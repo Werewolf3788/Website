@@ -669,7 +669,7 @@
                         Every movie and show I own digitally, plus where each one is streaming across Google, YouTube, Apple, Fandango, Amazon, and Movies Anywhere.
                     </p>
                     <div class="stat-tile inline-block text-left">
-                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest block">Titles in Archive</span>
+                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest block">IMDb Titles in Archive</span>
                         <div class="flex items-baseline gap-2">
                             <span id="movie-count" class="text-4xl font-black text-white leading-none" style="font-family:'Sora',sans-serif">Loading...</span>
                             <span id="type-breakdown" class="text-[11px] font-mono text-slate-400"></span>
@@ -2282,6 +2282,7 @@
 
             const slides = [];
             let rowCount = 0, tvTally = 0;
+            const imdbIds = new Set();
 
             for (let r = 1; r < rows.length; r++) {
                 const row = rows[r];
@@ -2311,6 +2312,7 @@
                 const typeRaw = cell(CIN.type);
                 const isTv = /tv|series/i.test(typeRaw) || /thetvdb\.com|tvdb/i.test(cell(CIN.id));
                 if (isTv) tvTally++;
+                const imdbM = cell(CIN.id).match(/tt\d+/i); if (imdbM) imdbIds.add(imdbM[0].toLowerCase());
 
                 // Poster Image Url (N) first, then Poster Art (B) if that holds a plain URL
                 const poster = [cell(CIN.poster), cell(CIN.posterArt)].find(u => /^(https?:)?\/\//i.test(u) && u !== 'N/A') || '';
@@ -2340,8 +2342,8 @@
                 });
             }
 
-            // Number of TITLES (not store links): sheet header total, falling back to counted rows
-            const titleCount = nums[0] ?? rowCount;
+            // Primary count = distinct IMDb titles (column A), falling back to the sheet header total / counted rows
+            const titleCount = imdbIds.size || (nums[0] ?? rowCount);
             return { slides, titleCount, tvTally };
         }
 

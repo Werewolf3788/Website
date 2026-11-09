@@ -749,7 +749,9 @@ function buildCatalog(csvText) {
   const latest = Math.max(0, ...list.map(m => m.ts));
   list.forEach(m => { m.isNew = m.ts && latest - m.ts <= 14 * 86400000; });
   const sum = Object.values(storeCounts).reduce((a, b) => a + b, 0);
-  return { list, stats: { titles: nums[0] ?? rowCount, links: nums[1] ?? sum, stores: storeCounts } };
+  // Primary count = distinct IMDb titles in the library (column A "tt…" ids), not store links
+  const imdb = new Set(list.map(m => (m.id.match(/^tt\d+$/i) || [])[0]).filter(Boolean)).size;
+  return { list, stats: { titles: nums[0] ?? rowCount, imdb: imdb || (nums[0] ?? rowCount), links: nums[1] ?? sum, stores: storeCounts } };
 }
 
 /* ---------------- data loading (device cache first, then the sheet) ---------------- */
@@ -887,7 +889,7 @@ function rowSection(title, list, moreHref, opts = {}) {
     <button class="row-arrow r" type="button" aria-label="Scroll right" data-scroll="1">${ICON.chevR}</button></div></section>`;
 }
 function storeBar() {
-  const all = `<button class="store-chip ${!state.store ? 'active' : ''}" data-store="">All stores <span class="n">${fmt(stats.links)}</span></button>`;
+  const all = `<button class="store-chip ${!state.store ? 'active' : ''}" data-store="">All stores <span class="n">${fmt(stats.imdb)}</span></button>`;
   const pinned = lsGet(LS.pin) || '';
   const pin = state.store !== pinned ? `<button class="pin-link" type="button" data-pin="${state.store}">📌 Make ${state.store ? esc(STORE[state.store].label) : 'All stores'} my default</button>` : (pinned ? `<span class="pin-link" style="cursor:default">📌 Your default</span>` : '');
   return `<div class="storebar" role="toolbar" aria-label="Filter by store">${all}${STORES.map(s => `<button class="store-chip ${state.store === s.key ? 'active' : ''}" data-store="${s.key}"><span class="sw" style="background:${s.color}"></span>${esc(s.label)} <span class="n">${fmt(stats.stores[s.key])}</span></button>`).join('')}${pin}</div>`;
@@ -911,7 +913,7 @@ function heroHtml(m) {
     <div class="hero-cta"><a class="btn btn-primary" href="${titleUrl(m)}" data-key="${esc(m.key)}">${ICON.play}Where to watch</a>
       <a class="btn btn-ghost" href="${titleUrl(m)}" data-key="${esc(m.key)}">${ICON.info}Details</a></div>
     <div class="hero-dots">${heroList.map((x, i) => `<button type="button" class="${i === heroIdx ? 'on' : ''}" data-hero="${i}" aria-label="Show ${esc(x.title)}"></button>`).join('')}</div>
-    <div class="inventory"><span><b>${fmt(stats.titles)}</b> titles</span><span><b>${fmt(stats.links)}</b> store links</span></div>
+    <div class="inventory"><span><b>${fmt(stats.imdb)}</b> IMDb titles</span></div>
   </div>${m.poster ? `<img class="hero-poster" src="${esc(m.poster)}" alt="${esc(m.title)} poster">` : ''}</div>`;
 }
 function setHero(i) {
