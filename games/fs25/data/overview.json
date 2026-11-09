@@ -15,10 +15,10 @@
   "serverVersion": "1.25.1.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-08T21:45:46Z",
-  "lastChange": "2026-11-08T21:45:46Z",
+  "lastCheck": "2026-11-09T01:15:30Z",
+  "lastChange": "2026-11-09T01:15:30Z",
   "lastFull": "2026-11-04T07:59:29Z",
-  "lastLight": "2026-11-08T21:45:46Z",
+  "lastLight": "2026-11-09T01:15:30Z",
   "files": [
    "careerSavegame",
    "collectibles",
@@ -51,8 +51,6 @@
   "changedFiles": [
    "careerSavegame.xml",
    "environment.xml",
-   "fields.xml",
-   "precisionFarming.xml",
    "gameStats.xml"
   ]
  },
@@ -105,8 +103,8 @@
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2196654972,
-  "playTimeHours": 1599.3,
+  "money": 2196789294,
+  "playTimeHours": 1602.8,
   "slotUsage": 2127,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
@@ -170,18 +168,11 @@
   "month": "February",
   "season": "Winter",
   "year": 5,
-  "time": "01:16",
-  "minutesSinceRain": 468,
+  "time": "04:46",
+  "minutesSinceRain": 678,
   "groundWetness": 0.0,
   "snowHeight": 0.0,
   "forecast": [
-   {
-    "type": "CLOUDY",
-    "season": "AUTUMN",
-    "startDay": 86,
-    "startTime": "17:00",
-    "durationH": 9.0
-   },
    {
     "type": "CLOUDY",
     "season": "AUTUMN",
@@ -342,6 +333,13 @@
     "startDay": 93,
     "startTime": "01:00",
     "durationH": 9.0
+   },
+   {
+    "type": "CLOUDY",
+    "season": "SUMMER",
+    "startDay": 93,
+    "startTime": "10:00",
+    "durationH": 10.0
    }
   ]
  },
@@ -351,7 +349,7 @@
   "version": "1.25.1.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "01:26",
+  "time": "04:55",
   "capacity": 6,
   "numUsed": 0,
   "players": [],
