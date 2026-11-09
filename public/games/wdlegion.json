@@ -1,0 +1,133 @@
+{
+  "game": "Watch Dogs: Legion",
+  "gameId": "WatchDogsLegion",
+  "commId": "NPWR16685_00",
+  "image_url": "",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR16685_00"
+    },
+    "steam": {
+      "appId": "",
+      "url": ""
+    },
+    "xbox": {
+      "productId": "",
+      "url": ""
+    }
+  },
+  "lastUpdated": "",
+  "overallProgress": 0,
+  "activeMission": "In Progress",
+  "boroughs": [
+    "Camden",
+    "City of London",
+    "City of Westminster",
+    "Islington & Hackney",
+    "Lambeth",
+    "Nine Elms",
+    "Southwark",
+    "Tower Hamlets"
+  ],
+  "metrics": [
+    { "id": "metric_1", "icon": "💎", "label": "Tech Points", "current": 0, "total": 130, "step": 1 },
+    { "id": "metric_2", "icon": "🏺", "label": "Relics", "current": 0, "total": 50, "step": 1 },
+    { "id": "metric_3", "icon": "🎭", "label": "Mask Boxes", "current": 0, "total": 38, "step": 1 },
+    { "id": "metric_4", "icon": "🎧", "label": "Audio Logs", "current": 0, "total": 53, "step": 1 },
+    { "id": "metric_5", "icon": "📄", "label": "Text Files / Data Points", "current": 0, "total": 194, "step": 1 },
+    { "id": "metric_6", "icon": "🎨", "label": "Paste-Ups", "current": 0, "total": 47, "step": 1 },
+    { "id": "metric_7", "icon": "🍺", "label": "Pub / Drink Locations", "current": 0, "total": 26, "step": 1 },
+    { "id": "metric_8", "icon": "🎯", "label": "Darts Locations", "current": 0, "total": 21, "step": 1 },
+    { "id": "metric_9", "icon": "⚽", "label": "Kick-Up Locations", "current": 0, "total": 21, "step": 1 }
+  ],
+  "categories": {},
+  "trophies": [],
+  "collectibles": {
+    "tech_points": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 130,
+      "region": "London-wide",
+      "description": "Used to upgrade DedSec gadgets, weapons, and hacks. Appear as small diamond-shaped icons on the map.",
+      "items": []
+    },
+    "relics": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 50,
+      "region": "London-wide",
+      "description": "Historical or pop-culture artifacts hidden around the city. Collecting 15 unlocks the 'Magpie' trophy/achievement. Many are also tied to story progress.",
+      "items": []
+    },
+    "mask_boxes": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 38,
+      "region": "London-wide",
+      "description": "Special containers that reward unique cosmetic masks to customize operatives.",
+      "items": []
+    },
+    "audio_logs": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 53,
+      "region": "London-wide",
+      "description": "Recorded messages and lore fragments that expand the story of London and its residents.",
+      "items": []
+    },
+    "text_files": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 194,
+      "region": "London-wide",
+      "description": "Written documents and data points / lore items found in various locations.",
+      "items": []
+    },
+    "paste_ups": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 47,
+      "region": "London-wide",
+      "description": "Street art locations where you paint DedSec art to complete regional activities.",
+      "items": []
+    },
+    "pubs": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 26,
+      "region": "London-wide",
+      "description": "Local pubs where you can take part in the 'Get Pissed' drinking activity.",
+      "items": []
+    },
+    "darts": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 21,
+      "region": "London-wide",
+      "description": "Pubs featuring a playable game of darts.",
+      "items": []
+    },
+    "kick_up": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 21,
+      "region": "London-wide",
+      "description": "Street football / soccer kick-up mini-game spots.",
+      "items": []
+    }
+  },
+  "tips": [
+    "Liberate boroughs first — completing borough uprisings reveals tech points and key activities directly on the map, making them much easier to track down.",
+    "Use an operative with a Cargo Drone (or Wrench) for tech points and text files on high rooftops or hard-to-reach ledges — saves a lot of time versus climbing.",
+    "Community interactive maps (MapGenie's Watch Dogs Legion map, Guides for Gamers' Watch Dogs Legion interactive maps) can be used alongside this tracker to visually cross-check progress."
+  ]
+}
