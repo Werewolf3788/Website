@@ -2827,6 +2827,51 @@
       "total_count": 24,
       "region": "London-wide",
       "description": "Spend Tech Points in the Tech menu to unlock all Gadgets, Upgrades, Weapons, and Hacks. Required for the Fully Kitted trophy.",
+      "wallet_label": "Tech Points",
+      "priority_order": [
+        "Spiderbot Level 2 (Infiltrator or Combat) — the single most useful early upgrade; lets your drone fight back or dive into vents solo.",
+        "Deep Profiler — tags every nearby NPC's items/skills through walls, which makes recruiting and casing targets much faster.",
+        "AR Shroud — hides your wanted/suspicious icon from casual NPCs so you can move around hot zones without being reported.",
+        "Gun Jam — remotely jams an enemy's weapon; great panic button against guards and snipers.",
+        "Chase Drone Hacks (all 3 tiers) and Turret Hacks (all 3 tiers) — turn the game's own pursuit drones and turrets into tools that fight for you instead of against you.",
+        "The three Deactivation upgrades (Chase Drone, Turret, Combat Drone) don't cost Tech Points directly — they unlock automatically as you turn boroughs Defiant (2 / 4 / 6 boroughs), so prioritize Defiance progress alongside spending."
+      ],
+      "build_guides": [
+        {
+          "name": "Stealth / Infiltrator build",
+          "focus": "Ghost through missions without raising alarms.",
+          "items": [
+            "AR Cloak",
+            "Attract Hack",
+            "Disrupt Hack",
+            "Electro-Shock Trap",
+            "Infiltrator Spiderbot"
+          ],
+          "note": "AR Cloak breaks line-of-sight detection, Attract and Disrupt Hacks pull/distract guards away from your path, and the Electro-Shock Trap handles anyone who finds you anyway."
+        },
+        {
+          "name": "Aggressive / Combat build",
+          "focus": "Fight through resistance instead of avoiding it.",
+          "items": [
+            "Combat Spiderbot",
+            "Missile Drone",
+            "DedSec Grenade Launcher",
+            "Gun Jam"
+          ],
+          "note": "Combat Spiderbot and Missile Drone give you ranged firepower that doesn't cost you health, and Gun Jam plus the Grenade Launcher clear out armored or grouped enemies fast."
+        },
+        {
+          "name": "Hacker / Drone-control build",
+          "focus": "Turn the city's own security against itself.",
+          "items": [
+            "Chase Drone Hacks",
+            "Turret Hacks",
+            "Riot Drone Hacks",
+            "Parcel Fox Drone Hacks"
+          ],
+          "note": "Once hacked, these let you ride or command drones/turrets that were previously chasing you — strongest once you've unlocked several hack tiers."
+        }
+      ],
       "items": [
         {
           "id": "gadget_infiltrator_spiderbot",
@@ -2926,7 +2971,8 @@
           "cost": 10,
           "region": "Upgrade",
           "location": "Upgrade",
-          "guide": "Permanently disables nearby chase drones."
+          "guide": "Permanently disables nearby chase drones.",
+          "unlock_requirement": "Unlock: turn 2 boroughs Defiant (removes DedSec Chase Drones from that borough once done citywide)"
         },
         {
           "id": "upgrade_turret_deactivation",
@@ -2936,7 +2982,8 @@
           "cost": null,
           "region": "Upgrade",
           "location": "Upgrade",
-          "guide": "Permanently disables nearby turrets. Unlocks after a borough turns Defiant (no Tech Point cost)."
+          "guide": "Permanently disables nearby turrets. Unlocks after a borough turns Defiant (no Tech Point cost).",
+          "unlock_requirement": "Unlock: turn 4 boroughs Defiant (disables hostile turrets in cleared boroughs)"
         },
         {
           "id": "upgrade_combat_drone_deactivation",
@@ -2946,7 +2993,8 @@
           "cost": null,
           "region": "Upgrade",
           "location": "Upgrade",
-          "guide": "Permanently disables nearby combat drones. Unlocks after a borough turns Defiant (no Tech Point cost)."
+          "guide": "Permanently disables nearby combat drones. Unlocks after a borough turns Defiant (no Tech Point cost).",
+          "unlock_requirement": "Unlock: turn 6 boroughs Defiant (disables Combat Drones in cleared boroughs)"
         },
         {
           "id": "weapon_ltl_68p_pistol",

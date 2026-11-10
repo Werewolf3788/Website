@@ -292,6 +292,14 @@ window.appState = {
                 const group = data.collectibles[cKey];
                 const rawItems = group?.items ? (Array.isArray(group.items) ? group.items : Object.values(group.items)) : [];
                 if (!this.collectibles[cKey]) this.collectibles[cKey] = { items: {} };
+                // Pinned-group-only guidance (wallet label + build/priority guidance), passed
+                // through onto the hydrated group so the pinned renderer can read it; harmless
+                // no-op for any game whose collectibles JSON doesn't set these fields.
+                if (group) {
+                    if (group.wallet_label) this.collectibles[cKey].wallet_label = group.wallet_label;
+                    if (Array.isArray(group.build_guides)) this.collectibles[cKey].build_guides = group.build_guides;
+                    if (Array.isArray(group.priority_order)) this.collectibles[cKey].priority_order = group.priority_order;
+                }
 
                 rawItems.forEach(cItem => {
                     if (!cItem || !cItem.id) return;
@@ -304,11 +312,13 @@ window.appState = {
                             location: cItem.location || '',
                             guide: cItem.guide || '',
                             image_url: cItem.image_url || '',
-                            // Tech-upgrade-style fields (cost in Tech Points, category, upgrade levels);
-                            // harmless passthrough for any game that doesn't use them.
+                            // Tech-upgrade-style fields (cost in Tech Points, category, upgrade levels,
+                            // and a Defiance-style unlock condition); harmless passthrough for any
+                            // game that doesn't use them.
                             cost: cItem.cost != null ? cItem.cost : null,
                             category: cItem.category || '',
-                            levels: cItem.levels != null ? cItem.levels : null
+                            levels: cItem.levels != null ? cItem.levels : null,
+                            unlock_requirement: cItem.unlock_requirement || ''
                         };
                     }
                 });
@@ -3074,6 +3084,36 @@ function renderUniversalCompanion(data) {
             .filter(([, grp]) => grp && grp.items && Object.keys(grp.items).length);
         pinnedGroups.forEach(([cKey, grp]) => {
             const items = Object.entries(grp.items || {});
+            // Optional wallet box: lets you log how many currency points (Tech Points,
+            // etc.) you currently have, so every item's cost badge below can show
+            // "Credits needed: X more" via the generic price-meter. Reuses the same
+            // #walletCredits id/appState.setWallet('credits', …) wiring the hunting
+            // schema's wallet panel uses, so no new JS state is needed — renderWalletUI()
+            // already keeps it and every .price-meter in sync on every update.
+            const walletBox = grp.wallet_label ? `
+                <div class="mission-detail" style="margin-bottom:10px;">
+                    <div><h4>${escapeHtml(grp.wallet_label)} you have</h4>
+                        <input id="walletCredits" type="number" min="0" class="uni-search-input hunt-input" onchange="appState.setWallet('credits', this.value)">
+                    </div>
+                </div>` : '';
+            // Optional "what works well together" guidance, driven entirely from JSON
+            // (grp.build_guides / grp.priority_order) so it stays data-only — no new
+            // interactive state, just reference text above the grid.
+            const buildGuides = Array.isArray(grp.build_guides) && grp.build_guides.length ? `
+                <div class="guide" style="margin-bottom:10px;">
+                    ${grp.build_guides.map(b => `
+                        <div class="guide-sec">
+                            <h3>${escapeHtml(b.name || '')}</h3>
+                            ${b.focus ? `<p>${escapeHtml(b.focus)}</p>` : ''}
+                            ${Array.isArray(b.items) && b.items.length ? `<p style="color:#94a3b8;font-size:0.8rem;"><strong>Pair:</strong> ${b.items.map(escapeHtml).join(' + ')}</p>` : ''}
+                            ${b.note ? `<p style="font-size:0.8rem;">${escapeHtml(b.note)}</p>` : ''}
+                        </div>`).join('')}
+                </div>` : '';
+            const priorityOrder = Array.isArray(grp.priority_order) && grp.priority_order.length ? `
+                <div class="guide-sec" style="margin-bottom:10px;">
+                    <h3>What to get first</h3>
+                    <ul>${grp.priority_order.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>
+                </div>` : '';
             pinnedHtml += `
             <section class="category-section" data-pinned="true">
                 <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
@@ -3081,20 +3121,25 @@ function renderUniversalCompanion(data) {
                     <span>▾</span>
                 </div>
                 <div class="section-content">
+                    ${walletBox}${buildGuides}${priorityOrder}
                     <div class="trophy-grid">
                         ${items.map(([id, it]) => {
                             // Tech upgrades show their Tech Point cost as the badge, so you can
                             // see at a glance what each one costs toward the Fully Kitted trophy.
                             // Items with more than one upgrade level get a 0/N stepper instead of
                             // a single checkbox, so partial progress (e.g. Level 1 of 2) is tracked.
-                            const costBadge = it.cost != null ? `${it.cost} TP` : 'No cost';
+                            // Items with an unlock_requirement (e.g. "turn N boroughs Defiant")
+                            // show that instead of/alongside the cost, since no amount of Tech
+                            // Points unlocks them until the condition is met.
+                            const costBadge = it.cost != null ? `${it.cost} TP` : (it.unlock_requirement ? 'Unlocks' : 'No cost');
                             return buildItemCard({
                                 id, type: 'collectible', group: cKey,
                                 badge: costBadge, badgeClass: 'rank-silver',
                                 title: it.name || id,
-                                sub: [it.category, it.levels ? `${it.levels} level(s)` : ''].filter(Boolean).join(' · '),
+                                sub: [it.category, it.levels ? `${it.levels} level(s)` : '', it.unlock_requirement || ''].filter(Boolean).join(' · '),
                                 body: it.guide || '', img: it.image_url,
-                                levelGoal: it.levels > 1 ? it.levels : 0
+                                levelGoal: it.levels > 1 ? it.levels : 0,
+                                price: grp.wallet_label && it.cost != null ? it.cost : 0
                             });
                         }).join('')}
                     </div>
