@@ -298,6 +298,7 @@ window.appState = {
                     if (!this.collectibles[cKey].items[cItem.id]) {
                         this.collectibles[cKey].items[cItem.id] = {
                             collected: false,
+                            level: 0,
                             name: cItem.name || '',
                             region: cItem.region || group.region || '',
                             location: cItem.location || '',
@@ -559,6 +560,10 @@ window.appState = {
                     for (const itemId in payload.collectibles[cKey].items) {
                         if (this.collectibles[cKey].items[itemId]) {
                             this.collectibles[cKey].items[itemId].collected = !!payload.collectibles[cKey].items[itemId].collected;
+                            // Multi-level items (e.g. Tech Upgrades with Level 1/2/3) store how many
+                            // levels are bought so far; restore it alongside the collected flag.
+                            const lvl = Number(payload.collectibles[cKey].items[itemId].level);
+                            if (Number.isFinite(lvl)) this.collectibles[cKey].items[itemId].level = Math.max(0, lvl);
                         }
                     }
                 }
@@ -756,7 +761,10 @@ window.appState.applyStateToUI = function() {
 
         if (type === 'collectible') {
             if (group && this.collectibles[group]?.items?.[id]) {
-                isDone = !!(this.collectibles[group].items[id].collected);
+                const it = this.collectibles[group].items[id];
+                isDone = !!it.collected;
+                const lvlEl = card.querySelector('.tech-level-display');
+                if (lvlEl && it.levels) lvlEl.textContent = `${it.level || 0}/${it.levels}`;
             }
         } else if (type === 'trophy') {
             isDone = !!(this.trophies[id]?.earned);
@@ -916,6 +924,22 @@ window.appState.setMedalProgress = function(id, value, source) {
 };
 window.appState.stepMedal = function(id, d) { this.setMedalProgress(id, (this.medals[id]?.progress || 0) + d); };
 window.appState.stepRibbon = function(id, d) { this.setRibbonCount(id, (this.ribbons[id]?.count || 0) + d); };
+// Multi-level collectibles (e.g. Watch Dogs: Legion Tech Upgrades, bought in
+// Level 1/2/3 tiers): track how many levels are bought, not just owned/not-owned.
+// `collected` flips true once every level is bought, so it keeps counting
+// correctly everywhere else (section totals, trophy cross-reference links).
+window.appState.setTechLevel = function(id, group, value) {
+    const it = this.collectibles[group]?.items?.[id]; if (!it) return;
+    const max = Number(it.levels) || 1;
+    it.level = Math.max(0, Math.min(max, Math.floor(Number(value) || 0)));
+    it.collected = it.level >= max;
+    this.applyStateToUI();
+    clearTimeout(this._techLevelSaveTimer); this._techLevelSaveTimer = setTimeout(() => this.saveProgress(), 600);
+};
+window.appState.stepTechLevel = function(id, group, d) {
+    const it = this.collectibles[group]?.items?.[id];
+    this.setTechLevel(id, group, (it?.level || 0) + d);
+};
 function renderMedalProgress() {
     document.querySelectorAll('.medal-meter[data-medal]').forEach(el => {
         const id = el.dataset.medal, m = appState.medals[id] || {}, def = medalDef(id);
@@ -1672,6 +1696,8 @@ function buildItemCard(o) {
             </div>
             ${o.counter
                 ? `<div class="ribbon-count-wrap" title="Times earned"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepRibbon('${escapeHtml(o.id)}', -1)">−</button><span>×</span><input type="number" min="0" step="1" inputmode="numeric" class="ribbon-count" value="0" aria-label="Times earned: ${escapeHtml(o.title || '')}" onchange="appState.setRibbonCount('${escapeHtml(o.id)}', this.value)"><button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepRibbon('${escapeHtml(o.id)}', 1)">+</button></div>`
+                : o.levelGoal
+                ? `<div class="ribbon-count-wrap tech-level-wrap" title="Levels bought"><button type="button" class="step-btn" aria-label="Lower level" onclick="appState.stepTechLevel('${escapeHtml(o.id)}', '${escapeHtml(o.group || '')}', -1)">−</button><span class="tech-level-display" data-tech-level="${escapeHtml(o.id)}" data-tech-group="${escapeHtml(o.group || '')}">0/${Number(o.levelGoal)}</span><button type="button" class="step-btn" aria-label="Raise level" onclick="appState.stepTechLevel('${escapeHtml(o.id)}', '${escapeHtml(o.group || '')}', 1)">+</button></div>`
                 : o.progressGoal
                 ? `<div class="ribbon-count-wrap medal-progress-wrap" title="Progress"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepMedal('${escapeHtml(o.id)}', -1)">−</button><input type="number" min="0" step="1" inputmode="numeric" class="medal-count" value="0" ${o.unit ? `placeholder="${escapeHtml(o.unit)}" title="Type your longest shot in meters"` : ''} aria-label="${o.unit ? 'Your longest shot (meters)' : 'Progress'}: ${escapeHtml(o.title || '')}" onchange="appState.setMedalProgress('${escapeHtml(o.id)}', this.value)">${o.unit ? `<span class="unit-lbl">${escapeHtml(o.unit)}</span>` : ''}<button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepMedal('${escapeHtml(o.id)}', 1)">+</button></div>`
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
@@ -3059,13 +3085,16 @@ function renderUniversalCompanion(data) {
                         ${items.map(([id, it]) => {
                             // Tech upgrades show their Tech Point cost as the badge, so you can
                             // see at a glance what each one costs toward the Fully Kitted trophy.
+                            // Items with more than one upgrade level get a 0/N stepper instead of
+                            // a single checkbox, so partial progress (e.g. Level 1 of 2) is tracked.
                             const costBadge = it.cost != null ? `${it.cost} TP` : 'No cost';
                             return buildItemCard({
                                 id, type: 'collectible', group: cKey,
                                 badge: costBadge, badgeClass: 'rank-silver',
                                 title: it.name || id,
                                 sub: [it.category, it.levels ? `${it.levels} level(s)` : ''].filter(Boolean).join(' · '),
-                                body: it.guide || '', img: it.image_url
+                                body: it.guide || '', img: it.image_url,
+                                levelGoal: it.levels > 1 ? it.levels : 0
                             });
                         }).join('')}
                     </div>
