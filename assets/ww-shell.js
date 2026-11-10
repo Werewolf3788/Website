@@ -338,6 +338,19 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
         applyMode();
         refreshInstallButtons();
         refreshPushState();
+        loadAuth();
+        window.dispatchEvent(new Event('ww-shell-rendered'));
+    }
+
+    // Shared sign-in (Sign in button + saved session). Loaded once, after the first render.
+    let authLoaded = false;
+    function loadAuth() {
+        if (authLoaded || window.WWAuth) return;
+        authLoaded = true;
+        const s = document.createElement('script');
+        s.src = rootUrl('Claude-Test/ww-auth.js');
+        s.defer = true;
+        document.head.appendChild(s);
     }
 
     // ------------------------------------------------------- interactions

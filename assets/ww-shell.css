@@ -145,7 +145,7 @@ html.ww-bn-mode .ww-sheet.is-open {
 
 /* Installed app: respect the notch / status bar */
 @media (display-mode: standalone) {
-    #ww-topbar { padding-top: env(safe-area-inset-top, 0px); height: calc(var(--ww-bar-h) + env(safe-area-inset-top, 0px)); }
+    /* (the page body is padded by the safe area below, so the top bar needs no extra padding) */
 }
 
 /* ---------- Small toast ---------- */
@@ -163,3 +163,17 @@ html.ww-bn-mode #ww-toast { bottom: calc(var(--ww-bn-h) + 16px + env(safe-area-i
 
 /* Buttons the shell hides (e.g. Install when the app is already installed) */
 .ww-list [hidden], #ww-drawer [hidden], .ww-sheet [hidden] { display: none !important; }
+
+/* ---------- Installed app / notch phones: keep the top of every page (and its Sign in) below the status bar ----------
+   The shell asks for a translucent status bar (apple-mobile-web-app-status-bar-style), so in the installed app
+   the page draws underneath the clock/notch. Push content down by the safe area and keep sticky headers there. */
+@media (display-mode: standalone) {
+    html.ww-shell-on:not([data-ww-own-pwa]) body { padding-top: env(safe-area-inset-top, 0px); }
+    html.ww-shell-on:not([data-ww-own-pwa])::before {
+        content: ''; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px);
+        background: #0b1120; z-index: 99999; pointer-events: none;
+    }
+    html.ww-shell-on:not([data-ww-own-pwa]) :is(.site-header, #ww-topbar, body > header, body > nav) {
+        top: env(safe-area-inset-top, 0px) !important;
+    }
+}
