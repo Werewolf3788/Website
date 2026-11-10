@@ -658,7 +658,918 @@
       "total_count": 130,
       "region": "London-wide",
       "description": "Used to upgrade DedSec gadgets, weapons, and hacks. Appear as small diamond-shaped icons on the map.",
-      "items": []
+      "items": [
+        {
+          "id": "techpoint_camden_01",
+          "name": "The British Museum",
+          "region": "Camden",
+          "location": "The British Museum",
+          "guide": "In a tent at the front of the building. Use the entrance with two gates and jump the fence section there to avoid alerting guards."
+        },
+        {
+          "id": "techpoint_camden_02",
+          "name": "ETO Bank Construction Site",
+          "region": "Camden",
+          "location": "ETO Bank Construction Site",
+          "guide": "At the top of the tower overlooking the site. Reach it by cargo drone."
+        },
+        {
+          "id": "techpoint_camden_03",
+          "name": "Argyle Inn",
+          "region": "Camden",
+          "location": "Argyle Inn",
+          "guide": "On the roof of the smaller building. Fly a cargo drone to the roof, then send a Spiderbot into the ventilation shaft."
+        },
+        {
+          "id": "techpoint_camden_04",
+          "name": "Royal Courts of Justice",
+          "region": "Camden",
+          "location": "Royal Courts of Justice",
+          "guide": "On the roof of the smaller building, outside any restricted area. A cargo drone gets you there."
+        },
+        {
+          "id": "techpoint_camden_05",
+          "name": "Leather Lane",
+          "region": "Camden",
+          "location": "Leather Lane",
+          "guide": "In an evidence room. Enter the garage, send a Spiderbot through the vent, and follow it to the end."
+        },
+        {
+          "id": "techpoint_camden_06",
+          "name": "Albion Station Camden",
+          "region": "Camden",
+          "location": "Albion Station Camden",
+          "guide": "In an evidence room. Climb the drainpipe at the back of the building, incapacitate the guard, and use a Spiderbot through a hole in the wall."
+        },
+        {
+          "id": "techpoint_camden_07",
+          "name": "Furzton Tower Block",
+          "region": "Camden",
+          "location": "Furzton Tower Block",
+          "guide": "On a small shelf beside the patio on the first floor. A guard is nearby, so a cargo drone is the safest approach."
+        },
+        {
+          "id": "techpoint_camden_08",
+          "name": "University College London",
+          "region": "Camden",
+          "location": "University College London",
+          "guide": "On the roof of a small shed in the courtyard. Fly a cargo drone to the roof, then use a Spiderbot in the ventilation."
+        },
+        {
+          "id": "techpoint_camden_09",
+          "name": "United Souls Search",
+          "region": "Camden",
+          "location": "United Souls Search",
+          "guide": "On the roof of the building. Reach it by cargo drone."
+        },
+        {
+          "id": "techpoint_camden_10",
+          "name": "GBB House",
+          "region": "Camden",
+          "location": "GBB House",
+          "guide": "On the roof of the building, near United Souls Search so you can collect both together."
+        },
+        {
+          "id": "techpoint_camden_11",
+          "name": "Crescent Park",
+          "region": "Camden",
+          "location": "Crescent Park",
+          "guide": "On scaffolding next to the fence, with a construction worker nearby. Use a drone or sneak through the main gate."
+        },
+        {
+          "id": "techpoint_camden_12",
+          "name": "Albion Internment Centre",
+          "region": "Camden",
+          "location": "Albion Internment Centre",
+          "guide": "In a prison cell. Fly a cargo drone over the fence to the grass patch right of the main entrance, then use a Spiderbot through the ventilation shaft."
+        },
+        {
+          "id": "techpoint_camden_13",
+          "name": "Blume Complex",
+          "region": "Camden",
+          "location": "Blume Complex",
+          "guide": "On the roof of the building. Reach it by cargo drone."
+        },
+        {
+          "id": "techpoint_camden_14",
+          "name": "Cruciform Hospital",
+          "region": "Camden",
+          "location": "Cruciform Hospital",
+          "guide": "In the courtyard. The gate is locked from inside, so use a cargo drone."
+        },
+        {
+          "id": "techpoint_camden_15",
+          "name": "Carcani Medical",
+          "region": "Camden",
+          "location": "Carcani Medical",
+          "guide": "In the ventilation shaft beneath the ground-floor laboratories. Open the gate, send in a Spiderbot, and move it through the complex."
+        },
+        {
+          "id": "techpoint_camden_16",
+          "name": "Camden Market",
+          "region": "Camden",
+          "location": "Camden Market",
+          "guide": "At one of the fair booths."
+        },
+        {
+          "id": "techpoint_camden_17",
+          "name": "St. Pancras International",
+          "region": "Camden",
+          "location": "St. Pancras International",
+          "guide": "In a cell on the terminal floor. Open it using the terminal across the corridor. A Spiderbot is the safest way inside."
+        },
+        {
+          "id": "techpoint_camden_18",
+          "name": "Ministry of Civic Management",
+          "region": "Camden",
+          "location": "Ministry of Civic Management",
+          "guide": "On a table in the ministry's yard. Use a Spiderbot to get it."
+        },
+        {
+          "id": "techpoint_camden_19",
+          "name": "Camden High Street",
+          "region": "Camden",
+          "location": "Camden High Street",
+          "guide": "On a table. Take the lift in the alley next to Camden Town station, then climb the drainpipe."
+        },
+        {
+          "id": "techpoint_nine_elms_01",
+          "name": "Solar Garden",
+          "region": "Nine Elms",
+          "location": "Solar Garden",
+          "guide": "On the circular top floor. Fly in with a cargo drone, find a grate, and throw a Spiderbot through it."
+        },
+        {
+          "id": "techpoint_nine_elms_02",
+          "name": "US Embassy",
+          "region": "Nine Elms",
+          "location": "US Embassy",
+          "guide": "In a restricted area on the lower level. Reach it quietly with a Spiderbot, or use a transport drone at the risk of being detected."
+        },
+        {
+          "id": "techpoint_nine_elms_03",
+          "name": "Nine Elms Walkway",
+          "region": "Nine Elms",
+          "location": "Nine Elms Walkway",
+          "guide": "In a restricted area. Use an Albion employee or builder outfit. On the right side of the bridge, shoot the barrel beside the X-marked wooden door to blow it open, then enter."
+        },
+        {
+          "id": "techpoint_nine_elms_04",
+          "name": "Vauxhall Tower",
+          "region": "Nine Elms",
+          "location": "Vauxhall Tower",
+          "guide": "Behind a locked door. Use a transport drone to hook explosives, fly to the roof, and drop them near the terminal."
+        },
+        {
+          "id": "techpoint_nine_elms_05",
+          "name": "Albion Station Nine Elms",
+          "region": "Nine Elms",
+          "location": "Albion Station Nine Elms",
+          "guide": "On the top floor. Call a transport drone, drop explosives on the X-marked wooden door, and enter the room."
+        },
+        {
+          "id": "techpoint_nine_elms_06",
+          "name": "Parcel Fox Distribution Centre",
+          "region": "Nine Elms",
+          "location": "Parcel Fox Distribution Centre",
+          "guide": "In a restricted area. Place a Spiderbot in the air duct and descend; raise the grate while hovering above it."
+        },
+        {
+          "id": "techpoint_nine_elms_07",
+          "name": "The Battersea",
+          "region": "Nine Elms",
+          "location": "The Battersea",
+          "guide": "In a restricted lower level. Use a jet ski to enter, or use a Spiderbot through the grate to unlock the door."
+        },
+        {
+          "id": "techpoint_nine_elms_08",
+          "name": "Nine Elms Docks",
+          "region": "Nine Elms",
+          "location": "Nine Elms Docks",
+          "guide": "Heavily guarded. Use a Spiderbot in the ventilation shaft near the point, then jump on the pipes and head to the end of the area."
+        },
+        {
+          "id": "techpoint_tower_hamlets_01",
+          "name": "Helmsman's Tracks",
+          "region": "Tower Hamlets",
+          "location": "Helmsman's Tracks",
+          "guide": "In a restricted area, break two identical plywood walls (marked with a red X), one behind the other."
+        },
+        {
+          "id": "techpoint_tower_hamlets_02",
+          "name": "Albion Bethnal Green Station",
+          "region": "Tower Hamlets",
+          "location": "Albion Bethnal Green Station",
+          "guide": "Climb the unfinished staircase in the building to reach the room with the Tech Point."
+        },
+        {
+          "id": "techpoint_tower_hamlets_03",
+          "name": "Cemetery Park",
+          "region": "Tower Hamlets",
+          "location": "Cemetery Park",
+          "guide": "In a small building in the park's corner. Use a Spiderbot to get inside."
+        },
+        {
+          "id": "techpoint_tower_hamlets_04",
+          "name": "Wapping Albion Station",
+          "region": "Tower Hamlets",
+          "location": "Wapping Albion Station",
+          "guide": "On the building's roof. Use a drone to reach it."
+        },
+        {
+          "id": "techpoint_tower_hamlets_05",
+          "name": "Thames Landing",
+          "region": "Tower Hamlets",
+          "location": "Thames Landing",
+          "guide": "In a room under a landing that can't be entered from either side. Use the Spiderbot located inside."
+        },
+        {
+          "id": "techpoint_tower_hamlets_06",
+          "name": "Royal London Hospital",
+          "region": "Tower Hamlets",
+          "location": "Royal London Hospital",
+          "guide": "Where part of the hospital overhangs the street, on a small roof with scaffolding. The Tech Point is inside."
+        },
+        {
+          "id": "techpoint_tower_hamlets_07",
+          "name": "Albion Drone Factory",
+          "region": "Tower Hamlets",
+          "location": "Albion Drone Factory",
+          "guide": "Inside the building, past a door protected by an alarm (unless you wear an Albion costume). A guard is nearby."
+        },
+        {
+          "id": "techpoint_tower_hamlets_08",
+          "name": "Whitechapel Terminus",
+          "region": "Tower Hamlets",
+          "location": "Whitechapel Terminus",
+          "guide": "On the lower level of the complex. Drop down near the restricted zone border and throw a Spiderbot over the fence."
+        },
+        {
+          "id": "techpoint_tower_hamlets_09",
+          "name": "Brick Lane",
+          "region": "Tower Hamlets",
+          "location": "Brick Lane",
+          "guide": "On a building's roof. Fly a drone over to collect it."
+        },
+        {
+          "id": "techpoint_tower_hamlets_10",
+          "name": "Old Spitalfields Market",
+          "region": "Tower Hamlets",
+          "location": "Old Spitalfields Market",
+          "guide": "Inside a building at the entrance, reached by stairs. The area is guarded, so you'll need to defeat at least one enemy."
+        },
+        {
+          "id": "techpoint_tower_hamlets_11",
+          "name": "Tower of London",
+          "region": "Tower Hamlets",
+          "location": "Tower of London",
+          "guide": "Inside a small cage in the courtyard. The area is guarded, so fly a drone up and drop a Spiderbot in."
+        },
+        {
+          "id": "techpoint_tower_hamlets_12",
+          "name": "Tower Bridge",
+          "region": "Tower Hamlets",
+          "location": "Tower Bridge",
+          "guide": "At the top of the bridge. Enter through a window on one of the towers, climb to the top, step outside above the street, and throw a Spiderbot to the upper floor to retrieve it."
+        },
+        {
+          "id": "techpoint_islington_hackney_01",
+          "name": "Stafford Auto Garage",
+          "region": "Islington & Hackney",
+          "location": "Stafford Auto Garage",
+          "guide": "On the top floor, on the desk beside the computer. Climb the container to reach the floor with two cars, fight through the guards, then go up the stairs on the far side and turn left."
+        },
+        {
+          "id": "techpoint_islington_hackney_02",
+          "name": "Old Canal Warehouse",
+          "region": "Islington & Hackney",
+          "location": "Old Canal Warehouse",
+          "guide": "On a box on the warehouse roof. Call a nearby cargo drone and fly up to it instead of fighting the heavy guards."
+        },
+        {
+          "id": "techpoint_islington_hackney_03",
+          "name": "Cargo Collective",
+          "region": "Islington & Hackney",
+          "location": "Cargo Collective",
+          "guide": "On the floor of a locked room. Fly a cargo drone one floor up to grab the access key, then open the door."
+        },
+        {
+          "id": "techpoint_islington_hackney_04",
+          "name": "World of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World of Tomorrow",
+          "guide": "Inside the club, next to the slot machines on the lower floor."
+        },
+        {
+          "id": "techpoint_islington_hackney_05",
+          "name": "Hackney Baths",
+          "region": "Islington & Hackney",
+          "location": "Hackney Baths",
+          "guide": "On the desk beside the computer in a room with doors on both sides. Eliminate the guards one by one, then go forward and up."
+        },
+        {
+          "id": "techpoint_islington_hackney_06",
+          "name": "Fusilli Tower",
+          "region": "Islington & Hackney",
+          "location": "Fusilli Tower",
+          "guide": "At the top of the public tower. Use the nearest cargo drone and fly as high as it goes."
+        },
+        {
+          "id": "techpoint_islington_hackney_07",
+          "name": "Inspire Towers",
+          "region": "Islington & Hackney",
+          "location": "Inspire Towers",
+          "guide": "On a metal box on the balcony beside the Inspire tower. Reach it with a cargo drone."
+        },
+        {
+          "id": "techpoint_islington_hackney_08",
+          "name": "NeoGate",
+          "region": "Islington & Hackney",
+          "location": "NeoGate",
+          "guide": "At the far end of a ventilation duct. Take the stairs to the basement, use a Spiderbot through the vent shafts, and follow the duct on the right, below the ceiling."
+        },
+        {
+          "id": "techpoint_islington_hackney_09",
+          "name": "Finsbury New Project",
+          "region": "Islington & Hackney",
+          "location": "Finsbury New Project",
+          "guide": "At the end of a route on the platforms to the right. Throw a Spiderbot through the open grate on the lowest floor, and keep it away from water."
+        },
+        {
+          "id": "techpoint_islington_hackney_10",
+          "name": "Battlebridge Basin",
+          "region": "Islington & Hackney",
+          "location": "Battlebridge Basin",
+          "guide": "On the large balcony by a table. Fly a cargo drone to the marked spot, then jump down."
+        },
+        {
+          "id": "techpoint_islington_hackney_11",
+          "name": "The Sandstone Residence",
+          "region": "Islington & Hackney",
+          "location": "The Sandstone Residence",
+          "guide": "At the end of an air duct on the left. Get the access key from the garden with a cargo drone, enter the building, go up a floor, and send a Spiderbot through the vent."
+        },
+        {
+          "id": "techpoint_islington_hackney_12",
+          "name": "Seam Nightclub",
+          "region": "Islington & Hackney",
+          "location": "Seam Nightclub",
+          "guide": "On the scaffolding. Fly a cargo drone to the marked spot, then jump down to collect it."
+        },
+        {
+          "id": "techpoint_city_of_westminster_01",
+          "name": "Vauxhall Bridge",
+          "region": "City of Westminster",
+          "location": "Vauxhall Bridge",
+          "guide": "Under the bridge, in a room behind a cage. Enter through a hole with a Spiderbot, then destroy the barrel blocking the way."
+        },
+        {
+          "id": "techpoint_city_of_westminster_02",
+          "name": "Perry Harris Redevelopment",
+          "region": "City of Westminster",
+          "location": "Perry Harris Redevelopment",
+          "guide": "On the barrels at the lowest level of the construction site. A Spiderbot can sneak you in."
+        },
+        {
+          "id": "techpoint_city_of_westminster_03",
+          "name": "Lambeth Bridge",
+          "region": "City of Westminster",
+          "location": "Lambeth Bridge",
+          "guide": "In a room below the bridge that is locked from the inside. Use a Spiderbot to get in."
+        },
+        {
+          "id": "techpoint_city_of_westminster_04",
+          "name": "Wellington Arch",
+          "region": "City of Westminster",
+          "location": "Wellington Arch",
+          "guide": "On the tower's roof, under the floor. Go through the collapsed floor and into a ventilation shaft with the Spiderbot."
+        },
+        {
+          "id": "techpoint_city_of_westminster_05",
+          "name": "Buckingham Palace",
+          "region": "City of Westminster",
+          "location": "Buckingham Palace",
+          "guide": "On a table across from the guard room near the main entrance. Distract the patrolling guard."
+        },
+        {
+          "id": "techpoint_city_of_westminster_06",
+          "name": "Broco Tech",
+          "region": "City of Westminster",
+          "location": "Broco Tech",
+          "guide": "In a ventilation shaft beside the main entrance. Use a Spiderbot."
+        },
+        {
+          "id": "techpoint_city_of_westminster_07",
+          "name": "Westminster Abbey",
+          "region": "City of Westminster",
+          "location": "Westminster Abbey",
+          "guide": "In a pot on the roof of the building next to the courtyard. A cargo drone is needed."
+        },
+        {
+          "id": "techpoint_city_of_westminster_08",
+          "name": "Downing Street",
+          "region": "City of Westminster",
+          "location": "Downing Street",
+          "guide": "On a table in the central courtyard, next to an alarm camera. A drone can fly in directly."
+        },
+        {
+          "id": "techpoint_city_of_westminster_09",
+          "name": "Admiralty Arch",
+          "region": "City of Westminster",
+          "location": "Admiralty Arch",
+          "guide": "At the junction between the complex's two buildings. Reach it with a cargo drone."
+        },
+        {
+          "id": "techpoint_city_of_westminster_10",
+          "name": "London Carriage Service",
+          "region": "City of Westminster",
+          "location": "London Carriage Service",
+          "guide": "In the underground part of the complex, reached through a small office by the round tower. Disable the alarm gates, subdue the guard, then throw the Spiderbot to the ventilation shaft."
+        },
+        {
+          "id": "techpoint_city_of_westminster_11",
+          "name": "Canadian High Commission",
+          "region": "City of Westminster",
+          "location": "Canadian High Commission",
+          "guide": "On the roof, under the stairs. Fly in with a cargo drone, then use a Spiderbot."
+        },
+        {
+          "id": "techpoint_city_of_westminster_12",
+          "name": "Regalia Theatre",
+          "region": "City of Westminster",
+          "location": "Regalia Theatre",
+          "guide": "At the connector between buildings. Use a cargo drone or the lift after lowering the road posts."
+        },
+        {
+          "id": "techpoint_city_of_westminster_13",
+          "name": "Palace of Westminster",
+          "region": "City of Westminster",
+          "location": "Palace of Westminster",
+          "guide": "On the building's balcony. A drone can reach it."
+        },
+        {
+          "id": "techpoint_city_of_westminster_14",
+          "name": "Chinatown",
+          "region": "City of Westminster",
+          "location": "Chinatown",
+          "guide": "In a netted storage room in the courtyard of a restricted area. Enter through a hole in the fence with a Spiderbot."
+        },
+        {
+          "id": "techpoint_city_of_westminster_15",
+          "name": "New Scotland Yard",
+          "region": "City of Westminster",
+          "location": "New Scotland Yard",
+          "guide": "On a table on the floor with the guard room."
+        },
+        {
+          "id": "techpoint_city_of_westminster_16",
+          "name": "Buckingham Royal Mews",
+          "region": "City of Westminster",
+          "location": "Buckingham Royal Mews",
+          "guide": "Inside the building, in the room next to the garage door."
+        },
+        {
+          "id": "techpoint_city_of_westminster_17",
+          "name": "SIRS HQ",
+          "region": "City of Westminster",
+          "location": "SIRS HQ",
+          "guide": "In a locked upstairs storage room. The terminal that unlocks the door is in the next room."
+        },
+        {
+          "id": "techpoint_city_of_westminster_18",
+          "name": "Covent Garden Piazza",
+          "region": "City of Westminster",
+          "location": "Covent Garden Piazza",
+          "guide": "Behind a wooden wall with a hole, near the marketplace at the south entrance of a restricted area. Deploy a Spiderbot through the hole."
+        },
+        {
+          "id": "techpoint_city_of_westminster_19",
+          "name": "Buckingham Palace Gardens",
+          "region": "City of Westminster",
+          "location": "Buckingham Palace Gardens",
+          "guide": "On one of the tables on the terrace at the back of the palace."
+        },
+        {
+          "id": "techpoint_city_of_westminster_20",
+          "name": "Throne's Felts",
+          "region": "City of Westminster",
+          "location": "Throne's Felts",
+          "guide": "Inside the building, on the lowest level under the stairs. A Spiderbot is the easiest way in."
+        },
+        {
+          "id": "techpoint_city_of_westminster_21",
+          "name": "Somerset House",
+          "region": "City of Westminster",
+          "location": "Somerset House",
+          "guide": "Under the floor. Take the Spiderbot behind the stage to a broken grate under the stairs and go through it."
+        },
+        {
+          "id": "techpoint_city_of_london_01",
+          "name": "Toan Attack Site",
+          "region": "City of London",
+          "location": "Toan Attack Site",
+          "guide": "Under rubble. You'll need the Spiderbot to reach it."
+        },
+        {
+          "id": "techpoint_city_of_london_02",
+          "name": "The Cheesegrater",
+          "region": "City of London",
+          "location": "The Cheesegrater",
+          "guide": "Near the main entrance, past a damaged fan. Deploy the Spiderbot and follow the corridor inside."
+        },
+        {
+          "id": "techpoint_city_of_london_03",
+          "name": "Carousel Plaza",
+          "region": "City of London",
+          "location": "Carousel Plaza",
+          "guide": "On the top tier of the curved section, beside the antenna. Use a drone."
+        },
+        {
+          "id": "techpoint_city_of_london_04",
+          "name": "Walkie Talkie",
+          "region": "City of London",
+          "location": "Walkie Talkie",
+          "guide": "In a locked room behind an elevator. Unlock a network node using the cameras in the room."
+        },
+        {
+          "id": "techpoint_city_of_london_05",
+          "name": "St. Dunstan-in-the-East",
+          "region": "City of London",
+          "location": "St. Dunstan-in-the-East",
+          "guide": "In the tower, at a broken window. Use a drone."
+        },
+        {
+          "id": "techpoint_city_of_london_06",
+          "name": "Bank of England",
+          "region": "City of London",
+          "location": "Bank of England",
+          "guide": "Inside a ventilation shaft whose entrance is in a control room. Only the Spiderbot can reach it."
+        },
+        {
+          "id": "techpoint_city_of_london_07",
+          "name": "The Spine",
+          "region": "City of London",
+          "location": "The Spine",
+          "guide": "Climb the scaffolding and building facade to a small room. Send the Spiderbot through a hole in the wall, then continue along the scaffold."
+        },
+        {
+          "id": "techpoint_city_of_london_08",
+          "name": "Horizon Multinational",
+          "region": "City of London",
+          "location": "Horizon Multinational",
+          "guide": "On the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_city_of_london_09",
+          "name": "Finsbury Circus Gardens",
+          "region": "City of London",
+          "location": "Finsbury Circus Gardens",
+          "guide": "Under a small building near the complex entrance."
+        },
+        {
+          "id": "techpoint_city_of_london_10",
+          "name": "Barbican Centre",
+          "region": "City of London",
+          "location": "Barbican Centre",
+          "guide": "At the bottom of the complex, on a table below the stairs. An Albion employee disguise helps here."
+        },
+        {
+          "id": "techpoint_city_of_london_11",
+          "name": "Old Bailey",
+          "region": "City of London",
+          "location": "Old Bailey",
+          "guide": "On a balcony. A cargo drone is the quickest way to reach it."
+        },
+        {
+          "id": "techpoint_city_of_london_12",
+          "name": "Great Fire Monument",
+          "region": "City of London",
+          "location": "Great Fire Monument",
+          "guide": "On a balcony on the building's highest level. Use a drone."
+        },
+        {
+          "id": "techpoint_lambeth_01",
+          "name": "County Hall",
+          "region": "Lambeth",
+          "location": "County Hall",
+          "guide": "On the bottom of a hole with a ladder, above the building. Reach it with the Spiderbot."
+        },
+        {
+          "id": "techpoint_lambeth_02",
+          "name": "Millennium Wheel",
+          "region": "Lambeth",
+          "location": "Millennium Wheel",
+          "guide": "In a closed room. Unlock a node by using a cargo drone to move boxes and clear the signal path."
+        },
+        {
+          "id": "techpoint_lambeth_03",
+          "name": "Southbank Atrium",
+          "region": "Lambeth",
+          "location": "Southbank Atrium",
+          "guide": "On the lowest level, in a room inside a fenced hall guarded by Clan Kelley."
+        },
+        {
+          "id": "techpoint_lambeth_04",
+          "name": "British Theatre",
+          "region": "Lambeth",
+          "location": "British Theatre",
+          "guide": "On the roof. Fly there with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_05",
+          "name": "Waterloo Plaza",
+          "region": "Lambeth",
+          "location": "Waterloo Plaza",
+          "guide": "On the roof. Fly there with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_06",
+          "name": "London Lens",
+          "region": "Lambeth",
+          "location": "London Lens",
+          "guide": "In the tunnels at the base of the round building. Enter through the tunnel entrance, defeat the guard, climb the scaffolding, and throw the Spiderbot onto the shelf above."
+        },
+        {
+          "id": "techpoint_lambeth_07",
+          "name": "London Necropolis",
+          "region": "Lambeth",
+          "location": "London Necropolis",
+          "guide": "On the roof of the complex. Reach it with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_08",
+          "name": "Oasis Church",
+          "region": "Lambeth",
+          "location": "Oasis Church",
+          "guide": "In a roof ventilation shaft. Open the hatch beside it and deploy the Spiderbot. Watch for traps."
+        },
+        {
+          "id": "techpoint_lambeth_09",
+          "name": "Lambeth Tower",
+          "region": "Lambeth",
+          "location": "Lambeth Tower",
+          "guide": "On a balcony. A cargo drone is the easiest way up."
+        },
+        {
+          "id": "techpoint_lambeth_10",
+          "name": "Kennington Albion Station",
+          "region": "Lambeth",
+          "location": "Kennington Albion Station",
+          "guide": "In a locked ground-floor room. Get the digital key from a computer on the first floor."
+        },
+        {
+          "id": "techpoint_lambeth_11",
+          "name": "Lambeth Palace",
+          "region": "Lambeth",
+          "location": "Lambeth Palace",
+          "guide": "In a ventilation shaft in the courtyard. Deploy the Spiderbot and follow the vent."
+        },
+        {
+          "id": "techpoint_lambeth_12",
+          "name": "The Ascent",
+          "region": "Lambeth",
+          "location": "The Ascent",
+          "guide": "In a café on the roof. Reach it with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_13",
+          "name": "FLVR Restaurant",
+          "region": "Lambeth",
+          "location": "FLVR Restaurant",
+          "guide": "On the roof, inside a locked cage. Complete the circuit on the clock tower to open it."
+        },
+        {
+          "id": "techpoint_lambeth_14",
+          "name": "Michael Faraday Memorial",
+          "region": "Lambeth",
+          "location": "Michael Faraday Memorial",
+          "guide": "On a roof. Find the ventilation hatch and deploy the Spiderbot inside. Protesters may be nearby in the afternoon."
+        },
+        {
+          "id": "techpoint_lambeth_15",
+          "name": "UK Fibrecomm Centre",
+          "region": "Lambeth",
+          "location": "UK Fibrecomm Centre",
+          "guide": "On a column next to a wall. Fly to the roof with the drone and deploy the Spiderbot to collect it."
+        },
+        {
+          "id": "techpoint_lambeth_16",
+          "name": "Kennington Park",
+          "region": "Lambeth",
+          "location": "Kennington Park",
+          "guide": "Under a parked car. Move the car to collect it."
+        },
+        {
+          "id": "techpoint_lambeth_17",
+          "name": "Brixton Recreation Centre",
+          "region": "Lambeth",
+          "location": "Brixton Recreation Centre",
+          "guide": "At the top of a skyscraper. Reach it by drone, or use the elevator to the lower level and climb the gutter."
+        },
+        {
+          "id": "techpoint_lambeth_18",
+          "name": "Brixton Barrier Block",
+          "region": "Lambeth",
+          "location": "Brixton Barrier Block",
+          "guide": "On the roof. Reach it with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_19",
+          "name": "Kennington Gas Tank",
+          "region": "Lambeth",
+          "location": "Kennington Gas Tank",
+          "guide": "On the roof. The drone is the easiest option."
+        },
+        {
+          "id": "techpoint_lambeth_20",
+          "name": "Dorrel Hand Car Wash",
+          "region": "Lambeth",
+          "location": "Dorrel Hand Car Wash",
+          "guide": "Inside the complex. Break the wooden wall marked with a red X near the main gate, or enter from another side."
+        },
+        {
+          "id": "techpoint_lambeth_21",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "In a restricted-area room. Use the drone to find the entrance."
+        },
+        {
+          "id": "techpoint_lambeth_22",
+          "name": "MI6 Building",
+          "region": "Lambeth",
+          "location": "MI6 Building",
+          "guide": "On the roof. Fly up with the drone and deploy the Spiderbot to collect it."
+        },
+        {
+          "id": "techpoint_lambeth_23",
+          "name": "E-TREE",
+          "region": "Lambeth",
+          "location": "E-TREE",
+          "guide": "At the bottom of the building, in a ventilation shaft. Reach the roof by drone, enter through an open window with the Spiderbot, and use a second vent to the left to get past the grate."
+        },
+        {
+          "id": "techpoint_lambeth_24",
+          "name": "Green Estate",
+          "region": "Lambeth",
+          "location": "Green Estate",
+          "guide": "On the roof, by the table next to the camera."
+        },
+        {
+          "id": "techpoint_lambeth_25",
+          "name": "Lambeth Town Hall",
+          "region": "Lambeth",
+          "location": "Lambeth Town Hall",
+          "guide": "On the roof. Fly there with the drone and check the ventilation shaft near the northern edge."
+        },
+        {
+          "id": "techpoint_lambeth_26",
+          "name": "St. Thomas' Hospital",
+          "region": "Lambeth",
+          "location": "St. Thomas' Hospital",
+          "guide": "In a ventilation shaft near the northern edge of the roof. Deploy the Spiderbot and watch for traps. The area is heavily guarded."
+        },
+        {
+          "id": "techpoint_southwark_01",
+          "name": "HMS Belfast",
+          "region": "Southwark",
+          "location": "HMS Belfast",
+          "guide": "On the highest deck of the ship. Use a drone to reach it."
+        },
+        {
+          "id": "techpoint_southwark_02",
+          "name": "AYW Imports",
+          "region": "Southwark",
+          "location": "AYW Imports",
+          "guide": "On the building's roof. Drop a Spiderbot or fly a drone."
+        },
+        {
+          "id": "techpoint_southwark_03",
+          "name": "Queen's Walk",
+          "region": "Southwark",
+          "location": "Queen's Walk",
+          "guide": "In a vent shaft by the river. Unlock the locked hatch with the circuit using the nearby drones, then enter with a Spiderbot."
+        },
+        {
+          "id": "techpoint_southwark_04",
+          "name": "Shad Thames Plaza",
+          "region": "Southwark",
+          "location": "Shad Thames Plaza",
+          "guide": "On the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_05",
+          "name": "Rotherhithe Docks",
+          "region": "Southwark",
+          "location": "Rotherhithe Docks",
+          "guide": "On the roof. A drone is the easiest way up."
+        },
+        {
+          "id": "techpoint_southwark_06",
+          "name": "Southwark River Gate",
+          "region": "Southwark",
+          "location": "Southwark River Gate",
+          "guide": "On the roof, under the grid. Use a Spiderbot, then jump through the hole on the far side of the roof."
+        },
+        {
+          "id": "techpoint_southwark_07",
+          "name": "Tidis",
+          "region": "Southwark",
+          "location": "Tidis",
+          "guide": "Outside the complex, next to the terminal that opens the gates. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_08",
+          "name": "Tidis Park",
+          "region": "Southwark",
+          "location": "Tidis Park",
+          "guide": "In a roof vent shaft. Fly a drone up, then drop a Spiderbot into the shaft."
+        },
+        {
+          "id": "techpoint_southwark_09",
+          "name": "Southwark Incinerator",
+          "region": "Southwark",
+          "location": "Southwark Incinerator",
+          "guide": "On the rooftop, next to the silos. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_10",
+          "name": "Southwark Auto Conversions",
+          "region": "Southwark",
+          "location": "Southwark Auto Conversions",
+          "guide": "On the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_11",
+          "name": "Around LDN Bus Depot",
+          "region": "Southwark",
+          "location": "Around LDN Bus Depot",
+          "guide": "On the canopy next to the building. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_12",
+          "name": "Southwark Residential",
+          "region": "Southwark",
+          "location": "Southwark Residential",
+          "guide": "In the construction zone, on the tower."
+        },
+        {
+          "id": "techpoint_southwark_13",
+          "name": "St. George Church",
+          "region": "Southwark",
+          "location": "St. George Church",
+          "guide": "In a vent shaft on the church roof. Unlock the hatch by solving the circuit on the tower, then enter with a Spiderbot."
+        },
+        {
+          "id": "techpoint_southwark_14",
+          "name": "Civil Aviation Traffic Office",
+          "region": "Southwark",
+          "location": "Civil Aviation Traffic Office",
+          "guide": "On the rooftop. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_15",
+          "name": "Tidis Advanced Technologies",
+          "region": "Southwark",
+          "location": "Tidis Advanced Technologies",
+          "guide": "On the platform next to the building. Reach it by drone, or from inside the building by going to the top and using the movable fan."
+        },
+        {
+          "id": "techpoint_southwark_16",
+          "name": "City Hall",
+          "region": "Southwark",
+          "location": "City Hall",
+          "guide": "In a locked room inside the building. Open it from the inside with a Spiderbot."
+        },
+        {
+          "id": "techpoint_southwark_17",
+          "name": "King's Head Yard",
+          "region": "Southwark",
+          "location": "King's Head Yard",
+          "guide": "On the pipes on the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_18",
+          "name": "Guy's Hospital",
+          "region": "Southwark",
+          "location": "Guy's Hospital",
+          "guide": "On the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_19",
+          "name": "Nexus Tower",
+          "region": "Southwark",
+          "location": "Nexus Tower",
+          "guide": "Inside the complex, at the very top. Place a Spiderbot on the upper shelf and send it into the vent shaft."
+        },
+        {
+          "id": "techpoint_southwark_20",
+          "name": "The Mix",
+          "region": "Southwark",
+          "location": "The Mix",
+          "guide": "In a roof vent shaft."
+        }
+      ]
     },
     "relics": {
       "quest_name": "",
@@ -1019,8 +1930,240 @@
       "quest_giver_location": "",
       "total_count": 38,
       "region": "London-wide",
-      "description": "Special containers that reward unique cosmetic masks to customize operatives.",
-      "items": []
+      "description": "Found in small blue mask boxes scattered across London; wearing masks is cosmetic. 33 of the 38 total have confirmed named locations below; the remaining 5 are unnamed/undetailed in available guides.",
+      "items": [
+        {
+          "id": "mask_01",
+          "name": "Albion Internment Centre",
+          "region": "Camden",
+          "location": "Albion Internment Centre",
+          "guide": "In the control room."
+        },
+        {
+          "id": "mask_02",
+          "name": "St. Pancras International",
+          "region": "Camden",
+          "location": "St. Pancras International",
+          "guide": "On a computer desk."
+        },
+        {
+          "id": "mask_03",
+          "name": "Camden Market",
+          "region": "Camden",
+          "location": "Camden Market",
+          "guide": "On the roof."
+        },
+        {
+          "id": "mask_04",
+          "name": "DedSec Safehouse",
+          "region": "Lambeth",
+          "location": "DedSec Safehouse",
+          "guide": "On the staircase leading to the first floor."
+        },
+        {
+          "id": "mask_05",
+          "name": "Downing Street",
+          "region": "City of Westminster",
+          "location": "Downing Street",
+          "guide": "On top of a crate."
+        },
+        {
+          "id": "mask_06",
+          "name": "Broco Tech",
+          "region": "City of Westminster",
+          "location": "Broco Tech",
+          "guide": "Next to a pile of barrels."
+        },
+        {
+          "id": "mask_07",
+          "name": "Buckingham Palace Gardens",
+          "region": "City of Westminster",
+          "location": "Buckingham Palace Gardens",
+          "guide": "At the entrance."
+        },
+        {
+          "id": "mask_08",
+          "name": "London Carriage Service",
+          "region": "City of Westminster",
+          "location": "London Carriage Service",
+          "guide": "On a computer desk."
+        },
+        {
+          "id": "mask_09",
+          "name": "New Scotland Yard",
+          "region": "City of Westminster",
+          "location": "New Scotland Yard",
+          "guide": "On a side table beside a computer desk."
+        },
+        {
+          "id": "mask_10",
+          "name": "Somerset House",
+          "region": "City of Westminster",
+          "location": "Somerset House",
+          "guide": "On a wooden table."
+        },
+        {
+          "id": "mask_11",
+          "name": "Thorne's Felts",
+          "region": "City of Westminster",
+          "location": "Thorne's Felts",
+          "guide": "On a wooden table, reached through the pipeline."
+        },
+        {
+          "id": "mask_12",
+          "name": "Perry Harris Redevelopment",
+          "region": "City of Westminster",
+          "location": "Perry Harris Redevelopment",
+          "guide": "On a ledge."
+        },
+        {
+          "id": "mask_13",
+          "name": "The Sandstone Residence",
+          "region": "Islington & Hackney",
+          "location": "The Sandstone Residence",
+          "guide": "On a computer desk on the third floor."
+        },
+        {
+          "id": "mask_14",
+          "name": "FoodTown",
+          "region": "Islington & Hackney",
+          "location": "FoodTown",
+          "guide": "In a room with a glass door entrance."
+        },
+        {
+          "id": "mask_15",
+          "name": "World of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World of Tomorrow",
+          "guide": "On the second-highest ledge inside the club."
+        },
+        {
+          "id": "mask_16",
+          "name": "Museum of the Home",
+          "region": "Islington & Hackney",
+          "location": "Museum of the Home",
+          "guide": "Near some sacks."
+        },
+        {
+          "id": "mask_17",
+          "name": "Cemetery Park",
+          "region": "Tower Hamlets",
+          "location": "Cemetery Park",
+          "guide": "On a table on the first floor, guarded by an enemy."
+        },
+        {
+          "id": "mask_18",
+          "name": "Limehouse Garden",
+          "region": "Tower Hamlets",
+          "location": "Limehouse Garden",
+          "guide": "On a balcony."
+        },
+        {
+          "id": "mask_19",
+          "name": "St. Paul's Cathedral",
+          "region": "City of London",
+          "location": "St. Paul's Cathedral",
+          "guide": "Among the pillars."
+        },
+        {
+          "id": "mask_20",
+          "name": "Walkie Talkie",
+          "region": "City of London",
+          "location": "Walkie Talkie",
+          "guide": "In the TV room, visited during the \"Initiate Sequence\" mission."
+        },
+        {
+          "id": "mask_21",
+          "name": "The Roberts & Scott Hall",
+          "region": "City of London",
+          "location": "The Roberts & Scott Hall",
+          "guide": "In a rathole to the right of the entrance."
+        },
+        {
+          "id": "mask_22",
+          "name": "London Bridge",
+          "region": "City of London",
+          "location": "London Bridge",
+          "guide": "Near the bridge; public access."
+        },
+        {
+          "id": "mask_23",
+          "name": "London Bridge (Secret)",
+          "region": "City of London",
+          "location": "London Bridge (Secret)",
+          "guide": "Reached by a secret passage west of the bridge, which opens at 2:00 AM."
+        },
+        {
+          "id": "mask_24",
+          "name": "Rotherhithe Docks",
+          "region": "Southwark",
+          "location": "Rotherhithe Docks",
+          "guide": "On top of a crate; easiest reached from the water."
+        },
+        {
+          "id": "mask_25",
+          "name": "Southwark Incinerator",
+          "region": "Southwark",
+          "location": "Southwark Incinerator",
+          "guide": "Restricted (Clan Kelley)."
+        },
+        {
+          "id": "mask_26",
+          "name": "The Martlet's Nest",
+          "region": "Southwark",
+          "location": "The Martlet's Nest",
+          "guide": "On the roof."
+        },
+        {
+          "id": "mask_27",
+          "name": "The Xcess",
+          "region": "Southwark",
+          "location": "The Xcess",
+          "guide": "On the roof."
+        },
+        {
+          "id": "mask_28",
+          "name": "Embassy Garden",
+          "region": "Nine Elms",
+          "location": "Embassy Garden",
+          "guide": "Public access, topmost ledge."
+        },
+        {
+          "id": "mask_29",
+          "name": "The Battersea",
+          "region": "Nine Elms",
+          "location": "The Battersea",
+          "guide": "On a ledge to the left of the entrance."
+        },
+        {
+          "id": "mask_30",
+          "name": "Brixton Barrier Block",
+          "region": "Lambeth",
+          "location": "Brixton Barrier Block",
+          "guide": "On the top."
+        },
+        {
+          "id": "mask_31",
+          "name": "Brixton Recreation Centre",
+          "region": "Lambeth",
+          "location": "Brixton Recreation Centre",
+          "guide": "On the roof."
+        },
+        {
+          "id": "mask_32",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Over the generators on the roof, reached from the garden side."
+        },
+        {
+          "id": "mask_33",
+          "name": "MI-6 Building",
+          "region": "Lambeth",
+          "location": "MI-6 Building",
+          "guide": "On the topmost ledge."
+        }
+      ]
     },
     "audio_logs": {
       "quest_name": "",
