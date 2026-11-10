@@ -15,10 +15,10 @@
   "serverVersion": "1.25.1.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-10T01:46:43Z",
-  "lastChange": "2026-11-10T01:46:43Z",
+  "lastCheck": "2026-11-10T08:51:30Z",
+  "lastChange": "2026-11-10T08:51:30Z",
   "lastFull": "2026-11-04T07:59:29Z",
-  "lastLight": "2026-11-10T01:46:43Z",
+  "lastLight": "2026-11-10T08:51:30Z",
   "files": [
    "careerSavegame",
    "collectibles",
@@ -51,7 +51,6 @@
   "changedFiles": [
    "careerSavegame.xml",
    "environment.xml",
-   "fields.xml",
    "gameStats.xml"
   ]
  },
@@ -99,21 +98,21 @@
   "savegameName": "Keep Rolling rollin rollin",
   "mapTitle": "The Rural Farmlands Of Ohio",
   "mapId": "FS25_The_Rural_Farmlands_Of_Ohio.mountain",
-  "saveDate": "2026-11-09",
+  "saveDate": "2026-11-10",
   "creationDate": "2026-08-30",
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2197728536,
-  "playTimeHours": 1627.0,
+  "money": 2198082043,
+  "playTimeHours": 1634.0,
   "slotUsage": 2127,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
    "creationDate": "2026-08-30",
    "mapId": "FS25_The_Rural_Farmlands_Of_Ohio.mountain",
    "mapTitle": "The Rural Farmlands Of Ohio",
-   "saveDateFormatted": "2026-11-09",
-   "saveDate": "2026-11-09",
+   "saveDateFormatted": "2026-11-10",
+   "saveDate": "2026-11-10",
    "initialMoney": 1000000,
    "initialLoan": 0,
    "economicDifficulty": "NORMAL",
@@ -169,18 +168,11 @@
   "month": "March",
   "season": "Spring",
   "year": 6,
-  "time": "05:01",
-  "minutesSinceRain": 153,
-  "groundWetness": 0.0,
+  "time": "12:01",
+  "minutesSinceRain": 0,
+  "groundWetness": 1.0,
   "snowHeight": 0.0,
   "forecast": [
-   {
-    "type": "CLOUDY",
-    "season": "WINTER",
-    "startDay": 88,
-    "startTime": "02:00",
-    "durationH": 6.0
-   },
    {
     "type": "SNOW",
     "season": "WINTER",
@@ -341,6 +333,13 @@
     "startDay": 94,
     "startTime": "14:00",
     "durationH": 3.0
+   },
+   {
+    "type": "RAIN",
+    "season": "AUTUMN",
+    "startDay": 94,
+    "startTime": "17:00",
+    "durationH": 1.0
    }
   ]
  },
@@ -350,7 +349,7 @@
   "version": "1.25.1.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "05:11",
+  "time": "12:13",
   "capacity": 6,
   "numUsed": 0,
   "players": [],
