@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 1321.656616,
-  "currentDay": 60,
-  "currentMonotonicDay": 87,
-  "realHourTimer": 3513400,
+  "dayTime": 301.749939,
+  "currentDay": 61,
+  "currentMonotonicDay": 88,
+  "realHourTimer": 3507800,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,25 +15,9 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 1713,
+   "timeSinceLastRain": 153,
    "forecast": {
     "instance": [
-     {
-      "typeName": "SUN",
-      "season": "AUTUMN",
-      "variationIndex": 2,
-      "startDay": 87,
-      "startDayTime": 72000000,
-      "duration": 14400000
-     },
-     {
-      "typeName": "SNOW",
-      "season": "WINTER",
-      "variationIndex": 4,
-      "startDay": 88,
-      "startDayTime": 0,
-      "duration": 7200000
-     },
      {
       "typeName": "CLOUDY",
       "season": "WINTER",
@@ -289,14 +273,46 @@
       "startDay": 96,
       "startDayTime": 25200000,
       "duration": 25200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 2,
+      "startDay": 96,
+      "startDayTime": 50400000,
+      "duration": 36000000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 4,
+      "startDay": 97,
+      "startDayTime": 0,
+      "duration": 7200000
      }
     ]
    },
    "fog": {
     "alpha": 1.0,
-    "visibilityAlpha": 0.0,
+    "visibilityAlpha": 1.0,
     "duration": 3600000.0,
     "target": {
+     "groundFog": {
+      "coverageEdge0": 0.129529,
+      "coverageEdge1": 0.975967,
+      "extraHeight": 13.489451,
+      "groundLevelDensity": 0.244032,
+      "minValleyDepth": 5.14678,
+      "startDayTimeMinutes": 233,
+      "endDayTimeMinutes": 575,
+      "weatherTypes": "SUN CLOUDY"
+     },
+     "heightFog": {
+      "maxHeight": 521.115356,
+      "groundLevelDensity": 0.141771
+     }
+    },
+    "last": {
      "groundFog": {
       "coverageEdge0": 0.364521,
       "coverageEdge1": 0.713836,
@@ -310,22 +326,6 @@
      "heightFog": {
       "maxHeight": 533.120239,
       "groundLevelDensity": 0.073057
-     }
-    },
-    "last": {
-     "groundFog": {
-      "coverageEdge0": 0.262574,
-      "coverageEdge1": 0.830833,
-      "extraHeight": 11.052934,
-      "groundLevelDensity": 0.019962,
-      "minValleyDepth": 7.505239,
-      "startDayTimeMinutes": 209,
-      "endDayTimeMinutes": 544,
-      "weatherTypes": "SUN CLOUDY"
-     },
-     "heightFog": {
-      "maxHeight": 519.125671,
-      "groundLevelDensity": 0.12463
      }
     }
    },
