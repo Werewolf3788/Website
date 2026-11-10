@@ -1,0 +1,850 @@
+{
+  "schema_version": 1,
+  "game": "Ghost of Tsushima",
+  "gameId": "GhostOfTsushima",
+  "commId": "NPWR22859_00",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR22859_00",
+      "note": "Director's Cut trophy list (includes Legends Mode DLC + Iki Island). Original base-game list is NPWR15120_00."
+    },
+    "steam": {
+      "appId": "",
+      "url": ""
+    },
+    "pc": {
+      "note": "Ghost of Tsushima Director's Cut on PC supports PSN sign-in and the same trophy list as PS5."
+    }
+  },
+  "image_url": "",
+  "crossplay": false,
+  "focus_note": "This crew plays Legends (multiplayer) mode primarily and has not started the single-player story yet, so 'legends' is tracked first and 'story' second.",
+  "legends": {
+    "description": "Ghost of Tsushima: Legends is the free online co-op/PvP mode, separate from Jin's single-player story. Up to 4 classes, 5 modes: Quickplay, Story, Survival, Rivals, and the Raid/Challenge.",
+    "classes": {
+      "samurai": {
+        "role": "Tank / melee damage",
+        "unlock": "Available from the start (first class is free)",
+        "starting_equipment": "Stone Katana, Half Bow, Basic Charm, Kunai, Smoke Bomb",
+        "class_rank": 0,
+        "ki_level": 0,
+        "skill_tree": [
+          {
+            "id": "sam_ult",
+            "name": "Hachiman's Fury",
+            "type": "Ultimate",
+            "rank": null,
+            "description": "Performs a rapid series of strikes against a group of enemies. Costs 3 Resolve.",
+            "collected": false
+          },
+          {
+            "id": "sam_ability_1",
+            "name": "Spirit Pull",
+            "type": "Class Ability",
+            "rank": 1,
+            "description": "Passively drains health from a nearby enemy while active. 36-second cooldown.",
+            "collected": false
+          },
+          {
+            "id": "sam_ability_2",
+            "name": "Explosive Blade",
+            "type": "Class Ability",
+            "rank": 10,
+            "description": "Melee attacks cause explosions on impact. 36-second cooldown.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk1_a",
+            "name": "Defender",
+            "type": "Perk 1",
+            "rank": 2,
+            "description": "Increases base health by 25.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk1_b",
+            "name": "Deep Strikes",
+            "type": "Perk 1",
+            "rank": 7,
+            "description": "Increases melee damage by 10%.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk1_c",
+            "name": "Samurai Unleashed",
+            "type": "Perk 1",
+            "rank": 14,
+            "description": "Reduces class ability cooldown by 15%.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk2_a",
+            "name": "Lightning Reflexes",
+            "type": "Perk 2",
+            "rank": 3,
+            "description": "Lets you parry incoming arrows while blocking.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk2_b",
+            "name": "Critical Defense",
+            "type": "Perk 2",
+            "rank": 9,
+            "description": "Widens the parry and dodge window when health is low.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk2_c",
+            "name": "Resolve Increase",
+            "type": "Perk 2",
+            "rank": 16,
+            "description": "Increases maximum Resolve by 1.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk3_a",
+            "name": "Heavenly Strikes",
+            "type": "Perk 3",
+            "rank": 5,
+            "description": "Performs an unblockable quick strike. Costs 1 Resolve.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk3_b",
+            "name": "Hachiman's Frenzy",
+            "type": "Perk 3",
+            "rank": 11,
+            "description": "Adds 2 extra strikes to Hachiman's Fury.",
+            "collected": false
+          },
+          {
+            "id": "sam_perk3_c",
+            "name": "Legendary",
+            "type": "Perk 3",
+            "rank": 18,
+            "description": "Increases the number of Legendary items you can equip by 1.",
+            "collected": false
+          }
+        ]
+      },
+      "hunter": {
+        "role": "Ranged / bow damage",
+        "unlock": "Unlocks at Class/Player Rank 15 (3rd class unlocked, or 2nd if not Samurai)",
+        "starting_equipment": "Stone Katana, Half Bow, Basic Charm, Kunai, Smoke Bomb",
+        "class_rank": 0,
+        "ki_level": 0,
+        "skill_tree": [
+          {
+            "id": "hun_ult",
+            "name": "Eye of Uchitsune",
+            "type": "Ultimate",
+            "rank": null,
+            "description": "Marks three enemies and guarantees a headshot on each.",
+            "collected": false
+          },
+          {
+            "id": "hun_ability_1",
+            "name": "Staggering Arrow",
+            "type": "Class Ability",
+            "rank": 1,
+            "description": "Shoots an arrow that stuns enemies within a small area.",
+            "collected": false
+          },
+          {
+            "id": "hun_ability_2",
+            "name": "Explosive Arrow",
+            "type": "Class Ability",
+            "rank": 10,
+            "description": "Shoots an arrow that detonates after a brief delay.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk1_a",
+            "name": "Executioner",
+            "type": "Perk 1",
+            "rank": 2,
+            "description": "Boosts headshot damage by 50% against targets within 12 meters.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk1_b",
+            "name": "Scent of Blood",
+            "type": "Perk 1",
+            "rank": 7,
+            "description": "After an assassination attempt, doubles draw and reload speed for 30 seconds.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk1_c",
+            "name": "Hunter Unleashed",
+            "type": "Perk 1",
+            "rank": 14,
+            "description": "Reduces class ability cooldown by 15%.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk2_a",
+            "name": "Resupply",
+            "type": "Perk 2",
+            "rank": 3,
+            "description": "Restores 30% of all ammo types.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk2_b",
+            "name": "Status Damage",
+            "type": "Perk 2",
+            "rank": 9,
+            "description": "Increases status effect damage by 25%.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk2_c",
+            "name": "Piercing Arrow",
+            "type": "Perk 2",
+            "rank": 16,
+            "description": "Unlocks bow arrows that can get past shields.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk3_a",
+            "name": "Pinpoint",
+            "type": "Perk 3",
+            "rank": 5,
+            "description": "Gives bow body shots a 50% chance to deal headshot damage.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk3_b",
+            "name": "All-Seeing Eye",
+            "type": "Perk 3",
+            "rank": 11,
+            "description": "Lets Eye of Uchitsune target two more enemies.",
+            "collected": false
+          },
+          {
+            "id": "hun_perk3_c",
+            "name": "Legendary",
+            "type": "Perk 3",
+            "rank": 18,
+            "description": "Lets you equip one additional Legendary item.",
+            "collected": false
+          }
+        ]
+      },
+      "ronin": {
+        "role": "Support / healer, revives",
+        "unlock": "One of the classes unlocked by leveling (see class_unlock_order note)",
+        "starting_equipment": "Stone Katana, Half Bow, Basic Charm, Kunai, Smoke Bomb, Bombs",
+        "class_rank": 0,
+        "ki_level": 0,
+        "skill_tree": [
+          {
+            "id": "ron_ult",
+            "name": "Breath of Izanami",
+            "type": "Ultimate",
+            "rank": null,
+            "description": "Revives all downed allies. Costs 3 Resolve.",
+            "collected": false
+          },
+          {
+            "id": "ron_ability_1",
+            "name": "Spirit Animal",
+            "type": "Class Ability",
+            "rank": 1,
+            "description": "Summons a friendly dog companion for a short time.",
+            "collected": false
+          },
+          {
+            "id": "ron_ability_2",
+            "name": "Healing Incense",
+            "type": "Class Ability",
+            "rank": 10,
+            "description": "Places an incense pot that heals nearby allies.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk1_a",
+            "name": "Enhanced Ghost Weapons",
+            "type": "Perk 1",
+            "rank": 2,
+            "description": "Boosts damage from Ghost Weapons by 50%.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk1_b",
+            "name": "Weakening Burst",
+            "type": "Perk 1",
+            "rank": 7,
+            "description": "Weakens enemies so they deal less damage and take more.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk1_c",
+            "name": "Ronin Unleashed",
+            "type": "Perk 1",
+            "rank": 14,
+            "description": "Reduces class ability cooldowns by 15%.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk2_a",
+            "name": "Staggering Imposition",
+            "type": "Perk 2",
+            "rank": 3,
+            "description": "Increases Stagger damage by 15%.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk2_b",
+            "name": "Resolve Increase",
+            "type": "Perk 2",
+            "rank": 9,
+            "description": "Raises maximum Resolve by 1.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk2_c",
+            "name": "Quick Regen",
+            "type": "Perk 2",
+            "rank": 16,
+            "description": "Increases healing received and health regeneration by 50%.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk3_a",
+            "name": "Soothing Breath",
+            "type": "Perk 3",
+            "rank": 5,
+            "description": "Gives all players a heal over time for 8 seconds when Breath of Izanami is used.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk3_b",
+            "name": "Fire Breath",
+            "type": "Perk 3",
+            "rank": 11,
+            "description": "Ignites nearby enemies around all players when Breath of Izanami is used.",
+            "collected": false
+          },
+          {
+            "id": "ron_perk3_c",
+            "name": "Legendary",
+            "type": "Perk 3",
+            "rank": 18,
+            "description": "Lets you equip one more Legendary item.",
+            "collected": false
+          }
+        ]
+      },
+      "assassin": {
+        "role": "Stealth / single-target burst",
+        "unlock": "Unlocks at Class/Player Rank 22 (4th and final class)",
+        "starting_equipment": "Stone Katana, Half Bow, Basic Charm, Kunai, Smoke Bomb",
+        "class_rank": 0,
+        "ki_level": 0,
+        "skill_tree": [
+          {
+            "id": "asn_ult",
+            "name": "Shadow Strike",
+            "type": "Ultimate",
+            "rank": null,
+            "description": "Slips into the shadows to strike enemies from a distance.",
+            "collected": false
+          },
+          {
+            "id": "asn_ability_1",
+            "name": "Toxic Vanish",
+            "type": "Class Ability",
+            "rank": 1,
+            "description": "Vanishes in a cloud of poison smoke that staggers nearby enemies.",
+            "collected": false
+          },
+          {
+            "id": "asn_ability_2",
+            "name": "Group Vanish",
+            "type": "Class Ability",
+            "rank": 10,
+            "description": "Vanishes together with nearby allies.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk1_a",
+            "name": "Critical Hit",
+            "type": "Perk 1",
+            "rank": 2,
+            "description": "Deals 30% more damage during assassinations.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk1_b",
+            "name": "Super Strike",
+            "type": "Perk 1",
+            "rank": 7,
+            "description": "Makes Stealth Attacks deal double normal damage.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk1_c",
+            "name": "Assassin Unleashed",
+            "type": "Perk 1",
+            "rank": 14,
+            "description": "Reduces class ability cooldowns by 15%.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk2_a",
+            "name": "Experienced Assassin",
+            "type": "Perk 2",
+            "rank": 3,
+            "description": "Makes Stealth Attacks faster and quieter.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk2_b",
+            "name": "Light Step",
+            "type": "Perk 2",
+            "rank": 9,
+            "description": "Makes Jin silent while running.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk2_c",
+            "name": "Opportunist",
+            "type": "Perk 2",
+            "rank": 16,
+            "description": "Adds 50% bonus assassination damage against staggered enemies.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk3_a",
+            "name": "Shadow Storm",
+            "type": "Perk 3",
+            "rank": 5,
+            "description": "Gives Shadow Strike 2 extra strikes.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk3_b",
+            "name": "Chain Vanish",
+            "type": "Perk 3",
+            "rank": 11,
+            "description": "Assassinating an enemy while vanished reactivates Vanish and refreshes its duration.",
+            "collected": false
+          },
+          {
+            "id": "asn_perk3_c",
+            "name": "Legendary Assassin",
+            "type": "Perk 3",
+            "rank": 18,
+            "description": "Increases the number of Legendary items you can equip by 1.",
+            "collected": false
+          }
+        ]
+      }
+    },
+    "class_unlock_order_note": "Your first class is free. Additional classes unlock as your overall player level rises: a 3rd class around Rank 15, the 4th and final class around Rank 22. Exact order of which 2nd/3rd class unlocks can vary.",
+    "progression": {
+      "class_rank": {
+        "description": "Each class levels independently from 1 up by earning XP in missions. Rank-ups grant skill points to spend on that class's skill tree (perks above) and unlock the next class ability. Ranks of note: 1 (first class ability), 10 (second class ability), and perk unlocks at ranks 2, 3, 5, 7, 9, 11, 14, 16, and 18 (Legendary item slot).",
+        "max_meaningful_rank": 18,
+        "trophy_goal": "Ultimate Warrior trophy: reach Rank 20 with all 4 classes."
+      },
+      "ki_level": {
+        "description": "Your gear power level (Ki) is the average item level of your equipped Katana, Ranged weapon, Charm, and 2 Ghost Weapons. Raised by equipping higher-level gear found from missions, not by XP directly.",
+        "soft_cap_normal_missions": 105,
+        "hard_cap_pre_gear_mastery": 110,
+        "max_cap_with_gear_mastery": 120,
+        "gear_mastery_note": "Gear Mastery (added Aug 2021) lets a Level 110 item be pushed to Level 120 by completing 5 Mastery Challenges per item (each adds +2 levels, costs 2000 Essence to activate)."
+      }
+    },
+    "modes": {
+      "quickplay": {
+        "description": "Drops you into an in-progress Story or Survival match via matchmaking. Split into Story Quickplay and Survival Quickplay."
+      },
+      "story": {
+        "description": "2-player co-op story missions told by the storyteller Gyozen, building toward the final antagonist Iyo. Each mission is split into 3 stages (torii gates), each with its own bonus side objectives. There are 9 story missions total; the names below are the ones confirmed by name — 3 remain unconfirmed/unnamed in our sources.",
+        "missions": [
+          {
+            "id": "legends_story_1",
+            "name": "The Crow Demons of Otsuna",
+            "order": 1,
+            "completed": false
+          },
+          {
+            "id": "legends_story_2",
+            "name": "Caravan of Thieves",
+            "order": 2,
+            "completed": false
+          },
+          {
+            "id": "legends_story_3",
+            "name": "The Stranded Dead",
+            "order": 3,
+            "completed": false
+          },
+          {
+            "id": "legends_story_4",
+            "name": "Tides of Battle",
+            "order": 4,
+            "completed": false
+          },
+          {
+            "id": "legends_story_5",
+            "name": "The Fire Spirits of Yarikawa",
+            "order": 5,
+            "completed": false
+          },
+          {
+            "id": "legends_story_unconfirmed_1",
+            "name": "(unconfirmed)",
+            "order": null,
+            "completed": false
+          },
+          {
+            "id": "legends_story_unconfirmed_2",
+            "name": "(unconfirmed)",
+            "order": null,
+            "completed": false
+          },
+          {
+            "id": "legends_story_unconfirmed_3",
+            "name": "(unconfirmed)",
+            "order": null,
+            "completed": false
+          },
+          {
+            "id": "legends_story_9",
+            "name": "The Tale of Iyo",
+            "order": 9,
+            "completed": false
+          }
+        ],
+        "total_missions": 9,
+        "bonus_objectives_note": "Each mission stage has 3 side objectives (Gyozen's Lost Scrolls, Oni Treasure, and a curse/challenge variant) for extra loot."
+      },
+      "survival": {
+        "description": "4-player horde mode defending a location against escalating waves of Mongols and Oni. Difficulty raises the enemy count, recommended Ki, and reward Ki.",
+        "difficulties": [
+          {
+            "id": "survival_bronze",
+            "name": "Bronze",
+            "completed": false
+          },
+          {
+            "id": "survival_silver",
+            "name": "Silver",
+            "completed": false
+          },
+          {
+            "id": "survival_gold",
+            "name": "Gold",
+            "waves": 15,
+            "recommended_ki": 90,
+            "reward_ki": 105,
+            "rule": "Any Ghost death fails the mission.",
+            "completed": false
+          },
+          {
+            "id": "survival_platinum",
+            "name": "Platinum",
+            "waves": 15,
+            "recommended_ki": 105,
+            "reward_ki": 110,
+            "rule": "Any Ghost death fails the mission.",
+            "completed": false
+          },
+          {
+            "id": "survival_nightmare",
+            "name": "Nightmare",
+            "waves": 25,
+            "recommended_ki": 115,
+            "reward_ki": 110,
+            "rule": "Any Ghost death fails the mission. Weekly rotating modifier.",
+            "completed": false
+          }
+        ],
+        "trophy_goal": "Ultimate Truth trophy: complete the final wave in a Gold Survival run."
+      },
+      "rivals": {
+        "description": "4-player (2v2) competitive PvP mode, added later as a free update alongside Gear Mastery.",
+        "maps": [
+          {
+            "id": "rivals_realm_of_the_dead",
+            "name": "Realm of the Dead",
+            "completed": false
+          },
+          {
+            "id": "rivals_siege_in_heaven",
+            "name": "Siege in Heaven",
+            "completed": false
+          },
+          {
+            "id": "rivals_trials_of_the_kami",
+            "name": "Trials of the Kami",
+            "completed": false
+          },
+          {
+            "id": "rivals_arena_of_shadows",
+            "name": "Arena of Shadows",
+            "completed": false
+          }
+        ]
+      },
+      "raid": {
+        "name": "The Tale of Iyo",
+        "description": "The endgame Raid, the culmination of the Legends story. Requires a full team of 4 Ghosts, no matchmaking (friends only), and a minimum recommended Ki level of 100.",
+        "chapters": [
+          {
+            "id": "iyo_chapter_1",
+            "name": "Chapter 1",
+            "completed": false
+          },
+          {
+            "id": "iyo_chapter_2",
+            "name": "Chapter 2",
+            "completed": false
+          },
+          {
+            "id": "iyo_chapter_3",
+            "name": "Chapter 3",
+            "completed": false
+          }
+        ],
+        "harder_variant": "Trials of Iyo - a bite-sized, harder-difficulty version of the Raid with its own leaderboards, added with the Director's Cut update.",
+        "trophy_goal": "Transcendence trophy: complete all 3 Raid chapters."
+      }
+    },
+    "trophies": [
+      {
+        "id": "trophy_promising_start",
+        "name": "Promising Start",
+        "type": "Bronze",
+        "description": "Complete a Legends Mode story mission.",
+        "earned": false
+      },
+      {
+        "id": "trophy_ultimate_warrior",
+        "name": "Ultimate Warrior",
+        "type": "Gold",
+        "description": "Reach Rank 20 with all 4 classes.",
+        "earned": false
+      },
+      {
+        "id": "trophy_ultimate_truth",
+        "name": "Ultimate Truth",
+        "type": "Silver",
+        "description": "Complete the final wave in a Gold Survival run.",
+        "earned": false
+      },
+      {
+        "id": "trophy_transcendence",
+        "name": "Transcendence",
+        "type": "Silver",
+        "description": "Complete all 3 Raid (Tale of Iyo) chapters.",
+        "earned": false
+      }
+    ]
+  },
+  "story": {
+    "description": "Jin Sakai's single-player campaign. This crew hasn't started it yet - tracked here for when you do.",
+    "acts": {
+      "act_1": {
+        "title": "Rescue Lord Shimura",
+        "missions": [
+          {
+            "id": "act1_1",
+            "name": "The Warrior's Code",
+            "completed": false
+          },
+          {
+            "id": "act1_2",
+            "name": "The Tale of Sensei Ishikawa",
+            "completed": false
+          },
+          {
+            "id": "act1_3",
+            "name": "The Tale of Lady Masako",
+            "completed": false
+          },
+          {
+            "id": "act1_4",
+            "name": "Blood on the Grass",
+            "completed": false
+          },
+          {
+            "id": "act1_5",
+            "name": "The Broken Blacksmith",
+            "completed": false
+          },
+          {
+            "id": "act1_6",
+            "name": "The Tale of Ryuzo",
+            "completed": false
+          },
+          {
+            "id": "act1_7",
+            "name": "Hammer and Forge",
+            "completed": false
+          },
+          {
+            "id": "act1_8",
+            "name": "The Iron Hook",
+            "completed": false
+          },
+          {
+            "id": "act1_9",
+            "name": "Shadow of the Samurai",
+            "completed": false
+          }
+        ],
+        "total": 9
+      },
+      "act_2": {
+        "title": "Retake Castle Shimura",
+        "missions": [
+          {
+            "id": "act2_1",
+            "name": "A New Horizon",
+            "completed": false
+          },
+          {
+            "id": "act2_2",
+            "name": "A Message in Fire",
+            "completed": false
+          },
+          {
+            "id": "act2_3",
+            "name": "The Walls of Yarikawa",
+            "completed": false
+          },
+          {
+            "id": "act2_4",
+            "name": "The Coward of Yarikawa",
+            "completed": false
+          },
+          {
+            "id": "act2_5",
+            "name": "Ghosts from the Past",
+            "completed": false
+          },
+          {
+            "id": "act2_6",
+            "name": "The Ghost of Yarikawa",
+            "completed": false
+          },
+          {
+            "id": "act2_7",
+            "name": "A Reckoning in Blood",
+            "completed": false
+          },
+          {
+            "id": "act2_8",
+            "name": "The Fate of Tsushima",
+            "completed": false
+          },
+          {
+            "id": "act2_9",
+            "name": "From the Darkness",
+            "completed": false
+          }
+        ],
+        "total": 9
+      },
+      "act_3": {
+        "title": "Kill the Khan",
+        "missions": [
+          {
+            "id": "act3_1",
+            "name": "Honor and Ash",
+            "completed": false
+          },
+          {
+            "id": "act3_2",
+            "name": "Wolves at the Gates",
+            "completed": false
+          },
+          {
+            "id": "act3_3",
+            "name": "A Gathering Storm",
+            "completed": false
+          },
+          {
+            "id": "act3_4",
+            "name": "Heart of the Jito",
+            "completed": false
+          },
+          {
+            "id": "act3_5",
+            "name": "Eternal Blue Sky",
+            "completed": false
+          },
+          {
+            "id": "act3_6",
+            "name": "The Tale of Lord Shimura",
+            "completed": false
+          }
+        ],
+        "total": 6
+      }
+    },
+    "total_main_missions": 24,
+    "legend_of_the_ghost": {
+      "description": "Jin's single-player leveling system (separate from Legends mode's class ranks). Gained through story progress, liberating areas, and combat. Each rank gives Technique Points for the Samurai/Ghost/Stance skill trees plus passive bonuses (max health, Resolve, new Ghost Weapons).",
+      "ranks_confirmed": [
+        "The Broken Samurai",
+        "The Wandering Samurai",
+        "The Shadow Samurai",
+        "The Hero of Tsushima",
+        "The Demon's Blade",
+        "The Raging Storm",
+        "The Ghost of Tsushima"
+      ],
+      "note": "Sources differ on whether there are 1-2 additional intermediate ranks between Wandering Samurai and Shadow Samurai (named variously 'The People's Hope' or 'The Unyielding Wind' depending on game version). Exact XP thresholds aren't reliably documented.",
+      "current_rank": "The Broken Samurai"
+    },
+    "side_content_note": "Side quests (Tales of Tsushima), Mythic Tales, and collectibles (Mongol Artifacts, Hot Springs, Haiku, Inari Shrines, etc.) aren't broken out yet since the story hasn't been started - ask and this can be filled in once you're further along.",
+    "dlc": {
+      "iki_island": {
+        "description": "Director's Cut expansion - Jin travels to Iki Island.",
+        "main_tales": 9,
+        "side_tales": 7,
+        "mythic_tales": 2
+      }
+    }
+  },
+  "metrics": [
+    {
+      "id": "metric_1",
+      "icon": "⚔️",
+      "label": "Legends Story Missions",
+      "current": 0,
+      "total": 9,
+      "step": 1
+    },
+    {
+      "id": "metric_2",
+      "icon": "🛡️",
+      "label": "Legends Trophies",
+      "current": 0,
+      "total": 4,
+      "step": 1
+    },
+    {
+      "id": "metric_3",
+      "icon": "🎖️",
+      "label": "Classes at Rank 20",
+      "current": 0,
+      "total": 4,
+      "step": 1
+    },
+    {
+      "id": "metric_4",
+      "icon": "📜",
+      "label": "Main Story Missions",
+      "current": 0,
+      "total": 24,
+      "step": 1
+    }
+  ]
+}
