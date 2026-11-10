@@ -101,6 +101,14 @@
       "current": 0,
       "total": 21,
       "step": 1
+    },
+    {
+      "id": "metric_10",
+      "icon": "🥊",
+      "label": "Bare Knuckle Arenas",
+      "current": 0,
+      "total": 5,
+      "step": 1
     }
   ],
   "categories": {},
@@ -1493,6 +1501,51 @@
           "region": "",
           "location": "Wellington Arch",
           "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        }
+      ]
+    },
+    "bare_knuckle_arenas": {
+      "quest_name": "Bare Knuckle League",
+      "quest_giver": "Tag (graffiti near Parliament Square Gardens)",
+      "quest_giver_location": "Parliament Square Gardens, City of Westminster",
+      "total_count": 5,
+      "region": "London-wide",
+      "description": "Illegal fight-club arenas streamed by Clan Kelley. Win a title fight in each of the 5 arenas to complete the 'Bare Knuckle League' side mission (reward: 875 ETO, Gold Handwear); each arena then unlocks repeatable Exhibition tournaments with recruitable fighters. No PSN trophy is tied to this one.",
+      "items": [
+        {
+          "id": "bk_01",
+          "name": "The Garden Arena",
+          "region": "",
+          "location": "The Garden Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        },
+        {
+          "id": "bk_02",
+          "name": "The Garage Arena",
+          "region": "",
+          "location": "The Garage Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        },
+        {
+          "id": "bk_03",
+          "name": "The Cellar Arena",
+          "region": "",
+          "location": "The Cellar Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        },
+        {
+          "id": "bk_04",
+          "name": "The Slaughterhouse Arena",
+          "region": "",
+          "location": "The Slaughterhouse Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        },
+        {
+          "id": "bk_05",
+          "name": "The Stage Arena",
+          "region": "",
+          "location": "The Stage Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
         }
       ]
     }
