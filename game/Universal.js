@@ -318,7 +318,8 @@ window.appState = {
                             cost: cItem.cost != null ? cItem.cost : null,
                             category: cItem.category || '',
                             levels: cItem.levels != null ? cItem.levels : null,
-                            unlock_requirement: cItem.unlock_requirement || ''
+                            unlock_requirement: cItem.unlock_requirement || '',
+                            level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null
                         };
                     }
                 });
@@ -3132,11 +3133,18 @@ function renderUniversalCompanion(data) {
                             // show that instead of/alongside the cost, since no amount of Tech
                             // Points unlocks them until the condition is met.
                             const costBadge = it.cost != null ? `${it.cost} TP` : (it.unlock_requirement ? 'Unlocks' : 'No cost');
+                            // When the JSON gives a cost for each individual level (e.g. a gadget
+                            // that's 10 TP at level 1, 20 at level 2, 25 at level 3), show the full
+                            // per-level breakdown instead of just "3 level(s)" so you know what the
+                            // next purchase actually costs, not just the first one.
+                            const levelsText = Array.isArray(it.level_costs) && it.level_costs.length
+                                ? `${it.level_costs.length} levels (${it.level_costs.join(' → ')} TP)`
+                                : (it.levels ? `${it.levels} level(s)` : '');
                             return buildItemCard({
                                 id, type: 'collectible', group: cKey,
                                 badge: costBadge, badgeClass: 'rank-silver',
                                 title: it.name || id,
-                                sub: [it.category, it.levels ? `${it.levels} level(s)` : '', it.unlock_requirement || ''].filter(Boolean).join(' · '),
+                                sub: [it.category, levelsText, it.unlock_requirement || ''].filter(Boolean).join(' · '),
                                 body: it.guide || '', img: it.image_url,
                                 levelGoal: it.levels > 1 ? it.levels : 0,
                                 price: grp.wallet_label && it.cost != null ? it.cost : 0

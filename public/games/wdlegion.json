@@ -2834,7 +2834,8 @@
         "AR Shroud — hides your wanted/suspicious icon from casual NPCs so you can move around hot zones without being reported.",
         "Gun Jam — remotely jams an enemy's weapon; great panic button against guards and snipers.",
         "Chase Drone Hacks (all 3 tiers) and Turret Hacks (all 3 tiers) — turn the game's own pursuit drones and turrets into tools that fight for you instead of against you.",
-        "The three Deactivation upgrades (Chase Drone, Turret, Combat Drone) don't cost Tech Points directly — they unlock automatically as you turn boroughs Defiant (2 / 4 / 6 boroughs), so prioritize Defiance progress alongside spending."
+        "The three Deactivation upgrades (Chase Drone, Turret, Combat Drone) only unlock once you've turned boroughs Defiant (2 / 4 / 6 boroughs) — Chase Drone Deactivation also costs 10 TP once unlocked, the other two are free once unlocked.",
+        "All three DedSec weapon upgrades (MP9 SMG, LTL SG, DedSec Grenade Launcher) are locked behind turning just 1 borough Defiant — only the starting LTL 68P Pistol is available with no Defiance requirement."
       ],
       "build_guides": [
         {
@@ -2877,61 +2878,97 @@
           "id": "gadget_infiltrator_spiderbot",
           "name": "Infiltrator Spiderbot",
           "category": "Gadget",
-          "levels": 2,
+          "levels": 3,
           "cost": 10,
           "region": "Gadget",
           "location": "Gadget",
-          "guide": "Stealth-focused Spiderbot: non-lethal takedowns, double jump/sprint and a manual cloak at higher levels."
+          "guide": "Stealth-focused Spiderbot: non-lethal takedowns, double jump/sprint and a manual cloak at higher levels.",
+          "level_costs": [
+            10,
+            20,
+            25
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_infiltrator_spiderbot.jpg"
         },
         {
           "id": "gadget_ar_cloak",
           "name": "AR Cloak",
           "category": "Gadget",
-          "levels": 2,
+          "levels": 3,
           "cost": 10,
           "region": "Gadget",
           "location": "Gadget",
-          "guide": "Projects a short-range visual camouflage field that hides you from nearby guards."
+          "guide": "Projects a short-range visual camouflage field that hides you from nearby guards.",
+          "level_costs": [
+            10,
+            20,
+            25
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_ar_cloak.jpg"
         },
         {
           "id": "gadget_electro_fist",
           "name": "Electro-Fist",
           "category": "Gadget",
-          "levels": 2,
+          "levels": 3,
           "cost": 10,
           "region": "Gadget",
           "location": "Gadget",
-          "guide": "A melee shock weapon built into the glove for fast non-lethal takedowns."
+          "guide": "A melee shock weapon built into the glove for fast non-lethal takedowns.",
+          "level_costs": [
+            10,
+            20,
+            25
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_electro_fist.jpg"
         },
         {
           "id": "gadget_electro_shock_trap",
           "name": "Electro-Shock Trap",
           "category": "Gadget",
-          "levels": 2,
-          "cost": 10,
+          "levels": 3,
+          "cost": 15,
           "region": "Gadget",
           "location": "Gadget",
-          "guide": "A throwable trap that stuns anyone who walks through it."
+          "guide": "A throwable trap that stuns anyone who walks through it.",
+          "level_costs": [
+            15,
+            20,
+            35
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_electro_shock_trap.jpg"
         },
         {
           "id": "gadget_combat_spiderbot",
           "name": "Combat Spiderbot",
           "category": "Gadget",
-          "levels": 2,
+          "levels": 3,
           "cost": 20,
           "region": "Gadget",
           "location": "Gadget",
-          "guide": "A more aggressive Spiderbot variant that can fight back in combat."
+          "guide": "A more aggressive Spiderbot variant that can fight back in combat.",
+          "level_costs": [
+            20,
+            25,
+            35
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_combat_spiderbot.jpg"
         },
         {
           "id": "gadget_missile_drone",
           "name": "Missile Drone",
           "category": "Gadget",
-          "levels": 2,
+          "levels": 3,
           "cost": 25,
           "region": "Gadget",
           "location": "Gadget",
-          "guide": "A cargo drone upgrade that can fire a guided missile."
+          "guide": "A cargo drone upgrade that can fire a guided missile.",
+          "level_costs": [
+            25,
+            30,
+            40
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_missile_drone.jpg"
         },
         {
           "id": "upgrade_ar_shroud",
@@ -2941,7 +2978,8 @@
           "cost": 35,
           "region": "Upgrade",
           "location": "Upgrade",
-          "guide": "Lets you hide the bodies of anyone you've taken down in plain sight."
+          "guide": "Lets you hide the bodies of anyone you've taken down in plain sight.",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_ar_shroud.jpg"
         },
         {
           "id": "upgrade_skin_mesh",
@@ -2951,7 +2989,8 @@
           "cost": 45,
           "region": "Upgrade",
           "location": "Upgrade",
-          "guide": "Reduces incoming damage taken by all DedSec operatives."
+          "guide": "Reduces incoming damage taken by all DedSec operatives.",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_skin_mesh.jpg"
         },
         {
           "id": "upgrade_deep_profiler",
@@ -2961,7 +3000,8 @@
           "cost": 25,
           "region": "Upgrade",
           "location": "Upgrade",
-          "guide": "Reveals schedule and contact info for recruits who have a negative opinion of DedSec, letting you recruit them anyway."
+          "guide": "Reveals schedule and contact info for recruits who have a negative opinion of DedSec, letting you recruit them anyway.",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_deep_profiler.jpg"
         },
         {
           "id": "upgrade_chase_drone_deactivation",
@@ -2972,7 +3012,8 @@
           "region": "Upgrade",
           "location": "Upgrade",
           "guide": "Permanently disables nearby chase drones.",
-          "unlock_requirement": "Unlock: turn 2 boroughs Defiant (removes DedSec Chase Drones from that borough once done citywide)"
+          "unlock_requirement": "Unlock: turn 2 boroughs Defiant (removes DedSec Chase Drones from that borough once done citywide)",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_chase_drone_deactivation.jpg"
         },
         {
           "id": "upgrade_turret_deactivation",
@@ -2983,7 +3024,8 @@
           "region": "Upgrade",
           "location": "Upgrade",
           "guide": "Permanently disables nearby turrets. Unlocks after a borough turns Defiant (no Tech Point cost).",
-          "unlock_requirement": "Unlock: turn 4 boroughs Defiant (disables hostile turrets in cleared boroughs)"
+          "unlock_requirement": "Unlock: turn 4 boroughs Defiant (disables hostile turrets in cleared boroughs)",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_turret_deactivation.jpg"
         },
         {
           "id": "upgrade_combat_drone_deactivation",
@@ -2994,7 +3036,8 @@
           "region": "Upgrade",
           "location": "Upgrade",
           "guide": "Permanently disables nearby combat drones. Unlocks after a borough turns Defiant (no Tech Point cost).",
-          "unlock_requirement": "Unlock: turn 6 boroughs Defiant (disables Combat Drones in cleared boroughs)"
+          "unlock_requirement": "Unlock: turn 6 boroughs Defiant (disables Combat Drones in cleared boroughs)",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_combat_drone_deactivation.jpg"
         },
         {
           "id": "weapon_ltl_68p_pistol",
@@ -3004,37 +3047,63 @@
           "cost": null,
           "region": "Weapon",
           "location": "Weapon",
-          "guide": "Non-lethal silenced sidearm, available from the start (no Tech Point cost)."
+          "guide": "Non-lethal silenced sidearm, available from the start (no Tech Point cost).",
+          "level_costs": [
+            15,
+            30
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/weapon_ltl_68p_pistol.jpg"
         },
         {
           "id": "weapon_mp9_smg",
           "name": "MP9 DedSec SMG",
           "category": "Weapon",
-          "levels": 2,
+          "levels": 3,
           "cost": 20,
           "region": "Weapon",
           "location": "Weapon",
-          "guide": "Non-lethal SMG unlocked with Tech Points."
+          "guide": "Non-lethal SMG unlocked with Tech Points.",
+          "level_costs": [
+            20,
+            25,
+            30
+          ],
+          "unlock_requirement": "Unlock: turn 1 borough Defiant",
+          "image_url": "/public/games/wdlegion/images/tech/weapon_mp9_smg.jpg"
         },
         {
           "id": "weapon_ltl_sg",
           "name": "LTL SG",
           "category": "Weapon",
-          "levels": 2,
+          "levels": 3,
           "cost": 20,
           "region": "Weapon",
           "location": "Weapon",
-          "guide": "Non-lethal shotgun unlocked with Tech Points."
+          "guide": "Non-lethal shotgun unlocked with Tech Points.",
+          "level_costs": [
+            20,
+            25,
+            35
+          ],
+          "unlock_requirement": "Unlock: turn 1 borough Defiant",
+          "image_url": "/public/games/wdlegion/images/tech/weapon_ltl_sg.jpg"
         },
         {
           "id": "weapon_dedsec_grenade_launcher",
           "name": "DedSec Grenade Launcher",
           "category": "Weapon",
-          "levels": 2,
+          "levels": 3,
           "cost": 30,
           "region": "Weapon",
           "location": "Weapon",
-          "guide": "Launcher firing non-lethal grenade rounds."
+          "guide": "Launcher firing non-lethal grenade rounds.",
+          "level_costs": [
+            30,
+            35,
+            45
+          ],
+          "unlock_requirement": "Unlock: turn 1 borough Defiant",
+          "image_url": "/public/games/wdlegion/images/tech/weapon_dedsec_grenade_launcher.jpg"
         },
         {
           "id": "hack_disrupt",
@@ -3044,7 +3113,8 @@
           "cost": 15,
           "region": "Hack",
           "location": "Hack",
-          "guide": "Temporarily disrupts an enemy's balance/aim at range."
+          "guide": "Temporarily disrupts an enemy's balance/aim at range.",
+          "image_url": "/public/games/wdlegion/images/tech/hack_disrupt.jpg"
         },
         {
           "id": "hack_attract",
@@ -3054,7 +3124,8 @@
           "cost": 15,
           "region": "Hack",
           "location": "Hack",
-          "guide": "Makes a device or object emit noise to lure guards."
+          "guide": "Makes a device or object emit noise to lure guards.",
+          "image_url": "/public/games/wdlegion/images/tech/hack_attract.jpg"
         },
         {
           "id": "hack_chase_drone",
@@ -3064,7 +3135,12 @@
           "cost": 10,
           "region": "Hack",
           "location": "Hack",
-          "guide": "Hijack/disable chase drones. 3 tiers: 10 / 15 / 25 Tech Points."
+          "guide": "Hijack/disable chase drones. 3 tiers: 10 / 15 / 25 Tech Points.",
+          "level_costs": [
+            10,
+            15,
+            25
+          ]
         },
         {
           "id": "hack_gun_jam",
@@ -3074,7 +3150,8 @@
           "cost": 35,
           "region": "Hack",
           "location": "Hack",
-          "guide": "Jams an enemy's weapon at range."
+          "guide": "Jams an enemy's weapon at range.",
+          "image_url": "/public/games/wdlegion/images/tech/hack_gun_jam.jpg"
         },
         {
           "id": "hack_turret",
@@ -3084,17 +3161,24 @@
           "cost": 25,
           "region": "Hack",
           "location": "Hack",
-          "guide": "Hijack/disable turrets. 3 tiers: 25 / 30 / 40 Tech Points."
+          "guide": "Hijack/disable turrets. 3 tiers: 25 / 30 / 40 Tech Points.",
+          "level_costs": [
+            25,
+            30,
+            40
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/hack_turret.jpg"
         },
         {
           "id": "hack_parcel_fox_drone",
           "name": "Parcel Fox Drone Hacks",
           "category": "Hack",
           "levels": 0,
-          "cost": 10,
+          "cost": 15,
           "region": "Hack",
           "location": "Hack",
-          "guide": "Hijack/disable Parcel Fox delivery drones."
+          "guide": "Hijack/disable Parcel Fox delivery drones.",
+          "image_url": "/public/games/wdlegion/images/tech/hack_parcel_fox_drone.jpg"
         },
         {
           "id": "hack_ct_drone",
@@ -3104,17 +3188,29 @@
           "cost": 40,
           "region": "Hack",
           "location": "Hack",
-          "guide": "Hijack/disable Counter-Terrorism drones. 3 tiers: 40 / 45 / 60 Tech Points."
+          "guide": "Hijack/disable Counter-Terrorism drones. 3 tiers: 40 / 45 / 60 Tech Points.",
+          "level_costs": [
+            40,
+            45,
+            60
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/hack_ct_drone.jpg"
         },
         {
           "id": "hack_riot_drone",
           "name": "Riot Drone Hacks",
           "category": "Hack",
           "levels": 3,
-          "cost": 20,
+          "cost": 25,
           "region": "Hack",
           "location": "Hack",
-          "guide": "Hijack/disable Riot drones. 3 tiers: 20 / 30 / 45 Tech Points."
+          "guide": "Hijack/disable Riot drones. 3 tiers: 20 / 30 / 45 Tech Points.",
+          "level_costs": [
+            25,
+            30,
+            45
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/hack_riot_drone.jpg"
         }
       ]
     }
