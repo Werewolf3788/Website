@@ -301,7 +301,13 @@ window.appState = {
                             name: cItem.name || '',
                             region: cItem.region || group.region || '',
                             location: cItem.location || '',
-                            guide: cItem.guide || ''
+                            guide: cItem.guide || '',
+                            image_url: cItem.image_url || '',
+                            // Tech-upgrade-style fields (cost in Tech Points, category, upgrade levels);
+                            // harmless passthrough for any game that doesn't use them.
+                            cost: cItem.cost != null ? cItem.cost : null,
+                            category: cItem.category || '',
+                            levels: cItem.levels != null ? cItem.levels : null
                         };
                     }
                 });
@@ -1691,7 +1697,8 @@ const COLLECT_WORDS = [
     [/darts? location/i, 'darts'], [/drink location/i, 'pubs'], [/paste.?up/i, 'paste_ups'],
     [/audio logs?/i, 'audio_logs'], [/\brelics?\b/i, 'relics'], [/tech points?/i, 'tech_points'],
     [/mask box(es)?/i, 'mask_boxes'], [/text files?|data points?/i, 'text_files'],
-    [/finding bagley/i, 'bagley_memories'], [/royal treatment/i, 'royal_treatment_mansions']
+    [/finding bagley/i, 'bagley_memories'], [/royal treatment/i, 'royal_treatment_mansions'],
+    [/unlock all upgrades|all tech upgrades/i, 'tech_upgrades']
 ];
 const xnorm = (t) => String(t || '').replace(/&/g, ' and ').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 let trophyLinkCache = { data: null, links: {} };
@@ -1726,7 +1733,7 @@ function trophyLinks(data) {
             if (ob) { L.objective = ob.text; L.mission = L.mission || k; break; }
         }
         const raw = String(t.description || '');
-        for (const [re, cat] of COLLECT_WORDS) { if (re.test(raw) && /collect|destroy|interact|find|complete|drink|play/i.test(raw)) { L.collect = cat; const n = raw.replace(/,/g, '').match(/\d+/); if (n) L.collectTarget = Number(n[0]); break; } }
+        for (const [re, cat] of COLLECT_WORDS) { if (re.test(raw) && /collect|destroy|interact|find|complete|drink|play|unlock/i.test(raw)) { L.collect = cat; const n = raw.replace(/,/g, '').match(/\d+/); if (n) L.collectTarget = Number(n[0]); break; } }
         const rk = raw.match(/reach rank (\d+)/i); if (rk) L.rank = Number(rk[1]);
         if (Array.isArray(data.species)) {
             const sp = data.species.find(x => x && x.name && d.includes(xnorm(x.name)));
@@ -3030,6 +3037,42 @@ function renderUniversalCompanion(data) {
 
     // Legacy fallback renderer
     let html = '';
+    let pinnedHtml = '';
+    // Pinned groups (e.g. tech_upgrades) render first, above missions, trophies,
+    // and every other collectible category, so progress toward them — and what
+    // each one costs — is always visible at the top of the page.
+    const PINNED_COLLECTIBLE_GROUPS = ['tech_upgrades'];
+    {
+        const pinnedGroups = PINNED_COLLECTIBLE_GROUPS
+            .map(k => [k, (appState.collectibles || {})[k]])
+            .filter(([, grp]) => grp && grp.items && Object.keys(grp.items).length);
+        pinnedGroups.forEach(([cKey, grp]) => {
+            const items = Object.entries(grp.items || {});
+            pinnedHtml += `
+            <section class="category-section" data-pinned="true">
+                <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                    <h2>📌 ${escapeHtml(humanize(cKey))} (${items.length})</h2>
+                    <span>▾</span>
+                </div>
+                <div class="section-content">
+                    <div class="trophy-grid">
+                        ${items.map(([id, it]) => {
+                            // Tech upgrades show their Tech Point cost as the badge, so you can
+                            // see at a glance what each one costs toward the Fully Kitted trophy.
+                            const costBadge = it.cost != null ? `${it.cost} TP` : 'No cost';
+                            return buildItemCard({
+                                id, type: 'collectible', group: cKey,
+                                badge: costBadge, badgeClass: 'rank-silver',
+                                title: it.name || id,
+                                sub: [it.category, it.levels ? `${it.levels} level(s)` : ''].filter(Boolean).join(' · '),
+                                body: it.guide || '', img: it.image_url
+                            });
+                        }).join('')}
+                    </div>
+                </div>
+            </section>`;
+        });
+    }
     const rawMissions = data.walkthrough_missions ? (Array.isArray(data.walkthrough_missions) ? data.walkthrough_missions : Object.values(data.walkthrough_missions)) : [];
     if (rawMissions.length > 0) {
         html += `
@@ -3076,7 +3119,8 @@ function renderUniversalCompanion(data) {
     // Legacy top-level `collectibles` schema (Far Cry 5, Watch Dogs: Legion, etc.):
     // data.collectibles[cKey] -> { items: [...] } was hydrated into appState.collectibles[cKey].items
     // but never actually rendered as cards until now — this is what was missing.
-    const collectibleGroups = Object.entries(appState.collectibles || {}).filter(([, grp]) => grp && grp.items && Object.keys(grp.items).length);
+    // Pinned groups are rendered separately above (pinnedHtml), so skip them here.
+    const collectibleGroups = Object.entries(appState.collectibles || {}).filter(([k, grp]) => grp && grp.items && Object.keys(grp.items).length && !PINNED_COLLECTIBLE_GROUPS.includes(k));
     if (collectibleGroups.length > 0) {
         collectibleGroups.forEach(([cKey, grp]) => {
             const items = Object.entries(grp.items || {});
@@ -3100,7 +3144,7 @@ function renderUniversalCompanion(data) {
         });
     }
 
-    container.innerHTML = html;
+    container.innerHTML = pinnedHtml + html;
     appState.applyStateToUI();
 }
 

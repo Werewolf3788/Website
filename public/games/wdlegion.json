@@ -125,6 +125,14 @@
       "current": 0,
       "total": 3,
       "step": 1
+    },
+    {
+      "id": "metric_13",
+      "icon": "🛠️",
+      "label": "Tech Upgrades Unlocked",
+      "current": 0,
+      "total": 24,
+      "step": 1
     }
   ],
   "categories": {},
@@ -2809,6 +2817,256 @@
           "region": "City of Westminster",
           "location": "Strathearn House",
           "guide": "Third Abandoned Mansion, south-west of Westminster, very close to Waxbey House."
+        }
+      ]
+    },
+    "tech_upgrades": {
+      "quest_name": "DedSec Tech",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 24,
+      "region": "London-wide",
+      "description": "Spend Tech Points in the Tech menu to unlock all Gadgets, Upgrades, Weapons, and Hacks. Required for the Fully Kitted trophy.",
+      "items": [
+        {
+          "id": "gadget_infiltrator_spiderbot",
+          "name": "Infiltrator Spiderbot",
+          "category": "Gadget",
+          "levels": 2,
+          "cost": 10,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "Stealth-focused Spiderbot: non-lethal takedowns, double jump/sprint and a manual cloak at higher levels."
+        },
+        {
+          "id": "gadget_ar_cloak",
+          "name": "AR Cloak",
+          "category": "Gadget",
+          "levels": 2,
+          "cost": 10,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "Projects a short-range visual camouflage field that hides you from nearby guards."
+        },
+        {
+          "id": "gadget_electro_fist",
+          "name": "Electro-Fist",
+          "category": "Gadget",
+          "levels": 2,
+          "cost": 10,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "A melee shock weapon built into the glove for fast non-lethal takedowns."
+        },
+        {
+          "id": "gadget_electro_shock_trap",
+          "name": "Electro-Shock Trap",
+          "category": "Gadget",
+          "levels": 2,
+          "cost": 10,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "A throwable trap that stuns anyone who walks through it."
+        },
+        {
+          "id": "gadget_combat_spiderbot",
+          "name": "Combat Spiderbot",
+          "category": "Gadget",
+          "levels": 2,
+          "cost": 20,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "A more aggressive Spiderbot variant that can fight back in combat."
+        },
+        {
+          "id": "gadget_missile_drone",
+          "name": "Missile Drone",
+          "category": "Gadget",
+          "levels": 2,
+          "cost": 25,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "A cargo drone upgrade that can fire a guided missile."
+        },
+        {
+          "id": "upgrade_ar_shroud",
+          "name": "AR Shroud",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": 35,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Lets you hide the bodies of anyone you've taken down in plain sight."
+        },
+        {
+          "id": "upgrade_skin_mesh",
+          "name": "Skin Mesh",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": 45,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Reduces incoming damage taken by all DedSec operatives."
+        },
+        {
+          "id": "upgrade_deep_profiler",
+          "name": "Deep Profiler",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": 25,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Reveals schedule and contact info for recruits who have a negative opinion of DedSec, letting you recruit them anyway."
+        },
+        {
+          "id": "upgrade_chase_drone_deactivation",
+          "name": "Chase Drone Deactivation",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": 10,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Permanently disables nearby chase drones."
+        },
+        {
+          "id": "upgrade_turret_deactivation",
+          "name": "Turret Deactivation",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": null,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Permanently disables nearby turrets. Unlocks after a borough turns Defiant (no Tech Point cost)."
+        },
+        {
+          "id": "upgrade_combat_drone_deactivation",
+          "name": "Combat Drone Deactivation",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": null,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Permanently disables nearby combat drones. Unlocks after a borough turns Defiant (no Tech Point cost)."
+        },
+        {
+          "id": "weapon_ltl_68p_pistol",
+          "name": "LTL 68P DedSec Pistol",
+          "category": "Weapon",
+          "levels": 2,
+          "cost": null,
+          "region": "Weapon",
+          "location": "Weapon",
+          "guide": "Non-lethal silenced sidearm, available from the start (no Tech Point cost)."
+        },
+        {
+          "id": "weapon_mp9_smg",
+          "name": "MP9 DedSec SMG",
+          "category": "Weapon",
+          "levels": 2,
+          "cost": 20,
+          "region": "Weapon",
+          "location": "Weapon",
+          "guide": "Non-lethal SMG unlocked with Tech Points."
+        },
+        {
+          "id": "weapon_ltl_sg",
+          "name": "LTL SG",
+          "category": "Weapon",
+          "levels": 2,
+          "cost": 20,
+          "region": "Weapon",
+          "location": "Weapon",
+          "guide": "Non-lethal shotgun unlocked with Tech Points."
+        },
+        {
+          "id": "weapon_dedsec_grenade_launcher",
+          "name": "DedSec Grenade Launcher",
+          "category": "Weapon",
+          "levels": 2,
+          "cost": 30,
+          "region": "Weapon",
+          "location": "Weapon",
+          "guide": "Launcher firing non-lethal grenade rounds."
+        },
+        {
+          "id": "hack_disrupt",
+          "name": "Disrupt Hack",
+          "category": "Hack",
+          "levels": 0,
+          "cost": 15,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Temporarily disrupts an enemy's balance/aim at range."
+        },
+        {
+          "id": "hack_attract",
+          "name": "Attract Hack",
+          "category": "Hack",
+          "levels": 0,
+          "cost": 15,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Makes a device or object emit noise to lure guards."
+        },
+        {
+          "id": "hack_chase_drone",
+          "name": "Chase Drone Hacks",
+          "category": "Hack",
+          "levels": 3,
+          "cost": 10,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable chase drones. 3 tiers: 10 / 15 / 25 Tech Points."
+        },
+        {
+          "id": "hack_gun_jam",
+          "name": "Gun Jam",
+          "category": "Hack",
+          "levels": 0,
+          "cost": 35,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Jams an enemy's weapon at range."
+        },
+        {
+          "id": "hack_turret",
+          "name": "Turret Hacks",
+          "category": "Hack",
+          "levels": 3,
+          "cost": 25,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable turrets. 3 tiers: 25 / 30 / 40 Tech Points."
+        },
+        {
+          "id": "hack_parcel_fox_drone",
+          "name": "Parcel Fox Drone Hacks",
+          "category": "Hack",
+          "levels": 0,
+          "cost": 10,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable Parcel Fox delivery drones."
+        },
+        {
+          "id": "hack_ct_drone",
+          "name": "CT Drone Hacks",
+          "category": "Hack",
+          "levels": 3,
+          "cost": 40,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable Counter-Terrorism drones. 3 tiers: 40 / 45 / 60 Tech Points."
+        },
+        {
+          "id": "hack_riot_drone",
+          "name": "Riot Drone Hacks",
+          "category": "Hack",
+          "levels": 3,
+          "cost": 20,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable Riot drones. 3 tiers: 20 / 30 / 45 Tech Points."
         }
       ]
     }
