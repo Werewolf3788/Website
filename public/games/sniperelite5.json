@@ -1010,7 +1010,16 @@
         "workbenches": []
       },
       "date": "June 13th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m09-loose-ends.jpg"
+      "image_url": "/public/games/sniperelite5/images/missions/m09-loose-ends.jpg",
+      "description": "Final mission of the main campaign. By design, Loose Ends has no collectibles (0 Personal Letters, Classified Documents, Hidden Items, Stone Eagles, or Workbenches) — there is nothing to find here.",
+      "collectible_totals": {
+        "personal_letters": 0,
+        "classified_documents": 0,
+        "hidden_items": 0,
+        "stone_eagles": 0,
+        "workbenches": 0,
+        "total": 0
+      }
     },
     "mission_10_dlc": {
       "number": 10,
@@ -1412,11 +1421,81 @@
       "number": 14,
       "title": "Kraken Awakes",
       "collectibles": {
-        "personal_letters": [],
-        "classified_documents": [],
-        "hidden_items": [],
-        "stone_eagles": [],
-        "workbenches": []
+        "personal_letters": [
+          {
+            "id": "se5_let_m14_01",
+            "name": "Boiler Room Inspection",
+            "location": "Comms room on the top floor of a dark-marked building in the north-west."
+          },
+          {
+            "id": "se5_let_m14_02",
+            "name": "Letter to Vogel",
+            "location": "Vogel's safe on the ship; get the code from his writing desk in the safe room, or blast the safe open with a satchel charge."
+          },
+          {
+            "id": "se5_let_m14_03",
+            "name": "Missing Tools",
+            "location": "Comms room on the top floor of a rectangular building in the south-west."
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "se5_doc_m14_01",
+            "name": "Salvage Operation",
+            "location": "On a table in the easternmost building on the east side of the map."
+          },
+          {
+            "id": "se5_doc_m14_02",
+            "name": "Successful Raid",
+            "location": "Third building of the middle dock in the north, counting from the access point closest to the ship."
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "se5_item_m14_01",
+            "name": "Backpack",
+            "location": "On a crate in the corner of a small building in the south-west."
+          },
+          {
+            "id": "se5_item_m14_02",
+            "name": "Eagle Plaque",
+            "location": "Ship's lower deck, near a room with a large red spotlight."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se5_eagle_m14_01",
+            "name": "Stone Eagle 1",
+            "location": "Top of the ship's middle mast."
+          },
+          {
+            "id": "se5_eagle_m14_02",
+            "name": "Stone Eagle 2",
+            "location": "Edge of the dark-marked building in the north-west."
+          },
+          {
+            "id": "se5_eagle_m14_03",
+            "name": "Stone Eagle 3",
+            "location": "Base of a chimney on the southern side of the map."
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "se5_wb_m14_01",
+            "name": "Workbench 1",
+            "location": "Reached through an air vent on the upper level of a building south of the docks."
+          },
+          {
+            "id": "se5_wb_m14_02",
+            "name": "Workbench 2",
+            "location": "North-west, slightly below the dark-marked building; take the key from the Letter 1 room, go to the bottom floor, enter the side area, and unlock the first door."
+          },
+          {
+            "id": "se5_wb_m14_03",
+            "name": "Workbench 3",
+            "location": "South, behind a wall with a gap you can slide under; take down the barricade to reach it."
+          }
+        ]
       },
       "region": "Finistère, Brittany",
       "date": "September 21st 1944",
