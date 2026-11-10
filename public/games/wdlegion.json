@@ -109,6 +109,22 @@
       "current": 0,
       "total": 5,
       "step": 1
+    },
+    {
+      "id": "metric_11",
+      "icon": "📷",
+      "label": "Bagley Memories",
+      "current": 0,
+      "total": 9,
+      "step": 1
+    },
+    {
+      "id": "metric_12",
+      "icon": "🏚️",
+      "label": "Royal Treatment Mansions",
+      "current": 0,
+      "total": 3,
+      "step": 1
     }
   ],
   "categories": {},
@@ -1546,6 +1562,110 @@
           "region": "",
           "location": "The Stage Arena",
           "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        }
+      ]
+    },
+    "bagley_memories": {
+      "quest_name": "Finding Bagley",
+      "quest_giver": "Bagley (at the Safehouse)",
+      "quest_giver_location": "DedSec Safehouse",
+      "total_count": 9,
+      "region": "London-wide",
+      "description": "Post-game side quest unlocked after finishing the main story. Photograph all 9 of Bagley's corrupted memory locations to complete it and unlock 'The One That Got Away' trophy. The 9th only appears after the first 8 are found (listed in-game as '4.5').",
+      "items": [
+        {
+          "id": "bagley_01",
+          "name": "National Gallery",
+          "region": "City of Westminster",
+          "location": "National Gallery",
+          "guide": "North side of Trafalgar Square."
+        },
+        {
+          "id": "bagley_02",
+          "name": "Millennium Wheel (London Eye)",
+          "region": "Lambeth",
+          "location": "Millennium Wheel (London Eye)",
+          "guide": "Western bank of the Thames; take the photo from the southern side."
+        },
+        {
+          "id": "bagley_03",
+          "name": "World of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World of Tomorrow",
+          "guide": "Southeast of the district; take the picture from the beer garden near it."
+        },
+        {
+          "id": "bagley_04",
+          "name": "Brixton Recreation Centre",
+          "region": "Lambeth",
+          "location": "Brixton Recreation Centre",
+          "guide": "Southeast Lambeth, south of Kennington Park; exit Brixton station southeast and head to the blue market-style buildings."
+        },
+        {
+          "id": "bagley_05",
+          "name": "Crosier & Cherry",
+          "region": "Lambeth",
+          "location": "Crosier & Cherry",
+          "guide": "Pub in east Lambeth, south of the Sandstone Residence; go inside to take the photo."
+        },
+        {
+          "id": "bagley_06",
+          "name": "Duck Island Cottage",
+          "region": "City of Westminster",
+          "location": "Duck Island Cottage",
+          "guide": "In the park just north of the DedSec safehouse."
+        },
+        {
+          "id": "bagley_07",
+          "name": "Wellington Arch",
+          "region": "City of Westminster",
+          "location": "Wellington Arch",
+          "guide": "Westernmost side of the borough, west of Buckingham Palace."
+        },
+        {
+          "id": "bagley_08",
+          "name": "Guy's Hospital",
+          "region": "Southwark",
+          "location": "Guy's Hospital",
+          "guide": "Just south of the Shard."
+        },
+        {
+          "id": "bagley_09",
+          "name": "Sky Garden (final memory, listed as 4.5)",
+          "region": "City of London",
+          "location": "Sky Garden (final memory, listed as 4.5)",
+          "guide": "Walkie Talkie building, southeast City of London; take the elevator up to the Sky Garden bar and photograph the city. Unlocks only after the first 8 are found."
+        }
+      ]
+    },
+    "royal_treatment_mansions": {
+      "quest_name": "Royal Treatment",
+      "quest_giver": "Nowt",
+      "quest_giver_location": "DedSec Safehouse (6th and final quest in Nowt's questline, triggers after 'Nobody Home')",
+      "total_count": 3,
+      "region": "London-wide",
+      "description": "Find all 3 Abandoned Mansions (not marked on the map), access the ctOS panel at each, and photograph it to complete the quest and unlock 'A Roof Over Your Head' trophy.",
+      "items": [
+        {
+          "id": "mansion_01",
+          "name": "St. Andrew's Court",
+          "region": "Camden",
+          "location": "St. Andrew's Court",
+          "guide": "First Abandoned Mansion. Interact with a ctOS panel near it (marked yellow when close), then photograph it (must say 'Target in View')."
+        },
+        {
+          "id": "mansion_02",
+          "name": "Waxbey House",
+          "region": "City of Westminster",
+          "location": "Waxbey House",
+          "guide": "Second Abandoned Mansion, close to Strathearn House."
+        },
+        {
+          "id": "mansion_03",
+          "name": "Strathearn House",
+          "region": "City of Westminster",
+          "location": "Strathearn House",
+          "guide": "Third Abandoned Mansion, south-west of Westminster, very close to Waxbey House."
         }
       ]
     }

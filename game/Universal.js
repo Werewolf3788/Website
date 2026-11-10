@@ -1690,7 +1690,8 @@ const COLLECT_WORDS = [
     [/hidden items?/i, 'hidden_items'], [/dead-?eye targets?|stone eagles?/i, 'stone_eagles'], [/workbench(es)?/i, 'workbenches'],
     [/darts? location/i, 'darts'], [/drink location/i, 'pubs'], [/paste.?up/i, 'paste_ups'],
     [/audio logs?/i, 'audio_logs'], [/\brelics?\b/i, 'relics'], [/tech points?/i, 'tech_points'],
-    [/mask box(es)?/i, 'mask_boxes'], [/text files?|data points?/i, 'text_files']
+    [/mask box(es)?/i, 'mask_boxes'], [/text files?|data points?/i, 'text_files'],
+    [/finding bagley/i, 'bagley_memories'], [/royal treatment/i, 'royal_treatment_mansions']
 ];
 const xnorm = (t) => String(t || '').replace(/&/g, ' and ').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 let trophyLinkCache = { data: null, links: {} };
