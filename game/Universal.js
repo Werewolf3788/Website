@@ -1063,6 +1063,15 @@ window.appState.updateStatus = function(msg) {
 const normPlatform = (p) => { const v = String(p || '').toLowerCase(); if (v.startsWith('play') || v === 'psn' || v === 'ps5' || v === 'ps4') return 'ps'; return ['ps', 'xbox', 'steam', 'pc'].includes(v) ? v : ''; };
 window.appState.friendsProgress = [];
 let friendSyncToken = 0;
+// Live Firestore listeners on each friend's save doc for the game on screen, so their
+// progress/trophies update on your squad roster without a page refresh. Replaced every
+// time syncFriendsProgress runs (friend list change, game switch, sign-in).
+let friendSnapshotUnsubs = [];
+function clearFriendSnapshots() {
+    friendSnapshotUnsubs.forEach((u) => { try { u(); } catch (e) {} });
+    friendSnapshotUnsubs = [];
+}
+window.addEventListener('beforeunload', clearFriendSnapshots);
 async function readFriendSave(keys, platforms, gameName) {
     if (!firestore) return null;
     for (const key of keys) {
@@ -1090,6 +1099,7 @@ function friendDoneSet(save, psnEarned) {
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
     const token = ++friendSyncToken;
+    clearFriendSnapshots();
     if (!this.currentUser || !this.currentUser.email || !rtdb) {
         this.friendsProgress = []; this.applyStateToUI();
         if (rosterContainer) rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to see your squad\'s progress.</div>';
@@ -1155,12 +1165,40 @@ window.appState.syncFriendsProgress = async function() {
             } catch (e) {}
             const { done, ribbons, medalProg } = friendDoneSet(save && save.data, psnEarned);
             const rank = psnRank || (save && save.data && save.data.campaignRank) || null;
-            return { code, userKey, name, avatar, nowPlays, plats, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, medalProg, rank, save: save && save.data };
+            return {
+                code, userKey, name, avatar, nowPlays, plats,
+                platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length,
+                done, ribbons, medalProg, rank, save: save && save.data,
+                // kept so a live Firestore update can recompute done/ribbons without re-running
+                // the whole friend fetch (RTDB lookups + PSN) again
+                saveDocKey: save && save.key, psnEarnedList: psnEarned
+            };
         }));
         if (token !== friendSyncToken) return;
         this.friendsProgress = results;
         this.applyStateToUI();
         renderSquadRoster();
+        if (firestore) {
+            results.forEach((entry) => {
+                if (!entry.hasSave || !entry.saveDocKey || !entry.platform) return;
+                try {
+                    const unsub = firestore.collection('user').doc(entry.saveDocKey)
+                        .collection('platform').doc(entry.platform).collection('game').doc(gameName)
+                        .onSnapshot((snap) => {
+                            if (token !== friendSyncToken) return; // a newer sync superseded this one
+                            const cur = toArr(appState.friendsProgress).find((x) => x.code === entry.code);
+                            if (!cur) return;
+                            const data = snap.exists ? snap.data() : null;
+                            const live = friendDoneSet(data, cur.psnEarnedList);
+                            cur.save = data; cur.hasSave = !!data;
+                            cur.done = live.done; cur.ribbons = live.ribbons; cur.medalProg = live.medalProg;
+                            appState.applyStateToUI();
+                            renderSquadRoster();
+                        }, (err) => console.warn('[Squad live]', entry.code, err && err.message));
+                    friendSnapshotUnsubs.push(unsub);
+                } catch (e) { console.warn('[Squad live] could not attach listener for', entry.code, e && e.message); }
+            });
+        }
     } catch (e) {
         console.warn('[Friends Roster Error]:', e);
         if (rosterContainer) rosterContainer.innerHTML = `<div style="font-size:0.8rem; color:#f87171;">Couldn't load squad progress: ${escapeHtml(e.message || String(e))}</div>`;
