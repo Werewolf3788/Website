@@ -776,6 +776,30 @@ window.appState.applyStateToUI = function() {
                 isDone = !!it.collected;
                 const lvlEl = card.querySelector('.tech-level-display');
                 if (lvlEl && it.levels) lvlEl.textContent = `${it.level || 0}/${it.levels}`;
+                // Multi-level gadgets/weapons: once a tier is bought, show what the
+                // *next* tier adds and what it costs, instead of repeating tier 1's
+                // description and price forever.
+                if (it.levels > 1 && Array.isArray(it.level_costs)) {
+                    const lvl = it.level || 0;
+                    const maxed = lvl >= it.levels;
+                    const bodyEl = card.querySelector(':scope > p');
+                    if (bodyEl) {
+                        const note = Array.isArray(it.tier_notes) ? it.tier_notes[lvl] : null;
+                        bodyEl.textContent = maxed
+                            ? (Array.isArray(it.tier_notes) ? it.tier_notes[it.levels - 1] : null) || it.guide || 'Fully upgraded.'
+                            : (note || it.guide || '');
+                    }
+                    const priceEl = card.querySelector(':scope > .price-meter');
+                    if (priceEl) {
+                        if (maxed) { priceEl.dataset.price = '0'; priceEl.innerHTML = 'Fully upgraded'; }
+                        else {
+                            const target = Number(it.level_costs[lvl]) || 0;
+                            priceEl.dataset.price = String(target);
+                            const have = (this.wallet && this.wallet.credits) || 0;
+                            priceEl.innerHTML = 'Credits needed: ' + meterHtml(target - have, target, '');
+                        }
+                    }
+                }
             }
         } else if (type === 'trophy') {
             isDone = !!(this.trophies[id]?.earned);

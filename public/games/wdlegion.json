@@ -3618,7 +3618,12 @@
             20,
             25
           ],
-          "image_url": "/public/games/wdlegion/images/tech/gadget_infiltrator_spiderbot.jpg"
+          "image_url": "/public/games/wdlegion/images/tech/gadget_infiltrator_spiderbot.jpg",
+          "tier_notes": [
+            "A stealth-based spiderbot capable of performing non-lethal takedowns.",
+            "Adds double jump and sprint capabilities.",
+            "Adds a Cloak that can be manually activated."
+          ]
         },
         {
           "id": "gadget_ar_cloak",
