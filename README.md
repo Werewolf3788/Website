@@ -73,3 +73,28 @@ Every game in `public/games/*.json` is cross-referenced with PlayStation trophie
 - **Rank:** `"campaign_rank": { "max": 40, "trophyId": 9, "trophyIds": [9] }` fills the rank from the matching PSN trophies.
 - **Hunting games:** trophies come from the PSN skeleton (playstation-stats); species names and "harvest N" trophies show your harvest counts.
 - Trophy icons and progress always come from the playstation-stats project (PSN engine).
+
+---
+
+## 6. Game Data — Free to Reuse
+
+The files in `public/games/*.json` are a standalone, hand-researched and
+corrected dataset: collectible locations, mission lists, and progress
+metrics for each supported game, cross-checked against official guides,
+community wikis, and in-game verification. They are not just a database
+for this site — they're intended as a reusable reference.
+
+**License:** released under [CC0](./LICENSE-DATA.md) (public domain). Use
+them in your own tracker, tool, wiki edit, dataset, or AI/LLM reference
+pipeline, no permission or attribution required.
+
+**Format:** one JSON file per game (e.g. `wdlegion.json`, `farcry5.json`),
+each with a consistent shape: `game`, `platforms`, `boroughs`/`regions`,
+`metrics`, `trophies`, and a `collectibles` object broken into typed
+categories (e.g. `text_files`, `relics`, `audio_logs`), where each item has
+an `id`, `name`, `region`, and a short `guide` describing how to find it.
+
+**Coverage:** see the `public/games/` folder for the current list of
+supported titles. Entries are added and corrected as they're verified —
+if you spot something wrong or missing, it's a plain JSON file, so a pull
+request is the fastest way to fix it.
