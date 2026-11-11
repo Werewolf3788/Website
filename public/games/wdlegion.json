@@ -2719,7 +2719,7 @@
       "quest_name": "",
       "quest_giver": "",
       "quest_giver_location": "",
-      "total_count": 199,
+      "total_count": 200,
       "region": "London-wide",
       "description": "Written documents and data points / lore items found in various locations.",
       "items": [
@@ -2830,6 +2830,12 @@
           "name": "Bricklayers Arms",
           "region": "Southwark",
           "guide": "SMS thread tied to the Clan Kelley storyline: Leo threatens Callie over an unpaid debt to the Kelleys; Callie protests the inflated 'interest rate.'"
+        },
+        {
+          "id": "text_estrom",
+          "name": "E-STROM",
+          "region": "Southwark/Lambeth border",
+          "guide": "Found inside the E-Strom corporate building, a restricted area near the Lambeth/Southwark border (uniformed access for Construction Workers or Albion). Letter from A. Lemoureux to G. Castorille about an employee (Robert Hastings) illegally living in a utility closet."
         }
       ]
     },
