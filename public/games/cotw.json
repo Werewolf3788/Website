@@ -1,8 +1,12 @@
 {
   "game": "theHunter: Call of the Wild",
   "gameId": "COTW",
-  "commId": null,
-  "platforms": {},
+  "commId": "NPWR13211_00",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR13211_00"
+    }
+  },
   "lastUpdated": "2026-11-11T07:47:41.409167+00:00",
   "overallProgress": 0,
   "activeMission": "In Progress",
