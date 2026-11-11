@@ -392,67 +392,67 @@
       "quest_name": "Legends: Story Missions",
       "total_count": 9,
       "region": "Legends Mode (Multiplayer) - 2 players",
-      "description": "2-player co-op story missions told by the storyteller Gyozen, building toward the final antagonist Iyo. Each mission is split into 3 stages (torii gates), each with its own bonus side objectives. There are 9 story missions total; the names below are the ones confirmed by name — 3 remain unconfirmed/unnamed in our sources.",
+      "description": "2-player co-op story missions told by the storyteller Gyozen, building toward the final antagonist Iyo. Each mission is split into 3 stages (torii gates), each with its own bonus side objectives. There are 9 story missions total, confirmed in order via the game's own mission-select screen (cross-checked against ghostoftsushima.fandom.com and gamepressure.com walkthroughs). The file previously had these out of order, with 3 slots marked unconfirmed, and wrongly listed 'The Tale of Iyo' as mission 9 — that's actually the separate 3-chapter endgame Raid (tracked under legends_raid_tale_of_iyo), not one of the 9 story missions.",
       "items": [
         {
           "id": "legends_story_1",
-          "name": "The Crow Demons of Otsuna",
+          "name": "Severed Hearts",
           "region": "Mission 1",
           "location": "",
           "guide": ""
         },
         {
           "id": "legends_story_2",
-          "name": "Caravan of Thieves",
+          "name": "The Curse of the Onibaba",
           "region": "Mission 2",
           "location": "",
           "guide": ""
         },
         {
           "id": "legends_story_3",
-          "name": "The Stranded Dead",
+          "name": "The Veil Between Realms",
           "region": "Mission 3",
           "location": "",
           "guide": ""
         },
         {
           "id": "legends_story_4",
-          "name": "Tides of Battle",
+          "name": "The Tale of Uchitsune",
           "region": "Mission 4",
           "location": "",
           "guide": ""
         },
         {
           "id": "legends_story_5",
-          "name": "The Fire Spirits of Yarikawa",
+          "name": "The Crow Demons of Otsuna",
           "region": "Mission 5",
           "location": "",
           "guide": ""
         },
         {
-          "id": "legends_story_unconfirmed_1",
-          "name": "(unconfirmed)",
-          "region": "Order unconfirmed",
+          "id": "legends_story_6",
+          "name": "Caravan of Thieves",
+          "region": "Mission 6",
           "location": "",
           "guide": ""
         },
         {
-          "id": "legends_story_unconfirmed_2",
-          "name": "(unconfirmed)",
-          "region": "Order unconfirmed",
+          "id": "legends_story_7",
+          "name": "The Stranded Dead",
+          "region": "Mission 7",
           "location": "",
           "guide": ""
         },
         {
-          "id": "legends_story_unconfirmed_3",
-          "name": "(unconfirmed)",
-          "region": "Order unconfirmed",
+          "id": "legends_story_8",
+          "name": "Tides of Battle",
+          "region": "Mission 8",
           "location": "",
           "guide": ""
         },
         {
           "id": "legends_story_9",
-          "name": "The Tale of Iyo",
+          "name": "The Fire Spirits of Yarikawa",
           "region": "Mission 9",
           "location": "",
           "guide": ""
