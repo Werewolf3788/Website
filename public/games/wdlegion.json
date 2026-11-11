@@ -3049,6 +3049,41 @@
           "region": "Nine Elms",
           "location": "The Martlet's Nest",
           "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_07",
+          "name": "Safehouse",
+          "region": "City of Westminster",
+          "location": "DedSec Safehouse",
+          "guide": "Drink-only location (no darts) -- available right in your own safehouse. One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        },
+        {
+          "id": "pub_camden_02",
+          "name": "Crosier & Cherry Tree",
+          "region": "Camden",
+          "location": "South-east Camden, near the City of London border, close to the Viaduct fast travel point (down a side alley, not on the main street)",
+          "guide": "Drink-only location (no darts). One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        },
+        {
+          "id": "pub_tower_hamlets_02",
+          "name": "The Concubine's Wail",
+          "region": "Tower Hamlets",
+          "location": "Central Tower Hamlets, north of Aldgate Station",
+          "guide": "Drink-only location (no darts). One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        },
+        {
+          "id": "pub_southwark_04",
+          "name": "The Mix Bar",
+          "region": "Southwark",
+          "location": "South-west Southwark, on the border with Lambeth",
+          "guide": "Drink-only location (no darts, no dartboard here). One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        },
+        {
+          "id": "pub_city_of_london_02",
+          "name": "Walkie Talkie Bar",
+          "region": "City of London",
+          "location": "Sky Garden, inside the Walkie Talkie building near Bank Station -- take the elevator to the top floor",
+          "guide": "Drink-only location (no darts). One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
         }
       ]
     },
