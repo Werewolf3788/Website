@@ -964,10 +964,33 @@ window.appState.stepRibbon = function(id, d) { this.setRibbonCount(id, (this.rib
 // Level 1/2/3 tiers): track how many levels are bought, not just owned/not-owned.
 // `collected` flips true once every level is bought, so it keeps counting
 // correctly everywhere else (section totals, trophy cross-reference links).
+// Buying/undoing a tier also spends/refunds against the top wallet balance
+// (the "Tech Points you have" box), using the same level_costs the per-card
+// "Credits needed" meter reads from — so the top total always reflects what's
+// left after the purchase, not just what the bottom meter still wants.
 window.appState.setTechLevel = function(id, group, value) {
     const it = this.collectibles[group]?.items?.[id]; if (!it) return;
     const max = Number(it.levels) || 1;
-    it.level = Math.max(0, Math.min(max, Math.floor(Number(value) || 0)));
+    const target = Math.max(0, Math.min(max, Math.floor(Number(value) || 0)));
+    const oldLevel = it.level || 0;
+    const costs = Array.isArray(it.level_costs) ? it.level_costs : null;
+    if (costs && target > oldLevel) {
+        let total = 0;
+        for (let i = oldLevel; i < target; i++) total += Number(costs[i]) || 0;
+        if (total > 0) {
+            const have = (this.wallet && this.wallet.credits) || 0;
+            if (have < total) {
+                this.updateStatus(`Not enough credits: need ${fmtNum(total - have)} more.`);
+                return;
+            }
+            this.wallet.credits = have - total;
+        }
+    } else if (costs && target < oldLevel) {
+        let total = 0;
+        for (let i = target; i < oldLevel; i++) total += Number(costs[i]) || 0;
+        if (total > 0) this.wallet.credits = ((this.wallet && this.wallet.credits) || 0) + total;
+    }
+    it.level = target;
     it.collected = it.level >= max;
     this.applyStateToUI();
     clearTimeout(this._techLevelSaveTimer); this._techLevelSaveTimer = setTimeout(() => this.saveProgress(), 600);
