@@ -1611,7 +1611,9 @@ function ensureUniversalStyles() {
         .category-section .category-section > .category-header { opacity: 0.95; }
         .category-section .category-section .category-header h2 { font-size: 0.95rem; }
         .sec-progress { font-size: 0.75rem; font-weight: 800; color: #94a3b8; margin-left: auto; margin-right: 10px; }
-        .uni-search-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+        .uni-search-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px;
+            position: sticky; top: var(--ww-bar-h, 60px); z-index: 500; background: var(--bg-surface, #131d31);
+            padding: 10px; border-radius: 12px; box-shadow: 0 6px 14px -8px rgba(0,0,0,0.6); }
         .uni-search-input { flex: 1 1 260px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.15);
             border-radius: 10px; padding: 10px 14px; font-size: 0.95rem; outline: none; }
         .uni-search-input:focus { border-color: var(--user-theme-accent, #ff5500); }
@@ -1619,6 +1621,11 @@ function ensureUniversalStyles() {
             border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
         .uni-search-btn:hover { border-color: var(--user-theme-accent, #ff5500); color: #fff; }
         .uni-search-count { flex-basis: 100%; font-size: 0.75rem; color: #94a3b8; min-height: 1em; }
+        .card-more { display: none; margin-top: 2px; }
+        .game-item-card.more-open .card-more { display: block; }
+        .card-more-toggle h3 { display: flex; align-items: center; gap: 6px; }
+        .card-chevron { font-size: 0.7rem; color: #94a3b8; display: inline-block; transition: transform 0.15s ease; }
+        .game-item-card.more-open .card-chevron { transform: rotate(180deg); }
         .mission-region { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin-left: 8px; }
         .ribbon-count-wrap { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; color: #94a3b8; font-weight: 800; }
         .ribbon-count { width: 68px; min-height: 40px; padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18);
@@ -1777,14 +1784,15 @@ function buildItemCard(o) {
     const img = o.img ? toSecureUrl(o.img) : '';
     const groupAttr = o.group ? ` data-group="${escapeHtml(o.group)}"` : '';
     const groupArg = o.group ? `, '${escapeHtml(o.group)}'` : '';
+    const hasMore = !!(o.body || o.locImg || o.link);
     return `
     <div class="trophy-card game-item-card" data-id="${escapeHtml(o.id)}" data-type="${o.type}"${groupAttr}${o.unit ? ` data-unit="${escapeHtml(o.unit)}" data-goal="${Number(o.progressGoal) || 0}"` : ''} data-search="${escapeHtml(search)}">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div style="display:flex; gap:10px; align-items:center;">
+            <div class="${hasMore ? 'card-more-toggle' : ''}" style="display:flex; gap:10px; align-items:center; min-width:0; flex:1 1 auto; ${hasMore ? 'cursor:pointer;' : ''}"${hasMore ? ` onclick="this.closest('.game-item-card').classList.toggle('more-open')"` : ''}>
                 ${img ? `<img src="${img}" alt="" loading="lazy" style="${o.wideImg ? 'width:96px; height:40px; object-fit:contain; background:#0f172a;' : 'width:40px; height:40px; object-fit:cover;'} border-radius:6px; flex:0 0 auto;" onerror="this.style.display='none'">` : ''}
-                <div>
+                <div style="min-width:0;">
                     <span class="trophy-rank ${o.badgeClass || 'rank-bronze'}">${escapeHtml(o.badge || '')}</span>
-                    <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(o.title || '')}</h3>
+                    <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(o.title || '')}${hasMore ? ' <span class="card-chevron">▾</span>' : ''}</h3>
                     ${o.sub ? `<div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.sub)}</div>` : ''}
                 </div>
             </div>
@@ -1796,12 +1804,14 @@ function buildItemCard(o) {
                 ? `<div class="ribbon-count-wrap medal-progress-wrap" title="Progress"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepMedal('${escapeHtml(o.id)}', -1)">−</button><input type="number" min="0" step="1" inputmode="numeric" class="medal-count" value="0" ${o.unit ? `placeholder="${escapeHtml(o.unit)}" title="Type your longest shot in meters"` : ''} aria-label="${o.unit ? 'Your longest shot (meters)' : 'Progress'}: ${escapeHtml(o.title || '')}" onchange="appState.setMedalProgress('${escapeHtml(o.id)}', this.value)">${o.unit ? `<span class="unit-lbl">${escapeHtml(o.unit)}</span>` : ''}<button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepMedal('${escapeHtml(o.id)}', 1)">+</button></div>`
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
         </div>
+        ${hasMore ? `<div class="card-more">
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
+        ${o.locImg ? `<img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" title="Tap to enlarge" onerror="this.remove()">` : ''}
+        ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
+        </div>` : ''}
         ${o.progressGoal ? `<div class="medal-meter wallet-meter" data-medal="${escapeHtml(o.id)}"></div>` : ''}
         ${o.type === 'trophy' ? `<div class="wallet-meter trophy-psn" data-trophy="${escapeHtml(o.id)}" hidden></div><div class="trophy-link" data-trophy="${escapeHtml(o.id)}" hidden></div>` : ''}
-        ${o.locImg ? `<img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" title="Tap to enlarge" onerror="this.remove()">` : ''}
         ${o.price ? `<div class="price-meter wallet-meter" data-price="${Number(o.price) || 0}"></div>` : ''}
-        ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
     </div>`;
 }
 
