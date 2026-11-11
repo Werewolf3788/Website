@@ -2273,7 +2273,7 @@
       "quest_name": "",
       "quest_giver": "",
       "quest_giver_location": "",
-      "total_count": 53,
+      "total_count": 64,
       "region": "London-wide",
       "description": "Recorded messages and lore fragments that expand the story of London and its residents.",
       "items": [
@@ -2580,7 +2580,7 @@
         },
         {
           "id": "audio_log_44",
-          "name": "The Upload: Eye on the Skye",
+          "name": "The Upload: Eyes on the Skye",
           "region": "Varies by borough",
           "location": "The Upload: Eye on the Skye",
           "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
@@ -2601,7 +2601,7 @@
         },
         {
           "id": "audio_log_47",
-          "name": "TOAn Attack Site #2",
+          "name": "TOAN Attack Site #2",
           "region": "Varies by borough",
           "location": "TOAn Attack Site #2",
           "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
@@ -2646,6 +2646,72 @@
           "name": "Kaitlin Lau's Log #1",
           "region": "City of Westminster",
           "guide": "Obtained automatically during the story mission \"Digging Up the Past\" (DedSec Chapter) by hacking the tablet at the TOAN Attack Site."
+        },
+        {
+          "id": "the_bug_bitter_medicine",
+          "name": "The Bug: Bitter Medicine",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice discuss alternative medicine amid shortages, the novelty of breakfast, and the 'glory days.'"
+        },
+        {
+          "id": "the_bug_diy_fake_news",
+          "name": "The Bug: DIY Fake News",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice pick apart 'official polls' and discuss media drones, new cameras, and made-up headlines."
+        },
+        {
+          "id": "the_bug_immigration_jokes",
+          "name": "The Bug: Immigration Jokes",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice discuss news of 4000 deportations, disappearances at the Immigration Processing Centre, and terrible spies."
+        },
+        {
+          "id": "the_bug_new_tech_new_lies",
+          "name": "The Bug: New Tech, New Lies",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice ponder the tech-industry job boom and debate whether the country even has a Prime Minister."
+        },
+        {
+          "id": "the_bug_sirs_and_sports",
+          "name": "The Bug: SIRS and Sports",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice heap praise on London's new CCTV cameras and discuss the city's popular new 'sport': rioting."
+        },
+        {
+          "id": "the_bug_see_something_say_something",
+          "name": "The Bug: See Something, Say Something",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice report each other to SIRS for 'criminal' behaviour, then reminisce about Europe."
+        },
+        {
+          "id": "the_bug_the_resistance",
+          "name": "The Bug: The Resistance?",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice question news that DedSec is no longer a threat, discuss the light at the end of the tunnel, and wrap with another 'BUG OFF.'"
+        },
+        {
+          "id": "epc_exit_interview",
+          "name": "EPC Exit Interview",
+          "region": "Lambeth",
+          "guide": "File #5478B4: exit-interview recording of applicant Ángel López at the European Processing Centre, sent for a bogus second medical exam under false suspicion of drug use."
+        },
+        {
+          "id": "buccanear_fake_news",
+          "name": "BuccanEar: Fake News",
+          "region": "City-wide (car radio)",
+          "guide": "Tash exposes the GBB and speaks with media experts about how authoritarian leaders exploit the spread of disinformation."
+        },
+        {
+          "id": "claire_waters_podcast",
+          "name": "Claire Waters Podcast",
+          "region": "City-wide (car radio)",
+          "guide": "Pirate radio broadcast hosted by Claire Waters, discussing public opinion on DedSec and seeking the truth beyond the headlines."
+        },
+        {
+          "id": "the_upload_cash_to_crypto",
+          "name": "The Upload: From Cash to Crypto",
+          "region": "City-wide (car radio)",
+          "guide": "Matt and Vicky dissect the history of cryptocurrency and its spread throughout the UK, getting nostalgic about cold, hard cash."
         }
       ]
     },
@@ -2653,7 +2719,7 @@
       "quest_name": "",
       "quest_giver": "",
       "quest_giver_location": "",
-      "total_count": 195,
+      "total_count": 199,
       "region": "London-wide",
       "description": "Written documents and data points / lore items found in various locations.",
       "items": [
@@ -2740,6 +2806,30 @@
           "name": "Parliament Square #2",
           "region": "City of Westminster",
           "guide": "Found at Parliament Square Gardens."
+        },
+        {
+          "id": "ayw_imports",
+          "name": "AYW Imports",
+          "region": "Unknown (London)",
+          "guide": "A text document found on the Data tab; exact in-world location not yet pinpointed."
+        },
+        {
+          "id": "county_hall",
+          "name": "County Hall",
+          "region": "Lambeth",
+          "guide": "Letter at County Hall (South Bank, Lambeth) from Commander Langton to Councillor J. Smalls, threatening blackmail over compromising photos."
+        },
+        {
+          "id": "london_carriage_1",
+          "name": "London Carriage #1",
+          "region": "City of Westminster",
+          "guide": "Letter from cab-company tech W. Downey to boss L. Barwell, reporting diminished memory bandwidth on fare-regulating chipsets causing overpriced fares."
+        },
+        {
+          "id": "bricklayers_arms",
+          "name": "Bricklayers Arms",
+          "region": "Southwark",
+          "guide": "SMS thread tied to the Clan Kelley storyline: Leo threatens Callie over an unpaid debt to the Kelleys; Callie protests the inflated 'interest rate.'"
         }
       ]
     },
