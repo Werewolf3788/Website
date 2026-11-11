@@ -4301,5 +4301,327 @@
     "Liberate boroughs first — completing borough uprisings reveals tech points and key activities directly on the map, making them much easier to track down.",
     "Use an operative with a Cargo Drone (or Wrench) for tech points and text files on high rooftops or hard-to-reach ledges — saves a lot of time versus climbing.",
     "Community interactive maps (MapGenie's Watch Dogs Legion map, Guides for Gamers' Watch Dogs Legion interactive maps) can be used alongside this tracker to visually cross-check progress."
+  ],
+  "recruitable_operatives": [
+    {
+      "id": "op_yi_mok",
+      "name": "Yi Mok",
+      "occupation": "Investor",
+      "bio": "Has a private phone line to the Police Commissioner",
+      "perks": [
+        {
+          "name": "Police Contact",
+          "effect": "Shorter Team Arrest Time"
+        },
+        {
+          "name": "Signing Bonuses",
+          "effect": "ETO Gain on Recruit"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_rachel_ng",
+      "name": "Rachel Ng",
+      "occupation": "Social Media Influencer",
+      "bio": "Recently purchased a £200,535 sports car",
+      "perks": [
+        {
+          "name": "Oscuro Ultra 8",
+          "effect": "Personal Sports Vehicle"
+        },
+        {
+          "name": "Anti-Chase",
+          "effect": "Chase Drone Immunity"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Brass Knuckles"
+    },
+    {
+      "id": "op_elijah_butterfield",
+      "name": "Elijah Butterfield",
+      "occupation": "Esports Competitor",
+      "bio": "Approached by Albion after hacking MMO servers",
+      "perks": [
+        {
+          "name": "ctOS Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "Fast Hacking",
+          "effect": "Short Hack Cooldowns"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_maryam_go",
+      "name": "Maryam Go",
+      "occupation": "Construction Worker",
+      "bio": "Posed for 'Sexy Workers Calendar'",
+      "perks": [
+        {
+          "name": "Uniformed Access",
+          "effect": "Construction Sites"
+        },
+        {
+          "name": "Cargo Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "Wrench",
+          "effect": "Heavy Melee Weapon"
+        },
+        {
+          "name": "Nail Gun",
+          "effect": "Unique Weapon"
+        }
+      ],
+      "weapons": [
+        "Nail Gun",
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_adina_nicoara",
+      "name": "Adina Nicoara",
+      "occupation": "Curator",
+      "bio": "Chased off Clan Kelley racketeers",
+      "perks": [
+        {
+          "name": "Tough Drunk",
+          "effect": "Take Less Damage"
+        }
+      ],
+      "weapons": [
+        "M590 Semi-Auto Shotgun",
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_bhairavi_mehta",
+      "name": "Bhairavi Mehta",
+      "occupation": "Construction Worker",
+      "bio": "Regularly publishes videos reviewing custom tools",
+      "perks": [
+        {
+          "name": "Uniformed Access",
+          "effect": "Construction Sites"
+        },
+        {
+          "name": "Cargo Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "Wrench",
+          "effect": "Heavy Melee Weapon"
+        },
+        {
+          "name": "Nail Gun",
+          "effect": "Unique Weapon"
+        }
+      ],
+      "weapons": [
+        "Nail Gun",
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_minh_vu",
+      "name": "Minh Vu",
+      "occupation": "Cameraman",
+      "bio": "Runs a forum for DIY electricians",
+      "perks": [
+        {
+          "name": "News Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "Albion Vendetta",
+          "effect": "Extra Faction Damage"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Brass Knuckles"
+    },
+    {
+      "id": "op_siraj_imam",
+      "name": "Siraj Imam",
+      "occupation": "Digital Privacy Advocate",
+      "bio": "Broke through CIA firewalls",
+      "perks": [
+        {
+          "name": "Key Steal",
+          "effect": "Unlimited Range"
+        },
+        {
+          "name": "Fast Hacking",
+          "effect": "Short Hack Cooldowns"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_katie_petrescu",
+      "name": "Katie Petrescu",
+      "occupation": "DJ",
+      "bio": "Profits from online gambling",
+      "perks": [
+        {
+          "name": "Killer Beat",
+          "effect": "Short Cooldowns and More Damage"
+        },
+        {
+          "name": "Feedback Loop",
+          "effect": "Stun Nearby Enemies"
+        },
+        {
+          "name": "Gambling Addict",
+          "effect": "Randomly Gambles ETO"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_siobhan_clancy",
+      "name": "Siobhan Clancy",
+      "occupation": "War Correspondent",
+      "bio": "Arrested by Leah Campbell (dynamic status, shown as Arrested with release timer at time of capture)",
+      "perks": [
+        {
+          "name": "News Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "LTL MP7",
+          "effect": "Burst-Fire Shock SMG"
+        },
+        {
+          "name": "Physically Fit",
+          "effect": "Take Less Damage"
+        }
+      ],
+      "weapons": [
+        "LTL MP7",
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_sienna_watson",
+      "name": "Sienna Watson",
+      "occupation": "Living Statue",
+      "bio": "Applied for permit to perform at Finsbury Circus",
+      "perks": [
+        {
+          "name": "Statue Pose",
+          "effect": "Hide From Pursuit"
+        },
+        {
+          "name": "Sticky Fingers",
+          "effect": "Ammo Drops Give ETO"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_edmond_dare",
+      "name": "Edmond Dare",
+      "occupation": "Hacker",
+      "bio": "Recruited Operative Zachary Wong into DedSec",
+      "perks": [
+        {
+          "name": "Viral Hacking",
+          "effect": "Hacks Propagate"
+        },
+        {
+          "name": "Shock Hack",
+          "effect": "Electrify Enemies"
+        },
+        {
+          "name": "Key Steal",
+          "effect": "Unlimited Range"
+        },
+        {
+          "name": "Gambling Addict",
+          "effect": "Randomly Gambles ETO"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_zsofia_juhasz",
+      "name": "Zsofia Juhasz",
+      "occupation": "Actor",
+      "bio": "Has multiple fake credit cards",
+      "perks": [
+        {
+          "name": "Famous",
+          "effect": "Noticed in Public"
+        },
+        {
+          "name": "Shopaholic",
+          "effect": "Randomly Buys Clothes"
+        },
+        {
+          "name": "Berserker",
+          "effect": "Defeat Enemies to Heal"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_zachary_wong",
+      "name": "Zachary Wong",
+      "occupation": "Neurologist",
+      "bio": "Recruited by Operative Edmond Dare",
+      "perks": [
+        {
+          "name": "Uniformed Access",
+          "effect": "Medical Facilities"
+        },
+        {
+          "name": "Triage",
+          "effect": "Team Injury Release"
+        },
+        {
+          "name": "Flatulent",
+          "effect": "Alert Nearby Enemies"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    }
   ]
 }
