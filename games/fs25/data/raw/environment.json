@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 286.657715,
+  "dayTime": 691.747742,
   "currentDay": 62,
   "currentMonotonicDay": 89,
-  "realHourTimer": 813400,
+  "realHourTimer": 1708000,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,17 +15,9 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 0,
+   "timeSinceLastRain": 363,
    "forecast": {
     "instance": [
-     {
-      "typeName": "SNOW",
-      "season": "WINTER",
-      "variationIndex": 1,
-      "startDay": 88,
-      "startDayTime": 82800000,
-      "duration": 21600000
-     },
      {
       "typeName": "SUN",
       "season": "WINTER",
@@ -257,6 +249,46 @@
       "startDay": 97,
       "startDayTime": 0,
       "duration": 7200000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 1,
+      "startDay": 97,
+      "startDayTime": 7200000,
+      "duration": 28800000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 2,
+      "startDay": 97,
+      "startDayTime": 36000000,
+      "duration": 18000000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 3,
+      "startDay": 97,
+      "startDayTime": 54000000,
+      "duration": 25200000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 2,
+      "startDay": 97,
+      "startDayTime": 79200000,
+      "duration": 25200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "WINTER",
+      "variationIndex": 1,
+      "startDay": 98,
+      "startDayTime": 18000000,
+      "duration": 18000000
      }
     ]
    },
@@ -301,7 +333,7 @@
     "height": 0.0
    },
    "ground": {
-    "wetness": 1.0
+    "wetness": 0.0
    },
    "twister": {
     "position": "0.00 0.00 0.00",
