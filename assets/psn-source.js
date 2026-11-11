@@ -1,12 +1,14 @@
 /* ============================================================================
    assets/psn-source.js  —  point every PSN read at the playstation-stats project
 
-   The PSN engine (Playstation/psn.js) writes player cards to the
-   playstation-stats Realtime Database. Older pages fetch
+   The PSN engine (Playstation/psn.js) writes player cards only to the
+   playstation-stats Realtime Database -- entertainment-71888 is not meant to
+   hold any PSN data. Older pages still fetch
    entertainment-71888 .../psn/... .json URLs. Load this script BEFORE the
    page's own scripts and those fetches are sent to playstation-stats instead
-   (signed in anonymously). If that fails, the original URL is used (the
-   engine also mirrors the cards there).
+   (signed in anonymously). If that redirect fails, the original URL is used
+   as a last resort, but since nothing mirrors PSN data into entertainment-71888
+   anymore that fallback will come back empty rather than stale.
 
    Also exposes window.wwPsn = { url(path), get(path) } for new code.
    ========================================================================== */

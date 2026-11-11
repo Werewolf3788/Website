@@ -17,6 +17,8 @@
  *       friendsDirectory/bucket_NN, raw_telemetry/{onlineId}, meta/*
  *       system/tokens, system/private_{onlineId}   (private: no client rules)
  *   No psn.json is written. Nothing secret is written to RTDB.
+ *   Kevin's DB gets no PSN data at all -- a leftover /psn mirror there is
+ *   removed once by clearKevinPsnMirror() and nothing writes it back.
  * ============================================================================ */
 "use strict";
 
@@ -677,43 +679,28 @@ async function saveTokenStore() {
 }
 
 /* ============================================================================
- * Mirror to Kevin's DB: the website's player pages (users/*.html) read
- * entertainment-71888 /psn/gamertags and /psn/games. Copy the fresh cards
- * there (only when they changed) so every member's page stays current.
+ * Kevin's DB (entertainment-71888) should hold no PSN data at all -- every
+ * player page now reaches PSN data through assets/psn-source.js, which
+ * transparently redirects any /psn/... fetch against entertainment-71888 to
+ * Ray's playstation-stats project. That shim covers every PSN URL these
+ * pages use (gamertags, games, usersByGamerTag), so the old copy this engine
+ * used to write into Kevin's DB as a fallback is unnecessary duplication.
+ * This one-time pass removes that leftover /psn node from Kevin's DB; once
+ * it's gone this is a cheap no-op on every future run.
  * ============================================================================ */
-async function mirrorToKevinDb() {
+async function clearKevinPsnMirror() {
     const raw = (process.env.GCP_SA_KEY_WEBSITE || "").trim();
-    if (!raw) { console.log("[MIRROR] Skipped: no GCP_SA_KEY_WEBSITE."); return; }
+    if (!raw) { console.log("[MIRROR CLEANUP] Skipped: no GCP_SA_KEY_WEBSITE."); return; }
     try {
         const creds = parseServiceAccount(raw, "GCP_SA_KEY_WEBSITE");
         const kdb = getDatabase(getNamedApp("kevinApp", creds, KEVIN_RTDB_URL));
-        const [srcTags, dstTags] = await Promise.all([rtdbRef("gamertags").once("value"), kdb.ref("psn/gamertags").once("value")]);
-        const src = srcTags.val() || {}, dst = dstTags.val() || {};
-        const dstKeys = Object.keys(dst);
-        let wrote = 0;
-        for (const [id, card] of Object.entries(src)) {
-            if (!card || typeof card !== "object") continue;
-            const hash = crypto.createHash("sha1").update(JSON.stringify(card)).digest("hex").slice(0, 16);
-            // one card per player, under the real PSN id; remove old copies that only differ in case
-            for (const k of dstKeys.filter((k) => k !== id && k.toLowerCase() === id.toLowerCase())) {
-                await kdb.ref(`psn/gamertags/${k}`).remove();
-                console.log(`[MIRROR] Removed duplicate '${k}' (real PSN ID '${id}').`);
-                wrote++;
-            }
-            if (!(dst[id] && dst[id]._mirrorHash === hash)) {
-                await kdb.ref(`psn/gamertags/${id}`).set({ ...card, _mirrorHash: hash, _mirroredAt: nowEt() });
-                wrote++;
-            }
+        const existing = (await kdb.ref("psn").once("value")).val();
+        if (existing) {
+            await kdb.ref("psn").remove();
+            console.log("[MIRROR CLEANUP] Removed leftover /psn node from Kevin's DB.");
         }
-        const games = (await rtdbRef("games").once("value")).val();
-        if (games) {
-            const gh = crypto.createHash("sha1").update(JSON.stringify(games)).digest("hex").slice(0, 16);
-            const cur = (await kdb.ref("psn/gamesMirrorHash").once("value")).val();
-            if (cur !== gh) { await kdb.ref("psn/games").set(games); await kdb.ref("psn/gamesMirrorHash").set(gh); wrote++; }
-        }
-        console.log(`[MIRROR] Kevin DB updated: ${wrote} node(s).`);
     } catch (e) {
-        console.warn(`[MIRROR] Kevin DB mirror failed: ${e.message}`);
+        console.warn(`[MIRROR CLEANUP] Failed: ${e.message}`);
     }
 }
 
@@ -2203,7 +2190,7 @@ async function executeSyncPass() {
             apiStats: apiSummary, updatedAt: FieldValue.serverTimestamp()
         }), { merge: true });
 
-        await mirrorToKevinDb();
+        await clearKevinPsnMirror();
         console.log(`[API STATS] ${apiStats.calls} calls, ${apiStats.failures} failed.`);
         console.log(`[SUCCESS] Engine v${ENGINE_VERSION} done. Players changed: ${changed}.`);
     } catch (err) {
