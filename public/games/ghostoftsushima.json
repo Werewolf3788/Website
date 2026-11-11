@@ -298,9 +298,9 @@
     },
     "legends_assassin_skills": {
       "quest_name": "Legends: Assassin Skill Tree",
-      "total_count": 12,
+      "total_count": 14,
       "region": "Legends Mode (Multiplayer)",
-      "description": "Stealth / single-target burst. Unlock: Unlocks at Class/Player Rank 22 (4th and final class). Starting gear: Stone Katana, Half Bow, Basic Charm, Kunai, Smoke Bomb. Check off each ability/perk as your Class Rank reaches its listed rank.",
+      "description": "Stealth / single-target burst. Unlock: Unlocks at Class/Player Rank 22 (4th and final class). Starting gear: Stone Katana, Half Bow, Basic Charm, Kunai, Smoke Bomb. Check off each ability/perk as your Class Rank reaches its listed rank. Each Perk row actually has a 4th node (asn_perk2_d, asn_perk3_d below) alongside the 3 rank-gated ones; the other 3 classes (Samurai/Hunter/Ronin) almost certainly have an equivalent hidden 4th node per Perk row too, but it hasn't been photographed/confirmed yet for them.",
       "items": [
         {
           "id": "asn_ult",
@@ -366,6 +366,13 @@
           "guide": "Adds 50% bonus assassination damage against staggered enemies."
         },
         {
+          "id": "asn_perk2_d",
+          "name": "Deft Hands",
+          "region": "Rank 16 (alt. choice)",
+          "location": "Perk 2",
+          "guide": "Critical Strikes and Assassinations reduce all Ghost Weapon cooldowns by 3 seconds. Appears to be a 4th, alternate option alongside Opportunist at the same Perk 2/Rank 16 slot."
+        },
+        {
           "id": "asn_perk3_a",
           "name": "Shadow Storm",
           "region": "Rank 5",
@@ -385,6 +392,13 @@
           "region": "Rank 18",
           "location": "Perk 3",
           "guide": "Increases the number of Legendary items you can equip by 1."
+        },
+        {
+          "id": "asn_perk3_d",
+          "name": "Overshadowed",
+          "region": "Unlocked via Gear Mastery Activations (0/3), not Class Rank",
+          "location": "Perk 3",
+          "guide": "Shadow Strike attacks do 100% extra damage. A 4th Perk 3 node, gated behind completing 3 Legendary gear Mastery Challenges instead of a rank requirement."
         }
       ]
     },
@@ -564,6 +578,21 @@
           "region": "",
           "location": "",
           "guide": ""
+        }
+      ]
+    },
+    "legends_legendary_gear": {
+      "quest_name": "Legends: Legendary Gear Catalog",
+      "total_count": 1,
+      "region": "Legends Mode (Multiplayer)",
+      "description": "Fixed, static data for Legendary-rarity gear (weapons, charms, masks). Each piece has a set of passive bonus stats plus a unique 'Mastery Challenge' - completing it is one of the 3 Gear Mastery Activations needed to unlock a class's 4th Perk-row node (see e.g. asn_perk3_d 'Overshadowed'). Equipped item level (110-120) and which pieces a player currently has equipped are personal save data and are intentionally not tracked here - only the item's own fixed stats are. This catalog is based on a single photographed item so far; there are many more Legendary items in the game not yet captured.",
+      "items": [
+        {
+          "id": "leg_charm_enjos_remorse",
+          "name": "Enjo's Remorse",
+          "region": "Legendary rarity - Charm slot",
+          "location": "Gear: Charm",
+          "guide": "Deal 15% bonus damage when at full health. Also grants +12.5% Melee Stagger Damage and +20% Counter Damage, plus a Health Increase (max health +15, partially illegible in source photo)."
         }
       ]
     },
