@@ -29,10 +29,94 @@
     "Southwark",
     "Tower Hamlets"
   ],
+  "borough_liberation": {
+    "description": "Each borough starts Oppressed under DedSec control by Albion/Zero-Day. Completing all of its listed Oppression Defiance objectives unlocks that borough's liberation mission; finishing the mission liberates the borough and grants the listed Skilled Operative recruit type plus Tech Points.",
+    "boroughs": [
+      {
+        "name": "City of Westminster",
+        "objectives": [
+          "Disrupt Propaganda",
+          "Rescue Freedom Fighter"
+        ],
+        "unlock_mission": "Like Clockwork",
+        "reward_operative": "Spy+"
+      },
+      {
+        "name": "City of London",
+        "objectives": [
+          "Sabotage",
+          "Photograph Evidence",
+          "Hack CtOS Hub"
+        ],
+        "unlock_mission": "Mind Games",
+        "reward_operative": "Beekeeper+"
+      },
+      {
+        "name": "Camden",
+        "objectives": [
+          "Collect Evidence",
+          "Disrupt Propaganda"
+        ],
+        "unlock_mission": "Clarion Call",
+        "reward_operative": "Hacker+"
+      },
+      {
+        "name": "Lambeth",
+        "objectives": [
+          "Digital Deface",
+          "Photograph Evidence",
+          "Disrupt Propaganda"
+        ],
+        "unlock_mission": "Wheels in Motion",
+        "reward_operative": "Drone Expert+"
+      },
+      {
+        "name": "Southwark",
+        "objectives": [
+          "Photograph Evidence",
+          "Sabotage",
+          "Digital Deface",
+          "Hack CtOS Hub"
+        ],
+        "unlock_mission": "Information Overload",
+        "reward_operative": "Anarchist+"
+      },
+      {
+        "name": "Islington & Hackney",
+        "objectives": [
+          "Sabotage",
+          "Neutralise VIP",
+          "Collect Evidence"
+        ],
+        "unlock_mission": "Fight or Flight Plan",
+        "reward_operative": "Football Hooligan+"
+      },
+      {
+        "name": "Nine Elms",
+        "objectives": [
+          "Sabotage",
+          "Neutralise VIP",
+          "Photograph Evidence"
+        ],
+        "unlock_mission": "The Black Hole of Battersea",
+        "reward_operative": "Professional Hitman+"
+      },
+      {
+        "name": "Tower Hamlets",
+        "objectives": [
+          "Neutralise VIP",
+          "Collect Evidence",
+          "Rescue Freedom Fighter"
+        ],
+        "unlock_mission": "Driven to Distraction",
+        "reward_operative": "Getaway Driver+"
+      }
+    ]
+  },
   "metrics": [
     {
       "id": "metric_1",
-      "icon": "\ud83d\udc8e",
+      "icon": "💎",
       "label": "Tech Points",
       "current": 0,
       "total": 130,
@@ -40,7 +124,7 @@
     },
     {
       "id": "metric_2",
-      "icon": "\ud83c\udffa",
+      "icon": "🏺",
       "label": "Relics",
       "current": 0,
       "total": 50,
@@ -48,7 +132,7 @@
     },
     {
       "id": "metric_3",
-      "icon": "\ud83c\udfad",
+      "icon": "🎭",
       "label": "Mask Boxes",
       "current": 0,
       "total": 38,
@@ -56,7 +140,7 @@
     },
     {
       "id": "metric_4",
-      "icon": "\ud83c\udfa7",
+      "icon": "🎧",
       "label": "Audio Logs",
       "current": 0,
       "total": 53,
@@ -64,7 +148,7 @@
     },
     {
       "id": "metric_5",
-      "icon": "\ud83d\udcc4",
+      "icon": "📄",
       "label": "Text Files / Data Points",
       "current": 0,
       "total": 194,
@@ -72,7 +156,7 @@
     },
     {
       "id": "metric_6",
-      "icon": "\ud83c\udfa8",
+      "icon": "🎨",
       "label": "Paste-Ups",
       "current": 0,
       "total": 47,
@@ -80,7 +164,7 @@
     },
     {
       "id": "metric_7",
-      "icon": "\ud83c\udf7a",
+      "icon": "🍺",
       "label": "Pub / Drink Locations",
       "current": 0,
       "total": 26,
@@ -88,7 +172,7 @@
     },
     {
       "id": "metric_8",
-      "icon": "\ud83c\udfaf",
+      "icon": "🎯",
       "label": "Darts Locations",
       "current": 0,
       "total": 21,
@@ -96,7 +180,7 @@
     },
     {
       "id": "metric_9",
-      "icon": "\u26bd",
+      "icon": "⚽",
       "label": "Kick-Up Locations",
       "current": 0,
       "total": 21,
@@ -104,7 +188,7 @@
     },
     {
       "id": "metric_10",
-      "icon": "\ud83e\udd4a",
+      "icon": "🥊",
       "label": "Bare Knuckle Arenas",
       "current": 0,
       "total": 5,
@@ -112,7 +196,7 @@
     },
     {
       "id": "metric_11",
-      "icon": "\ud83d\udcf7",
+      "icon": "📷",
       "label": "Bagley Memories",
       "current": 0,
       "total": 9,
@@ -120,7 +204,7 @@
     },
     {
       "id": "metric_12",
-      "icon": "\ud83c\udfda\ufe0f",
+      "icon": "🏚️",
       "label": "Royal Treatment Mansions",
       "current": 0,
       "total": 3,
@@ -128,7 +212,7 @@
     },
     {
       "id": "metric_13",
-      "icon": "\ud83d\udee0\ufe0f",
+      "icon": "🛠️",
       "label": "Tech Upgrades Unlocked",
       "current": 0,
       "total": 24,
@@ -1337,7 +1421,7 @@
           "name": "The Ascent",
           "region": "Lambeth",
           "location": "The Ascent",
-          "guide": "In a caf\u00e9 on the roof. Reach it with the drone."
+          "guide": "In a café on the roof. Reach it with the drone."
         },
         {
           "id": "techpoint_lambeth_13",
@@ -1690,7 +1774,7 @@
           "name": "1984 (fragment)",
           "region": "Lambeth",
           "location": "European Processing Centre",
-          "guide": "Reach the complex gardens and enter the ventilation shaft. It leads to a locked room with another vent \u2014 follow it to the relic."
+          "guide": "Reach the complex gardens and enter the ventilation shaft. It leads to a locked room with another vent — follow it to the relic."
         },
         {
           "id": "relic_lambeth_09",
@@ -1893,7 +1977,7 @@
           "name": "Cocaine Vial",
           "region": "Nine Elms",
           "location": "Nine Elms docks",
-          "guide": "Heavily guarded area \u2014 hide your character and switch to a spiderbot. Move forward along the left side; behind one of the objects is a ventilation duct. Open the vent and crawl to the end, where a suitcase holds the vial."
+          "guide": "Heavily guarded area — hide your character and switch to a spiderbot. Move forward along the left side; behind one of the objects is a ventilation duct. Open the vent and crawl to the end, where a suitcase holds the vial."
         },
         {
           "id": "relic_southwark_01",
@@ -3004,7 +3088,7 @@
       "quest_giver_location": "",
       "total_count": 26,
       "region": "London-wide",
-      "description": "Local pubs where you can take part in the 'Get Pissed' drinking activity. 21 of the 26 are the same pubs that also have Darts (listed below); the other 5 are drink-only spots not yet logged here \u2014 add them as you find them.",
+      "description": "Local pubs where you can take part in the 'Get Pissed' drinking activity. 21 of the 26 are the same pubs that also have Darts (listed below); the other 5 are drink-only spots not yet logged here — add them as you find them.",
       "items": [
         {
           "id": "pub_city_of_westminster_01",
@@ -3662,13 +3746,13 @@
       "description": "Spend Tech Points in the Tech menu to unlock all Gadgets, Upgrades, Weapons, and Hacks. Required for the Fully Kitted trophy.",
       "wallet_label": "Tech Points",
       "priority_order": [
-        "Spiderbot Level 2 (Infiltrator or Combat) \u2014 the single most useful early upgrade; lets your drone fight back or dive into vents solo.",
-        "Deep Profiler \u2014 tags every nearby NPC's items/skills through walls, which makes recruiting and casing targets much faster.",
-        "AR Shroud \u2014 hides your wanted/suspicious icon from casual NPCs so you can move around hot zones without being reported.",
-        "Gun Jam \u2014 remotely jams an enemy's weapon; great panic button against guards and snipers.",
-        "Chase Drone Hacks (all 3 tiers) and Turret Hacks (all 3 tiers) \u2014 turn the game's own pursuit drones and turrets into tools that fight for you instead of against you.",
-        "The three Deactivation upgrades (Chase Drone, Turret, Combat Drone) only unlock once you've turned boroughs Defiant (2 / 4 / 6 boroughs) \u2014 Chase Drone Deactivation also costs 10 TP once unlocked, the other two are free once unlocked.",
-        "All three DedSec weapon upgrades (MP9 SMG, LTL SG, DedSec Grenade Launcher) are locked behind turning just 1 borough Defiant \u2014 only the starting LTL 68P Pistol is available with no Defiance requirement."
+        "Spiderbot Level 2 (Infiltrator or Combat) — the single most useful early upgrade; lets your drone fight back or dive into vents solo.",
+        "Deep Profiler — tags every nearby NPC's items/skills through walls, which makes recruiting and casing targets much faster.",
+        "AR Shroud — hides your wanted/suspicious icon from casual NPCs so you can move around hot zones without being reported.",
+        "Gun Jam — remotely jams an enemy's weapon; great panic button against guards and snipers.",
+        "Chase Drone Hacks (all 3 tiers) and Turret Hacks (all 3 tiers) — turn the game's own pursuit drones and turrets into tools that fight for you instead of against you.",
+        "The three Deactivation upgrades (Chase Drone, Turret, Combat Drone) only unlock once you've turned boroughs Defiant (2 / 4 / 6 boroughs) — Chase Drone Deactivation also costs 10 TP once unlocked, the other two are free once unlocked.",
+        "All three DedSec weapon upgrades (MP9 SMG, LTL SG, DedSec Grenade Launcher) are locked behind turning just 1 borough Defiant — only the starting LTL 68P Pistol is available with no Defiance requirement."
       ],
       "build_guides": [
         {
@@ -3703,7 +3787,7 @@
             "Riot Drone Hacks",
             "Parcel Fox Drone Hacks"
           ],
-          "note": "Once hacked, these let you ride or command drones/turrets that were previously chasing you \u2014 strongest once you've unlocked several hack tiers."
+          "note": "Once hacked, these let you ride or command drones/turrets that were previously chasing you — strongest once you've unlocked several hack tiers."
         }
       ],
       "items": [
@@ -4118,8 +4202,8 @@
     }
   },
   "tips": [
-    "Liberate boroughs first \u2014 completing borough uprisings reveals tech points and key activities directly on the map, making them much easier to track down.",
-    "Use an operative with a Cargo Drone (or Wrench) for tech points and text files on high rooftops or hard-to-reach ledges \u2014 saves a lot of time versus climbing.",
+    "Liberate boroughs first — completing borough uprisings reveals tech points and key activities directly on the map, making them much easier to track down.",
+    "Use an operative with a Cargo Drone (or Wrench) for tech points and text files on high rooftops or hard-to-reach ledges — saves a lot of time versus climbing.",
     "Community interactive maps (MapGenie's Watch Dogs Legion map, Guides for Gamers' Watch Dogs Legion interactive maps) can be used alongside this tracker to visually cross-check progress."
   ]
 }
