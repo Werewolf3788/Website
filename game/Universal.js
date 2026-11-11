@@ -319,7 +319,8 @@ window.appState = {
                             category: cItem.category || '',
                             levels: cItem.levels != null ? cItem.levels : null,
                             unlock_requirement: cItem.unlock_requirement || '',
-                            level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null
+                            level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null,
+                            tier_notes: Array.isArray(cItem.tier_notes) ? cItem.tier_notes : null
                         };
                     }
                 });
