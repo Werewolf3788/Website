@@ -32,7 +32,7 @@
       "icon": "🏴",
       "label": "Outposts",
       "current": 0,
-      "total": 21,
+      "total": 20,
       "step": 1
     },
     {
@@ -40,7 +40,7 @@
       "icon": "🔥",
       "label": "Cult Property",
       "current": 0,
-      "total": 48,
+      "total": 42,
       "step": 1
     },
     {
@@ -48,7 +48,7 @@
       "icon": "📦",
       "label": "Prepper Stashes",
       "current": 0,
-      "total": 27,
+      "total": 28,
       "step": 1
     },
     {
@@ -64,7 +64,7 @@
       "icon": "🗂️",
       "label": "Collectibles",
       "current": 0,
-      "total": 58,
+      "total": 68,
       "step": 1
     }
   ],
