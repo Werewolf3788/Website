@@ -896,106 +896,112 @@
         "personal_letters": [
           {
             "id": "se5_let_m8_01",
-            "name": "Your Man Charlie",
-            "location": "Ruined town house first-floor table."
+            "name": "It's Not Over Yet",
+            "location": "Hotel ground floor, southeast side room, on a table left of a wall hole."
           },
           {
             "id": "se5_let_m8_02",
-            "name": "Orders To Stand Down",
-            "location": "Hotel lobby counter."
+            "name": "Clean Out the Sewer",
+            "location": "Inside the sewers, behind boxes to the left after the cutscene."
           },
           {
             "id": "se5_let_m8_03",
-            "name": "He Is Not The One",
-            "location": "Church altar table."
+            "name": "He's Not the Sharpest",
+            "location": "Theatre balcony, in a locked box behind an armoured gun (needs a crowbar)."
           },
           {
             "id": "se5_let_m8_04",
-            "name": "Clean Exit",
-            "location": "Submarine pen dry dock walkway desk."
+            "name": "Your Man Talked",
+            "location": "Bombed building in the south-central area, on a table behind a locked door."
           },
           {
             "id": "se5_let_m8_05",
-            "name": "Final Warning",
-            "location": "Submarine pen control office."
+            "name": "Möller Is Moving",
+            "location": "Sea View Offices, ground-floor back room."
           }
         ],
         "classified_documents": [
           {
             "id": "se5_doc_m8_01",
-            "name": "Sub Pen Repairs",
-            "location": "Sub pen workshop shelf."
+            "name": "Secure Radio Lines",
+            "location": "Level start, near a restaurant with three Nazi troops, on a wooden box."
           },
           {
             "id": "se5_doc_m8_02",
-            "name": "Harbour Clearances",
-            "location": "Harbor master dispatch office safe."
+            "name": "Broken Resistance",
+            "location": "Past the boarded doorway on the sewer route, on a box ahead."
           },
           {
             "id": "se5_doc_m8_03",
-            "name": "U-Boat Manifest",
-            "location": "Dry dock submarine catwalk table."
+            "name": "Resistance Report",
+            "location": "Western bombed Interrogation Room building, basement table reached via tunnel."
           },
           {
             "id": "se5_doc_m8_04",
-            "name": "Kraken Departs",
-            "location": "Bunker command center central plotting map table."
+            "name": "Flagship Fuel Risks",
+            "location": "Hotel second-floor locked room, in a safe (code is on Personal Letter #1, \"It's Not Over Yet\")."
+          },
+          {
+            "id": "se5_doc_m8_05",
+            "name": "Priority Pick Up",
+            "location": "Metro Du Café top floor attic, on the floor after climbing through a roof gap."
           }
         ],
         "hidden_items": [
           {
             "id": "se5_item_m8_01",
-            "name": "Stolen Painting",
-            "location": "Art collector apartment wall safe."
+            "name": "Hidden Tantō",
+            "location": "Chest in the sewer pump room, behind a locked door."
           },
           {
             "id": "se5_item_m8_02",
-            "name": "Kriegsmarine Dagger",
-            "location": "U-boat officer quarters bunk."
+            "name": "I-400 V2 Hangar",
+            "location": "Second floor, north of the map."
           },
           {
             "id": "se5_item_m8_03",
-            "name": "Yoshikawa's Codebook",
-            "location": "Yoshikawa private office desk."
+            "name": "An 'Original' Adolf",
+            "location": "Church, next to a sleeping bag."
           }
         ],
         "stone_eagles": [
           {
             "id": "se5_eagle_m8_01",
             "name": "Stone Eagle 1",
-            "location": "Destroyed church pediment arch."
+            "location": "Far west of the map, visible from outside Sea View Offices."
           },
           {
             "id": "se5_eagle_m8_02",
             "name": "Stone Eagle 2",
-            "location": "Harbor entrance lighthouse stone trim."
+            "location": "Far east of the map, left of two silos, visible from the road east of the sewer entrance."
           },
           {
             "id": "se5_eagle_m8_03",
             "name": "Stone Eagle 3",
-            "location": "Submarine pen blast door roof crest."
+            "location": "Atop the large building where Yoshikawa is targeted, northwest of the map."
           }
         ],
         "workbenches": [
           {
+            "id": "se5_wb_m8_rifle",
+            "name": "Rifle Workbench",
+            "location": "Sewer armoury, in the first Nazi encounter area."
+          },
+          {
             "id": "se5_wb_m8_smg",
             "name": "SMG Workbench",
-            "location": "Town square resistance cache."
+            "location": "Northwest resistance armoury, upstairs."
           },
           {
             "id": "se5_wb_m8_pistol",
             "name": "Pistol Workbench",
-            "location": "Sub pen maintenance shop."
-          },
-          {
-            "id": "se5_wb_m8_rifle",
-            "name": "Rifle Workbench",
-            "location": "Torpedo staging room locker."
+            "location": "Church crypt area, northwest corner."
           }
         ]
       },
       "date": "June 13th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m08-rubble-and-ruin.jpg"
+      "image_url": "/public/games/sniperelite5/images/missions/m08-rubble-and-ruin.jpg",
+      "collectibles_source": "pushsquare.com (Rubble and Ruin: All Collectibles). Replaces earlier placeholder names/locations that didn't match any guide (classified_documents was also short by 1: 4 instead of the correct 5, which is why the file's classified_documents total was 38 instead of the 39 target)."
     },
     "mission_9": {
       "number": 9,
