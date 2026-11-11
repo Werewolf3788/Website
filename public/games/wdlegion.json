@@ -1,11 +1,11 @@
 {
   "game": "Watch Dogs: Legion",
   "gameId": "WatchDogsLegion",
-  "commId": "NPWR16685_00",
+  "commId": "NPWR21033_00",
   "image_url": "",
   "platforms": {
     "playstation": {
-      "commId": "NPWR16685_00"
+      "commId": "NPWR21033_00"
     },
     "steam": {
       "appId": "",
