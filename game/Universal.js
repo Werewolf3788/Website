@@ -1295,27 +1295,24 @@ function applyFriendMarks() {
     });
 }
 
-// Section 8: Dynamic Poster Art Lookup via /psn/games
+// Section 8: Dynamic Poster Art Lookup via Ray's PSN Firestore catalog (games/{key})
+// NOTE: this used to read an RTDB node at /psn/games, but psn.js has never written
+// a games catalog to RTDB -- it only ever saves it to Firestore (meta/gameIndex ->
+// games/{key}). That RTDB read was silently failing and quietly falling back to a
+// stale copy that used to be mirrored into entertainment-71888; once that mirror
+// was removed (PSN data now lives only in Ray's project, per design), the fallback
+// had nothing left to return. Reading the real Firestore catalog directly fixes it.
 async function searchGamePosterArt(commId, gameName) {
-    if (!rtdb) return;
-
     try {
         await psnReady;
-        let snap = psnRtdb ? await psnRtdb.ref('/psn/games').once('value').catch(() => null) : null;
-        if (!snap || !snap.val()) snap = await rtdb.ref('/psn/games').once('value');
-        const psnGames = snap.val();
-        if (!psnGames || typeof psnGames !== 'object') return;
-
         let matchedPoster = null;
-        for (const [titleId, gObj] of Object.entries(psnGames)) {
-            if (!gObj) continue;
-            const matchesCommId = commId && (gObj.commId === commId || gObj.npCommunicationId === commId);
-            const matchesName = gameName && gObj.name && gObj.name.toLowerCase().trim() === gameName.toLowerCase().trim();
 
-            if ((matchesCommId || matchesName) && gObj.posterArt) {
-                matchedPoster = gObj.posterArt;
-                break;
-            }
+        const sk = commId ? await loadPsnTrophySkeleton(commId) : null;
+        if (sk && sk.posterArt) {
+            matchedPoster = sk.posterArt;
+        } else if (gameName && window.__psnFs) {
+            const q = await window.__psnFs.collection('games').where('name', '==', gameName).limit(1).get();
+            if (!q.empty) matchedPoster = q.docs[0].data().posterArt || null;
         }
 
         if (matchedPoster && matchedPoster !== LAST_APPLIED_POSTER) {
