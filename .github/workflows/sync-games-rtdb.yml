@@ -92,6 +92,7 @@ jobs:
           failed_files = []
           catalog_index = {}
           success_count = 0
+          valid_keys = set()
 
           for filepath in json_files:
               filename = os.path.basename(filepath)
@@ -99,6 +100,8 @@ jobs:
 
               if game_key in ["manifest", "catalog"]:
                   continue
+
+              valid_keys.add(game_key)
 
               try:
                   with open(filepath, 'r', encoding='utf-8') as f:
@@ -152,6 +155,33 @@ jobs:
               except Exception as net_err:
                   print(f"❌ Upload Error on {filename}: {net_err}")
                   failed_files.append((filename, f"Error: {net_err}"))
+
+          # Remove any /games/{key} left over from a renamed or deleted file (e.g. the
+          # WOTH2 -> woth2 rename left the old uppercase key behind forever, since this
+          # step only ever PUT the current files and never looked at what was already
+          # there). Left in place, a rename shows up on the site as a duplicate game pill
+          # instead of replacing the old entry.
+          try:
+              shallow_q = (AUTH + "&shallow=true") if AUTH else "?shallow=true"
+              list_url = "https://entertainment-71888-default-rtdb.firebaseio.com/games.json" + shallow_q
+              with urllib.request.urlopen(list_url) as resp:
+                  existing_keys = json.loads(resp.read().decode('utf-8')) or {}
+              orphans = [k for k in existing_keys.keys() if k not in valid_keys]
+              for key in orphans:
+                  del_url = f"https://entertainment-71888-default-rtdb.firebaseio.com/games/{key}.json{AUTH}"
+                  req_del = urllib.request.Request(del_url, method="DELETE")
+                  try:
+                      with urllib.request.urlopen(req_del) as del_resp:
+                          if del_resp.status == 200:
+                              print(f"🗑️ Removed orphaned /games/{key} (no matching file in public/games).")
+                          else:
+                              print(f"⚠️ Failed to remove orphaned /games/{key}: HTTP {del_resp.status}")
+                  except Exception as del_err:
+                      print(f"⚠️ Failed to remove orphaned /games/{key}: {del_err}")
+              if not orphans:
+                  print("No orphaned /games keys to remove.")
+          except Exception as list_err:
+              print(f"⚠️ Could not list /games for orphan cleanup: {list_err}")
 
           if catalog_index:
               catalog_payload = json.dumps(catalog_index).encode('utf-8')
