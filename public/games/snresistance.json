@@ -2723,9 +2723,10 @@
         "title": "La Voix Du Maquis",
         "unlock_poster": "item_m7_02",
         "target_score": null,
-        "briefing": null,
+        "briefing": "Stealth infiltration trial. Slip into the vineyard facility and stop the Kleine Blume nerve-agent shipment without raising the alarm.",
         "image_url": "",
-        "source": "La Voix Du Maquis poster in Mission 7 (user + MapMaster)"
+        "source": "La Voix Du Maquis poster in Mission 7 (user + MapMaster)",
+        "note": "target_score not sourced: sibling missions run 15000 (M2) to 30000 (M8) but no confirmed value was found for M7's 'La Voix Du Maquis' specifically; interpolating would be a guess, not a sourced figure, so it's left null."
       },
       "medals": {
         "objective": [
@@ -2800,9 +2801,9 @@
           {
             "id": "med_longshot_mission_7_authentic_long_shot",
             "name": "Mission 7 Authentic Long Shot",
-            "description": "Take a 200 meters shot in Lock, Stock and Barrels, in authentic difficulty.",
-            "goal": 200,
-            "goal_tier": null,
+            "description": "Take a 350 meters shot in Lock, Stock and Barrels, in authentic difficulty.",
+            "goal": 350,
+            "goal_tier": "gold",
             "tiers": {
               "bronze": null,
               "silver": null,
@@ -2810,15 +2811,15 @@
             },
             "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_7_authentic_long_shot.jpg",
             "mission_number": 7,
-            "distance_m": 200,
+            "distance_m": 350,
             "authentic": true,
-            "notes": "Distance not confirmed yet (the normal Long Shot is 350 m).",
+            "notes": "Inferred, not directly sourced for Mission 7: missions 2-6 all have identical normal/Authentic Gold Medal distances (430/430, 200/200, 400/400, 485/485, 400/400), and the normal M7 Long Shot is confirmed at 350m, so 350m is the likely Authentic value too. No direct source for M7's Authentic distance was found.",
             "unit": "m",
             "best_shot": true,
             "tier_goals": {
               "bronze": null,
               "silver": null,
-              "gold": 200
+              "gold": 350
             }
           }
         ],
@@ -7941,7 +7942,61 @@
         "unlocked_by_default": true
       }
     ],
-    "pistolsNote": "In-game pistol list order: Star Ruby, Hi-Power 9MM, Modèle 1935A, Welrod, Nagant M1895, M1912. Locks shown only on Nagant M1895 and M1912 on a rank-24 save."
+    "pistolsNote": "In-game pistol list order: Star Ruby, Hi-Power 9MM, Modèle 1935A, Welrod, Nagant M1895, M1912. Locks shown only on Nagant M1895 and M1912 on a rank-24 save.",
+    "secondaries": [
+      {
+        "name": "UD-42",
+        "description": "A compact Spanish-made submachine gun chambered in 9mm, unlocked from the start of the game.",
+        "unlockRequirement": "Unlocked by default.",
+        "source": "deltiasgaming.com (How to Unlock All Secondary Weapons) + gamingbolt.com (How to Unlock All Weapons and Master Each Weapon)"
+      },
+      {
+        "name": "Model 1907",
+        "description": "A self-loading carbine-style secondary chambered for a rifle-caliber round, giving it more punch than the other secondaries at the cost of control.",
+        "unlockRequirement": "Unconfirmed: deltiasgaming.com lists it as unlocked by default, but gamingbolt.com lists it as unlocked via the Kill Challenge in Mission 3: Sonderzüge Sabotage.",
+        "note": "Sources disagree on the unlock point; not yet confirmed from an in-game screenshot.",
+        "source": "deltiasgaming.com (How to Unlock All Secondary Weapons) + gamingbolt.com (How to Unlock All Weapons and Master Each Weapon)"
+      },
+      {
+        "name": "MAS 38",
+        "description": "A compact French submachine gun chambered in 7.65mm Long, issued to French forces and favored by Resistance fighters for its light weight.",
+        "unlockRequirement": "Unconfirmed: deltiasgaming.com says completing Mission 2: Dead Drop, but gamingbolt.com says completing Mission 5: Devil's Cauldron.",
+        "note": "Sources disagree on the unlock mission; not yet confirmed from an in-game screenshot.",
+        "source": "deltiasgaming.com (How to Unlock All Secondary Weapons) + gamingbolt.com (How to Unlock All Weapons and Master Each Weapon)"
+      },
+      {
+        "name": "Stengun MK2",
+        "description": "The mass-produced British Sten Mk II submachine gun in 9mm, cheap to manufacture and widely supplied to resistance fighters.",
+        "unlockRequirement": "Complete Mission 5: Devil's Cauldron.",
+        "source": "deltiasgaming.com (How to Unlock All Secondary Weapons)"
+      },
+      {
+        "name": "Trench Gun",
+        "description": "A pump-action shotgun built for close-quarters combat, with the highest per-shot damage of the secondaries but a small magazine.",
+        "unlockRequirement": "Complete the Kill Challenge in Mission 5: Devil's Cauldron.",
+        "source": "deltiasgaming.com (How to Unlock All Secondary Weapons) + gamingbolt.com (How to Unlock All Weapons and Master Each Weapon)"
+      },
+      {
+        "name": "ERMA .36",
+        "description": "A German-made ERMA EMP 36 submachine gun; widely regarded as the best-rounded secondary weapon in the game.",
+        "unlockRequirement": "Complete a Mission 6: Assault on Fort Rouge challenge.",
+        "note": "Sources disagree on whether this is the Skill Challenge (deltiasgaming.com) or the Kill Challenge (gamingbolt.com).",
+        "source": "deltiasgaming.com (How to Unlock All Secondary Weapons) + gamingbolt.com (How to Unlock All Weapons and Master Each Weapon)"
+      },
+      {
+        "name": "M1918 BAR",
+        "description": "The American Browning Automatic Rifle M1918, a heavy automatic rifle offering sustained fire at the cost of mobility.",
+        "unlockRequirement": "Complete the Kill Challenge in Mission 7: Lock, Stock and Barrels.",
+        "source": "deltiasgaming.com (How to Unlock All Secondary Weapons) + gamingbolt.com (How to Unlock All Weapons and Master Each Weapon)"
+      },
+      {
+        "name": "SIG MKMS",
+        "description": "A rare Swiss-made SIG MKMS submachine gun with a high fire rate, offset by heavy vertical recoil that makes it hard to control.",
+        "unlockRequirement": "Complete Mission 7: Lock, Stock and Barrels.",
+        "source": "deltiasgaming.com (How to Unlock All Secondary Weapons) + gamingbolt.com (How to Unlock All Weapons and Master Each Weapon)"
+      }
+    ],
+    "secondariesNote": "From outside guides, not in-game screenshots, so no power/rateOfFire/control/mobility stat bars or detailedStats are included (unlike weapons.rifles/weapons.pistols). Unlock requirements conflict between sources for MAS 38, Model 1907, and the ERMA .36 challenge type; flagged per-weapon above."
   },
   "weapon_roster": {
     "note": "Full weapon list from outside guides (not from in-game screenshots). Rifles with full data are under weapons.rifles.",
