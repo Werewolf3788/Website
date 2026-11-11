@@ -32,7 +32,7 @@
   "metrics": [
     {
       "id": "metric_1",
-      "icon": "💎",
+      "icon": "\ud83d\udc8e",
       "label": "Tech Points",
       "current": 0,
       "total": 130,
@@ -40,7 +40,7 @@
     },
     {
       "id": "metric_2",
-      "icon": "🏺",
+      "icon": "\ud83c\udffa",
       "label": "Relics",
       "current": 0,
       "total": 50,
@@ -48,7 +48,7 @@
     },
     {
       "id": "metric_3",
-      "icon": "🎭",
+      "icon": "\ud83c\udfad",
       "label": "Mask Boxes",
       "current": 0,
       "total": 38,
@@ -56,7 +56,7 @@
     },
     {
       "id": "metric_4",
-      "icon": "🎧",
+      "icon": "\ud83c\udfa7",
       "label": "Audio Logs",
       "current": 0,
       "total": 53,
@@ -64,7 +64,7 @@
     },
     {
       "id": "metric_5",
-      "icon": "📄",
+      "icon": "\ud83d\udcc4",
       "label": "Text Files / Data Points",
       "current": 0,
       "total": 194,
@@ -72,7 +72,7 @@
     },
     {
       "id": "metric_6",
-      "icon": "🎨",
+      "icon": "\ud83c\udfa8",
       "label": "Paste-Ups",
       "current": 0,
       "total": 47,
@@ -80,7 +80,7 @@
     },
     {
       "id": "metric_7",
-      "icon": "🍺",
+      "icon": "\ud83c\udf7a",
       "label": "Pub / Drink Locations",
       "current": 0,
       "total": 26,
@@ -88,7 +88,7 @@
     },
     {
       "id": "metric_8",
-      "icon": "🎯",
+      "icon": "\ud83c\udfaf",
       "label": "Darts Locations",
       "current": 0,
       "total": 21,
@@ -96,7 +96,7 @@
     },
     {
       "id": "metric_9",
-      "icon": "⚽",
+      "icon": "\u26bd",
       "label": "Kick-Up Locations",
       "current": 0,
       "total": 21,
@@ -104,7 +104,7 @@
     },
     {
       "id": "metric_10",
-      "icon": "🥊",
+      "icon": "\ud83e\udd4a",
       "label": "Bare Knuckle Arenas",
       "current": 0,
       "total": 5,
@@ -112,7 +112,7 @@
     },
     {
       "id": "metric_11",
-      "icon": "📷",
+      "icon": "\ud83d\udcf7",
       "label": "Bagley Memories",
       "current": 0,
       "total": 9,
@@ -120,7 +120,7 @@
     },
     {
       "id": "metric_12",
-      "icon": "🏚️",
+      "icon": "\ud83c\udfda\ufe0f",
       "label": "Royal Treatment Mansions",
       "current": 0,
       "total": 3,
@@ -128,7 +128,7 @@
     },
     {
       "id": "metric_13",
-      "icon": "🛠️",
+      "icon": "\ud83d\udee0\ufe0f",
       "label": "Tech Upgrades Unlocked",
       "current": 0,
       "total": 24,
@@ -1337,7 +1337,7 @@
           "name": "The Ascent",
           "region": "Lambeth",
           "location": "The Ascent",
-          "guide": "In a café on the roof. Reach it with the drone."
+          "guide": "In a caf\u00e9 on the roof. Reach it with the drone."
         },
         {
           "id": "techpoint_lambeth_13",
@@ -1583,7 +1583,7 @@
       "quest_name": "",
       "quest_giver": "",
       "quest_giver_location": "",
-      "total_count": 49,
+      "total_count": 51,
       "region": "London-wide",
       "description": "Historical or pop-culture artifacts hidden around the city. Collecting 15 unlocks the 'Magpie' trophy/achievement. Many are also tied to story progress.",
       "items": [
@@ -1690,7 +1690,7 @@
           "name": "1984 (fragment)",
           "region": "Lambeth",
           "location": "European Processing Centre",
-          "guide": "Reach the complex gardens and enter the ventilation shaft. It leads to a locked room with another vent — follow it to the relic."
+          "guide": "Reach the complex gardens and enter the ventilation shaft. It leads to a locked room with another vent \u2014 follow it to the relic."
         },
         {
           "id": "relic_lambeth_09",
@@ -1893,7 +1893,7 @@
           "name": "Cocaine Vial",
           "region": "Nine Elms",
           "location": "Nine Elms docks",
-          "guide": "Heavily guarded area — hide your character and switch to a spiderbot. Move forward along the left side; behind one of the objects is a ventilation duct. Open the vent and crawl to the end, where a suitcase holds the vial."
+          "guide": "Heavily guarded area \u2014 hide your character and switch to a spiderbot. Move forward along the left side; behind one of the objects is a ventilation duct. Open the vent and crawl to the end, where a suitcase holds the vial."
         },
         {
           "id": "relic_southwark_01",
@@ -1929,6 +1929,18 @@
           "region": "Southwark",
           "location": "Civil Aviation Traffic Office",
           "guide": "On the roof. Reach it by drone."
+        },
+        {
+          "id": "relic_damaged_spiderbot",
+          "name": "Damaged Spiderbot",
+          "region": "City of Westminster",
+          "guide": "Obtained automatically during the story mission \"Digging Up the Past\" (DedSec Chapter) at New Scotland Yard."
+        },
+        {
+          "id": "relic_damaged_spiderbot_leg",
+          "name": "Damaged Spiderbot Leg",
+          "region": "City of Westminster",
+          "guide": "Obtained automatically during the story mission \"Digging Up the Past\" (DedSec Chapter) at the TOAN Attack Site underground carpark."
         }
       ]
     },
@@ -2544,6 +2556,12 @@
           "region": "Varies by borough",
           "location": "World of Tomorrow",
           "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_kaitlin_laus_log_01",
+          "name": "Kaitlin Lau's Log #1",
+          "region": "City of Westminster",
+          "guide": "Obtained automatically during the story mission \"Digging Up the Past\" (DedSec Chapter) by hacking the tablet at the TOAN Attack Site."
         }
       ]
     },
@@ -2551,10 +2569,95 @@
       "quest_name": "",
       "quest_giver": "",
       "quest_giver_location": "",
-      "total_count": 194,
+      "total_count": 195,
       "region": "London-wide",
       "description": "Written documents and data points / lore items found in various locations.",
-      "items": []
+      "items": [
+        {
+          "id": "text_file_epc_01",
+          "name": "EPC #1",
+          "region": "Lambeth",
+          "guide": "Found at the European Processing Centre (EPC), an Albion immigration detention site in Lambeth tied to the Mary Kelley storyline."
+        },
+        {
+          "id": "text_file_epc_02",
+          "name": "EPC #2",
+          "region": "Lambeth",
+          "guide": "Found at the European Processing Centre (EPC) in Lambeth, alongside EPC #1 and #3."
+        },
+        {
+          "id": "text_file_epc_03",
+          "name": "EPC #3",
+          "region": "Lambeth",
+          "guide": "Found at the European Processing Centre (EPC) in Lambeth, alongside EPC #1 and #2."
+        },
+        {
+          "id": "text_file_parcel_fox_centre_01",
+          "name": "Parcel Fox Centre #1",
+          "region": "Nine Elms",
+          "guide": "Found at the Parcel Fox Distribution Centre, an Albion-restricted delivery hub in Nine Elms."
+        },
+        {
+          "id": "text_file_profile_dalton_wolf",
+          "name": "Profile: Dalton Wolf",
+          "region": "City of Westminster",
+          "guide": "Found near the Houses of Parliament, tied to prologue operative Dalton Wolfe."
+        },
+        {
+          "id": "text_file_inspector_laus_file",
+          "name": "Inspector Lau's File",
+          "region": "Southwark",
+          "guide": "Obtained automatically during the story mission \"Clan Kelley's New Export\" (Kelley Chapter) when retrieving Inspector Kaitlin Lau's files at Southwark Incinerator."
+        },
+        {
+          "id": "text_file_southwark_incinerator_01",
+          "name": "Southwark Incinerator #1",
+          "region": "Southwark",
+          "guide": "Found at Southwark Incinerator."
+        },
+        {
+          "id": "text_file_royal_courts_02",
+          "name": "Royal Courts #2",
+          "region": "Camden",
+          "guide": "Found at the Royal Courts of Justice in Camden."
+        },
+        {
+          "id": "text_file_new_scotland_yard_02",
+          "name": "New Scotland Yard #2",
+          "region": "City of Westminster",
+          "guide": "Found at New Scotland Yard."
+        },
+        {
+          "id": "text_file_new_scotland_yard_03",
+          "name": "New Scotland Yard #3",
+          "region": "City of Westminster",
+          "guide": "Found at New Scotland Yard."
+        },
+        {
+          "id": "text_file_southwark_auto",
+          "name": "Southwark Auto",
+          "region": "Southwark",
+          "guide": "Found at Southwark Auto Conversions."
+        },
+        {
+          "id": "text_file_st_thomas_hospital_02",
+          "name": "St. Thomas Hospital #2",
+          "region": "Lambeth",
+          "guide": "Found at St. Thomas' Hospital."
+        },
+        {
+          "id": "text_file_parliament_square_01",
+          "name": "Parliament Square #1",
+          "region": "City of Westminster",
+          "guide": "Found at Parliament Square Gardens."
+        },
+        {
+          "id": "text_file_parliament_square_02",
+          "name": "Parliament Square #2",
+          "region": "City of Westminster",
+          "guide": "Found at Parliament Square Gardens."
+        }
+      ]
     },
     "paste_ups": {
       "quest_name": "",
@@ -2901,7 +3004,7 @@
       "quest_giver_location": "",
       "total_count": 26,
       "region": "London-wide",
-      "description": "Local pubs where you can take part in the 'Get Pissed' drinking activity. 21 of the 26 are the same pubs that also have Darts (listed below); the other 5 are drink-only spots not yet logged here — add them as you find them.",
+      "description": "Local pubs where you can take part in the 'Get Pissed' drinking activity. 21 of the 26 are the same pubs that also have Darts (listed below); the other 5 are drink-only spots not yet logged here \u2014 add them as you find them.",
       "items": [
         {
           "id": "pub_city_of_westminster_01",
@@ -3559,13 +3662,13 @@
       "description": "Spend Tech Points in the Tech menu to unlock all Gadgets, Upgrades, Weapons, and Hacks. Required for the Fully Kitted trophy.",
       "wallet_label": "Tech Points",
       "priority_order": [
-        "Spiderbot Level 2 (Infiltrator or Combat) — the single most useful early upgrade; lets your drone fight back or dive into vents solo.",
-        "Deep Profiler — tags every nearby NPC's items/skills through walls, which makes recruiting and casing targets much faster.",
-        "AR Shroud — hides your wanted/suspicious icon from casual NPCs so you can move around hot zones without being reported.",
-        "Gun Jam — remotely jams an enemy's weapon; great panic button against guards and snipers.",
-        "Chase Drone Hacks (all 3 tiers) and Turret Hacks (all 3 tiers) — turn the game's own pursuit drones and turrets into tools that fight for you instead of against you.",
-        "The three Deactivation upgrades (Chase Drone, Turret, Combat Drone) only unlock once you've turned boroughs Defiant (2 / 4 / 6 boroughs) — Chase Drone Deactivation also costs 10 TP once unlocked, the other two are free once unlocked.",
-        "All three DedSec weapon upgrades (MP9 SMG, LTL SG, DedSec Grenade Launcher) are locked behind turning just 1 borough Defiant — only the starting LTL 68P Pistol is available with no Defiance requirement."
+        "Spiderbot Level 2 (Infiltrator or Combat) \u2014 the single most useful early upgrade; lets your drone fight back or dive into vents solo.",
+        "Deep Profiler \u2014 tags every nearby NPC's items/skills through walls, which makes recruiting and casing targets much faster.",
+        "AR Shroud \u2014 hides your wanted/suspicious icon from casual NPCs so you can move around hot zones without being reported.",
+        "Gun Jam \u2014 remotely jams an enemy's weapon; great panic button against guards and snipers.",
+        "Chase Drone Hacks (all 3 tiers) and Turret Hacks (all 3 tiers) \u2014 turn the game's own pursuit drones and turrets into tools that fight for you instead of against you.",
+        "The three Deactivation upgrades (Chase Drone, Turret, Combat Drone) only unlock once you've turned boroughs Defiant (2 / 4 / 6 boroughs) \u2014 Chase Drone Deactivation also costs 10 TP once unlocked, the other two are free once unlocked.",
+        "All three DedSec weapon upgrades (MP9 SMG, LTL SG, DedSec Grenade Launcher) are locked behind turning just 1 borough Defiant \u2014 only the starting LTL 68P Pistol is available with no Defiance requirement."
       ],
       "build_guides": [
         {
@@ -3600,7 +3703,7 @@
             "Riot Drone Hacks",
             "Parcel Fox Drone Hacks"
           ],
-          "note": "Once hacked, these let you ride or command drones/turrets that were previously chasing you — strongest once you've unlocked several hack tiers."
+          "note": "Once hacked, these let you ride or command drones/turrets that were previously chasing you \u2014 strongest once you've unlocked several hack tiers."
         }
       ],
       "items": [
@@ -4015,8 +4118,8 @@
     }
   },
   "tips": [
-    "Liberate boroughs first — completing borough uprisings reveals tech points and key activities directly on the map, making them much easier to track down.",
-    "Use an operative with a Cargo Drone (or Wrench) for tech points and text files on high rooftops or hard-to-reach ledges — saves a lot of time versus climbing.",
+    "Liberate boroughs first \u2014 completing borough uprisings reveals tech points and key activities directly on the map, making them much easier to track down.",
+    "Use an operative with a Cargo Drone (or Wrench) for tech points and text files on high rooftops or hard-to-reach ledges \u2014 saves a lot of time versus climbing.",
     "Community interactive maps (MapGenie's Watch Dogs Legion map, Guides for Gamers' Watch Dogs Legion interactive maps) can be used alongside this tracker to visually cross-check progress."
   ]
 }
