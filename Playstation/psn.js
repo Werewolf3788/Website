@@ -79,6 +79,12 @@ const RTDB_CARD_KEYS = new Set([
 // While a player is in a game, trophy progress (22/150, 25%) is re-read this often even if no trophy popped.
 const PROGRESS_REFRESH_MS = 15 * 60 * 1000;
 
+// If a player never gets caught online between sync runs (a whole play session can start and end
+// between two scheduled ticks), the presence-based gate below would skip them forever and silently
+// lose any trophies earned during that session. This forces a real pull every so often regardless of
+// whether presence currently reads "offline," so a missed session still gets picked up eventually.
+const OFFLINE_CATCHUP_MS = 3 * 3600 * 1000;
+
 const PULL_CONFIG = {
     SKELETON_REFRESH_RECENT_TITLES: 20,
     PROGRESS_REFRESH_RECENT_TITLES: 3,      // re-read trophy progress (22/150, 25%) for your 3 most recent games every full pull
@@ -1413,6 +1419,10 @@ async function evaluateUserActivityDelta(auth, targetId, scope, existing, force)
     const needsBackfill = existing.gameStatus === undefined;
     if (!liveOnline && !storedOnline) {
         if (needsBackfill) return { hasDelta: true, statusOnly: true, reason: "GAME_STATUS_BACKFILL", ...base };
+        const lastProg = Number(existing.progressPulledAtMs) || 0;
+        if (Date.now() - lastProg > OFFLINE_CATCHUP_MS) {
+            return { hasDelta: true, reason: "OFFLINE_CATCHUP", ...base };
+        }
         return { hasDelta: false, reason: "OFFLINE_SKIPPED", ...base };
     }
     if (liveOnline !== storedOnline) {
