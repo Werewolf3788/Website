@@ -2180,7 +2180,372 @@
       "total_count": 53,
       "region": "London-wide",
       "description": "Recorded messages and lore fragments that expand the story of London and its residents.",
-      "items": []
+      "items": [
+        {
+          "id": "audio_log_01",
+          "name": "Audio Log (Unmarked) #1",
+          "region": "Varies by borough",
+          "location": "Audio Log (Unmarked) #1",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_02",
+          "name": "Audio Log (Unmarked) #2",
+          "region": "Varies by borough",
+          "location": "Audio Log (Unmarked) #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_03",
+          "name": "Barbican Centre",
+          "region": "Varies by borough",
+          "location": "Barbican Centre",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_04",
+          "name": "Bethnal Green Police",
+          "region": "Varies by borough",
+          "location": "Bethnal Green Police",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_05",
+          "name": "Brick Lane",
+          "region": "Varies by borough",
+          "location": "Brick Lane",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_06",
+          "name": "Broken Studio",
+          "region": "Varies by borough",
+          "location": "Broken Studio",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_07",
+          "name": "BuccanEar: Big Brother Meets Big Data",
+          "region": "Varies by borough",
+          "location": "BuccanEar: Big Brother Meets Big Data",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_08",
+          "name": "BuccanEar: Human Commodities",
+          "region": "Varies by borough",
+          "location": "BuccanEar: Human Commodities",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_09",
+          "name": "Carousel Plaza",
+          "region": "Varies by borough",
+          "location": "Carousel Plaza",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_10",
+          "name": "CATO",
+          "region": "Varies by borough",
+          "location": "CATO",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_11",
+          "name": "Cemetery Park",
+          "region": "Varies by borough",
+          "location": "Cemetery Park",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_12",
+          "name": "Finsbury Circus #1",
+          "region": "Varies by borough",
+          "location": "Finsbury Circus #1",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_13",
+          "name": "Finsbury Circus #3",
+          "region": "Varies by borough",
+          "location": "Finsbury Circus #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_14",
+          "name": "Finsbury Circus #4",
+          "region": "Varies by borough",
+          "location": "Finsbury Circus #4",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_15",
+          "name": "Finsbury New Project",
+          "region": "Varies by borough",
+          "location": "Finsbury New Project",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_16",
+          "name": "Hackney Baths",
+          "region": "Varies by borough",
+          "location": "Hackney Baths",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_17",
+          "name": "Horizon Multinational #2",
+          "region": "Varies by borough",
+          "location": "Horizon Multinational #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_18",
+          "name": "London Carriage #3",
+          "region": "Varies by borough",
+          "location": "London Carriage #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_19",
+          "name": "Museum of the Home",
+          "region": "Varies by borough",
+          "location": "Museum of the Home",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_20",
+          "name": "Neogate #2",
+          "region": "Varies by borough",
+          "location": "Neogate #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_21",
+          "name": "Neogate #3",
+          "region": "Varies by borough",
+          "location": "Neogate #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_22",
+          "name": "New River Head",
+          "region": "Varies by borough",
+          "location": "New River Head",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_23",
+          "name": "Old Canal Warehouse",
+          "region": "Varies by borough",
+          "location": "Old Canal Warehouse",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_24",
+          "name": "Overheard Rumors",
+          "region": "Varies by borough",
+          "location": "Overheard Rumors",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_25",
+          "name": "PR: Come to the You-K",
+          "region": "Varies by borough",
+          "location": "PR: Come to the You-K",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_26",
+          "name": "PR: Droning On",
+          "region": "Varies by borough",
+          "location": "PR: Droning On",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_27",
+          "name": "PR: Mind the Machine",
+          "region": "Varies by borough",
+          "location": "PR: Mind the Machine",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_28",
+          "name": "PR: Mother Mary",
+          "region": "Varies by borough",
+          "location": "PR: Mother Mary",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_29",
+          "name": "PR: Policing the Police",
+          "region": "Varies by borough",
+          "location": "PR: Policing the Police",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_30",
+          "name": "PR: Puppet Masters",
+          "region": "Varies by borough",
+          "location": "PR: Puppet Masters",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_31",
+          "name": "PR: Skye's the Limit",
+          "region": "Varies by borough",
+          "location": "PR: Skye's the Limit",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_32",
+          "name": "PR: Tot-ally 1984",
+          "region": "Varies by borough",
+          "location": "PR: Tot-ally 1984",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_33",
+          "name": "Presentation Rehearsal",
+          "region": "Varies by borough",
+          "location": "Presentation Rehearsal",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_34",
+          "name": "Priest's Speech",
+          "region": "Varies by borough",
+          "location": "Priest's Speech",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_35",
+          "name": "Robert & Scott Hall",
+          "region": "Varies by borough",
+          "location": "Robert & Scott Hall",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_36",
+          "name": "Rotherhithe Docks #2",
+          "region": "Varies by borough",
+          "location": "Rotherhithe Docks #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_37",
+          "name": "Saint Lukes LSO",
+          "region": "Varies by borough",
+          "location": "Saint Lukes LSO",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_38",
+          "name": "Southwark Incinerator #2",
+          "region": "Varies by borough",
+          "location": "Southwark Incinerator #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_39",
+          "name": "The Bug: Albion, Shmalbion",
+          "region": "Varies by borough",
+          "location": "The Bug: Albion, Shmalbion",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_40",
+          "name": "The Nexus Tower #2",
+          "region": "Varies by borough",
+          "location": "The Nexus Tower #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_41",
+          "name": "The Spine",
+          "region": "Varies by borough",
+          "location": "The Spine",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_42",
+          "name": "The Upload: Bagley",
+          "region": "Varies by borough",
+          "location": "The Upload: Bagley",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_43",
+          "name": "The Upload: cTOS 3.NO",
+          "region": "Varies by borough",
+          "location": "The Upload: cTOS 3.NO",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_44",
+          "name": "The Upload: Eye on the Skye",
+          "region": "Varies by borough",
+          "location": "The Upload: Eye on the Skye",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_45",
+          "name": "The Upload: Opting out of Optik",
+          "region": "Varies by borough",
+          "location": "The Upload: Opting out of Optik",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_46",
+          "name": "Tidis #2",
+          "region": "Varies by borough",
+          "location": "Tidis #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_47",
+          "name": "TOAn Attack Site #2",
+          "region": "Varies by borough",
+          "location": "TOAn Attack Site #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_48",
+          "name": "Tower Bridge #3",
+          "region": "Varies by borough",
+          "location": "Tower Bridge #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_49",
+          "name": "Tower of London #1",
+          "region": "Varies by borough",
+          "location": "Tower of London #1",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_50",
+          "name": "Tower of London #3",
+          "region": "Varies by borough",
+          "location": "Tower of London #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_51",
+          "name": "Whitechapel Terminus #2",
+          "region": "Varies by borough",
+          "location": "Whitechapel Terminus #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_52",
+          "name": "World of Tomorrow",
+          "region": "Varies by borough",
+          "location": "World of Tomorrow",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        }
+      ]
     },
     "text_files": {
       "quest_name": "",
@@ -2198,7 +2563,337 @@
       "total_count": 47,
       "region": "London-wide",
       "description": "Street art locations where you paint DedSec art to complete regional activities.",
-      "items": []
+      "items": [
+        {
+          "id": "paste_up_city_of_westminster_01",
+          "name": "Horseferry Road area",
+          "region": "City of Westminster",
+          "location": "Horseferry Road area",
+          "guide": "South: right of Horseferry Road Underground Station, at Perry Harris Development. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_02",
+          "name": "Horse Guards Parade",
+          "region": "City of Westminster",
+          "location": "Horse Guards Parade",
+          "guide": "Central: Horse Guards Parade. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_03",
+          "name": "Charing Cross Station",
+          "region": "City of Westminster",
+          "location": "Charing Cross Station",
+          "guide": "Central: left of Embankment Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_04",
+          "name": "National Gallery",
+          "region": "City of Westminster",
+          "location": "National Gallery",
+          "guide": "North: above Trafalgar Square. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_05",
+          "name": "The Sanford Theatre",
+          "region": "City of Westminster",
+          "location": "The Sanford Theatre",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_06",
+          "name": "Brewer Street area",
+          "region": "City of Westminster",
+          "location": "Brewer Street area",
+          "guide": "North: right next to Brewer Street Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_07",
+          "name": "Chinatown",
+          "region": "City of Westminster",
+          "location": "Chinatown",
+          "guide": "North, on the Camden border: a hostile area in Chinatown. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_08",
+          "name": "Covent Garden Piazza",
+          "region": "City of Westminster",
+          "location": "Covent Garden Piazza",
+          "guide": "North: behind a breakable wall. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_09",
+          "name": "Thorne's Felts",
+          "region": "City of Westminster",
+          "location": "Thorne's Felts",
+          "guide": "East, on the Camden border. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_01",
+          "name": "University College London",
+          "region": "Camden",
+          "location": "University College London",
+          "guide": "West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_02",
+          "name": "Camden Market",
+          "region": "Camden",
+          "location": "Camden Market",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_03",
+          "name": "Camden High Street",
+          "region": "Camden",
+          "location": "Camden High Street",
+          "guide": "North: south-east of the Camden Market paste up. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_04",
+          "name": "Furzton Tower Block",
+          "region": "Camden",
+          "location": "Furzton Tower Block",
+          "guide": "North: south of the Camden High Street paste up. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_05",
+          "name": "Euston Station",
+          "region": "Camden",
+          "location": "Euston Station",
+          "guide": "Central. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_06",
+          "name": "British Library",
+          "region": "Camden",
+          "location": "British Library",
+          "guide": "Central-East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_07",
+          "name": "Leather Lane",
+          "region": "Camden",
+          "location": "Leather Lane",
+          "guide": "East, near the Islington & Hackney border. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_08",
+          "name": "Border with Westminster",
+          "region": "Camden",
+          "location": "Border with Westminster",
+          "guide": "South-East, on the Westminster border. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_london_01",
+          "name": "Old Bailey",
+          "region": "City of London",
+          "location": "Old Bailey",
+          "guide": "West: next to St. Paul's Cathedral. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_london_02",
+          "name": "The Spine",
+          "region": "City of London",
+          "location": "The Spine",
+          "guide": "East: at the top; fly as high as the drone allows, then climb. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_london_03",
+          "name": "Horizon Multinational",
+          "region": "City of London",
+          "location": "Horizon Multinational",
+          "guide": "East: north of The Spine. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_islington_and_hackney_01",
+          "name": "Seam Nightclub",
+          "region": "Islington & Hackney",
+          "location": "Seam Nightclub",
+          "guide": "South-West, on the City of London border. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_islington_and_hackney_02",
+          "name": "World of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World of Tomorrow",
+          "guide": "Central: right of Old Street Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_islington_and_hackney_03",
+          "name": "FoodTown",
+          "region": "Islington & Hackney",
+          "location": "FoodTown",
+          "guide": "South. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_islington_and_hackney_04",
+          "name": "Old Canal Warehouse",
+          "region": "Islington & Hackney",
+          "location": "Old Canal Warehouse",
+          "guide": "East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_01",
+          "name": "Freight 1",
+          "region": "Tower Hamlets",
+          "location": "Freight 1",
+          "guide": "North-West: next to Shoreditch High Street Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_02",
+          "name": "Brick Lane",
+          "region": "Tower Hamlets",
+          "location": "Brick Lane",
+          "guide": "North-West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_03",
+          "name": "Royal London Hospital",
+          "region": "Tower Hamlets",
+          "location": "Royal London Hospital",
+          "guide": "East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_04",
+          "name": "Fenchurch Place",
+          "region": "Tower Hamlets",
+          "location": "Fenchurch Place",
+          "guide": "West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_05",
+          "name": "The Drowning Post",
+          "region": "Tower Hamlets",
+          "location": "The Drowning Post",
+          "guide": "South: next to Wapping Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_01",
+          "name": "Shad Thames Plaza",
+          "region": "Southwark",
+          "location": "Shad Thames Plaza",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_02",
+          "name": "St. Thomas Museum",
+          "region": "Southwark",
+          "location": "St. Thomas Museum",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_03",
+          "name": "Southwark Residential",
+          "region": "Southwark",
+          "location": "Southwark Residential",
+          "guide": "West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_04",
+          "name": "The Martlet's Nest",
+          "region": "Southwark",
+          "location": "The Martlet's Nest",
+          "guide": "West: immediately south. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_05",
+          "name": "Southwark Auto Conversions",
+          "region": "Southwark",
+          "location": "Southwark Auto Conversions",
+          "guide": "Central. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_06",
+          "name": "Southwark Incinerator",
+          "region": "Southwark",
+          "location": "Southwark Incinerator",
+          "guide": "South-West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_07",
+          "name": "Tidis Park",
+          "region": "Southwark",
+          "location": "Tidis Park",
+          "guide": "South-East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_01",
+          "name": "Blackfriars Bridge",
+          "region": "Lambeth",
+          "location": "Blackfriars Bridge",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_02",
+          "name": "Thames Promenade",
+          "region": "Lambeth",
+          "location": "Thames Promenade",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_03",
+          "name": "British Theatre",
+          "region": "Lambeth",
+          "location": "British Theatre",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_04",
+          "name": "Southbank Atrium",
+          "region": "Lambeth",
+          "location": "Southbank Atrium",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_05",
+          "name": "London Necropolis",
+          "region": "Lambeth",
+          "location": "London Necropolis",
+          "guide": "North-Central. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_06",
+          "name": "Wind Tower",
+          "region": "Lambeth",
+          "location": "Wind Tower",
+          "guide": "East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_07",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Central. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_08",
+          "name": "Albion Station Kennington",
+          "region": "Lambeth",
+          "location": "Albion Station Kennington",
+          "guide": "Central: left of the European Processing Centre. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_09",
+          "name": "Brixton Recreation Centre",
+          "region": "Lambeth",
+          "location": "Brixton Recreation Centre",
+          "guide": "South-East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_10",
+          "name": "Lambeth Town Hall",
+          "region": "Lambeth",
+          "location": "Lambeth Town Hall",
+          "guide": "South. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_11",
+          "name": "The Stage",
+          "region": "Lambeth",
+          "location": "The Stage",
+          "guide": "South. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        }
+      ]
     },
     "pubs": {
       "quest_name": "",
