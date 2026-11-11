@@ -4362,6 +4362,509 @@
         ]
       },
       "collectibles_note": "Names and video times from Trophy Tom's guide. Location text and photos still to be added from in-game screenshots."
+    },
+    "mission_11_dlc": {
+      "number": 11,
+      "title": "Vercors Vendetta",
+      "region": "Vercors, France (DLC)",
+      "walkthrough": "Infiltrate occupied Vercors to destroy the last remaining stock of the Kleine Blume nerve agent and the Nebelwerfer battery guarding it.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m11_01",
+            "name": "No Brother of Mine",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m11_02",
+            "name": "The Lord Guides Us",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m11_03",
+            "name": "New Cannons",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m11_04",
+            "name": "Gas Mask Shortage",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m11_05",
+            "name": "Worst Officer Alive",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m11_01",
+            "name": "Warhead Storage",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m11_02",
+            "name": "Final Warning",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m11_03",
+            "name": "Nebelwerfer Maintenance",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜",
+            "location": "In a safe; open it with a satchel charge or the Nazi Command Post Key."
+          },
+          {
+            "id": "doc_m11_04",
+            "name": "Think Before Firing",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m11_05",
+            "name": "Nebelwerfer Repaired",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m11_01",
+            "name": "Radio Tin",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🎀"
+          },
+          {
+            "id": "item_m11_02",
+            "name": "Lucky Rabbit's Foot",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🎀"
+          },
+          {
+            "id": "item_m11_03",
+            "name": "Pour Les Français",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🏷️",
+            "location": "Hanging on a wall in the attic of a building.",
+            "description": "Propaganda Poster."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m11_01",
+            "name": "Stone Eagle 25",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅",
+            "location": "On top of a building on a hill."
+          },
+          {
+            "id": "eagle_m11_02",
+            "name": "Stone Eagle 26",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅"
+          },
+          {
+            "id": "eagle_m11_03",
+            "name": "Stone Eagle 27",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅"
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m11_01",
+            "name": "Gaswaffen Command Workbench",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️"
+          },
+          {
+            "id": "wb_m11_02",
+            "name": "Resistance Hideout Workbench",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️"
+          },
+          {
+            "id": "wb_m11_03",
+            "name": "Waterfall Lookout Workbench",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️",
+            "location": "Top floor of a building."
+          }
+        ]
+      },
+      "collectibles_note": "Collectible names/locations from guides4gamers.com's interactive map (not from an in-game screenshot or guide video, unlike missions 1-10), so no video_time/video_url/location_image_url fields are included.",
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_11",
+            "name": "Vercors Vendetta Long Shot",
+            "description": "Make a 600 meters shot in Vercors Vendetta.",
+            "goal": 600,
+            "goal_tier": "gold",
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "mission_number": 11,
+            "distance_m": 600,
+            "authentic": false,
+            "notes": "600 m per guides4gamers.com; target is a soldier standing on a hill. Not confirmed from an in-game screenshot.",
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 600
+            }
+          }
+        ]
+      },
+      "trophies": [],
+      "source": "guides4gamers.com interactive map (collectibles); pushsquare.com (mission description, 19 collectibles: 5/5/3/3/3)"
+    },
+    "mission_12_dlc": {
+      "number": 12,
+      "title": "Striking Range",
+      "region": "Théoule-sur-Mer, France (DLC)",
+      "walkthrough": "Infiltrate a heavily guarded facility to stop a V1 rocket barrage aimed at the Allied invasion fleet, rescue captured Resistance operative Carillon, and sabotage the launch site for good.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m12_01",
+            "name": "Last Call",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m12_02",
+            "name": "Monster, Not Man",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m12_03",
+            "name": "Hope is Fading",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m12_04",
+            "name": "Unease Fills Me",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m12_05",
+            "name": "Desperate Times",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m12_01",
+            "name": "Handle With Care",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m12_02",
+            "name": "Strict Security Protocols",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m12_03",
+            "name": "Unsettling Questions",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m12_04",
+            "name": "Precious Cargo",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m12_05",
+            "name": "Cease This Foolishness",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m12_01",
+            "name": "Vivre Libre Ou Mourir",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🏷️",
+            "description": "Propaganda Poster."
+          },
+          {
+            "id": "item_m12_02",
+            "name": "Engraved Tankard",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🎀"
+          },
+          {
+            "id": "item_m12_03",
+            "name": "Binoculars",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🎀"
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m12_01",
+            "name": "Stone Eagle 28",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅"
+          },
+          {
+            "id": "eagle_m12_02",
+            "name": "Stone Eagle 29",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅"
+          },
+          {
+            "id": "eagle_m12_03",
+            "name": "Stone Eagle 30",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅"
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m12_01",
+            "name": "Axis Radio Room",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️"
+          },
+          {
+            "id": "wb_m12_02",
+            "name": "Hidden Harbour Cave",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️"
+          },
+          {
+            "id": "wb_m12_03",
+            "name": "Occupied Pharmacy",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️"
+          }
+        ]
+      },
+      "collectibles_note": "Collectible names/locations from guides4gamers.com's interactive map (not from an in-game screenshot or guide video, unlike missions 1-10), so no video_time/video_url/location_image_url fields are included.",
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_12",
+            "name": "Striking Range Long Shot",
+            "description": "Make a 420 meters shot in Striking Range.",
+            "goal": 420,
+            "goal_tier": "gold",
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "mission_number": 12,
+            "distance_m": 420,
+            "authentic": false,
+            "notes": "420 m per guides4gamers.com; target is the sniper standing on the balcony. Not confirmed from an in-game screenshot.",
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 420
+            }
+          }
+        ]
+      },
+      "trophies": [],
+      "source": "guides4gamers.com interactive map (collectibles); thexboxhub.com + steamdeckhq.com (mission description, Striking Range Mission, Weapons and Skins Pack)"
+    },
+    "mission_13_dlc": {
+      "number": 13,
+      "title": "Mud and Thunder",
+      "region": "Baie des Veys, France (DLC)",
+      "walkthrough": "Axis forces have captured the region and a Resistance contact has vanished; infiltrate Baie des Veys to rescue the contact and recover crucial intel.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m13_01",
+            "name": "Concerning News",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m13_02",
+            "name": "I Hate This Place",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m13_03",
+            "name": "Relocation Request Draft",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m13_04",
+            "name": "Damp and Misery",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          },
+          {
+            "id": "let_m13_05",
+            "name": "Walda, My Dearest",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "emoji": "✉️"
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m13_01",
+            "name": "New Orders",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m13_02",
+            "name": "Construction Complete",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m13_03",
+            "name": "A Monster in the Marshes",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m13_04",
+            "name": "Workplace Safety",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          },
+          {
+            "id": "doc_m13_05",
+            "name": "New Tech",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "emoji": "📜"
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m13_01",
+            "name": "Fancy Teapot",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🎀"
+          },
+          {
+            "id": "item_m13_02",
+            "name": "Aspirin Bottle",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🎀"
+          },
+          {
+            "id": "item_m13_03",
+            "name": "Resistance, Revolution, Vengeance",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "emoji": "🏷️",
+            "location": "On the wall, inside a circular bunker.",
+            "description": "Propaganda Poster."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m13_01",
+            "name": "Stone Eagle 31",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅"
+          },
+          {
+            "id": "eagle_m13_02",
+            "name": "Stone Eagle 32",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅"
+          },
+          {
+            "id": "eagle_m13_03",
+            "name": "Stone Eagle 33",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "emoji": "🦅"
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m13_01",
+            "name": "Axis Controlled Farmhouse Workbench",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️"
+          },
+          {
+            "id": "wb_m13_02",
+            "name": "Dock Warehouse Workbench",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️"
+          },
+          {
+            "id": "wb_m13_03",
+            "name": "V2 Bunker Workbench",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "emoji": "⚙️"
+          }
+        ]
+      },
+      "collectibles_note": "Collectible names/locations from guides4gamers.com's interactive map (not from an in-game screenshot or guide video, unlike missions 1-10), so no video_time/video_url/location_image_url fields are included.",
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_13",
+            "name": "Mud and Thunder Long Shot",
+            "description": "Make a 430 meters shot in Mud and Thunder.",
+            "goal": 430,
+            "goal_tier": "gold",
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "mission_number": 13,
+            "distance_m": 430,
+            "authentic": false,
+            "notes": "430 m per guides4gamers.com; target is to the southwest, a soldier on a watchtower. Not confirmed from an in-game screenshot.",
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 430
+            }
+          }
+        ]
+      },
+      "trophies": [],
+      "source": "guides4gamers.com interactive map (collectibles); eneba.com + steamdeckhq.com (mission description, Mud and Thunder Mission, Weapons and Skin Pack)"
     }
   },
   "campaign_ribbons": [
@@ -6916,6 +7419,21 @@
           "sprintMovementSpeed": 100,
           "aimedMovementSpeed": 100
         }
+      },
+      {
+        "name": "M1941 Johnson Rifle",
+        "description": "An American semi-automatic rifle with a distinctive rotary magazine, issued here as part of the Vercors Vendetta DLC weapon pack.",
+        "source": "store.steampowered.com (Vercors Vendetta Mission and Weapons Pack: 'M1941 Rifle'). Not from an in-game screenshot, so no stats/detailedStats block is included."
+      },
+      {
+        "name": "SVT-40",
+        "description": "A Soviet semi-automatic rifle chambered in 7.62x54mmR, offering faster follow-up shots than a bolt-action rifle; part of the Striking Range DLC weapon pack.",
+        "source": "gameswelt.de + steamdeckhq.com (Striking Range Mission, Weapons & Skins Pack). Not from an in-game screenshot, so no stats/detailedStats block is included."
+      },
+      {
+        "name": "MAS 36",
+        "description": "A French bolt-action service rifle intended as a replacement for the Berthier and Lebel rifles already in the game; part of the Mud and Thunder DLC weapon pack.",
+        "source": "steamdeckhq.com + eneba.com (Mud and Thunder Mission, Weapons and Skin Pack). Not from an in-game screenshot, so no stats/detailedStats block is included."
       }
     ],
     "rifleSpecialAmmo": {
@@ -7940,6 +8458,17 @@
       {
         "name": "Welrod",
         "unlocked_by_default": true
+      },
+      {
+        "name": "Mars Automatic Pistol",
+        "description": "A powerful, hard-hitting handgun with a light, refined design and a folding magazine release; part of the Striking Range DLC weapon pack.",
+        "source": "steamdeckhq.com (Striking Range Mission, Weapons & Skins Pack). Not from an in-game screenshot, so no stats/detailedStats block is included."
+      },
+      {
+        "name": "Mod.712",
+        "description": "A fully-automatic machine pistol (based on the real-world Astra Model 712) with an incredibly high rate of fire that's hard to control.",
+        "unlockRequirement": "Included in the free 'Wrath of the Resistance' Weapon and Skins Pack; not tied to a specific campaign mission.",
+        "source": "xbox.com + gamespress.com (Wrath of the Resistance Weapon and Skins Pack, free). Not from an in-game screenshot, so no stats/detailedStats block is included."
       }
     ],
     "pistolsNote": "In-game pistol list order: Star Ruby, Hi-Power 9MM, Modèle 1935A, Welrod, Nagant M1895, M1912. Locks shown only on Nagant M1895 and M1912 on a rank-24 save.",
@@ -7994,6 +8523,16 @@
         "description": "A rare Swiss-made SIG MKMS submachine gun with a high fire rate, offset by heavy vertical recoil that makes it hard to control.",
         "unlockRequirement": "Complete Mission 7: Lock, Stock and Barrels.",
         "source": "deltiasgaming.com (How to Unlock All Secondary Weapons) + gamingbolt.com (How to Unlock All Weapons and Master Each Weapon)"
+      },
+      {
+        "name": "Armaguerra OG-44",
+        "description": "An Italian-made Armaguerra OG-44 submachine gun, added as part of the Vercors Vendetta DLC weapon pack.",
+        "source": "store.steampowered.com (Vercors Vendetta Mission and Weapons Pack). Not from an in-game screenshot, so no stats/detailedStats block is included."
+      },
+      {
+        "name": "Auto-5 Shotgun",
+        "description": "A Browning Auto-5 semi-automatic shotgun, offering a much faster rate of fire than the game's other, manually-operated shotguns; part of the Mud and Thunder DLC weapon pack.",
+        "source": "steamdeckhq.com (Mud and Thunder Mission, Weapons and Skin Pack). Not from an in-game screenshot, so no stats/detailedStats block is included."
       }
     ],
     "secondariesNote": "From outside guides, not in-game screenshots, so no power/rateOfFire/control/mobility stat bars or detailedStats are included (unlike weapons.rifles/weapons.pistols). Unlock requirements conflict between sources for MAS 38, Model 1907, and the ERMA .36 challenge type; flagged per-weapon above."
@@ -8011,7 +8550,10 @@
       "Lee No.4",
       "M1 Garand",
       "Mosin-Nagant M91/30",
-      "Karabiner 98 (K98)"
+      "Karabiner 98 (K98)",
+      "M1941 Johnson Rifle",
+      "SVT-40",
+      "MAS 36"
     ],
     "secondaries": [
       "MAS 38",
@@ -8021,7 +8563,9 @@
       "Trench Gun",
       "ERMA .36",
       "M1918 BAR",
-      "SIG MKMS"
+      "SIG MKMS",
+      "Armaguerra OG-44",
+      "Auto-5 Shotgun"
     ],
     "pistols": [
       "Modèle 1935A",
@@ -8030,11 +8574,17 @@
       "Star Ruby",
       "Hi-Power 9MM",
       "M1912",
-      "M1911"
+      "M1911",
+      "Mars Automatic Pistol",
+      "Mod.712"
     ],
     "rifleNotes": {
-      "Karabiner 98 (K98)": "Not shown in the in-game rifle list on capture; may be DLC or added via Get More Guns."
-    }
+      "Karabiner 98 (K98)": "Not shown in the in-game rifle list on capture; may be DLC or added via Get More Guns.",
+      "M1941 Johnson Rifle": "Vercors Vendetta DLC weapon pack.",
+      "SVT-40": "Striking Range DLC weapon pack.",
+      "MAS 36": "Mud and Thunder DLC weapon pack."
+    },
+    "dlcNote": "These 3 missions (Vercors Vendetta, Striking Range, Mud and Thunder) and their weapon packs were released after this file's base-game/Target Führer data was built. Collectibles are sourced from guides4gamers.com's interactive maps rather than in-game screenshots or a guide video, so no video_time/location_image_url fields or numeric weapon stats are included."
   },
   "tactical_items": {
     "healing": [
