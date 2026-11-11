@@ -808,8 +808,8 @@
         "classified_documents": [
           {
             "id": "se5_doc_m7_01",
-            "name": "Intruder Sighted",
-            "location": "Subterranean rail terminus desk."
+            "name": "Inbound Deliveries",
+            "location": "Source confirms this is Classified Document #1 for Secret Weapons; exact in-mission location not yet re-verified against a screenshot."
           },
           {
             "id": "se5_doc_m7_02",
@@ -818,18 +818,18 @@
           },
           {
             "id": "se5_doc_m7_03",
-            "name": "Prufstand XII Plans",
-            "location": "V2 wind tunnel testing room."
+            "name": "A-4B Logistical Issues",
+            "location": "Source confirms this is Classified Document #3 for Secret Weapons; exact in-mission location not yet re-verified against a screenshot."
           },
           {
             "id": "se5_doc_m7_04",
-            "name": "Pressurisation Report",
-            "location": "Liquid oxygen refuelling site."
+            "name": "Intruder Sighted",
+            "location": "Subterranean rail terminus desk."
           },
           {
             "id": "se5_doc_m7_05",
-            "name": "Kraken Fuel Issues",
-            "location": "Main facility entrance outpost desk."
+            "name": "Pressurisation Report",
+            "location": "Liquid oxygen refuelling site."
           }
         ],
         "hidden_items": [
@@ -885,7 +885,8 @@
         ]
       },
       "date": "June 12th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m07-secret-weapons.jpg"
+      "image_url": "/public/games/sniperelite5/images/missions/m07-secret-weapons.jpg",
+      "collectibles_source": "Classified documents corrected against pushsquare.com's Secret Weapons collectible list: real doc order is Inbound Deliveries, Dr Junger's Schedule, A-4B Logistical Issues, Intruder Sighted, Pressurisation Report. The file previously duplicated 'Prufstand XII Plans' as both a classified document AND a hidden item (it's correctly only a hidden item) and included a fabricated 'Kraken Fuel Issues' doc; both have been replaced with the two real missing docs (Inbound Deliveries, A-4B Logistical Issues). Locations for those two are not yet confirmed from an in-game screenshot."
     },
     "mission_8": {
       "number": 8,
@@ -1156,25 +1157,25 @@
         "personal_letters": [
           {
             "id": "se5_let_m11_01",
-            "name": "Island Blues",
-            "location": "Barracks bunk table."
+            "name": "Munition Ignitions",
+            "location": "Found on a map table inside the command room (per itemlevel.net's Landing Force collectible guide)."
           },
           {
             "id": "se5_let_m11_02",
-            "name": "Shore Patrol Report",
-            "location": "Pier watch office desk."
+            "name": "Heavy is the Crown",
+            "location": "Same map location as 'Munition Ignitions' — look for the indicated table (per itemlevel.net's Landing Force collectible guide)."
           }
         ],
         "classified_documents": [
           {
             "id": "se5_doc_m11_01",
-            "name": "Battery Readiness",
-            "location": "Gun battery plotting desk."
+            "name": "Security Measures",
+            "location": "Lies under a desk inside the fishing hut (per guides4gamers.com's Classified Documents index)."
           },
           {
             "id": "se5_doc_m11_02",
-            "name": "Radio Logbook",
-            "location": "Lighthouse communication room."
+            "name": "Wine-Stained Warning",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Classified Documents index)."
           }
         ],
         "hidden_items": [
@@ -1237,7 +1238,8 @@
         "stone_eagles": 3,
         "workbenches": 3,
         "total": 13
-      }
+      },
+      "collectibles_note": "Landing Force has 3 personal letters, not 2 — the file was missing one. Two of the three real names are confirmed (Munition Ignitions, Heavy is the Crown) via itemlevel.net; the third/first letter's real name is not yet confirmed from a reliable source, so it has been left out rather than invented. Previous names ('Island Blues', 'Shore Patrol Report', 'Battery Readiness', 'Radio Logbook') were fabricated placeholders and have been replaced with sourced real names."
     },
     "mission_12_dlc": {
       "number": 12,
@@ -1248,25 +1250,30 @@
         "personal_letters": [
           {
             "id": "se5_let_m12_01",
-            "name": "Surrounded",
-            "location": "Cellar hideout table."
+            "name": "An Unfinished Plea for Aid",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Personal Letters index, listed under Conqueror)."
           },
           {
             "id": "se5_let_m12_02",
-            "name": "Final Stand",
-            "location": "Castle courtyard barrack."
+            "name": "Hastily Scribbled Note",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Personal Letters index, listed under Conqueror)."
+          },
+          {
+            "id": "se5_let_m12_03",
+            "name": "Letters Between Friends",
+            "location": "Carried by a soldier; provides the Medical Supplies Safe Code (per guides4gamers.com's Personal Letters index)."
           }
         ],
         "classified_documents": [
           {
             "id": "se5_doc_m12_01",
-            "name": "Defensive Perimeter",
-            "location": "Command tent plotting table."
+            "name": "King of the Tigers",
+            "location": "On a wooden crate outside a building (per guides4gamers.com's Classified Documents index)."
           },
           {
             "id": "se5_doc_m12_02",
-            "name": "Panzer Orders",
-            "location": "Motor pool maintenance desk."
+            "name": "Operations Dossier",
+            "location": "On a table in a small, circular gazebo (per guides4gamers.com's Classified Documents index)."
           }
         ],
         "hidden_items": [
@@ -1329,7 +1336,8 @@
         "stone_eagles": 3,
         "workbenches": 3,
         "total": 13
-      }
+      },
+      "collectibles_note": "Conqueror has 3 personal letters, not 2 — the file was missing one, and all previous names ('Surrounded', 'Final Stand', 'Defensive Perimeter', 'Panzer Orders') were fabricated placeholders. Replaced with sourced real names from guides4gamers.com."
     },
     "mission_13_dlc": {
       "number": 13,
@@ -1340,25 +1348,20 @@
         "personal_letters": [
           {
             "id": "se5_let_m13_01",
-            "name": "Forest Ambush",
-            "location": "Logging camp cabin desk."
-          },
-          {
-            "id": "se5_let_m13_02",
-            "name": "Search Orders",
-            "location": "Checkpost communications desk."
+            "name": "Damaged Journal",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Rough Landing map)."
           }
         ],
         "classified_documents": [
           {
             "id": "se5_doc_m13_01",
-            "name": "Crash Coordinates",
-            "location": "Patrol command tent table."
+            "name": "Resistance Correspondence",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Classified Documents index)."
           },
           {
             "id": "se5_doc_m13_02",
-            "name": "Cargo Manifest",
-            "location": "Timber rail station office safe."
+            "name": "Scribble-Covered Map",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Classified Documents index)."
           }
         ],
         "hidden_items": [
@@ -1421,7 +1424,8 @@
         "stone_eagles": 3,
         "workbenches": 3,
         "total": 13
-      }
+      },
+      "collectibles_note": "Rough Landing has 3 personal letters, not 2 or 1 — the file was missing entries, and all previous names ('Forest Ambush', 'Search Orders', 'Crash Coordinates', 'Cargo Manifest') were fabricated placeholders. Only 1 of the 3 real personal-letter names ('Damaged Journal') could be confirmed from available sources; the other two are not yet identified and have been left out rather than invented. Classified documents (2, matching the real count) are confirmed as 'Resistance Correspondence' and 'Scribble-Covered Map'."
     },
     "mission_14_dlc": {
       "number": 14,
