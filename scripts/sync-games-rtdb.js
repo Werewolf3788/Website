@@ -46,10 +46,13 @@ async function pushGamesToRTDB() {
 
   console.log(`Found ${jsonFiles.length} game JSON file(s). Syncing to /games/...`);
 
+  const validKeys = new Set();
+
   for (const file of jsonFiles) {
     const filePath = path.join(targetDir, file);
     // Sanitize game key: farcry5.json -> farcry5
     const gameKey = path.basename(file, '.json').replace(/[.#$\[\]\/]/g, '_');
+    validKeys.add(gameKey);
 
     try {
       const fileData = fs.readFileSync(filePath, 'utf8');
@@ -75,6 +78,29 @@ async function pushGamesToRTDB() {
     } catch (err) {
       console.error(`Error processing file ${file}:`, err.message);
     }
+  }
+
+  // Remove any /games/{key} left over from a renamed or deleted file (e.g. WOTH2 -> woth2
+  // left the old uppercase key behind forever, since this script only ever PUTs current
+  // files and never looked at what was already there). Without this, a rename shows up as
+  // a duplicate game pill on the site instead of replacing the old entry.
+  try {
+    const listRes = await fetch(`${RTDB_BASE}/games.json?shallow=true&auth=${apiKey}`);
+    if (listRes.ok) {
+      const existingKeys = await listRes.json();
+      const orphans = Object.keys(existingKeys || {}).filter((k) => !validKeys.has(k));
+      for (const key of orphans) {
+        const delUrl = `${RTDB_BASE}/games/${key}.json?auth=${apiKey}`;
+        const delRes = await fetch(delUrl, { method: 'DELETE' });
+        if (delRes.ok) console.log(`Removed orphaned /games/${key} (no matching file in public/games).`);
+        else console.error(`Failed to remove orphaned /games/${key}: HTTP ${delRes.status}`);
+      }
+      if (!orphans.length) console.log("No orphaned /games keys to remove.");
+    } else {
+      console.error(`Could not list /games for orphan cleanup: HTTP ${listRes.status}`);
+    }
+  } catch (err) {
+    console.error("Error during orphaned-key cleanup:", err.message);
   }
 
   console.log("Finished syncing game files to RTDB.");
