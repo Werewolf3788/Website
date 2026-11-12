@@ -155,7 +155,12 @@ async function fetchOpenXBL(path, apiKey) {
 async function getProfileByGamertag(gamertag, apiKey) {
     const data = await fetchOpenXBL(`/account/${encodeURIComponent(gamertag)}`, apiKey);
     const p = data?.profileUsers?.[0];
-    if (!p) throw new Error(`No profile returned for gamertag "${gamertag}"`);
+    if (!p) {
+        // Temporary diagnostic: dump the actual shape OpenXBL sent back (no key in it)
+        // so the real field names can be fixed here instead of guessed at again.
+        console.warn(`[XBOX DEBUG] /account/${gamertag} raw response: ${JSON.stringify(data).slice(0, 800)}`);
+        throw new Error(`No profile returned for gamertag "${gamertag}"`);
+    }
     const settings = {};
     for (const s of p.settings || []) settings[s.id] = s.value;
     return {
