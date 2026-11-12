@@ -382,13 +382,13 @@ async function addFriend(){
   const code=extractFriendCode($('add_code').value);
   if(!code)return false;
   if(!K)return addMsg('Sign in first, then add your friend.',1),false;
-  if(!/^[A-HJ-NP-Z2-9]{8}$/.test(code))return addMsg('A friend code is 8 letters and numbers (no 0, 1, I or O). Check it and try again.',1),false;
+  if(!/^[A-Z0-9]{8}$/.test(code))return addMsg('A friend code is 8 letters and numbers. Check it and try again.',1),false;
   if(code===D.friend_code)return addMsg("That's your own code. Send it to a friend instead.",1),false;
   if((D.friends||{})[code])return addMsg('Already in your friends list.',1),false;
   const b=$('addFr');b.disabled=true;b.textContent='Adding…';
   try{
     const fk=(await db.ref('friend_codes/'+code).get()).val();
-    if(typeof fk!=='string'||!fk)return addMsg('No player has the code '+code+'. Check it with your friend. If it is right, ask them to open Settings once while signed in, which activates older codes.',1),false;
+    if(typeof fk!=='string'||!fk)return addMsg('No player has the code '+code+'. Check it with your friend (watch for 0 vs O and 1 vs I). If it is right, ask them to open Settings once while signed in, which activates older codes.',1),false;
     if(fk===K)return addMsg("That's your own code.",1),false;
     const prof=(await db.ref('users/'+fk).get()).val()||{};
     const f={friend_code:code,username:prof.username||code,added_at:Date.now()};
@@ -409,11 +409,12 @@ $('addFr').onclick=addFriend;
 $('add_code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addFriend()}});
 // Pull a friend code out of whatever was pasted: "ABCD2345", "abcd 2345", "ABCD-2345", " ABCD2345\n", "Friend code: ABCD2345"
 function extractFriendCode(raw){
-  const t=String(raw||'').toUpperCase(),OK='A-HJ-NP-Z2-9';
+  const t=String(raw||'').toUpperCase();
   const squashed=t.replace(/[^A-Z0-9]/g,'');
-  if(new RegExp('^['+OK+']{8}$').test(squashed))return squashed;          // plain, spaced or dashed
-  const word=t.match(new RegExp('(?:^|[^A-Z0-9])(['+OK+']{8})(?![A-Z0-9])'));  // a code inside a sentence
-  return word?word[1]:squashed.slice(0,8);
+  if(squashed.length===8)return squashed;                                   // plain, spaced or dashed
+  const toks=(t.match(/(?:^|[^A-Z0-9])([A-Z0-9]{8})(?![A-Z0-9])/g)||[]).map(x=>x.replace(/[^A-Z0-9]/g,''));  // a code inside a sentence
+  if(toks.length)return toks.find(x=>/\d/.test(x))||toks[toks.length-1];
+  return squashed.slice(0,8);
 }
 $('add_code').addEventListener('paste',e=>{
   const txt=(e.clipboardData||window.clipboardData).getData('text');
