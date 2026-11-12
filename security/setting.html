@@ -74,6 +74,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <label for="username">Display name / gamer tag</label><input id="username" maxlength="32">
   <label>Friend code</label>
   <div class="row"><input id="friend_code" readonly><button id="cp">Copy</button></div>
+  <p class="hint" id="codeState" role="status" style="min-height:1.2em"></p>
   <p class="hint">Share this 8-character code so friends can see your display name, platform badge and hunting logs.</p>
   <label for="add_code">Add a friend</label>
   <div class="row"><input id="add_code" maxlength="64" inputmode="text" placeholder="Friend's 8-character code" autocapitalize="characters" autocomplete="off" spellcheck="false"><button id="addFr" type="button">Add friend</button></div>
@@ -326,14 +327,22 @@ $('avatar_custom').onchange=resolveAvatar;
 
 // ---- Load / save ----
 const rand8=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b%32]).join('');
+const codeMsg=(t,bad)=>{const e=$('codeState');if(!e)return;e.textContent=t;e.style.color=bad?'var(--danger)':'var(--accent-green)'};
 async function ensureFriendCode(){
   if(D.friend_code){
-    // Older accounts have the code on their profile but no /friend_codes lookup, so nobody could add them. Repair it.
-    try{const r=await db.ref('friend_codes/'+D.friend_code).get();if(!r.exists())await db.ref('friend_codes/'+D.friend_code).set(K)}catch(e){console.warn('[friend code repair]',e&&e.message)}
+    // Older accounts have the code on their profile but no /friend_codes lookup, so nobody could add them. Repair it, then check.
+    try{
+      const ref=db.ref('friend_codes/'+D.friend_code);
+      let cur=(await ref.get()).val();
+      if(!cur){await ref.set(K);cur=(await ref.get()).val()}
+      if(cur===K)codeMsg('Your code is active: friends can add you with it.');
+      else if(typeof cur==='string')codeMsg('This code is already registered to a different account ('+cur+'). Tell Kevin so it can be sorted out.',1);
+      else codeMsg('Could not activate your code. Sign out, sign in again and reopen Settings.',1);
+    }catch(e){console.warn('[friend code repair]',e&&e.message);codeMsg('Could not activate your code: '+(/permission/i.test(e&&e.message||'')?'the database refused the write (rules need publishing).':(e&&e.message||'unknown error')),1)}
     return D.friend_code;
   }
   for(let i=0;i<5;i++){const c=rand8();const r=await db.ref('friend_codes/'+c).get();
-    if(!r.exists()){await db.ref('friend_codes/'+c).set(K);D.friend_code=c;await db.ref('users/'+K+'/friend_code').set(c);return c}}
+    if(!r.exists()){await db.ref('friend_codes/'+c).set(K);D.friend_code=c;await db.ref('users/'+K+'/friend_code').set(c);codeMsg('Your code is active: friends can add you with it.');return c}}
   throw new Error('Could not create a friend code. Try again.');
 }
 async function load(){
