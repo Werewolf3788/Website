@@ -156,10 +156,12 @@ async function getProfileByGamertag(gamertag, apiKey) {
     const data = await fetchOpenXBL(`/account/${encodeURIComponent(gamertag)}`, apiKey);
     const p = data?.profileUsers?.[0];
     if (!p) {
-        // Temporary diagnostic: dump the actual shape OpenXBL sent back (no key in it)
-        // so the real field names can be fixed here instead of guessed at again.
-        console.warn(`[XBOX DEBUG] /account/${gamertag} raw response: ${JSON.stringify(data).slice(0, 800)}`);
-        throw new Error(`No profile returned for gamertag "${gamertag}"`);
+        // The /account/{gamertag} shape itself checks out (profileUsers[0] is right) -
+        // this is Xbox Live's own "no such profile" passed through by OpenXBL, usually
+        // because the saved gamertag string doesn't match exactly (missing/wrong #1234
+        // discriminator, a typo, or a changed gamertag). Surface the real reason.
+        const inner = data?.content?.description || data?.description || JSON.stringify(data).slice(0, 300);
+        throw new Error(`Xbox Live found no profile for gamertag "${gamertag}": ${inner}`);
     }
     const settings = {};
     for (const s of p.settings || []) settings[s.id] = s.value;
