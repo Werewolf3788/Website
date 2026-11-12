@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Section 1: Document Metadata & Responsive Viewport (Lines 4-11) -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription &amp; Renewal Tracker</title>
+  <link id="dynamic-favicon" rel="icon" href="//www.google.com/s2/favicons?domain=sheets.google.com&sz=64">
+  <link id="dynamic-apple-icon" rel="apple-touch-icon" href="//www.google.com/s2/favicons?domain=sheets.google.com&sz=180">
+
+  <!-- Section 2: Sleek High-Contrast Design System & Responsive Grid CSS (Lines 13-370) -->
+  <style>
+    :root {
+      --bg-primary: #090d16;
+      --bg-secondary: #111827;
+      --bg-card: rgba(23, 32, 51, 0.85);
+      --bg-glass: rgba(15, 23, 42, 0.78);
+      --border-subtle: rgba(148, 163, 184, 0.16);
+      --border-glow: rgba(56, 189, 248, 0.45);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-cyan: #38bdf8;
+      --accent-blue: #3b82f6;
+      --status-active: #10b981;
+      --status-warning: #f59e0b;
+      --status-danger: #ef4444;
+      --status-inactive: #64748b;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-card: 0 12px 30px -8px rgba(0, 0, 0, 0.65);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top right, #162238 0%, var(--bg-primary) 55%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      padding-bottom: 68px; /* Space for persistent footer */
+    }
+
+    /* Header & Top Controls (Lines 55-135) */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg-glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 24px;
+    }
+
+    .header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border-glow);
+      background: var(--bg-secondary);
+    }
+
+    .brand-title h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .brand-title span {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-input, .filter-select, .btn-refresh {
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input {
+      min-width: 230px;
+    }
+
+    .search-input:focus, .filter-select:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .btn-refresh {
+      cursor: pointer;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px;
+    }
+
+    .btn-refresh:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Main Container & KPI Summary Strip (Lines 137-200) */
+    main {
+      width: 100%;
+      max-width: 1440px;
+      margin: 24px auto;
+      padding: 0 24px;
+      flex: 1;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stat-sub {
+      font-size: 0.78rem;
+      color: var(--accent-cyan);
+      margin-top: 2px;
+    }
+
+    /* Subscription Cards Grid (Lines 202-345) */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 20px;
+    }
+
+    .sub-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sub-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-glow);
+    }
+
+    .sub-card.is-inactive {
+      opacity: 0.72;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .sub-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #1e293b;
+      border: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      cursor: zoom-in;
+    }
+
+    .sub-header-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sub-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sub-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    .badge-active {
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .badge-inactive {
+      background: rgba(100, 116, 139, 0.18);
+      color: #cbd5e1;
+      border: 1px solid rgba(100, 116, 139, 0.35);
+    }
+
+    .sub-meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .meta-pill {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .sub-price {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+    }
+
+    .sub-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Countdown Box (Lines 347-405) */
+    .countdown-panel {
+      background: rgba(9, 13, 22, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .countdown-panel.urgent {
+      border-color: rgba(245, 158, 11, 0.55);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .countdown-panel.critical {
+      border-color: rgba(239, 68, 68, 0.6);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .countdown-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .countdown-timer {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .time-unit {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 6px 8px;
+      min-width: 54px;
+    }
+
+    .time-unit strong {
+      display: block;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .time-unit span {
+      font-size: 0.66rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .countdown-static {
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 8px 0;
+      color: var(--text-secondary);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .visit-link {
+      min-height: 44px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      transition: background 0.2s;
+    }
+
+    .visit-link:hover {
+      background: rgba(56, 189, 248, 0.25);
+    }
+
+    /* Lightbox Modal (Lines 407-450) */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.86);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox-content {
+      max-width: 90vw;
+      max-height: 85vh;
+      text-align: center;
+    }
+
+    .lightbox-content img {
+      max-width: 100%;
+      max-height: 75vh;
+      border-radius: 12px;
+      border: 1px solid var(--border-glow);
+    }
+
+    .lightbox-caption {
+      margin-top: 10px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    /* Persistent 24-Hour NY Timestamp Footer (Lines 452-478) */
+    footer.persistent-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(9, 13, 22, 0.94);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border-subtle);
+      padding: 10px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--status-active);
+      margin-right: 6px;
+    }
+
+    /* Responsive Breakpoints (Lines 480-520) */
+    @media (max-width: 1024px) {
+      .stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 767px) {
+      main {
+        width: 88%;
+        padding: 0;
+        margin: 16px auto;
+      }
+      .stats-bar {
+        grid-template-columns: 1fr;
+      }
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .search-input, .filter-select, .btn-refresh {
+        width: 100%;
+      }
+      .header-actions {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Section 3: Sticky Navigation & Filter Header (Lines 525-562) -->
+  <header>
+    <div class="header-inner">
+      <div class="brand-block">
+        <img id="header-logo" class="brand-logo" src="//www.google.com/s2/favicons?domain=sheets.google.com&sz=128">
+        <div class="brand-title">
+          <h1>Subscription &amp; Renewal Tracker</h1>
+          <span id="sync-status-text">Syncing live Google Sheet CSV...</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <input type="search" id="search-input" class="search-input" placeholder="Search subscriptions...">
+        <select id="status-filter" class="filter-select" aria-label="Filter by status">
+          <option value="ALL">All Statuses</option>
+          <option value="Active">Active Only</option>
+          <option value="Inactive">Inactive Only</option>
+        </select>
+        <select id="owner-filter" class="filter-select" aria-label="Filter by owner">
+          <option value="ALL">All Owners</option>
+        </select>
+        <select id="sort-select" class="filter-select" aria-label="Sort subscriptions">
+          <option value="ending-soon">Sort: Ending Soonest</option>
+          <option value="price-desc">Sort: Price (High to Low)</option>
+          <option value="price-asc">Sort: Price (Low to High)</option>
+          <option value="name-asc">Sort: Name (A–Z)</option>
+        </select>
+        <button type="button" id="refresh-btn" class="btn-refresh">↻ Sync Sheet</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Section 4: KPI Summary & Subscription Card Grid (Lines 564-592) -->
+  <main>
+    <section class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">Active Subscriptions</div>
+        <div class="stat-value" id="kpi-active-count">0</div>
+        <div class="stat-sub" id="kpi-total-count">of 0 total tracked</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Spend Total</div>
+        <div class="stat-value" id="kpi-active-spend">$0.00</div>
+        <div class="stat-sub">Combined active billing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Expiring Within 7 Days</div>
+        <div class="stat-value" id="kpi-expiring-soon">0</div>
+        <div class="stat-sub">Needs renewal review</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Next Expiring</div>
+        <div class="stat-value" id="kpi-next-name" style="font-size: 1.15rem; margin-top: 4px;">—</div>
+        <div class="stat-sub" id="kpi-next-date">No upcoming end dates</div>
+      </div>
+    </section>
+
+    <section id="cards-grid" class="cards-grid"></section>
+  </main>
+
+  <!-- Section 5: Lightbox Modal for Image Descriptions (Lines 594-601) -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true">
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="">
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <!-- Section 6: Persistent 24-Hour NY Timestamp & Version Footer (Lines 603-611) -->
+  <footer class="persistent-footer">
+    <div><span class="status-dot"></span>Live CSV Feed: Google Sheets</div>
+    <div id="ny-clock">NY Time: Loading... | Version: 1.0.0</div>
+  </footer>
+
+  <!-- Section 7: CSV Parser, Countdown Engine & DOM Controller (Lines 613-915) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const APP_VERSION = "1.0.0";
+      const CSV_URL = "//docs.google.com/spreadsheets/d/e/2PACX-1vTr4PBHQznFnTvHBOxBgZnLqbxYlc9QhsZFeHee_qzkpRdE99OCCxn2nJkGY2sGlHXzIOjNvnsxierz/pub?output=csv";
+      const CACHE_KEY = "sub_tracker_csv_cache_v1";
+      const FALLBACK_ICON = "//www.google.com/s2/favicons?domain=sheets.google.com&sz=128";
+
+      let subscriptions = [];
+
+      const gridEl = document.getElementById("cards-grid");
+      const searchInput = document.getElementById("search-input");
+      const statusFilter = document.getElementById("status-filter");
+      const ownerFilter = document.getElementById("owner-filter");
+      const sortSelect = document.getElementById("sort-select");
+      const refreshBtn = document.getElementById("refresh-btn");
+      const syncStatusText = document.getElementById("sync-status-text");
+
+      /* 7A: Persistent 24-Hour New York Clock (Lines 634-652) */
+      function updateNYClock() {
+        const nyEl = document.getElementById("ny-clock");
+        if (!nyEl) return;
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "America/New_York",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        });
+        nyEl.textContent = `NY Time: ${formatter.format(now).replace(",", "")} | Version: ${APP_VERSION}`;
+      }
+      updateNYClock();
+      setInterval(updateNYClock, 1000);
+
+      /* 7B: Protocol Enforcement Helper (Lines 654-662) */
+      function toRelativeProtocol(url) {
+        if (!url || typeof url !== "string") return "";
+        const clean = url.trim();
+        if (clean.startsWith("https://")) return clean.replace("https://", "//");
+        if (clean.startsWith("http://")) return clean.replace("http://", "//");
+        return clean;
+      }
+
+      /* 7C: RFC-Compliant Quote-Safe CSV Parser (Lines 664-702) */
+      function parseCSV(text) {
+        const rows = [];
+        let currentRow = [];
+        let currentVal = "";
+        let insideQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+          const char = text[i];
+          const nextChar = text[i + 1];
+
+          if (char === '"') {
+            if (insideQuotes && nextChar === '"') {
+              currentVal += '"';
+              i++;
+            } else {
+              insideQuotes = !insideQuotes;
+            }
+          } else if (char === "," && !insideQuotes) {
+            currentRow.push(currentVal.trim());
+            currentVal = "";
+          } else if ((char === "\r" || char === "\n") && !insideQuotes) {
+            if (char === "\r" && nextChar === "\n") i++;
+            currentRow.push(currentVal.trim());
+            if (currentRow.some(cell => cell !== "")) rows.push(currentRow);
+            currentRow = [];
+            currentVal = "";
+          } else {
+            currentVal += char;
+          }
+        }
+        if (currentVal !== "" || currentRow.length > 0) {
+          currentRow.push(currentVal.trim());
+          if (currentRow.some(cell => cell !== "")) rows.push(currentRow);
+        }
+        return rows;
+      }
+
+      /* 7D: Date & Currency Parsing Helpers (Lines 704-738) */
+      function parseEndDate(dateStr) {
+        if (!dateStr) return null;
+        const parsed = new Date(dateStr);
+        if (isNaN(parsed.getTime())) return null;
+        // Set expiration to end of the specified calendar day (23:59:59)
+        parsed.setHours(23, 59, 59, 999);
+        return parsed;
+      }
+
+      function parsePrice(priceStr) {
+        if (!priceStr) return 0;
+        const num = parseFloat(priceStr.replace(/[^0-9.-]+/g, ""));
+        return isNaN(num) ? 0 : num;
+      }
+
+      /* 7E: Fetch CSV with Write-Protection LocalStorage Fallback (Lines 740-795) */
+      async function loadSheetData() {
+        try {
+          if (syncStatusText) syncStatusText.textContent = "Fetching latest sheet rows...";
+          const cacheBusterUrl = `${CSV_URL}&t=${Date.now()}`;
+          const response = await fetch(cacheBusterUrl);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const csvText = await response.text();
+          const rows = parseCSV(csvText);
+
+          if (!rows || rows.length <= 1) {
+            throw new Error("CSV snapshot empty or missing data rows.");
+          }
+
+          // Write-Protection Gate: Save only non-empty valid CSV
+          localStorage.setItem(CACHE_KEY, csvText);
+          processRows(rows);
+          if (syncStatusText) syncStatusText.textContent = `Synced ${subscriptions.length} subscriptions`;
+        } catch (err) {
+          console.warn("Live CSV fetch failed, checking localStorage fallback:", err);
+          const cached = localStorage.getItem(CACHE_KEY);
+          if (cached) {
+            processRows(parseCSV(cached));
+            if (syncStatusText) syncStatusText.textContent = "Offline mode (loaded cached snapshot)";
+          } else {
+            if (syncStatusText) syncStatusText.textContent = "Unable to load sheet data";
+          }
+        }
+      }
+
+      /* 7F: Map Columns A–J into Objects (Lines 797-835) */
+      function processRows(rows) {
+        // Columns: Name (A=0), Price (B=1), start (C=2), end (D=3), url (E=4),
+        // who_owns_it (F=5), status (G=6), monthly/yearly (H=7), Description (I=8), Image_url (J=9)
+        const dataRows = rows.slice(1);
+        const owners = new Set();
+
+        subscriptions = dataRows
+          .filter(r => r[0] && r[0].trim() !== "")
+          .map((r, idx) => {
+            const owner = (r[5] || "Unassigned").trim();
+            if (owner) owners.add(owner);
+
+            const endDateObj = parseEndDate(r[3]);
+            const rawStatus = (r[6] || "").trim();
+            const computedStatus = rawStatus || (!endDateObj || endDateObj > new Date() ? "Active" : "Inactive");
+
+            return {
+              id: idx,
+              name: r[0] || "Unnamed Service",
+              priceRaw: r[1] || "$0.00",
+              priceNum: parsePrice(r[1]),
+              start: r[2] || "—",
+              end: r[3] || "",
+              endDateObj: endDateObj,
+              url: r[4] || "",
+              owner: owner,
+              status: computedStatus,
+              cycle: r[7] || "Standard",
+              description: r[8] || "No description provided.",
+              imageUrl: toRelativeProtocol(r[9]) || FALLBACK_ICON
+            };
+          });
+
+        // Populate Owner Dropdown dynamically
+        const currentOwner = ownerFilter.value;
+        ownerFilter.innerHTML = `<option value="ALL">All Owners</option>`;
+        Array.from(owners).sort().forEach(o => {
+          const opt = document.createElement("option");
+          opt.value = o;
+          opt.textContent = o;
+          ownerFilter.appendChild(opt);
+        });
+        if (Array.from(owners).includes(currentOwner)) {
+          ownerFilter.value = currentOwner;
+        }
+
+        updateKPIs();
+        renderCards();
+      }
+
+      /* 7G: Update Summary KPI Strip (Lines 837-875) */
+      function updateKPIs() {
+        const now = new Date();
+        const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+
+        const activeSubs = subscriptions.filter(s => s.status.toLowerCase() === "active");
+        const activeSpend = activeSubs.reduce((sum, s) => sum + s.priceNum, 0);
+
+        const expiringSoon = activeSubs.filter(s => {
+          if (!s.endDateObj) return false;
+          const diff = s.endDateObj - now;
+          return diff > 0 && diff <= sevenDaysMs;
+        });
+
+        const upcoming = activeSubs
+          .filter(s => s.endDateObj && s.endDateObj > now)
+          .sort((a, b) => a.endDateObj - b.endDateObj);
+
+        document.getElementById("kpi-active-count").textContent = activeSubs.length;
+        document.getElementById("kpi-total-count").textContent = `of ${subscriptions.length} total tracked`;
+        document.getElementById("kpi-active-spend").textContent = `$${activeSpend.toFixed(2)}`;
+        document.getElementById("kpi-expiring-soon").textContent = expiringSoon.length;
+
+        if (upcoming.length > 0) {
+          document.getElementById("kpi-next-name").textContent = upcoming[0].name;
+          document.getElementById("kpi-next-date").textContent = `Ends ${upcoming[0].end}`;
+        } else {
+          document.getElementById("kpi-next-name").textContent = "None";
+          document.getElementById("kpi-next-date").textContent = "No upcoming end dates";
+        }
+      }
+
+      /* 7H: Render Filtered & Sorted Subscription Cards (Lines 877-965) */
+      function renderCards() {
+        const query = searchInput.value.toLowerCase().trim();
+        const statusVal = statusFilter.value;
+        const ownerVal = ownerFilter.value;
+        const sortVal = sortSelect.value;
+
+        let filtered = subscriptions.filter(sub => {
+          const matchesQuery =
+            sub.name.toLowerCase().includes(query) ||
+            sub.description.toLowerCase().includes(query) ||
+            sub.owner.toLowerCase().includes(query);
+          const matchesStatus = statusVal === "ALL" || sub.status.toLowerCase() === statusVal.toLowerCase();
+          const matchesOwner = ownerVal === "ALL" || sub.owner === ownerVal;
+          return matchesQuery && matchesStatus && matchesOwner;
+        });
+
+        filtered.sort((a, b) => {
+          if (sortVal === "price-desc") return b.priceNum - a.priceNum;
+          if (sortVal === "price-asc") return a.priceNum - b.priceNum;
+          if (sortVal === "name-asc") return a.name.localeCompare(b.name);
+          // Default: ending-soon
+          const timeA = a.endDateObj ? a.endDateObj.getTime() : Number.MAX_SAFE_INTEGER;
+          const timeB = b.endDateObj ? b.endDateObj.getTime() : Number.MAX_SAFE_INTEGER;
+          return timeA - timeB;
+        });
+
+        if (filtered.length === 0) {
+          gridEl.innerHTML = `<div class="stat-card" style="grid-column: 1/-1; text-align:center;">No matching subscriptions found.</div>`;
+          return;
+        }
+
+        gridEl.innerHTML = filtered.map(sub => {
+          const isActive = sub.status.toLowerCase() === "active";
+          const linkAttrs = sub.url
+            ? (() => {
+                const isExternal = sub.url.startsWith("http") && !sub.url.includes(window.location.hostname);
+                return `href="${sub.url}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}`;
+              })()
+            : "";
+
+          return `
+            <article class="sub-card ${isActive ? "" : "is-inactive"}">
+              <div>
+                <div class="card-top">
+                  <img
+                    class="sub-thumb"
+                    src="${sub.imageUrl}"
+                    onerror="this.onerror=null;this.src='${FALLBACK_ICON}';"
+                    data-fullsrc="${sub.imageUrl}"
+                    data-caption="${sub.name.replace(/"/g, "&quot;")} — ${sub.description.replace(/"/g, "&quot;")}"
+                  >
+                  <div class="sub-header-info">
+                    <div class="sub-title-row">
+                      <h2 class="sub-name" title="${sub.name}">${sub.name}</h2>
+                      <span class="badge ${isActive ? "badge-active" : "badge-inactive"}">${sub.status}</span>
+                    </div>
+                    <div class="sub-meta-tags">
+                      <span class="meta-pill">${sub.cycle}</span>
+                      <span class="meta-pill">Owner: ${sub.owner}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:14px;">
+                  <div class="sub-price">${sub.priceRaw}</div>
+                  <div style="font-size:0.78rem; color:var(--text-secondary);">Start: ${sub.start}</div>
+                </div>
+
+                <p class="sub-desc" style="margin-top:8px;">${sub.description}</p>
+              </div>
+
+              <div>
+                <div class="countdown-panel" data-end="${sub.endDateObj ? sub.endDateObj.getTime() : ""}">
+                  <div class="countdown-label">Time Remaining</div>
+                  <div class="countdown-display">Calculating...</div>
+                </div>
+
+                <div class="card-footer" style="margin-top:14px;">
+                  <span>Ends: <strong>${sub.end || "Lifetime / Ongoing"}</strong></span>
+                  ${sub.url ? `<a class="visit-link" ${linkAttrs}>Manage ↗</a>` : ""}
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+
+        tickCountdowns();
+      }
+
+      /* 7I: Live 1-Second Countdown Ticker (Lines 967-1015) */
+      function tickCountdowns() {
+        const now = Date.now();
+        const panels = document.querySelectorAll(".countdown-panel");
+
+        panels.forEach(panel => {
+          const endMsRaw = panel.getAttribute("data-end");
+          const displayEl = panel.querySelector(".countdown-display");
+          if (!displayEl) return;
+
+          if (!endMsRaw) {
+            panel.classList.remove("urgent", "critical");
+            displayEl.innerHTML = `<div class="countdown-static" style="color:#34d399;">∞ Lifetime / Ongoing</div>`;
+            return;
+          }
+
+          const endMs = Number(endMsRaw);
+          const diff = endMs - now;
+
+          if (diff <= 0) {
+            panel.classList.remove("urgent");
+            panel.classList.add("critical");
+            displayEl.innerHTML = `<div class="countdown-static" style="color:#f87171;">Expired</div>`;
+            return;
+          }
+
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((diff / 1000 / 60) % 60);
+          const seconds = Math.floor((diff / 1000) % 60);
+
+          panel.classList.toggle("critical", days < 2);
+          panel.classList.toggle("urgent", days >= 2 && days <= 7);
+
+          displayEl.innerHTML = `
+            <div class="countdown-timer">
+              <div class="time-unit"><strong>${days}</strong><span>Days</span></div>
+              <div class="time-unit"><strong>${String(hours).padStart(2, "0")}</strong><span>Hrs</span></div>
+              <div class="time-unit"><strong>${String(minutes).padStart(2, "0")}</strong><span>Min</span></div>
+              <div class="time-unit"><strong>${String(seconds).padStart(2, "0")}</strong><span>Sec</span></div>
+            </div>
+          `;
+        });
+      }
+      setInterval(tickCountdowns, 1000);
+
+      /* 7J: Lightbox Image & Alt Description Viewer (Lines 1017-1042) */
+      const lightbox = document.getElementById("lightbox");
+      const lightboxImg = document.getElementById("lightbox-img");
+      const lightboxCaption = document.getElementById("lightbox-caption");
+
+      gridEl.addEventListener("click", e => {
+        const thumb = e.target.closest(".sub-thumb");
+        if (!thumb) return;
+        const caption = thumb.getAttribute("data-caption") || "";
+        lightboxImg.src = thumb.getAttribute("data-fullsrc") || thumb.src;
+        lightboxImg.alt = caption;
+        lightboxCaption.textContent = caption;
+        lightbox.classList.add("open");
+      });
+
+      lightbox.addEventListener("click", () => {
+        lightbox.classList.remove("open");
+        lightboxImg.alt = "";
+      });
+
+      /* 7K: Event Listeners & Initial Load (Lines 1044-1055) */
+      searchInput.addEventListener("input", renderCards);
+      statusFilter.addEventListener("change", renderCards);
+      ownerFilter.addEventListener("change", renderCards);
+      sortSelect.addEventListener("change", renderCards);
+      refreshBtn.addEventListener("click", loadSheetData);
+
+      loadSheetData();
+    });
+  </script>
+</body>
+</html>
