@@ -269,6 +269,27 @@
             box-shadow: 0 0 12px var(--accent-glow);
         }
 
+        /* Pill of the game the signed-in player is playing right now */
+        .game-pill.is-live { border-color: #22c55e; }
+        .game-pill.is-live::after {
+            content: 'LIVE';
+            font-size: 0.6rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #052e16;
+            background: #22c55e;
+            padding: 2px 6px;
+            border-radius: 10px;
+            animation: livePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes livePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.55); } 50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); } }
+        .live-follow-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-muted);
+            padding: 6px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; cursor: pointer;
+        }
+        .live-follow-btn.is-on { color: #22c55e; border-color: rgba(34,197,94,0.5); }
+
         .game-pill-icon {
             font-size: 0.8rem;
             color: var(--user-theme-accent);
@@ -550,7 +571,11 @@
                     <i class="fas fa-crosshairs" style="color:var(--user-theme-accent);"></i>
                     <span id="resistance-name">GUEST [PS]</span>
                 </div>
-                <div>
+                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <button type="button" id="liveFollowBtn" class="live-follow-btn hidden" title="Move the game pill to whatever you're playing on PlayStation">
+                        <i class="fas fa-tower-broadcast"></i> <span>AUTO-SWITCH: ON</span>
+                    </button>
+                    <div>
                     <label for="platformSelector" style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-right:6px;">PLATFORM:</label>
                     <select id="platformSelector" class="hud-select">
                         <option value="ps">PlayStation</option>
@@ -558,6 +583,7 @@
                         <option value="xbox">Xbox</option>
                         <option value="steam">Steam</option>
                     </select>
+                    </div>
                 </div>
             </div>
 
@@ -632,6 +658,6 @@
     </footer>
 
     <!-- Direct neighbor script binding (Same /game/ directory) -->
-    <script src="./Universal.js?v=20261102d"></script>
+    <script src="./Universal.js?v=20261112a"></script>
 </body>
 </html>

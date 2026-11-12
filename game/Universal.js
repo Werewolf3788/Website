@@ -3378,6 +3378,180 @@ async function buildGamePillsBar() {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Section 12b: Follow the game the signed-in player is playing.
+// Works for ANY user: it listens to the PSN card of whichever gamertag is saved
+// on the signed-in profile (/psn/gamertags/{tag}/online, commId, currentGame,
+// activeHunt/commId ...) and moves the pill to the matching game. Nothing here
+// is tied to one person.
+// ---------------------------------------------------------------------------
+const LIVE_FOLLOW_PREF = 'ww_live_follow';
+let initialGameLoadDone = false;
+let liveFollow = { tag: null, refs: [], timer: null, lastKey: null, first: true, state: {}, pending: false, scrolledKey: null };
+
+function liveFollowEnabled() {
+    try { return localStorage.getItem(LIVE_FOLLOW_PREF) !== '0'; } catch (e) { return true; }
+}
+
+function refreshLiveFollowButton() {
+    const btn = document.getElementById('liveFollowBtn');
+    if (!btn) return;
+    const on = liveFollowEnabled();
+    btn.classList.toggle('hidden', !liveFollow.tag);
+    btn.classList.toggle('is-on', on);
+    const label = btn.querySelector('span');
+    if (label) label.textContent = on ? 'AUTO-SWITCH: ON' : 'AUTO-SWITCH: OFF';
+}
+
+function normGameTitle(s) {
+    return String(s || '').toLowerCase().replace(/[®™©]/g, '').replace(/&/g, ' and ')
+        .replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+// Every PlayStation id a catalog game is known by. Reads commId, the PS4/PS5
+// variants and any id mentioned in the platform notes (e.g. a base-game trophy
+// list noted next to the Director's Cut one), so either edition lands on the pill.
+function psnIdsOfCatalogGame(g) {
+    const commIds = new Set(), titleIds = new Set();
+    const walk = (v, depth) => {
+        if (v == null || depth > 5) return;
+        if (typeof v === 'string') {
+            (v.match(/NPWR\d+_\d+/gi) || []).forEach(m => commIds.add(m.toUpperCase()));
+            (v.match(/(?:CUSA|PPSA)\d+/gi) || []).forEach(m => titleIds.add(m.toUpperCase()));
+        } else if (typeof v === 'object') {
+            Object.values(v).forEach(x => walk(x, depth + 1));
+        }
+    };
+    if (g) [g.commId, g.psn_communication_id, g.platforms && g.platforms.playstation].forEach(x => walk(x, 0));
+    return { commIds, titleIds };
+}
+
+// Resolve what the player is on to a key in the /games catalog (the pill keys).
+// Order: explicit gameKey, trophy-list id, console title id, exact title, then a
+// unique "starts with" title match (so "Far Cry 5 Gold Edition" finds "Far Cry 5").
+function matchLiveGameKey(catalog, hint) {
+    if (!catalog) return null;
+    const keys = Object.keys(catalog);
+    const byLower = {};
+    keys.forEach(k => { byLower[k.toLowerCase()] = k; });
+
+    const gk = String(hint.gameKey || '').toLowerCase();
+    if (gk && byLower[gk]) return byLower[gk];
+
+    const ids = keys.map(k => ({ k, ...psnIdsOfCatalogGame(catalog[k]) }));
+    for (const raw of hint.commIds || []) {
+        const c = String(raw || '').toUpperCase().trim();
+        if (!c) continue;
+        const hit = ids.find(x => x.commIds.has(c));
+        if (hit) return hit.k;
+    }
+    const tid = (String(hint.titleId || '').toUpperCase().match(/(?:CUSA|PPSA)\d+/) || [])[0];
+    if (tid) {
+        const hit = ids.find(x => x.titleIds.has(tid));
+        if (hit) return hit.k;
+    }
+    for (const raw of hint.titles || []) {
+        const t = normGameTitle(raw);
+        if (!t) continue;
+        const named = keys.map(k => ({ k, t: normGameTitle(catalog[k] && (catalog[k].game || catalog[k].title)) })).filter(x => x.t);
+        const exact = named.filter(x => x.t === t);
+        if (exact.length === 1) return exact[0].k;
+        if (t.length >= 8) {
+            const part = named.filter(x => x.t.length >= 8 && (t.startsWith(x.t + ' ') || x.t.startsWith(t + ' ')));
+            if (part.length === 1) return part[0].k;
+        }
+    }
+    return null;
+}
+
+function paintLivePills(liveKey) {
+    let livePill = null;
+    document.querySelectorAll('.game-pill').forEach(pill => {
+        const isLive = !!liveKey && String(pill.getAttribute('data-game-key') || '').toLowerCase() === String(liveKey).toLowerCase();
+        pill.classList.toggle('is-live', isLive);
+        if (isLive) livePill = pill;
+    });
+    if (livePill && liveFollow.scrolledKey !== liveKey) {
+        liveFollow.scrolledKey = liveKey;
+        try { livePill.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+    }
+    if (!liveKey) liveFollow.scrolledKey = null;
+}
+
+function evaluateLiveGame(force) {
+    const lf = liveFollow;
+    if (!lf.tag) return;
+    if (!initialGameLoadDone) { lf.pending = true; return; }   // never race the first game load
+    const catalog = window.__gamesCatalog;
+    if (!catalog) return;
+
+    const s = lf.state;
+    const online = s.online === true || s.online === 'true';
+    const cur = String(s.currentGame || '').trim();
+    const playing = online && !!cur && !/^(dashboard|idle)$/i.test(cur);
+    const huntId = s['activeHunt/commId'], huntTitle = s['activeHunt/title'];
+
+    // Playing right now: the live commId wins. Offline / on the dashboard: fall back to
+    // the game they are hunting (activeHunt) so the pill still lands on their game.
+    const key = matchLiveGameKey(catalog, {
+        gameKey: s.gameKey,
+        commIds: playing ? [s.commId, huntId] : [huntId, s.commId],
+        titleId: s.currentGameId,
+        titles: playing ? [cur, huntTitle] : [huntTitle, cur]
+    });
+
+    paintLivePills(playing ? key : null);
+
+    const first = lf.first, changed = key !== lf.lastKey;
+    lf.first = false;
+    lf.lastKey = key;
+    if (!key) {
+        if (playing && (first || changed)) appState.updateStatus(`[Live] ${lf.tag} is playing "${cur}", which isn't in the game library yet.`);
+        return;
+    }
+    if (!liveFollowEnabled() && !force) return;
+    if (String(key).toLowerCase() === CURRENT_GAME_KEY) return;
+
+    const q = new URLSearchParams(window.location.search);
+    const explicit = q.has('game') || q.has('id');
+    // First look: live game beats a stale link; a quiet player doesn't override an explicit link.
+    // After that: only move when their game actually changes, so a manual pill pick sticks.
+    const shouldSwitch = force || (first ? (playing || !explicit) : changed);
+    if (!shouldSwitch) return;
+
+    appState.updateStatus(playing ? `[Live] ${lf.tag} is playing ${cur}. Switching to it.` : `[Live] Switching to ${lf.tag}'s active game.`);
+    appState.switchGame(key);
+}
+
+function stopLiveGameFollow() {
+    liveFollow.refs.forEach(({ ref, cb }) => { try { ref.off('value', cb); } catch (e) {} });
+    if (liveFollow.timer) clearTimeout(liveFollow.timer);
+    liveFollow = { tag: null, refs: [], timer: null, lastKey: null, first: true, state: {}, pending: false, scrolledKey: null };
+    paintLivePills(null);
+    refreshLiveFollowButton();
+}
+
+async function startLiveGameFollow(tag) {
+    if (!tag || !psnRtdb) { stopLiveGameFollow(); return; }
+    if (liveFollow.tag === tag) return;
+    stopLiveGameFollow();
+    const mine = liveFollow = { tag, refs: [], timer: null, lastKey: null, first: true, state: {}, pending: false, scrolledKey: null };
+    refreshLiveFollowButton();
+    await psnReady;                                    // anonymous sign-in to the PSN project
+    if (liveFollow !== mine) return;                   // signed out / changed while waiting
+    const base = `/psn/gamertags/${String(tag).replace(/[.$#\[\]\/]/g, '_')}`;
+    ['online', 'commId', 'currentGame', 'currentGameId', 'gameKey', 'activeHunt/commId', 'activeHunt/title'].forEach(field => {
+        const ref = psnRtdb.ref(`${base}/${field}`);
+        const cb = snap => {
+            mine.state[field] = snap.val();
+            if (mine.timer) clearTimeout(mine.timer);
+            mine.timer = setTimeout(() => { if (liveFollow === mine) evaluateLiveGame(); }, 150);  // fields land together
+        };
+        ref.on('value', cb, err => console.warn('[Live game follow]', field, err && err.message));
+        mine.refs.push({ ref, cb });
+    });
+}
+
 // Live game data: when GitHub syncs a new version of /games/{key}, re-render
 // in place (keeping your progress, open sections and scroll position).
 let gameWatch = null;
@@ -3455,6 +3629,16 @@ async function initUniversalEngine() {
         });
     }
 
+    const liveBtn = document.getElementById('liveFollowBtn');
+    if (liveBtn) {
+        liveBtn.addEventListener('click', () => {
+            const turnOn = !liveFollowEnabled();
+            try { localStorage.setItem(LIVE_FOLLOW_PREF, turnOn ? '1' : '0'); } catch (e) {}
+            refreshLiveFollowButton();
+            if (turnOn) evaluateLiveGame(true);   // jump straight to the game they're on
+        });
+    }
+
     const menuBtn = document.getElementById('mobileMenuBtn');
     const navLinks = document.getElementById('dynamicNavLinks');
     if (menuBtn && navLinks) {
@@ -3518,6 +3702,9 @@ async function initUniversalEngine() {
                     }
                 } catch (e) {}
 
+                // Follow whatever game this player's PSN card says they are on.
+                startLiveGameFollow(appState.psnGamertag).catch(e => console.warn('[Live game follow]', e));
+
                 if (appState.gameData) {
                     await appState.loadProgress();
                     await appState.syncFriendsProgress();
@@ -3529,6 +3716,7 @@ async function initUniversalEngine() {
                 appState.currentUser = null;
                 try { localStorage.removeItem('ww_user_avatar'); window.dispatchEvent(new Event('ww-avatar')); } catch (e) {}
                 appState.psnGamertag = null;
+                stopLiveGameFollow();
 
                 const nameEl = document.getElementById('resistance-name');
                 if (nameEl) nameEl.innerText = `GUEST [${appState.platform.toUpperCase()}]`;
@@ -3543,6 +3731,8 @@ async function initUniversalEngine() {
     }
 
     await loadAndHydrateGame(CURRENT_GAME_KEY);
+    initialGameLoadDone = true;
+    if (liveFollow.pending) { liveFollow.pending = false; evaluateLiveGame(); }
 }
 
 // Universal Self-Starting Execution Gate
