@@ -21,7 +21,9 @@
         ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
         "username":        { ".validate": "newData.isString() && newData.val().length <= 32" },
         "primary_color":   { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" },
-        "secondary_color": { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" }
+        "secondary_color": { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" },
+        "discord_signin_id":  { ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[0-9]{17,20}$/))" },
+        "discord_signin_key": { ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[0-9a-f]{64}$/))" }
       }
     },
 

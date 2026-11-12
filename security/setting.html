@@ -122,6 +122,11 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
     <p>Optional: the site uses its own key if you leave this empty. To use yours, open <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener">steamcommunity.com/dev/apikey</a>, sign in, enter <code>entertainment-71888.firebaseapp.com</code> as the domain, and paste the 32-character key. A key does not unlock a private Steam profile; the privacy settings above still apply.</p>
     <p id="steamKeyState" class="hint"></p></div>
 
+  <h2>Discord sign-in</h2>
+  <p class="hint">Your Discord app's details, saved to your account. Find both at <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">discord.com/developers/applications</a> &gt; your app &gt; General Information. These two are public values, not secrets. Never paste the Client Secret here.</p>
+  <label for="discord_signin_id">Discord Application ID</label><div class="row"><input id="discord_signin_id" inputmode="numeric" autocomplete="off" placeholder="17-20 digit number"></div>
+  <label for="discord_signin_key">Discord Public Key</label><div class="row"><input id="discord_signin_key" autocomplete="off" spellcheck="false" placeholder="64-character key"></div>
+
   <h2>Xbox / Microsoft sync (private)</h2>
   <p class="hint">Put your Xbox gamertag in the Xbox gamertag box under Linked accounts. The API key below is what lets the site actually pull your achievements and presence, the same way the PSN NPSSO cookie does for PlayStation.</p>
   <label for="xbox_user_id">Xbox User ID # (XUID, optional)</label><div class="row" data-secret="xbox_user_id"></div>
@@ -416,6 +421,7 @@ async function load(){
   $('username').value=D.username||U.displayName||'';
   $('avatar_source').value=D.avatar_source||'google';$('avatar_custom').value=D.avatar_source==='custom'?D.avatar_url||'':'';
   HANDLES.forEach(([f,,s])=>{$(f).value=D[f]||'';$(s).value=D[s]||'private'});
+  $('discord_signin_id').value=D.discord_signin_id||'';$('discord_signin_key').value=D.discord_signin_key||'';
   $('psn_account_id').value=D.psn_account_id||S.psn_account_id||'';$('psn_npsso').value=S.psn_npsso||'';
   $('steam_api_key').value=S.steam_api_key||'';$('steamKeyState').textContent=S.steam_api_key?(D.steam_api_key_valid===false?'Steam rejected the saved key. Paste a new one.':'Key saved.'):'';
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
@@ -553,6 +559,10 @@ $('save').onclick=async()=>{
       primary_color:$('h1').value,secondary_color:$('h2x').value,
       links:[0,1,2,3,4].map(i=>$('lk'+i).value.trim()).filter(Boolean),updated_at:now};
     HANDLES.forEach(([f,,s])=>{pub[f]=$(f).value.trim();pub[s]=$(s).value});
+    const dId=$('discord_signin_id').value.trim(),dKey=$('discord_signin_key').value.trim().toLowerCase();
+    if(dId&&!/^\d{17,20}$/.test(dId))return say('Discord Application ID must be a 17-20 digit number.',1);
+    if(dKey&&!/^[0-9a-f]{64}$/.test(dKey))return say('Discord Public Key must be 64 characters (0-9, a-f).',1);
+    pub.discord_signin_id=dId;pub.discord_signin_key=dKey;
     const npsso=$('psn_npsso').value.trim();
     if(npsso&&!/^[A-Za-z0-9]{64}$/.test(npsso))return say('NPSSO must be exactly 64 letters and numbers.',1);
     const skey=$('steam_api_key').value.trim().toUpperCase();
