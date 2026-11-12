@@ -34,7 +34,10 @@ const { getDatabase } = require("firebase-admin/database");
 const KEVIN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const RAY_RTDB_URL = "https://playstation-stats-default-rtdb.firebaseio.com";
 const ENGINE_VERSION = "1.0.0";
-const OPENXBL_BASE = "https://xbl.io/api/v2";
+// Confirmed against the OpenXBL dashboard's own "Getting Started" curl example
+// (api.xbl.io, not xbl.io/api) - the earlier xbl.io/api/v2 base happened to also
+// resolve and pass requests through, which is why it looked like it was working.
+const OPENXBL_BASE = "https://api.xbl.io/v2";
 const IS_MANUAL = process.env.GITHUB_EVENT_NAME === "workflow_dispatch";
 
 /* ----------------------------------------------------------------------------
@@ -153,25 +156,30 @@ async function fetchOpenXBL(path, apiKey) {
 }
 
 async function getProfileByGamertag(gamertag, apiKey) {
-    const data = await fetchOpenXBL(`/account/${encodeURIComponent(gamertag)}`, apiKey);
-    const p = data?.profileUsers?.[0];
+    // /account/{gamertag} isn't the right lookup-by-gamertag endpoint - confirmed working
+    // reference implementations use /search/{gamertag} instead. The account endpoint
+    // (bare, no gamertag) is for the authenticated key owner's own profile.
+    const data = await fetchOpenXBL(`/search/${encodeURIComponent(gamertag)}`, apiKey);
+    const p = data?.profileUsers?.[0] || data?.people?.[0] || (Array.isArray(data) ? data[0] : null);
     if (!p) {
-        // The /account/{gamertag} shape itself checks out (profileUsers[0] is right) -
-        // this is Xbox Live's own "no such profile" passed through by OpenXBL, usually
-        // because the saved gamertag string doesn't match exactly (missing/wrong #1234
-        // discriminator, a typo, or a changed gamertag). Surface the real reason.
-        const inner = data?.content?.description || data?.description || JSON.stringify(data).slice(0, 300);
-        throw new Error(`Xbox Live found no profile for gamertag "${gamertag}": ${inner}`);
+        // Response shape for /search isn't confirmed yet - dump it (no key in it) so the
+        // real field names can be read from the Action log if this still comes up empty.
+        console.warn(`[XBOX DEBUG] /search/${gamertag} raw response: ${JSON.stringify(data).slice(0, 800)}`);
+        throw new Error(`No profile found via /search for gamertag "${gamertag}"`);
     }
     const settings = {};
     for (const s of p.settings || []) settings[s.id] = s.value;
+    // Two possible shapes seen across OpenXBL/XSAPI-style endpoints: the XSAPI
+    // "profileUsers[0].settings[]" array (id/value pairs), or a flatter
+    // peoplehub-style object with the fields directly on it. Handle both rather
+    // than assume - this is the part most likely to need a follow-up tweak.
     return {
-        xuid: p.id,
-        gamertag: settings.Gamertag || gamertag,
-        gamerscore: Number(settings.Gamerscore || 0),
-        gamerPicture: settings.GameDisplayPicRaw || "",
-        bio: settings.Bio || "",
-        tier: settings.AccountTier || ""
+        xuid: p.id || p.xuid,
+        gamertag: settings.Gamertag || p.gamertag || gamertag,
+        gamerscore: Number(settings.Gamerscore ?? p.gamerScore ?? p.gamerscore ?? 0),
+        gamerPicture: settings.GameDisplayPicRaw || p.displayPicRaw || p.gamerPicture || "",
+        bio: settings.Bio || p.bio || "",
+        tier: settings.AccountTier || p.detail?.accountTier || ""
     };
 }
 
