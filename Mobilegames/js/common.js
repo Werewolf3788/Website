@@ -219,7 +219,7 @@
           var prof = (await db.ref('users/' + uk).once('value')).val() || {};
           var scope = prof.tracking_scope || 'friends';
           if (scope === 'private') { out.push({ code: code, name: item.name, avatar: item.avatar, plays: [], note: 'private' }); return; }
-          item.name = fo.username || prof.username || prof.display_name || code; item.avatar = prof.avatar_url || fo.avatar_url || '';
+          item.name = prof.username || prof.display_name || fo.username || code; item.avatar = prof.avatar_url || fo.avatar_url || '';
           var np = prof.now_playing;
           if (!item.plays.length && np && np.t && now - np.t < 150000) item.plays.push({ kind: 'mobile', game: np.game, title: np.title, status: np.status || '', room: np.room, open: np.open | 0 });
           var tag = prof.psn_username || fo.psn_username;

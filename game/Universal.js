@@ -1169,7 +1169,7 @@ window.appState.syncFriendsProgress = async function() {
             let userKey = null, profile = {};
             try { const k = (await rtdb.ref(`/friend_codes/${code}`).once('value')).val(); if (typeof k === 'string') userKey = k; } catch (e) {}
             if (userKey) { try { profile = (await rtdb.ref(`/users/${userKey}`).once('value')).val() || {}; } catch (e) {} }
-            const name = fObj.username || profile.username || profile.display_name || code;
+            const name = profile.username || profile.display_name || fObj.username || code;   // their current username wins over the one saved when added
             // Respect the friend's "Game & trophy tracking" setting (default: friends can see it).
             const scope = profile.tracking_scope || 'friends';
             let allowed = scope !== 'private';
@@ -3690,6 +3690,22 @@ async function initUniversalEngine() {
                     const uData = snap.val() || {};
                     appState.myFriendCode = uData.friend_code || null;
                     appState.psnGamertag = uData.psn_username || null;
+
+                    // Show the username they chose in Settings, not their Google/email name.
+                    if (uData.username && String(uData.username).trim()) {
+                        appState.activeUser = String(uData.username).trim();
+                        const n1 = document.getElementById('resistance-name');
+                        if (n1) n1.innerText = `${appState.activeUser.toUpperCase()} [${appState.platform.toUpperCase()}]`;
+                        const n2 = document.getElementById('userDisplayName');
+                        if (n2) n2.innerText = appState.activeUser;
+                    }
+                    // Older accounts have a friend code but no /friend_codes lookup entry, so friends cannot add them. Repair it.
+                    if (appState.myFriendCode) {
+                        try {
+                            const fcRef = rtdb.ref(`/friend_codes/${appState.myFriendCode}`);
+                            if (!(await fcRef.once('value')).exists()) await fcRef.set(emailKey);
+                        } catch (e) { console.warn('[friend code repair]', e && e.message); }
+                    }
 
                     const codeDisplay = document.getElementById('myFriendCodeDisplay');
                     if (codeDisplay && appState.myFriendCode) codeDisplay.innerText = appState.myFriendCode;

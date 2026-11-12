@@ -327,7 +327,11 @@ $('avatar_custom').onchange=resolveAvatar;
 // ---- Load / save ----
 const rand8=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b%32]).join('');
 async function ensureFriendCode(){
-  if(D.friend_code)return D.friend_code;
+  if(D.friend_code){
+    // Older accounts have the code on their profile but no /friend_codes lookup, so nobody could add them. Repair it.
+    try{const r=await db.ref('friend_codes/'+D.friend_code).get();if(!r.exists())await db.ref('friend_codes/'+D.friend_code).set(K)}catch(e){console.warn('[friend code repair]',e&&e.message)}
+    return D.friend_code;
+  }
   for(let i=0;i<5;i++){const c=rand8();const r=await db.ref('friend_codes/'+c).get();
     if(!r.exists()){await db.ref('friend_codes/'+c).set(K);D.friend_code=c;await db.ref('users/'+K+'/friend_code').set(c);return c}}
   throw new Error('Could not create a friend code. Try again.');
@@ -354,6 +358,7 @@ async function load(){
   $('tracking_scope').value=D.tracking_scope||'friends';
   renderCloseFriends();
   $('friend_code').value=await ensureFriendCode();
+  refreshFriendNames();
   await resolveAvatar();
   showSteam();
   if($('psn_account_id').value.trim())fillPsnName();else fillPsnId();
@@ -383,7 +388,7 @@ async function addFriend(){
   const b=$('addFr');b.disabled=true;b.textContent='Adding…';
   try{
     const fk=(await db.ref('friend_codes/'+code).get()).val();
-    if(typeof fk!=='string'||!fk)return addMsg('No player has the code '+code+'. Check it with your friend.',1),false;
+    if(typeof fk!=='string'||!fk)return addMsg('No player has the code '+code+'. Check it with your friend. If it is right, ask them to open Settings once while signed in, which activates older codes.',1),false;
     if(fk===K)return addMsg("That's your own code.",1),false;
     const prof=(await db.ref('users/'+fk).get()).val()||{};
     const f={friend_code:code,username:prof.username||code,added_at:Date.now()};
@@ -415,6 +420,15 @@ $('add_code').addEventListener('paste',e=>{
   e.preventDefault();$('add_code').value=extractFriendCode(txt);$('addState').textContent='';
 });
 $('add_code').addEventListener('input',e=>{const el=e.target,v=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);if(el.value!==v)el.value=v});
+async function refreshFriendNames(){
+  const entries=Object.entries(D.friends||{});if(!entries.length)return;
+  let changed=false;
+  await Promise.all(entries.map(async([code,f])=>{
+    try{const fk=(await db.ref('friend_codes/'+(f&&f.friend_code||code)).get()).val();if(typeof fk!=='string')return;
+      const u=(await db.ref('users/'+fk+'/username').get()).val();
+      if(u&&f&&f.username!==u){f.username=u;changed=true}}catch(e){}}));
+  if(changed){keepCloseTicks();renderCloseFriends()}
+}
 $('cp').onclick=()=>navigator.clipboard.writeText($('friend_code').value).then(()=>say('Friend code copied.'));
 
 $('save').onclick=async()=>{
