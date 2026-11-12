@@ -1,0 +1,645 @@
+{
+  "game": "Tom Clancy's Ghost Recon Wildlands",
+  "gameId": "wildlands",
+  "commId": "NPWR09395_00",
+  "image_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/460930/header.jpg",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR09395_00"
+    },
+    "steam": {
+      "appId": "",
+      "url": ""
+    },
+    "xbox": {
+      "productId": "",
+      "url": ""
+    }
+  },
+  "lastUpdated": "",
+  "overallProgress": 0,
+  "collectibles": {
+    "weapon_skills": {
+      "quest_name": "Weapon Skills",
+      "region": "Bolivia-wide",
+      "description": "Weapon skill tree. Click a rank box to mark your current tier (1-3); a skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "items": [
+        {
+          "id": "skill_stable_aim",
+          "name": "Stable Aim",
+          "region": "Weapon",
+          "location": "Weapon Skill Tree",
+          "guide": "Reduces sway when aiming heavy sniper rifles.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/stable_aim.png",
+          "bonus": {
+            "name": "Stable Aim",
+            "desc": "Reduces aim sway by 15%."
+          }
+        },
+        {
+          "id": "skill_hip_fire_spread",
+          "name": "Hip Fire Spread",
+          "region": "Weapon",
+          "location": "Weapon Skill Tree",
+          "guide": "Tightens bullet spread when firing from the hip.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/hip_fire_spread.png",
+          "bonus": {
+            "name": "Hip Fire Spread",
+            "desc": "Reduces hip-fire spread by 10%."
+          }
+        },
+        {
+          "id": "skill_grenade_launcher",
+          "name": "Grenade Launcher",
+          "region": "Weapon",
+          "location": "Weapon Skill Tree",
+          "guide": "Unlocks an under-barrel launcher that fires frag grenades quickly.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/grenade_launcher.png"
+        },
+        {
+          "id": "skill_ammo_capacity",
+          "name": "Ammo Capacity",
+          "region": "Weapon",
+          "location": "Weapon Skill Tree",
+          "guide": "Lets you carry more reserve ammo (not more per magazine).",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/ammo_capacity.png",
+          "bonus": {
+            "name": "Ammo Capacity",
+            "desc": "Raises maximum reserve ammo by 25%."
+          }
+        },
+        {
+          "id": "skill_vhc_destruction",
+          "name": "VHC Destruction",
+          "region": "Weapon",
+          "location": "Weapon Skill Tree",
+          "guide": "Increases the damage your weapons deal to vehicles.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/vhc_destruction.png",
+          "bonus": {
+            "name": "VHC Destruction",
+            "desc": "Increases vehicle damage by 20%."
+          }
+        },
+        {
+          "id": "skill_adv_suppressor",
+          "name": "ADV Suppressor",
+          "region": "Weapon",
+          "location": "Weapon Skill Tree",
+          "guide": "Keeps full weapon damage while a suppressor is attached.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/adv_suppressor.png"
+        },
+        {
+          "id": "skill_time_to_aim",
+          "name": "Time to Aim",
+          "region": "Weapon",
+          "location": "Weapon Skill Tree",
+          "guide": "Shortens the time it takes to aim scoped weapons.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/time_to_aim.png",
+          "bonus": {
+            "name": "Time to Aim",
+            "desc": "Cuts aim-in time by 10%."
+          }
+        },
+        {
+          "id": "skill_ammo_retention",
+          "name": "Ammo Retention",
+          "region": "Weapon",
+          "location": "Weapon Skill Tree",
+          "guide": "Refills all carried ammo whenever you respawn.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/ammo_retention.png"
+        }
+      ]
+    },
+    "drone_skills": {
+      "quest_name": "Drone Skills",
+      "region": "Bolivia-wide",
+      "description": "Drone skill tree. Click a rank box to mark your current tier (1-3); a skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "items": [
+        {
+          "id": "skill_battery_increase",
+          "name": "Battery Increase",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Extends how long the drone can stay airborne before needing to recharge.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/battery_increase.png"
+        },
+        {
+          "id": "skill_night_vision",
+          "name": "Night Vision",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Improves the drone's camera for use in low light.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/night_vision.png"
+        },
+        {
+          "id": "skill_range",
+          "name": "Range",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Extends how far the drone can fly from the operator before losing signal.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/range.png",
+          "bonus": {
+            "name": "Range",
+            "desc": "Increases drone range by 25%."
+          }
+        },
+        {
+          "id": "skill_speed",
+          "name": "Speed",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Makes the drone fly faster and turn more nimbly.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/speed.png",
+          "bonus": {
+            "name": "Speed",
+            "desc": "Adds a 20% speed bonus."
+          }
+        },
+        {
+          "id": "skill_mark_area",
+          "name": "Mark Area",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Lets the drone spot and mark targets across a wider area.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/mark_area.png",
+          "bonus": {
+            "name": "Mark Area",
+            "desc": "Doubles mark-area efficiency."
+          }
+        },
+        {
+          "id": "skill_stealth",
+          "name": "Stealth",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Reduces the noise the drone makes in flight.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/stealth.png"
+        },
+        {
+          "id": "skill_cooldown",
+          "name": "Cooldown",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Shortens the wait before the drone's payload can be used again.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/cooldown.png",
+          "bonus": {
+            "name": "Cooldown",
+            "desc": "Shortens cooldown by 8 seconds."
+          }
+        },
+        {
+          "id": "skill_noisemaker",
+          "name": "Noisemaker",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Lets the drone emit noise to distract and lure enemies.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/noisemaker.png"
+        },
+        {
+          "id": "skill_zoom",
+          "name": "Zoom",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Increases the drone camera's maximum zoom.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/zoom.png"
+        },
+        {
+          "id": "skill_explosive",
+          "name": "Explosive",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Equips the drone with a remotely detonated explosive charge.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/explosive.png"
+        },
+        {
+          "id": "skill_emp",
+          "name": "EMP",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Equips the drone with an EMP charge that disables nearby vehicles and electronics.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/emp.png"
+        },
+        {
+          "id": "skill_armor",
+          "name": "Armor",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Lets the drone absorb more damage before being destroyed.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/armor.png",
+          "bonus": {
+            "name": "Armor",
+            "desc": "Doubles the drone's damage resistance."
+          }
+        },
+        {
+          "id": "skill_thermal_vision",
+          "name": "Thermal Vision",
+          "region": "Drone",
+          "location": "Drone Skill Tree",
+          "guide": "Gives the drone a thermal camera mode.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/thermal_vision.png"
+        }
+      ]
+    },
+    "item_skills": {
+      "quest_name": "Item Skills",
+      "region": "Bolivia-wide",
+      "description": "Item skill tree. Click a rank box to mark your current tier (1-3); a skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "items": [
+        {
+          "id": "skill_parachute",
+          "name": "Parachute",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Lets you deploy a parachute to land safely after jumping or falling from aircraft.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/parachute.png"
+        },
+        {
+          "id": "skill_binocular_zoom",
+          "name": "Binocular Zoom",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Increases the binoculars' maximum zoom level.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/binocular_zoom.png",
+          "bonus": {
+            "name": "Binocular Zoom",
+            "desc": "Raises maximum binocular zoom by 25%."
+          }
+        },
+        {
+          "id": "skill_mine",
+          "name": "Mine",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Unlocks a proximity mine that damages infantry and vehicles; higher ranks carry more.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/mine.png",
+          "bonus": {
+            "name": "Mine",
+            "desc": "Grants one extra mine."
+          }
+        },
+        {
+          "id": "skill_diversion_lure",
+          "name": "Diversion Lure",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Throws a lure that draws nearby enemies to a chosen spot.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/diversion_lure.png",
+          "bonus": {
+            "name": "Diversion Lure",
+            "desc": "Grants one extra lure."
+          }
+        },
+        {
+          "id": "skill_frag_grenade",
+          "name": "Frag Grenade",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Unlocks frag grenades; higher ranks let you carry more.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/frag_grenade.png",
+          "bonus": {
+            "name": "Frag Grenade",
+            "desc": "Grants two extra frag grenades."
+          }
+        },
+        {
+          "id": "skill_c4",
+          "name": "C4",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Unlocks remote-detonated C4 charges; higher ranks let you carry more.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/c4.png",
+          "bonus": {
+            "name": "C4",
+            "desc": "Grants one extra C4 pack."
+          }
+        },
+        {
+          "id": "skill_binocular_recon",
+          "name": "Binocular Recon",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Improves how quickly and accurately the binoculars identify and tag targets.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/binocular_recon.png",
+          "bonus": {
+            "name": "Binocular Recon",
+            "desc": "Boosts recon efficiency by 15%."
+          }
+        },
+        {
+          "id": "skill_thermal_vision",
+          "name": "Thermal Vision",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Gives you a handheld thermal-vision mode.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/thermal_vision.png"
+        },
+        {
+          "id": "skill_flashbang_grenade",
+          "name": "Flashbang Grenade",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Unlocks flashbangs that disorient groups of enemies.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/flashbang_grenade.png",
+          "bonus": {
+            "name": "Flashbang Grenade",
+            "desc": "Grants two extra flashbangs."
+          }
+        },
+        {
+          "id": "skill_flare_gun",
+          "name": "Flare Gun",
+          "region": "Item",
+          "location": "Item Skill Tree",
+          "guide": "Fires a flare that draws enemy attention to where it lands.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/flare_gun.png",
+          "bonus": {
+            "name": "Flare Gun",
+            "desc": "Grants two extra flares."
+          }
+        }
+      ]
+    },
+    "physical_skills": {
+      "quest_name": "Physical Skills",
+      "region": "Bolivia-wide",
+      "description": "Physical skill tree. Click a rank box to mark your current tier (1-3); a skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "items": [
+        {
+          "id": "skill_stamina",
+          "name": "Stamina",
+          "region": "Physical",
+          "location": "Physical Skill Tree",
+          "guide": "Extends how long you can sprint before running out of breath.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/stamina.png"
+        },
+        {
+          "id": "skill_no_pain",
+          "name": "No Pain",
+          "region": "Physical",
+          "location": "Physical Skill Tree",
+          "guide": "Lengthens the damage-resistant window after being revived.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/no_pain.png",
+          "bonus": {
+            "name": "No Pain",
+            "desc": "Extends the resistant window by 50%."
+          }
+        },
+        {
+          "id": "skill_car_shield",
+          "name": "Car Shield",
+          "region": "Physical",
+          "location": "Physical Skill Tree",
+          "guide": "Reduces weapon damage taken while driving a ground vehicle.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/car_shield.png",
+          "bonus": {
+            "name": "Car Shield",
+            "desc": "Reduces incoming damage by 10% while driving."
+          }
+        },
+        {
+          "id": "skill_quiet_running",
+          "name": "Quiet Running",
+          "region": "Physical",
+          "location": "Physical Skill Tree",
+          "guide": "Makes running quieter, so you're harder to hear while moving fast.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/quiet_running.png",
+          "bonus": {
+            "name": "Quiet Running",
+            "desc": "Reduces running noise by 10%."
+          }
+        },
+        {
+          "id": "skill_bullet_resistance",
+          "name": "Bullet Resistance",
+          "region": "Physical",
+          "location": "Physical Skill Tree",
+          "guide": "Reduces the damage you take from bullets.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/bullet_resistance.png",
+          "bonus": {
+            "name": "Bullet Resistance",
+            "desc": "Reduces bullet damage by 5%."
+          }
+        },
+        {
+          "id": "skill_detection",
+          "name": "Detection",
+          "region": "Physical",
+          "location": "Physical Skill Tree",
+          "guide": "Makes you harder for enemies to spot while crouched or prone.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/detection.png",
+          "bonus": {
+            "name": "Detection",
+            "desc": "Slows the enemy detection rate by 5%."
+          }
+        },
+        {
+          "id": "skill_explosion_resistance",
+          "name": "Explosion Resistance",
+          "region": "Physical",
+          "location": "Physical Skill Tree",
+          "guide": "Reduces the damage you take from explosions.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/explosion_resistance.png",
+          "bonus": {
+            "name": "Explosion Resistance",
+            "desc": "Reduces explosion damage by 15%."
+          }
+        },
+        {
+          "id": "skill_aircraft_shield",
+          "name": "Aircraft Shield",
+          "region": "Physical",
+          "location": "Physical Skill Tree",
+          "guide": "Reduces weapon damage taken while piloting an aircraft.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/aircraft_shield.png",
+          "bonus": {
+            "name": "Aircraft Shield",
+            "desc": "Reduces incoming damage by 10% while piloting."
+          }
+        }
+      ]
+    },
+    "squad_skills": {
+      "quest_name": "Squad Skills",
+      "region": "Bolivia-wide",
+      "description": "Squad skill tree. Click a rank box to mark your current tier (1-3); a skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "items": [
+        {
+          "id": "skill_revive_speed",
+          "name": "Revive Speed",
+          "region": "Squad",
+          "location": "Squad Skill Tree",
+          "guide": "Speeds up how quickly you revive a downed teammate.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/revive_speed.png",
+          "bonus": {
+            "name": "Revive Speed",
+            "desc": "Speeds up revives by 30%."
+          }
+        },
+        {
+          "id": "skill_extra_sync_shot",
+          "name": "Extra Sync Shot",
+          "region": "Squad",
+          "location": "Squad Skill Tree",
+          "guide": "Adds extra targets to your Sync Shot marks.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/extra_sync_shot.png"
+        },
+        {
+          "id": "skill_trained_rebels",
+          "name": "Trained Rebels",
+          "region": "Squad",
+          "location": "Squad Skill Tree",
+          "guide": "Makes allied rebel fighters hit harder.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/trained_rebels.png",
+          "bonus": {
+            "name": "Trained Rebels",
+            "desc": "Increases rebel damage by 5%."
+          }
+        },
+        {
+          "id": "skill_squad_resilience",
+          "name": "Squad Resilience",
+          "region": "Squad",
+          "location": "Squad Skill Tree",
+          "guide": "Makes your AI teammates more resistant to bullet damage.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/squad_resilience.png",
+          "bonus": {
+            "name": "Squad Resilience",
+            "desc": "Increases teammate resistance by 5%."
+          }
+        },
+        {
+          "id": "skill_bleed_out_time",
+          "name": "Bleed Out Time",
+          "region": "Squad",
+          "location": "Squad Skill Tree",
+          "guide": "Extends how long you survive while waiting to be revived.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/bleed_out_time.png",
+          "bonus": {
+            "name": "Bleed Out Time",
+            "desc": "Lengthens bleed-out time by 20%."
+          }
+        },
+        {
+          "id": "skill_born_leader",
+          "name": "Born Leader",
+          "region": "Squad",
+          "location": "Squad Skill Tree",
+          "guide": "Makes your AI teammates more effective overall.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/born_leader.png",
+          "bonus": {
+            "name": "Born Leader",
+            "desc": "Increases teammate efficiency by 8%."
+          }
+        }
+      ]
+    },
+    "rebel_support_skills": {
+      "quest_name": "Rebel Support Skills",
+      "region": "Bolivia-wide",
+      "description": "Rebel Support skill tree. Click a rank box to mark your current tier (1-3); a skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "items": [
+        {
+          "id": "skill_vehicle_drop_off",
+          "name": "Vehicle Drop-Off",
+          "region": "Rebel Support",
+          "location": "Rebel Support Skill Tree",
+          "guide": "Calls in Rebel forces to drop off a vehicle nearby.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/vehicle_drop_off.png",
+          "tier_notes": [
+            "Rank 1: Rebels drop off an SUV.",
+            "Rank 2: Rebels drop off an armored vehicle.",
+            "Rank 3: Rebels drop off a helicopter."
+          ]
+        },
+        {
+          "id": "skill_guns_for_hire",
+          "name": "Guns for Hire",
+          "region": "Rebel Support",
+          "location": "Rebel Support Skill Tree",
+          "guide": "Summons temporary Rebel fighters to fight alongside you; higher ranks bring more.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/guns_for_hire.png"
+        },
+        {
+          "id": "skill_mortar",
+          "name": "Mortar",
+          "region": "Rebel Support",
+          "location": "Rebel Support Skill Tree",
+          "guide": "Calls in a Rebel mortar strike on a marked area.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/mortar.png"
+        },
+        {
+          "id": "skill_diversion",
+          "name": "Diversion",
+          "region": "Rebel Support",
+          "location": "Rebel Support Skill Tree",
+          "guide": "Has Rebels stage an attack from another direction to draw enemies away.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/diversion.png"
+        },
+        {
+          "id": "skill_spotting",
+          "name": "Spotting",
+          "region": "Rebel Support",
+          "location": "Rebel Support Skill Tree",
+          "guide": "Has Rebels mark nearby enemies; higher ranks widen the detection area.",
+          "levels": 3,
+          "image_url": "/public/games/wildlands/images/skills/spotting.png"
+        }
+      ]
+    }
+  },
+  "tips": [
+    "Each skill tree has up to 3 ranks. Click a tier box to jump straight to that rank; click the already-active top box again to drop back one rank.",
+    "A skill with a Bonus Medal (shown as a star) has that medal as a separate, independent toggle from its tier boxes \u2014 the medal is a one-off map pickup, not another rank.",
+    "Rebel Support's Vehicle Drop-Off is the one skill with explicitly documented per-rank differences: Rank 1 calls an SUV, Rank 2 an armored vehicle, Rank 3 a helicopter."
+  ]
+}
