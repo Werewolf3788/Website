@@ -124,8 +124,12 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 
   <h2>Xbox / Microsoft sync (private)</h2>
   <p class="hint">Put your Xbox gamertag in the Xbox gamertag box under Linked accounts. The API key below is what lets the site actually pull your achievements and presence, the same way the PSN NPSSO cookie does for PlayStation.</p>
+  <label for="xbox_user_id">Xbox User ID # (XUID, optional)</label><div class="row" data-secret="xbox_user_id"></div>
+  <div class="box"><strong>Optional, but recommended.</strong> The site looks you up by gamertag, which is a fuzzy name search and can match the wrong person if your gamertag is common or has changed. Saving your XUID here lets it confirm it found the right account instead of guessing.
+    <p>Both this and the API key below are on your <a href="https://xbl.io/dashboard/settings" target="_blank" rel="noopener">xbl.io dashboard settings</a> page. Paste just the number here.</p>
+    <p id="xuidState" class="hint"></p></div>
   <div class="box sec"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
-    <p>Xbox has no simple key of its own like PSN's NPSSO, so the site uses <a href="https://xbl.io" target="_blank" rel="noopener">xbl.io (OpenXBL)</a> to bridge your Microsoft account. Sign in there with the same Microsoft account as your Xbox gamertag, then copy the API key from your xbl.io account page and paste it below.</p></div>
+    <p>Xbox has no simple key of its own like PSN's NPSSO, so the site uses <a href="https://xbl.io" target="_blank" rel="noopener">xbl.io (OpenXBL)</a> to bridge your Microsoft account. Sign in there with the same Microsoft account as your Xbox gamertag, then copy the API key from your <a href="https://xbl.io/dashboard/settings" target="_blank" rel="noopener">xbl.io dashboard settings</a> page and paste it below.</p></div>
   <label for="xbox_api_key">Microsoft / Xbox API key (OpenXBL)</label><div class="row" data-secret="xbox_api_key"></div>
   <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
     <p id="xboxKeyState" class="hint"></p></div>
@@ -254,6 +258,16 @@ $('xbox_api_key').addEventListener('input',e=>{
   if(!v){st.textContent='';return}
   if(v.length<20){st.textContent='That looks too short for an xbl.io key. Double-check the paste.';st.style.color='var(--text-muted)'}
   else{st.textContent='Key ready to save ('+v.length+' characters).';st.style.color='var(--accent-green)'}
+});
+
+// Xbox User ID (XUID) - optional, digits only, used server-side to confirm the
+// right account was matched by the fuzzy gamertag search.
+$('xbox_user_id').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('xuidState');
+  if(!v){st.textContent='';return}
+  if(!/^\d+$/.test(v)){st.textContent='XUIDs are numbers only.';st.style.color='var(--text-muted)'}
+  else if(v.length<10){st.textContent='That looks too short for an XUID. Double-check the paste.';st.style.color='var(--text-muted)'}
+  else{st.textContent='XUID ready to save.';st.style.color='var(--accent-green)'}
 });
 
 // ---- PSN: Account ID <-> username lookup (site's PSN data: tracked players + their PSN friends) ----
@@ -406,6 +420,7 @@ async function load(){
   $('steam_api_key').value=S.steam_api_key||'';$('steamKeyState').textContent=S.steam_api_key?(D.steam_api_key_valid===false?'Steam rejected the saved key. Paste a new one.':'Key saved.'):'';
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
   $('xbox_api_key').value=S.xbox_api_key||'';$('xboxKeyState').textContent=S.xbox_api_key?(D.xbox_api_key_valid===false?'xbl.io rejected the saved key. Paste a new one.':'Key saved.'):'';
+  $('xbox_user_id').value=D.xbox_user_id||S.xbox_user_id||'';$('xuidState').textContent=D.xbox_user_id?(D.xbox_user_id_valid===false?'xbl.io could not match this XUID. Double-check it.':'XUID saved.'):'';
   (D.links||[]).slice(0,5).forEach((l,i)=>$('lk'+i).value=l);
   setColor(1,D.primary_color||'#0088ff');setColor(2,D.secondary_color||'#f5a623');
   $('tracking_scope').value=D.tracking_scope||'friends';
@@ -546,6 +561,10 @@ $('save').onclick=async()=>{
     const xkey=$('xbox_api_key').value.trim();
     if(xkey&&xkey.length<20)return say('That Microsoft/Xbox API key looks too short. Double-check the paste from xbl.io.',1);
     if(xkey&&xkey!==S.xbox_api_key)pub.xbox_api_key_valid=true;
+    const xuid=$('xbox_user_id').value.trim();
+    if(xuid&&!/^\d{10,20}$/.test(xuid))return say('Xbox User ID (XUID) must be numbers only. Get it from xbl.io/dashboard/settings.',1);
+    if(xuid&&xuid!==D.xbox_user_id)pub.xbox_user_id_valid=true;
+    pub.xbox_user_id=xuid;
     const acc=$('psn_account_id').value.trim();
     if(acc&&!/^\d{10,20}$/.test(acc))return say('PSN Account ID must be numbers only. Get it from psn.flipscreen.games.',1);
     if(npsso&&npsso!==S.psn_npsso)pub.psn_npsso_valid=true;

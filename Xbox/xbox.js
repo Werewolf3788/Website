@@ -5,8 +5,10 @@
  * Description: Xbox Telemetry Engine - Ray's Firebase (playstation-stats)
  *   Mirrors the shape of Playstation/psn.js, but for Xbox/Microsoft accounts.
  *   INPUT  : Kevin's DB (entertainment-71888) /users + /user_secrets (READ-ONLY):
- *            xbox_gamertag (handle) and xbox_api_key (private, OpenXBL key the
- *            user pastes into Settings -> Xbox / Microsoft sync).
+ *            xbox_gamertag (handle), xbox_user_id (optional XUID, used to pick
+ *            the right person out of /search's fuzzy results) and xbox_api_key
+ *            (private, OpenXBL key the user pastes into Settings -> Xbox /
+ *            Microsoft sync).
  *   OUTPUT : Ray's DB (playstation-stats) via FIREBASE_SERVICE_RAY (Admin SDK)
  *     RTDB (live, changes often), same project PSN already writes to:
  *       /xbox/gamertags/{gamertag}   player card: gamerscore, presence, achievements
@@ -131,8 +133,12 @@ async function readKevinXboxAccounts() {
         const gaming = u.gaming_platforms || {};
         const gamertag = String(pick(u.xbox_gamertag, gaming.xbox_gamertag) || "").trim();
         const apiKey = String(pick(sec.xbox_api_key, u.xbox_api_key, gaming.xbox_api_key) || "").trim();
+        // Optional: the account's real Xbox User ID (XUID), saved in Settings next to
+        // the gamertag. /search is a fuzzy name search, so a saved XUID lets the right
+        // person be picked out of multiple results instead of trusting the first match.
+        const xuid = String(pick(u.xbox_user_id, gaming.xbox_user_id) || "").trim();
         const updatedAt = sec.updated_at || u.updated_at || null;
-        if (gamertag && apiKey) accounts.push({ emailKey, gamertag, apiKey, updatedAt });
+        if (gamertag && apiKey) accounts.push({ emailKey, gamertag, apiKey, xuid: xuid || null, updatedAt });
     }
     console.log(`[KEVIN DB] Xbox accounts with both a gamertag and a key: ${accounts.length}`);
     return { accounts, usersReadOk: ok };
@@ -142,8 +148,11 @@ async function readKevinXboxAccounts() {
  * OpenXBL (xbl.io) client
  * -------------------------------------------------------------------------- */
 async function fetchOpenXBL(path, apiKey) {
+    // Confirmed from a real response: the underlying Xbox Live service rejects a
+    // request with no Accept-Language (400: "invalid locale value: *") - Node's
+    // fetch doesn't send one by default, so it has to be set explicitly.
     const res = await fetch(`${OPENXBL_BASE}${path}`, {
-        headers: { "X-Authorization": apiKey, Accept: "application/json" }
+        headers: { "X-Authorization": apiKey, Accept: "application/json", "Accept-Language": "en-US" }
     });
     const text = await res.text();
     let json = null;
@@ -155,14 +164,26 @@ async function fetchOpenXBL(path, apiKey) {
     return json;
 }
 
-async function getProfileByGamertag(gamertag, apiKey) {
+async function getProfileByGamertag(gamertag, apiKey, expectedXuid) {
     // Confirmed from a real response (2026-11-12): /search/{gamertag} returns
     // { content: { people: [ { xuid, gamertag, gamerScore, displayPicRaw,
     // presenceState, presenceText, presenceDevices, ... } ] } } - a peoplehub-
     // style payload, one level deeper (under "content") than the bare XSAPI
     // profileUsers[] shape other Xbox endpoints use.
+    //
+    // /search is a fuzzy name search, so it can return more than one person for
+    // a common or partial gamertag. When the account has its real Xbox User ID
+    // (XUID) saved in Settings, use it to pick the right match out of the list
+    // instead of blindly trusting people[0]; without one, fall back to the
+    // first result like before, but flag it so a mismatch is visible in the log.
     const data = await fetchOpenXBL(`/search/${encodeURIComponent(gamertag)}`, apiKey);
-    const p = data?.content?.people?.[0];
+    const people = data?.content?.people || [];
+    let p = null;
+    if (expectedXuid) {
+        p = people.find((person) => String(person.xuid) === String(expectedXuid));
+        if (!p) console.warn(`[XBOX] "${gamertag}": none of ${people.length} /search result(s) matched the saved XUID ${expectedXuid} - falling back to the first result.`);
+    }
+    if (!p) p = people[0];
     if (!p) {
         console.warn(`[XBOX DEBUG] /search/${gamertag} raw response: ${JSON.stringify(data).slice(0, 800)}`);
         throw new Error(`No profile found via /search for gamertag "${gamertag}"`);
@@ -177,7 +198,8 @@ async function getProfileByGamertag(gamertag, apiKey) {
         // /search already includes presence - no need for a second call/endpoint.
         presenceState: p.presenceState || "Offline",
         presenceText: p.presenceText || "",
-        presenceDevices: p.presenceDevices || null
+        presenceDevices: p.presenceDevices || null,
+        xuidVerified: expectedXuid ? String(p.xuid) === String(expectedXuid) : null
     };
 }
 
@@ -218,7 +240,7 @@ async function main() {
 
     for (const acc of accounts) {
         try {
-            const profile = await getProfileByGamertag(acc.gamertag, acc.apiKey);
+            const profile = await getProfileByGamertag(acc.gamertag, acc.apiKey, acc.xuid);
             const titles = await getRecentAchievementTitles(profile.xuid, acc.apiKey);
 
             const card = plain({
@@ -231,6 +253,7 @@ async function main() {
                 presenceState: profile.presenceState,
                 presenceText: profile.presenceText,
                 presenceDevices: profile.presenceDevices,
+                xuidVerified: profile.xuidVerified,
                 recentTitles: titles,
                 lastUpdated: nowEt(),
                 lastUpdatedMs: Date.now(),
@@ -240,7 +263,8 @@ async function main() {
             await rtdbRef(`gamertags/${profile.gamertag}`).set(card);
             usersByGamerTag[profile.gamertag] = acc.emailKey;
             okCount++;
-            console.log(`[XBOX] Synced ${profile.gamertag} (${titles.length} recent titles, ${profile.gamerscore}G).`);
+            const xuidNote = profile.xuidVerified === true ? ", XUID verified" : profile.xuidVerified === false ? ", XUID MISMATCH" : "";
+            console.log(`[XBOX] Synced ${profile.gamertag} (${titles.length} recent titles, ${profile.gamerscore}G${xuidNote}).`);
         } catch (e) {
             failCount++;
             console.warn(`[XBOX] Failed to sync "${acc.gamertag}" (${acc.emailKey}): ${e.message}`);
