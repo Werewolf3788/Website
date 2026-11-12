@@ -1,0 +1,10 @@
+{
+  "name": "ww-discord-auth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sign in with Discord for the Werewolf site: Discord OAuth -> Firebase custom token",
+  "main": "server.js",
+  "engines": { "node": ">=18" },
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.19.2", "firebase-admin": "^12.6.0" }
+}

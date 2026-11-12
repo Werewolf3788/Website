@@ -33,6 +33,7 @@
     fallbackSdk: '10.12.2',
     // Optional: a dedicated sign-in page. Blank = the profile page offers Google sign-in.
     loginUrl: '',
+    discordAuthUrl: 'https://ww-discord-auth.onrender.com',   // blank = no Discord button
     profileUrl: new URL('profile.html', SCRIPT_SRC).href
   };
 
@@ -444,6 +445,10 @@
     WW.ready.then(function () { setTimeout(function () { openChat(key, name); }, 0); });
   }
   WW.openChat = openChatPublic;
+  WW.signInDiscord = function () {
+    if (window.WWAuth && WWAuth.signInDiscord) return WWAuth.signInDiscord();
+    if (CONFIG.discordAuthUrl) location.href = CONFIG.discordAuthUrl + '/login?next=' + encodeURIComponent(location.href.split('#')[0]);
+  };
 
   /* ---------- go ---------- */
   function start() {

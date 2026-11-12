@@ -191,7 +191,9 @@ function fail(html) { $('#state-msg').innerHTML = html; }
 function signInView() {
   $('#state-msg').innerHTML = `<div class="h2" style="justify-content:center;margin-bottom:.75rem"><i class="fas fa-user-lock"></i> Sign in to see your profile</div>
     <button class="btn primary" id="signin-btn"><i class="fab fa-google"></i> Sign in with Google</button>
+    ${W.config.discordAuthUrl ? '<button class="btn" id="signin-discord" style="margin-left:.5rem"><i class="fab fa-discord"></i> Sign in with Discord</button>' : ''}
     <div class="mute" style="margin-top:.8rem;font-size:.8rem">Other sign-in methods are in the menu at the top.</div>`;
+  const dc = $('#signin-discord'); if (dc) dc.onclick = () => W.signInDiscord();
   $('#signin-btn').onclick = async () => {
     if (W.config.loginUrl) { location.href = W.config.loginUrl + (W.config.loginUrl.includes('?') ? '&' : '?') + 'next=' + encodeURIComponent(location.href); return; }
     try { await W.auth.signInWithPopup(new W.firebase.auth.GoogleAuthProvider()); location.reload(); }
