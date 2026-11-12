@@ -5,15 +5,18 @@
   "image_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/460930/header.jpg",
   "platforms": {
     "playstation": {
-      "commId": "NPWR09395_00"
+      "commId": "NPWR09395_00",
+      "titleId": "CUSA02902",
+      "productId": "UP0001-CUSA02902_00-GRWNCSANORMAL000",
+      "store_url": "https://store.playstation.com/en-us/product/UP0001-CUSA02902_00-GRWNCSANORMAL000"
     },
     "steam": {
-      "appId": "",
-      "url": ""
+      "appId": 460930,
+      "store_url": "https://store.steampowered.com/app/460930/Tom_Clancys_Ghost_Recon_Wildlands/"
     },
     "xbox": {
-      "productId": "",
-      "url": ""
+      "productId": "9P85NL6T3DHP",
+      "store_url": "https://www.xbox.com/en-US/games/store/tom-clancys-ghost-recon-wildlands/9p85nl6t3dhp"
     }
   },
   "lastUpdated": "",
