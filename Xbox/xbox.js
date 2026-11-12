@@ -41,6 +41,11 @@ const ENGINE_VERSION = "1.0.0";
 // resolve and pass requests through, which is why it looked like it was working.
 const OPENXBL_BASE = "https://api.xbl.io/v2";
 const IS_MANUAL = process.env.GITHUB_EVENT_NAME === "workflow_dispatch";
+// A friend-key-sharing cap: how many keyless friends can ride on one person's
+// OpenXBL key in a single sync run. OpenXBL's free tier is rate-limited
+// (150 requests/day as of writing), so this keeps one popular key owner's
+// friend circle from silently burning through their whole daily quota.
+const MAX_SHARED_FRIENDS_PER_KEY = 5;
 
 /* ----------------------------------------------------------------------------
  * Shared helpers (same pattern as Playstation/psn.js, kept local so this file
@@ -86,15 +91,20 @@ const rtdbRef = (p) => rayDb.ref(`xbox/${p}`);
  * Kevin's Firebase (READ-ONLY): gamertags + OpenXBL keys only
  * -------------------------------------------------------------------------- */
 async function readKevinNodes() {
-    let users = {}, secrets = {}, ok = false;
+    let users = {}, secrets = {}, friendCodes = {}, ok = false;
     const raw = (process.env.GCP_SA_KEY_WEBSITE || "").trim();
     if (raw) {
         try {
             const creds = parseServiceAccount(raw, "GCP_SA_KEY_WEBSITE");
             const db = getDatabase(getNamedApp("kevinAppXbox", creds, KEVIN_RTDB_URL));
-            const [u, s] = await Promise.all([db.ref("users").once("value"), db.ref("user_secrets").once("value")]);
+            const [u, s, f] = await Promise.all([
+                db.ref("users").once("value"),
+                db.ref("user_secrets").once("value"),
+                db.ref("friend_codes").once("value")
+            ]);
             users = u.val() || {};
             secrets = s.val() || {};
+            friendCodes = f.val() || {};
             ok = Object.keys(users).length > 0;
             if (ok) console.log(`[KEVIN DB] Admin read OK: ${Object.keys(users).length} users.`);
         } catch (e) {
@@ -104,29 +114,80 @@ async function readKevinNodes() {
     if (!ok) {
         const q = process.env.FIREBASE_AUTH_SECRET ? `?auth=${encodeURIComponent(process.env.FIREBASE_AUTH_SECRET.trim())}` : "";
         try {
-            const [uRes, sRes] = await Promise.all([
+            const [uRes, sRes, fRes] = await Promise.all([
                 fetch(`${KEVIN_RTDB_URL}/users.json${q}`).then((r) => r.json()),
-                fetch(`${KEVIN_RTDB_URL}/user_secrets.json${q}`).then((r) => r.json())
+                fetch(`${KEVIN_RTDB_URL}/user_secrets.json${q}`).then((r) => r.json()),
+                fetch(`${KEVIN_RTDB_URL}/friend_codes.json${q}`).then((r) => r.json())
             ]);
             if (uRes && uRes.error) console.warn(`[KEVIN DB] /users: ${uRes.error}`);
             if (sRes && sRes.error) console.warn(`[KEVIN DB] /user_secrets: ${sRes.error}`);
             users = uRes && typeof uRes === "object" && !uRes.error ? uRes : {};
             secrets = sRes && typeof sRes === "object" && !sRes.error ? sRes : {};
+            friendCodes = fRes && typeof fRes === "object" && !fRes.error ? fRes : {};
             ok = Object.keys(users).length > 0;
             if (ok) console.log(`[KEVIN DB] REST read OK: ${Object.keys(users).length} users.`);
         } catch (e) {
             console.warn(`[KEVIN DB] REST read failed: ${e.message}`);
         }
     }
-    return { users, secrets, ok };
+    return { users, secrets, friendCodes, ok };
+}
+
+// A friend_codes/{code} entry is normally just the owner's email key (string).
+// Older records can be an object instead - this mirrors setting.html's own
+// ownerKeyOfCode() fallback: try likely field names, then confirm by checking
+// that users/{candidate}/friend_code actually matches the code being resolved.
+function resolveOwnerKey(users, friendCodes, code) {
+    const v = friendCodes[code];
+    if (typeof v === "string") return v || null;
+    if (!v || typeof v !== "object") return null;
+    const cands = new Set();
+    ["user_key", "userKey", "email_key", "emailKey", "key", "owner", "uid", "email", "user"]
+        .concat(Object.keys(v))
+        .forEach((f) => {
+            const x = v[f];
+            if (typeof x !== "string") return;
+            const t = x.trim();
+            if (!t || t.length > 120) return;
+            cands.add(t.indexOf("@") > -1 ? t.toLowerCase().replace(/\./g, "_").replace("@", "_at_") : t);
+        });
+    for (const c of cands) {
+        if (/[.$#[\]/]/.test(c)) continue;
+        const u = users[c];
+        if (u && String(u.friend_code || "").toUpperCase() === String(code).toUpperCase()) return c;
+    }
+    return null;
+}
+
+// Direct friends only (no friends-of-friends): reads emailKey's own /friends
+// list and resolves each friend_code back to that friend's emailKey.
+function directFriendEmailKeys(users, friendCodes, emailKey) {
+    const u = users[emailKey];
+    const friends = (u && u.friends) || {};
+    const out = [];
+    for (const code of Object.keys(friends)) {
+        const fk = resolveOwnerKey(users, friendCodes, code);
+        if (fk && fk !== emailKey) out.push(fk);
+    }
+    return out;
 }
 
 // Every tracked Xbox account is a "guest" in the psn.js sense: gamertag + key
 // both live in Kevin's DB (filled in via Settings), never a hardcoded list.
+//
+// Friend-key sharing: someone with no OpenXBL key of their own, but who has
+// saved their own XUID and is a direct friend of someone who DOES have a
+// working key, gets synced too - using the friend's key, looked up by XUID
+// (via /account/{xuid}, so no gamertag or /search fuzziness involved). Each
+// key owner is capped at MAX_SHARED_FRIENDS_PER_KEY borrowers per run so one
+// popular key doesn't silently burn through OpenXBL's daily quota.
 async function readKevinXboxAccounts() {
-    const { users, secrets, ok } = await readKevinNodes();
+    const { users, secrets, friendCodes, ok } = await readKevinNodes();
     const pick = (...v) => v.find((x) => x !== undefined && x !== null && String(x).trim() !== "");
     const accounts = [];
+    const keyOwnerByEmailKey = new Map(); // emailKey -> apiKey, for the friend-sharing pass below
+    const keylessWithXuid = []; // { emailKey, xuid }
+
     for (const [emailKey, u] of Object.entries(users)) {
         if (!u || typeof u !== "object") continue;
         const sec = (secrets && secrets[emailKey]) || {};
@@ -138,9 +199,33 @@ async function readKevinXboxAccounts() {
         // person be picked out of multiple results instead of trusting the first match.
         const xuid = String(pick(u.xbox_user_id, gaming.xbox_user_id) || "").trim();
         const updatedAt = sec.updated_at || u.updated_at || null;
-        if (gamertag && apiKey) accounts.push({ emailKey, gamertag, apiKey, xuid: xuid || null, updatedAt });
+        if (gamertag && apiKey) {
+            accounts.push({ emailKey, gamertag, apiKey, xuid: xuid || null, updatedAt, viaFriendKey: false });
+            keyOwnerByEmailKey.set(emailKey, apiKey);
+        } else if (xuid) {
+            keylessWithXuid.push({ emailKey, xuid });
+        }
     }
-    console.log(`[KEVIN DB] Xbox accounts with both a gamertag and a key: ${accounts.length}`);
+
+    let borrowed = 0, skippedOverCap = 0;
+    // Deterministic order so the same people win the cap every run, rather
+    // than an arbitrary one skipping a different person each time.
+    for (const owner of [...keyOwnerByEmailKey.keys()].sort()) {
+        const ownerApiKey = keyOwnerByEmailKey.get(owner);
+        const friendKeys = new Set(directFriendEmailKeys(users, friendCodes, owner));
+        const borrowers = keylessWithXuid.filter((b) => friendKeys.has(b.emailKey)).sort((a, b) => a.emailKey.localeCompare(b.emailKey));
+        borrowers.slice(0, MAX_SHARED_FRIENDS_PER_KEY).forEach((b) => {
+            accounts.push({ emailKey: b.emailKey, gamertag: null, apiKey: ownerApiKey, xuid: b.xuid, updatedAt: null, viaFriendKey: true, keyOwnerEmailKey: owner });
+            borrowed++;
+        });
+        if (borrowers.length > MAX_SHARED_FRIENDS_PER_KEY) {
+            const overflow = borrowers.length - MAX_SHARED_FRIENDS_PER_KEY;
+            skippedOverCap += overflow;
+            console.warn(`[XBOX] ${owner}'s key already covers ${MAX_SHARED_FRIENDS_PER_KEY} friends this run; ${overflow} more friend(s) with a saved XUID were skipped (quota cap).`);
+        }
+    }
+
+    console.log(`[KEVIN DB] Xbox accounts with both a gamertag and a key: ${keyOwnerByEmailKey.size}; borrowing a friend's key: ${borrowed}${skippedOverCap ? ` (${skippedOverCap} skipped over cap)` : ""}.`);
     return { accounts, usersReadOk: ok };
 }
 
@@ -203,6 +288,45 @@ async function getProfileByGamertag(gamertag, apiKey, expectedXuid) {
     };
 }
 
+// Used for friend-key-sharing: a borrower who gave only their XUID (no
+// gamertag of their own on file), looked up directly - no fuzzy /search
+// involved, so there's nothing to verify against.
+//
+// Confirmed from a real response (2026-11-12): /account/{xuid} returns
+// { content: { profileUsers: [ { id, settings: [ { id, value }, ... ] } ] } }
+// - the bare XSAPI profile shape, settings as an id/value pair list rather
+// than a flat object, and with NO presence fields (presence is only in
+// /search's peoplehub-style response, which needs a gamertag to call).
+//
+// Only the fields this site actually displays are pulled out. The real
+// response also includes RealName, RealNameOverride and Location (the
+// account's real name/city) - deliberately left out here rather than stored,
+// since this card can end up shared with a friend's Firebase node.
+async function getProfileByXuid(xuid, apiKey) {
+    const data = await fetchOpenXBL(`/account/${xuid}`, apiKey);
+    const pu = data?.content?.profileUsers?.[0];
+    if (!pu) {
+        console.warn(`[XBOX DEBUG] /account/${xuid} raw response: ${JSON.stringify(data).slice(0, 800)}`);
+        throw new Error(`No profile found via /account for XUID "${xuid}"`);
+    }
+    const settings = {};
+    (pu.settings || []).forEach((s) => { if (s && s.id) settings[s.id] = s.value; });
+    return {
+        xuid: pu.id || xuid,
+        gamertag: settings.Gamertag || settings.ModernGamertag || "",
+        gamerscore: Number(settings.Gamerscore || 0),
+        gamerPicture: settings.GameDisplayPicRaw || "",
+        bio: settings.Bio || "",
+        tier: settings.AccountTier || "",
+        // /account/{xuid} has no presence data; null (not "Offline") so it's
+        // visibly "unknown" rather than a guessed/wrong status.
+        presenceState: null,
+        presenceText: null,
+        presenceDevices: null,
+        xuidVerified: true
+    };
+}
+
 async function getRecentAchievementTitles(xuid, apiKey) {
     try {
         const data = await fetchOpenXBL(`/achievements/player/${xuid}`, apiKey);
@@ -249,18 +373,10 @@ async function main() {
 
     for (const acc of accounts) {
         try {
-            const profile = await getProfileByGamertag(acc.gamertag, acc.apiKey, acc.xuid);
+            const profile = acc.viaFriendKey
+                ? await getProfileByXuid(acc.xuid, acc.apiKey)
+                : await getProfileByGamertag(acc.gamertag, acc.apiKey, acc.xuid);
             const titles = await getRecentAchievementTitles(profile.xuid, acc.apiKey);
-
-            // TEMP DIAGNOSTIC - checking whether /account/{xuid} works for an XUID-only
-            // lookup (no gamertag), to support friend-key-sharing where a friend gives
-            // only their XUID. Remove once confirmed.
-            try {
-                const probe = await fetchOpenXBL(`/account/${profile.xuid}`, acc.apiKey);
-                console.warn(`[XBOX DIAG] /account/${profile.xuid} -> ${JSON.stringify(probe)}`);
-            } catch (e) {
-                console.warn(`[XBOX DIAG] /account/${profile.xuid} failed: ${e.message}`);
-            }
 
             const card = plain({
                 gamertag: profile.gamertag,
@@ -276,7 +392,11 @@ async function main() {
                 recentTitles: titles,
                 lastUpdated: nowEt(),
                 lastUpdatedMs: Date.now(),
-                sourceEmailKey: acc.emailKey
+                sourceEmailKey: acc.emailKey,
+                // Transparency/debugging: this account has no OpenXBL key of its own
+                // and was synced using a direct friend's key instead.
+                syncedViaFriendKey: acc.viaFriendKey || false,
+                keyOwnerEmailKey: acc.viaFriendKey ? acc.keyOwnerEmailKey : null
             });
 
             await rtdbRef(`gamertags/${profile.gamertag}`).set(card);
@@ -286,7 +406,8 @@ async function main() {
             console.log(`[XBOX] Synced ${profile.gamertag} (${titles.length} recent titles, ${profile.gamerscore}G${xuidNote}).`);
         } catch (e) {
             failCount++;
-            console.warn(`[XBOX] Failed to sync "${acc.gamertag}" (${acc.emailKey}): ${e.message}`);
+            const who = acc.viaFriendKey ? `XUID ${acc.xuid} (borrowing ${acc.keyOwnerEmailKey}'s key)` : `"${acc.gamertag}"`;
+            console.warn(`[XBOX] Failed to sync ${who} (${acc.emailKey}): ${e.message}`);
             // Don't let one bad key/gamertag stop the rest of the batch.
         }
     }
