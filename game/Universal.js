@@ -1167,7 +1167,7 @@ window.appState.syncFriendsProgress = async function() {
             fObj = fObj || {};
             const code = fObj.friend_code || fKey;
             let userKey = null, profile = {};
-            try { const k = (await rtdb.ref(`/friend_codes/${code}`).once('value')).val(); if (typeof k === 'string') userKey = k; } catch (e) {}
+            try { const raw = (await rtdb.ref(`/friend_codes/${code}`).once('value')).val(); const k = await ownerKeyOfCode(raw, code, async (pth) => (await rtdb.ref('/' + pth).once('value')).val()); if (k) userKey = k; } catch (e) {}
             if (userKey) { try { profile = (await rtdb.ref(`/users/${userKey}`).once('value')).val() || {}; } catch (e) {} }
             const name = profile.username || profile.display_name || fObj.username || code;   // their current username wins over the one saved when added
             // Respect the friend's "Game & trophy tracking" setting (default: friends can see it).
@@ -3342,6 +3342,22 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+}
+
+// friend_codes/{CODE} is the owner's user key (plain text) in newer records, but a profile-style object in older ones.
+// Returns the owner's user key when it can be worked out, otherwise null.
+async function ownerKeyOfCode(v, code, readVal) {
+  if (typeof v === 'string') return v || null;
+  if (!v || typeof v !== 'object') return null;
+  const cands = [];
+  const add = (x) => { if (typeof x !== 'string') return; x = x.trim(); if (!x || x.length > 120) return; cands.push(x.indexOf('@') > -1 ? x.toLowerCase().replace(/\./g, '_').replace('@', '_at_') : x); };
+  ['user_key', 'userKey', 'email_key', 'emailKey', 'key', 'owner', 'uid', 'email', 'user'].forEach((f) => add(v[f]));
+  Object.keys(v).forEach((f) => add(v[f]));
+  for (const c of new Set(cands)) {
+    if (/[.$#\[\]\/]/.test(c)) continue;
+    try { const fc = await readVal('users/' + c + '/friend_code'); if (String(fc || '').toUpperCase() === String(code).toUpperCase()) return c; } catch (e) {}
+  }
+  return null;
 }
 
 // Section 12: Game Pills Bar

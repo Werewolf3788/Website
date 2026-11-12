@@ -88,6 +88,22 @@
   }
 
   // Reuses the tracker's friend code; creates one (same format) only if the user has none yet.
+
+  // friend_codes/{CODE} is the owner's user key (text) in newer records, a profile-style object in older ones. Returns the key if it can be worked out.
+  async function ownerKeyOfCode(v, code) {
+    if (typeof v === 'string') return v || null;
+    if (!v || typeof v !== 'object') return null;
+    var cands = [];
+    function add(x) { if (typeof x !== 'string') return; x = x.trim(); if (!x || x.length > 120) return; cands.push(x.indexOf('@') > -1 ? x.toLowerCase().replace(/\./g, '_').replace('@', '_at_') : x); }
+    ['user_key', 'userKey', 'email_key', 'emailKey', 'key', 'owner', 'uid', 'email', 'user'].forEach(function (f) { add(v[f]); });
+    Object.keys(v).forEach(function (f) { add(v[f]); });
+    var seen = {};
+    for (var i = 0; i < cands.length; i++) {
+      var c = cands[i]; if (seen[c] || /[.$#\[\]\/]/.test(c)) continue; seen[c] = 1;
+      try { var fc = (await db.ref('users/' + c + '/friend_code').once('value')).val(); if (String(fc || '').toUpperCase() === String(code).toUpperCase()) return c; } catch (e) {}
+    }
+    return null;
+  }
   WW.ensureFriendCode = async function (user) {
     var key = WW.emailKey(user.email);
     var ref = db.ref('users/' + key + '/friend_code');
@@ -214,8 +230,8 @@
       } catch (e) { console.warn('friend presence', e); }
       try {
         // 2) optional extras (avatar, privacy setting, PlayStation / Steam) when their profile can be found
-        var uk = (await db.ref('friend_codes/' + code).once('value')).val();
-        if (typeof uk === 'string') {
+        var uk = await ownerKeyOfCode((await db.ref('friend_codes/' + code).once('value')).val(), code);
+        if (uk) {
           var prof = (await db.ref('users/' + uk).once('value')).val() || {};
           var scope = prof.tracking_scope || 'friends';
           if (scope === 'private') { out.push({ code: code, name: item.name, avatar: item.avatar, plays: [], note: 'private' }); return; }
@@ -244,7 +260,7 @@
     auth.onAuthStateChanged(async function (user) {
       WW.user = user || null; WW.friendCode = null;
       if (user) { try { WW.friendCode = await WW.ensureFriendCode(user); } catch (e) { console.error(e); } }
-      if (user && WW.friendCode) { try { var pk = (await db.ref('friend_codes/' + WW.friendCode).once('value')).val(); WW.playKey = typeof pk === 'string' ? pk : null; } catch (e) { WW.playKey = null; } }   // friends read us at the key our friend code points to
+      if (user && WW.friendCode) { try { var pk = (await db.ref('friend_codes/' + WW.friendCode).once('value')).val(); WW.playKey = (await ownerKeyOfCode(pk, WW.friendCode)) || null; } catch (e) { WW.playKey = null; } }   // friends read us at the key our friend code points to
       if (user) await WW.loadAvatar(user);
       cb(WW.user, WW.friendCode);
     });

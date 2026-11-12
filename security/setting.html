@@ -327,6 +327,22 @@ $('avatar_custom').onchange=resolveAvatar;
 [['twitch_username','twitch'],['psn_username','psn'],['steam_id','steam']].forEach(([f,s])=>$(f).addEventListener('change',()=>$('avatar_source').value===s&&resolveAvatar()));
 
 // ---- Load / save ----
+// friend_codes/{CODE} is the owner's user key (plain text) in newer records, but a profile-style object in older ones.
+// Returns the owner's user key when it can be worked out, otherwise null.
+async function ownerKeyOfCode(v, code, readVal) {
+  if (typeof v === 'string') return v || null;
+  if (!v || typeof v !== 'object') return null;
+  const cands = [];
+  const add = (x) => { if (typeof x !== 'string') return; x = x.trim(); if (!x || x.length > 120) return; cands.push(x.indexOf('@') > -1 ? x.toLowerCase().replace(/\./g, '_').replace('@', '_at_') : x); };
+  ['user_key', 'userKey', 'email_key', 'emailKey', 'key', 'owner', 'uid', 'email', 'user'].forEach((f) => add(v[f]));
+  Object.keys(v).forEach((f) => add(v[f]));
+  for (const c of new Set(cands)) {
+    if (/[.$#\[\]\/]/.test(c)) continue;
+    try { const fc = await readVal('users/' + c + '/friend_code'); if (String(fc || '').toUpperCase() === String(code).toUpperCase()) return c; } catch (e) {}
+  }
+  return null;
+}
+const rv=async p=>(await db.ref(p).get()).val();
 const rand8=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b%32]).join('');
 const codeMsg=(t,bad)=>{const e=$('codeState');if(!e)return;e.textContent=t;e.style.color=bad?'var(--danger)':'var(--accent-green)'};
 async function ensureFriendCode(){
@@ -338,7 +354,12 @@ async function ensureFriendCode(){
       if(!cur){await ref.set(K);cur=(await ref.get()).val()}
       if(cur===K)codeMsg('Your code is active: friends can add you with it.');
       else if(typeof cur==='string')codeMsg('This code is already registered to a different account ('+cur+'). Tell Kevin so it can be sorted out.',1);
-      else if(cur)codeMsg('The entry for your code is in the wrong format (stored: '+JSON.stringify(cur).slice(0,70)+'). In Firebase, delete friend_codes/'+D.friend_code+' and reload this page. It will recreate itself.',1);
+      else if(cur&&typeof cur==='object'){
+        const o=await ownerKeyOfCode(cur,D.friend_code,rv);
+        if(o&&o!==K)codeMsg('This code is registered to a different account ('+o+'). Tell Kevin so it can be sorted out.',1);
+        else codeMsg('Your code is active: friends can add you with it.');   // older record format, still works
+      }
+      else if(cur)codeMsg('The entry for your code has an unexpected value ('+JSON.stringify(cur).slice(0,70)+'). Tell Kevin.',1);
       else codeMsg('The write for your code did not stick (nothing was stored for '+D.friend_code+' after saving). Reload and try once more; if it repeats, tell Kevin.',1);
     }catch(e){console.warn('[friend code repair]',e&&e.message);codeMsg('Could not activate your code: '+(/permission/i.test(e&&e.message||'')?'the database refused the write (rules need publishing).':(e&&e.message||'unknown error')),1)}
     return D.friend_code;
@@ -400,11 +421,13 @@ async function addFriend(){
   const b=$('addFr');b.disabled=true;b.textContent='Adding…';
   try{
     await ensureFriendCode().catch(()=>{});   // make sure MY code is registered so they can add me back
-    const fk=(await db.ref('friend_codes/'+code).get()).val();
-    if(typeof fk!=='string'||!fk)return addMsg('No player has the code '+code+'. Check it with your friend (watch for 0 vs O and 1 vs I). If it is right, ask them to open Settings once while signed in, which activates older codes.',1),false;
+    const raw=(await db.ref('friend_codes/'+code).get()).val();
+    if(raw==null||raw===''||(typeof raw!=='string'&&typeof raw!=='object'))return addMsg('No player has the code '+code+'. Check it with your friend (watch for 0 vs O and 1 vs I). If it is right, ask them to open Settings once while signed in, which activates older codes.',1),false;
+    const fk=await ownerKeyOfCode(raw,code,rv);   // null for older records that do not say whose they are
     if(fk===K)return addMsg("That's your own code.",1),false;
-    const prof=(await db.ref('users/'+fk).get()).val()||{};
-    const f={friend_code:code,username:prof.username||code,added_at:Date.now()};
+    const prof=fk?((await db.ref('users/'+fk).get()).val()||{}):{};
+    const snap=(raw&&typeof raw==='object')?raw:{};
+    const f={friend_code:code,username:String(prof.username||snap.username||snap.display_name||code).slice(0,32),avatar_url:String(prof.avatar_url||snap.avatar_url||''),added_at:Date.now()};
     await db.ref('users/'+K+'/friends/'+code).set(f);
     const back=(await db.ref('users/'+K+'/friends/'+code).get()).val();   // read it back so "Added" is only shown when it really saved
     if(!back)throw new Error('The friend was not saved. Try again.');
@@ -413,7 +436,7 @@ async function addFriend(){
     let sent=false;
     try{   // also post a request to their account so they can accept and list you too
       const mine=D.friend_code;
-      if(mine){
+      if(mine&&fk){
         const already=(await db.ref('users/'+fk+'/friends/'+mine).get()).exists();
         if(!already){
           await db.ref('friend_requests/'+fk+'/'+mine).set({from_key:K,from_code:mine,username:($('username').value.trim()||D.username||mine),avatar_url:D.avatar_url||'',at:Date.now(),status:'pending'});
@@ -447,7 +470,8 @@ async function acceptRequest(code){
   const r=reqCache[code];if(!r)return;
   try{
     const reg=(await db.ref('friend_codes/'+code).get()).val();
-    if(typeof reg==='string'&&reg!==r.from_key)return say('That request does not match the code owner, so it was not accepted.',1);
+    const regOwner=await ownerKeyOfCode(reg,code,rv);
+    if(regOwner&&regOwner!==r.from_key)return say('That request does not match the code owner, so it was not accepted.',1);
     const f={friend_code:code,username:String(r.username||code).slice(0,32),avatar_url:String(r.avatar_url||''),added_at:Date.now()};
     await db.ref('users/'+K+'/friends/'+code).set(f);
     await db.ref('friend_requests/'+K+'/'+code).remove();
@@ -477,7 +501,7 @@ async function refreshFriendNames(){
   const entries=Object.entries(D.friends||{});if(!entries.length)return;
   let changed=false;
   await Promise.all(entries.map(async([code,f])=>{
-    try{const fk=(await db.ref('friend_codes/'+(f&&f.friend_code||code)).get()).val();if(typeof fk!=='string')return;
+    try{const fc=f&&f.friend_code||code;const fk=await ownerKeyOfCode((await db.ref('friend_codes/'+fc).get()).val(),fc,rv);if(!fk)return;
       const u=(await db.ref('users/'+fk+'/username').get()).val();
       if(u&&f&&f.username!==u){f.username=u;changed=true}}catch(e){}}));
   if(changed){keepCloseTicks();renderCloseFriends()}
