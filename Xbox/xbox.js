@@ -185,6 +185,9 @@ async function getRecentAchievementTitles(xuid, apiKey) {
     try {
         const data = await fetchOpenXBL(`/achievements/player/${xuid}`, apiKey);
         const titles = data?.titles || data?.achievements || [];
+        if (!titles.length) {
+            console.warn(`[XBOX DEBUG] /achievements/player/${xuid} raw response: ${JSON.stringify(data).slice(0, 800)}`);
+        }
         return titles.slice(0, 25).map((t) => ({
             titleName: t.name || t.titleName || "",
             currentAchievements: Number(t.currentAchievements ?? t.earnedAchievements ?? 0),
