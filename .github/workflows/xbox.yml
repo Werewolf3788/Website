@@ -1,0 +1,46 @@
+# File: .github/workflows/xbox.yml
+# Xbox/Microsoft sync -> Ray's Firebase (RTDB), same project PSN sync writes to.
+# Every tracked account's gamertag + OpenXBL key come from Kevin's DB (the user
+# pastes their key into Settings -> Xbox / Microsoft sync), so no per-person
+# GitHub secret is needed here the way PSN_NPSSO_* secrets are for PSN.
+name: Xbox Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/23 * * * *'
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'game/data/**'
+      - 'README.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xbox-sync-runner
+  cancel-in-progress: false
+
+jobs:
+  xbox-sync-job:
+    name: Xbox Sync Engine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: npm install firebase-admin
+
+      - name: Execute Xbox Sync Engine
+        env:
+          FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+        run: node Xbox/xbox.js

@@ -89,7 +89,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
     <input id="avatar_custom" placeholder="https://..." class="hidden"></div>
 
   <h2>Linked accounts</h2>
-  <p class="hint">Choose who can see each handle. Account ID, NPSSO and Steam API key below are always private.</p>
+  <p class="hint">Choose who can see each handle. Account ID, NPSSO, Steam API key and Microsoft API key below are always private.</p>
   <div id="handles"></div>
 
   <h2>Game &amp; trophy tracking</h2>
@@ -121,6 +121,14 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
     <p>Optional: the site uses its own key if you leave this empty. To use yours, open <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener">steamcommunity.com/dev/apikey</a>, sign in, enter <code>entertainment-71888.firebaseapp.com</code> as the domain, and paste the 32-character key. A key does not unlock a private Steam profile; the privacy settings above still apply.</p>
     <p id="steamKeyState" class="hint"></p></div>
+
+  <h2>Xbox / Microsoft sync (private)</h2>
+  <p class="hint">Put your Xbox gamertag in the Xbox gamertag box under Linked accounts. The API key below is what lets the site actually pull your achievements and presence, the same way the PSN NPSSO cookie does for PlayStation.</p>
+  <div class="box sec"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
+    <p>Xbox has no simple key of its own like PSN's NPSSO, so the site uses <a href="https://xbl.io" target="_blank" rel="noopener">xbl.io (OpenXBL)</a> to bridge your Microsoft account. Sign in there with the same Microsoft account as your Xbox gamertag, then copy the API key from your xbl.io account page and paste it below.</p></div>
+  <label for="xbox_api_key">Microsoft / Xbox API key (OpenXBL)</label><div class="row" data-secret="xbox_api_key"></div>
+  <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
+    <p id="xboxKeyState" class="hint"></p></div>
 
   <h2>Personal links (up to 5)</h2>
   <div id="links"></div>
@@ -237,6 +245,15 @@ $('steam_api_key').addEventListener('input',e=>{
   const m=v.match(/\b[0-9A-Fa-f]{32}\b/);
   if(m){e.target.value=m[0].toUpperCase();st.textContent='Key detected (32 characters).';st.style.color='var(--accent-green)'}
   else{st.textContent='A Steam key is 32 letters A-F and numbers.';st.style.color='var(--text-muted)'}
+});
+
+// Microsoft/Xbox (OpenXBL) API key: no fixed format published, just trim and
+// sanity-check a reasonable length so an empty/truncated paste gets caught.
+$('xbox_api_key').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('xboxKeyState');
+  if(!v){st.textContent='';return}
+  if(v.length<20){st.textContent='That looks too short for an xbl.io key. Double-check the paste.';st.style.color='var(--text-muted)'}
+  else{st.textContent='Key ready to save ('+v.length+' characters).';st.style.color='var(--accent-green)'}
 });
 
 // ---- PSN: Account ID <-> username lookup (site's PSN data: tracked players + their PSN friends) ----
@@ -388,6 +405,7 @@ async function load(){
   $('psn_account_id').value=D.psn_account_id||S.psn_account_id||'';$('psn_npsso').value=S.psn_npsso||'';
   $('steam_api_key').value=S.steam_api_key||'';$('steamKeyState').textContent=S.steam_api_key?(D.steam_api_key_valid===false?'Steam rejected the saved key. Paste a new one.':'Key saved.'):'';
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
+  $('xbox_api_key').value=S.xbox_api_key||'';$('xboxKeyState').textContent=S.xbox_api_key?(D.xbox_api_key_valid===false?'xbl.io rejected the saved key. Paste a new one.':'Key saved.'):'';
   (D.links||[]).slice(0,5).forEach((l,i)=>$('lk'+i).value=l);
   setColor(1,D.primary_color||'#0088ff');setColor(2,D.secondary_color||'#f5a623');
   $('tracking_scope').value=D.tracking_scope||'friends';
@@ -525,6 +543,9 @@ $('save').onclick=async()=>{
     const skey=$('steam_api_key').value.trim().toUpperCase();
     if(skey&&!/^[0-9A-F]{32}$/.test(skey))return say('Steam API key must be exactly 32 characters (0-9, A-F).',1);
     if(skey&&skey!==S.steam_api_key)pub.steam_api_key_valid=true;
+    const xkey=$('xbox_api_key').value.trim();
+    if(xkey&&xkey.length<20)return say('That Microsoft/Xbox API key looks too short. Double-check the paste from xbl.io.',1);
+    if(xkey&&xkey!==S.xbox_api_key)pub.xbox_api_key_valid=true;
     const acc=$('psn_account_id').value.trim();
     if(acc&&!/^\d{10,20}$/.test(acc))return say('PSN Account ID must be numbers only. Get it from psn.flipscreen.games.',1);
     if(npsso&&npsso!==S.psn_npsso)pub.psn_npsso_valid=true;
@@ -539,10 +560,10 @@ $('save').onclick=async()=>{
     D=back;dirty=false;
     {const av=D.avatar_url||'';try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){}}
     let ok=true;
-    try{await db.ref('user_secrets/'+K).update({psn_npsso:npsso,steam_api_key:skey,updated_at:now});S.psn_npsso=npsso;S.steam_api_key=skey}catch(e){ok=false}
+    try{await db.ref('user_secrets/'+K).update({psn_npsso:npsso,steam_api_key:skey,xbox_api_key:xkey,updated_at:now});S.psn_npsso=npsso;S.steam_api_key=skey;S.xbox_api_key=xkey}catch(e){ok=false}
     const t=new Date(now).toLocaleString();
     if(ok){say('Saved to your account.');setState('Saved to cloud: '+t+' ✓','var(--accent-green)')}
-    else{say('Profile saved, but the NPSSO and Steam key could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. Private keys not saved.','var(--danger)')}
+    else{say('Profile saved, but the NPSSO, Steam key and Microsoft key could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. Private keys not saved.','var(--danger)')}
   }catch(e){say(e.message,1);setState('Not saved. '+e.message,'var(--danger)')}
   finally{b.disabled=false;b.textContent='Save settings'}
 };
