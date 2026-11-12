@@ -3,7 +3,11 @@
 <head>
   <!-- Section 1: Document Metadata & Responsive Viewport (Lines 4-11) -->
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#090d16">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Subscriptions">
   <title>Subscription &amp; Renewal Tracker</title>
   <link id="dynamic-favicon" rel="icon" href="//www.google.com/s2/favicons?domain=sheets.google.com&sz=64">
   <link id="dynamic-apple-icon" rel="apple-touch-icon" href="//www.google.com/s2/favicons?domain=sheets.google.com&sz=180">
@@ -488,9 +492,47 @@
         width: 100%;
       }
     }
+
+    /* ---- Per-owner colors + avatar (Firebase /users/<owner>/primary_color, secondary_color, avatar_url) ---- */
+    .sub-card { --own-1: #38bdf8; --own-2: #3b82f6; }
+    .sub-card::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+      background: linear-gradient(180deg, var(--own-1), var(--own-2));
+    }
+    .sub-card:hover { border-color: var(--own-1); }
+    .meta-pill.owner-pill {
+      display: inline-flex; align-items: center; gap: 6px; font-weight: 700;
+      color: var(--own-1); border-color: var(--own-2);
+      background: color-mix(in srgb, var(--own-2) 18%, rgba(15, 23, 42, 0.75));
+    }
+    .own-avatar {
+      width: 20px; height: 20px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+      border: 2px solid var(--own-1); background: #1e293b;
+    }
+    .own-avatar.initial {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.66rem; font-weight: 800; color: #0b1220; background: var(--own-1);
+    }
+    .btn-auth {
+      display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+      background: rgba(15, 23, 42, 0.85); color: var(--text-primary);
+      border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      padding: 9px 14px; font-size: 0.86rem; font-weight: 600; min-height: 40px;
+    }
+    .btn-auth:hover { border-color: var(--border-glow); }
+    .btn-auth img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-cyan); }
+
+    /* ---- App shell (site menu from utm_links, bottom tab bar on phones) ---- */
+    header { top: var(--ww-bar-h, 0px); }
+    html.ww-bn-mode footer.persistent-footer { bottom: calc(var(--ww-bn-h, 66px) + env(safe-area-inset-bottom, 0px)); }
+    html.ww-bn-mode body.subs-page { padding-bottom: calc(var(--ww-bn-h, 66px) + 64px + env(safe-area-inset-bottom, 0px)) !important; }
+    @media (display-mode: standalone) { footer.persistent-footer { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); } }
   </style>
+  <link rel="stylesheet" href="assets/ww-shell.css">
+  <script src="assets/menu-sheet.js"></script>
+  <script defer src="assets/ww-shell.js"></script>
 </head>
-<body>
+<body class="subs-page">
 
   <!-- Section 3: Sticky Navigation & Filter Header (Lines 525-562) -->
   <header>
@@ -520,6 +562,7 @@
           <option value="name-asc">Sort: Name (A–Z)</option>
         </select>
         <button type="button" id="refresh-btn" class="btn-refresh">↻ Sync Sheet</button>
+        <button type="button" id="auth-btn" class="btn-auth" title="Sign in to load Kevin's and Ray's colors and avatars">Sign in</button>
       </div>
     </div>
   </header>
@@ -575,6 +618,73 @@
       const FALLBACK_ICON = "//www.google.com/s2/favicons?domain=sheets.google.com&sz=128";
 
       let subscriptions = [];
+
+      /* ---- Owner themes: colors + avatar from Firebase /users, cached on the device ---- */
+      const THEME_CACHE_KEY = "sub_tracker_owner_theme_v1";
+      // Owner name in the sheet (lower-case) -> Firebase user key (email with . -> _ and @ -> _at_)
+      const OWNER_KEYS = {
+        kevin: "raykevin71888_at_gmail_com",
+        ray: "cartnalray9_at_gmail_com"
+      };
+      const HEX = /^#[0-9a-fA-F]{6}$/;
+      const FALLBACK_COLORS = [["#38bdf8", "#3b82f6"], ["#f472b6", "#a855f7"], ["#34d399", "#10b981"], ["#fbbf24", "#f97316"]];
+      let ownerThemes = {};
+      try { ownerThemes = JSON.parse(localStorage.getItem(THEME_CACHE_KEY) || "{}") || {}; } catch (e) { ownerThemes = {}; }
+
+      const esc = (v) => String(v == null ? "" : v)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      const secure = (u) => (typeof u === "string" && u.startsWith("http://")) ? "https://" + u.slice(7) : (u || "");
+      const safeUrl = (u) => /^(https?:)?\/\//i.test(u || "") ? u : "";
+
+      function themeFor(owner) {
+        const key = (owner || "").trim().toLowerCase();
+        const t = ownerThemes[key] || {};
+        let i = 0;
+        for (const ch of key) i = (i * 31 + ch.charCodeAt(0)) % FALLBACK_COLORS.length;
+        const fb = FALLBACK_COLORS[i];
+        const c1 = HEX.test(t.primary || "") ? t.primary : fb[0];
+        const c2 = HEX.test(t.secondary || "") ? t.secondary : (HEX.test(t.primary || "") ? t.primary : fb[1]);
+        return { c1, c2, avatar: secure(t.avatar || "") };
+      }
+
+      function ownerPillHtml(owner) {
+        const th = themeFor(owner);
+        const av = th.avatar
+          ? `<img class="own-avatar" src="${esc(th.avatar)}" alt="" onerror="this.outerHTML='<span class=&quot;own-avatar initial&quot;>${esc((owner || "?").charAt(0).toUpperCase())}</span>'">`
+          : `<span class="own-avatar initial">${esc((owner || "?").charAt(0).toUpperCase())}</span>`;
+        return `<span class="meta-pill owner-pill">${av}${esc(owner)}</span>`;
+      }
+
+      // Called by the sign-in module once the owners' profiles are loaded
+      window.applyOwnerThemes = (themes, viewer) => {
+        if (themes && typeof themes === "object") {
+          ownerThemes = Object.assign({}, ownerThemes, themes);
+          try { localStorage.setItem(THEME_CACHE_KEY, JSON.stringify(ownerThemes)); } catch (e) {}
+        }
+        updateAuthButton(viewer);
+        if (subscriptions.length) renderCards();
+      };
+      window.OWNER_KEYS = OWNER_KEYS;
+
+      const authBtn = document.getElementById("auth-btn");
+      function updateAuthButton(viewer) {
+        if (!authBtn) return;
+        if (viewer && viewer.signedIn) {
+          const img = viewer.avatar ? `<img src="${esc(secure(viewer.avatar))}" alt="" onerror="this.remove()">` : "";
+          authBtn.innerHTML = `${img}<span>${esc(viewer.name || "Signed in")}</span>`;
+          authBtn.title = "Signed in. Click to sign out.";
+          authBtn.dataset.state = "in";
+        } else {
+          authBtn.textContent = "Sign in";
+          authBtn.title = "Sign in to load Kevin's and Ray's colors and avatars";
+          authBtn.dataset.state = "out";
+        }
+      }
+      if (authBtn) authBtn.addEventListener("click", () => {
+        if (authBtn.dataset.state === "in") { if (window.SubAuth && window.SubAuth.signOut) window.SubAuth.signOut(); }
+        else if (window.SubAuth && window.SubAuth.signIn) window.SubAuth.signIn();
+        else alert("Sign-in is still loading, try again in a moment.");
+      });
 
       const gridEl = document.getElementById("cards-grid");
       const searchInput = document.getElementById("search-input");
@@ -817,39 +927,39 @@
           const linkAttrs = sub.url
             ? (() => {
                 const isExternal = sub.url.startsWith("http") && !sub.url.includes(window.location.hostname);
-                return `href="${sub.url}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}`;
+                return `href="${esc(safeUrl(sub.url) || "#")}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}`;
               })()
             : "";
 
           return `
-            <article class="sub-card ${isActive ? "" : "is-inactive"}">
+            <article class="sub-card ${isActive ? "" : "is-inactive"}" style="--own-1:${themeFor(sub.owner).c1};--own-2:${themeFor(sub.owner).c2}">
               <div>
                 <div class="card-top">
                   <img
                     class="sub-thumb"
-                    src="${sub.imageUrl}"
+                    src="${esc(sub.imageUrl)}"
                     onerror="this.onerror=null;this.src='${FALLBACK_ICON}';"
-                    data-fullsrc="${sub.imageUrl}"
-                    data-caption="${sub.name.replace(/"/g, "&quot;")} — ${sub.description.replace(/"/g, "&quot;")}"
+                    data-fullsrc="${esc(sub.imageUrl)}"
+                    data-caption="${esc(sub.name)} — ${esc(sub.description)}"
                   >
                   <div class="sub-header-info">
                     <div class="sub-title-row">
-                      <h2 class="sub-name" title="${sub.name}">${sub.name}</h2>
-                      <span class="badge ${isActive ? "badge-active" : "badge-inactive"}">${sub.status}</span>
+                      <h2 class="sub-name" title="${esc(sub.name)}">${esc(sub.name)}</h2>
+                      <span class="badge ${isActive ? "badge-active" : "badge-inactive"}">${esc(sub.status)}</span>
                     </div>
                     <div class="sub-meta-tags">
-                      <span class="meta-pill">${sub.cycle}</span>
-                      <span class="meta-pill">Owner: ${sub.owner}</span>
+                      <span class="meta-pill">${esc(sub.cycle)}</span>
+                      ${ownerPillHtml(sub.owner)}
                     </div>
                   </div>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:14px;">
-                  <div class="sub-price">${sub.priceRaw}</div>
-                  <div style="font-size:0.78rem; color:var(--text-secondary);">Start: ${sub.start}</div>
+                  <div class="sub-price">${esc(sub.priceRaw)}</div>
+                  <div style="font-size:0.78rem; color:var(--text-secondary);">Start: ${esc(sub.start)}</div>
                 </div>
 
-                <p class="sub-desc" style="margin-top:8px;">${sub.description}</p>
+                <p class="sub-desc" style="margin-top:8px;">${esc(sub.description)}</p>
               </div>
 
               <div>
@@ -859,7 +969,7 @@
                 </div>
 
                 <div class="card-footer" style="margin-top:14px;">
-                  <span>Ends: <strong>${sub.end || "Lifetime / Ongoing"}</strong></span>
+                  <span>Ends: <strong>${esc(sub.end || "Lifetime / Ongoing")}</strong></span>
                   ${sub.url ? `<a class="visit-link" ${linkAttrs}>Manage ↗</a>` : ""}
                 </div>
               </div>
@@ -944,6 +1054,42 @@
       refreshBtn.addEventListener("click", loadSheetData);
 
       loadSheetData();
+    });
+  </script>
+
+  <!-- Sign-in (same Google login as the rest of the site). Kevin's and Ray's profile colors + avatars live under /users,
+       which the database rules only let signed-in people read. They are cached on this device after the first sign-in. -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    const app = initializeApp({
+      apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc", authDomain: "entertainment-71888.firebaseapp.com",
+      databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com", projectId: "entertainment-71888",
+      storageBucket: "entertainment-71888.firebasestorage.app", messagingSenderId: "660524340277",
+      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+    });   // default app name on purpose: shares the saved login with the other pages
+    const auth = getAuth(app), db = getDatabase(app);
+    const keyOf = u => u.email ? u.email.toLowerCase().replace(/\./g, "_").replace("@", "_at_") : u.uid;
+    const ready = () => new Promise(r => { const t = () => window.applyOwnerThemes ? r() : setTimeout(t, 50); t(); });
+    const val = async (path) => { try { const v = (await get(ref(db, path))).val(); return typeof v === "string" ? v : ""; } catch (e) { return ""; } };
+    window.SubAuth = {
+      signIn: () => signInWithPopup(auth, new GoogleAuthProvider()).catch(e => alert("Sign-in failed: " + e.message)),
+      signOut: () => signOut(auth)
+    };
+    await ready();
+    onAuthStateChanged(auth, async u => {
+      if (!u) { window.applyOwnerThemes(null, { signedIn: false }); return; }
+      const themes = {};
+      await Promise.all(Object.entries(window.OWNER_KEYS).map(async ([owner, key]) => {
+        const [primary, secondary, avatar] = await Promise.all([
+          val("users/" + key + "/primary_color"), val("users/" + key + "/secondary_color"), val("users/" + key + "/avatar_url")
+        ]);
+        if (primary || secondary || avatar) themes[owner] = { primary, secondary, avatar };
+      }));
+      const mine = await val("users/" + keyOf(u) + "/avatar_url");
+      const name = (await val("users/" + keyOf(u) + "/username")) || u.displayName || "Signed in";
+      window.applyOwnerThemes(themes, { signedIn: true, name, avatar: mine || u.photoURL || "" });
     });
   </script>
 </body>
