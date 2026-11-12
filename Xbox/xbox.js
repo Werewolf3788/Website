@@ -252,6 +252,16 @@ async function main() {
             const profile = await getProfileByGamertag(acc.gamertag, acc.apiKey, acc.xuid);
             const titles = await getRecentAchievementTitles(profile.xuid, acc.apiKey);
 
+            // TEMP DIAGNOSTIC - checking whether /account/{xuid} works for an XUID-only
+            // lookup (no gamertag), to support friend-key-sharing where a friend gives
+            // only their XUID. Remove once confirmed.
+            try {
+                const probe = await fetchOpenXBL(`/account/${profile.xuid}`, acc.apiKey);
+                console.warn(`[XBOX DIAG] /account/${profile.xuid} -> ${JSON.stringify(probe).slice(0, 500)}`);
+            } catch (e) {
+                console.warn(`[XBOX DIAG] /account/${profile.xuid} failed: ${e.message}`);
+            }
+
             const card = plain({
                 gamertag: profile.gamertag,
                 xuid: profile.xuid,
