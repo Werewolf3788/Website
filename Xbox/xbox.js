@@ -156,46 +156,29 @@ async function fetchOpenXBL(path, apiKey) {
 }
 
 async function getProfileByGamertag(gamertag, apiKey) {
-    // /account/{gamertag} isn't the right lookup-by-gamertag endpoint - confirmed working
-    // reference implementations use /search/{gamertag} instead. The account endpoint
-    // (bare, no gamertag) is for the authenticated key owner's own profile.
+    // Confirmed from a real response (2026-11-12): /search/{gamertag} returns
+    // { content: { people: [ { xuid, gamertag, gamerScore, displayPicRaw,
+    // presenceState, presenceText, presenceDevices, ... } ] } } - a peoplehub-
+    // style payload, one level deeper (under "content") than the bare XSAPI
+    // profileUsers[] shape other Xbox endpoints use.
     const data = await fetchOpenXBL(`/search/${encodeURIComponent(gamertag)}`, apiKey);
-    const p = data?.profileUsers?.[0] || data?.people?.[0] || (Array.isArray(data) ? data[0] : null);
+    const p = data?.content?.people?.[0];
     if (!p) {
-        // Response shape for /search isn't confirmed yet - dump it (no key in it) so the
-        // real field names can be read from the Action log if this still comes up empty.
         console.warn(`[XBOX DEBUG] /search/${gamertag} raw response: ${JSON.stringify(data).slice(0, 800)}`);
         throw new Error(`No profile found via /search for gamertag "${gamertag}"`);
     }
-    const settings = {};
-    for (const s of p.settings || []) settings[s.id] = s.value;
-    // Two possible shapes seen across OpenXBL/XSAPI-style endpoints: the XSAPI
-    // "profileUsers[0].settings[]" array (id/value pairs), or a flatter
-    // peoplehub-style object with the fields directly on it. Handle both rather
-    // than assume - this is the part most likely to need a follow-up tweak.
     return {
-        xuid: p.id || p.xuid,
-        gamertag: settings.Gamertag || p.gamertag || gamertag,
-        gamerscore: Number(settings.Gamerscore ?? p.gamerScore ?? p.gamerscore ?? 0),
-        gamerPicture: settings.GameDisplayPicRaw || p.displayPicRaw || p.gamerPicture || "",
-        bio: settings.Bio || p.bio || "",
-        tier: settings.AccountTier || p.detail?.accountTier || ""
+        xuid: p.xuid,
+        gamertag: p.gamertag || p.modernGamertag || gamertag,
+        gamerscore: Number(p.gamerScore || 0),
+        gamerPicture: p.displayPicRaw || "",
+        bio: p.bio || "",
+        tier: p.xboxOneRep || "",
+        // /search already includes presence - no need for a second call/endpoint.
+        presenceState: p.presenceState || "Offline",
+        presenceText: p.presenceText || "",
+        presenceDevices: p.presenceDevices || null
     };
-}
-
-async function getPresence(xuid, apiKey) {
-    try {
-        const data = await fetchOpenXBL(`/${xuid}/presence`, apiKey);
-        const entry = Array.isArray(data) ? data[0] : data;
-        return {
-            state: entry?.state || "Unknown",
-            device: entry?.devices?.[0]?.type || "",
-            currentTitle: entry?.devices?.[0]?.titles?.[0]?.name || ""
-        };
-    } catch (e) {
-        console.warn(`[XBOX] presence lookup failed for ${xuid}: ${e.message}`);
-        return { state: "Unknown", device: "", currentTitle: "" };
-    }
 }
 
 async function getRecentAchievementTitles(xuid, apiKey) {
@@ -233,10 +216,7 @@ async function main() {
     for (const acc of accounts) {
         try {
             const profile = await getProfileByGamertag(acc.gamertag, acc.apiKey);
-            const [presence, titles] = await Promise.all([
-                getPresence(profile.xuid, acc.apiKey),
-                getRecentAchievementTitles(profile.xuid, acc.apiKey)
-            ]);
+            const titles = await getRecentAchievementTitles(profile.xuid, acc.apiKey);
 
             const card = plain({
                 gamertag: profile.gamertag,
@@ -245,9 +225,9 @@ async function main() {
                 gamerPicture: profile.gamerPicture,
                 bio: profile.bio,
                 tier: profile.tier,
-                presenceState: presence.state,
-                currentDevice: presence.device,
-                currentTitle: presence.currentTitle,
+                presenceState: profile.presenceState,
+                presenceText: profile.presenceText,
+                presenceDevices: profile.presenceDevices,
                 recentTitles: titles,
                 lastUpdated: nowEt(),
                 lastUpdatedMs: Date.now(),
