@@ -79,6 +79,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <label for="add_code">Add a friend</label>
   <div class="row"><input id="add_code" maxlength="64" inputmode="text" placeholder="Friend's 8-character code" autocapitalize="characters" autocomplete="off" spellcheck="false"><button id="addFr" type="button">Add friend</button></div>
   <p class="hint" id="addState" role="status" style="min-height:1.2em"></p>
+  <div id="reqBox" class="box hidden"><strong>Friend requests</strong><p class="hint" style="margin:4px 0 8px">These people added you. Accept to add them to your list too.</p><div id="reqList"></div></div>
   <p class="hint">Type the code your friend copied from their own Settings. They show up in the list below straight away, no Save needed.</p>
 
   <h2>Profile image</h2>
@@ -368,6 +369,7 @@ async function load(){
   renderCloseFriends();
   $('friend_code').value=await ensureFriendCode();
   refreshFriendNames();
+  watchRequests();
   await resolveAvatar();
   showSteam();
   if($('psn_account_id').value.trim())fillPsnName();else fillPsnId();
@@ -396,6 +398,7 @@ async function addFriend(){
   if((D.friends||{})[code])return addMsg('Already in your friends list.',1),false;
   const b=$('addFr');b.disabled=true;b.textContent='Adding…';
   try{
+    await ensureFriendCode().catch(()=>{});   // make sure MY code is registered so they can add me back
     const fk=(await db.ref('friend_codes/'+code).get()).val();
     if(typeof fk!=='string'||!fk)return addMsg('No player has the code '+code+'. Check it with your friend (watch for 0 vs O and 1 vs I). If it is right, ask them to open Settings once while signed in, which activates older codes.',1),false;
     if(fk===K)return addMsg("That's your own code.",1),false;
@@ -406,13 +409,52 @@ async function addFriend(){
     if(!back)throw new Error('The friend was not saved. Try again.');
     keepCloseTicks();
     D.friends=D.friends||{};D.friends[code]=f;
-    $('add_code').value='';renderCloseFriends();addMsg('Added '+f.username+' and saved to your account.');
+    let sent=false;
+    try{   // also post a request to their account so they can accept and list you too
+      const mine=D.friend_code;
+      if(mine){
+        const already=(await db.ref('users/'+fk+'/friends/'+mine).get()).exists();
+        if(!already){
+          await db.ref('friend_requests/'+fk+'/'+mine).set({from_key:K,from_code:mine,username:($('username').value.trim()||D.username||mine),avatar_url:D.avatar_url||'',at:Date.now(),status:'pending'});
+          sent=true;
+        }
+      }
+    }catch(e){console.warn('[friend request]',e&&e.message)}
+    $('add_code').value='';renderCloseFriends();addMsg('Added '+f.username+' and saved to your account.'+(sent?' A friend request was sent so you show up on their list too.':''));
     return true;
   }catch(e){
     addMsg(/permission/i.test(e.message||e.code||'')?'Could not save: the database refused the write. Sign out, sign in again and retry. If it still fails the database rules need publishing.':(e.message||'Could not add that friend.'),1);
     return false;
   }
   finally{b.disabled=false;b.textContent='Add friend'}
+}
+let reqRef=null,reqCache={};
+function watchRequests(){
+  if(!K)return;
+  if(reqRef){try{reqRef.off()}catch(e){}}
+  reqRef=db.ref('friend_requests/'+K);
+  reqRef.on('value',snap=>{reqCache=snap.val()||{};renderRequests()},e=>console.warn('[friend requests]',e&&e.message));
+}
+function renderRequests(){
+  const rows=Object.entries(reqCache).filter(([c,r])=>r&&r.from_key&&/^[A-Z0-9]{8}$/.test(c)&&!(D.friends||{})[c]);
+  $('reqBox').classList.toggle('hidden',!rows.length);
+  $('reqList').innerHTML=rows.map(([c,r])=>`<div style="display:flex;gap:8px;align-items:center;margin:4px 0"><span style="flex:1">${esc(r.username||c)} <span class="hint" style="margin:0">${esc(c)}</span></span><button type="button" class="primary acc" data-code="${esc(c)}">Accept</button><button type="button" class="dec" data-code="${esc(c)}">Decline</button></div>`).join('');
+  $('reqList').querySelectorAll('.acc').forEach(b=>b.onclick=()=>acceptRequest(b.dataset.code));
+  $('reqList').querySelectorAll('.dec').forEach(b=>b.onclick=()=>declineRequest(b.dataset.code));
+}
+async function acceptRequest(code){
+  const r=reqCache[code];if(!r)return;
+  try{
+    const reg=(await db.ref('friend_codes/'+code).get()).val();
+    if(typeof reg==='string'&&reg!==r.from_key)return say('That request does not match the code owner, so it was not accepted.',1);
+    const f={friend_code:code,username:String(r.username||code).slice(0,32),avatar_url:String(r.avatar_url||''),added_at:Date.now()};
+    await db.ref('users/'+K+'/friends/'+code).set(f);
+    await db.ref('friend_requests/'+K+'/'+code).remove();
+    keepCloseTicks();D.friends=D.friends||{};D.friends[code]=f;renderCloseFriends();say('Added '+f.username+'.');
+  }catch(e){say(e.message,1)}
+}
+async function declineRequest(code){
+  try{await db.ref('friend_requests/'+K+'/'+code).remove();say('Request removed.')}catch(e){say(e.message,1)}
 }
 $('addFr').onclick=addFriend;
 $('add_code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addFriend()}});
