@@ -19,6 +19,8 @@
     if (window.WWAuth) return;
 
     const CACHE_KEY = 'ww_auth_user_v1';
+    // Discord sign-in runs through a small login server (Claude-Test/discord-auth). Blank = hide the Discord buttons.
+    const DISCORD_AUTH = 'https://ww-discord-auth.onrender.com';
     const SDK = 'https://www.gstatic.com/firebasejs/8.10.1/';
     const CFG = {
         apiKey: 'AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc',
@@ -71,6 +73,13 @@
         try {
             await ensureAuth();
             try { await auth.getRedirectResult(); } catch (e) { /* ignored: onAuthStateChanged reports the user */ }
+            // Returning from the Discord login server: it hands back a Firebase token in the URL fragment.
+            const dm = location.hash.match(/ww_discord_token=([^&]+)/), de = location.hash.match(/ww_discord_error=([^&]+)/);
+            if (dm || de) {
+                try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+                if (dm) { try { await auth.signInWithCustomToken(decodeURIComponent(dm[1])); } catch (e) { alert('Discord sign-in problem: ' + e.message); } }
+                else alert('Discord sign-in problem: ' + decodeURIComponent(de[1]).replace(/\+/g, ' '));
+            }
             auth.onAuthStateChanged((u) => {
                 confirmed = true;
                 user = toProfile(u);
@@ -81,6 +90,11 @@
         } catch (e) {
             console.warn('[ww-auth] could not start Firebase Auth - keeping the saved sign-in on screen', e);
         }
+    }
+
+    function signInDiscord() {
+        if (!DISCORD_AUTH) return;
+        location.href = DISCORD_AUTH + '/login?next=' + encodeURIComponent(location.href.split('#')[0]);
     }
 
     async function signIn() {
@@ -128,7 +142,7 @@
             return `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn is-in" data-ww-acct-toggle aria-haspopup="true">${av}<span>${esc(user.name)}</span></button>
 <div class="ww-acct-pop"><small>${esc(user.email)}</small><button type="button" data-ww-acct-out>Sign out</button></div></div>`;
         }
-        return `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn" data-ww-acct-in>Sign in</button></div>`;
+        return `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn" data-ww-acct-in>Sign in</button>${DISCORD_AUTH ? '<button type="button" class="ww-acct-btn" data-ww-acct-discord>Discord</button>' : ''}</div>`;
     }
 
     // Remove everything we mounted last time, then mount again (the shell re-renders its menus)
@@ -152,17 +166,18 @@
             row.className = 'ww-acct-row'; row.setAttribute('data-ww-acct-mount', '');
             row.innerHTML = user
                 ? `<div class="ww-acct" data-ww-acct><div class="ww-acct-pop"><small>Signed in as ${esc(user.name)}<br>${esc(user.email)}</small><button type="button" data-ww-acct-out>Sign out</button></div></div>`
-                : `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn" data-ww-acct-in>Sign in with Google</button></div>`;
+                : `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn" data-ww-acct-in>Sign in with Google</button>${DISCORD_AUTH ? '<button type="button" class="ww-acct-btn" data-ww-acct-discord>Sign in with Discord</button>' : ''}</div>`;
             const first = box.querySelector('.ww-sheet-title, .ww-drawer-head');
             if (first) first.insertAdjacentElement('afterend', row); else box.insertBefore(row, box.firstChild);
         });
     }
 
     document.addEventListener('click', (e) => {
-        const t = e.target.closest && e.target.closest('[data-ww-acct-in],[data-ww-acct-out],[data-ww-acct-toggle]');
+        const t = e.target.closest && e.target.closest('[data-ww-acct-in],[data-ww-acct-discord],[data-ww-acct-out],[data-ww-acct-toggle]');
         const open = document.querySelector('.ww-acct.is-open');
         if (!t) { if (open) open.classList.remove('is-open'); return; }
         if (t.hasAttribute('data-ww-acct-in')) signIn();
+        else if (t.hasAttribute('data-ww-acct-discord')) signInDiscord();
         else if (t.hasAttribute('data-ww-acct-out')) signOut();
         else { const a = t.closest('.ww-acct'); if (open && open !== a) open.classList.remove('is-open'); a.classList.toggle('is-open'); }
     });
@@ -172,7 +187,7 @@
     // The shell rebuilds its menus (cache refresh, resize) -> mount again
     window.addEventListener('ww-shell-rendered', mount);
 
-    window.WWAuth = { signIn, signOut, get user() { return user; }, get confirmed() { return confirmed; } };
+    window.WWAuth = { signIn, signInDiscord, signOut, get user() { return user; }, get confirmed() { return confirmed; } };
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { mount(); start(); });
     else { mount(); start(); }
