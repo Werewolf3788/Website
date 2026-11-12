@@ -320,7 +320,11 @@ window.appState = {
                             levels: cItem.levels != null ? cItem.levels : null,
                             unlock_requirement: cItem.unlock_requirement || '',
                             level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null,
-                            tier_notes: Array.isArray(cItem.tier_notes) ? cItem.tier_notes : null
+                            tier_notes: Array.isArray(cItem.tier_notes) ? cItem.tier_notes : null,
+                            // Bonus medal: a one-off perk independent of the tier/level above
+                            // (e.g. a skill's associated bonus medal), toggled by its own star button.
+                            bonus: cItem.bonus || null,
+                            bonusEarned: false
                         };
                     }
                 });
@@ -576,6 +580,10 @@ window.appState = {
                             // levels are bought so far; restore it alongside the collected flag.
                             const lvl = Number(payload.collectibles[cKey].items[itemId].level);
                             if (Number.isFinite(lvl)) this.collectibles[cKey].items[itemId].level = Math.max(0, lvl);
+                            // Bonus medal star, restored independently of the tier/level above.
+                            if (payload.collectibles[cKey].items[itemId].bonusEarned !== undefined) {
+                                this.collectibles[cKey].items[itemId].bonusEarned = !!payload.collectibles[cKey].items[itemId].bonusEarned;
+                            }
                         }
                     }
                 }
@@ -775,29 +783,42 @@ window.appState.applyStateToUI = function() {
             if (group && this.collectibles[group]?.items?.[id]) {
                 const it = this.collectibles[group].items[id];
                 isDone = !!it.collected;
-                const lvlEl = card.querySelector('.tech-level-display');
-                if (lvlEl && it.levels) lvlEl.textContent = `${it.level || 0}/${it.levels}`;
-                // Multi-level gadgets/weapons: once a tier is bought, show what the
-                // *next* tier adds and what it costs, instead of repeating tier 1's
-                // description and price forever.
-                if (it.levels > 1 && Array.isArray(it.level_costs)) {
+                // Tier boxes: fill box 1..level, leave the rest unfilled.
+                const tierWrap = card.querySelector('.tier-box-wrap');
+                if (tierWrap) {
+                    const lvl = it.level || 0;
+                    tierWrap.querySelectorAll('.tier-box').forEach(btn => {
+                        const n = Number(btn.getAttribute('data-tier')) || 0;
+                        btn.classList.toggle('filled', n <= lvl);
+                        btn.classList.toggle('is-current', n === lvl && lvl > 0);
+                    });
+                }
+                // Bonus star: filled/earned state, independent of the tier boxes above.
+                const bonusBtn = card.querySelector('.bonus-star-btn');
+                if (bonusBtn) bonusBtn.classList.toggle('earned', !!it.bonusEarned);
+                // Once a tier is bought, show what the *next* tier adds (and, for
+                // wallet-costed items, what it costs) instead of repeating tier 1's
+                // description forever. tier_notes works with or without level_costs.
+                if (it.levels > 1 && (Array.isArray(it.tier_notes) || Array.isArray(it.level_costs))) {
                     const lvl = it.level || 0;
                     const maxed = lvl >= it.levels;
                     const bodyEl = card.querySelector(':scope > p');
-                    if (bodyEl) {
-                        const note = Array.isArray(it.tier_notes) ? it.tier_notes[lvl] : null;
+                    if (bodyEl && Array.isArray(it.tier_notes)) {
+                        const note = it.tier_notes[lvl];
                         bodyEl.textContent = maxed
-                            ? (Array.isArray(it.tier_notes) ? it.tier_notes[it.levels - 1] : null) || it.guide || 'Fully upgraded.'
+                            ? it.tier_notes[it.levels - 1] || it.guide || 'Fully upgraded.'
                             : (note || it.guide || '');
                     }
-                    const priceEl = card.querySelector(':scope > .price-meter');
-                    if (priceEl) {
-                        if (maxed) { priceEl.dataset.price = '0'; priceEl.innerHTML = 'Fully upgraded'; }
-                        else {
-                            const target = Number(it.level_costs[lvl]) || 0;
-                            priceEl.dataset.price = String(target);
-                            const have = (this.wallet && this.wallet.credits) || 0;
-                            priceEl.innerHTML = 'Credits needed: ' + meterHtml(target - have, target, '');
+                    if (Array.isArray(it.level_costs)) {
+                        const priceEl = card.querySelector(':scope > .price-meter');
+                        if (priceEl) {
+                            if (maxed) { priceEl.dataset.price = '0'; priceEl.innerHTML = 'Fully upgraded'; }
+                            else {
+                                const target = Number(it.level_costs[lvl]) || 0;
+                                priceEl.dataset.price = String(target);
+                                const have = (this.wallet && this.wallet.credits) || 0;
+                                priceEl.innerHTML = 'Credits needed: ' + meterHtml(target - have, target, '');
+                            }
                         }
                     }
                 }
@@ -998,6 +1019,22 @@ window.appState.setTechLevel = function(id, group, value) {
 window.appState.stepTechLevel = function(id, group, d) {
     const it = this.collectibles[group]?.items?.[id];
     this.setTechLevel(id, group, (it?.level || 0) + d);
+};
+// Tier-box click handler: clicking box N jumps straight to rank N. Clicking the
+// box that is already the current top rank deselects back down to N-1, so a
+// misclick (or dropping back a rank) doesn't require stepping down one at a time.
+window.appState.toggleTechLevel = function(id, group, n) {
+    const it = this.collectibles[group]?.items?.[id]; if (!it) return;
+    const current = it.level || 0;
+    this.setTechLevel(id, group, current === n ? n - 1 : n);
+};
+// Bonus medal: an independent one-off toggle (rendered as a star), separate from
+// the tier-box rank above — e.g. a Drone skill's "Range" bonus medal.
+window.appState.toggleBonus = function(id, group) {
+    const it = this.collectibles[group]?.items?.[id]; if (!it) return;
+    it.bonusEarned = !it.bonusEarned;
+    this.applyStateToUI();
+    clearTimeout(this._bonusSaveTimer); this._bonusSaveTimer = setTimeout(() => this.saveProgress(), 600);
 };
 function renderMedalProgress() {
     document.querySelectorAll('.medal-meter[data-medal]').forEach(el => {
@@ -1627,6 +1664,18 @@ function ensureUniversalStyles() {
         .card-chevron { font-size: 0.7rem; color: #94a3b8; display: inline-block; transition: transform 0.15s ease; }
         .game-item-card.more-open .card-chevron { transform: rotate(180deg); }
         .mission-region { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin-left: 8px; }
+        .tier-box-wrap { display: inline-flex; gap: 4px; flex: 0 0 auto; }
+        .tier-box { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.22);
+            background: #0f172a; color: #94a3b8; font-size: 0.8rem; font-weight: 800; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+        .tier-box:hover { border-color: var(--user-theme-accent, #ff5500); }
+        .tier-box.filled { background: var(--user-theme-accent, #ff5500); border-color: var(--user-theme-accent, #ff5500); color: #fff; }
+        .tier-box.filled.is-current { box-shadow: 0 0 0 2px rgba(255,255,255,0.35) inset; }
+        .bonus-star-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.22);
+            background: #0f172a; color: #475569; font-size: 1.05rem; line-height: 1; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+        .bonus-star-btn:hover { border-color: #facc15; color: #facc15; }
+        .bonus-star-btn.earned { background: #facc15; border-color: #facc15; color: #1f2937; }
         .ribbon-count-wrap { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; color: #94a3b8; font-weight: 800; }
         .ribbon-count { width: 68px; min-height: 40px; padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18);
             background: #0f172a; color: #fff; font-size: 1rem; font-weight: 800; text-align: center; }
@@ -1785,6 +1834,24 @@ function buildItemCard(o) {
     const groupAttr = o.group ? ` data-group="${escapeHtml(o.group)}"` : '';
     const groupArg = o.group ? `, '${escapeHtml(o.group)}'` : '';
     const hasMore = !!(o.body || o.locImg || o.link);
+    // Tier boxes: a row of N clickable boxes (skills with 2-3 ranks, tech upgrades
+    // with multiple levels, etc.) — click box N to set your current rank directly,
+    // rather than stepping one at a time. Boxes start unfilled; applyStateToUI's
+    // sync loop fills in boxes <= the saved level once progress loads.
+    const tierBoxesHtml = o.levelGoal
+        ? `<div class="tier-box-wrap" data-tier-id="${escapeHtml(o.id)}" data-tier-group="${escapeHtml(o.group || '')}" title="Click a box to set your current rank">
+            ${Array.from({ length: Number(o.levelGoal) || 0 }, (_, i) => i + 1).map(n =>
+                `<button type="button" class="tier-box" data-tier="${n}" aria-label="Set rank ${n}" onclick="appState.toggleTechLevel('${escapeHtml(o.id)}', '${escapeHtml(o.group || '')}', ${n})">${n}</button>`
+                // Clicking the already-active top box deselects down one rank; clicking any
+                // other box jumps straight to that rank. See appState.toggleTechLevel below.
+            ).join('')}
+           </div>`
+        : '';
+    // Bonus medal: a separate star toggle for a one-off perk tied to this skill
+    // (e.g. the Drone's range bonus medal) — independent of the rank boxes above.
+    const bonusHtml = o.bonus
+        ? `<button type="button" class="bonus-star-btn" data-bonus-id="${escapeHtml(o.id)}" data-bonus-group="${escapeHtml(o.group || '')}" title="${escapeHtml(o.bonus.name || 'Bonus Medal')}: ${escapeHtml(o.bonus.desc || '')}" onclick="appState.toggleBonus('${escapeHtml(o.id)}', '${escapeHtml(o.group || '')}')">★</button>`
+        : '';
     return `
     <div class="trophy-card game-item-card" data-id="${escapeHtml(o.id)}" data-type="${o.type}"${groupAttr}${o.unit ? ` data-unit="${escapeHtml(o.unit)}" data-goal="${Number(o.progressGoal) || 0}"` : ''} data-search="${escapeHtml(search)}">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -1796,13 +1863,16 @@ function buildItemCard(o) {
                     ${o.sub ? `<div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.sub)}</div>` : ''}
                 </div>
             </div>
+            <div style="display:flex; gap:8px; align-items:center; flex:0 0 auto;">
             ${o.counter
                 ? `<div class="ribbon-count-wrap" title="Times earned"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepRibbon('${escapeHtml(o.id)}', -1)">−</button><span>×</span><input type="number" min="0" step="1" inputmode="numeric" class="ribbon-count" value="0" aria-label="Times earned: ${escapeHtml(o.title || '')}" onchange="appState.setRibbonCount('${escapeHtml(o.id)}', this.value)"><button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepRibbon('${escapeHtml(o.id)}', 1)">+</button></div>`
                 : o.levelGoal
-                ? `<div class="ribbon-count-wrap tech-level-wrap" title="Levels bought"><button type="button" class="step-btn" aria-label="Lower level" onclick="appState.stepTechLevel('${escapeHtml(o.id)}', '${escapeHtml(o.group || '')}', -1)">−</button><span class="tech-level-display" data-tech-level="${escapeHtml(o.id)}" data-tech-group="${escapeHtml(o.group || '')}">0/${Number(o.levelGoal)}</span><button type="button" class="step-btn" aria-label="Raise level" onclick="appState.stepTechLevel('${escapeHtml(o.id)}', '${escapeHtml(o.group || '')}', 1)">+</button></div>`
+                ? tierBoxesHtml
                 : o.progressGoal
                 ? `<div class="ribbon-count-wrap medal-progress-wrap" title="Progress"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepMedal('${escapeHtml(o.id)}', -1)">−</button><input type="number" min="0" step="1" inputmode="numeric" class="medal-count" value="0" ${o.unit ? `placeholder="${escapeHtml(o.unit)}" title="Type your longest shot in meters"` : ''} aria-label="${o.unit ? 'Your longest shot (meters)' : 'Progress'}: ${escapeHtml(o.title || '')}" onchange="appState.setMedalProgress('${escapeHtml(o.id)}', this.value)">${o.unit ? `<span class="unit-lbl">${escapeHtml(o.unit)}</span>` : ''}<button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepMedal('${escapeHtml(o.id)}', 1)">+</button></div>`
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
+            ${bonusHtml}
+            </div>
         </div>
         ${hasMore ? `<div class="card-more">
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
@@ -3311,7 +3381,8 @@ function renderUniversalCompanion(data) {
                             id, type: 'collectible', group: cKey,
                             badge: it.region || humanize(cKey), badgeClass: 'rank-silver',
                             title: it.name || id, sub: it.location || '',
-                            body: it.guide || '', img: it.image_url
+                            body: it.guide || '', img: it.image_url,
+                            levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null
                         })).join('')}
                     </div>
                 </div>
