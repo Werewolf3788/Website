@@ -77,6 +77,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <p class="hint">Share this 8-character code so friends can see your display name, platform badge and hunting logs.</p>
   <label for="add_code">Add a friend</label>
   <div class="row"><input id="add_code" maxlength="8" placeholder="Friend's 8-character code" autocapitalize="characters" autocomplete="off" spellcheck="false"><button id="addFr" type="button">Add friend</button></div>
+  <p class="hint" id="addState" role="status" style="min-height:1.2em"></p>
   <p class="hint">Type the code your friend copied from their own Settings. They show up in the list below straight away, no Save needed.</p>
 
   <h2>Profile image</h2>
@@ -371,24 +372,33 @@ function renderCloseFriends(){
     if(!confirm('Remove '+(f.username||code)+' from your friends?'))return;
     try{keepCloseTicks();await db.ref('users/'+K+'/friends/'+code).remove();delete D.friends[code];renderCloseFriends();say('Friend removed.')}catch(e){say(e.message,1)}});
 }
+const addMsg=(t,bad)=>{const e=$('addState');e.textContent=t;e.style.color=bad?'var(--danger)':'var(--accent-green)';say(t,bad)};
 async function addFriend(){
   const code=$('add_code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
-  if(!/^[A-HJ-NP-Z2-9]{8}$/.test(code))return say('A friend code is 8 letters and numbers. Check it and try again.',1);
-  if(code===D.friend_code)return say("That's your own code. Send it to a friend instead.",1);
-  if((D.friends||{})[code])return say('Already in your friends list.',1);
-  const b=$('addFr');b.disabled=true;
+  if(!code)return false;
+  if(!K)return addMsg('Sign in first, then add your friend.',1),false;
+  if(!/^[A-HJ-NP-Z2-9]{8}$/.test(code))return addMsg('A friend code is 8 letters and numbers (no 0, 1, I or O). Check it and try again.',1),false;
+  if(code===D.friend_code)return addMsg("That's your own code. Send it to a friend instead.",1),false;
+  if((D.friends||{})[code])return addMsg('Already in your friends list.',1),false;
+  const b=$('addFr');b.disabled=true;b.textContent='Adding…';
   try{
     const fk=(await db.ref('friend_codes/'+code).get()).val();
-    if(typeof fk!=='string'||!fk)return say("No player has that code. Check it with your friend.",1);
-    if(fk===K)return say("That's your own code.",1);
+    if(typeof fk!=='string'||!fk)return addMsg('No player has the code '+code+'. Check it with your friend.',1),false;
+    if(fk===K)return addMsg("That's your own code.",1),false;
     const prof=(await db.ref('users/'+fk).get()).val()||{};
     const f={friend_code:code,username:prof.username||code,added_at:Date.now()};
     await db.ref('users/'+K+'/friends/'+code).set(f);
+    const back=(await db.ref('users/'+K+'/friends/'+code).get()).val();   // read it back so "Added" is only shown when it really saved
+    if(!back)throw new Error('The friend was not saved. Try again.');
     keepCloseTicks();
     D.friends=D.friends||{};D.friends[code]=f;
-    $('add_code').value='';renderCloseFriends();say('Added '+f.username+'.');
-  }catch(e){say(e.message,1)}
-  finally{b.disabled=false}
+    $('add_code').value='';renderCloseFriends();addMsg('Added '+f.username+' and saved to your account.');
+    return true;
+  }catch(e){
+    addMsg(/permission/i.test(e.message||e.code||'')?'Could not save: the database refused the write. Sign out, sign in again and retry. If it still fails the database rules need publishing.':(e.message||'Could not add that friend.'),1);
+    return false;
+  }
+  finally{b.disabled=false;b.textContent='Add friend'}
 }
 $('addFr').onclick=addFriend;
 $('add_code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addFriend()}});
@@ -396,6 +406,7 @@ $('add_code').addEventListener('input',e=>{e.target.value=e.target.value.toUpper
 $('cp').onclick=()=>navigator.clipboard.writeText($('friend_code').value).then(()=>say('Friend code copied.'));
 
 $('save').onclick=async()=>{
+  if($('add_code').value.trim())await addFriend();   // a code typed but not added yet still gets added on Save
   const b=$('save');b.disabled=true;b.textContent='Saving…';
   try{
     const url=await resolveAvatar(),now=Date.now();
