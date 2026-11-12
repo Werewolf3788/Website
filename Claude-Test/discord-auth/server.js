@@ -22,7 +22,7 @@
 const crypto = require('crypto');
 const express = require('express');
 
-const PUBLIC_URL = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
+const PUBLIC_URL = (process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || '').trim().replace(/\/$/, '');
 const ALLOWED = (process.env.ALLOWED_ORIGINS || 'https://werewolf3788.github.io').split(',').map(s => s.trim().replace(/\/$/, '')).filter(Boolean);
 const STATE_SECRET = process.env.STATE_SECRET || '';
 const REDIRECT_URI = PUBLIC_URL + '/callback';
@@ -95,6 +95,11 @@ function createApp(deps) {
           grant_type: 'authorization_code', code: String(req.query.code), redirect_uri: REDIRECT_URI })
       });
       const tok = await tr.json();
+      if (!tok.access_token) {
+        // No secrets here: only Discord's reason and which redirect address we sent.
+        console.error('[token] Discord refused:', tr.status, tok.error, tok.error_description, '| redirect_uri =', REDIRECT_URI,
+          '| secret set:', !!process.env.DISCORD_CLIENT_SECRET);
+      }
       if (!tok.access_token) return backWithError(res, st.next, 'Discord did not accept the sign-in. Try again.');
       const me = await (await fetchFn('https://discord.com/api/users/@me', { headers: { Authorization: 'Bearer ' + tok.access_token } })).json();
       const email = String(me.email || '').toLowerCase();
