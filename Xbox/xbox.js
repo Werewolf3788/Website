@@ -257,7 +257,7 @@ async function main() {
             // only their XUID. Remove once confirmed.
             try {
                 const probe = await fetchOpenXBL(`/account/${profile.xuid}`, acc.apiKey);
-                console.warn(`[XBOX DIAG] /account/${profile.xuid} -> ${JSON.stringify(probe).slice(0, 500)}`);
+                console.warn(`[XBOX DIAG] /account/${profile.xuid} -> ${JSON.stringify(probe)}`);
             } catch (e) {
                 console.warn(`[XBOX DIAG] /account/${profile.xuid} failed: ${e.message}`);
             }
