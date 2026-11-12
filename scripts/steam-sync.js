@@ -8,7 +8,11 @@
  *             profile  { name, avatar, profileUrl, public, state, currentGame }
  *             friends  { public, count, list:[steamId64...] }
  *             games    { public, count, recent:[...] }
- *             library  { appid: { n, t, l } }   n=name t=minutes played l=last played (unix)
+ *             library  { appid: { n, t, l, i } } n=name t=minutes played l=last played (unix) i=icon hash
+ *             ach      { appid: { n, got, total, pct, checked, u:[[apiName, unlockUnix]...] } }  achievements for the
+ *                      games they play (recent first, then most played); u = unlocked only
+ *             achTotals { games, got, total, perfect }
+ *           /steam_games/{appid} = { name, schema_at, ach:{ apiName: { n, d, i, g, h } } }   shared names/descriptions/icons
  *             updated_at
  *           /steam_vanity/{customName} = steamId64
  *   Steam only returns friends / games when the player's Steam privacy
@@ -72,6 +76,47 @@ async function steam(key, path, params) {
         return r.json();
     }
     throw new Error(`${path}: Steam kept failing (rate limit or outage).`);
+}
+
+/** Like steam(), but a 400/403/404 (no achievements for this game, or hidden) is returned as { _err } instead of throwing. */
+async function steamSoft(key, path, params) {
+    const qs = new URLSearchParams({ key, format: "json", ...params });
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        const r = await fetch(`${API}/${path}/?${qs}`);
+        if (r.status === 401) return { _private: true };
+        if (r.status === 400 || r.status === 403 || r.status === 404) return { _err: r.status };
+        if (r.status === 429 || r.status >= 500) { await sleep(2000 * attempt); continue; }
+        if (!r.ok) return { _err: r.status };
+        return r.json();
+    }
+    return { _err: 429 };
+}
+
+const ACH_MAX_GAMES = 40;                     // games checked per player (recent first, then most played)
+const ACH_MAX_PER_RUN = 25;                   // fresh lookups per player per run, so a run stays short
+const ACH_REUSE_MS = 24 * 3600 * 1000;        // a game not played lately is re-checked once a day
+const ACH_NONE_REUSE_MS = 7 * 24 * 3600 * 1000; // "this game has no achievements" is re-checked weekly
+const SCHEMA_REUSE_MS = 7 * 24 * 3600 * 1000;
+const fbKey = (x) => String(x).replace(/[.$#\[\]\/]/g, "_");   // Firebase-safe key, case kept
+
+/** Names, descriptions and icons for a game's achievements, shared by every player (/steam_games/{appid}). */
+async function rememberSchema(acct, appid, gameName, playerList) {
+    const cur = await dbGet(`steam_games/${appid}/schema_at`).catch(() => null);
+    if (cur && Date.now() - Number(cur) < SCHEMA_REUSE_MS) return;
+    const map = {};
+    for (const a of playerList) map[fbKey(a.apiname)] = { n: String(a.name || a.apiname), d: String(a.description || "") };
+    try {
+        const j = await withKey(acct, (k) => steamSoft(k, "ISteamUserStats/GetSchemaForGame/v2", { appid, l: "english" }));
+        for (const a of j?.game?.availableGameStats?.achievements || []) {
+            const k = fbKey(a.name);
+            const base = map[k] || { n: String(a.displayName || a.name), d: String(a.description || "") };
+            base.i = String(a.icon || "").split("/").pop().replace(/\.jpg$/i, "");
+            base.g = String(a.icongray || "").split("/").pop().replace(/\.jpg$/i, "");
+            base.h = a.hidden ? 1 : 0;
+            map[k] = base;
+        }
+    } catch (e) { /* names from the player's own list are still saved */ }
+    await dbSet(`steam_games/${appid}`, { name: String(gameName || `App ${appid}`), schema_at: Date.now(), ach: map });
 }
 
 const ID64 = /^7656119\d{10}$/;
@@ -163,9 +208,49 @@ async function main() {
 
             const library = {};
             for (const g of owned?.response?.games || []) {
-                library[g.appid] = { n: g.name || `App ${g.appid}`, t: g.playtime_forever || 0, l: g.rtime_last_played || 0 };
+                library[g.appid] = { n: g.name || `App ${g.appid}`, t: g.playtime_forever || 0, l: g.rtime_last_played || 0, i: g.img_icon_url || "" };
             }
             const gamesPublic = !owned?._private && Array.isArray(owned?.response?.games);
+
+            // Achievements for the games they actually play. Earlier results are kept when a lookup fails.
+            const prevAch = (await dbGet(`steam_users/${id}/ach`).catch(() => null)) || {};
+            const ach = { ...prevAch };
+            let achFetched = 0;
+            if (gamesPublic) {
+                const recentIds = new Set((recent?.response?.games || []).map((g) => String(g.appid)));
+                const played = (owned?.response?.games || []).filter((g) => (g.playtime_forever || 0) > 0)
+                    .sort((x, y) => (recentIds.has(String(y.appid)) - recentIds.has(String(x.appid))) || (y.playtime_forever - x.playtime_forever))
+                    .slice(0, ACH_MAX_GAMES);
+                for (const g of played) {
+                    if (achFetched >= ACH_MAX_PER_RUN) break;
+                    const key = String(g.appid), prev = prevAch[key], recentlyPlayed = recentIds.has(key);
+                    const age = prev && prev.checked ? Date.now() - prev.checked : Infinity;
+                    if (!recentlyPlayed && age < (prev && prev.none ? ACH_NONE_REUSE_MS : ACH_REUSE_MS)) continue;
+                    achFetched++;
+                    const name = g.name || `App ${g.appid}`;
+                    const j = await withKey(acct, (k) => steamSoft(k, "ISteamUserStats/GetPlayerAchievements/v1", { steamid: id, appid: g.appid, l: "english" }));
+                    const list = j?.playerstats?.achievements;
+                    if (!Array.isArray(list) || j?.playerstats?.success === false) {
+                        ach[key] = { n: name, got: 0, total: 0, pct: 0, none: 1, checked: Date.now() };   // no achievements, or hidden
+                    } else {
+                        const got = list.filter((a) => a.achieved === 1);
+                        ach[key] = {
+                            n: name, got: got.length, total: list.length,
+                            pct: list.length ? Math.round((got.length * 1000) / list.length) / 10 : 0,
+                            checked: Date.now(),
+                            u: got.map((a) => [fbKey(a.apiname), a.unlocktime || 0])
+                        };
+                        await rememberSchema(acct, g.appid, name, list);
+                    }
+                    await sleep(250);
+                }
+            }
+            const achTotals = { games: 0, got: 0, total: 0, perfect: 0 };
+            for (const a of Object.values(ach)) {
+                if (!a || !a.total) continue;
+                achTotals.games++; achTotals.got += a.got || 0; achTotals.total += a.total;
+                if (a.got === a.total) achTotals.perfect++;
+            }
 
             await dbSet(`steam_users/${id}`, {
                 profile: {
@@ -188,10 +273,12 @@ async function main() {
                     }))
                 },
                 library,
+                ach,
+                achTotals,
                 updated_at: Date.now()
             });
             ok++;
-            console.log(`[STEAM] ${p.personaname || id}: ${friendIds.length} friends, ${Object.keys(library).length} games${isPublic ? "" : " (profile not public)"}${acct.key && !acct.badKey ? " [own key]" : ""}.`);
+            console.log(`[STEAM] ${p.personaname || id}: ${friendIds.length} friends, ${Object.keys(library).length} games, ${achTotals.got}/${achTotals.total} achievements in ${achTotals.games} games (${achFetched} fetched)${isPublic ? "" : " (profile not public)"}${acct.key && !acct.badKey ? " [own key]" : ""}.`);
             await sleep(300);
         } catch (e) {
             failed++;

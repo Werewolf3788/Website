@@ -312,12 +312,15 @@ async function steamId64(){const v=cleanSteam($('steam_id').value);if(!v)return'
 async function showSteam(){const st=$('steamState');st.textContent='';const raw=$('steam_id').value.trim();if(!raw)return;
   const id=await steamId64();
   if(!id){st.textContent='Saved. Your custom name is matched to a Steam ID on the next sync (every 2 hours).';st.style.color='var(--text-muted)';return}
-  let s=null;try{s=(await db.ref('steam_users/'+id).get()).val()}catch(e){}
+  let s=null;try{const b='steam_users/'+id+'/',g=async c=>(await db.ref(b+c).get()).val();   // small parts only: the library and achievements can be large
+    const [profile,fpub,fcount,games,achTotals,updated_at]=await Promise.all([g('profile'),g('friends/public'),g('friends/count'),g('games'),g('achTotals'),g('updated_at')]);
+    s=updated_at?{profile,friends:{public:fpub,count:fcount},games,achTotals,updated_at}:null}catch(e){}
   if(!s){st.textContent='Steam ID '+id+'. Not synced yet. Check back after the next sync (every 2 hours).';st.style.color='var(--text-muted)';return}
   const bits=[];
   bits.push(s.profile&&s.profile.public?'Profile public':'Profile is private on Steam');
   bits.push(s.friends&&s.friends.public?(s.friends.count||0)+' friends found':'Friends list hidden');
   bits.push(s.games&&s.games.public?(s.games.count||0)+' games found':'Game details hidden');
+  if(s.achTotals&&s.achTotals.total)bits.push(s.achTotals.got+' of '+s.achTotals.total+' achievements in '+s.achTotals.games+' games');
   st.textContent=(s.profile&&s.profile.name?s.profile.name+': ':'')+bits.join(' · ')+'. Last sync '+new Date(s.updated_at).toLocaleString()+'.';
   st.style.color=(s.friends&&s.friends.public&&s.games&&s.games.public)?'var(--accent-green)':'var(--secondary)'}
 $('steam_id').addEventListener('change',e=>{const v=cleanSteam(e.target.value);if(v!==e.target.value.trim())e.target.value=v;showSteam()});
