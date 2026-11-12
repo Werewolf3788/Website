@@ -124,9 +124,11 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 
   <div id="discordBox" class="hidden">
   <h2>Discord sign-in</h2>
-  <p class="hint">Your Discord app's details, saved to your account. Find both at <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">discord.com/developers/applications</a> &gt; your app &gt; General Information. These two are public values, not secrets. Never paste the Client Secret here.</p>
+  <p class="hint">Your Discord app's details. Find both at <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">discord.com/developers/applications</a> &gt; your app &gt; General Information. Never paste the Client Secret here.</p>
   <label for="discord_signin_id">Discord Application ID</label><div class="row"><input id="discord_signin_id" inputmode="numeric" autocomplete="off" placeholder="17-20 digit number"></div>
-  <label for="discord_signin_key">Discord Public Key</label><div class="row"><input id="discord_signin_key" autocomplete="off" spellcheck="false" placeholder="64-character key"></div>
+  <label for="discord_signin_key">Discord Public Key</label><div class="row" data-secret="discord_signin_key"></div>
+  <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it, kept in the same private store as the other API keys.
+    <p id="discordKeyState" class="hint"></p></div>
   </div>
 
   <h2>Xbox / Microsoft sync (private)</h2>
@@ -277,6 +279,14 @@ $('xbox_user_id').addEventListener('input',e=>{
   else{st.textContent='XUID ready to save.';st.style.color='var(--accent-green)'}
 });
 
+// Discord Public Key: a 64-character hex string (Ed25519 public key).
+$('discord_signin_key').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('discordKeyState');
+  if(!v){st.textContent='';return}
+  if(!/^[0-9A-Fa-f]{64}$/.test(v)){st.textContent='A Public Key is 64 letters (a-f) and numbers.';st.style.color='var(--text-muted)'}
+  else{st.textContent='Public Key ready to save.';st.style.color='var(--accent-green)'}
+});
+
 // ---- PSN: Account ID <-> username lookup (site's PSN data: tracked players + their PSN friends) ----
 let psnMap=null;
 async function psnTagMap(){if(psnMap)return psnMap;await psnReady;
@@ -424,7 +434,7 @@ async function load(){
   $('username').value=D.username||U.displayName||'';
   $('avatar_source').value=D.avatar_source||'google';$('avatar_custom').value=D.avatar_source==='custom'?D.avatar_url||'':'';
   HANDLES.forEach(([f,,s])=>{$(f).value=D[f]||'';$(s).value=D[s]||'private'});
-  $('discord_signin_id').value=D.discord_signin_id||'';$('discord_signin_key').value=D.discord_signin_key||'';
+  $('discord_signin_id').value=D.discord_signin_id||'';$('discord_signin_key').value=S.discord_signin_key||'';$('discordKeyState').textContent=S.discord_signin_key?'Public Key saved.':'';
   $('psn_account_id').value=D.psn_account_id||S.psn_account_id||'';$('psn_npsso').value=S.psn_npsso||'';
   $('steam_api_key').value=S.steam_api_key||'';$('steamKeyState').textContent=S.steam_api_key?(D.steam_api_key_valid===false?'Steam rejected the saved key. Paste a new one.':'Key saved.'):'';
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
@@ -565,7 +575,7 @@ $('save').onclick=async()=>{
     const dId=$('discord_signin_id').value.trim(),dKey=$('discord_signin_key').value.trim().toLowerCase();
     if(dId&&!/^\d{17,20}$/.test(dId))return say('Discord Application ID must be a 17-20 digit number.',1);
     if(dKey&&!/^[0-9a-f]{64}$/.test(dKey))return say('Discord Public Key must be 64 characters (0-9, a-f).',1);
-    if(!$('discordBox').classList.contains('hidden')){pub.discord_signin_id=dId;pub.discord_signin_key=dKey}
+    if(!$('discordBox').classList.contains('hidden'))pub.discord_signin_id=dId;
     const npsso=$('psn_npsso').value.trim();
     if(npsso&&!/^[A-Za-z0-9]{64}$/.test(npsso))return say('NPSSO must be exactly 64 letters and numbers.',1);
     const skey=$('steam_api_key').value.trim().toUpperCase();
@@ -592,7 +602,9 @@ $('save').onclick=async()=>{
     D=back;dirty=false;
     {const av=D.avatar_url||'';try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){}}
     let ok=true;
-    try{await db.ref('user_secrets/'+K).update({psn_npsso:npsso,steam_api_key:skey,xbox_api_key:xkey,updated_at:now});S.psn_npsso=npsso;S.steam_api_key=skey;S.xbox_api_key=xkey}catch(e){ok=false}
+    const secretsUpdate={psn_npsso:npsso,steam_api_key:skey,xbox_api_key:xkey,updated_at:now};
+    if(!$('discordBox').classList.contains('hidden'))secretsUpdate.discord_signin_key=dKey;
+    try{await db.ref('user_secrets/'+K).update(secretsUpdate);S.psn_npsso=npsso;S.steam_api_key=skey;S.xbox_api_key=xkey;if('discord_signin_key' in secretsUpdate)S.discord_signin_key=dKey}catch(e){ok=false}
     const t=new Date(now).toLocaleString();
     if(ok){say('Saved to your account.');setState('Saved to cloud: '+t+' ✓','var(--accent-green)')}
     else{say('Profile saved, but the NPSSO, Steam key and Microsoft key could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. Private keys not saved.','var(--danger)')}
