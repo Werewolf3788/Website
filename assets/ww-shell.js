@@ -351,6 +351,13 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
         s.src = rootUrl('Claude-Test/ww-auth.js');
         s.defer = true;
         document.head.appendChild(s);
+        // Friend messenger (chat button, unread badge, pop-ups) on every page.
+        if (!window.WW) {
+            const m = document.createElement('script');
+            m.src = rootUrl('Claude-Test/ww-social.js');
+            m.defer = true;
+            document.head.appendChild(m);
+        }
     }
 
     // ------------------------------------------------------- interactions
