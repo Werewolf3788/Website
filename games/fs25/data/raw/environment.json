@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 871.256592,
+  "dayTime": 1336.359985,
   "currentDay": 63,
   "currentMonotonicDay": 90,
-  "realHourTimer": 1737600,
+  "realHourTimer": 2631400,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,25 +15,9 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 123,
+   "timeSinceLastRain": 0,
    "forecast": {
     "instance": [
-     {
-      "typeName": "CLOUDY",
-      "season": "WINTER",
-      "variationIndex": 4,
-      "startDay": 90,
-      "startDayTime": 43200000,
-      "duration": 21600000
-     },
-     {
-      "typeName": "SNOW",
-      "season": "WINTER",
-      "variationIndex": 2,
-      "startDay": 90,
-      "startDayTime": 64800000,
-      "duration": 14400000
-     },
      {
       "typeName": "SUN",
       "season": "WINTER",
@@ -341,7 +325,7 @@
     "height": 0.0
    },
    "ground": {
-    "wetness": 0.0
+    "wetness": 1.0
    },
    "twister": {
     "position": "0.00 0.00 0.00",
