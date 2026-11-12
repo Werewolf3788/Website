@@ -11,8 +11,8 @@ services:
         value: https://ww-discord-auth.onrender.com
       - key: ALLOWED_ORIGINS
         value: https://werewolf3788.github.io
-      - key: DISCORD_CLIENT_ID
-        sync: false
+      - key: DISCORD_APP_OWNER_KEY
+        value: raykevin71888_at_gmail_com
       - key: DISCORD_CLIENT_SECRET
         sync: false
       - key: FIREBASE_SERVICE_ACCOUNT
