@@ -206,17 +206,26 @@ async function getProfileByGamertag(gamertag, apiKey, expectedXuid) {
 async function getRecentAchievementTitles(xuid, apiKey) {
     try {
         const data = await fetchOpenXBL(`/achievements/player/${xuid}`, apiKey);
-        const titles = data?.titles || data?.achievements || [];
+        // Confirmed from a real response (2026-11-12): like /search, this is wrapped
+        // one level deeper under "content", and each title's progress numbers sit
+        // under a nested "achievement" object rather than flat on the title itself:
+        // { content: { xuid, titles: [ { titleId, name, achievement: {
+        //   currentAchievements, totalAchievements, currentGamerscore,
+        //   totalGamerscore, progressPercentage, ... }, ... } ] } }
+        const titles = data?.content?.titles || data?.titles || [];
         if (!titles.length) {
             console.warn(`[XBOX DEBUG] /achievements/player/${xuid} raw response: ${JSON.stringify(data).slice(0, 800)}`);
         }
-        return titles.slice(0, 25).map((t) => ({
-            titleName: t.name || t.titleName || "",
-            currentAchievements: Number(t.currentAchievements ?? t.earnedAchievements ?? 0),
-            totalAchievements: Number(t.totalAchievements ?? t.achievements ?? 0),
-            currentGamerscore: Number(t.currentGamerscore ?? 0),
-            totalGamerscore: Number(t.totalGamerscore ?? t.maxGamerscore ?? 0)
-        }));
+        return titles.slice(0, 25).map((t) => {
+            const a = t.achievement || {};
+            return {
+                titleName: t.name || t.titleName || "",
+                currentAchievements: Number(a.currentAchievements ?? 0),
+                totalAchievements: Number(a.totalAchievements ?? 0),
+                currentGamerscore: Number(a.currentGamerscore ?? 0),
+                totalGamerscore: Number(a.totalGamerscore ?? 0)
+            };
+        });
     } catch (e) {
         console.warn(`[XBOX] achievements lookup failed for ${xuid}: ${e.message}`);
         return [];
