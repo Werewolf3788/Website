@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+ * Social Profile  -  /Claude-Test/profile.html
+ * Shows the SIGNED-IN user's own profile.  ?u=<username | friend code | emailKey>
+ * opens a friend's profile instead.  Nothing here is tied to one person.
+ *
+ * Needs:  ww-social.js (same folder)  -  shared sign-in + site-wide messenger
+ *
+ * Privacy reuses Settings (psn/xbox/steam scopes, tracking_scope, close friends);
+ * trophy lists + online status get their own Everyone/Friends/Close friends/Only me setting.
+ * ========================================================================== -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#070709">
+<title>Profile | Pack Hub</title>
+<script src="//cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../assets/ww-shell.css">
+<script src="ww-social.js"></script>
+<script defer src="../assets/ww-shell.js"></script>
+<style>
+  @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
+  :root{
+    --bg:#070709; --panel:rgba(22,22,30,.74); --panel-solid:#16161e; --line:rgba(255,255,255,.12);
+    --text:#e8ecf3; --mute:#9aa4b2; --accent:#ff5f1f; --ok:#10b981; --warn:#f59e0b;
+    --ps:#3b82f6; --xb:#22c55e; --st:#66c0f4; --dim:.55; --bg-img:none;
+  }
+  @media (prefers-color-scheme: light){
+    body:not(.has-bg){ --bg:#eef1f6; --panel:rgba(255,255,255,.82); --panel-solid:#fff; --line:rgba(0,0,0,.1); --text:#12151c; --mute:#566070; }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;
+       padding-bottom:calc(90px + env(safe-area-inset-bottom));overflow-x:hidden}
+  .bg-layer{position:fixed;inset:0;z-index:-2;background:var(--bg-img) center/cover no-repeat;}
+  .bg-dim{position:fixed;inset:0;z-index:-1;background:rgba(0,0,0,var(--dim));display:none}
+  body.has-bg .bg-dim{display:block}
+  .wrap{width:calc(100% - 1.5rem);margin:0 auto}
+  @media(min-width:1024px){.wrap{width:80%;max-width:1850px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:1.25rem;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  h1,h2,h3{margin:0;font-weight:900}
+  .h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:900;display:flex;align-items:center;gap:.5rem}
+  .mute{color:var(--mute)}
+  .mono{font-family:'JetBrains Mono',monospace}
+  button,select,input,textarea{font:inherit;color:inherit}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:.55rem 1rem;border-radius:.8rem;border:1px solid var(--line);background:rgba(127,127,127,.14);font-weight:800;font-size:.8rem;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.danger{color:#ef4444}
+  .chip{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem;border-radius:999px;border:1px solid var(--line);background:rgba(127,127,127,.14);font-size:.72rem;font-weight:800;text-transform:uppercase}
+  .chip.live{color:var(--ok);border-color:rgba(16,185,129,.5)}
+  .tabs{display:flex;gap:.5rem;overflow-x:auto;padding:.25rem 0;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none;min-height:44px;padding:.5rem 1.1rem;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:900;font-size:.78rem;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:.5rem}
+  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .stat{padding:1rem;text-align:center}
+  .stat .v{font-size:1.7rem;font-weight:900}
+  .stat .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:800}
+  .bar{height:8px;border-radius:99px;background:rgba(127,127,127,.25);overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ef4444,#f59e0b,#84cc16,#10b981);background-size:400% 100%}
+  .games{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+  @media(min-width:640px){.games{grid-template-columns:repeat(3,1fr)}}
+  @media(min-width:1024px){.games{grid-template-columns:repeat(4,1fr)}}
+  @media(min-width:1400px){.games{grid-template-columns:repeat(6,1fr)}}
+  .game{position:relative;aspect-ratio:2/3;border-radius:1rem;overflow:hidden;background:#1a1a22;border:1px solid var(--line);cursor:pointer;transition:transform .2s}
+  .game:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .game img{width:100%;height:100%;object-fit:cover;display:block}
+  .game .ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.2) 55%,transparent);display:flex;flex-direction:column;justify-content:flex-end;padding:.65rem;color:#fff;gap:.25rem}
+  .game .ttl{font-weight:900;font-size:.78rem;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .pf{position:absolute;top:.5rem;left:.5rem;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:#fff}
+  .pf.psn{background:var(--ps)}.pf.xbox{background:var(--xb)}.pf.steam{background:#1b2838}
+  .st{position:absolute;top:.5rem;right:.5rem;padding:.1rem .5rem;border-radius:99px;font-size:.62rem;font-weight:900;text-transform:uppercase;background:rgba(0,0,0,.7);color:#fff}
+  .st.live{background:var(--ok)}.st.done{background:#a855f7}.st.prog{background:var(--warn);color:#000}
+  .row{display:flex;align-items:center;gap:.75rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
+  .row img{width:48px;height:48px;border-radius:.6rem;object-fit:cover;flex:none}
+  .avatar{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--accent);background:#1e1e24;flex:none}
+  @media(min-width:768px){.avatar{width:160px;height:160px}}
+  /* modal + drawer */
+  .modal{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(10px)}
+  .modal.open{display:flex}
+  .modal .box{width:100%;max-width:760px;max-height:90vh;overflow:auto;background:var(--panel-solid);border:1px solid var(--line);border-radius:1.25rem}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);z-index:5001;background:var(--panel-solid);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;padding:calc(1rem + env(safe-area-inset-top)) 1rem calc(6rem + env(safe-area-inset-bottom))}
+  .drawer.open{transform:none}
+  .fld{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.9rem}
+  .fld label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--mute)}
+  .fld input[type=text],.fld input[type=url],.fld textarea,.fld select{background:rgba(127,127,127,.14);border:1px solid var(--line);border-radius:.7rem;padding:.65rem .8rem;font-size:16px;width:100%}
+  .fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--accent)}
+  .priv{display:grid;grid-template-columns:1fr 150px;gap:.5rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--line);font-size:.85rem;font-weight:700}
+  .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--panel-solid);border:1px solid var(--accent);padding:.7rem 1.2rem;border-radius:999px;font-weight:800;z-index:6000;font-size:.85rem}
+  .sticky-save{position:sticky;bottom:0;padding-top:.75rem;background:linear-gradient(to top,var(--panel-solid) 70%,transparent)}
+  [hidden]{display:none!important}
+  .nowrap-trunc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body class="">
+<div class="bg-layer" id="bg-layer"></div><div class="bg-dim" id="bg-dim"></div>
+
+<!-- top bar -->
+<header class="wrap" style="padding-top:calc(.75rem + env(safe-area-inset-top))">
+  <div class="card" style="padding:.5rem .75rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+    <a class="btn" href="../index.html"><i class="fab fa-playstation" style="color:var(--accent)"></i> Pack Hub</a>
+    <div data-ww-nav-slot style="flex:1 1 auto;min-width:0;display:flex;justify-content:flex-end;align-items:center"></div>
+    <span id="top-actions" style="display:flex;gap:.5rem;flex-wrap:wrap"></span>
+  </div>
+</header>
+
+<main class="wrap" style="margin-top:1rem;display:flex;flex-direction:column;gap:1rem">
+  <div id="state-msg" class="card" style="padding:2rem;text-align:center"><i class="fas fa-spinner fa-spin"></i> Loading profile&hellip;</div>
+  <div id="profile-root" hidden style="display:flex;flex-direction:column;gap:1rem"></div>
+</main>
+
+<!-- game / trophy modal -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="box"><div id="modal-body"></div></div>
+</div>
+
+<!-- edit drawer (owner only) -->
+<aside class="drawer" id="drawer" aria-label="Edit profile"></aside>
+
+<script>
+(async function () {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const W = window.WW;
+const esc = (s) => W.esc(s);
+
+const LEVELS = [['public','Everyone'],['friends','Friends'],['close','Close friends'],['private','Only me']];
+const LV_RANK = { public:0, friends:1, close:2, private:3 };
+const REL_LABEL = ['Public view','Friend view','Close-friend view'];
+const PLATS = { psn:{name:'PlayStation',icon:'fab fa-playstation'}, xbox:{name:'Xbox',icon:'fab fa-xbox'}, steam:{name:'Steam',icon:'fab fa-steam'} };
+const RAY_DB = 'https://playstation-stats-default-rtdb.firebaseio.com';   // Xbox sync output lives here (Xbox/xbox.js)
+// Game Companion saves: Firestore  user/{key}/platform/{ps|xbox|steam|pc}/game/{gameName}
+const TRACK_PLATS = { ps:'psn', xbox:'xbox', steam:'steam', pc:'steam' };
+
+const S = { ownerKey:null, isOwner:false, rel:0, viewAs:null, U:{}, profile:{}, media:{}, plat:{}, psnRaw:null,
+            tab:'all', tracking:null, presence:null, myFriends:{}, edit:null };
+
+/* ---------- helpers ---------- */
+const DB = () => W.config.firebase.databaseURL.replace(/\/$/, '');
+const arr = (d) => !d ? [] : Array.isArray(d) ? d.filter(Boolean) : typeof d === 'object' ? Object.values(d) : [];
+const secure = (u) => (typeof u === 'string' ? u.trim().replace(/^http:\/\//i, 'https://') : '');
+const num = (n, d = 0) => { n = Number(n); return isNaN(n) ? d : n; };
+function ago(ts) {
+  const t = typeof ts === 'number' ? ts : new Date(ts).getTime(); if (!t || isNaN(t)) return '';
+  const s = Math.max(0, (Date.now() - t) / 1000);
+  if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago'; if (s < 2592000) return Math.floor(s / 86400) + 'd ago';
+  return Math.floor(s / 2592000) + 'mo ago';
+}
+const fmtDate = (ts) => { const d = new Date(ts); return isNaN(d) ? '' : d.toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }); };
+function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+const ph = (w, h, t) => `//via.placeholder.com/${w}x${h}/1e1e24/ff5f1f?text=${encodeURIComponent(t || '')}`;
+
+/* ---------- privacy ----------
+ * PlayStation / Xbox / Steam / Game tracking use the settings you already have in Settings
+ * (psn_username_scope, xbox_gamertag_scope, steam_id_scope, tracking_scope).
+ * Trophy lists & online status are new and live in profiles/{key}/privacy. */
+const viewRank = () => S.isOwner ? (S.viewAs === null ? 3 : S.viewAs) : S.rel;
+const SCOPE_FIELD = { psn:'psn_username_scope', xbox:'xbox_gamertag_scope', steam:'steam_id_scope', tracking:'tracking_scope' };
+const levelOf = (sec) => SCOPE_FIELD[sec]
+  ? (S.U[SCOPE_FIELD[sec]] || (sec === 'tracking' ? 'friends' : 'private'))
+  : ((S.profile.privacy || {})[sec] || 'friends');
+const canSee = (sec) => viewRank() >= (LV_RANK[levelOf(sec)] ?? 3);
+const platId = (p) => String(S.U[{ psn:'psn_username', xbox:'xbox_gamertag', steam:'steam_id' }[p]] || '').trim();
+const visiblePlats = () => Object.keys(PLATS).filter(p => platId(p) && canSee(p) && S.plat[p]);
+const displayName = () => S.profile.displayName || S.U.username || S.U.display_name || 'Player';
+const avatarOf = () => S.U.avatar_url || '';
+
+/* ---------- boot ---------- */
+async function boot() {
+  try { await W.ready; } catch (e) { return fail('Could not start Firebase. Reload and try again.'); }
+  if (!W.me) return signInView();
+  const q = new URLSearchParams(location.search).get('u');
+  S.ownerKey = q ? await resolveUser(q) : W.me.key;
+  if (!S.ownerKey) return fail('That profile could not be found.');
+  S.isOwner = S.ownerKey === W.me.key;
+  await loadProfile();
+  if (!Object.keys(S.U).length) return fail('That profile could not be found.');
+  await loadPlatforms();
+  document.title = displayName() + ' | Pack Hub';
+  $('#state-msg').hidden = true; $('#profile-root').hidden = false;
+  if (S.profile.defaultTab) S.tab = S.profile.defaultTab;
+  render();
+  watchPresence();
+}
+
+function fail(html) { $('#state-msg').innerHTML = html; }
+function signInView() {
+  $('#state-msg').innerHTML = `<div class="h2" style="justify-content:center;margin-bottom:.75rem"><i class="fas fa-user-lock"></i> Sign in to see your profile</div>
+    <button class="btn primary" id="signin-btn"><i class="fab fa-google"></i> Sign in with Google</button>
+    <div class="mute" style="margin-top:.8rem;font-size:.8rem">Other sign-in methods are in the menu at the top.</div>`;
+  $('#signin-btn').onclick = async () => {
+    if (W.config.loginUrl) { location.href = W.config.loginUrl + (W.config.loginUrl.includes('?') ? '&' : '?') + 'next=' + encodeURIComponent(location.href); return; }
+    try { await W.auth.signInWithPopup(new W.firebase.auth.GoogleAuthProvider()); location.reload(); }
+    catch (e) { toast('Sign-in failed: ' + (e.code || e.message)); }
+  };
+}
+
+// ?u= accepts a friend code or an account key
+async function resolveUser(t) {
+  t = String(t).trim();
+  if (/_at_/.test(t)) return t.toLowerCase();
+  return await W.ownerKeyOfCode(t);
+}
+
+/* ---------- load profile, relation, media ---------- */
+async function loadProfile() {
+  const key = S.ownerKey, db = W.db;
+  const [uSnap, pSnap, mSnap, meSnap] = await Promise.all([
+    db.ref('users/' + key).once('value').catch(() => null),
+    db.ref('profiles/' + key).once('value').catch(() => null),
+    db.ref('profileMedia/' + key).once('value').catch(() => null),
+    S.isOwner ? null : db.ref('users/' + W.me.key + '/friends').once('value').catch(() => null)
+  ]);
+  S.U = (uSnap && uSnap.val()) || {};
+  S.profile = (pSnap && pSnap.val()) || {};
+  S.media = (mSnap && mSnap.val()) || {};
+  S.myFriends = S.isOwner ? (S.U.friends || {}) : ((meSnap && meSnap.val()) || {});
+  if (!S.isOwner) {
+    // relation comes from the owner's own friends list (Settings): friend entry, plus the close_friend tick
+    const mine = W.me.friendCode, f = mine && S.U.friends && S.U.friends[mine];
+    S.rel = f ? (f.close_friend === true ? 2 : 1) : 0;
+  }
+  applyTheme();
+  if (canSee('tracking')) loadTracking(); else S.tracking = null;
+}
+
+function applyTheme() {
+  const p = S.profile, b = document.body;
+  b.style.setProperty('--accent', p.accent || S.U.primary_color || '#ff5f1f');
+  b.style.setProperty('--dim', String(p.bgDim != null ? p.bgDim : .55));
+  const bg = S.media.bg || '';
+  const ok = /^(data:image\/|https:\/\/)/.test(bg);
+  $('#bg-layer').style.setProperty('--bg-img', ok ? `url("${bg.replace(/"/g, '%22')}")` : 'none');
+  b.classList.toggle('has-bg', ok);
+}
+
+/* ---------- platform loaders ---------- */
+async function loadPlatforms() {
+  S.plat = {}; S.psnRaw = null;
+  const fns = { psn: loadPsn, xbox: loadXbox, steam: loadSteam };
+  await Promise.all(Object.keys(PLATS).map(async (p) => {
+    const id = platId(p); if (!id) return;
+    if (!S.isOwner && !canSee(p)) return;                // never even fetch what the viewer may not see
+    try { S.plat[p] = await fns[p](id); } catch (e) { console.warn('[profile]', p, e); }
+  }));
+}
+
+async function loadPsn(tag) {
+  let u = null;
+  for (const t of [...new Set([tag, tag.toLowerCase()])]) {
+    const r = await fetch(`${DB()}/psn/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
+    if (r.ok) { u = await r.json(); if (u) break; }
+  }
+  if (!u) return null;
+  S.psnRaw = u;
+  const ah = u.activeHunt || {};
+  const activeId = String(u.commId || ah.commId || ah.npCommunicationId || '').toUpperCase();
+  const online = u.online === true || u.online === 'true';
+  const list = arr(u.recentGames).map(g => {
+    const id = String(g.npCommunicationId || g.commId || '').toUpperCase();
+    return { platform:'psn', id, title:g.name || g.trophyTitleName || 'Game', poster:secure(g.posterArt || g.art || ''),
+      progress:num(g.progress), earned:g.earnedTotal, total:g.definedTotal, hours:g.nativePlaytimeFormatted || '',
+      lastPlayed:g.lastPlayedDateTime || g.lastUpdatedDateTime || '', playing: online && !!id && id === activeId };
+  });
+  if (activeId && !list.some(g => g.id === activeId)) {
+    list.unshift({ platform:'psn', id:activeId, title:ah.title || u.currentGame || 'Active hunt', poster:secure(ah.art || ah.posterArt || u.currentGameArt || ''),
+      progress:num(ah.progress), earned:undefined, total:undefined, hours:ah.nativePlaytimeFormatted || '', lastPlayed:u.lastUpdated || '', playing: online });
+  }
+  // fill missing posters/totals from the master skeleton (same source the squad hub uses)
+  await Promise.all(list.slice(0, 12).filter(g => g.id.startsWith('NPWR') && (!g.poster || g.total == null)).map(async g => {
+    try {
+      const r = await fetch(`${DB()}/psn/games/${g.id}.json`); if (!r.ok) return; const s = await r.json(); if (!s) return;
+      g.poster = g.poster || secure(s.posterArt || '');
+      if (g.title === 'Active hunt') g.title = s.name || s.trophyTitleName || g.title;
+      if (g.total == null) g.total = arr(s.trophies).length || undefined;
+    } catch (e) {}
+  }));
+  const sm = u.trophySummary || {}, et = sm.earnedTrophies || {};
+  const g4 = k => sm[k] !== undefined ? sm[k] : (et[k] || 0);
+  const total = sm.total !== undefined ? sm.total : g4('platinum') + g4('gold') + g4('silver') + g4('bronze');
+  return {
+    platform:'psn', name:u.onlineId || tag, avatar:secure(u.avatar || u.image || (u.allAvatars && u.allAvatars[0]) || ''),
+    online, currentGame:online ? (u.currentGame || '') : '', activity:u.currentGameActivity || '', plus:!!u.plus,
+    stats:[['Level', u.level || sm.trophyLevel || '--'], ['Trophies', num(total).toLocaleString()], ['Games', u.gamesPlayed || list.length]],
+    breakdown:{ platinum:g4('platinum'), gold:g4('gold'), silver:g4('silver'), bronze:g4('bronze') },
+    games:list, recent:arr(u.mostRecentTrophies)
+  };
+}
+
+// Xbox: written by Xbox/xbox.js to the playstation-stats DB at /xbox/gamertags/{gamertag}
+async function loadXbox(tag) {
+  let d = null;
+  for (const t of [...new Set([tag, tag.toLowerCase()])]) {
+    const r = await fetch(`${RAY_DB}/xbox/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
+    if (r.ok) { d = await r.json(); if (d) break; }
+  }
+  if (!d) return null;
+  const online = /online/i.test(d.presenceState || '');
+  const games = arr(d.recentTitles).map(t => {
+    const total = num(t.totalAchievements), got = num(t.currentAchievements);
+    return { platform:'xbox', id:String(t.titleName), title:t.titleName || 'Game', poster:'', progress: total ? Math.round(got / total * 100) : 0,
+      earned:got, total:total || undefined, hours:t.totalGamerscore ? `${num(t.currentGamerscore)}/${num(t.totalGamerscore)} G` : '', lastPlayed:'',
+      playing: online && !!d.presenceText && String(d.presenceText).toLowerCase().includes(String(t.titleName || '').toLowerCase()), achievements:[] };
+  });
+  const gotAll = games.reduce((n, g) => n + num(g.earned), 0);
+  return { platform:'xbox', name:d.gamertag || tag, avatar:secure(d.gamerPicture || ''), online,
+    currentGame: online ? (d.presenceText || '') : '', activity:'',
+    stats:[['Gamerscore', num(d.gamerscore).toLocaleString()], ['Recent games', games.length], ['Achievements', gotAll.toLocaleString()]],
+    games, recent:[] };
+}
+
+// Steam: written by scripts/steam-sync.js to /steam_users/{steamId64}
+async function loadSteam(raw) {
+  let id = String(raw).trim().replace(/\/+$/, '').split('/').pop();
+  if (!/^7656119\d{10}$/.test(id)) {
+    const vn = (await W.db.ref('steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value').catch(() => null));
+    id = vn && typeof vn.val() === 'string' ? vn.val() : '';
+    if (!id) return null;
+  }
+  const g = async (c) => (await W.db.ref(`steam_users/${id}/${c}`).once('value').catch(() => ({ val: () => null }))).val();
+  const [profile, games, ach, tot] = await Promise.all([g('profile'), g('games'), g('ach'), g('achTotals')]);
+  if (!profile) return null;
+  const achOf = (appid) => (ach && ach[appid]) || {};
+  const list = arr(games && games.recent).map(r => {
+    const a = achOf(r.appid), total = num(a.total), got = num(a.got);
+    return { platform:'steam', id:String(r.appid), title:r.name || ('App ' + r.appid), progress: total ? Math.round(got / total * 100) : 0,
+      poster:`https://cdn.cloudflare.steamstatic.com/steam/apps/${r.appid}/library_600x900.jpg`,
+      earned: total ? got : undefined, total: total || undefined,
+      hours: r.minutesTotal ? (r.minutesTotal / 60).toFixed(1) + ' hrs' : '', lastPlayed:'',
+      playing: !!profile.currentGameId && String(profile.currentGameId) === String(r.appid), achievements:[] };
+  });
+  if (profile.currentGameId && !list.some(x => x.playing)) {
+    list.unshift({ platform:'steam', id:String(profile.currentGameId), title:profile.currentGame || 'Playing', progress:0, poster:`https://cdn.cloudflare.steamstatic.com/steam/apps/${profile.currentGameId}/library_600x900.jpg`, hours:'', playing:true, achievements:[] });
+  }
+  return { platform:'steam', name:profile.name || id, avatar:secure(profile.avatar || ''), online: !!profile.state && profile.state !== 'offline',
+    currentGame:profile.currentGame || '', activity:'',
+    stats:[['Games', (games && games.count) || list.length], ['Achievements', num(tot && tot.got).toLocaleString()], ['Perfect games', num(tot && tot.perfect)]],
+    games:list, recent:[] };
+}
+
+/* Game Companion saves (Firestore user/{key}/platform/{p}/game/{name}) */
+async function loadTracking() {
+  try {
+    const fs = await W.loadFirestore(), out = [];
+    for (const p of Object.keys(TRACK_PLATS)) {
+      const snap = await fs.collection('user').doc(S.ownerKey).collection('platform').doc(p).collection('game').get();
+      snap.forEach(doc => {
+        const d = doc.data() || {};
+        const sets = [d.trophies, d.medals, d.missions].filter(Boolean).map(o => Object.values(o));
+        const total = sets.reduce((n, a) => n + a.length, 0);
+        const done = sets.reduce((n, a) => n + a.filter(x => x && (x.earned || x.completed)).length, 0)
+                   + Object.values(d.collectibles || {}).reduce((n, c) => n + Object.values((c && c.items) || {}).filter(i => i && i.collected).length, 0);
+        out.push({ title:doc.id, platform:({ ps:'PlayStation', xbox:'Xbox', steam:'Steam', pc:'PC' })[p], status: total && done >= total ? 'Completed' : (done ? 'In progress' : 'Started'),
+          progress: total ? Math.round(Math.min(done, total) / total * 100) : null, poster:'', note: total ? `${Math.min(done, total)}/${total} tracked` : '', updated:d.updatedAt || 0 });
+      });
+    }
+    out.sort((a, b) => num(b.updated) - num(a.updated));
+    S.tracking = out;
+  } catch (e) { console.warn('[tracking]', e); S.tracking = { error:true }; }
+  if (!$('#profile-root').hidden) render();
+}
+
+function watchPresence() {
+  W.db.ref('presence/' + S.ownerKey).on('value', s => { S.presence = s.val(); renderHeroStatus(); });
+}
+
+/* ---------- render ---------- */
+function status(g) {
+  if (g.playing) return { t:'Playing now', c:'live' };
+  if (g.progress >= 100) return { t:'Completed', c:'done' };
+  if (g.progress > 0) return { t:'In progress', c:'prog' };
+  return { t:'Started', c:'' };
+}
+
+function render() {
+  const p = S.profile, vp = visiblePlats();
+  if (S.tab !== 'all' && S.tab !== 'tracking' && !vp.includes(S.tab)) S.tab = 'all';
+  const root = $('#profile-root');
+  const canTrack = canSee('tracking');
+  const avatar = avatarOf() || (vp.map(x => S.plat[x].avatar).find(Boolean)) || (S.isOwner && W.me.photoURL) || ph(250, 250, displayName()[0]);
+  const code = String(S.U.friend_code || '').toUpperCase();
+
+  // top actions
+  const ta = $('#top-actions'); ta.innerHTML = '';
+  if (S.isOwner) {
+    ta.insertAdjacentHTML('beforeend', `<select class="btn" id="viewas" title="Preview how others see your profile"><option value="">Viewing as: Me</option>${REL_LABEL.map((l, i) => `<option value="${i}" ${S.viewAs === i ? 'selected' : ''}>Preview: ${l}</option>`).join('')}</select><button class="btn primary" id="edit-btn"><i class="fas fa-pen"></i> Edit</button>`);
+    $('#viewas').onchange = (e) => { S.viewAs = e.target.value === '' ? null : Number(e.target.value); applyTheme(); render(); };
+    $('#edit-btn').onclick = openEdit;
+  } else {
+    ta.insertAdjacentHTML('beforeend', `<a class="btn" href="profile.html"><i class="fas fa-user"></i> My profile</a>`);
+  }
+
+  const canMsg = !S.isOwner && (S.rel >= 1 || Object.keys(S.myFriends).some(k => String(k).toUpperCase() === code || String((S.myFriends[k] || {}).friend_code || '').toUpperCase() === code));
+  const tabsHtml = [`<button class="tab ${S.tab === 'all' ? 'active' : ''}" data-tab="all"><i class="fas fa-layer-group"></i> All</button>`]
+    .concat(vp.map(x => `<button class="tab ${S.tab === x ? 'active' : ''}" data-tab="${x}"><i class="${PLATS[x].icon}"></i> ${PLATS[x].name}</button>`))
+    .concat(canTrack && S.tracking ? [`<button class="tab ${S.tab === 'tracking' ? 'active' : ''}" data-tab="tracking"><i class="fas fa-bullseye"></i> Game Tracking</button>`] : []).join('');
+
+  root.innerHTML = `
+    <section class="card" style="padding:1.25rem;display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap">
+      <img class="avatar" src="${esc(avatar)}" alt="" onerror="this.src='${ph(250, 250, '?')}'">
+      <div style="flex:1;min-width:230px">
+        <h1 style="font-size:clamp(1.6rem,4vw,2.6rem);text-transform:uppercase;letter-spacing:-.03em;color:var(--accent)">${esc(displayName())}</h1>
+        <div class="mute" style="font-weight:700">${S.U.username ? '@' + esc(S.U.username) : ''}</div>
+        ${p.bio ? `<p style="margin:.6rem 0;max-width:60ch;white-space:pre-wrap">${esc(p.bio)}</p>` : ''}
+        <div id="hero-status" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem"></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem">
+          ${canMsg ? `<button class="btn primary" id="msg-btn"><i class="fas fa-comment-dots"></i> Message</button>` : ''}
+          ${S.isOwner && code ? `<button class="btn" id="code-btn"><i class="fas fa-copy"></i> Friend code ${esc(code)}</button>` : ''}
+        </div>
+      </div>
+    </section>
+
+    ${vp.length || canTrack ? `<nav class="tabs" id="tabs">${tabsHtml}</nav>` : ''}
+    <div id="tab-body" style="display:flex;flex-direction:column;gap:1rem"></div>
+    ${emptyHint(vp)}
+  `;
+  renderHeroStatus();
+  root.querySelectorAll('.tab').forEach(t => t.onclick = () => { S.tab = t.dataset.tab; render(); });
+  const mb = $('#msg-btn'); if (mb) mb.onclick = () => W.openChat(S.ownerKey, displayName());
+  const cb = $('#code-btn'); if (cb) cb.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(code); toast('Friend code copied'); };
+  renderTab(vp);
+}
+
+function emptyHint(vp) {
+  if (vp.length || (canSee('tracking') && S.tracking)) return '';
+  return `<div class="card mute" style="padding:1.5rem;text-align:center">${S.isOwner ? 'Nothing is showing yet. Click <b>Edit</b> to add your PlayStation, Xbox or Steam IDs and choose who can see them.' : 'Nothing has been shared with you yet.'}</div>`;
+}
+
+function renderHeroStatus() {
+  const box = $('#hero-status'); if (!box) return;
+  const vp = visiblePlats(); let h = '';
+  if (canSee('activity')) {
+    const online = (S.presence && S.presence.online) || vp.some(x => S.plat[x].online);
+    const now = vp.map(x => S.plat[x]).find(x => x.online && x.currentGame);
+    h += `<span class="chip ${online ? 'live' : ''}"><i class="fas fa-circle" style="font-size:.5rem"></i> ${online ? 'Online' : (S.presence && S.presence.ts ? 'Seen ' + ago(S.presence.ts) : 'Offline')}</span>`;
+    if (now) h += `<span class="chip live"><i class="fas fa-gamepad"></i> ${esc(now.currentGame)}${now.activity ? ' &bull; ' + esc(now.activity) : ''}</span>`;
+  }
+  if (S.isOwner) h += `<span class="chip">${S.viewAs === null ? 'This is you' : REL_LABEL[S.viewAs]}</span>`;
+  else h += `<span class="chip">${['Public','Friend','Close friend'][S.rel]}</span>`;
+  box.innerHTML = h;
+}
+
+function statsHtml(vp, tab) {
+  const list = tab === 'all' ? vp : [tab];
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(${tab === 'all' ? 260 : 150}px,1fr));gap:.75rem">` + list.map(x => {
+    const d = S.plat[x]; if (!d) return '';
+    const bd = d.breakdown;
+    return `<div class="card" style="padding:1rem">
+      <div class="h2" style="margin-bottom:.6rem"><i class="${PLATS[x].icon}"></i> ${esc(PLATS[x].name)} <span class="mute" style="text-transform:none;letter-spacing:0">&bull; ${esc(d.name)}</span></div>
+      <div style="display:grid;grid-template-columns:repeat(${d.stats.length},1fr);gap:.5rem;text-align:center">
+        ${d.stats.map(([k, v]) => `<div><div class="mono" style="font-size:1.35rem;font-weight:800">${esc(v)}</div><div class="stat k" style="padding:0">${esc(k)}</div></div>`).join('')}
+      </div>
+      ${bd && canSee('trophies') ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.25rem;margin-top:.8rem;padding-top:.7rem;border-top:1px solid var(--line);text-align:center;font-weight:800" class="mono">
+        <div><i class="fas fa-trophy" style="color:#93c5fd"></i><br>${bd.platinum}</div><div><i class="fas fa-trophy" style="color:#fbbf24"></i><br>${bd.gold}</div>
+        <div><i class="fas fa-trophy" style="color:#94a3b8"></i><br>${bd.silver}</div><div><i class="fas fa-trophy" style="color:#b45309"></i><br>${bd.bronze}</div></div>` : ''}
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function gameCard(g, idx) {
+  const st = status(g), has = g.total != null && g.earned != null;
+  return `<div class="game" data-g="${idx}" tabindex="0">
+    <img loading="lazy" src="${esc(g.poster || ph(300, 450, g.title))}" alt="" onerror="this.src='${ph(300, 450, 'GAME')}'">
+    <span class="pf ${g.platform}"><i class="${PLATS[g.platform].icon}"></i></span>
+    <span class="st ${st.c}">${st.t}</span>
+    <div class="ov"><div class="ttl">${esc(g.title)}</div>
+      <div class="bar"><i style="width:${Math.min(100, g.progress)}%"></i></div>
+      <div class="mono" style="font-size:.68rem;display:flex;justify-content:space-between"><span>${g.progress}%</span><span>${has ? esc(g.earned) + '/' + esc(g.total) : esc(g.hours)}</span></div>
+    </div></div>`;
+}
+
+let shownGames = [];
+function renderTab(vp) {
+  const body = $('#tab-body'); if (!body) return;
+  if (S.tab === 'tracking') { body.innerHTML = trackingHtml(); return; }
+  const tab = S.tab, plats = tab === 'all' ? vp : [tab];
+  let html = vp.length ? statsHtml(vp, tab) : '';
+  shownGames = [];
+  const sections = plats.map(x => {
+    const d = S.plat[x]; if (!d || !d.games.length) return '';
+    const gs = d.games.slice(0, tab === 'all' ? 6 : 18);
+    const start = shownGames.length; shownGames.push(...gs);
+    const cur = gs.find(g => g.playing);
+    return `<section class="card" style="padding:1rem">
+      <div class="h2" style="margin-bottom:.8rem"><i class="${PLATS[x].icon}"></i> ${tab === 'all' ? esc(PLATS[x].name) + ' &mdash; ' : ''}${cur ? 'Current &amp; recent games' : 'Recent games'}</div>
+      <div class="games">${gs.map((g, i) => gameCard(g, start + i)).join('')}</div></section>`;
+  }).join('');
+  html += sections;
+
+  // latest trophy unlocks (PSN)
+  if (canSee('trophies') && plats.includes('psn') && S.plat.psn && S.plat.psn.recent.length) {
+    html += `<section class="card" style="padding:1rem"><div class="h2"><i class="fas fa-trophy"></i> Latest trophy unlocks</div>` +
+      S.plat.psn.recent.slice(0, 5).map(t => `<div class="row">
+        <img src="${esc(secure(t.icon || ''))}" alt="" onerror="this.src='${ph(64, 64, '🏆')}'">
+        <div style="min-width:0;flex:1"><div style="font-weight:800" class="nowrap-trunc">${esc(t.name || 'Trophy')}</div>
+        <div class="mute nowrap-trunc" style="font-size:.78rem">${esc(t.gameTitle || t.game || '')}</div></div>
+        <div class="mute" style="font-size:.75rem;text-align:right">${esc(ago(t.earnedDate || t.timestamp))}</div></div>`).join('') + '</section>';
+  }
+  if (tab === 'all' && canSee('tracking') && S.tracking && !S.tracking.error && S.tracking.length) {
+    html += `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking.slice(0, 5))}
+      <button class="btn" style="margin-top:.7rem" data-tab="tracking" id="more-track">See all</button></section>`;
+  }
+  body.innerHTML = html;
+  body.querySelectorAll('.game').forEach(c => { c.onclick = () => openGame(shownGames[c.dataset.g]); c.onkeydown = (e) => { if (e.key === 'Enter') c.click(); }; });
+  const mt = $('#more-track'); if (mt) mt.onclick = () => { S.tab = 'tracking'; render(); };
+}
+
+function trackingRows(items) {
+  return items.map(t => `<div class="row">
+    ${t.poster ? `<img src="${esc(t.poster)}" alt="" onerror="this.style.display='none'">` : '<div style="width:48px;height:48px;border-radius:.6rem;background:rgba(127,127,127,.2);display:flex;align-items:center;justify-content:center;flex:none"><i class="fas fa-gamepad mute"></i></div>'}
+    <div style="min-width:0;flex:1"><div style="font-weight:800" class="nowrap-trunc">${esc(t.title)}</div>
+      <div class="mute" style="font-size:.75rem">${[t.platform, t.status].filter(Boolean).map(esc).join(' &bull; ')}${t.note ? ' &mdash; ' + esc(t.note) : ''}</div>
+      ${t.progress != null ? `<div class="bar" style="margin-top:.35rem"><i style="width:${Math.min(100, t.progress)}%"></i></div>` : ''}</div>
+    ${t.progress != null ? `<div class="mono" style="font-weight:800">${t.progress}%</div>` : ''}</div>`).join('');
+}
+function trackingHtml() {
+  if (!S.tracking || S.tracking.error) return `<div class="card mute" style="padding:1.5rem;text-align:center">Game tracking isn't available right now.</div>`;
+  if (!S.tracking.length) return `<div class="card mute" style="padding:1.5rem;text-align:center">No tracked games yet.</div>`;
+  return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking)}</section>`;
+}
+
+/* ---------- game modal ---------- */
+window.closeModal = () => $('#modal').classList.remove('open');
+async function openGame(g) {
+  if (!g) return;
+  const st = status(g), m = $('#modal-body');
+  m.innerHTML = `<div style="display:flex;gap:1rem;padding:1rem;align-items:center;border-bottom:1px solid var(--line)">
+      <img src="${esc(g.poster || ph(300, 450, g.title))}" style="width:84px;border-radius:.7rem;aspect-ratio:2/3;object-fit:cover" alt="">
+      <div style="flex:1;min-width:0"><div class="h2"><i class="${PLATS[g.platform].icon}"></i> ${esc(PLATS[g.platform].name)} &bull; ${st.t}</div>
+        <h2 style="font-size:1.3rem;margin:.25rem 0">${esc(g.title)}</h2>
+        <div class="bar"><i style="width:${Math.min(100, g.progress)}%"></i></div>
+        <div class="mono mute" style="font-size:.78rem;margin-top:.3rem">${g.progress}%${g.earned != null && g.total != null ? ` &bull; ${esc(g.earned)}/${esc(g.total)}` : ''}${g.hours ? ' &bull; ' + esc(g.hours) : ''}${g.lastPlayed ? ' &bull; ' + esc(ago(g.lastPlayed)) : ''}</div></div>
+      <button class="btn" onclick="closeModal()" aria-label="Close"><i class="fas fa-times"></i></button></div>
+    <div id="trophy-list" style="padding:1rem" class="mute">${canSee('trophies') ? 'Loading trophies&hellip;' : 'Trophy list is private.'}</div>`;
+  $('#modal').classList.add('open');
+  if (!canSee('trophies')) return;
+
+  let items = [];
+  if (g.platform === 'psn') {
+    try {
+      const r = await fetch(`${DB()}/psn/games/${g.id}.json`); const s = r.ok ? await r.json() : null;
+      const live = (S.psnRaw && S.psnRaw.liveTrophyProgress && S.psnRaw.liveTrophyProgress[g.id]) || {};
+      items = arr(s && s.trophies).map(t => { const l = live[t.trophyId] || live[String(t.trophyId)] || {};
+        return { name:t.trophyName || t.name, desc:t.trophyDetail || t.description, icon:secure(t.trophyIconUrl || t.icon || ''), earned:!!l.earned, at:l.earnedDate || l.earnedDateTime || l.timestamp || '' }; });
+    } catch (e) {}
+  } else {
+    items = g.achievements.map(a => ({ name:a.name || a.title, desc:a.description || a.desc, icon:secure(a.icon || a.image || ''), earned:!!(a.earned ?? a.achieved ?? a.unlocked), at:a.earnedAt || a.unlockTime || '' }));
+  }
+  const box = $('#trophy-list');
+  if (!items.length) { box.textContent = 'No trophy/achievement list available for this game yet.'; return; }
+  items.sort((a, b) => (b.earned ? 1 : 0) - (a.earned ? 1 : 0));
+  box.classList.remove('mute');
+  box.innerHTML = items.map(t => `<div class="row" style="${t.earned ? '' : 'opacity:.55'}">
+      <img src="${esc(t.icon)}" alt="" onerror="this.src='${ph(64, 64, '🏆')}'">
+      <div style="min-width:0;flex:1"><div style="font-weight:800">${esc(t.name)}</div><div class="mute" style="font-size:.78rem">${esc(t.desc || '')}</div>
+      ${t.earned && t.at ? `<div style="font-size:.72rem;color:var(--ok)">${esc(fmtDate(t.at))}</div>` : ''}</div>
+      <span class="chip ${t.earned ? 'live' : ''}">${t.earned ? 'Earned' : 'Locked'}</span></div>`).join('');
+}
+
+function compressImage(file, maxW, quality, maxBytes) {
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      let w = Math.min(maxW, img.width), h = Math.round(img.height * (w / img.width)), q = quality, out;
+      const c = document.createElement('canvas');
+      for (let i = 0; i < 6; i++) {
+        c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h);
+        out = c.toDataURL('image/jpeg', q);
+        if (out.length * 0.75 <= maxBytes) break;
+        q = Math.max(.4, q - .1); w = Math.round(w * .85); h = Math.round(h * .85);
+      }
+      URL.revokeObjectURL(url);
+      out.length * 0.75 <= maxBytes ? resolve(out) : reject(new Error('Image is too large even after compression'));
+    };
+    img.onerror = () => reject(new Error('Could not read that image'));
+    img.src = url;
+  });
+}
+
+
+function openEdit() {
+  const p = S.profile, pv = p.privacy || {};
+  S.edit = { bg: S.media.bg || '' };
+  const d = $('#drawer');
+  const row = (k, label, icon, val) => `<div class="priv"><span><i class="${icon}" style="width:1.4rem"></i>${label}</span>
+      <select class="fld-sel" data-sec="${k}" style="background:rgba(127,127,127,.14);border:1px solid var(--line);border-radius:.6rem;padding:.5rem">${LEVELS.map(([v, l]) => `<option value="${v}" ${val === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>`;
+  const scopeLabel = (s) => (LEVELS.find(l => l[0] === s) || [0, 'Only me'])[1];
+  d.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:1.2rem;text-transform:uppercase">Edit profile</h2>
+      <button class="btn" id="ed-close" aria-label="Close"><i class="fas fa-times"></i></button></div>
+
+    <div class="h2" style="margin:.5rem 0">About you</div>
+    <div class="fld"><label>Display name (blank = your username)</label><input type="text" id="ed-name" maxlength="40" value="${esc(p.displayName || '')}" placeholder="${esc(S.U.username || '')}"></div>
+    <div class="fld"><label>Bio</label><textarea id="ed-bio" rows="3" maxlength="280">${esc(p.bio)}</textarea></div>
+
+    <div class="h2" style="margin:1.2rem 0 .5rem">Look</div>
+    <div class="fld"><label>Background image</label>
+      <input type="file" id="ed-bg-file" accept="image/*">
+      <input type="url" id="ed-bg-url" placeholder="&hellip;or paste an https:// image link" style="margin-top:.4rem">
+      <button class="btn danger" id="ed-bg-clear" type="button" style="margin-top:.4rem">Remove background</button></div>
+    <div class="fld"><label>Background darkness</label><input type="range" id="ed-dim" min="0" max="90" value="${Math.round((p.bgDim != null ? p.bgDim : .55) * 100)}"></div>
+    <div class="fld"><label>Accent color</label><input type="color" id="ed-accent" value="${esc(p.accent || S.U.primary_color || '#ff5f1f')}" style="height:44px;width:100%;border-radius:.7rem;border:1px solid var(--line);background:transparent"></div>
+
+    <div class="h2" style="margin:1.2rem 0 .3rem">Who can see what</div>
+    ${row('trophies', 'Trophy lists & latest unlocks', 'fas fa-trophy', pv.trophies || 'friends')}
+    ${row('activity', 'Online status & now playing', 'fas fa-signal', pv.activity || 'friends')}
+    ${row('tracking', 'Game tracking', 'fas fa-bullseye', S.U.tracking_scope || 'friends')}
+    <div class="mute" style="font-size:.8rem;margin:.8rem 0">
+      Your accounts use the privacy you already set in <a href="../security/setting.html" style="color:var(--accent)"><b>Settings</b></a>:
+      PlayStation &ndash; ${scopeLabel(S.U.psn_username_scope || 'private')}, Xbox &ndash; ${scopeLabel(S.U.xbox_gamertag_scope || 'private')}, Steam &ndash; ${scopeLabel(S.U.steam_id_scope || 'private')}.
+      Usernames, avatar, friends and close friends are managed there too.</div>
+    <div class="fld"><label>Default tab when someone opens your profile</label>
+      <select id="ed-tab"><option value="all">All platforms</option><option value="psn" ${p.defaultTab === 'psn' ? 'selected' : ''}>PlayStation</option><option value="xbox" ${p.defaultTab === 'xbox' ? 'selected' : ''}>Xbox</option><option value="steam" ${p.defaultTab === 'steam' ? 'selected' : ''}>Steam</option></select></div>
+
+    <div class="sticky-save"><button class="btn primary" id="ed-save" style="width:100%;justify-content:center"><i class="fas fa-floppy-disk"></i> Save profile</button></div>`;
+  d.classList.add('open');
+
+  $('#ed-close').onclick = () => d.classList.remove('open');
+  const preview = () => { S.media.bg = S.edit.bg; S.profile.bgDim = $('#ed-dim').value / 100; S.profile.accent = $('#ed-accent').value; applyTheme(); };
+  $('#ed-dim').oninput = preview; $('#ed-accent').oninput = preview;
+  $('#ed-bg-file').onchange = async (e) => { const f = e.target.files[0]; if (!f) return;
+    try { S.edit.bg = await compressImage(f, 1600, .78, 380000); preview(); } catch (err) { toast(err.message); } };
+  $('#ed-bg-url').onchange = (e) => { const v = e.target.value.trim(); if (v && !/^https:\/\//.test(v)) return toast('Use an https:// link'); S.edit.bg = v; preview(); };
+  $('#ed-bg-clear').onclick = () => { S.edit.bg = ''; preview(); };
+  $('#ed-save').onclick = saveProfile;
+}
+
+async function saveProfile() {
+  const btn = $('#ed-save'); btn.disabled = true;
+  try {
+    const me = W.me, db = W.db, SV = W.firebase.database.ServerValue;
+    const sec = {}; document.querySelectorAll('.fld-sel').forEach(s => sec[s.dataset.sec] = s.value);
+    const prof = { displayName:$('#ed-name').value.trim().slice(0, 40), bio:$('#ed-bio').value.trim().slice(0, 280),
+                   accent:$('#ed-accent').value, bgDim:Number($('#ed-dim').value) / 100, defaultTab:$('#ed-tab').value,
+                   privacy:{ trophies:sec.trophies, activity:sec.activity }, updatedAt:SV.TIMESTAMP };
+    await db.ref('profiles/' + me.key).update(prof);
+    await db.ref('profileMedia/' + me.key).set({ bg:S.edit.bg || null });
+    if (sec.tracking !== (S.U.tracking_scope || 'friends')) {          // same field Settings uses
+      await db.ref('users/' + me.key + '/tracking_scope').set(sec.tracking); S.U.tracking_scope = sec.tracking;
+    }
+    Object.assign(S.profile, prof); S.media = { bg:S.edit.bg };
+    me.name = displayName();
+    $('#drawer').classList.remove('open');
+    toast('Profile saved');
+    applyTheme();
+    if (canSee('tracking')) await loadTracking();
+    render();
+  } catch (e) { console.error(e); toast('Save failed: ' + (e.code || e.message)); }
+  btn.disabled = false;
+}
+
+/* ---------- go ---------- */
+await boot();
+})();
+</script>
+</body>
+</html>

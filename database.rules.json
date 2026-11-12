@@ -71,6 +71,44 @@
         ".write": "$id.matches(/^[0-9a-f]{32}$/)",
         ".validate": "newData.hasChildren(['endpoint', 'keys']) && newData.child('endpoint').isString() && newData.child('endpoint').val().beginsWith('https://')"
       }
+    },
+
+    "profiles": {
+      "$k": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')",
+        "bio":         { ".validate": "newData.isString() && newData.val().length <= 280" },
+        "displayName": { ".validate": "newData.isString() && newData.val().length <= 40" }
+      }
+    },
+
+    "profileMedia": {
+      "$k": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')"
+      }
+    },
+
+    "presence": {
+      "$k": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')"
+      }
+    },
+
+    "messages": {
+      "$tid": {
+        ".read":  "auth != null && auth.token.email != null && ($tid.beginsWith(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') + '__') || $tid.endsWith('__' + auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        ".write": "auth != null && auth.token.email != null && ($tid.beginsWith(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') + '__') || $tid.endsWith('__' + auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        "$m": { ".validate": "newData.hasChildren(['from', 'text', 'ts']) && newData.child('text').isString() && newData.child('text').val().length <= 1000" }
+      }
+    },
+
+    "userThreads": {
+      "$me": {
+        ".read": "auth != null && auth.token.email != null && $me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')",
+        "$other": { ".write": "auth != null && auth.token.email != null && ($me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || $other === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))" }
+      }
     }
   }
 }
