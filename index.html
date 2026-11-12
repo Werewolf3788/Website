@@ -669,7 +669,7 @@
                         Every movie and show I own digitally, plus where each one is streaming across Google, YouTube, Apple, Fandango, Amazon, and Movies Anywhere.
                     </p>
                     <div class="stat-tile inline-block text-left">
-                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest block">IMDb Titles in Archive</span>
+                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest block">Titles Owned / Total</span>
                         <div class="flex items-baseline gap-2">
                             <span id="movie-count" class="text-4xl font-black text-white leading-none" style="font-family:'Sora',sans-serif">Loading...</span>
                             <span id="type-breakdown" class="text-[11px] font-mono text-slate-400"></span>
@@ -2293,7 +2293,7 @@ function buildCinemaFromCsv(text) {
             }
 
             const slides = [];
-            let rowCount = 0, tvTally = 0;
+            let rowCount = 0, tvTally = 0, ownedCount = 0;
             const imdbIds = new Set();
 
             for (let r = 1; r < rows.length; r++) {
@@ -2316,6 +2316,7 @@ function buildCinemaFromCsv(text) {
                 const flag = (v) => { v = String(v || '').trim().toLowerCase(); return v.includes('✅') || v === 'true' || v === 'yes' || v === '1'; };
                 if (flag(cell(CIN.google)) || flag(cell(CIN.youtube)) || /free/i.test(cell(CIN.youtube))) owned = true;
                 if (!owned) continue; // no store link = not in the library
+                ownedCount++; // one per title/edition, no matter how many stores carry it
 
                 let year = '';
                 const ym = title.match(/^(.*\S)\s*\((\d{4})\)\s*$/);
@@ -2355,8 +2356,8 @@ function buildCinemaFromCsv(text) {
             }
 
             // Primary count = distinct IMDb titles (column A), falling back to the sheet header total / counted rows
-            const titleCount = headerImdbTotal(header) ?? (imdbIds.size || (nums[0] ?? rowCount));
-            return { slides, titleCount, tvTally };
+            const titleCount = ownedCount;
+            return { slides, titleCount, totalCount: rowCount, tvTally };
         }
 
         async function fetchMovieData() {
@@ -2365,8 +2366,8 @@ function buildCinemaFromCsv(text) {
 
             // Show the last known title count instantly while the sheet loads
             const cachedCount = localStorage.getItem('werewolf_library_count');
-            if (countDisplay && cachedCount && /^\d+$/.test(cachedCount) && countDisplay.textContent === 'Loading...') {
-                countDisplay.textContent = Number(cachedCount).toLocaleString();
+            if (countDisplay && cachedCount && /^[\d,]+( \/ [\d,]+)?$/.test(cachedCount) && countDisplay.textContent === 'Loading...') {
+                countDisplay.textContent = cachedCount;
             }
 
             try {
@@ -2378,8 +2379,8 @@ function buildCinemaFromCsv(text) {
                 if (!built) throw new Error('Sheet returned no rows');
                 cinemaSig = sig;
 
-                if (countDisplay) countDisplay.textContent = built.titleCount.toLocaleString();
-                localStorage.setItem('werewolf_library_count', built.titleCount);
+                if (countDisplay) countDisplay.textContent = built.titleCount.toLocaleString() + ' / ' + built.totalCount.toLocaleString();
+                localStorage.setItem('werewolf_library_count', built.titleCount.toLocaleString() + ' / ' + built.totalCount.toLocaleString());
                 if (breakdownDisplay) breakdownDisplay.textContent = built.tvTally > 0 ? `(${built.tvTally} TV Shows)` : '';
 
                 if (built.slides.length > 0) {

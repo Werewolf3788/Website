@@ -761,10 +761,13 @@ function buildCatalog(csvText) {
   const latest = Math.max(0, ...list.map(m => m.ts));
   list.forEach(m => { m.isNew = m.ts && latest - m.ts <= 14 * 86400000; });
   const sum = Object.values(storeCounts).reduce((a, b) => a + b, 0);
-  // Primary count = IMDb total from the sheet header (falls back to counting tt… ids), not store links
-  const imdbCounted = new Set(list.map(m => (m.id.match(/^tt\d+$/i) || [])[0]).filter(Boolean)).size;
-  const imdb = headerImdbTotal(header) ?? imdbCounted;
-  return { list, stats: { titles: nums[0] ?? rowCount, imdb: imdb || (nums[0] ?? rowCount), links: nums[1] ?? sum, stores: storeCounts } };
+  // All stores = number of distinct owned titles (any ID type, one per edition) that have at least one store link.
+  // A title counts ONCE here no matter how many stores carry it (Movies Anywhere + Apple + Amazon... = 1).
+  const owned = list.length;
+  // Each store pill = how many titles have a link in that store's column.
+  const pill = Object.fromEntries(STORES.map(s => [s.key, 0]));
+  list.forEach(m => STORES.forEach(s => { if (m.links[s.key]) pill[s.key]++; }));
+  return { list, stats: { titles: rowCount, imdb: owned, links: owned, stores: pill } };
 }
 
 /* ---------------- data loading (device cache first, then the sheet) ---------------- */
@@ -926,7 +929,7 @@ function heroHtml(m) {
     <div class="hero-cta"><a class="btn btn-primary" href="${titleUrl(m)}" data-key="${esc(m.key)}">${ICON.play}Where to watch</a>
       <a class="btn btn-ghost" href="${titleUrl(m)}" data-key="${esc(m.key)}">${ICON.info}Details</a></div>
     <div class="hero-dots">${heroList.map((x, i) => `<button type="button" class="${i === heroIdx ? 'on' : ''}" data-hero="${i}" aria-label="Show ${esc(x.title)}"></button>`).join('')}</div>
-    <div class="inventory"><span><b>${fmt(stats.imdb)}</b> IMDb titles</span></div>
+    <div class="inventory"><span><b>${fmt(stats.imdb)}</b> / ${fmt(stats.titles)} titles</span></div>
   </div>${m.poster ? `<img class="hero-poster" src="${esc(m.poster)}" alt="${esc(m.title)} poster">` : ''}</div>`;
 }
 function setHero(i) {
