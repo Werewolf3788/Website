@@ -338,7 +338,8 @@ async function ensureFriendCode(){
       if(!cur){await ref.set(K);cur=(await ref.get()).val()}
       if(cur===K)codeMsg('Your code is active: friends can add you with it.');
       else if(typeof cur==='string')codeMsg('This code is already registered to a different account ('+cur+'). Tell Kevin so it can be sorted out.',1);
-      else codeMsg('Could not activate your code. Sign out, sign in again and reopen Settings.',1);
+      else if(cur)codeMsg('The entry for your code is in the wrong format (stored: '+JSON.stringify(cur).slice(0,70)+'). In Firebase, delete friend_codes/'+D.friend_code+' and reload this page. It will recreate itself.',1);
+      else codeMsg('The write for your code did not stick (nothing was stored for '+D.friend_code+' after saving). Reload and try once more; if it repeats, tell Kevin.',1);
     }catch(e){console.warn('[friend code repair]',e&&e.message);codeMsg('Could not activate your code: '+(/permission/i.test(e&&e.message||'')?'the database refused the write (rules need publishing).':(e&&e.message||'unknown error')),1)}
     return D.friend_code;
   }
