@@ -262,7 +262,9 @@ async function main() {
     console.log(`[XBOX ENGINE] Done. ok=${okCount} failed=${failCount} totalAccounts=${accounts.length}`);
 }
 
-main().catch((e) => {
-    console.error(`[XBOX ENGINE] Fatal: ${e.stack || e.message}`);
-    process.exitCode = 1;
-});
+main()
+    .then(() => process.exit(0))
+    .catch((e) => {
+        console.error(`[XBOX ENGINE] Fatal: ${e.stack || e.message}`);
+        process.exit(1);
+    });
