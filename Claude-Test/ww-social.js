@@ -436,7 +436,7 @@
       ]);
     } catch (e) {
       console.warn('[WW] send failed', e);
-      if (UI) UI.msgs.appendChild(el('div', 'm', 'Message failed to send. Check your connection and try again.'));
+      if (UI) UI.msgs.appendChild(el('div', 'm', (e && /permission/i.test(e.code + ' ' + e.message)) ? 'Messaging is blocked by the database rules (messages / userThreads / presence not published yet).' : 'Message failed to send. Check your connection and try again.'));
     }
   }
 

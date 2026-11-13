@@ -248,18 +248,22 @@ async function loadPlatforms() {
   await Promise.all(Object.keys(PLATS).map(async (p) => {
     const id = platId(p); if (!id) return;
     if (!S.isOwner && !canSee(p)) return;                // never even fetch what the viewer may not see
-    try { S.plat[p] = await fns[p](id); } catch (e) { console.warn('[profile]', p, e); }
+    let d = null;
+    try { d = await fns[p](id); } catch (e) { console.warn('[profile]', p, e); }
+    // keep the platform visible even with no synced data, so it never silently disappears
+    S.plat[p] = d || { platform:p, name:id, avatar:'', online:false, currentGame:'', activity:'', stats:[['Status','No data yet']], games:[], recent:[], empty:true };
   }));
 }
 
 async function loadPsn(tag) {
   let u = null;
-  for (const t of [...new Set([tag, tag.toLowerCase()])]) {
-    const r = await fetch(`${DB()}/psn/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
-    if (r.ok) { u = await r.json(); if (u) break; }
+  let src = DB();
+  outer: for (const base of [...new Set([DB(), RAY_DB])]) for (const t of [...new Set([tag, tag.toLowerCase()])]) {
+    try { const r = await fetch(`${base}/psn/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
+      if (r.ok) { u = await r.json(); if (u) { src = base; break outer; } } } catch (e) {}
   }
   if (!u) return null;
-  S.psnRaw = u;
+  S.psnRaw = u; S.psnSrc = src;
   const ah = u.activeHunt || {};
   const activeId = String(u.commId || ah.commId || ah.npCommunicationId || '').toUpperCase();
   const online = u.online === true || u.online === 'true';
@@ -276,7 +280,7 @@ async function loadPsn(tag) {
   // fill missing posters/totals from the master skeleton (same source the squad hub uses)
   await Promise.all(list.slice(0, 12).filter(g => g.id.startsWith('NPWR') && (!g.poster || g.total == null)).map(async g => {
     try {
-      const r = await fetch(`${DB()}/psn/games/${g.id}.json`); if (!r.ok) return; const s = await r.json(); if (!s) return;
+      const r = await fetch(`${src}/psn/games/${g.id}.json`); if (!r.ok) return; const s = await r.json(); if (!s) return;
       g.poster = g.poster || secure(s.posterArt || '');
       if (g.title === 'Active hunt') g.title = s.name || s.trophyTitleName || g.title;
       if (g.total == null) g.total = arr(s.trophies).length || undefined;
@@ -297,9 +301,9 @@ async function loadPsn(tag) {
 // Xbox: written by Xbox/xbox.js to the playstation-stats DB at /xbox/gamertags/{gamertag}
 async function loadXbox(tag) {
   let d = null;
-  for (const t of [...new Set([tag, tag.toLowerCase()])]) {
-    const r = await fetch(`${RAY_DB}/xbox/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
-    if (r.ok) { d = await r.json(); if (d) break; }
+  outer: for (const base of [...new Set([RAY_DB, DB()])]) for (const t of [...new Set([tag, tag.toLowerCase()])]) {
+    try { const r = await fetch(`${base}/xbox/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
+      if (r.ok) { d = await r.json(); if (d) break outer; } } catch (e) {}
   }
   if (!d) return null;
   const online = /online/i.test(d.presenceState || '');
@@ -346,25 +350,61 @@ async function loadSteam(raw) {
 }
 
 /* Game Companion saves (Firestore user/{key}/platform/{p}/game/{name}) */
+// Game Companion saves under the friend code (fallback: account key). Returns rows for one person.
+async function readTracking(fs, ids) {
+  const out = [], seen = new Set();
+  for (const id of ids) for (const p of Object.keys(TRACK_PLATS)) {
+    let snap; try { snap = await fs.collection('user').doc(id).collection('platform').doc(p).collection('game').get(); } catch (e) { continue; }
+    snap.forEach(doc => {
+      const sk = p + '|' + doc.id; if (seen.has(sk)) return; seen.add(sk);
+      const d = doc.data() || {};
+      const sets = [d.trophies, d.medals, d.missions].filter(Boolean).map(o => Object.values(o));
+      const total = sets.reduce((n, a) => n + a.length, 0);
+      const done = sets.reduce((n, a) => n + a.filter(x => x && (x.earned || x.completed)).length, 0)
+                 + Object.values(d.collectibles || {}).reduce((n, c) => n + Object.values((c && c.items) || {}).filter(i => i && i.collected).length, 0);
+      out.push({ title:doc.id, platform:({ ps:'PlayStation', xbox:'Xbox', steam:'Steam', pc:'PC' })[p], status: total && done >= total ? 'Completed' : (done ? 'In progress' : 'Started'),
+        progress: total ? Math.round(Math.min(done, total) / total * 100) : null, poster:'', note: total ? `${Math.min(done, total)}/${total} tracked` : '', updated:d.updatedAt || 0 });
+    });
+  }
+  out.sort((a, b) => num(b.updated) - num(a.updated));
+  return out;
+}
+const idsFor = (code, key) => [...new Set([String(code || '').toUpperCase(), String(code || ''), key].filter(Boolean))];
+
 async function loadTracking() {
   try {
-    const fs = await W.loadFirestore(), out = [];
-    for (const p of Object.keys(TRACK_PLATS)) {
-      const snap = await fs.collection('user').doc(S.ownerKey).collection('platform').doc(p).collection('game').get();
-      snap.forEach(doc => {
-        const d = doc.data() || {};
-        const sets = [d.trophies, d.medals, d.missions].filter(Boolean).map(o => Object.values(o));
-        const total = sets.reduce((n, a) => n + a.length, 0);
-        const done = sets.reduce((n, a) => n + a.filter(x => x && (x.earned || x.completed)).length, 0)
-                   + Object.values(d.collectibles || {}).reduce((n, c) => n + Object.values((c && c.items) || {}).filter(i => i && i.collected).length, 0);
-        out.push({ title:doc.id, platform:({ ps:'PlayStation', xbox:'Xbox', steam:'Steam', pc:'PC' })[p], status: total && done >= total ? 'Completed' : (done ? 'In progress' : 'Started'),
-          progress: total ? Math.round(Math.min(done, total) / total * 100) : null, poster:'', note: total ? `${Math.min(done, total)}/${total} tracked` : '', updated:d.updatedAt || 0 });
-      });
-    }
-    out.sort((a, b) => num(b.updated) - num(a.updated));
-    S.tracking = out;
+    const fs = await W.loadFirestore();
+    S.tracking = await readTracking(fs, idsFor(S.U.friend_code, S.ownerKey));
   } catch (e) { console.warn('[tracking]', e); S.tracking = { error:true }; }
   if (!$('#profile-root').hidden) render();
+  loadFriendProgress();
+}
+
+/* Friends' progress: each friend's tracked games, honouring THEIR tracking_scope (same rule as the Game Companion) */
+async function loadFriendProgress() {
+  if (!S.isOwner || !canSee('tracking')) { S.friendsProg = null; return; }
+  try {
+    const fs = await W.loadFirestore(), friends = S.U.friends || {};
+    S.friendsProg = await Promise.all(Object.entries(friends).map(async ([fk, fo]) => {
+      fo = fo || {}; const code = String(fo.friend_code || fk).toUpperCase();
+      const key = await W.ownerKeyOfCode(code);
+      let prof = {}; if (key) { try { prof = (await W.db.ref('users/' + key).once('value')).val() || {}; } catch (e) {} }
+      const name = prof.username || prof.display_name || fo.username || code, scope = prof.tracking_scope || 'friends';
+      let ok = scope !== 'private';
+      if (scope === 'close') ok = !!(prof.friends && prof.friends[S.U.friend_code] && prof.friends[S.U.friend_code].close_friend === true);
+      if (!ok) return { code, name, hidden:true, games:[] };
+      return { code, name, games:(await readTracking(fs, idsFor(code, key))).slice(0, 4) };
+    }));
+  } catch (e) { console.warn('[friends progress]', e); S.friendsProg = null; }
+  if (!$('#profile-root').hidden) render();
+}
+
+function friendsHtml() {
+  if (!S.friendsProg) return '';
+  const head = `<div class="h2" style="margin-bottom:.6rem"><i class="fas fa-user-group"></i> Friends' progress</div>`;
+  if (!S.friendsProg.length) return `<section class="card" style="padding:1rem">${head}<div class="mute">No friends added yet.</div></section>`;
+  return `<section class="card" style="padding:1rem">${head}` + S.friendsProg.map(f => `<div style="margin-bottom:.8rem"><div style="font-weight:800;margin-bottom:.3rem">${esc(f.name)}</div>` +
+    (f.hidden ? '<div class="mute" style="font-size:.8rem">Keeps their tracking private.</div>' : f.games.length ? trackingRows(f.games) : '<div class="mute" style="font-size:.8rem">No tracked games yet.</div>') + '</div>').join('') + '</section>';
 }
 
 function watchPresence() {
@@ -484,7 +524,7 @@ function renderTab(vp) {
   let html = vp.length ? statsHtml(vp, tab) : '';
   shownGames = [];
   const sections = plats.map(x => {
-    const d = S.plat[x]; if (!d || !d.games.length) return '';
+    const d = S.plat[x]; if (!d) return ''; if (d.empty) return `<section class="card mute" style="padding:1rem"><i class="${PLATS[x].icon}"></i> No synced ${esc(PLATS[x].name)} data found for <b>${esc(d.name)}</b> yet. Check the ID in Settings is exact.</section>`; if (!d.games.length) return '';
     const gs = d.games.slice(0, tab === 'all' ? 6 : 18);
     const start = shownGames.length; shownGames.push(...gs);
     const cur = gs.find(g => g.playing);
@@ -506,6 +546,7 @@ function renderTab(vp) {
   if (tab === 'all' && canSee('tracking') && S.tracking && !S.tracking.error && S.tracking.length) {
     html += `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking.slice(0, 5))}
       <button class="btn" style="margin-top:.7rem" data-tab="tracking" id="more-track">See all</button></section>`;
+    html += friendsHtml();
   }
   body.innerHTML = html;
   body.querySelectorAll('.game').forEach(c => { c.onclick = () => openGame(shownGames[c.dataset.g]); c.onkeydown = (e) => { if (e.key === 'Enter') c.click(); }; });
@@ -522,8 +563,8 @@ function trackingRows(items) {
 }
 function trackingHtml() {
   if (!S.tracking || S.tracking.error) return `<div class="card mute" style="padding:1.5rem;text-align:center">Game tracking isn't available right now.</div>`;
-  if (!S.tracking.length) return `<div class="card mute" style="padding:1.5rem;text-align:center">No tracked games yet.</div>`;
-  return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking)}</section>`;
+  if (!S.tracking.length) return `<div class="card mute" style="padding:1.5rem;text-align:center">No tracked games found yet.</div>` + friendsHtml();
+  return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking)}</section>` + friendsHtml();
 }
 
 /* ---------- game modal ---------- */
@@ -545,7 +586,7 @@ async function openGame(g) {
   let items = [];
   if (g.platform === 'psn') {
     try {
-      const r = await fetch(`${DB()}/psn/games/${g.id}.json`); const s = r.ok ? await r.json() : null;
+      const r = await fetch(`${S.psnSrc || DB()}/psn/games/${g.id}.json`); const s = r.ok ? await r.json() : null;
       const live = (S.psnRaw && S.psnRaw.liveTrophyProgress && S.psnRaw.liveTrophyProgress[g.id]) || {};
       items = arr(s && s.trophies).map(t => { const l = live[t.trophyId] || live[String(t.trophyId)] || {};
         return { name:t.trophyName || t.name, desc:t.trophyDetail || t.description, icon:secure(t.trophyIconUrl || t.icon || ''), earned:!!l.earned, at:l.earnedDate || l.earnedDateTime || l.timestamp || '' }; });
