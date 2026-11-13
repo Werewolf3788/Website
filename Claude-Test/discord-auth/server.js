@@ -91,7 +91,7 @@ function createApp(deps) {
     try {
       const tr = await fetchFn('https://discord.com/api/oauth2/token', {
         method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ client_id: await getClientId(admin), client_secret: process.env.DISCORD_CLIENT_SECRET,
+        body: new URLSearchParams({ client_id: await getClientId(admin), client_secret: String(process.env.DISCORD_CLIENT_SECRET || '').trim().replace(/^["']|["']$/g, ''),
           grant_type: 'authorization_code', code: String(req.query.code), redirect_uri: REDIRECT_URI })
       });
       const tok = await tr.json();
