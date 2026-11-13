@@ -28,7 +28,7 @@
 
 const KEVIN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const API = "https://api.steampowered.com";
-const SITE_KEY = (process.env.STEAM_API_KEY || "").trim().toUpperCase();
+let SITE_KEY = (process.env.STEAM_API_KEY || "").trim().toUpperCase();
 const KEY_RX = /^[0-9A-F]{32}$/;
 
 /* ---------- Database access (Admin SDK first, REST + legacy secret fallback) ---------- */
@@ -164,6 +164,11 @@ async function main() {
     let secrets = {};
     try { secrets = (await dbGet("user_secrets")) || {}; } catch (e) { console.warn(`[DB] user_secrets: ${e.message}`); }
     const vanityCache = (await dbGet("steam_vanity").catch(() => null)) || {};
+    // Site-wide fallback key (no GitHub secret needed): /user_secrets/_site/steam_api_key
+    if (!SITE_KEY) {
+        const k = String((secrets._site || {}).steam_api_key || "").trim().toUpperCase();
+        if (KEY_RX.test(k)) { SITE_KEY = k; console.log("[STEAM] Using the site fallback key from /user_secrets/_site."); }
+    }
 
     // 1. Collect every Steam account entered in Settings, with that user's own key if saved
     const accounts = [];
@@ -171,7 +176,7 @@ async function main() {
         if (!u || !u.steam_id) continue;
         const own = String((secrets[emailKey] || {}).steam_api_key || "").trim().toUpperCase();
         const acct = { emailKey, key: KEY_RX.test(own) ? own : null, badKey: false };
-        if (!acct.key && !SITE_KEY) { console.warn(`[STEAM] ${emailKey}: no Steam API key (save one in Settings or add STEAM_API_KEY).`); continue; }
+        if (!acct.key && !SITE_KEY) { console.warn(`[STEAM] ${emailKey}: no Steam API key (save one in Settings, or put a fallback at /user_secrets/_site/steam_api_key).`); continue; }
         try {
             acct.id = await withKey(acct, (k) => toSteamId64(u.steam_id, vanityCache, k));
             if (acct.id) accounts.push(acct);

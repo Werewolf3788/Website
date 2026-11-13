@@ -90,6 +90,22 @@ const rtdbRef = (p) => rayDb.ref(`xbox/${p}`);
 /* ----------------------------------------------------------------------------
  * Kevin's Firebase (READ-ONLY): gamertags + OpenXBL keys only
  * -------------------------------------------------------------------------- */
+/* Copy of each player card into Kevin's DB (/xbox/gamertags/{tag}) so the site reads it with the member's normal sign-in.
+ * Email keys are stripped; this is the only thing written to Kevin's DB. */
+let kevinWriteDb = undefined;
+async function mirrorToKevin(tag, card) {
+    try {
+        if (kevinWriteDb === undefined) {
+            const raw = (process.env.GCP_SA_KEY_WEBSITE || "").trim();
+            kevinWriteDb = raw ? getDatabase(getNamedApp("kevinAppXbox", parseServiceAccount(raw, "GCP_SA_KEY_WEBSITE"), KEVIN_RTDB_URL)) : null;
+        }
+        if (!kevinWriteDb) return;
+        const pub = JSON.parse(JSON.stringify(card));
+        delete pub.sourceEmailKey; delete pub.keyOwnerEmailKey; delete pub.syncedViaFriendKey;
+        await kevinWriteDb.ref(`xbox/gamertags/${String(tag).replace(/[.$#\[\]\/]/g, "_")}`).set(pub);
+    } catch (e) { console.warn(`[KEVIN DB] Xbox mirror failed for ${tag}: ${e.message}`); }
+}
+
 async function readKevinNodes() {
     let users = {}, secrets = {}, friendCodes = {}, ok = false;
     const raw = (process.env.GCP_SA_KEY_WEBSITE || "").trim();
@@ -400,6 +416,7 @@ async function main() {
             });
 
             await rtdbRef(`gamertags/${profile.gamertag}`).set(card);
+            await mirrorToKevin(profile.gamertag, card);
             usersByGamerTag[profile.gamertag] = acc.emailKey;
             okCount++;
             const xuidNote = profile.xuidVerified === true ? ", XUID verified" : profile.xuidVerified === false ? ", XUID MISMATCH" : "";

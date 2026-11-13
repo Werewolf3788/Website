@@ -301,7 +301,11 @@ async function loadPsn(tag) {
 // Xbox: written by Xbox/xbox.js to the playstation-stats DB at /xbox/gamertags/{gamertag}
 async function loadXbox(tag) {
   let d = null;
-  outer: for (const base of [...new Set([RAY_DB, DB()])]) for (const t of [...new Set([tag, tag.toLowerCase()])]) {
+  const tags = [...new Set([tag, tag.toLowerCase()])];
+  // 1) Kevin's DB through the member's sign-in (Xbox sync mirrors cards here)
+  for (const t of tags) { if (d) break; try { d = (await W.db.ref('xbox/gamertags/' + t.replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); } catch (e) {} }
+  // 2) the sync's original home in Ray's DB, then public REST on Kevin's DB
+  outer: for (const base of d ? [] : [...new Set([RAY_DB, DB()])]) for (const t of tags) {
     try { const r = await fetch(`${base}/xbox/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
       if (r.ok) { d = await r.json(); if (d) break outer; } } catch (e) {}
   }
@@ -543,7 +547,7 @@ function renderTab(vp) {
         <div class="mute nowrap-trunc" style="font-size:.78rem">${esc(t.gameTitle || t.game || '')}</div></div>
         <div class="mute" style="font-size:.75rem;text-align:right">${esc(ago(t.earnedDate || t.timestamp))}</div></div>`).join('') + '</section>';
   }
-  if (tab === 'all' && canSee('tracking') && S.tracking && !S.tracking.error && S.tracking.length) {
+  if (canSee('tracking') && S.tracking && !S.tracking.error && S.tracking.length) {   // tracking is per platform but shown on every tab
     html += `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking.slice(0, 5))}
       <button class="btn" style="margin-top:.7rem" data-tab="tracking" id="more-track">See all</button></section>`;
     html += friendsHtml();
