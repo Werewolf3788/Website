@@ -440,13 +440,25 @@ async function loadFriendProgress() {
   if (!$('#profile-root').hidden) render();
 }
 
-function friendsHtml() {
+/* friends' tracking lives inside the same Game tracking card as yours (same rows, same colours) */
+function friendsInner() {
   if (!S.friendsProg) return '';
-  const head = `<div class="h2" style="margin-bottom:.6rem"><i class="fas fa-user-group"></i> Friends' progress</div>`;
-  if (!S.friendsProg.length) return `<section class="card" style="padding:1rem">${head}<div class="mute">No friends added yet.</div></section>`;
-  return `<section class="card" style="padding:1rem">${head}` + S.friendsProg.map(f => `<div style="margin-bottom:.8rem"><div style="font-weight:800;margin-bottom:.3rem">${esc(f.name)}</div>` +
-    (f.hidden ? '<div class="mute" style="font-size:.8rem">Keeps their tracking private.</div>' : f.games.length ? trackingRows(f.games) : '<div class="mute" style="font-size:.8rem">No tracked games yet.</div>') + '</div>').join('') + '</section>';
+  const head = `<div class="h2" style="margin:1rem 0 .5rem"><i class="fas fa-user-group"></i> Friends</div>`;
+  if (!S.friendsProg.length) return head + '<div class="mute" style="font-size:.85rem">No friends added yet.</div>';
+  return head + S.friendsProg.map(f => `<div style="margin-bottom:.8rem"><div style="font-weight:800;margin-bottom:.3rem">${esc(f.name)}</div>` +
+    (f.hidden ? '<div class="mute" style="font-size:.8rem">Keeps their tracking private.</div>' : f.games.length ? trackingRows(f.games) : '<div class="mute" style="font-size:.8rem">No tracked games yet.</div>') + '</div>').join('');
 }
+
+/* progress colour: 0% red -> yellow -> green -> blue -> diamond blue at 100%, blended smoothly in between */
+const PCT_STOPS = [[0, [239, 68, 68]], [25, [250, 204, 21]], [50, [34, 197, 94]], [75, [59, 130, 246]], [100, [103, 232, 249]]];
+function pctColor(p) {
+  p = Math.max(0, Math.min(100, +p || 0));
+  for (let i = 1; i < PCT_STOPS.length; i++) {
+    const a = PCT_STOPS[i - 1], b = PCT_STOPS[i]; if (p <= b[0]) { const f = (p - a[0]) / (b[0] - a[0]); return 'rgb(' + a[1].map((v, k) => Math.round(v + (b[1][k] - v) * f)).join(',') + ')'; }
+  }
+  return 'rgb(103,232,249)';
+}
+const pctBar = (p) => { const c = pctColor(p), d = p >= 100; return `<div class="bar" style="margin-top:.35rem"><i style="width:${Math.min(100, p)}%;background:${d ? 'linear-gradient(90deg,#67e8f9,#e0faff,#67e8f9)' : c};${d ? 'box-shadow:0 0 8px #67e8f9;' : ''}"></i></div>`; };
 
 function watchPresence() {
   W.db.ref('presence/' + S.ownerKey).on('value', s => { S.presence = s.val(); renderHeroStatus(); });
@@ -586,8 +598,7 @@ function renderTab(vp) {
   }
   if (canSee('tracking') && S.tracking && !S.tracking.error && S.tracking.length) {   // tracking is per platform but shown on every tab
     html += `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking.slice(0, 5))}
-      <button class="btn" style="margin-top:.7rem" data-tab="tracking" id="more-track">See all</button></section>`;
-    html += friendsHtml();
+      <button class="btn" style="margin-top:.7rem" data-tab="tracking" id="more-track">See all</button>${friendsInner()}</section>`;
   }
   body.innerHTML = html;
   body.querySelectorAll('.game').forEach(c => { c.onclick = () => openGame(shownGames[c.dataset.g]); c.onkeydown = (e) => { if (e.key === 'Enter') c.click(); }; });
@@ -599,13 +610,12 @@ function trackingRows(items) {
     ${t.poster ? `<img src="${esc(t.poster)}" alt="" onerror="this.style.display='none'">` : '<div style="width:48px;height:48px;border-radius:.6rem;background:rgba(127,127,127,.2);display:flex;align-items:center;justify-content:center;flex:none"><i class="fas fa-gamepad mute"></i></div>'}
     <div style="min-width:0;flex:1"><div style="font-weight:800" class="nowrap-trunc">${esc(t.title)}</div>
       <div class="mute" style="font-size:.75rem">${[t.platform, t.status].filter(Boolean).map(esc).join(' &bull; ')}${t.note ? ' &mdash; ' + esc(t.note) : ''}</div>
-      ${t.progress != null ? `<div class="bar" style="margin-top:.35rem"><i style="width:${Math.min(100, t.progress)}%"></i></div>` : ''}</div>
-    ${t.progress != null ? `<div class="mono" style="font-weight:800">${t.progress}%</div>` : ''}</div>`).join('');
+      ${t.progress != null ? pctBar(t.progress) : ''}</div>
+    ${t.progress != null ? `<div class="mono" style="font-weight:800;color:${t.progress >= 100 ? '#67e8f9' : pctColor(t.progress)}">${t.progress}%</div>` : ''}</div>`).join('');
 }
 function trackingHtml() {
   if (!S.tracking || S.tracking.error) return `<div class="card mute" style="padding:1.5rem;text-align:center">Game tracking isn't available right now.</div>`;
-  if (!S.tracking.length) return `<div class="card mute" style="padding:1.5rem;text-align:center">No tracked games found yet.</div>` + friendsHtml();
-  return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking)}</section>` + friendsHtml();
+  return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${S.tracking.length ? trackingRows(S.tracking) : '<div class="mute" style="font-size:.85rem">No tracked games found yet.</div>'}${friendsInner()}</section>`;
 }
 
 /* ---------- game modal ---------- */
