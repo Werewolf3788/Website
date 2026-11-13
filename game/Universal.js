@@ -113,6 +113,17 @@ function ribbonKeys(data) {
     return Object.keys(data || {}).filter(k => /_ribbons$/.test(k));
 }
 
+// A mission can have one or more sibling keys shaped like the original
+// "gnomes" collectible-checklist group: { medal_id, items: [...] }. Each item
+// is a plain checklist entry (rendered as a type:'mission' card) that, once
+// every item in the group is ticked, auto-earns the linked medal. Returns
+// [key, group] pairs for every such key on the mission object.
+function missionItemGroups(m) {
+    if (!m || typeof m !== 'object') return [];
+    return Object.entries(m).filter(([k, v]) => v && typeof v === 'object' && !Array.isArray(v) && v.medal_id && Array.isArray(v.items));
+}
+const GROUP_EMOJI = { gnomes: '🧙', cardboard_pigeons: '🕊️' };
+
 // All ribbons as a tree: supports "campaign_ribbons": [...] keys and a
 // nested "ribbons": { campaign: [...], multiplayer: { combat: [...] } } object.
 // Lists named *_unverified are skipped.
@@ -774,11 +785,12 @@ window.appState.applyStateToUI = function() {
         if (el.innerHTML !== h) el.innerHTML = h; el.hidden = !h;
     });
     Object.values((this.gameData && this.gameData.missions) || {}).forEach(mm => {
-        const g = mm && mm.gnomes; if (!g || !g.medal_id) return;
-        const all = toArr(g.items).length && toArr(g.items).every(it => this.missions[it.id]?.completed);
-        if (!this.medals[g.medal_id]) this.medals[g.medal_id] = { earned: false };
-        if (all) { this.medals[g.medal_id].earned = true; this.medals[g.medal_id].auto = true; }
-        else if (this.medals[g.medal_id].auto) { this.medals[g.medal_id].earned = false; delete this.medals[g.medal_id].auto; }
+        missionItemGroups(mm).forEach(([, g]) => {
+            const all = toArr(g.items).length && toArr(g.items).every(it => this.missions[it.id]?.completed);
+            if (!this.medals[g.medal_id]) this.medals[g.medal_id] = { earned: false };
+            if (all) { this.medals[g.medal_id].earned = true; this.medals[g.medal_id].auto = true; }
+            else if (this.medals[g.medal_id].auto) { this.medals[g.medal_id].earned = false; delete this.medals[g.medal_id].auto; }
+        });
     });
 
     document.querySelectorAll('.game-item-card').forEach(card => {
@@ -2168,11 +2180,24 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     }
     if (detail.length) inner = (m.image_url ? `<img class="mission-hero" src="${toSecureUrl(m.image_url)}" alt="" loading="lazy" onerror="this.remove()">` : '') + `<div class="mission-detail">${detail.join('')}</div>` + inner;
 
-    if (m.gnomes && toArr(m.gnomes.items).length) {
-        const g = m.gnomes;
-        inner += buildFolder(`🧙 Gnomes — ${escapeHtml(g.medal_name || 'medal')}`, `<p style="font-size:0.8rem;color:#cbd5e1;margin-bottom:8px;">${escapeHtml(g.description || '')} Ticking all ${toArr(g.items).length} earns the medal. ${g.numbering_note ? escapeHtml(g.numbering_note) + ' ' : ''}${g.guide_video ? `<a href="${escapeHtml(g.guide_video.url)}" target="_blank" rel="noopener" style="color:var(--user-theme-accent,#ff5500);font-weight:800;">▶ Full gnome video (${escapeHtml(g.guide_video.creator || 'YouTube')})</a>` : ''}</p>`
-            + gridOf(toArr(g.items).map(it => buildItemCard({ id: it.id, type: 'mission', badge: '🧙 Gnome', badgeClass: 'rank-bronze', title: it.name, sub: it.location || '', body: it.description || '', ctx: `${ctx} gnome`, link: it.video_url, linkLabel: 'Watch guide', locImg: it.location_image_url }))));
-    }
+    missionItemGroups(m).forEach(([gk, g]) => {
+        if (!toArr(g.items).length) return;
+        const emoji = GROUP_EMOJI[gk] || '📍';
+        const label = g.group_label || humanize(gk);
+        const groupLink = g.guide_video
+            ? `<a href="${escapeHtml(g.guide_video.url)}" target="_blank" rel="noopener" style="color:var(--user-theme-accent,#ff5500);font-weight:800;">▶ Full video (${escapeHtml(g.guide_video.creator || 'YouTube')})</a>`
+            : g.map_url
+            ? `<a href="${escapeHtml(g.map_url)}" target="_blank" rel="noopener" style="color:var(--user-theme-accent,#ff5500);font-weight:800;">🗺️ Open interactive map</a>`
+            : '';
+        inner += buildFolder(`${emoji} ${escapeHtml(label)} — ${escapeHtml(g.medal_name || 'medal')}`, `<p style="font-size:0.8rem;color:#cbd5e1;margin-bottom:8px;">${escapeHtml(g.description || '')} Ticking all ${toArr(g.items).length} earns the medal. ${g.numbering_note ? escapeHtml(g.numbering_note) + ' ' : ''}${groupLink}</p>`
+            + gridOf(toArr(g.items).map(it => buildItemCard({
+                id: it.id, type: 'mission', badge: `${emoji} ${label}`, badgeClass: 'rank-bronze',
+                title: it.name, sub: it.location || '', body: it.description || '', ctx: `${ctx} ${gk}`,
+                link: it.video_url || it.map_url || g.map_url,
+                linkLabel: it.video_url ? 'Watch guide' : ((it.map_url || g.map_url) ? 'Open on map' : ''),
+                locImg: it.location_image_url
+            }))));
+    });
     if (colCards.length) inner += buildFolder('🗂️ Collectibles', `<div class="mark-all-bar" data-mission="${escapeHtml(mKey)}">
         <button type="button" class="uni-search-btn" onclick="appState.markAllCollectibles('${escapeHtml(mKey)}', true)">✓ Mark all collected</button>
         <button type="button" class="uni-search-btn" onclick="appState.markAllCollectibles('${escapeHtml(mKey)}', false)">Clear all</button>

@@ -1040,6 +1040,55 @@
         "approximate": true,
         "marked_mastermind_target": 20,
         "notes": "Split rail yard map with extra snipers."
+      },
+      "cardboard_pigeons": {
+        "medal_id": "med_mission_wing_wing_situation",
+        "medal_name": "Wing-Wing Situation",
+        "description": "Destroy 10 Cardboard Pigeons in Sonderzüge Sabotage.",
+        "map_url": "https://mapmaster.io/games/sniper-elite-resistance/maps/mission-3-sonderz-ge-sabotage",
+        "numbering_note": "Positions captured from the Map Master interactive map for this mission (numbering is Map Master's own, not necessarily in-world order) — open the map link to see each pigeon's exact spot.",
+        "items": [
+          {
+            "id": "pigeon_m3_01",
+            "name": "Cardboard Pigeon 1/10"
+          },
+          {
+            "id": "pigeon_m3_02",
+            "name": "Cardboard Pigeon 2/10"
+          },
+          {
+            "id": "pigeon_m3_03",
+            "name": "Cardboard Pigeon 3/10"
+          },
+          {
+            "id": "pigeon_m3_04",
+            "name": "Cardboard Pigeon 4/10"
+          },
+          {
+            "id": "pigeon_m3_05",
+            "name": "Cardboard Pigeon 5/10"
+          },
+          {
+            "id": "pigeon_m3_06",
+            "name": "Cardboard Pigeon 6/10"
+          },
+          {
+            "id": "pigeon_m3_07",
+            "name": "Cardboard Pigeon 7/10"
+          },
+          {
+            "id": "pigeon_m3_08",
+            "name": "Cardboard Pigeon 8/10"
+          },
+          {
+            "id": "pigeon_m3_09",
+            "name": "Cardboard Pigeon 9/10"
+          },
+          {
+            "id": "pigeon_m3_10",
+            "name": "Cardboard Pigeon 10/10"
+          }
+        ]
       }
     },
     "mission_4": {
