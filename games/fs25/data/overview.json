@@ -15,10 +15,10 @@
   "serverVersion": "1.25.1.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-12T19:37:11Z",
-  "lastChange": "2026-11-12T19:37:11Z",
+  "lastCheck": "2026-11-13T00:43:06Z",
+  "lastChange": "2026-11-13T00:43:06Z",
   "lastFull": "2026-11-04T07:59:29Z",
-  "lastLight": "2026-11-12T19:37:11Z",
+  "lastLight": "2026-11-13T00:43:06Z",
   "files": [
    "careerSavegame",
    "collectibles",
@@ -51,6 +51,7 @@
   "changedFiles": [
    "careerSavegame.xml",
    "environment.xml",
+   "fields.xml",
    "gameStats.xml"
   ]
  },
@@ -103,8 +104,8 @@
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2200588025,
-  "playTimeHours": 1692.2,
+  "money": 2200897853,
+  "playTimeHours": 1697.2,
   "slotUsage": 2127,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
@@ -160,17 +161,17 @@
   }
  },
  "environment": {
-  "day": 63,
-  "monotonicDay": 90,
+  "day": 64,
+  "monotonicDay": 91,
   "daysPerPeriod": 1,
   "dayInPeriod": 1,
-  "period": "LATE_SPRING",
-  "month": "May",
-  "season": "Spring",
+  "period": "EARLY_SUMMER",
+  "month": "June",
+  "season": "Summer",
   "year": 6,
-  "time": "22:16",
-  "minutesSinceRain": 0,
-  "groundWetness": 1.0,
+  "time": "03:16",
+  "minutesSinceRain": 288,
+  "groundWetness": 0.0,
   "snowHeight": 0.0,
   "forecast": [
    {
@@ -349,7 +350,7 @@
   "version": "1.25.1.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "22:17",
+  "time": "03:21",
   "capacity": 6,
   "numUsed": 0,
   "players": [],
@@ -5096,12 +5097,12 @@
    "id": 3,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "COTTON",
+   "fruit": "UNKNOWN",
    "plannedFruit": "FALLOW",
-   "status": "ready",
-   "growthState": 11,
-   "lastGrowthState": 11,
-   "groundType": "HARVEST_READY_OTHER",
+   "status": "empty",
+   "growthState": 0,
+   "lastGrowthState": 0,
+   "groundType": "CULTIVATED",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 2,
@@ -5118,7 +5119,7 @@
    "x": -456.624298,
    "z": -820.547791,
    "needs": [
-    "harvest"
+    "sow"
    ],
    "grew": false
   },
@@ -5159,10 +5160,10 @@
    "isOwned": false,
    "fruit": "SUGARBEET",
    "plannedFruit": "FALLOW",
-   "status": "growing",
-   "growthState": 7,
-   "lastGrowthState": 6,
-   "groundType": "SOWN",
+   "status": "ready",
+   "growthState": 8,
+   "lastGrowthState": 7,
+   "groundType": "HARVEST_READY_OTHER",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 3,
@@ -5179,7 +5180,7 @@
    "x": -210.545044,
    "z": -952.606873,
    "needs": [
-    "roll"
+    "harvest"
    ],
    "grew": true
   },
@@ -5375,8 +5376,8 @@
    "fruit": "COTTON",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 3,
-   "lastGrowthState": 2,
+   "growthState": 4,
+   "lastGrowthState": 3,
    "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5405,8 +5406,8 @@
    "fruit": "MEADOW",
    "plannedFruit": "FALLOW",
    "status": "grass",
-   "growthState": 4,
-   "lastGrowthState": 9,
+   "growthState": 5,
+   "lastGrowthState": 4,
    "groundType": "GRASS",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5432,12 +5433,12 @@
    "id": 19,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "UNKNOWN",
-   "plannedFruit": "WINTERBARLEY",
-   "status": "empty",
-   "growthState": 0,
+   "fruit": "WINTERBARLEY",
+   "plannedFruit": "FALLOW",
+   "status": "growing",
+   "growthState": 1,
    "lastGrowthState": 0,
-   "groundType": "CULTIVATED",
+   "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 1,
    "limeLevel": 0,
@@ -5454,11 +5455,11 @@
    "x": -618.92572,
    "z": -406.886322,
    "needs": [
-    "sow",
+    "roll",
     "lime",
     "fertilizer"
    ],
-   "grew": false
+   "grew": true
   },
   {
    "id": 20,
@@ -5467,15 +5468,15 @@
    "fruit": "COTTON",
    "plannedFruit": "FALLOW",
    "status": "ready",
-   "growthState": 9,
+   "growthState": 11,
    "lastGrowthState": 9,
    "groundType": "HARVEST_READY_OTHER",
    "sprayType": "NONE",
    "sprayLevel": 2,
-   "limeLevel": 2,
+   "limeLevel": 1,
    "plowLevel": 1,
    "fertilizerPercent": 100,
-   "limePercent": 67,
+   "limePercent": 33,
    "rollerLevel": 0,
    "stubbleShredLevel": 0,
    "weedState": 0,
@@ -5488,7 +5489,7 @@
    "needs": [
     "harvest"
    ],
-   "grew": false
+   "grew": true
   },
   {
    "id": 21,
@@ -5620,8 +5621,8 @@
    "fruit": "WINTERWHEAT",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 3,
-   "lastGrowthState": 2,
+   "growthState": 4,
+   "lastGrowthState": 3,
    "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5711,8 +5712,8 @@
    "fruit": "ALFALFA",
    "plannedFruit": "FALLOW",
    "status": "grass",
-   "growthState": 4,
-   "lastGrowthState": 3,
+   "growthState": 5,
+   "lastGrowthState": 4,
    "groundType": "GRASS",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5738,12 +5739,12 @@
    "id": 29,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "BEETROOT",
+   "fruit": "UNKNOWN",
    "plannedFruit": "FALLOW",
-   "status": "ready",
-   "growthState": 7,
-   "lastGrowthState": 7,
-   "groundType": "HARVEST_READY_OTHER",
+   "status": "empty",
+   "growthState": 0,
+   "lastGrowthState": 0,
+   "groundType": "CULTIVATED",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 1,
@@ -5760,7 +5761,7 @@
    "x": -663.669739,
    "z": 843.705994,
    "needs": [
-    "harvest"
+    "sow"
    ],
    "grew": false
   },
@@ -6108,8 +6109,8 @@
    "fruit": "SUNFLOWER",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 3,
-   "lastGrowthState": 2,
+   "growthState": 4,
+   "lastGrowthState": 3,
    "groundType": "PLANTED",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -19808,8 +19809,8 @@
  },
  "farmColors": {
   "1": {
-   "primary": "#da6416",
-   "secondary": "#0061bd"
+   "primary": "#163dda",
+   "secondary": "#bd5b00"
   },
   "2": {
    "primary": "#37ff00",
