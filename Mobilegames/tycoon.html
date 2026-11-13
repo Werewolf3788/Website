@@ -50,6 +50,19 @@
   .deed table{width:100%;border-collapse:collapse;margin:4px 0} .deed td{padding:1px 0} .deed td:last-child{text-align:right}
   .deed tr.cur{background:#14532d;font-weight:700}
   .deed button{width:100%;margin-top:4px;padding:7px 8px;font-size:.8rem}
+  #mine .grp{background:#1e293b;border-radius:10px;overflow:hidden;margin-top:8px;font-size:.82rem}
+  #mine .gh{padding:5px 8px;font-weight:800;color:#fff;text-shadow:0 1px 2px #000a;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  #mine .gs{padding:4px 8px;color:#cbd5e1;background:#0f172a}
+  #mine .pr{display:flex;align-items:center;gap:6px;padding:5px 8px;border-top:1px solid #0f172a;flex-wrap:wrap}
+  #mine .pr .n{flex:1;min-width:120px;cursor:pointer} #mine .pr button{padding:5px 8px;font-size:.75rem}
+  #mine .mgd{opacity:.6}
+  .offer{background:#422006;border:1px solid #f59e0b;border-radius:10px;padding:8px 10px;width:100%;font-size:.88rem;line-height:1.4}
+  #tradeDlg{position:fixed;inset:0;background:#000c;z-index:30;display:none;align-items:center;justify-content:center;padding:12px}
+  #tradeBox{background:#1e293b;border-radius:14px;padding:14px;width:100%;max-width:520px;max-height:92vh;overflow:auto}
+  #tradeBox h3{margin:0 0 8px} #tradeBox label{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:.88rem}
+  #tradeBox .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px} @media(max-width:480px){#tradeBox .cols{grid-template-columns:1fr}}
+  #tradeBox .col{background:#0f172a;border-radius:10px;padding:8px} #tradeBox input[type=number]{width:90px;padding:6px;border-radius:8px;border:1px solid #475569;background:#0b1220;color:#e2e8f0;font:inherit}
+  #tradeBox .sw{display:inline-block;width:.8em;height:.8em;border-radius:3px;flex:none}
   .plain{background:#1e293b;border-radius:10px;padding:10px;font-size:.85rem;line-height:1.5}
   details#hist{margin-top:10px;background:#0f172a;border-radius:10px;padding:8px 10px} details#hist summary{cursor:pointer;font-weight:700}
   .bankpulse{animation:pop .4s ease-out}
@@ -81,8 +94,9 @@
       <div id="buildList"></div>
     </div>
     <div id="deeds">
-      <div id="landed"></div>
-      <div class="muted" style="margin-top:10px">Owned properties · tap a card to find it on the board</div>
+      <div id="mine"></div>
+      <div id="landed" style="margin-top:10px"></div>
+      <div class="muted" style="margin-top:10px">Everything that is owned (all players) · tap a card to find it on the board</div>
       <div id="ownedDeeds" class="deeds"></div>
     </div>
   </div>
@@ -92,9 +106,10 @@
     <div id="emotes"></div>
     <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
     <div id="log"></div>
-    <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on, collect rent, and build up to 4 houses and then an apartment once you own a whole colour. Doubles roll again; three doubles go to jail. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
+    <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 4 houses and then an apartment once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, your houses are sold and properties mortgaged automatically before you go bankrupt. Doubles roll again; three doubles go to jail. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
   </div>
 </div>
+<div id="tradeDlg"><div id="tradeBox"></div></div>
 <div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -163,7 +178,7 @@
   function housesOf(s, i) { return (s.hs && s.hs[i]) | 0; }
   function addLog(s, m) { s.log = (s.log || []).slice(-5); s.log.push(m); s.msg = m; }
   function norm(s) {
-    ['own', 'hs', 'pl', 'seats'].forEach(function (k) {
+    ['own', 'hs', 'pl', 'seats', 'mg'].forEach(function (k) {
       var v = s[k]; if (!v) { s[k] = {}; return; }
       if (Array.isArray(v)) { var o = {}; v.forEach(function (x, i) { if (x !== null && x !== undefined) o[i] = x; }); s[k] = o; }
     });
@@ -172,6 +187,11 @@
   function countOwned(s, p, t) { var n = 0; SP.forEach(function (sp, i) { if (sp.t === t && ownerOf(s, i) === p) n++; }); return n; }
   function ownsSet(s, p, g) { return group(g).every(function (j) { return ownerOf(s, j) === p; }); }
   function rentMult(s) { return 1 + 0.25 * Math.floor((s.rd | 0) / 4); }
+  function mgOf(s, i) { return !!(s.mg && s.mg[i]); }
+  function setOf(i) { var sp = SP[i], a = []; if (sp.t === 'prop') return group(sp.g); SP.forEach(function (x, j) { if (x.t === sp.t) a.push(j); }); return a; }
+  function setHasHouses(s, i) { return SP[i].t === 'prop' && group(SP[i].g).some(function (j) { return housesOf(s, j) > 0; }); }
+  function mgValue(i) { return Math.floor(SP[i].p / 2); } function unmgCost(i) { return Math.ceil(SP[i].p * 0.55); } function bankValue(i) { return Math.floor(SP[i].p * 0.6); }
+  function manageOk(s) { return s.status === 'playing' && (s.phase === 'roll' || s.phase === 'end'); }
   function rentOf(s, i, sum) {
     var sp = SP[i], o = ownerOf(s, i), base, h;
     if (sp.t === 'rail') base = RAIL_RENT[Math.min(3, countOwned(s, o, 'rail') - 1)];
@@ -189,18 +209,25 @@
       q.cash += Math.floor(SP[best].p / 4);
     }
   }
+  // still short after the houses are gone: mortgage the cheapest properties until the bill is covered
+  function raiseCash(s, p, target) {
+    var q = plOf(s, p); sellHouses(s, p, target);
+    var mine = []; SP.forEach(function (sp, i) { if (sp.p && ownerOf(s, i) === p && !mgOf(s, i)) mine.push(i); });
+    mine.sort(function (a, b) { return SP[a].p - SP[b].p; });
+    for (var k = 0; k < mine.length && q.cash < target; k++) { s.mg[mine[k]] = 1; q.cash += mgValue(mine[k]); addLog(s, NAMES[p] + ' mortgaged ' + SP[mine[k]].n + ' to raise $' + mgValue(mine[k]) + '.'); }
+  }
   function checkWin(s) {
     var a = alive(s);
     if (a.length <= 1 && s.status === 'playing') { s.status = 'done'; s.winner = a.length ? a[0] : s.turn; addLog(s, NAMES[s.winner] + ' wins the game!'); }
   }
   function pay(s, from, to, amt) {
     var f = plOf(s, from);
-    if (f.cash < amt) sellHouses(s, from, amt);
+    if (f.cash < amt) raiseCash(s, from, amt);
     if (f.cash >= amt) { f.cash -= amt; if (to >= 0) plOf(s, to).cash += amt; else s.pot = (s.pot | 0) + amt; return true; }
     if (to >= 0) plOf(s, to).cash += f.cash; else s.pot = (s.pot | 0) + f.cash;
     f.cash = 0; f.bankrupt = true;
     SP.forEach(function (sp, i) {
-      if (ownerOf(s, i) === from) { if (to >= 0) s.own[i] = to; else delete s.own[i]; delete s.hs[i]; }
+      if (ownerOf(s, i) === from) { if (to >= 0) s.own[i] = to; else { delete s.own[i]; delete s.mg[i]; } delete s.hs[i]; }
     });
     addLog(s, NAMES[from] + ' is bankrupt!');
     checkWin(s);
@@ -210,7 +237,7 @@
     var old = s.turn;
     for (var k = 1; k <= 4; k++) { var n = (s.turn + k) % 4; var q = plOf(s, n); if (seatOf(s, n) && q && !q.bankrupt) { s.turn = n; break; } }
     if (s.turn <= old) s.rd = (s.rd | 0) + 1;
-    s.phase = 'roll'; s.dc = 0; s.again = false; s.pend = -1;
+    s.phase = 'roll'; s.dc = 0; s.again = false; s.pend = -1; delete s.trade; delete s.au;
   }
   function fin(s) {
     if (s.status === 'done') return;
@@ -230,8 +257,9 @@
       var o = ownerOf(s, q.pos);
       if (o < 0) {
         if (q.cash >= sp.p) { s.phase = 'buy'; s.pend = q.pos; addLog(s, nm + ' landed on ' + sp.n + ' ($' + sp.p + ').'); }
-        else addLog(s, nm + ' landed on ' + sp.n + ' but cannot afford it.');
-      } else if (o !== p) { var r = rentOf(s, q.pos, sum); addLog(s, nm + ' pays $' + r + ' rent to ' + NAMES[o] + ' (' + sp.n + ').'); pay(s, p, o, r); }
+        else { addLog(s, nm + ' landed on ' + sp.n + ' but cannot afford it.'); startAuction(s, q.pos); }
+      } else if (o !== p && mgOf(s, q.pos)) addLog(s, nm + ' landed on ' + sp.n + '. It is mortgaged, so no rent.');
+      else if (o !== p) { var r = rentOf(s, q.pos, sum); addLog(s, nm + ' pays $' + r + ' rent to ' + NAMES[o] + ' (' + sp.n + ').'); pay(s, p, o, r); }
       else addLog(s, nm + ' is at home on ' + sp.n + '.');
     } else if (sp.t === 'tax') { addLog(s, nm + ' pays $' + sp.p + ' ' + sp.n + '.'); pay(s, p, -1, sp.p); }
     else if (sp.t === 'gotojail') toJail(s, p);
@@ -269,7 +297,7 @@
     } else s.dc = 0;
     moveBy(s, p, sum, cr);
     if (s.status === 'done') return true;
-    if (s.phase !== 'buy') fin(s);
+    if (s.phase !== 'buy' && s.phase !== 'auction') fin(s);
     return true;
   }
   function doBuy(s) {
@@ -277,14 +305,14 @@
     if (s.phase !== 'buy' || !sp || q.cash < sp.p) return false;
     q.cash -= sp.p; s.own[s.pend] = p; addLog(s, NAMES[p] + ' bought ' + sp.n + ' for $' + sp.p + '.'); fin(s); return true;
   }
-  function doPass(s) { if (s.phase !== 'buy') return false; addLog(s, NAMES[s.turn] + ' passed on ' + SP[s.pend].n + '.'); fin(s); return true; }
+  function doPass(s) { if (s.phase !== 'buy') return false; addLog(s, NAMES[s.turn] + ' passed on ' + SP[s.pend].n + '.'); startAuction(s, s.pend); return true; }
   function doEnd(s) { if (s.phase !== 'end') return false; advance(s); return true; }
   function doBail(s) {
     var q = plOf(s, s.turn); if (s.phase !== 'roll' || q.jail < 1 || q.cash < 50) return false;
     q.cash -= 50; s.pot = (s.pot | 0) + 50; q.jail = 0; addLog(s, NAMES[s.turn] + ' pays $50 bail.'); return true;
   }
   function canBuild(s, p, i) {
-    var sp = SP[i], q = plOf(s, p); if (sp.t !== 'prop' || ownerOf(s, i) !== p || !ownsSet(s, p, sp.g)) return false;
+    var sp = SP[i], q = plOf(s, p); if (sp.t !== 'prop' || ownerOf(s, i) !== p || !ownsSet(s, p, sp.g) || group(sp.g).some(function (j) { return mgOf(s, j); })) return false;
     var h = housesOf(s, i); if (h >= 5) return false;
     var mn = Math.min.apply(null, group(sp.g).map(function (j) { return housesOf(s, j); }));
     return h <= mn && q.cash >= Math.floor(sp.p / 2);
@@ -294,8 +322,79 @@
     var p = s.turn; if ((s.phase !== 'roll' && s.phase !== 'end') || !canBuild(s, p, i)) return false;
     var c = Math.floor(SP[i].p / 2); plOf(s, p).cash -= c; s.hs[i] = housesOf(s, i) + 1; addLog(s, NAMES[p] + (s.hs[i] >= 5 ? ' built an apartment on ' : ' added a house to ') + SP[i].n + ' ($' + c + ').'); return true;
   }
+  // ---- selling, mortgaging
+  function canSellHouse(s, p, i) { if (ownerOf(s, i) !== p) return false; var h = housesOf(s, i); if (h < 1) return false; return h >= Math.max.apply(null, group(SP[i].g).map(function (j) { return housesOf(s, j); })); }
+  function doSellHouse(s, i) {
+    var p = s.turn; if (!manageOk(s) || !canSellHouse(s, p, i)) return false;
+    var was = housesOf(s, i), c = Math.floor(SP[i].p / 4); s.hs[i] = was - 1; if (!s.hs[i]) delete s.hs[i]; plOf(s, p).cash += c;
+    addLog(s, NAMES[p] + ' sold ' + (was >= 5 ? 'the apartment' : 'a house') + ' on ' + SP[i].n + ' (+$' + c + ').'); return true;
+  }
+  function canMortgage(s, p, i) { return !!SP[i].p && ownerOf(s, i) === p && !mgOf(s, i) && !setHasHouses(s, i); }
+  function doMortgage(s, i) { var p = s.turn; if (!manageOk(s) || !canMortgage(s, p, i)) return false; s.mg[i] = 1; plOf(s, p).cash += mgValue(i); addLog(s, NAMES[p] + ' mortgaged ' + SP[i].n + ' (+$' + mgValue(i) + ').'); return true; }
+  function doUnmortgage(s, i) { var p = s.turn, q = plOf(s, p); if (!manageOk(s) || ownerOf(s, i) !== p || !mgOf(s, i) || q.cash < unmgCost(i)) return false; delete s.mg[i]; q.cash -= unmgCost(i); addLog(s, NAMES[p] + ' paid off the mortgage on ' + SP[i].n + ' ($' + unmgCost(i) + ').'); return true; }
+  function doSellProp(s, i) { var p = s.turn; if (!manageOk(s) || !canMortgage(s, p, i)) return false; delete s.own[i]; plOf(s, p).cash += bankValue(i); addLog(s, NAMES[p] + ' sold ' + SP[i].n + ' back to the bank (+$' + bankValue(i) + ').'); return true; }
+
+  // ---- auction: when a property is passed on (or can't be afforded) everyone still in the game can bid
+  function auOut(s, p) { return !!(s.au && s.au.out && s.au.out[p]); }
+  function auNext(s) {
+    var a = s.au; a.out = a.out || {};
+    alive(s).forEach(function (p) { if (p !== a.by && plOf(s, p).cash < a.bid + 10) a.out[p] = 1; });
+    var live = alive(s).filter(function (p) { return !auOut(s, p); });
+    if (!live.length || (live.length === 1 && live[0] === a.by)) {
+      if (a.by >= 0) { plOf(s, a.by).cash -= a.bid; s.own[a.i] = a.by; addLog(s, '🔨 ' + NAMES[a.by] + ' wins the auction for ' + SP[a.i].n + ' at $' + a.bid + '.'); }
+      else addLog(s, '🔨 Nobody bid on ' + SP[a.i].n + '. It stays for sale.');
+      delete s.au; s.pend = -1; fin(s); return;
+    }
+    for (var k = 1; k <= 4; k++) { var n = (a.cur + k) % 4; if (live.indexOf(n) > -1 && n !== a.by) { a.cur = n; return; } }
+  }
+  function startAuction(s, i) { s.phase = 'auction'; s.pend = i; s.au = { i: i, bid: 0, by: -1, cur: (s.turn + 3) % 4, out: {} }; addLog(s, '🔨 Auction: ' + SP[i].n + '. Bidding starts at $10.'); auNext(s); }
+  function doBid(s, amt) { var a = s.au; if (s.phase !== 'auction' || !a) return false; amt = Math.floor(amt); var p = a.cur, nb = a.bid + amt; if (amt < 10 || plOf(s, p).cash < nb) return false; a.bid = nb; a.by = p; addLog(s, '🔨 ' + NAMES[p] + ' bids $' + nb + ' for ' + SP[a.i].n + '.'); auNext(s); return true; }
+  function doDrop(s) { var a = s.au; if (s.phase !== 'auction' || !a) return false; a.out = a.out || {}; a.out[a.cur] = 1; addLog(s, '🔨 ' + NAMES[a.cur] + ' drops out of the auction.'); auNext(s); return true; }
+
+  // ---- trades: the player whose turn it is can offer properties and / or money to another player
+  function tradable(s, p, i) { return !!SP[i].p && ownerOf(s, i) === p && !setHasHouses(s, i); }
+  function tradeValid(s, t) {
+    if (!t || t.from === t.to) return false; var f = plOf(s, t.from), o = plOf(s, t.to); if (!f || !o || f.bankrupt || o.bankrupt || !seatOf(s, t.to)) return false;
+    var gv = t.give || [], gt = t.get || [], c = t.cash | 0; if (!gv.length && !gt.length) return false;
+    if (!gv.every(function (i) { return tradable(s, t.from, i); }) || !gt.every(function (i) { return tradable(s, t.to, i); })) return false;
+    return c >= 0 ? f.cash >= c : o.cash >= -c;
+  }
+  function tradeText(t) {
+    var nm = function (a) { return (a || []).map(function (i) { return SP[i].n; }).join(', '); }, c = t.cash | 0;
+    var left = [nm(t.give), c > 0 ? '$' + c : ''].filter(Boolean).join(' + ') || 'nothing', right = [nm(t.get), c < 0 ? '$' + (-c) : ''].filter(Boolean).join(' + ') || 'nothing';
+    return NAMES[t.from] + ' offers ' + left + ' to ' + NAMES[t.to] + ' for ' + right;
+  }
+  function doPropose(s, t) { if (!manageOk(s) || s.trade || t.from !== s.turn || !tradeValid(s, t)) return false; s.trade = { from: t.from, to: t.to, give: (t.give || []).slice(), get: (t.get || []).slice(), cash: t.cash | 0 }; addLog(s, '🤝 ' + tradeText(s.trade) + '.'); return true; }
+  function doTradeAnswer(s, yes) {
+    var t = s.trade; if (!t) return false;
+    if (yes && tradeValid(s, t)) {
+      (t.give || []).forEach(function (i) { s.own[i] = t.to; }); (t.get || []).forEach(function (i) { s.own[i] = t.from; });
+      plOf(s, t.from).cash -= t.cash | 0; plOf(s, t.to).cash += t.cash | 0; addLog(s, '🤝 ' + NAMES[t.to] + ' accepted the trade with ' + NAMES[t.from] + '.');
+    } else addLog(s, '🤝 ' + NAMES[t.to] + ' turned down the trade.');
+    delete s.trade; return true;
+  }
+  function doTradeCancel(s) { if (!s.trade) return false; delete s.trade; addLog(s, '🤝 The trade offer was withdrawn.'); return true; }
+  function worth(s, i, p) {     // what property i is worth to player p
+    var sp = SP[i], v = sp.p * (mgOf(s, i) ? 0.5 : 1), set = setOf(i), n = set.filter(function (j) { return j !== i && ownerOf(s, j) === p; }).length;
+    if (sp.t === 'prop') v *= (n === set.length - 1) ? 2.2 : (n > 0 ? 1.3 : 1); else v *= 1 + 0.25 * n;
+    return v;
+  }
+  function botLikesTrade(s, t) {
+    var b = t.to, gain = (t.cash | 0), loss = 0;
+    (t.give || []).forEach(function (i) { gain += worth(s, i, b); });
+    (t.get || []).forEach(function (i) { loss += worth(s, i, b); var set = setOf(i); if (SP[i].t === 'prop' && set.every(function (j) { return j === i || ownerOf(s, j) === t.from; })) loss += SP[i].p * 1.5; });
+    return gain >= loss * 1.1 && plOf(s, b).cash + (t.cash | 0) >= 100;
+  }
+
   function botAct(s) {
     var p = s.turn, q = plOf(s, p), b;
+    if (s.phase === 'auction' && s.au) {
+      var a = s.au, bq = plOf(s, a.cur), mates = setOf(a.i).filter(function (j) { return ownerOf(s, j) === a.cur; }).length;
+      var lim = Math.min(bq.cash - 80, Math.round(SP[a.i].p * (mates ? 1.25 : 0.85))), room = Math.floor((lim - a.bid) / 10) * 10;
+      if (room < 10) return { k: 'drop' };
+      return { k: 'bid', v: Math.max(10, Math.min(room, Math.round((lim - a.bid) / 30) * 10)) };
+    }
+    for (var u = 0; u < 40; u++) if (manageOk(s) && ownerOf(s, u) === p && mgOf(s, u) && q.cash - unmgCost(u) >= 300) return { k: 'unmort', i: u };
     if (s.phase === 'buy') { var sp = SP[s.pend]; return { k: (q.cash - sp.p >= 50) ? 'buy' : 'pass' }; }
     b = buildable(s, p).filter(function (i) { return q.cash - Math.floor(SP[i].p / 2) >= 250; });
     if (s.phase === 'roll') {
@@ -378,6 +477,14 @@
   function turnAct(fn) { mutate(function (s) { if (s.status !== 'playing' || !actorOk(s)) return false; return fn(s); }); }
   function actRoll(r1, r2, cr) { turnAct(function (s) { if (s.phase !== 'roll') return false; return doRoll(s, r1, r2, cr); }); }
   function actBuy() { turnAct(doBuy); } function actPass() { turnAct(doPass); } function actEnd() { turnAct(doEnd); }
+  function actorSeat(s) { return (s.phase === 'auction' && s.au) ? s.au.cur : s.turn; }
+  function seatAct(seatFn, fn) { mutate(function (s) { if (s.status !== 'playing') return false; var st = seatOf(s, seatFn(s)); if (!st || !((!st.bot && st.uid === me.uid) || isDriver())) return false; return fn(s); }); }
+  function actBid(v) { seatAct(actorSeat, function (s) { return doBid(s, v); }); } function actDrop() { seatAct(actorSeat, doDrop); }
+  function actSellH(i) { turnAct(function (s) { return doSellHouse(s, i); }); } function actMort(i) { turnAct(function (s) { return doMortgage(s, i); }); }
+  function actUnmort(i) { turnAct(function (s) { return doUnmortgage(s, i); }); } function actSellP(i) { turnAct(function (s) { return doSellProp(s, i); }); }
+  function actPropose(t) { turnAct(function (s) { return doPropose(s, t); }); }
+  function actTradeAnswer(yes) { seatAct(function (s) { return s.trade ? s.trade.to : -1; }, function (s) { return doTradeAnswer(s, yes); }); }
+  function actTradeCancel() { seatAct(function (s) { return s.trade ? s.trade.from : -1; }, doTradeCancel); }
   function actBail() { turnAct(doBail); } function actBuild(i) { turnAct(function (s) { return doBuild(s, i); }); }
 
   // ---------- dice, sound
@@ -454,6 +561,9 @@
     if (ms >= 0 && a.pl && b.pl && a.pl[ms] && b.pl[ms]) {
       var d = b.pl[ms].cash - a.pl[ms].cash; if (d <= -20) { sfx('pay'); buzz(80); } else if (d >= 20) sfx('coin');
     }
+    if (b.au && !a.au) sfx('pop');
+    if (ms >= 0 && b.trade && !a.trade && b.trade.to === ms) { sfx('turn'); buzz([40, 40, 40]); }
+    if (ms >= 0 && b.au && b.au.cur === ms && (!a.au || a.au.cur !== ms)) { sfx('turn'); buzz(40); }
     if (ms >= 0 && b.status === 'playing' && b.turn === ms && b.phase === 'roll' && (a.turn !== ms || a.phase !== 'roll')) { sfx('turn'); buzz(40); }
   }
 
@@ -461,22 +571,28 @@
   function perform(a) {
     if (a.k === 'roll') spinThen(actRoll); else if (a.k === 'buy') actBuy(); else if (a.k === 'pass') actPass();
     else if (a.k === 'end') actEnd(); else if (a.k === 'bail') actBail(); else if (a.k === 'build') actBuild(a.i);
+    else if (a.k === 'bid') actBid(a.v); else if (a.k === 'drop') actDrop(); else if (a.k === 'unmort') actUnmort(a.i);
   }
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
     if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
-    var st = seatOf(s, s.turn); if (!st) return;
+    if (s.trade && isDriver()) {       // bots answer trade offers; an offer to someone who has left is turned down
+      var ts = seatOf(s, s.trade.to), tk = 'trade:' + s.rid;
+      if (ts && (ts.bot || (WW.mode === 'cloud' && !players[ts.uid])) && acted.k !== tk) { acted = { k: tk, t: Date.now() }; var yes = !!ts.bot && botLikesTrade(s, s.trade); setTimeout(function () { actTradeAnswer(yes); }, 1500); return; }
+    }
+    var inAu = s.phase === 'auction' && !!s.au;
+    var st = seatOf(s, actorSeat(s)); if (!st) return;
     var mine = !st.bot && st.uid === me.uid, auto = false;
     if (!mine) {
       if (!isDriver()) return;
-      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid], idle = WW.now() - (s.t || 0) > 90000;
+      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid], idle = WW.now() - (s.t || 0) > (inAu ? 30000 : 90000);
       auto = st.bot || away || idle; if (!auto) return;
     }
-    var key = s.rid + ':' + s.turn + ':' + s.phase, now = Date.now();
+    var key = s.rid + ':' + actorSeat(s) + ':' + s.phase, now = Date.now();
     if (acted.k === key && now - acted.t < 4000) return;
     function mark() { acted = { k: key, t: now }; }
-    if (mine) { if (s.phase === 'end' && !buildable(s, s.turn).length) { mark(); setTimeout(actEnd, 1400); } return; }
-    var a = botAct(s); mark(); setTimeout(function () { perform(a); }, a.k === 'roll' ? 800 : 1000);
+    if (mine) return;      // your own turn never ends by itself: there may be building, trading or selling to do
+    var a = (inAu && !st.bot) ? { k: 'drop' } : botAct(s); mark(); setTimeout(function () { perform(a); }, a.k === 'roll' ? 800 : 1000);
   }
   setInterval(tick, 2000);
 
@@ -572,7 +688,7 @@
   function buildBoard() {
     var h = '<rect width="110" height="110" fill="#0b1220"/><rect x="10" y="10" width="90" height="90" fill="#134e4a"/>';
     for (var i = 0; i < 40; i++) h += cellStatic(i);
-    h += '<text x="55" y="48" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">PROPERTY</text><text x="55" y="58" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">TYCOON</text>';
+    h += '<text x="55" y="48" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">MONO</text><text x="55" y="58" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">POLY</text>';
     h += '<rect id="siren" x="10" y="10" width="90" height="90" fill="#ef4444" opacity="0" pointer-events="none"/><text id="sirenTxt" x="55" y="84" text-anchor="middle" font-size="6" font-weight="800" fill="#fff" stroke="#000" stroke-width=".3" opacity="0"></text>';
     h += '<g id="dyn"></g><g id="toks"></g><g id="emoLayer"></g><g id="selLayer"></g>';
     $('board').innerHTML = h;
@@ -616,11 +732,26 @@
   function money(n) { return '$' + n; }
 
   function lvlLabel(n) { return n >= 5 ? '🏢 Apartment' : (n ? '🏠 ' + n + (n === 1 ? ' house' : ' houses') : 'No houses yet'); }
+  var GNAME = { brown: 'Brown', sky: 'Light blue', pink: 'Pink', orange: 'Orange', red: 'Red', yellow: 'Yellow', green: 'Green', blue: 'Dark blue' };
+  function ownerLabel(s, j) { var o = ownerOf(s, j); return o < 0 ? 'for sale' : NAMES[o] + ' owns it'; }
+  // why (not) buildable, and how many more are needed
+  function buildStatus(s, i, p) {
+    var sp = SP[i]; if (sp.t !== 'prop') return '';
+    var g = group(sp.g), miss = g.filter(function (j) { return ownerOf(s, j) !== p; }), h = housesOf(s, i), cost = Math.floor(sp.p / 2), q = plOf(s, p);
+    if (miss.length) return '🚫 Cannot build yet: ' + miss.length + ' more ' + GNAME[sp.g].toLowerCase() + ' propert' + (miss.length === 1 ? 'y' : 'ies') + ' needed (' + miss.map(function (j) { return SP[j].n + ' - ' + ownerLabel(s, j); }).join('; ') + ').';
+    var mg = g.filter(function (j) { return mgOf(s, j); });
+    if (mg.length) return '🚫 Cannot build: pay off the mortgage on ' + mg.map(function (j) { return SP[j].n; }).join(', ') + ' first.';
+    if (h >= 5) return '🏢 Fully built.';
+    var low = g.filter(function (j) { return housesOf(s, j) < h; });
+    if (low.length) return '🚫 Build evenly: add a house to ' + low.map(function (j) { return SP[j].n; }).join(', ') + ' first.';
+    if (q && q.cash < cost) return '🚫 Full set, but you need $' + (cost - q.cash) + ' more for the next ' + (h >= 4 ? 'apartment' : 'house') + ' ($' + cost + ').';
+    return '✅ You can build here: next ' + (h >= 4 ? 'apartment' : 'house') + ' costs $' + cost + '. ' + (4 - Math.min(4, h)) + ' house' + (4 - Math.min(4, h) === 1 ? '' : 's') + ' + 1 apartment still to go.';
+  }
   function deedHtml(s, i, big) {
     var sp = SP[i], o = ownerOf(s, i), lvl = housesOf(s, i), m = rentMult(s), ms = mySeat(), rows, k;
     var col = sp.c || (sp.t === 'rail' ? '#475569' : sp.t === 'util' ? '#0e7490' : '#475569');
     var h = '<div class="deed' + (big ? ' big' : '') + '" data-c="' + i + '"><div class="band" style="background:' + col + '">' + (sp.i ? sp.i + ' ' : '') + sp.n + '</div><div class="body">';
-    var who = o >= 0 ? WW.shapeIcon(o, 14, COLORS[o]) + ' ' + NAMES[o] + ' owns this' : 'For sale · $' + sp.p;
+    var who = o >= 0 ? WW.shapeIcon(o, 14, COLORS[o]) + ' ' + NAMES[o] + ' owns this' + (mgOf(s, i) ? ' · 🏦 mortgaged (no rent)' : '') : 'For sale · $' + sp.p;
     if (sp.t === 'prop') {
       h += who + (o >= 0 ? ' · ' + lvlLabel(lvl) : '');
       rows = [['Rent (no houses)', sp.p * LV[0]], ['Full colour set', sp.p * LV[1]], ['1 house', sp.p * LV[2]], ['2 houses', sp.p * LV[3]], ['3 houses', sp.p * LV[4]], ['4 houses', sp.p * LV[5]], ['Apartment', sp.p * LV[6]]];
@@ -628,6 +759,7 @@
       h += '<table>'; rows.forEach(function (r, j) { h += '<tr' + (o >= 0 && j === cur ? ' class="cur"' : '') + '><td>' + r[0] + '</td><td>$' + Math.round(r[1] * m) + '</td></tr>'; }); h += '</table>';
       h += 'Price $' + sp.p + '. Each house or apartment costs $' + Math.floor(sp.p / 2) + '.';
       if (m > 1) h += '<div class="muted">Rents are x' + m + ' right now.</div>';
+      if (o >= 0 && o === ms && s.status === 'playing') h += '<div style="margin-top:4px;font-weight:700">' + buildStatus(s, i, ms) + '</div>';
       if (o >= 0 && o === ms && s.status === 'playing' && ms === s.turn && (s.phase === 'roll' || s.phase === 'end') && canBuild(s, ms, i))
         h += '<button class="go" data-a="build" data-i="' + i + '">' + (lvl >= 4 ? '🏢 Build apartment' : '🏠 Add house ' + (lvl + 1)) + ' · $' + Math.floor(sp.p / 2) + '</button>';
     } else if (sp.t === 'rail') {
@@ -642,8 +774,36 @@
     else h += 'Draw a card.';
     return h + '</div></div>';
   }
+  function renderMine(s) {
+    var ms = mySeat(), el = $('mine'); if (ms < 0 || s.status !== 'playing' || !plOf(s, ms) || plOf(s, ms).bankrupt) { el.innerHTML = ''; return; }
+    var can = ms === s.turn && manageOk(s), q = plOf(s, ms), seen = {}, h = '', total = 0;
+    for (var i = 0; i < 40; i++) {
+      if (!SP[i].p || ownerOf(s, i) !== ms) continue; var sp = SP[i], key = sp.t === 'prop' ? sp.g : sp.t; if (seen[key]) continue; seen[key] = 1;
+      var set = setOf(i), mineL = set.filter(function (j) { return ownerOf(s, j) === ms; }), miss = set.filter(function (j) { return ownerOf(s, j) !== ms; });
+      var col = sp.c || (sp.t === 'rail' ? '#475569' : '#0e7490'), title = sp.t === 'prop' ? GNAME[sp.g] : sp.t === 'rail' ? '🚉 Stations' : '💡 Utilities', st;
+      total += mineL.length;
+      if (sp.t !== 'prop') st = miss.length ? miss.length + ' more would raise the rent (' + miss.map(function (j) { return SP[j].n + ' - ' + ownerLabel(s, j); }).join('; ') + ').' : 'You own them all: top rent.';
+      else if (miss.length) st = '🚫 ' + miss.length + ' more needed before you can build: ' + miss.map(function (j) { return SP[j].n + ' (' + ownerLabel(s, j) + ')'; }).join(', ');
+      else if (set.some(function (j) { return mgOf(s, j); })) st = '🚫 Full set, but pay off the mortgage before building.';
+      else if (set.every(function (j) { return housesOf(s, j) >= 5; })) st = '🏢 Fully built.';
+      else { var nx = set.filter(function (j) { return canBuild(s, ms, j); }); st = nx.length ? '✅ Full set: you can build' + (can ? '' : ' on your turn') + '.' : '✅ Full set, but not enough cash for the next house ($' + Math.floor(SP[set[0]].p / 2) + '+).'; }
+      h += '<div class="grp"><div class="gh" style="background:' + col + '"><span>' + title + '</span><span>' + mineL.length + ' / ' + set.length + '</span></div><div class="gs">' + st + '</div>';
+      mineL.forEach(function (j) {
+        var lv = housesOf(s, j), mg = mgOf(s, j), b = '';
+        if (can) {
+          if (canBuild(s, ms, j)) b += '<button class="go" data-a="build" data-i="' + j + '">' + (lv >= 4 ? '🏢' : '🏠') + '+ $' + Math.floor(SP[j].p / 2) + '</button>';
+          if (canSellHouse(s, ms, j)) b += '<button data-a="sellh" data-i="' + j + '">🏠− +$' + Math.floor(SP[j].p / 4) + '</button>';
+          if (mg) b += '<button data-a="unmort" data-i="' + j + '"' + (q.cash < unmgCost(j) ? ' disabled' : '') + '>Pay off $' + unmgCost(j) + '</button>';
+          else if (canMortgage(s, ms, j)) b += '<button data-a="mort" data-i="' + j + '">🏦 Mortgage +$' + mgValue(j) + '</button><button data-a="sellp" data-i="' + j + '">Sell +$' + bankValue(j) + '</button>';
+        }
+        h += '<div class="pr' + (mg ? ' mgd' : '') + '"><span class="n" data-c="' + j + '">' + SP[j].n + (SP[j].t === 'prop' ? ' · ' + (lv >= 5 ? '🏢' : lv ? '🏠×' + lv : 'no houses') : '') + (mg ? ' · 🏦 mortgaged' : '') + '</span>' + b + '</div>';
+      });
+      h += '</div>';
+    }
+    el.innerHTML = '<div style="font-weight:800">🗂️ My properties' + (total ? ' (' + total + ')' : '') + ' · 💵 $' + q.cash + '</div>' + (total ? (can ? '' : '<div class="muted">Build, sell, mortgage and trade buttons appear here on your turn.</div>') + h : '<div class="muted" style="margin-top:4px">You do not own anything yet. Land on a property to buy it, or win one at auction.</div>');
+  }
   function renderInfo() {
-    var s = S; if (!s) return;
+    var s = S; if (!s) return; renderMine(s);
     if (sel < 0) { $('landed').innerHTML = '<div class="plain muted">Tap any space on the board to see its card.</div>'; }
     else {
       var q = s.status === 'playing' ? plOf(s, s.turn) : null, here = q && q.pos === sel;
@@ -682,15 +842,24 @@
     var ban = $('banner');
     if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else ban.style.display = 'none';
     // actions
-    var a = '', bl = '';
-    if (myTurn) {
+    var a = '', bl = '', tr = playing ? s.trade : null, au = playing && s.phase === 'auction' ? s.au : null;
+    if (tr && ms === tr.to) a += '<div class="offer">🤝 <b>Trade offer:</b> ' + tradeText(tr) + '.<div style="margin-top:6px;display:flex;gap:8px"><button class="go" data-a="tradeyes">Accept</button><button data-a="tradeno">Decline</button></div></div>';
+    else if (tr && ms === tr.from) a += '<div class="offer">🤝 Offer sent: ' + tradeText(tr) + '. Waiting for an answer… <button data-a="tradecancel">Withdraw</button></div>';
+    if (au) {
+      var as = seatOf(s, au.cur), mq2 = ms >= 0 ? plOf(s, ms) : null;
+      a += '<div class="offer">🔨 <b>Auction: ' + SP[au.i].n + '</b> (list price $' + SP[au.i].p + ') · ' + (au.by >= 0 ? 'high bid <b>$' + au.bid + '</b> by ' + NAMES[au.by] : 'no bids yet') + '<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">';
+      if (ms === au.cur && mq2) { [10, 50, 100].forEach(function (v) { a += '<button class="go" data-a="bid" data-v="' + v + '"' + (mq2.cash < au.bid + v ? ' disabled' : '') + '>Bid $' + (au.bid + v) + '</button>'; }); a += '<button data-a="drop">Drop out</button>'; }
+      else a += '<span class="muted">' + (as ? as.name : NAMES[au.cur]) + ' is bidding…' + (ms >= 0 && auOut(s, ms) ? ' You are out of this auction.' : '') + '</span>';
+      a += '</div></div>';
+    } else if (myTurn) {
       var can = buildable(s, s.turn);
       if (s.phase === 'roll') { a += '<button class="go" data-a="roll">🎲 Roll dice</button>'; if (q0.jail > 0 && q0.cash >= 50) a += '<button data-a="bail">Pay $50 bail</button>'; }
       else if (s.phase === 'buy') { var sp = SP[s.pend]; a += '<button class="go" data-a="buy">Buy ' + sp.n + ' · $' + sp.p + '</button><button data-a="pass">Pass</button>'; }
       else if (s.phase === 'end') a += '<button class="go" data-a="end">End turn</button>';
       if (can.length && (s.phase === 'roll' || s.phase === 'end')) a += '<button data-a="togglebuild">🏠 Build (' + can.length + ')</button>';
+      if (manageOk(s) && !s.trade && alive(s).length > 1) a += '<button data-a="trade">🤝 Trade</button>';
       if (showBuild && can.length && (s.phase === 'roll' || s.phase === 'end')) can.forEach(function (j) { bl += '<button data-a="build" data-i="' + j + '">' + (housesOf(s, j) >= 4 ? '🏢 Apartment' : '🏠 House ' + (housesOf(s, j) + 1)) + ' · ' + SP[j].n + ' · $' + Math.floor(SP[j].p / 2) + '</button>'; });
-    } else if (playing) a = '<span class="muted">Waiting for ' + (cs ? cs.name : NAMES[s.turn]) + '…</span>';
+    } else if (playing) a += '<span class="muted">Waiting for ' + (cs ? cs.name : NAMES[s.turn]) + '…</span>';
     $('acts').innerHTML = a; $('buildList').innerHTML = bl;
     // seats
     var h = '';
@@ -726,7 +895,7 @@
   }
 
   $('main').addEventListener('click', function (e) {
-    var dc = e.target.closest ? e.target.closest('.deed[data-c]') : null;
+    var dc = e.target.closest ? e.target.closest('.deed[data-c], #mine .n[data-c]') : null;
     if (dc && !(e.target.closest('button'))) { sel = +dc.dataset.c; renderInfo(); return; }
     var eb = e.target.closest ? e.target.closest('button[data-e]') : null;
     if (eb) {
@@ -741,7 +910,46 @@
     else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
     else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail();
     else if (a === 'togglebuild') { showBuild = !showBuild; render(); } else if (a === 'build') actBuild(+b.dataset.i);
+    else if (a === 'sellh') actSellH(+b.dataset.i); else if (a === 'mort') actMort(+b.dataset.i); else if (a === 'unmort') actUnmort(+b.dataset.i);
+    else if (a === 'sellp') { if (confirm('Sell ' + SP[+b.dataset.i].n + ' back to the bank for $' + bankValue(+b.dataset.i) + '? (Mortgaging gives $' + mgValue(+b.dataset.i) + ' and you keep it.)')) actSellP(+b.dataset.i); }
+    else if (a === 'bid') actBid(+b.dataset.v); else if (a === 'drop') actDrop();
+    else if (a === 'trade') openTrade(); else if (a === 'tradeyes') actTradeAnswer(true); else if (a === 'tradeno') actTradeAnswer(false); else if (a === 'tradecancel') actTradeCancel();
   });
+
+  // ---------- trade window
+  var TR = null;
+  function sw(i) { var sp = SP[i]; return '<span class="sw" style="background:' + (sp.c || (sp.t === 'rail' ? '#475569' : '#0e7490')) + '"></span>'; }
+  function openTrade() {
+    var s = S, ms = mySeat(); if (!s || ms < 0 || ms !== s.turn || !manageOk(s)) return;
+    var others = alive(s).filter(function (p) { return p !== ms; }); if (!others.length) return;
+    TR = { to: others[0], give: {}, get: {}, pay: 0, ask: 0 }; drawTrade(); $('tradeDlg').style.display = 'flex';
+  }
+  function drawTrade() {
+    var s = S, ms = mySeat(), t = TR, h = '<h3>🤝 Offer a trade</h3><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">';
+    alive(s).filter(function (p) { return p !== ms; }).forEach(function (p) { var st = seatOf(s, p); h += '<button data-t="to" data-p="' + p + '"' + (p === t.to ? ' class="go"' : '') + '>' + NAMES[p] + (st ? ' · ' + st.name : '') + ' · $' + plOf(s, p).cash + '</button>'; });
+    function list(p, bag, k) { var o = ''; for (var i = 0; i < 40; i++) if (SP[i].p && ownerOf(s, i) === p) { var ok = tradable(s, p, i); o += '<label' + (ok ? '' : ' class="muted"') + '><input type="checkbox" data-t="' + k + '" data-i="' + i + '"' + (bag[i] ? ' checked' : '') + (ok ? '' : ' disabled') + '>' + sw(i) + SP[i].n + ' ($' + SP[i].p + ')' + (mgOf(s, i) ? ' 🏦' : '') + (ok ? '' : ' · has houses') + '</label>'; } return o || '<div class="muted">No properties.</div>'; }
+    h += '</div><div class="cols"><div class="col"><b>You give</b>' + list(ms, t.give, 'give') + '<label>Money $<input type="number" min="0" step="10" data-t="pay" value="' + (t.pay || '') + '" placeholder="0"></label><div class="muted">You have $' + plOf(s, ms).cash + '</div></div>';
+    h += '<div class="col"><b>You get from ' + NAMES[t.to] + '</b>' + list(t.to, t.get, 'get') + '<label>Money $<input type="number" min="0" step="10" data-t="ask" value="' + (t.ask || '') + '" placeholder="0"></label><div class="muted">They have $' + plOf(s, t.to).cash + '</div></div></div>';
+    h += '<div id="tradeErr" class="muted" style="color:#fca5a5;min-height:1.2em;margin-top:6px"></div><div style="display:flex;gap:8px;margin-top:6px"><button class="go" data-t="send">Send offer</button><button data-t="close">Cancel</button></div>';
+    $('tradeBox').innerHTML = h;
+  }
+  $('tradeDlg').addEventListener('input', function (e) { var k = e.target.dataset.t; if (k === 'pay' || k === 'ask') TR[k] = Math.max(0, Math.floor(+e.target.value || 0)); else if (k === 'give' || k === 'get') { if (e.target.checked) TR[k][e.target.dataset.i] = 1; else delete TR[k][e.target.dataset.i]; } });
+  $('tradeDlg').addEventListener('click', function (e) {
+    if (e.target === $('tradeDlg')) { $('tradeDlg').style.display = 'none'; return; }
+    var b = e.target.closest('button[data-t]'); if (!b) return; var k = b.dataset.t;
+    if (k === 'close') $('tradeDlg').style.display = 'none';
+    else if (k === 'to') { TR.to = +b.dataset.p; TR.get = {}; drawTrade(); }
+    else if (k === 'send') {
+      var ms = mySeat(), t = { from: ms, to: TR.to, give: Object.keys(TR.give).map(Number), get: Object.keys(TR.get).map(Number), cash: (TR.pay | 0) - (TR.ask | 0) }, err = '';
+      if (!t.give.length && !t.get.length) err = 'Pick at least one property (yours or theirs).';
+      else if (t.cash > 0 && plOf(S, ms).cash < t.cash) err = 'You do not have that much money.';
+      else if (t.cash < 0 && plOf(S, t.to).cash < -t.cash) err = NAMES[t.to] + ' does not have that much money.';
+      else if (!tradeValid(S, t)) err = 'That trade is not possible right now.';
+      if (err) { $('tradeErr').textContent = err; return; }
+      actPropose(t); $('tradeDlg').style.display = 'none';
+    }
+  });
+  window.__ty = { get S() { return S; }, mutate: function (f) { mutate(f); }, mySeat: function () { return mySeat(); } };
   $('shareBtn').onclick = function () {
     if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
     var url = location.origin + location.pathname + '?room=' + cloudCode;

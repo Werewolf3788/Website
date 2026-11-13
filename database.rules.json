@@ -66,6 +66,11 @@
       }
     },
 
+    "pranks": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email === 'raykevin71888@gmail.com'"
+    },
+
     "game_rooms": {
       "$game": {
         "$code": {

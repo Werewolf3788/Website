@@ -466,6 +466,7 @@
   /* ---------- go ---------- */
   function start() {
     try { var at = document.createElement('script'); at.src = new URL('ww-ach-toast.js', SCRIPT_SRC).href; at.defer = true; document.head.appendChild(at); } catch (e) {}
+    try { var pk = document.createElement('script'); pk.src = new URL('ww-prank.js', SCRIPT_SRC).href; pk.onload = function () { WW.ready.then(function () { if (window.WWPrank) window.WWPrank.start(WW); }); }; document.head.appendChild(pk); } catch (e) {}
     boot().catch(function (e) { console.warn('[WW]', e.message || e); readyReject(e); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

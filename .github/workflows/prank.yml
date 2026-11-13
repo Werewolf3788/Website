@@ -1,0 +1,28 @@
+# Manual: Actions -> "Prank" -> Run workflow. Turns the random jump scare on or off for one friend code.
+name: Prank
+on:
+  workflow_dispatch:
+    inputs:
+      code:
+        description: 'Friend code, e.g. 8QDU2APE'
+        required: true
+      enabled:
+        description: 'true = on, false = off'
+        default: 'true'
+      chance:
+        description: 'Chance per page visit, 0 to 1 (0.2 = one visit in five)'
+        default: '0.2'
+permissions:
+  contents: read
+jobs:
+  prank:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet google-auth requests
+      - run: python scripts/prank-set.py
+        env:
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          CODE: ${{ github.event.inputs.code }}
+          ENABLED: ${{ github.event.inputs.enabled }}
+          CHANCE: ${{ github.event.inputs.chance }}
