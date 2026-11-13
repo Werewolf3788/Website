@@ -4957,127 +4957,127 @@
       "id": "ribbon_engineer",
       "name": "Engineer",
       "requirement": "Destroy 1 vehicle using traps",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/engineer.jpg"
     },
     {
       "id": "ribbon_ghost",
       "name": "Ghost",
       "requirement": "15 kills while remaining undetected",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/ghost.jpg"
     },
     {
       "id": "ribbon_distraction",
       "name": "Distraction Expert",
       "requirement": "5 kills on distracted enemies",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/distraction.jpg"
     },
     {
       "id": "ribbon_wrecker",
       "name": "Wrecker",
       "requirement": "Destroy 5 vehicles",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/wrecker.jpg"
     },
     {
       "id": "ribbon_brawler",
       "name": "Brawler",
       "requirement": "10 lethal melee takedowns",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/brawler.jpg"
     },
     {
       "id": "ribbon_mechanic",
       "name": "Mechanic",
       "requirement": "Disable 3 vehicle engines",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/mechanic.jpg"
     },
     {
       "id": "ribbon_sound_mask",
       "name": "Sound Mask Expert",
       "requirement": "Create or exploit 3 sound masks",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/sound_mask.jpg"
     },
     {
       "id": "ribbon_skull_crusher",
       "name": "Skull Crusher",
       "requirement": "10 headshot kills",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/skull_crusher.jpg"
     },
     {
       "id": "ribbon_scout",
       "name": "Scout",
       "requirement": "Tag 20 enemies using binoculars",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/scout.jpg"
     },
     {
       "id": "ribbon_cleaner",
       "name": "Cleaner",
       "requirement": "Hide 3 bodies in crates or dumpsters",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/cleaner.jpg"
     },
     {
       "id": "ribbon_boxer",
       "name": "Boxer",
       "requirement": "10 non-lethal takedowns",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/boxer.jpg"
     },
     {
       "id": "ribbon_guerrilla",
       "name": "Guerrilla",
       "requirement": "3 enemy knockdowns using Schu-mines",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/guerrilla.jpg"
     },
     {
       "id": "ribbon_camofleur",
       "name": "Camofleur",
       "requirement": "15 kills while hidden in tall grass",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/camofleur.jpg"
     },
     {
       "id": "ribbon_knockout",
       "name": "Knockout Expert",
       "requirement": "4 enemy knockdowns with thrown bottles",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/knockout.jpg"
     },
     {
       "id": "ribbon_circuit_breaker",
       "name": "Circuit Breaker",
       "requirement": "Disable an active alarm panel",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/circuit_breaker.jpg"
     },
     {
       "id": "ribbon_partisan",
       "name": "Partisan",
       "requirement": "3 environmental hazard kills",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/partisan.jpg"
     },
     {
       "id": "ribbon_merciful",
       "name": "Merciful",
       "requirement": "Hit 15 enemies with non-lethal ammunition",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/merciful.jpg"
     },
     {
       "id": "ribbon_head_doctor",
       "name": "Head Doctor",
       "requirement": "15 non-lethal headshots",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/head_doctor.jpg"
     },
     {
       "id": "ribbon_demolitionist",
       "name": "Demolitionist",
       "requirement": "Double kill by shooting placed TNT or trap",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/demolitionist.jpg"
     },
     {
       "id": "ribbon_grenadier",
       "name": "Grenadier",
       "requirement": "5 grenade kills",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/grenadier.jpg"
     },
     {
       "id": "ribbon_trapper",
       "name": "Trapper",
       "requirement": "3 booby trap kills",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/trapper.jpg"
     },
     {
       "id": "ribbon_rifle_specialist",
@@ -5089,7 +5089,7 @@
       "id": "ribbon_marked_mastermind",
       "name": "Marked Mastermind",
       "requirement": "Complete a mission with at least 20 tagged enemies that have not been killed.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/ribbons/marked_mastermind.jpg",
       "repeatable": true
     }
   ],
@@ -5098,79 +5098,79 @@
       "id": "surv_sentry_service",
       "name": "Sentry Service",
       "requirement": "Kill 15 Nazis while you're near the Command Post.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/sentry_service.jpg"
     },
     {
       "id": "surv_survivor",
       "name": "Survivor",
       "requirement": "Complete a Survival Mission.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/survivor.jpg"
     },
     {
       "id": "surv_boom_barrage",
       "name": "Boom Barrage",
       "requirement": "Kill 10 Nazis with the Panzerfaust.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/boom_barrage.jpg"
     },
     {
       "id": "surv_high_achiever",
       "name": "High Achiever",
       "requirement": "Kill 10 Nazis, with each kill worth at least 300 points.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/high_achiever.jpg"
     },
     {
       "id": "surv_post_protector",
       "name": "Post Protector",
       "requirement": "Kill 5 Nazis that are actively taking your Command Post.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/post_protector.jpg"
     },
     {
       "id": "surv_flawless_fighter",
       "name": "Flawless Fighter",
       "requirement": "Kill 10 Nazis without taking damage.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/flawless_fighter.jpg"
     },
     {
       "id": "surv_consecutive_carnage",
       "name": "Consecutive Carnage",
       "requirement": "Get the most kills two waves in a row (Multiplayer only).",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/consecutive_carnage.jpg"
     },
     {
       "id": "surv_no_quarter",
       "name": "No Quarter",
       "requirement": "Complete an entire stage without losing your Command Post.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/no_quarter.jpg"
     },
     {
       "id": "surv_steadfast",
       "name": "Steadfast",
       "requirement": "Complete an entire stage without being incapacitated.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/steadfast.jpg"
     },
     {
       "id": "surv_sniper_suppressor",
       "name": "Sniper Suppressor",
       "requirement": "Kill 5 Nazi snipers with headshots.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/sniper_suppressor.jpg"
     },
     {
       "id": "surv_riders_remorse",
       "name": "Rider's Remorse",
       "requirement": "Kill 10 Nazis without allowing them to leave their vehicles.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/riders_remorse.jpg"
     },
     {
       "id": "surv_machine_gun_maverick",
       "name": "Machine Gun Maverick",
       "requirement": "Kill 10 Nazis with an MG42.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/machine_gun_maverick.jpg"
     },
     {
       "id": "surv_fortress_keeper",
       "name": "Fortress Keeper",
       "requirement": "Complete an entire stage without an enemy making it to the Command Post.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/fortress_keeper.jpg"
     }
   ],
   "multiplayer_ribbons": [
@@ -5178,7 +5178,7 @@
       "id": "mp_first_blood",
       "name": "First Blood",
       "requirement": "Score the first kill of the match.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/first_blood.jpg"
     },
     {
       "id": "mp_longshot",
@@ -5202,7 +5202,7 @@
       "id": "mp_streak",
       "name": "Dominator",
       "requirement": "Achieve a killstreak of 5 players without dying.",
-      "image_url": ""
+      "image_url": "/public/games/snresistance/images/ribbons/streak.jpg"
     },
     {
       "id": "mp_axis_hunter",
