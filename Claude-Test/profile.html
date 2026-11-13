@@ -171,15 +171,18 @@ const displayName = () => S.profile.displayName || S.U.username || S.U.display_n
 const avatarOf = () => S.U.avatar_url || '';
 
 /* ---------- boot ---------- */
+window.addEventListener('hashchange', () => location.reload());
 async function boot() {
   try { await W.ready; } catch (e) { return fail('Could not start Firebase. Reload and try again.'); }
   if (!W.me) return signInView();
-  const q = new URLSearchParams(location.search).get('u');
+  const q = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim() || new URLSearchParams(location.search).get('u');   // profile.html#FRIENDCODE (or ?u=)
   S.ownerKey = q ? await resolveUser(q) : W.me.key;
   if (!S.ownerKey) return fail('That profile could not be found.');
   S.isOwner = S.ownerKey === W.me.key;
   await loadProfile();
   if (!Object.keys(S.U).length) return fail('That profile could not be found.');
+  if (!S.isOwner && S.rel < 1) return fail('This profile is only visible to its owner\u2019s friends.');
+  if (S.isOwner && !location.hash && W.me.friendCode) { try { history.replaceState(null, '', location.pathname + location.search + '#' + W.me.friendCode); } catch (e) {} }
   await loadPlatforms();
   document.title = displayName() + ' | Pack Hub';
   setTabIcon(avatarOf() || (S.isOwner && W.me.photoURL) || Object.values(S.plat).map(x => x && x.avatar).find(Boolean) || '');

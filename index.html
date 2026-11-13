@@ -526,12 +526,13 @@
         <div class="w-[92vw] md:w-[80vw] mx-auto">
             <div class="app-hero">
                 <span class="eyebrow">Werewolf Project</span>
-                <h1 class="mt-3" style="font-size: clamp(26px, 6vw, 44px);">Who's on tonight?</h1>
+                <h1 id="hero-title" class="mt-3" style="font-size: clamp(26px, 6vw, 44px);">Welcome to the Werewolf Project</h1>
                 <p class="mt-2 text-slate-300 text-sm sm:text-base max-w-xl">
-                    Live from PlayStation. Tap a player to see how they're progressing through their gaming world.
+                    <span id="hero-text">Track your games and trophies across PlayStation, Xbox and Steam, see what your friends are playing, chat, and browse the Werewolf Cinema movie library. Sign in to see your friends.</span>
                 </p>
+                <div id="hero-signin" class="mt-4"><a href="Claude-Test/profile.html" class="live-chip" style="text-decoration:none;background:#ff5f1f;color:#fff;font-weight:800"><i class="fa-brands fa-google"></i> Sign in</a></div>
                 <div class="mt-4 flex flex-wrap items-center gap-3">
-                    <span id="online-summary" class="live-chip"><span class="live-dot"></span><span id="online-summary-text">Checking PlayStation...</span></span>
+                    <span id="online-summary" class="live-chip" style="display:none"><span class="live-dot"></span><span id="online-summary-text">Checking PlayStation...</span></span>
                     <a href="#cinema" class="live-chip" style="text-decoration:none"><i class="fa-solid fa-film text-orange-400"></i> Cinema</a>
                     <a href="#fs25-server-section" class="live-chip" style="text-decoration:none"><i class="fa-solid fa-tractor text-green-400"></i> Farm</a>
                 </div>
@@ -540,7 +541,7 @@
     </header>
 
     <!-- Players: swipeable on phones -->
-    <section id="team" class="py-6 sm:py-10">
+    <section id="team" class="py-6 sm:py-10" style="display:none" aria-hidden="true">
         <div class="w-[92vw] md:w-[80vw] mx-auto">
             <div class="flex items-end justify-between mb-3 px-1">
                 <h2 style="font-size: clamp(20px, 4vw, 28px);">The Pack</h2>
@@ -656,6 +657,18 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+
+    <!-- My friends: the signed-in user's own friends (each links to their profile, which only friends can open) -->
+    <section id="my-friends" class="py-6 sm:py-10" style="display:none">
+        <div class="w-[92vw] md:w-[80vw] mx-auto">
+            <div class="flex items-end justify-between mb-3 px-1 gap-3 flex-wrap">
+                <h2 style="font-size: clamp(20px, 4vw, 28px);">My Friends <a id="mf-code" class="text-orange-400 font-mono" style="font-size:.7em;text-decoration:none" href="Claude-Test/profile.html"></a></h2>
+                <span id="mf-note" class="text-[11px] text-slate-400 font-bold uppercase tracking-widest"></span>
+            </div>
+            <div id="mf-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
         </div>
     </section>
 
@@ -2667,5 +2680,43 @@ function buildCinemaFromCsv(text) {
             setInterval(refreshData, 300000);
         });
     </script>
+
+<script>
+/* My Friends: shown after sign-in. Friend list = users/{me}/friends; names/avatars from users/{key}; live status from game_rooms/presence/{code}. */
+(function () {
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var secure = function (u) { u = String(u || ''); return /^https:\/\//.test(u) ? u : ''; };
+  function start() {
+    var W = window.WW; if (!W || !W.ready) return false;
+    W.ready.then(async function () {
+      if (!W.me) return;
+      var me = W.me; document.getElementById('hero-title').textContent = "Who's on tonight?";
+      document.getElementById('hero-text').textContent = 'Your friends, live. Tap a friend to open their profile and see how they are progressing. Only friends can open each other\u2019s profiles.';
+      document.getElementById('hero-signin').style.display = 'none';
+      var sec = document.getElementById('my-friends'), grid = document.getElementById('mf-grid'); sec.style.display = '';
+      var codeEl = document.getElementById('mf-code'); codeEl.textContent = me.friendCode ? '#' + me.friendCode : ''; if (me.friendCode) codeEl.href = 'Claude-Test/profile.html#' + me.friendCode;
+      var v = {}; try { v = (await W.db.ref('users/' + me.key + '/friends').once('value')).val() || {}; } catch (e) {}
+      var codes = Object.keys(v).map(function (k) { var f = v[k] && typeof v[k] === 'object' ? v[k] : {}; return { code: String(f.friend_code || k).toUpperCase(), name: f.username || '', close: f.close_friend === true }; });
+      if (!codes.length) { grid.innerHTML = '<div class="custom-card p-5 text-slate-300 text-sm" style="grid-column:1/-1">No friends yet. Add a friend code in Settings and they will show up here.</div>'; return; }
+      document.getElementById('mf-note').textContent = codes.length + ' friend' + (codes.length === 1 ? '' : 's');
+      var cards = await Promise.all(codes.map(async function (c) {
+        var key = await W.ownerKeyOfCode(c.code), u = {}, pres = null;
+        if (key) { try { u = (await W.db.ref('users/' + key).once('value')).val() || {}; } catch (e) {} }
+        try { pres = (await W.db.ref('game_rooms/presence/' + c.code).once('value')).val(); } catch (e) {}
+        var name = u.username || u.display_name || c.name || c.code, av = secure(u.avatar_url);
+        var playing = pres && pres.title ? (pres.platform === 'mobile' ? '\uD83C\uDFB2 ' : '\uD83C\uDFAE ') + esc(pres.title) + (pres.status ? ' \u00b7 ' + esc(pres.status) : '') : '';
+        return '<a href="Claude-Test/profile.html#' + encodeURIComponent(c.code) + '" class="custom-card p-5" style="display:flex;gap:12px;align-items:center;text-decoration:none;color:inherit">' +
+          (av ? '<img src="' + esc(av) + '" alt="" referrerpolicy="no-referrer" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none">' : '<span style="width:52px;height:52px;border-radius:50%;background:#334155;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none">' + esc(name.charAt(0).toUpperCase()) + '</span>') +
+          '<div style="min-width:0;flex:1"><div style="font-weight:800" class="truncate">' + esc(name) + (c.close ? ' <span title="Close friend" style="color:#facc15">\u2605</span>' : '') + '</div>' +
+          '<div class="text-slate-400 font-mono" style="font-size:.7rem">#' + esc(c.code) + '</div>' +
+          '<div class="text-xs" style="color:' + (playing ? '#4ade80' : '#94a3b8') + '">' + (playing || 'Not playing right now') + '</div></div></a>';
+      }));
+      grid.innerHTML = cards.join('');
+    }).catch(function () {});
+    return true;
+  }
+  var n = 0, iv = setInterval(function () { if (start() || ++n > 40) clearInterval(iv); }, 500);
+})();
+</script>
 </body>
 </html>
