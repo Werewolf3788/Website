@@ -3,7 +3,8 @@ import * as THREE from './three.min.js';
 
 export const TILE = 2, COLS = 20, ROWS = 12, FIELD_TILES = COLS * ROWS;     // one field: 20x12 tiles of 2 units (big enough to need a tractor)
 // six fields. Field 0 is the original one (saved farms keep working); the top row is open, the bottom row is land for sale.
-export const FIELDS = [{ x0: -20, z0: 2 }, { x0: -66, z0: 2 }, { x0: 26, z0: 2 }, { x0: -20, z0: 32 }, { x0: -66, z0: 32 }, { x0: 26, z0: 32 }];
+export const FIELDS = [{ x0: -20, z0: 2 }, { x0: -66, z0: 2 }, { x0: 26, z0: 2 }, { x0: -20, z0: 32 }, { x0: -66, z0: 32 }, { x0: 26, z0: 32 },
+  { x0: -20, z0: 62 }, { x0: -66, z0: 62 }, { x0: 26, z0: 62 }, { x0: -20, z0: 92 }, { x0: -66, z0: 92 }, { x0: 26, z0: 92 }];   // the last six appear one at a time as land gets bought
 export const NT = FIELDS.length * FIELD_TILES;
 export const fieldOf = i => Math.floor(i / FIELD_TILES);
 export function tilePos(i) { const f = FIELDS[Math.floor(i / FIELD_TILES)], li = i % FIELD_TILES; return { x: f.x0 + (li % COLS) * TILE + TILE / 2, z: f.z0 + Math.floor(li / COLS) * TILE + TILE / 2 }; }
@@ -84,6 +85,7 @@ export function buildWorld(scene) {
     [[0, -fd / 2, fw, .5], [0, fd / 2, fw, .5], [-fw / 2, 0, .5, fd], [fw / 2, 0, .5, fd]].forEach(function (b) { box(g, b[2], .45, b[3], 0x8b5a2b, cx + b[0], .22, cz + b[1], false); });
     let tag = null, sign = null;
     return {
+      setVisible: function (v) { g.visible = !!v; },
       // name: owner's name (null = nobody owns it yet); mine: it is the local player's; saleText: what the FOR SALE sign says
       setOwner: function (name, mine, saleText) {
         base.material = mat(name ? 0x6f8f3a : 0x9aa86a);
@@ -117,7 +119,7 @@ export function buildWorld(scene) {
   fence(scene, COW_PASTURE.x0 - 1, COW_PASTURE.z0 - 1, COW_PASTURE.x1 + 1, COW_PASTURE.z1 + 1, 'e');
   const coop = new THREE.Group(); coop.position.set(37.5, 0, -30); scene.add(coop); box(coop, 3, 2, 2.4, 0xd9b26f, 0, 1, 0); const cr = new THREE.Mesh(new THREE.ConeGeometry(2.5, 1.2, 4), mat(0x8a3b2d)); cr.rotation.y = Math.PI / 4; cr.position.y = 2.6; cr.scale.z = .8; coop.add(cr);
   // trees (seeded, away from play areas)
-  const r = rng(42), keep = (x, z) => !(x > -74 && x < 74 && z > -10 && z < 64) && !(x > 25 && x < 45 && z > -41 && z < -25) && !(x < -26 && x > -48 && z > -48 && z < -27) && !(Math.abs(x + 24) < 8 && Math.abs(z + 8) < 8) && !(Math.abs(x - 24) < 12 && Math.abs(z + 9) < 10);
+  const r = rng(42), keep = (x, z) => !(x > -74 && x < 74 && z > -10 && z < 124) && !(x > 25 && x < 45 && z > -41 && z < -25) && !(x < -26 && x > -48 && z > -48 && z < -27) && !(Math.abs(x + 24) < 8 && Math.abs(z + 8) < 8) && !(Math.abs(x - 24) < 12 && Math.abs(z + 9) < 10);
   let n = 0; while (n < 150) { const x = (r() - .5) * 170, z = (r() - .5) * 170; if (keep(x, z)) { tree(scene, x, z, r); n++; } }
   // clouds
   W.clouds = new THREE.Group(); const cm = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .9 });
@@ -219,7 +221,7 @@ export function makeCropField(scene, N) {
     kinds[id] = { gm: mk(mergeGeoms(parts[0]), mat), rm: mk(mergeGeoms(parts[1]), mat) };
   });
   const soil = mk(new THREE.BoxGeometry(TILE - .12, .22, TILE - .12), new THREE.MeshLambertMaterial({ color: 0xffffff })); soil.receiveShadow = true;
-  const DRY = new THREE.Color(0x7a5230), WET = new THREE.Color(0x4a2e17);
+  const SOIL = [null, new THREE.Color(0x7a5230), new THREE.Color(0x4a2e17), new THREE.Color(0xa87846), new THREE.Color(0x6b4423)];   // plowed dry / wet, cultivated dry / wet (lighter, loosened soil)
   // put a matrix for tile i into mesh m (adds a slot if the tile is new)
   function put(m, i, matrix) { const u = m.userData; let s = u.map.get(i); if (s === undefined) { s = u.tiles.length; u.tiles.push(i); u.map.set(i, s); m.count = u.tiles.length; } m.setMatrixAt(s, matrix); dirty.add(m); return s; }
   // take tile i out of mesh m: the last instance moves into the freed slot
@@ -231,10 +233,10 @@ export function makeCropField(scene, N) {
   const state = new Array(N).fill(null);
   return {
     // hasSoil: tile is plowed; wet: crop has been watered; type: crop id or null; scale: growth 0..1; ripe: ready to harvest
-    set: function (i, x, z, hasSoil, wet, type, scale, ripe) {
-      type = type || null; const sq = type ? Math.round(scale * 20) : 0, rp = !!(type && ripe), sv = hasSoil ? (wet ? 2 : 1) : 0, old = state[i];
+    set: function (i, x, z, hasSoil, wet, type, scale, ripe, cult) {
+      type = type || null; const sq = type ? Math.round(scale * 20) : 0, rp = !!(type && ripe), sv = hasSoil ? (wet ? 2 : 1) + (cult ? 2 : 0) : 0, old = state[i];
       if (old && old.soil === sv && old.type === type && old.sq === sq && old.ripe === rp) return;
-      if (!old || old.soil !== sv) { if (sv === 0) drop(soil, i); else { tmp.makeTranslation(x, .11, z); const s = put(soil, i, tmp); soil.setColorAt(s, sv === 2 ? WET : DRY); } }
+      if (!old || old.soil !== sv) { if (sv === 0) drop(soil, i); else { tmp.makeTranslation(x, .11, z); const s = put(soil, i, tmp); soil.setColorAt(s, SOIL[sv]); } }
       if (old && old.type && old.type !== type) { drop(kinds[old.type].gm, i); drop(kinds[old.type].rm, i); }
       if (type) {
         const k = kinds[type]; pos.set(x, .2, z);
@@ -255,6 +257,13 @@ export function makeAnimal(type) {
   if (type === 'chicken') {
     sph(g, .38, 0xffffff, 0, .55, 0, 1, .9, 1.25); sph(g, .2, 0xffffff, 0, .98, .42); box(g, .1, .12, .05, 0xf2a900, 0, .95, .62); box(g, .06, .14, .22, 0xd62828, 0, 1.15, .42);
     box(g, .08, .35, .08, 0xf2a900, -.15, .18, 0); box(g, .08, .35, .08, 0xf2a900, .15, .18, 0); g.userData.speed = 1.1;
+  } else if (type === 'duck') {
+    sph(g, .34, 0xf5f0dc, 0, .5, 0, 1, .85, 1.3); sph(g, .19, 0x2f7a4a, 0, .92, .38); box(g, .2, .06, .22, 0xf29a00, 0, .88, .62); box(g, .1, .1, .1, 0xf5f0dc, 0, .62, -.45);
+    box(g, .09, .3, .09, 0xf29a00, -.13, .15, 0); box(g, .09, .3, .09, 0xf29a00, .13, .15, 0); g.userData.speed = 1;
+  } else if (type === 'goat') {
+    sph(g, .42, 0xb89a74, 0, 1.0, 0, .85, .75, 1.35); box(g, .3, .36, .42, 0xcdb48e, 0, 1.28, .78); box(g, .22, .2, .22, 0x8a6f4d, 0, 1.12, 1.02);
+    box(g, .06, .3, .06, 0x3a3029, -.1, 1.62, .72).rotation.z = .35; box(g, .06, .3, .06, 0x3a3029, .1, 1.62, .72).rotation.z = -.35; box(g, .05, .22, .12, 0xb89a74, 0, .78, 1.0);
+    box(g, .1, .2, .1, 0xb89a74, 0, 1.15, -.62); for (const x of [-.2, .2]) for (const z of [-.4, .4]) box(g, .1, .55, .1, 0x6b5640, x, .28, z); g.userData.speed = .9;
   } else if (type === 'sheep') {
     // woolly cream body on long dark legs, with a dark face, sideways ears and a short tail, so it reads as a sheep, not a cloud
     sph(g, .5, 0xe3dac4, 0, 1.02, 0, 1, .78, 1.3);
@@ -272,9 +281,9 @@ export function makeAnimal(type) {
     for (const x of [-.45, .45]) for (const z of [-.8, .8]) box(g, .22, .95, .22, 0xf4f4f4, x, .48, z);
     g.userData.speed = .7;
   }
-  const icon = new THREE.Mesh(type === 'chicken' ? new THREE.SphereGeometry(.22, 10, 8) : new THREE.BoxGeometry(.4, .45, .4), new THREE.MeshBasicMaterial({ color: type === 'chicken' ? 0xfff6e0 : (type === 'sheep' ? 0xf0e6ff : 0x9fd8ff) }));
-  if (type === 'chicken') icon.scale.set(.8, 1.1, .8);
-  icon.position.y = type === 'chicken' ? 2 : (type === 'sheep' ? 2.4 : 3.3); icon.visible = false; g.add(icon); g.userData.icon = icon;
+  const small = type === 'chicken' || type === 'duck', icon = new THREE.Mesh(small ? new THREE.SphereGeometry(.22, 10, 8) : new THREE.BoxGeometry(.4, .45, .4), new THREE.MeshBasicMaterial({ color: small ? 0xfff6e0 : (type === 'sheep' ? 0xf0e6ff : type === 'goat' ? 0xffe9b0 : 0x9fd8ff) }));
+  if (small) icon.scale.set(.8, 1.1, .8);
+  icon.position.y = small ? 2 : (type === 'sheep' || type === 'goat' ? 2.4 : 3.3); icon.visible = false; g.add(icon); g.userData.icon = icon;
   return g;
 }
 export { THREE };

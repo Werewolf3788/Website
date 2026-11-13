@@ -266,3 +266,28 @@
     });
   };
 })();
+
+// ---- mobile zoom guard: no double-tap / input-focus zoom, and a "Reset zoom" button if the page ever ends up zoomed in
+(function () {
+  try {
+    var st = document.createElement('style');
+    st.textContent = 'html,body,button,a,label,summary{touch-action:manipulation}@media (pointer:coarse){input,select,textarea{font-size:16px!important}}';
+    document.head.appendChild(st);
+    document.addEventListener('gesturestart', function (e) { e.preventDefault(); });          // iOS pinch
+    var vv = window.visualViewport, btn = null;
+    function reset() {
+      var m = document.querySelector('meta[name=viewport]'); if (!m) return;
+      var old = m.getAttribute('content'); m.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover');
+      setTimeout(function () { m.setAttribute('content', old); window.scrollTo(0, 0); }, 120);
+    }
+    function check() {
+      var zoomed = vv && vv.scale > 1.02;
+      if (zoomed && !btn) {
+        btn = document.createElement('button'); btn.textContent = '🔍 Reset zoom';
+        btn.style.cssText = 'position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483000;padding:10px 16px;border-radius:999px;border:2px solid #fff;background:#0f172a;color:#fff;font:700 14px system-ui,sans-serif';
+        btn.onclick = function () { reset(); btn.remove(); btn = null; }; document.body.appendChild(btn);
+      } else if (!zoomed && btn) { btn.remove(); btn = null; }
+    }
+    if (vv) { vv.addEventListener('resize', check); vv.addEventListener('scroll', check); }
+  } catch (e) {}
+})();
