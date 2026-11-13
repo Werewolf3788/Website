@@ -379,7 +379,8 @@ async function loadSteam(raw) {
       poster:`https://cdn.cloudflare.steamstatic.com/steam/apps/${r.appid}/library_600x900.jpg`,
       earned: total ? got : undefined, total: total || undefined,
       hours: r.minutesTotal ? (r.minutesTotal / 60).toFixed(1) + ' hrs' : '', lastPlayed:'',
-      playing: !!profile.currentGameId && String(profile.currentGameId) === String(r.appid), achievements:[] };
+      playing: !!profile.currentGameId && String(profile.currentGameId) === String(r.appid), achievements:[],
+      steamUnlocks: a.u ? Object.values(a.u).map(x => Object.values(x)) : [] };
   });
   if (profile.currentGameId && !list.some(x => x.playing)) {
     list.unshift({ platform:'steam', id:String(profile.currentGameId), title:profile.currentGame || 'Playing', progress:0, poster:`https://cdn.cloudflare.steamstatic.com/steam/apps/${profile.currentGameId}/library_600x900.jpg`, hours:'', playing:true, achievements:[] });
@@ -642,12 +643,21 @@ async function openGame(g) {
       items = arr(s && s.trophies).map(t => { const l = live[t.trophyId] || live[String(t.trophyId)] || {};
         return { name:t.trophyName || t.name, desc:t.trophyDetail || t.description, icon:secure(t.trophyIconUrl || t.icon || ''), earned:!!l.earned, at:l.earnedDate || l.earnedDateTime || l.timestamp || '' }; });
     } catch (e) {}
+  } else if (g.platform === 'steam' && g.steamUnlocks) {
+    try {
+      const sc = (await W.db.ref('steam_games/' + g.id + '/ach').once('value')).val() || {};
+      const got = {}; g.steamUnlocks.forEach(x => { got[x[0]] = Number(x[1]) || 0; });
+      const icon = (f) => f ? `https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/${g.id}/${f}.jpg` : '';
+      const keys = Object.keys(sc); Object.keys(got).forEach(k => { if (!(k in sc)) keys.push(k); });
+      items = keys.map(k => { const d = sc[k] || {}, e = k in got;
+        return { name:d.n || k, desc:d.d || (d.h ? 'Hidden achievement' : ''), icon:icon(e ? d.i : (d.g || d.i)), earned:e, at:e && got[k] ? got[k] * 1000 : '' }; });
+    } catch (e) {}
   } else {
     items = g.achievements.map(a => ({ name:a.name || a.title, desc:a.description || a.desc, icon:secure(a.icon || a.image || ''), earned:!!(a.earned ?? a.achieved ?? a.unlocked), at:a.earnedAt || a.unlockTime || '' }));
   }
   const box = $('#trophy-list');
   if (!items.length) { box.textContent = 'No trophy/achievement list available for this game yet.'; return; }
-  items.sort((a, b) => (b.earned ? 1 : 0) - (a.earned ? 1 : 0));
+  items.sort((a, b) => ((b.earned ? 1 : 0) - (a.earned ? 1 : 0)) || ((Number(b.at) || 0) - (Number(a.at) || 0)));
   box.classList.remove('mute');
   box.innerHTML = items.map(t => `<div class="row" style="${t.earned ? '' : 'opacity:.55'}">
       <img src="${esc(t.icon)}" alt="" onerror="this.src='${ph(64, 64, '🏆')}'">

@@ -204,8 +204,8 @@ async function readKevinXboxAccounts() {
     const keyOwnerByEmailKey = new Map(); // emailKey -> apiKey, for the friend-sharing pass below
     const keylessWithXuid = []; // { emailKey, xuid }
 
-    // Key policy: the owner's key serves the owner's CLOSE friends first; a member's own key is the backup
-    // if the owner's key stops working. Everyone else uses only their own key.
+    // Key policy (splits the OpenXBL load): everyone who has their own key uses it first; the owner's key is the
+    // backup for the owner's CLOSE friends (and their main key if they have none). Everyone else uses only their own key.
     const OWNER_KEY = (process.env.OWNER_EMAIL_KEY || "raykevin71888_at_gmail_com").trim();
     const readUser = (emailKey, u) => {
         const sec = (secrets && secrets[emailKey]) || {};
@@ -229,19 +229,21 @@ async function readKevinXboxAccounts() {
     for (const [emailKey, u] of Object.entries(users).sort((x, y) => x[0].localeCompare(y[0]))) {
         if (!u || typeof u !== "object") continue;
         const me = readUser(emailKey, u);
-        const useOwner = !!ownerApiKey && closeKeys.has(emailKey) && emailKey !== OWNER_KEY && (me.gamertag || me.xuid);
-        if (useOwner && shared >= MAX_SHARED_FRIENDS_PER_KEY * 4) { skippedOverCap++; }
-        if (useOwner && shared < MAX_SHARED_FRIENDS_PER_KEY * 4) {
-            shared++; borrowed++;
-            accounts.push({ emailKey, gamertag: me.gamertag || null, apiKey: ownerApiKey, backupKey: me.apiKey || null, xuid: me.xuid || null,
-                updatedAt: me.updatedAt, viaFriendKey: !me.gamertag, keyOwnerEmailKey: OWNER_KEY });
-        } else if (me.gamertag && me.apiKey) {
-            accounts.push({ emailKey, gamertag: me.gamertag, apiKey: me.apiKey, backupKey: null, xuid: me.xuid || null, updatedAt: me.updatedAt, viaFriendKey: false });
+        const wantsOwner = !!ownerApiKey && closeKeys.has(emailKey) && emailKey !== OWNER_KEY && (me.gamertag || me.xuid);
+        const hasOwn = !!(me.gamertag && me.apiKey);
+        const sec = (secrets && secrets[emailKey]) || {};
+        console.log(`[KEY] ${emailKey}: gamertag=${me.gamertag ? "yes" : "no"} ownKey=${me.apiKey ? "yes" : "no"} (secrets=${sec.xbox_api_key ? "y" : "n"} users=${u.xbox_api_key ? "y" : "n"} gaming=${(u.gaming_platforms || {}).xbox_api_key ? "y" : "n"}) close=${closeKeys.has(emailKey)}`);
+        if (hasOwn) {
+            accounts.push({ emailKey, gamertag: me.gamertag, apiKey: me.apiKey, backupKey: wantsOwner ? ownerApiKey : null, xuid: me.xuid || null, updatedAt: me.updatedAt, viaFriendKey: false });
+        } else if (wantsOwner) {
+            if (shared >= MAX_SHARED_FRIENDS_PER_KEY * 4) { skippedOverCap++; }
+            else { shared++; borrowed++; accounts.push({ emailKey, gamertag: me.gamertag || null, apiKey: ownerApiKey, backupKey: null, xuid: me.xuid || null,
+                updatedAt: me.updatedAt, viaFriendKey: !me.gamertag, keyOwnerEmailKey: OWNER_KEY }); }
         }
         if (me.gamertag && me.apiKey) keyOwnerByEmailKey.set(emailKey, me.apiKey);
     }
 
-    console.log(`[KEVIN DB] Xbox accounts with both a gamertag and a key: ${keyOwnerByEmailKey.size}; using the owner's key as a close friend: ${borrowed}${skippedOverCap ? ` (${skippedOverCap} skipped over cap)` : ""}.`);
+    console.log(`[KEVIN DB] Xbox accounts with both a gamertag and a key: ${keyOwnerByEmailKey.size}; using the owner's key (no key of their own): ${borrowed}${skippedOverCap ? ` (${skippedOverCap} skipped over cap)` : ""}.`);
     return { accounts, usersReadOk: ok };
 }
 
@@ -397,7 +399,7 @@ async function main() {
             try { got = await attempt(acc.apiKey); }
             catch (err) {
                 if (!acc.backupKey) throw err;
-                console.warn(`[XBOX] ${acc.gamertag || acc.xuid}: the owner's key failed (${err.message}); retrying with their own key.`);
+                console.warn(`[XBOX] ${acc.gamertag || acc.xuid}: their own key failed (${err.message}); retrying with the owner's key.`);
                 got = await attempt(acc.backupKey);
             }
             const profile = got.pr, titles = got.ti;
