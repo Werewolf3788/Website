@@ -196,6 +196,12 @@
     '.pv{font-size:12px;color:#9aa4b2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
     '.un{background:#ef4444;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:800}',
     '.empty{padding:28px 18px;text-align:center;color:#9aa4b2;font-size:13px}',
+    '.tabs{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.1)}',
+    '.tab{flex:1;border:1px solid rgba(255,255,255,.14);background:transparent;color:inherit;border-radius:999px;padding:6px 10px;font-weight:700;font-size:13px;cursor:pointer}',
+    '.tab.on{background:#ff5f1f;border-color:#ff5f1f;color:#fff}.tab.dc.on{background:#5865f2;border-color:#5865f2}',
+    '.m .who{display:block;font-size:11px;font-weight:700;opacity:.75;margin-bottom:2px}.m img{max-width:100%;max-height:220px;border-radius:8px;display:block;margin-top:4px}.m a{color:#93c5fd;word-break:break-all}.m.me a{color:#fff}',
+    '.m .emb{border-left:3px solid #5865f2;padding-left:8px;margin-top:4px;font-size:13px;opacity:.9}',
+    '.empty a{display:inline-block;margin-top:10px;background:#5865f2;color:#fff;border-radius:10px;padding:8px 14px;font-weight:700;text-decoration:none;font-size:13px}',
     '.chat{flex:1;display:flex;flex-direction:column;min-height:0}',
     '.msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}',
     '.m{max-width:80%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.35;white-space:pre-wrap;word-break:break-word;background:rgba(255,255,255,.09);align-self:flex-start}',
@@ -246,14 +252,17 @@
     var send = el('button', 'send', 'Send'); send.type = 'submit';
     form.append(input, send);
     chat.append(msgs, form);
-    panel.append(hd, list, chat);
+    var tabs = el('div', 'tabs'), tSite = el('button', 'tab on', '💬 Site'), tDisc = el('button', 'tab dc', '🎮 Discord');
+    tabs.append(tSite, tDisc); if (!CONFIG.discordAuthUrl) tabs.hidden = true;
+    tSite.onclick = function () { setTab('site'); }; tDisc.onclick = function () { setTab('discord'); };
+    panel.append(hd, tabs, list, chat);
 
     var toasts = el('div', 'toasts');
     root.append(fab, panel, toasts);
     document.body.appendChild(host);
 
     UI = { host: host, fab: fab, badge: badge, panel: panel, title: title, back: back, view: view, bell: bell,
-           list: list, chat: chat, msgs: msgs, form: form, input: input, toasts: toasts };
+           list: list, chat: chat, msgs: msgs, form: form, input: input, toasts: toasts, tabs: tabs, tSite: tSite, tDisc: tDisc };
 
     fab.onclick = function () { panel.hidden ? openPanel() : closePanel(); };
     close.onclick = closePanel;
@@ -264,7 +273,7 @@
     form.onsubmit = function (e) {
       e.preventDefault();
       var t = input.value; input.value = '';
-      if (openOther) sendMsg(openOther, openName, t);
+      if (DC.open) sendDiscord(t); else if (openOther) sendMsg(openOther, openName, t);
     };
 
     watchThreads();
@@ -361,6 +370,7 @@
   async function renderList() {
     if (!UI) return;
     var fr = await loadFriends();
+    if (!UI || tab !== 'site') return;
     var L = UI.list; L.textContent = '';
     var keys = Object.keys(threads).sort(function (a, b) { return (threads[b].ts || 0) - (threads[a].ts || 0); });
     if (keys.length) {
@@ -396,9 +406,85 @@
   function showList() {
     if (msgsRef && msgsCb) msgsRef.off('child_added', msgsCb);
     msgsRef = null; openOther = null;
+    stopDiscord();
     UI.chat.hidden = true; UI.list.hidden = false; UI.back.hidden = true; UI.view.hidden = true;
+    UI.tabs.hidden = !CONFIG.discordAuthUrl;
     UI.title.textContent = 'Messages';
-    renderList();
+    if (tab === 'discord') renderDiscord(); else renderList();
+  }
+
+  /* ---------- Discord pill: the bridged Discord server's channels (through the login server's bot) ---------- */
+  var tab = 'site', DC = { chans: null, guild: null, me: null, open: null, last: '', timer: null, busy: false };
+  function setTab(t) { tab = t; UI.tSite.classList.toggle('on', t === 'site'); UI.tDisc.classList.toggle('on', t === 'discord'); showList(); }
+  async function bridge(path, body) {
+    var u = (WW.auth || firebase.auth()).currentUser; if (!u) return { status: 401, error: 'signin' };
+    body = body || {}; body.idToken = await u.getIdToken();
+    try {
+      var r = await fetch(CONFIG.discordAuthUrl + '/bridge/' + path, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body) });
+      var j = {}; try { j = await r.json(); } catch (e) {} j.status = r.status; return j;
+    } catch (e) { return { status: 0, error: 'offline' }; }
+  }
+  function discordProblem(j) {
+    var box = el('div', 'empty'), a;
+    if (j.error === 'notlinked') { box.textContent = 'Connect your Discord account to read and send the server’s messages here, without installing Discord.'; box.appendChild(document.createElement('br')); a = el('a', null, 'Connect Discord in Settings'); a.href = new URL('../security/setting.html', SCRIPT_SRC).href; box.appendChild(a); }
+    else if (j.error === 'notmember') { box.textContent = 'Your Discord account is connected, but it is not in ' + (j.guild || 'the server') + ' yet.'; box.appendChild(document.createElement('br')); a = el('a', null, 'Join the server'); a.href = j.invite; a.target = '_blank'; a.rel = 'noopener'; box.appendChild(a); }
+    else if (j.error === 'nobot' || j.error === 'noserver' || j.error === 'botnotin') box.textContent = 'Discord is not connected to the site yet (the bot still has to be added to the server).';
+    else if (j.error === 'signin') box.textContent = 'Sign in again to use Discord here.';
+    else box.textContent = 'Could not reach Discord right now. Try again in a minute.';
+    return box;
+  }
+  async function renderDiscord() {
+    var L = UI.list; L.textContent = '';
+    if (!DC.chans) {
+      L.appendChild(el('div', 'empty', 'Loading Discord… the first load can take up to a minute.'));
+      var j = await bridge('channels'); if (!UI || tab !== 'discord' || !UI.chat.hidden) return; L.textContent = '';
+      if (j.status !== 200) { L.appendChild(discordProblem(j)); return; }
+      DC.chans = j.channels || []; DC.guild = j.guild; DC.me = j.me;
+    }
+    L.appendChild(el('div', 'sec', (DC.guild && DC.guild.name) || 'Discord'));
+    if (!DC.chans.length) L.appendChild(el('div', 'empty', 'The bot cannot see any channels yet.'));
+    DC.chans.forEach(function (c) {
+      var r = el('div', 'row'), av = el('div', 'av', '#'); av.style.background = '#5865f2';
+      var meta = el('div', 'meta'); meta.append(el('div', 'nm', c.name), el('div', 'pv', 'Discord channel')); r.append(av, meta);
+      r.onclick = function () { openDiscord(c); }; L.appendChild(r);
+    });
+  }
+  function stopDiscord() { clearInterval(DC.timer); DC.timer = null; DC.open = null; DC.last = ''; }
+  function openDiscord(c) {
+    if (msgsRef && msgsCb) msgsRef.off('child_added', msgsCb); msgsRef = null; openOther = null; stopDiscord();
+    DC.open = c; UI.list.hidden = true; UI.chat.hidden = false; UI.tabs.hidden = true; UI.back.hidden = false; UI.view.hidden = true;
+    UI.title.textContent = '# ' + c.name; UI.msgs.textContent = ''; UI.msgs.appendChild(el('div', 'empty', 'Loading…'));
+    pollDiscord(true); DC.timer = setInterval(function () { if (UI && !UI.panel.hidden && !document.hidden) pollDiscord(false); }, 4000);
+    setTimeout(function () { UI.input.focus(); }, 50);
+  }
+  async function pollDiscord(first) {
+    if (!DC.open || DC.busy) return; DC.busy = true; var ch = DC.open.id;
+    var j = await bridge('messages', { channel: ch, after: DC.last }); DC.busy = false;
+    if (!UI || !DC.open || DC.open.id !== ch) return;
+    if (first) UI.msgs.textContent = '';
+    if (j.status !== 200) { if (first) UI.msgs.appendChild(discordProblem(j)); return; }
+    (j.messages || []).forEach(function (m) {
+      if (DC.last && BigInt(m.id) <= BigInt(DC.last)) return; DC.last = m.id;
+      var mine = !!DC.me && (m.did === DC.me.did || (m.hook && m.name === DC.me.name));
+      var b = el('div', 'm' + (mine ? ' me' : ''));
+      b.appendChild(el('span', 'who', m.name + (m.ts ? ' · ' + new Date(m.ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '')));
+      if (m.text) b.appendChild(document.createTextNode(m.text));
+      (m.embeds || []).forEach(function (e) { var d = el('div', 'emb'); if (e.title) d.appendChild(el('b', null, e.title)); if (e.text) d.appendChild(el('div', null, e.text)); b.appendChild(d); });
+      (m.files || []).forEach(function (f) {
+        if (!/^https:\/\//.test(f.url)) return;
+        if (f.img) { var i = document.createElement('img'); i.src = f.url; i.alt = f.name; i.loading = 'lazy'; i.referrerPolicy = 'no-referrer'; b.appendChild(i); }
+        else { var a = el('a', null, '📎 ' + f.name); a.href = f.url; a.target = '_blank'; a.rel = 'noopener'; a.style.display = 'block'; b.appendChild(a); }
+      });
+      UI.msgs.appendChild(b);
+    });
+    if (first && !UI.msgs.childNodes.length) UI.msgs.appendChild(el('div', 'empty', 'No messages here yet.'));
+    if ((j.messages || []).length) UI.msgs.scrollTop = UI.msgs.scrollHeight;
+  }
+  async function sendDiscord(text) {
+    text = String(text || '').trim().slice(0, 1500); if (!text || !DC.open) return;
+    var j = await bridge('send', { channel: DC.open.id, text: text });
+    if (j.status !== 200) UI.msgs.appendChild(el('div', 'm', j.error === 'slow' ? 'Slow down a little: one message a second.' : 'That message could not be sent to Discord.'));
+    pollDiscord(false);
   }
 
   function openPanel() {
@@ -417,6 +503,7 @@
   function openChat(otherKey, name) {
     if (!UI || !WW.me || !otherKey || otherKey === WW.me.key) return;
     if (msgsRef && msgsCb) msgsRef.off('child_added', msgsCb);
+    stopDiscord(); UI.tabs.hidden = true;
     openOther = otherKey; openName = name || (threads[otherKey] && threads[otherKey].name) || otherKey;
     UI.panel.hidden = false; UI.list.hidden = true; UI.chat.hidden = false;
     UI.back.hidden = false; UI.view.hidden = false; UI.title.textContent = openName;

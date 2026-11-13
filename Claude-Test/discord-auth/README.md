@@ -18,3 +18,16 @@ Settings > Sign-in methods shows Google, Email & password and Discord as Connect
 - `POST /link` (idToken + next): links Discord to the signed-in account, even if the Discord e-mail differs.
 - `POST /unlink` (idToken): unlinks; refused if it would be the only sign-in method. Unlinking also turns off e-mail matching for that account until it is linked again.
 - Writes (admin only): `discord_links/{discordId}` = uid and `auth_links/{uid}/discord`. Add the matching rules from `database.rules.json` (`auth_links` readable by its owner, `discord_links` closed).
+
+## Discord server bridge (the "Discord" pill in the site messenger)
+
+`bridge.js` lets signed-in site users who have Discord linked, and who are members of the bridged server, read and post in that server's text channels from the site messenger.
+
+Setup, once:
+
+1. Discord Developer Portal -> your application -> **Bot**: turn on **Message Content Intent**, then **Reset Token** and copy the token.
+2. Save the token in Firebase at `user_secrets/{owner key}/discord_bot_token` (never in the repo).
+3. Portal -> **OAuth2 -> URL Generator**: scope `bot`; permissions View Channels, Read Message History, Send Messages, Manage Webhooks. Open the generated link and add the bot to the server.
+4. The server is picked by invite code: Firebase `discord_bridge/invite`, else env `DISCORD_BRIDGE_INVITE`.
+
+Only channels the bot can read are shown, so hide a channel from the bot's role to keep it off the site. Posts from the site appear under the person's Discord name and avatar (via a "Pack Hub" webhook) and can never ping @everyone, roles or users.

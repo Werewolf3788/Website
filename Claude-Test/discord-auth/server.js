@@ -17,6 +17,7 @@
  *      The Discord Application ID (= OAuth client id) is read from Firebase:
  *      users/{DISCORD_APP_OWNER_KEY}/discord_signin_id  (saved from Settings).
  *      DISCORD_CLIENT_ID can override it.
+ *      Discord server bridge for the messenger: see bridge.js (bot token in Firebase user_secrets).
  * ========================================================================== */
 'use strict';
 const crypto = require('crypto');
@@ -99,6 +100,7 @@ function createApp(deps) {
   }
 
   app.get('/health', (_req, res) => res.send('ok'));
+  require('./bridge').mountBridge(app, { admin, fetchFn, cors });   // Discord server channels in the site messenger
 
   app.get('/login', async (req, res) => {
     const next = safeNext(req.query.next);
