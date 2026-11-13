@@ -237,11 +237,11 @@ async function readKevinXboxAccounts() {
         if (!u || typeof u !== "object") continue;
         const me = readUser(emailKey, u);
         const wantsOwner = !!ownerApiKey && closeKeys.has(emailKey) && emailKey !== OWNER_KEY && (me.gamertag || me.xuid);
-        const hasOwn = !!(me.gamertag && me.apiKey);
+        const hasOwn = !!(me.apiKey && (me.gamertag || me.xuid));
         const sec = (secrets && secrets[emailKey]) || {};
         console.log(`[KEY] ${emailKey}: gamertag=${me.gamertag ? "yes" : "no"} ownKey=${me.apiKey ? "yes" : "no"} (secrets=${sec.xbox_api_key ? "y" : "n"} users=${u.xbox_api_key ? "y" : "n"} gaming=${(u.gaming_platforms || {}).xbox_api_key ? "y" : "n"}) close=${closeKeys.has(emailKey)}`);
         if (hasOwn) {
-            accounts.push({ emailKey, gamertag: me.gamertag, apiKey: me.apiKey, backupKey: wantsOwner ? ownerApiKey : null, xuid: me.xuid || null, updatedAt: me.updatedAt, viaFriendKey: false });
+            accounts.push({ emailKey, gamertag: me.gamertag || null, apiKey: me.apiKey, backupKey: wantsOwner ? ownerApiKey : null, xuid: me.xuid || null, updatedAt: me.updatedAt, viaFriendKey: !me.gamertag, keyOwnerEmailKey: emailKey });
         } else if (wantsOwner) {
             if (shared >= MAX_SHARED_FRIENDS_PER_KEY * 4) { skippedOverCap++; }
             else { shared++; borrowed++; const i = borrowed - 1; accounts.push({ emailKey, gamertag: me.gamertag || null, apiKey: pool[i % pool.length], backupKey: pool.length > 1 ? pool[(i + 1) % pool.length] : null, xuid: me.xuid || null,

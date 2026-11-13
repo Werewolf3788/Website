@@ -294,3 +294,28 @@
 
 // site-wide achievement pop-ups (shared with the rest of the site)
 (function () { try { var s = document.createElement('script'); s.src = '../Claude-Test/ww-ach-toast.js'; s.defer = true; document.head.appendChild(s); } catch (e) {} })();
+
+// ---- auto-update: when new game files are deployed, show a "tap to refresh" bar (no more Ctrl+F5). Checks every minute and when you come back to the tab.
+(function () {
+  try {
+    var files = ['js/common.js', 'js/gamenav.js', 'js/farm3d.js', 'js/world.js', 'js/config.js', location.pathname.split('/').pop() || 'index.html'], base = {}, shown = false;
+    function sig(f) { return fetch(f, { method: 'HEAD', cache: 'no-store' }).then(function (r) { return r.ok ? (r.headers.get('etag') || r.headers.get('last-modified') || r.headers.get('content-length') || '') : ''; }).catch(function () { return ''; }); }
+    function check(first) {
+      if (shown) return;
+      Promise.all(files.map(sig)).then(function (s) {
+        var changed = false;
+        files.forEach(function (f, i) { if (!s[i]) return; if (first || base[f] === undefined) base[f] = s[i]; else if (base[f] !== s[i]) changed = true; });
+        if (changed) banner();
+      });
+    }
+    function banner() {
+      if (shown) return; shown = true;
+      var b = document.createElement('button'); b.textContent = '🔄 New update ready: tap to refresh';
+      b.style.cssText = 'position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));transform:translateX(-50%);z-index:2147483100;padding:10px 16px;border-radius:999px;border:2px solid #fff;background:#16a34a;color:#fff;font:700 14px system-ui,sans-serif;box-shadow:0 4px 16px #0008';
+      b.onclick = function () { b.textContent = 'Refreshing…'; setTimeout(function () { location.reload(); }, 400); }; document.body.appendChild(b);
+    }
+    setTimeout(function () { check(true); }, 3000);
+    setInterval(function () { check(false); }, 60000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) check(false); });
+  } catch (e) {}
+})();
