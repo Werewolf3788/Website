@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 1081.187744,
-  "currentDay": 64,
-  "currentMonotonicDay": 91,
-  "realHourTimer": 3541800,
+  "dayTime": 1.267732,
+  "currentDay": 65,
+  "currentMonotonicDay": 92,
+  "realHourTimer": 3537000,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,7 +15,7 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 33,
+   "timeSinceLastRain": 393,
    "forecast": {
     "instance": [
      {
@@ -285,10 +285,26 @@
     ]
    },
    "fog": {
-    "alpha": 1.0,
+    "alpha": 0.021111,
     "visibilityAlpha": 0.0,
     "duration": 3600000.0,
     "target": {
+     "groundFog": {
+      "coverageEdge0": 0.390385,
+      "coverageEdge1": 0.984416,
+      "extraHeight": 12.131821,
+      "groundLevelDensity": 0.022487,
+      "minValleyDepth": 4.530824,
+      "startDayTimeMinutes": 240,
+      "endDayTimeMinutes": 596,
+      "weatherTypes": "SUN CLOUDY"
+     },
+     "heightFog": {
+      "maxHeight": 512.066345,
+      "groundLevelDensity": 0.09722
+     }
+    },
+    "last": {
      "groundFog": {
       "coverageEdge0": 0.122312,
       "coverageEdge1": 0.65102,
@@ -302,22 +318,6 @@
      "heightFog": {
       "maxHeight": 506.864807,
       "groundLevelDensity": 0.120985
-     }
-    },
-    "last": {
-     "groundFog": {
-      "coverageEdge0": 0.399702,
-      "coverageEdge1": 0.771357,
-      "extraHeight": 14.762264,
-      "groundLevelDensity": 0.197287,
-      "minValleyDepth": 6.209062,
-      "startDayTimeMinutes": 201,
-      "endDayTimeMinutes": 580,
-      "weatherTypes": "SUN CLOUDY"
-     },
-     "heightFog": {
-      "maxHeight": 431.342346,
-      "groundLevelDensity": 0.196561
      }
     }
    },
