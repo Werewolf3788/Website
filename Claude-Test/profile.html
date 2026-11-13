@@ -286,8 +286,8 @@ async function loadPlatforms() {
     let d = null;
     try { d = await fns[p](id); } catch (e) { console.warn('[profile]', p, e); }
     if (d && Array.isArray(d.games)) d.games = dedupeGames(d.games, g => normTitle(g.title), furtherAlong);
-    // keep the platform visible even with no synced data, so it never silently disappears
-    S.plat[p] = d || { platform:p, name:id, avatar:'', online:false, currentGame:'', activity:'', stats:[['Status','No data yet']], games:[], recent:[], empty:true };
+    // a platform with nothing synced yet stays hidden; it shows up as soon as it has data
+    if (d) S.plat[p] = d; else delete S.plat[p];
   }));
 }
 
@@ -350,9 +350,12 @@ async function loadXbox(tag) {
   // 1) Kevin's DB through the member's sign-in (Xbox sync mirrors cards here)
   for (const t of tags) { if (d) break; try { d = (await W.db.ref('xbox/gamertags/' + t.replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); } catch (e) {} }
   // 2) the sync's original home in Ray's DB, then public REST on Kevin's DB
+  // 1b) the same card is also copied under /psn/xbox_cards, a path the live database rules already allow the site to read
+  for (const t of tags) { if (d) break; try { d = (await W.db.ref('psn/xbox_cards/' + t.replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); } catch (e) {} }
   outer: for (const base of d ? [] : [...new Set([RAY_DB, DB()])]) for (const t of tags) {
-    try { const r = await fetch(`${base}/xbox/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
-      if (r.ok) { d = await r.json(); if (d) break outer; } } catch (e) {}
+    for (const path of ['psn/xbox_cards/' + t.replace(/[.$#\[\]\/]/g, '_'), 'xbox/gamertags/' + encodeURIComponent(t)]) {
+      try { const r = await fetch(`${base}/${path}.json?t=${Date.now()}`); if (r.ok) { d = await r.json(); if (d) break outer; } } catch (e) {}
+    }
   }
   if (!d) return null;
   const online = /online/i.test(d.presenceState || '');

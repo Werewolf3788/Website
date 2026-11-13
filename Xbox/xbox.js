@@ -102,7 +102,9 @@ async function mirrorToKevin(tag, card) {
         if (!kevinWriteDb) return;
         const pub = JSON.parse(JSON.stringify(card));
         delete pub.sourceEmailKey; delete pub.keyOwnerEmailKey; delete pub.syncedViaFriendKey;
-        await kevinWriteDb.ref(`xbox/gamertags/${String(tag).replace(/[.$#\[\]\/]/g, "_")}`).set(pub);
+        const k = String(tag).replace(/[.$#\[\]\/]/g, "_");
+        await kevinWriteDb.ref(`xbox/gamertags/${k}`).set(pub);
+        await kevinWriteDb.ref(`psn/xbox_cards/${k}`).set(pub);   // same card under /psn, which the live rules already let the site read
     } catch (e) { console.warn(`[KEVIN DB] Xbox mirror failed for ${tag}: ${e.message}`); }
 }
 
@@ -441,6 +443,7 @@ async function main() {
 
             await rtdbRef(`gamertags/${profile.gamertag}`).set(card);
             await mirrorToKevin(profile.gamertag, card);
+            try { await rayDb.ref(`psn/xbox_cards/${String(profile.gamertag).replace(/[.$#\[\]\/]/g, "_")}`).set(JSON.parse(JSON.stringify(card, (k2, v) => (k2 === "sourceEmailKey" || k2 === "keyOwnerEmailKey" || k2 === "syncedViaFriendKey") ? undefined : v))); } catch (e) { console.warn(`[XBOX] Ray psn copy failed: ${e.message}`); }
             usersByGamerTag[profile.gamertag] = acc.emailKey;
             okCount++;
             const xuidNote = profile.xuidVerified === true ? ", XUID verified" : profile.xuidVerified === false ? ", XUID MISMATCH" : "";
@@ -457,6 +460,8 @@ async function main() {
     for (const [label, base] of [["Ray DB", "https://playstation-stats-default-rtdb.firebaseio.com/xbox"], ["Kevin DB", `${KEVIN_RTDB_URL}/xbox`]]) {
         for (const tag of Object.keys(usersByGamerTag).slice(0, 1)) {
             try {
+                const r2 = await fetch(`${base.replace(/\/xbox$/, "")}/psn/xbox_cards/${encodeURIComponent(tag)}.json?shallow=true`);
+                console.log(`[CHECK] public read ${label} psn/xbox_cards/${tag}: HTTP ${r2.status} ${(await r2.text()).slice(0, 100)}`);
                 const r = await fetch(`${base}/gamertags/${encodeURIComponent(tag)}.json?shallow=true`);
                 const t = (await r.text()).slice(0, 120);
                 console.log(`[CHECK] public read ${label} xbox/gamertags/${tag}: HTTP ${r.status} ${t}`);
