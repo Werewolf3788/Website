@@ -5103,10 +5103,10 @@
           "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/bagger.jpg"
         },
         {
-          "id": "ribbon_ignition_inhibitor",
-          "name": "Ignition Inhibitor",
-          "requirement": "Disable the engine of 3 vehicles.",
-          "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/ignition_inhibitor.jpg"
+          "id": "ribbon_armored_annihilator",
+          "name": "Armored Annihilator",
+          "requirement": "Destroy a 222 Armored Car.",
+          "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/armored_annihilator.jpg"
         }
       ],
       "lethal": [
@@ -5139,12 +5139,6 @@
           "name": "Close Quarters",
           "requirement": "Perform 10 lethal takedowns.",
           "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/brawler.jpg"
-        },
-        {
-          "id": "ribbon_armored_annihilator",
-          "name": "Armored Annihilator",
-          "requirement": "Destroy a 222 Armored Car.",
-          "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/armored_annihilator.jpg"
         },
         {
           "id": "ribbon_pistol_expert",
@@ -5208,6 +5202,12 @@
           "name": "Conscientious Affecter",
           "requirement": "Knock 15 enemies unconscious with non-lethal ammo.",
           "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/merciful.jpg"
+        },
+        {
+          "id": "ribbon_ignition_inhibitor",
+          "name": "Ignition Inhibitor",
+          "requirement": "Disable the engine of 3 vehicles.",
+          "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/ignition_inhibitor.jpg"
         }
       ]
     },
@@ -5556,15 +5556,15 @@
           "name": "Team Match Victory",
           "requirement": "Win a Team Match.",
           "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/team_match_victory.jpg"
-        }
-      ],
-      "support": [
+        },
         {
           "id": "mp_decorated_soldier",
           "name": "Decorated Soldier",
           "requirement": "Earn 3 Accolades in a match.",
           "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/decorated_soldier.jpg"
-        },
+        }
+      ],
+      "support": [
         {
           "id": "mp_squad_saviour",
           "name": "Squad Saviour",
