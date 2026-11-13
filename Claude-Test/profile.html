@@ -361,8 +361,8 @@ async function loadXbox(tag) {
   const online = /online/i.test(d.presenceState || '');
   const games = arr(d.recentTitles).map(t => {
     const total = num(t.totalAchievements), got = num(t.currentAchievements);
-    return { platform:'xbox', id:String(t.titleName), title:t.titleName || 'Game', poster:'', progress: total ? Math.round(got / total * 100) : 0,
-      earned:got, total:total || undefined, hours:t.totalGamerscore ? `${num(t.currentGamerscore)}/${num(t.totalGamerscore)} G` : '', lastPlayed:'',
+    return { platform:'xbox', id:String(t.titleName), title:t.titleName || 'Game', poster:secure(t.image || ''), progress: total ? Math.round(got / total * 100) : 0,
+      earned:got, total:total || undefined, hours:t.totalGamerscore ? `${num(t.currentGamerscore)}/${num(t.totalGamerscore)} G` : '', lastPlayed:t.lastPlayed || '',
       playing: online && !!d.presenceText && String(d.presenceText).toLowerCase().includes(String(t.titleName || '').toLowerCase()), achievements:[] };
   });
   const gotAll = games.reduce((n, g) => n + num(g.earned), 0);
