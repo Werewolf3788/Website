@@ -228,9 +228,11 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     if (!sorted.length) return;
     const key = (t) => `${t.commId || t.npCommunicationId || ''}:${t.trophyId}:${t.timestamp || ''}`;
     if (firstCard || lastToastKey === null) { lastToastKey = key(sorted[0]); return; }
-    const fresh = [];
-    for (const t of sorted) { if (key(t) === lastToastKey) break; fresh.push(t); }
-    if (fresh.length) { lastToastKey = key(sorted[0]); if (CFG.toast) { fresh.reverse().forEach(t => toastQueue.push(t)); showNextToast(); } }
+    // Only ever pop the single newest trophy (index 0), and only when it actually changed.
+    const newest = sorted[0];
+    if (key(newest) === lastToastKey) return;
+    lastToastKey = key(newest);
+    if (CFG.toast) { toastQueue.length = 0; toastQueue.push(newest); showNextToast(); }
   }
 
   // ---- game tracker panel (site saves)
