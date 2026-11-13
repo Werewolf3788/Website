@@ -76,7 +76,7 @@
 </head>
 <body>
 <div id="top">
-  <span>🏙️ <b id="roomLabel">Property Tycoon</b> · 👥 <b id="count">1</b></span>
+  <span>🏙️ <b id="roomLabel">Monopoly</b> · 👥 <b id="count">1</b></span>
   <span>💵 <b id="bank">—</b> · 🏆 <b id="wins">0</b></span>
   <span><button id="snd" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
 </div>
@@ -776,7 +776,7 @@
   $('shareBtn').onclick = function () {
     if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
     var url = location.origin + location.pathname + '?room=' + cloudCode;
-    if (navigator.share) navigator.share({ title: 'Join my Property Tycoon game', text: 'Table ' + cloudCode, url: url }).catch(function () {});
+    if (navigator.share) navigator.share({ title: 'Join my Monopoly game', text: 'Table ' + cloudCode, url: url }).catch(function () {});
     else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); });
     else say('Share this code: ' + cloudCode);
   };
@@ -799,7 +799,7 @@
   }
   function publish() {
     if (!S || mySeat() < 0 || WW.mode !== 'cloud') return;
-    WW.publishPlaying({ game: 'tycoon', title: 'Property Tycoon', room: cloudCode, status: statusText(S), open: seatCounts(S).open });
+    WW.publishPlaying({ game: 'tycoon', title: 'Monopoly', room: cloudCode, status: statusText(S), open: seatCounts(S).open });
   }
   function publishSoon() { clearTimeout(pubTimer); pubTimer = setTimeout(publish, 1500); }
   setInterval(publish, 30000);
@@ -816,7 +816,7 @@
     var key = 'tycoon_' + (cloudCode || 'solo') + '_' + s.gid; if (statKey === key) return; statKey = key;
     var opp = [], win = null;
     seated(s).forEach(function (p) { var st = seatOf(s, p), o = { n: st.name, b: !!st.bot }; if (!st.bot) o.u = st.uid; if (p === s.winner) win = o; if (p !== ms) opp.push(o); });
-    var added = await WW.recordResult(key, { game: 'tycoon', title: 'Property Tycoon', room: cloudCode || 'solo', result: s.winner === ms ? 'win' : 'loss', opp: opp, winner: win });
+    var added = await WW.recordResult(key, { game: 'tycoon', title: 'Monopoly', room: cloudCode || 'solo', result: s.winner === ms ? 'win' : 'loss', opp: opp, winner: win });
     if (!added) return;
     var sv = (await WW.loadSave('tycoon')) || {};
     sv.played = (sv.played | 0) + 1; if (s.winner === ms) sv.wins = (sv.wins | 0) + 1;
@@ -832,7 +832,7 @@
         var meta = (await ref.child('meta').once('value')).val();
         if (!meta) {
           if (roomId === code) await ref.child('meta').set({ host: myName, created: firebase.database.ServerValue.TIMESTAMP });
-          else { gate('Table ' + roomId + ' not found. Ask your friend to open Property Tycoon once first.', false); return; }
+          else { gate('Table ' + roomId + ' not found. Ask your friend to open Monopoly once first.', false); return; }
         }
         me = user; cloudCode = roomId; WW.mode = 'cloud';
         $('roomLabel').textContent = (roomId === code ? 'My table' : 'Friend’s table') + ' · ' + roomId;

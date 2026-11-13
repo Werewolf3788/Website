@@ -663,6 +663,11 @@ async function begin(user, myCode) {
         if (pr && pr.game === 'farm' && pr.t && nowMs() - pr.t < 150000) { meta = { host: pr.n || hostCode, created: firebase.database.ServerValue.TIMESTAMP }; await roomRef.child('meta').set(meta); }
         else { gate('Multiplayer farm ' + hostCode + ' not found. Your friend is not playing right now. Ask them to open Neighborly Acre first.', { back: true }); return; }
       } }
+      if (isMP) {   // up to 8 farmers at a time
+        const live = (await roomRef.child('players').once('value')).val() || {}, nowT = nowMs();
+        const others = Object.keys(live).filter(function (u) { return u !== user.uid && nowT - ((live[u] && live[u].t) || 0) < 45000; }).length;
+        if (others >= 8) { gate('This farm is full (8 players). Try again in a minute, or start your own from the hub.', { back: true }); return; }
+      }
       hostName = meta.host || ''; me = user; cloudCode = hostCode || myCode; hostIsMe = !isMP || hostCode === myCode;
       $('roomLabel').textContent = isMP ? 'Multiplayer · ' + (hostName ? hostName + '\u2019s farm' : hostCode) : 'Solo farm';
     } catch (e) { console.warn(e); gate('Your online farm could not be opened (' + (e.code || e.message || 'permission denied') + '). The game database rules need to be published in Firebase — nothing is saved to this device while you are signed in.', { back: true }); return; }

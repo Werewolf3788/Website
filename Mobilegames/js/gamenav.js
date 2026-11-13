@@ -5,7 +5,8 @@
   var GAMES = [
     { n: 'Neighborly Acre', i: '🌾', d: '3D co-op farm: crops, animals, tractor', u: 'Mobilegames/farm.html', k: 'farm' },
     { n: 'Wahoo', i: '🎲', d: 'Race your pegs around the board', u: 'Mobilegames/wahoo.html', k: 'wahoo' },
-    { n: 'Property Tycoon', i: '🏙️', d: 'Buy, trade and build properties', u: 'Mobilegames/tycoon.html', k: 'tycoon' }
+    { n: 'Monopoly', i: '🏙️', d: 'Buy, trade and build properties', u: 'Mobilegames/tycoon.html', k: 'tycoon' },
+    { n: 'Frogger', i: '🐸', d: 'Hop across traffic, up to 8 players', u: 'Mobilegames/frogger.html', k: 'frogger' }
   ];
   var HUBS = [{ n: 'All games hub', u: 'Mobilegames/' }, { n: 'Main site', u: '' }];
   var ov = document.createElement('div');

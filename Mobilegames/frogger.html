@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Frogger</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;align-items:center;height:100%}
+  #top{width:100%;padding:6px 12px;font-size:.82rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.5}
+  #top button,#top a{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;text-decoration:none;padding:0 2px}
+  #board{width:100%;padding:3px 10px;font-size:.78rem;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;background:#0f172a;min-height:22px}
+  #board span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  #board i{display:inline-block;width:.75em;height:.75em;border-radius:50%}
+  #stage{position:relative;flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:0}
+  canvas{display:block;touch-action:none;border-radius:10px;box-shadow:0 6px 24px #000a}
+  #toast{position:absolute;top:10px;left:0;right:0;text-align:center;color:#fde68a;font-weight:700;text-shadow:0 1px 4px #000;pointer-events:none;min-height:1.3em}
+  #pad{display:none;position:relative;width:168px;height:132px;margin:4px 0 calc(6px + env(safe-area-inset-bottom));flex:none}
+  body.touch #pad{display:block}
+  #pad button{position:absolute;width:56px;height:56px;border-radius:14px;border:0;background:#334155;color:#e2e8f0;font-size:1.5rem;touch-action:manipulation}
+  #pad button:active{background:#22c55e;color:#04210f}
+  #ov{position:fixed;inset:0;z-index:20;background:#000b;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px}
+  #ov button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:12px 18px;font:inherit;cursor:pointer}
+  #ov button.alt{background:#334155;color:#e2e8f0}
+  #ovT{font-size:1.4rem;font-weight:800} #ovS{color:#cbd5e1}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top"><span>🐸 <b id="roomLabel">Frogger</b> · 👥 <b id="count">1</b></span><span id="lives"></span><span>⭐ <b id="score">0</b>/<span id="goal">10</span> · best <b id="best">0</b></span><span><button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span></div>
+  <div id="board"></div>
+  <div id="stage"><canvas id="c"></canvas><div id="toast"></div></div>
+  <div id="pad"><button data-d="u" style="left:56px;top:0">▲</button><button data-d="l" style="left:0;top:66px">◀</button><button data-d="d" style="left:56px;top:66px">▼</button><button data-d="r" style="left:112px;top:66px">▶</button></div>
+</div>
+<div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button><button id="ovBtn2" class="alt" style="display:none"></button></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>document.write('<script src="js/common.js"><\/script>');</script>
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var COLS = 13, ROWS = 13, GOAL = 10, MAXP = 8, LOOP = COLS + 8;
+  var ROAD_ROWS = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11];
+  var COLORS = ['#22c55e', '#f97316', '#38bdf8', '#e879f9', '#facc15', '#f43f5e', '#a3e635', '#94a3b8'];
+  var CAR_COLORS = ['#ef4444', '#3b82f6', '#eab308', '#f8fafc', '#a855f7', '#14b8a6', '#f97316', '#64748b'];
+  var qs = new URLSearchParams(location.search), roomCode = (qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var isMP = !!roomCode, roomRef = null, me = null, myName = 'Frog', mid = 0, winner = null, players = {}, lastSent = 0, lastBeat = 0;
+  var cv = $('c'), ctx = cv.getContext('2d'), cell = 32, dpr = Math.min(2, window.devicePixelRatio || 1);
+  var lanes = [], level = 1, score = 0, deaths = 0, lives = 3, best = +(localStorage.getItem('frogger_best') || 0) || 0, over = false, started = false;
+  var frog = { x: 6, y: 0, px: 6, py: 0, fx: 6, fy: 0, hop: 1, alive: true, deadAt: 0, face: 0 }, splats = [], flash = 0;
+  var queue = [], pad = false;
+
+  // ---------------------------------------------------------------- shared, deterministic traffic
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function buildLanes(seed, lvl) {
+    var r = rng(seed), mul = 1 + 0.14 * (lvl - 1); if (mul > 2.4) mul = 2.4;
+    return ROAD_ROWS.map(function (row, i) {
+      var dir = (i % 2 ? 1 : -1) * (r() < .12 ? -1 : 1), speed = (1.5 + r() * 1.7) * mul, k = r() < .45 ? 3 : 4, list = [];
+      for (var n = 0; n < k; n++) {
+        var kind = r(), len = kind < .5 ? 1.05 : kind < .75 ? 1.5 : 2.5, type = len > 2 ? 'truck' : len > 1.2 ? 'van' : 'car';
+        list.push({ base: n * LOOP / k + (r() - .5) * .6, len: len, type: type, color: CAR_COLORS[Math.floor(r() * CAR_COLORS.length)] });
+      }
+      return { row: row, dir: dir, speed: speed, cars: list };
+    });
+  }
+  function clock() { return (isMP && window.WW && WW.mode === 'cloud' ? WW.now() : Date.now()) / 1000; }
+  function carX(l, c, t) { var x = (((c.base + l.dir * l.speed * t) % LOOP) + LOOP) % LOOP; return x - 4; }
+  function laneOf(row) { for (var i = 0; i < lanes.length; i++) if (lanes[i].row === row) return lanes[i]; return null; }
+  function seedNow() { return (isMP ? hash(roomCode) : hash('solo' + level + ':' + (frog.seed || 0))) + (isMP ? mid * 7919 : level * 104729); }
+  function regen() { lanes = buildLanes(seedNow(), isMP ? 1 : level); }
+
+  // ---------------------------------------------------------------- sizing + static art
+  var bg = document.createElement('canvas');
+  function resize() {
+    var stage = $('stage'), padH = pad && !$('pad').offsetHeight ? 0 : 0;
+    var w = stage.clientWidth - 8, h = stage.clientHeight - 6; cell = Math.max(16, Math.floor(Math.min(w / COLS, h / ROWS)));
+    cv.width = cell * COLS * dpr; cv.height = cell * ROWS * dpr; cv.style.width = cell * COLS + 'px'; cv.style.height = cell * ROWS + 'px';
+    bg.width = cv.width; bg.height = cv.height; paintBackground();
+  }
+  function py2(row) { return (ROWS - 1 - row) * cell; }   // canvas y of a board row (row 0 = bottom)
+  function paintBackground() {
+    var g = bg.getContext('2d'), s = dpr; g.setTransform(s, 0, 0, s, 0, 0); var r = rng(7);
+    for (var row = 0; row < ROWS; row++) {
+      var y = py2(row), road = ROAD_ROWS.indexOf(row) >= 0;
+      if (road) {
+        var gr = g.createLinearGradient(0, y, 0, y + cell); gr.addColorStop(0, '#30343c'); gr.addColorStop(1, '#262a31'); g.fillStyle = gr; g.fillRect(0, y, cell * COLS, cell);
+        for (var i = 0; i < cell * COLS / 4; i++) { g.fillStyle = r() < .5 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.06)'; g.fillRect(r() * cell * COLS, y + r() * cell, 1.5, 1.5); }
+        var below = ROAD_ROWS.indexOf(row - 1) >= 0, above = ROAD_ROWS.indexOf(row + 1) >= 0;
+        g.fillStyle = 'rgba(245,245,235,.85)';
+        if (above) { for (var x = 0; x < COLS * 2; x++) g.fillRect(x * cell / 2 + cell * .08, y + cell * .04, cell * .3, Math.max(2, cell * .06)); }
+        if (!below) g.fillRect(0, y + cell - Math.max(2, cell * .07), cell * COLS, Math.max(2, cell * .07));
+        if (!above) g.fillRect(0, y, cell * COLS, Math.max(2, cell * .07));
+      } else {
+        g.fillStyle = (row % 2) ? '#3c8a38' : '#3f9140'; g.fillRect(0, y, cell * COLS, cell);
+        for (var j = 0; j < cell * COLS / 3; j++) { g.fillStyle = r() < .5 ? 'rgba(20,70,20,.35)' : 'rgba(150,220,110,.28)'; g.fillRect(r() * cell * COLS, y + r() * cell, 1.5, Math.max(2, cell * .12)); }
+        if (row === ROWS - 1) { g.fillStyle = 'rgba(255,255,255,.12)'; for (var k = 0; k < COLS; k += 2) g.fillRect(k * cell, y, cell, cell); g.fillStyle = '#fde68a'; g.font = '700 ' + Math.floor(cell * .5) + 'px system-ui'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('🏁', cell * COLS / 2, y + cell / 2); }
+      }
+    }
+    var v = g.createRadialGradient(cell * COLS / 2, cell * ROWS / 2, cell * 4, cell * COLS / 2, cell * ROWS / 2, cell * 10); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.28)'); g.fillStyle = v; g.fillRect(0, 0, cell * COLS, cell * ROWS);
+  }
+
+  // ---------------------------------------------------------------- drawing
+  function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+  function drawVehicle(g, l, c, t) {
+    var x = carX(l, c, t) * cell, y = py2(l.row), w = c.len * cell, h = cell * .74, top = y + (cell - h) / 2;
+    if (x > cell * COLS || x + w < 0) return;
+    g.save(); g.translate(x + w / 2, top + h / 2); if (l.dir < 0) g.scale(-1, 1); var hw = w / 2, hh = h / 2;
+    g.fillStyle = 'rgba(0,0,0,.35)'; rr(g, -hw + 2, -hh + 4, w, h, 6); g.fill();                         // shadow
+    g.fillStyle = '#111'; [[-hw + w * .16, -hh - 2], [hw - w * .34, -hh - 2], [-hw + w * .16, hh - 2], [hw - w * .34, hh - 2]].forEach(function (p) { g.fillRect(p[0], p[1], Math.max(4, w * .18), 4); });   // wheels
+    var gr = g.createLinearGradient(0, -hh, 0, hh); gr.addColorStop(0, shade(c.color, 28)); gr.addColorStop(.5, c.color); gr.addColorStop(1, shade(c.color, -35));
+    g.fillStyle = gr;
+    if (c.type === 'truck') {
+      var cab = w * .28; rr(g, -hw, -hh, w - cab + 4, h, 4); g.fillStyle = '#e5e7eb'; g.fill(); g.fillStyle = 'rgba(0,0,0,.12)'; for (var i = 1; i < 4; i++) g.fillRect(-hw + (w - cab) * i / 4, -hh + 2, 1.5, h - 4);
+      g.fillStyle = gr; rr(g, hw - cab, -hh + 1, cab, h - 2, 5); g.fill(); g.fillStyle = '#1e293b'; rr(g, hw - cab * .55, -hh + 4, cab * .4, h - 8, 3); g.fill();
+    } else {
+      rr(g, -hw, -hh, w, h, 7); g.fill(); g.fillStyle = 'rgba(15,23,42,.88)'; rr(g, -hw + w * .26, -hh + 3, w * .34, h - 6, 4); g.fill();            // glass
+      g.fillStyle = 'rgba(255,255,255,.18)'; rr(g, -hw + w * .3, -hh + 4, w * .18, (h - 8) * .45, 3); g.fill();
+    }
+    g.fillStyle = '#fef9c3'; g.fillRect(hw - 3, -hh + 2, 3, 4); g.fillRect(hw - 3, hh - 6, 3, 4);                                                      // headlights
+    g.fillStyle = 'rgba(254,249,195,.12)'; g.beginPath(); g.moveTo(hw, -hh + 3); g.lineTo(hw + cell * .9, -hh - 4); g.lineTo(hw + cell * .9, hh + 4); g.lineTo(hw, hh - 3); g.fill();
+    g.fillStyle = '#dc2626'; g.fillRect(-hw, -hh + 2, 2.5, 4); g.fillRect(-hw, hh - 6, 2.5, 4);                                                        // taillights
+    g.restore();
+  }
+  function shade(hex, amt) { var n = parseInt(hex.slice(1), 16), r = Math.max(0, Math.min(255, (n >> 16) + amt)), gg = Math.max(0, Math.min(255, ((n >> 8) & 255) + amt)), b = Math.max(0, Math.min(255, (n & 255) + amt)); return 'rgb(' + r + ',' + gg + ',' + b + ')'; }
+  function drawFrog(g, x, y, color, hopK, face, name, ghost, dead) {
+    var cx = x * cell + cell / 2, cy = py2(0) - y * cell + cell / 2, lift = Math.sin(Math.min(1, hopK) * Math.PI), s = 1 + lift * .22, R = cell * .4;
+    g.save(); g.globalAlpha = ghost ? .85 : 1;
+    g.fillStyle = 'rgba(0,0,0,' + (.3 - lift * .12) + ')'; g.beginPath(); g.ellipse(cx + 2, cy + 4, R * 1.05, R * .8, 0, 0, 7); g.fill();
+    g.translate(cx, cy - lift * cell * .16); g.rotate(face); g.scale(s, s);
+    if (dead) { g.fillStyle = color; g.globalAlpha = .9; g.beginPath(); g.ellipse(0, 0, R * 1.5, R * 1.2, 0, 0, 7); g.fill(); g.fillStyle = '#14532d'; g.font = '700 ' + Math.floor(cell * .4) + 'px system-ui'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('✕', 0, 0); g.restore(); return; }
+    var ext = lift * R * .5;
+    g.fillStyle = shade(color, -30); [[-1, -1], [1, -1]].forEach(function (p) { g.beginPath(); g.ellipse(p[0] * (R * .95 + ext * .3), p[1] * (R * .7 + ext), R * .42, R * .24, p[0] * .6, 0, 7); g.fill(); });  // front legs
+    [[-1, 1], [1, 1]].forEach(function (p) { g.beginPath(); g.ellipse(p[0] * (R * 1.0 + ext * .4), p[1] * (R * .6 + ext * 1.6), R * .5, R * .27, -p[0] * .7, 0, 7); g.fill(); });                       // back legs
+    var gr = g.createRadialGradient(-R * .3, -R * .3, R * .1, 0, 0, R * 1.3); gr.addColorStop(0, shade(color, 55)); gr.addColorStop(1, shade(color, -25)); g.fillStyle = gr;
+    g.beginPath(); g.ellipse(0, 0, R * .85, R * 1.05, 0, 0, 7); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.25)'; g.beginPath(); g.ellipse(-R * .2, -R * .3, R * .25, R * .4, 0, 0, 7); g.fill();
+    g.fillStyle = '#fff'; [-1, 1].forEach(function (p) { g.beginPath(); g.arc(p[0] * R * .5, -R * .8, R * .27, 0, 7); g.fill(); }); g.fillStyle = '#111'; [-1, 1].forEach(function (p) { g.beginPath(); g.arc(p[0] * R * .5, -R * .9, R * .13, 0, 7); g.fill(); });
+    g.restore();
+    if (name) { g.save(); g.font = '700 ' + Math.max(9, Math.floor(cell * .26)) + 'px system-ui'; g.textAlign = 'center'; g.fillStyle = '#fff'; g.strokeStyle = 'rgba(0,0,0,.8)'; g.lineWidth = 3; g.strokeText(name, cx, cy - cell * .52); g.fillText(name, cx, cy - cell * .52); g.restore(); }
+  }
+  function colorOf(uid) { var ids = Object.keys(players).concat(me ? [me.uid] : []).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(); var i = ids.indexOf(uid); return COLORS[(i < 0 ? 0 : i) % COLORS.length]; }
+
+  function draw(t) {
+    var g = ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.drawImage(bg, 0, 0, bg.width / dpr, bg.height / dpr);
+    splats.forEach(function (s) { drawFrog(g, s.x, s.y, s.c, 1, s.f, '', false, true); });
+    var others = Object.keys(players).filter(function (u) { return me && u !== me.uid; });
+    others.forEach(function (u) { var p = players[u]; if (!p || p.px === undefined) return; if (p.dx === undefined) { p.dx = p.px; p.dy = p.py; } p.dx += (p.px - p.dx) * .35; p.dy += (p.py - p.dy) * .35; if (p.alive !== false) drawFrog(g, p.dx, p.dy, colorOf(u), 0, 0, p.n, true, false); });
+    lanes.forEach(function (l) { l.cars.forEach(function (c) { drawVehicle(g, l, c, t); }); });
+    if (frog.alive && !over) drawFrog(g, frog.px, frog.py, isMP && me ? colorOf(me.uid) : COLORS[0], frog.hop, frog.face, isMP ? myName : '', false, false);
+    if (flash > 0) { g.fillStyle = 'rgba(250,204,21,' + flash * .35 + ')'; g.fillRect(0, 0, cell * COLS, cell * ROWS); flash -= .05; }
+  }
+
+  // ---------------------------------------------------------------- game logic
+  function say(t) { var el = $('toast'); el.textContent = t || ''; clearTimeout(say.t); if (t) say.t = setTimeout(function () { el.textContent = ''; }, 2200); }
+  function respawn() { frog.x = frog.px = frog.fx = Math.floor(COLS / 2); frog.y = frog.py = frog.fy = 0; frog.hop = 1; frog.alive = true; frog.face = 0; queue.length = 0; }
+  function die() {
+    if (!frog.alive) return; frog.alive = false; frog.deadAt = performance.now(); splats.push({ x: frog.px, y: frog.py, c: isMP && me ? colorOf(me.uid) : COLORS[0], f: frog.face, at: performance.now() }); deaths++;
+    if (!isMP) { lives--; hud(); if (lives <= 0) { setTimeout(gameOver, 700); return; } }
+    sendNow();
+  }
+  function hop(dx, dy) {
+    if (over || !started || !frog.alive || frog.hop < 1 || winner) return;
+    var nx = Math.max(0, Math.min(COLS - 1, frog.x + dx)), ny = Math.max(0, Math.min(ROWS - 1, frog.y + dy)); if (nx === frog.x && ny === frog.y) return;
+    frog.fx = frog.x; frog.fy = frog.y; frog.x = nx; frog.y = ny; frog.hop = 0; frog.face = dx > 0 ? Math.PI / 2 : dx < 0 ? -Math.PI / 2 : dy < 0 ? Math.PI : 0;
+  }
+  function crossed() {
+    score++; flash = 1; say('🐸 Made it! ' + score + '/' + GOAL);
+    if (!isMP && score % 3 === 0) { level++; regen(); say('Level ' + level + ': traffic speeds up'); }
+    if (score > best && !isMP) { best = score; try { localStorage.setItem('frogger_best', best); } catch (e) {} }
+    hud(); respawn();
+    if (isMP && score >= GOAL && !winner && roomRef) roomRef.child('state/win').transaction(function (c) { return c ? undefined : { u: me.uid, n: myName }; });
+    if (!isMP && score >= GOAL * 100) gameOver();
+    sendNow();
+  }
+  var lastT = performance.now();
+  function frame(now) {
+    var dt = Math.min(.05, (now - lastT) / 1000); lastT = now; var t = clock();
+    if (started && !over) {
+      if (frog.hop < 1) { frog.hop = Math.min(1, frog.hop + dt / .11); var k = frog.hop; frog.px = frog.fx + (frog.x - frog.fx) * k; frog.py = frog.fy + (frog.y - frog.fy) * k; if (frog.hop >= 1) { frog.px = frog.x; frog.py = frog.y; if (frog.y === ROWS - 1) crossed(); else if (queue.length) { var q = queue.shift(); hop(q[0], q[1]); } } }
+      if (frog.alive) {
+        var row = Math.round(frog.py), l = laneOf(row);
+        if (l && Math.abs(frog.py - row) < .45) { var a = frog.px + .5 - .27, b = frog.px + .5 + .27; l.cars.forEach(function (c) { var x = carX(l, c, t); if (b > x + .08 && a < x + c.len - .08) die(); }); }
+      } else if (now - frog.deadAt > 1000 && (isMP || lives > 0) && !winner) respawn();
+    }
+    splats = splats.filter(function (s) { return now - s.at < 1800; });
+    draw(t); if (isMP) send(now); requestAnimationFrame(frame);
+  }
+  function hud() {
+    $('score').textContent = score; $('best').textContent = best; $('goal').textContent = isMP ? GOAL : '∞';
+    $('lives').textContent = isMP ? '💀 ' + deaths : '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, 3 - lives));
+    if (!isMP) $('best').parentNode.style.display = ''; else $('best').parentNode.style.display = '';
+  }
+  function gameOver() {
+    over = true; $('ovT').textContent = '💀 Game over'; $('ovS').textContent = 'Score ' + score + ' · best ' + best + ' · level ' + level;
+    $('ovBtn').textContent = 'Play again'; $('ovBtn').onclick = restartSolo; $('ovBtn2').style.display = 'none'; $('ov').style.display = 'flex';
+  }
+  function restartSolo() { $('ov').style.display = 'none'; level = 1; score = 0; deaths = 0; lives = 3; over = false; frog.seed = Math.floor(Math.random() * 1e6); regen(); respawn(); hud(); }
+
+  // ---------------------------------------------------------------- input
+  var keymap = { ArrowUp: [0, 1], KeyW: [0, 1], ArrowDown: [0, -1], KeyS: [0, -1], ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0], Space: [0, 1] };
+  function input(d) { if (frog.hop < 1) { if (queue.length < 2) queue.push(d); } else hop(d[0], d[1]); }
+  window.addEventListener('keydown', function (e) { var d = keymap[e.code]; if (!d) return; e.preventDefault(); if (!e.repeat) input(d); });
+  var dm = { u: [0, 1], d: [0, -1], l: [-1, 0], r: [1, 0] };
+  Array.prototype.forEach.call(document.querySelectorAll('#pad button'), function (b) { b.addEventListener('pointerdown', function (e) { e.preventDefault(); input(dm[b.dataset.d]); }); });
+  var sx = 0, sy = 0, st = 0;
+  cv.addEventListener('pointerdown', function (e) { sx = e.clientX; sy = e.clientY; st = performance.now(); });
+  cv.addEventListener('pointerup', function (e) {
+    var dx = e.clientX - sx, dy = e.clientY - sy; if (Math.abs(dx) < 22 && Math.abs(dy) < 22) { if (performance.now() - st < 300) input([0, 1]); return; }
+    input(Math.abs(dx) > Math.abs(dy) ? [dx > 0 ? 1 : -1, 0] : [0, dy < 0 ? 1 : -1]);
+  });
+  if (matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window) { document.body.classList.add('touch'); pad = true; }
+  window.addEventListener('resize', resize);
+
+  // ---------------------------------------------------------------- multiplayer (up to 8, same traffic for everyone)
+  function activeCount() { var n = 0, now = WW.now(); Object.keys(players).forEach(function (u) { var p = players[u]; if (p && now - (p.t || 0) < 15000) n++; }); return n; }
+  function sendNow() { lastSent = 0; }
+  function send(now) {
+    if (!roomRef || !me) return;
+    if (now - lastSent > 110) { lastSent = now; roomRef.child('players/' + me.uid).update({ n: myName, px: +frog.px.toFixed(2), py: +frog.py.toFixed(2), s: score, d: deaths, alive: frog.alive }).catch(function () {}); }
+    if (now - lastBeat > 4000) { lastBeat = now; roomRef.child('players/' + me.uid + '/t').set(firebase.database.ServerValue.TIMESTAMP).catch(function () {}); publish(); }
+  }
+  function publish() { var n = Math.max(1, activeCount()); WW.publishPlaying({ game: 'frogger', title: 'Frogger', room: roomCode, status: n + ' of ' + MAXP + ' hopping · first to ' + GOAL, open: Math.max(0, MAXP - n) }); }
+  function drawBoard() {
+    var list = Object.keys(players).filter(function (u) { return players[u] && WW.now() - (players[u].t || 0) < 15000 || (me && u === me.uid); }).map(function (u) { var p = players[u] || {}; return { u: u, n: (me && u === me.uid) ? myName : (p.n || 'Frog'), s: (me && u === me.uid) ? score : (p.s | 0) }; });
+    list.sort(function (a, b) { return b.s - a.s; }); $('count').textContent = Math.max(1, list.length);
+    $('board').innerHTML = list.map(function (p) { return '<span><i style="background:' + colorOf(p.u) + '"></i>' + esc(p.n) + ' <b>' + p.s + '</b></span>'; }).join('');
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function onState(v) {
+    v = v || {}; var m = v.mid | 0;
+    if (m !== mid) { mid = m; winner = null; score = 0; deaths = 0; regen(); respawn(); splats = []; $('ov').style.display = 'none'; hud(); say('New match: first to ' + GOAL + '!'); }
+    if (v.win && !winner) {
+      winner = v.win; var mine = me && winner.u === me.uid;
+      $('ovT').textContent = mine ? '🏆 You win!' : '🏁 ' + winner.n + ' wins!'; $('ovS').textContent = 'First to ' + GOAL + ' crossings.';
+      $('ovBtn').textContent = 'Play again'; $('ovBtn').onclick = function () { roomRef.child('state').transaction(function (c) { return (c && c.win) ? { mid: (c.mid | 0) + 1 } : undefined; }); };
+      $('ovBtn2').textContent = 'Leave'; $('ovBtn2').style.display = ''; $('ovBtn2').onclick = function () { location.href = 'index.html'; }; $('ov').style.display = 'flex';
+      var opp = Object.keys(players).filter(function (u) { return me && u !== me.uid; }).map(function (u) { return { n: (players[u] && players[u].n) || 'Frog', u: u }; });
+      WW.recordResult('frogger_' + roomCode + '_' + mid, { game: 'frogger', title: 'Frogger', room: roomCode, result: mine ? 'win' : 'loss', opp: opp, winner: { n: winner.n, u: winner.u } });
+    }
+  }
+  function begin(user) {
+    $('ov').style.display = 'none';
+    if (!isMP) { WW.useLocal(); $('roomLabel').textContent = 'Frogger · solo'; $('shareBtn').style.display = 'none'; frog.seed = Math.floor(Math.random() * 1e6); regen(); respawn(); hud(); started = true; return; }
+    if (!user) { $('ovT').textContent = 'Sign in to join this game'; $('ovS').textContent = 'Room ' + roomCode + ' · up to ' + MAXP + ' players'; $('ovBtn').textContent = 'Sign in with Google'; $('ovBtn').onclick = WW.signIn; $('ovBtn2').textContent = 'Play solo'; $('ovBtn2').style.display = ''; $('ovBtn2').onclick = function () { location.href = 'frogger.html'; }; $('ov').style.display = 'flex'; return; }
+    WW.mode = 'cloud'; me = user; myName = String(user.displayName || 'Frog').split(' ')[0].slice(0, 12); roomRef = WW.roomRef('frogger', roomCode);
+    roomRef.child('players').once('value').then(function (snap) {
+      var v = snap.val() || {}, now = WW.now(), others = Object.keys(v).filter(function (u) { return u !== user.uid && now - ((v[u] && v[u].t) || 0) < 15000; }).length;
+      if (others >= MAXP) { $('ovT').textContent = 'This game is full'; $('ovS').textContent = 'All ' + MAXP + ' spots are taken right now. Try again in a minute.'; $('ovBtn').textContent = 'Back to games'; $('ovBtn').onclick = function () { location.href = 'index.html'; }; $('ov').style.display = 'flex'; return; }
+      $('roomLabel').textContent = 'Frogger · ' + roomCode; roomRef.child('players/' + user.uid).onDisconnect().remove();
+      roomRef.child('state').transaction(function (c) { return c || { mid: 0 }; }).then(function () {
+        roomRef.child('players').on('value', function (s) { var nv = s.val() || {}; Object.keys(nv).forEach(function (u) { var o = players[u]; if (o) { nv[u].dx = o.dx; nv[u].dy = o.dy; } }); players = nv; drawBoard(); });
+        roomRef.child('state').on('value', function (s) { onState(s.val()); });
+        regen(); respawn(); hud(); started = true; sendNow(); publish(); setInterval(drawBoard, 3000);
+      });
+    }).catch(function (e) { $('ovT').textContent = 'Could not open the game'; $('ovS').textContent = (e && (e.code || e.message)) || 'The game database rules may not be published.'; $('ovBtn').textContent = 'Back'; $('ovBtn').onclick = function () { location.href = 'index.html'; }; $('ov').style.display = 'flex'; });
+    window.addEventListener('pagehide', function () { try { roomRef.child('players/' + user.uid).remove(); WW.clearPlaying(); } catch (e) {} });
+  }
+  $('shareBtn').onclick = function () {
+    var url = location.origin + location.pathname.replace(/[^\/]*$/, '') + 'frogger.html?room=' + encodeURIComponent(roomCode);
+    if (navigator.share) navigator.share({ title: 'Join my Frogger game', text: 'Room ' + roomCode, url: url }).catch(function () {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied'); });
+  };
+
+  resize(); requestAnimationFrame(frame);
+  WW.onError = function (m) { say(m); };
+  var booted = false; WW.onReady(function (user) { if (booted && !isMP) return; if (booted && me) return; booted = true; begin(user); });
+  window.__frogger = { get score() { return score; }, get lanes() { return lanes; }, hop: hop, input: input, get alive() { return frog.alive; }, get frog() { return frog; }, carX: carX, clock: clock, die: die };
+})();
+</script>
+</body>
+</html>
