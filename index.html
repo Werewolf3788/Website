@@ -2685,7 +2685,7 @@ function buildCinemaFromCsv(text) {
 /* My Friends: shown after sign-in. Friend list = users/{me}/friends; names/avatars from users/{key}; live status from game_rooms/presence/{code}. */
 (function () {
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
-  var secure = function (u) { u = String(u || ''); return /^https:\/\//.test(u) ? u : ''; };
+  var secure = function (u) { u = String(u || '').trim(); if (!u) return ''; if (u.indexOf('//') === 0) return 'https:' + u; return u.replace(/^http:\/\//i, 'https://'); };
   function start() {
     var W = window.WW; if (!W || !W.ready) return false;
     W.ready.then(async function () {
@@ -2720,7 +2720,7 @@ function buildCinemaFromCsv(text) {
         var playing = plays.map(function (p) { return p.icon + ' ' + esc(p.title) + ' <span style="opacity:.7">on ' + p.where + (p.status ? ' \u00b7 ' + esc(p.status) : '') + '</span>'; }).join('<br>');
         var idle = hidden ? 'Keeps status private' : 'Not playing right now';
         return '<a href="Claude-Test/profile.html#' + encodeURIComponent(c.code) + '" class="custom-card p-5" style="display:flex;gap:12px;align-items:center;text-decoration:none;color:inherit">' +
-          (av ? '<img src="' + esc(av) + '" alt="" referrerpolicy="no-referrer" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none">' : '<span style="width:52px;height:52px;border-radius:50%;background:#334155;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none">' + esc(name.charAt(0).toUpperCase()) + '</span>') +
+          (av ? '<img src="' + esc(av) + '" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none" onerror="this.outerHTML=\'<span style=&quot;width:52px;height:52px;border-radius:50%;background:#334155;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none&quot;>' + esc(name.charAt(0).toUpperCase()) + '</span>\'">' : '<span style="width:52px;height:52px;border-radius:50%;background:#334155;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none">' + esc(name.charAt(0).toUpperCase()) + '</span>') +
           '<div style="min-width:0;flex:1"><div style="font-weight:800" class="truncate">' + esc(name) + (c.close ? ' <span title="Close friend" style="color:#facc15">\u2605</span>' : '') + '</div>' +
           '<div class="text-slate-400 font-mono" style="font-size:.7rem">#' + esc(c.code) + '</div>' +
           '<div class="text-xs" style="color:' + (playing ? '#4ade80' : '#94a3b8') + '">' + (playing || idle) + '</div></div></a>';

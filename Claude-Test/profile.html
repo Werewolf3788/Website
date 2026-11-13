@@ -181,7 +181,11 @@ async function boot() {
   S.isOwner = S.ownerKey === W.me.key;
   await loadProfile();
   if (!Object.keys(S.U).length) return fail('That profile could not be found.');
-  if (!S.isOwner && S.rel < 1) return fail('This profile is only visible to its owner\u2019s friends.');
+  if (!S.isOwner && S.rel < 1) {   // not on their list: still reachable when THEY are on MY list (public view only); otherwise friends-only
+    const oc = String(S.U.friend_code || location.hash.replace(/^#/, '')).toUpperCase();
+    S.viewerHasOwner = Object.keys(S.myFriends || {}).some(k => String(k).toUpperCase() === oc || String(((S.myFriends || {})[k] || {}).friend_code || '').toUpperCase() === oc);
+    if (!S.viewerHasOwner) return fail('This profile is only visible to its owner\u2019s friends.');
+  }
   if (S.isOwner && !location.hash && W.me.friendCode) { try { history.replaceState(null, '', location.pathname + location.search + '#' + W.me.friendCode); } catch (e) {} }
   await loadPlatforms();
   document.title = displayName() + ' | Pack Hub';
