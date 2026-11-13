@@ -143,19 +143,25 @@ async function toSteamId64(raw, vanityCache, key) {
 
 const STATES = ["offline", "online", "busy", "away", "snooze", "looking to trade", "looking to play"];
 
-/** Run fn(key) with the user's own key, falling back to the site key if Steam rejects it. */
+/* Key policy: the site owner's key (SITE_KEY) serves the owner's CLOSE friends first; a member's own key is the backup
+ * if the owner's key is rejected. Everyone else uses only their own key. */
+const OWNER_KEY = (process.env.OWNER_EMAIL_KEY || "raykevin71888_at_gmail_com").trim();
+let siteBad = false;
 async function withKey(acct, fn) {
-    if (acct.key && !acct.badKey) {
-        try { return await fn(acct.key); }
+    const order = acct.close ? [["site", SITE_KEY], ["own", acct.key]] : [["own", acct.key]];
+    for (const [kind, key] of order) {
+        if (!key || (kind === "own" && acct.badKey) || (kind === "site" && siteBad)) continue;
+        try { return await fn(key); }
         catch (e) {
             if (!(e instanceof BadKeyError)) throw e;
-            acct.badKey = true;
-            console.warn(`[STEAM] ${acct.emailKey}: own API key rejected by Steam; using the site key.`);
-            await dbSet(`users/${acct.emailKey}/steam_api_key_valid`, false).catch(() => {});
+            if (kind === "own") {
+                acct.badKey = true;
+                console.warn(`[STEAM] ${acct.emailKey}: own API key rejected by Steam.`);
+                await dbSet(`users/${acct.emailKey}/steam_api_key_valid`, false).catch(() => {});
+            } else { siteBad = true; console.warn("[STEAM] The owner's API key was rejected; falling back to members' own keys."); }
         }
     }
-    if (!SITE_KEY) throw new Error("no working Steam API key (own key missing or rejected, and no STEAM_API_KEY secret).");
-    return fn(SITE_KEY);
+    throw new Error("no working Steam API key (owner's key not available to this member, and own key missing or rejected).");
 }
 
 async function main() {
@@ -164,19 +170,29 @@ async function main() {
     let secrets = {};
     try { secrets = (await dbGet("user_secrets")) || {}; } catch (e) { console.warn(`[DB] user_secrets: ${e.message}`); }
     const vanityCache = (await dbGet("steam_vanity").catch(() => null)) || {};
-    // Site-wide fallback key (no GitHub secret needed): /user_secrets/_site/steam_api_key
+    // Owner's key: STEAM_API_KEY secret if set, else the owner's own saved key in /user_secrets (or /user_secrets/_site)
     if (!SITE_KEY) {
-        const k = String((secrets._site || {}).steam_api_key || "").trim().toUpperCase();
-        if (KEY_RX.test(k)) { SITE_KEY = k; console.log("[STEAM] Using the site fallback key from /user_secrets/_site."); }
+        for (const c of [(secrets[OWNER_KEY] || {}).steam_api_key, (secrets._site || {}).steam_api_key]) {
+            const k = String(c || "").trim().toUpperCase();
+            if (KEY_RX.test(k)) { SITE_KEY = k; break; }
+        }
     }
+    // Close friends of the owner (owner's friends list, close_friend ticked) share the owner's key
+    const closeKeys = new Set([OWNER_KEY]);
+    for (const [code, f] of Object.entries((users[OWNER_KEY] || {}).friends || {})) {
+        if (!f || f.close_friend !== true) continue;
+        const c = String(f.friend_code || code).toUpperCase();
+        for (const [ek, u] of Object.entries(users)) if (u && String(u.friend_code || "").toUpperCase() === c) closeKeys.add(ek);
+    }
+    console.log(`[STEAM] Owner key ${SITE_KEY ? "available" : "NOT available"}; ${closeKeys.size - 1} close friend(s).`);
 
     // 1. Collect every Steam account entered in Settings, with that user's own key if saved
     const accounts = [];
     for (const [emailKey, u] of Object.entries(users)) {
         if (!u || !u.steam_id) continue;
         const own = String((secrets[emailKey] || {}).steam_api_key || "").trim().toUpperCase();
-        const acct = { emailKey, key: KEY_RX.test(own) ? own : null, badKey: false };
-        if (!acct.key && !SITE_KEY) { console.warn(`[STEAM] ${emailKey}: no Steam API key (save one in Settings, or put a fallback at /user_secrets/_site/steam_api_key).`); continue; }
+        const acct = { emailKey, key: KEY_RX.test(own) ? own : null, badKey: false, close: closeKeys.has(emailKey) };
+        if (!acct.key && !(acct.close && SITE_KEY)) { console.warn(`[STEAM] ${emailKey}: no Steam API key to use (save your own in Settings; close friends use the owner's).`); continue; }
         try {
             acct.id = await withKey(acct, (k) => toSteamId64(u.steam_id, vanityCache, k));
             if (acct.id) accounts.push(acct);
@@ -185,16 +201,17 @@ async function main() {
         if (acct.key && !acct.badKey && u.steam_api_key_valid === false) await dbSet(`users/${emailKey}/steam_api_key_valid`, true).catch(() => {});
     }
     const byId = new Map();
-    for (const a of accounts) if (!byId.has(a.id) || (a.key && !a.badKey)) byId.set(a.id, a);   // one sync per Steam account
+    for (const a of accounts) if (!byId.has(a.id) || a.close || (a.key && !a.badKey)) byId.set(a.id, a);   // one sync per Steam account
     console.log(`[STEAM] ${byId.size} Steam account(s) to sync (${accounts.filter((a) => a.key && !a.badKey).length} with their own key).`);
     if (!byId.size) return;
 
     // 2. Profiles: batched with the site key when there is one, otherwise per user
     const profiles = {};
     const all = [...byId.keys()];
-    if (SITE_KEY) {
-        for (let i = 0; i < all.length; i += 100) {
-            const j = await steam(SITE_KEY, "ISteamUser/GetPlayerSummaries/v2", { steamids: all.slice(i, i + 100).join(",") });
+    const batchIds = all.filter((id) => byId.get(id).close);
+    if (SITE_KEY && batchIds.length) {
+        for (let i = 0; i < batchIds.length; i += 100) {
+            const j = await steam(SITE_KEY, "ISteamUser/GetPlayerSummaries/v2", { steamids: batchIds.slice(i, i + 100).join(",") }).catch(() => null);
             for (const p of j?.response?.players || []) profiles[p.steamid] = p;
         }
     }

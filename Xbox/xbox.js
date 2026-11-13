@@ -204,44 +204,44 @@ async function readKevinXboxAccounts() {
     const keyOwnerByEmailKey = new Map(); // emailKey -> apiKey, for the friend-sharing pass below
     const keylessWithXuid = []; // { emailKey, xuid }
 
-    for (const [emailKey, u] of Object.entries(users)) {
-        if (!u || typeof u !== "object") continue;
+    // Key policy: the owner's key serves the owner's CLOSE friends first; a member's own key is the backup
+    // if the owner's key stops working. Everyone else uses only their own key.
+    const OWNER_KEY = (process.env.OWNER_EMAIL_KEY || "raykevin71888_at_gmail_com").trim();
+    const readUser = (emailKey, u) => {
         const sec = (secrets && secrets[emailKey]) || {};
         const gaming = u.gaming_platforms || {};
-        const gamertag = String(pick(u.xbox_gamertag, gaming.xbox_gamertag) || "").trim();
-        const apiKey = String(pick(sec.xbox_api_key, u.xbox_api_key, gaming.xbox_api_key) || "").trim();
-        // Optional: the account's real Xbox User ID (XUID), saved in Settings next to
-        // the gamertag. /search is a fuzzy name search, so a saved XUID lets the right
-        // person be picked out of multiple results instead of trusting the first match.
-        const xuid = String(pick(u.xbox_user_id, gaming.xbox_user_id) || "").trim();
-        const updatedAt = sec.updated_at || u.updated_at || null;
-        if (gamertag && apiKey) {
-            accounts.push({ emailKey, gamertag, apiKey, xuid: xuid || null, updatedAt, viaFriendKey: false });
-            keyOwnerByEmailKey.set(emailKey, apiKey);
-        } else if (xuid) {
-            keylessWithXuid.push({ emailKey, xuid });
+        return {
+            gamertag: String(pick(u.xbox_gamertag, gaming.xbox_gamertag) || "").trim(),
+            apiKey: String(pick(sec.xbox_api_key, u.xbox_api_key, gaming.xbox_api_key) || "").trim(),
+            xuid: String(pick(u.xbox_user_id, gaming.xbox_user_id) || "").trim(),
+            updatedAt: sec.updated_at || u.updated_at || null
+        };
+    };
+    const ownerInfo = users[OWNER_KEY] ? readUser(OWNER_KEY, users[OWNER_KEY]) : { apiKey: "" };
+    const ownerApiKey = ownerInfo.apiKey;
+    const closeKeys = new Set([OWNER_KEY]);
+    for (const [code, f] of Object.entries((users[OWNER_KEY] || {}).friends || {})) {
+        if (!f || f.close_friend !== true) continue;
+        const fk = resolveOwnerKey(users, friendCodes, String(f.friend_code || code));
+        if (fk) closeKeys.add(fk);
+    }
+    let shared = 0, skippedOverCap = 0, borrowed = 0;
+    for (const [emailKey, u] of Object.entries(users).sort((x, y) => x[0].localeCompare(y[0]))) {
+        if (!u || typeof u !== "object") continue;
+        const me = readUser(emailKey, u);
+        const useOwner = !!ownerApiKey && closeKeys.has(emailKey) && emailKey !== OWNER_KEY && (me.gamertag || me.xuid);
+        if (useOwner && shared >= MAX_SHARED_FRIENDS_PER_KEY * 4) { skippedOverCap++; }
+        if (useOwner && shared < MAX_SHARED_FRIENDS_PER_KEY * 4) {
+            shared++; borrowed++;
+            accounts.push({ emailKey, gamertag: me.gamertag || null, apiKey: ownerApiKey, backupKey: me.apiKey || null, xuid: me.xuid || null,
+                updatedAt: me.updatedAt, viaFriendKey: !me.gamertag, keyOwnerEmailKey: OWNER_KEY });
+        } else if (me.gamertag && me.apiKey) {
+            accounts.push({ emailKey, gamertag: me.gamertag, apiKey: me.apiKey, backupKey: null, xuid: me.xuid || null, updatedAt: me.updatedAt, viaFriendKey: false });
         }
+        if (me.gamertag && me.apiKey) keyOwnerByEmailKey.set(emailKey, me.apiKey);
     }
 
-    let borrowed = 0, skippedOverCap = 0;
-    // Deterministic order so the same people win the cap every run, rather
-    // than an arbitrary one skipping a different person each time.
-    for (const owner of [...keyOwnerByEmailKey.keys()].sort()) {
-        const ownerApiKey = keyOwnerByEmailKey.get(owner);
-        const friendKeys = new Set(directFriendEmailKeys(users, friendCodes, owner));
-        const borrowers = keylessWithXuid.filter((b) => friendKeys.has(b.emailKey)).sort((a, b) => a.emailKey.localeCompare(b.emailKey));
-        borrowers.slice(0, MAX_SHARED_FRIENDS_PER_KEY).forEach((b) => {
-            accounts.push({ emailKey: b.emailKey, gamertag: null, apiKey: ownerApiKey, xuid: b.xuid, updatedAt: null, viaFriendKey: true, keyOwnerEmailKey: owner });
-            borrowed++;
-        });
-        if (borrowers.length > MAX_SHARED_FRIENDS_PER_KEY) {
-            const overflow = borrowers.length - MAX_SHARED_FRIENDS_PER_KEY;
-            skippedOverCap += overflow;
-            console.warn(`[XBOX] ${owner}'s key already covers ${MAX_SHARED_FRIENDS_PER_KEY} friends this run; ${overflow} more friend(s) with a saved XUID were skipped (quota cap).`);
-        }
-    }
-
-    console.log(`[KEVIN DB] Xbox accounts with both a gamertag and a key: ${keyOwnerByEmailKey.size}; borrowing a friend's key: ${borrowed}${skippedOverCap ? ` (${skippedOverCap} skipped over cap)` : ""}.`);
+    console.log(`[KEVIN DB] Xbox accounts with both a gamertag and a key: ${keyOwnerByEmailKey.size}; using the owner's key as a close friend: ${borrowed}${skippedOverCap ? ` (${skippedOverCap} skipped over cap)` : ""}.`);
     return { accounts, usersReadOk: ok };
 }
 
@@ -389,10 +389,18 @@ async function main() {
 
     for (const acc of accounts) {
         try {
-            const profile = acc.viaFriendKey
-                ? await getProfileByXuid(acc.xuid, acc.apiKey)
-                : await getProfileByGamertag(acc.gamertag, acc.apiKey, acc.xuid);
-            const titles = await getRecentAchievementTitles(profile.xuid, acc.apiKey);
+            const attempt = async (key) => {
+                const pr = acc.viaFriendKey ? await getProfileByXuid(acc.xuid, key) : await getProfileByGamertag(acc.gamertag, key, acc.xuid);
+                return { pr, ti: await getRecentAchievementTitles(pr.xuid, key) };
+            };
+            let got;
+            try { got = await attempt(acc.apiKey); }
+            catch (err) {
+                if (!acc.backupKey) throw err;
+                console.warn(`[XBOX] ${acc.gamertag || acc.xuid}: the owner's key failed (${err.message}); retrying with their own key.`);
+                got = await attempt(acc.backupKey);
+            }
+            const profile = got.pr, titles = got.ti;
 
             const card = plain({
                 gamertag: profile.gamertag,
