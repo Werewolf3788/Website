@@ -1,0 +1,17 @@
+{
+  "id": "/Ray/monopoly",
+  "name": "Ray's Monopoly Vault",
+  "short_name": "Ray's Vault",
+  "description": "Ray's Monopoly board-game collection - every edition, every box.",
+  "start_url": "./monopoly.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#03100c",
+  "theme_color": "#03100c",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

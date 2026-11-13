@@ -1,0 +1,196 @@
+{
+  "collector": "Ray",
+  "title": "Ray's Monopoly Vault",
+  "tagline": "Every edition. Every box. One collection.",
+  "updated": "2026-11-13",
+
+  "categories": [
+    { "name": "Classic",          "color": "#e2382c", "blurb": "The originals and deluxe sets" },
+    { "name": "Modern Twists",    "color": "#2f6fe0", "blurb": "New rules, new gadgets, bigger boards" },
+    { "name": "Video Games",      "color": "#2faa5b", "blurb": "Level up your property empire" },
+    { "name": "Movies & Icons",   "color": "#f08a24", "blurb": "Hollywood and legends" },
+    { "name": "Places & History", "color": "#38b6e8", "blurb": "Parks, museums and moments in time" },
+    { "name": "Spin-offs",        "color": "#c14bb5", "blurb": "Monopoly's rivals and remixes" }
+  ],
+
+  "games": [
+    {
+      "id": "deluxe-edition",
+      "title": "Deluxe Edition",
+      "subtitle": "Property Trading Game",
+      "category": "Classic",
+      "publisher": "Parker Brothers",
+      "copies": 2,
+      "accent": "#e2382c",
+      "notes": "Two copies with different box art - note the sky and skyline on each.",
+      "image": "images/monopoly/deluxe-a.webp",
+      "thumb": "images/monopoly/deluxe-a-thumb.webp",
+      "variants": [
+        { "label": "Box A", "image": "images/monopoly/deluxe-a.webp", "thumb": "images/monopoly/deluxe-a-thumb.webp" },
+        { "label": "Box B", "image": "images/monopoly/deluxe-b.webp", "thumb": "images/monopoly/deluxe-b-thumb.webp" }
+      ],
+      "added": "2026-11-13"
+    },
+    {
+      "id": "here-and-now",
+      "title": "Here & Now",
+      "subtitle": "America Has Voted!",
+      "category": "Modern Twists",
+      "publisher": "Parker Brothers",
+      "accent": "#2f7be5",
+      "notes": "A modern makeover for today's would-be billionaires.",
+      "image": "images/monopoly/here-and-now.webp",
+      "thumb": "images/monopoly/here-and-now-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "ultimate-banking",
+      "title": "Ultimate Banking",
+      "subtitle": "Own It All on Your Ultimate Bank Cards",
+      "category": "Modern Twists",
+      "publisher": "Hasbro Gaming",
+      "accent": "#18b3d6",
+      "notes": "Electronic banking unit with bank cards; property values rise and fall.",
+      "image": "images/monopoly/ultimate-banking.webp",
+      "thumb": "images/monopoly/ultimate-banking-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "millionaire",
+      "title": "Millionaire",
+      "subtitle": "First to a Million Wins!",
+      "category": "Modern Twists",
+      "publisher": "Hasbro Gaming",
+      "accent": "#e0553a",
+      "image": "images/monopoly/millionaire.webp",
+      "thumb": "images/monopoly/millionaire-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "mega-edition",
+      "title": "The Mega Edition",
+      "subtitle": "Bigger, Faster, Own It All... and More!",
+      "category": "Modern Twists",
+      "accent": "#2f9bff",
+      "notes": "2 to 8 players.",
+      "image": "images/monopoly/mega.webp",
+      "thumb": "images/monopoly/mega-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "city",
+      "title": "City",
+      "subtitle": "With 80 3-D Buildings Inside",
+      "category": "Modern Twists",
+      "publisher": "Hasbro Gaming",
+      "accent": "#f2b705",
+      "image": "images/monopoly/city.webp",
+      "thumb": "images/monopoly/city-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "championship-edition",
+      "title": "Championship Edition",
+      "subtitle": "Who'll Be the Champion in Your Home?",
+      "category": "Modern Twists",
+      "publisher": "Hasbro Gaming",
+      "accent": "#f5c400",
+      "notes": "Includes a trophy.",
+      "image": "images/monopoly/championship.webp",
+      "thumb": "images/monopoly/championship-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "nintendo",
+      "title": "Nintendo",
+      "subtitle": "Collector's Edition",
+      "category": "Video Games",
+      "accent": "#e4302b",
+      "image": "images/monopoly/nintendo.webp",
+      "thumb": "images/monopoly/nintendo-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "zelda",
+      "title": "The Legend of Zelda",
+      "subtitle": "Collector's Edition",
+      "category": "Video Games",
+      "condition": "Factory Sealed",
+      "accent": "#d8b640",
+      "image": "images/monopoly/zelda.webp",
+      "thumb": "images/monopoly/zelda-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "fortnite",
+      "title": "Fortnite",
+      "subtitle": "Battle Your Opponents, and Avoid the Storm!",
+      "category": "Video Games",
+      "publisher": "Hasbro Gaming",
+      "accent": "#7a4dff",
+      "notes": "Ages 13+.",
+      "image": "images/monopoly/fortnite.webp",
+      "thumb": "images/monopoly/fortnite-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "jurassic-park",
+      "title": "Jurassic Park",
+      "category": "Movies & Icons",
+      "publisher": "Hasbro Gaming",
+      "accent": "#ff7a1a",
+      "notes": "Has a 'Try Me!' sound button on the box.",
+      "image": "images/monopoly/jurassic.webp",
+      "thumb": "images/monopoly/jurassic-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "john-wayne-opoly",
+      "title": "John Wayne-Opoly",
+      "subtitle": "Collector's Edition",
+      "category": "Movies & Icons",
+      "accent": "#e08a2e",
+      "notes": "Comes with 6 custom pewter pieces.",
+      "image": "images/monopoly/john-wayne.webp",
+      "thumb": "images/monopoly/john-wayne-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "americas-world-war-ii",
+      "title": "America's World War II",
+      "subtitle": "We're All in This Together",
+      "category": "Places & History",
+      "publisher": "The National WWII Museum, New Orleans",
+      "condition": "Factory Sealed",
+      "accent": "#d6342b",
+      "image": "images/monopoly/wwii.webp",
+      "thumb": "images/monopoly/wwii-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "seaworld",
+      "title": "SeaWorld",
+      "subtitle": "Wildlife Conservation Edition",
+      "category": "Places & History",
+      "condition": "Factory Sealed",
+      "accent": "#1fa3e0",
+      "image": "images/monopoly/seaworld.webp",
+      "thumb": "images/monopoly/seaworld-thumb.webp",
+      "added": "2026-11-13"
+    },
+    {
+      "id": "anti-monopoly",
+      "title": "Anti-Monopoly",
+      "subtitle": "The Real Estate Trading Game for the 21st Century",
+      "category": "Spin-offs",
+      "publisher": "University Games",
+      "accent": "#d83a3a",
+      "notes": "The classic rival game, 'Since 1977'.",
+      "image": "images/monopoly/anti-monopoly.webp",
+      "thumb": "images/monopoly/anti-monopoly-thumb.webp",
+      "added": "2026-11-13"
+    }
+  ],
+
+  "wishlist": []
+}
