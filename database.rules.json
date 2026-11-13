@@ -125,7 +125,8 @@
     "userThreads": {
       "$me": {
         ".read": "auth != null && auth.token.email != null && $me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')",
-        "$other": { ".write": "auth != null && auth.token.email != null && ($me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || $other === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))" }
+        "$other": { ".read": "auth != null && auth.token.email != null && ($me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || $other === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))",
+          ".write": "auth != null && auth.token.email != null && ($me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || $other === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))" }
       }
     }
   }
