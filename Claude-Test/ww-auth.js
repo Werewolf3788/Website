@@ -187,7 +187,7 @@
         if (t.hasAttribute('data-ww-acct-in')) signIn();
         else if (t.hasAttribute('data-ww-acct-discord')) signInDiscord();
         else if (t.hasAttribute('data-ww-acct-out')) signOut();
-        else { const a = t.closest('.ww-acct'); if (open && open !== a) open.classList.remove('is-open'); a.classList.toggle('is-open'); }
+        else { location.href = PROFILE_URL; }   // the avatar/name chip goes straight to the member's profile
     });
 
     // Another tab signed in / out -> follow it
