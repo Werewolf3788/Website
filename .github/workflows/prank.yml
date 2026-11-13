@@ -1,4 +1,4 @@
-# Manual: Actions -> "Prank" -> Run workflow. Turns the random jump scare on or off for one friend code.
+# Manual: Actions -> "Prank" -> Run workflow. Turns the random jump scare on or off for one friend code. Preview on any page: add ?jumpscare=test
 name: Prank
 on:
   workflow_dispatch:
