@@ -452,17 +452,13 @@ function useAction() {
   }
 }
 
-// ------------------------------------------------------------ avatar fallback: a normal <img> badge that follows the head on screen
+// ------------------------------------------------------------ level badge: a round "LV n" badge that follows each farmer's head on screen (it replaces the profile picture)
 const domBadges = [];
-function giveAvatar(mesh, url, label) {
-  if (!url) return; const u = mesh.userData;
-  u.onAvatarFail = function (bad) {
-    if (u.domBadge) { if (u.domBadge.src === bad) return; u.domBadge.remove(); }
-    const el = document.createElement('img'); el.src = bad; el.referrerPolicy = 'no-referrer'; el.title = label || '';
-    el.style.cssText = 'position:fixed;z-index:4;width:44px;height:44px;border-radius:50%;border:3px solid #fff;object-fit:cover;pointer-events:none;display:none;transform:translate(-50%,-100%)';
-    el.onerror = function () { el.remove(); }; document.body.appendChild(el); u.domBadge = el; domBadges.push({ mesh: mesh, el: el });
-  };
-  W.setAvatar(mesh, url);
+function giveLevel(mesh, getLv, label) {
+  const u = mesh.userData; u.getLv = getLv; if (u.domBadge && u.domBadge.isConnected) return;
+  const el = document.createElement('div'); el.title = label || '';
+  el.style.cssText = 'position:fixed;z-index:4;border-radius:50%;border:3px solid #fff;background:linear-gradient(#fbbf24,#d97706);color:#2a1500;font-family:system-ui,sans-serif;font-weight:800;pointer-events:none;display:none;align-items:center;justify-content:center;flex-direction:column;line-height:1;transform:translate(-50%,-100%);text-shadow:0 1px 0 #fff6';
+  document.body.appendChild(el); u.domBadge = el; domBadges.push({ mesh: mesh, el: el });
 }
 const _v = new THREE.Vector3();
 function updateDomBadges() {
@@ -471,8 +467,9 @@ function updateDomBadges() {
     if (!b.mesh.visible || !b.mesh.parent) { b.el.style.display = 'none'; continue; }
     _v.set(b.mesh.position.x, 3.5, b.mesh.position.z).project(camera);
     if (_v.z > 1) { b.el.style.display = 'none'; continue; }
-    const dd = camera.position.distanceTo(b.mesh.position), px = Math.max(26, Math.min(56, 520 / dd));
-    b.el.style.width = b.el.style.height = px + 'px'; b.el.style.left = ((_v.x + 1) / 2 * window.innerWidth) + 'px'; b.el.style.top = ((1 - _v.y) / 2 * window.innerHeight) + 'px'; b.el.style.display = 'block';
+    const dd = camera.position.distanceTo(b.mesh.position), px = Math.max(30, Math.min(56, 520 / dd)), lv = Math.max(1, (b.mesh.userData.getLv && b.mesh.userData.getLv()) | 0);
+    if (b.el.dataset.lv !== String(lv)) { b.el.dataset.lv = String(lv); b.el.innerHTML = '<small style="font-size:.5em;letter-spacing:.08em">LV</small><span style="font-size:1em">' + lv + '</span>'; }
+    b.el.style.width = b.el.style.height = px + 'px'; b.el.style.fontSize = (px * .4) + 'px'; b.el.style.left = ((_v.x + 1) / 2 * window.innerWidth) + 'px'; b.el.style.top = ((1 - _v.y) / 2 * window.innerHeight) + 'px'; b.el.style.display = 'flex';
   }
 }
 function dropBadge(mesh) { const d = mesh.userData.domBadge; if (d) d.remove(); }
@@ -492,7 +489,7 @@ function syncRemotes() {
   Object.keys(players).forEach(function (u) {
     if (me && u === me.uid) return; const p = players[u]; if (now - (p.t || 0) > 45000) return; let r = remote[u];
     if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 4.5; m.add(lab); scene.add(m); r = remote[u] = { mesh: m, tractor: null, tcol: null }; m.position.set(p.x, 0, p.z); }
-    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; r.px = p.tx; r.pz = p.tz; r.pr = p.tr || 0; giveAvatar(r.mesh, avatarFor(u), p.n);
+    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; r.px = p.tx; r.pz = p.tz; r.pr = p.tr || 0; giveLevel(r.mesh, function () { const q = players[u]; return (q && q.lv) || 1; }, p.n);
     const col = colors[u] || '';
     if (!r.tractor || r.tcol !== col) { if (r.tractor) scene.remove(r.tractor); r.tcol = col; r.tractor = W.makeTractor(col ? parseInt(col.slice(1), 16) : undefined); scene.add(r.tractor); const t = r.tractor; t.position.set(r.driving ? p.x : (p.tx === undefined ? p.x : p.tx), 0, r.driving ? p.z : (p.tz === undefined ? p.z : p.tz)); }
   });
@@ -627,7 +624,7 @@ async function begin(user, myCode) {
     try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; }
     try { const pc = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/primary_color').once('value')).val(); if (hexOk(pc)) myColor = pc.trim(); } catch (e) {}
   }
-  if (myAvatar) { giveAvatar(farmer, myAvatar, myName); roomRef.child('avatars/' + me.uid).set(myAvatar); }
+  giveLevel(farmer, level, myName); if (myAvatar) roomRef.child('avatars/' + me.uid).set(myAvatar);
   if (myColor) { paintTractor(parseInt(myColor.slice(1), 16)); roomRef.child('colors/' + me.uid).set(myColor); }
   // fields first (so we know which one is ours), then everything else
   ownedFields = (await roomRef.child('fields').once('value')).val() || {}; await autoClaim();
