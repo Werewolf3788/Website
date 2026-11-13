@@ -376,7 +376,6 @@ async function getRecentAchievementTitles(xuid, apiKey) {
         }
         // Steam / Windows-store titles show up in the Xbox history with no Xbox achievements (PC-only, 0 total): they are
         // not Xbox games, so leave them out. Keep anything with achievements or that ran on a console.
-        console.log(`[XBOX TITLES] ${xuid}: ` + titles.slice(0, 12).map((t) => `${t.name} {type:${t.type}, devices:${JSON.stringify(t.devices)}, total:${(t.achievement || {}).totalAchievements}, keys:${Object.keys(t).join("/")}}`).join(" | "));
         const consoleDev = (t) => (Array.isArray(t.devices) ? t.devices : []).some((d) => /xbox|series/i.test(String(d)));
         const keep = titles.filter((t) => Number((t.achievement || {}).totalAchievements ?? 0) > 0 || consoleDev(t) || !Array.isArray(t.devices));
         return keep.slice(0, 40).map((t) => {
