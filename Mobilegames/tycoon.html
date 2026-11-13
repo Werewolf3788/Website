@@ -420,13 +420,30 @@
     else if (k === 'pop') tone(880, .07, 0, 'sine', .1);
     else if (k === 'turn') tone(660, .06, 0, 'sine', .08);
   }
+  // police-car siren: two slow "wail" sweeps, then a fast "yelp", ~3s total to match the flashing lights
+  function policeSiren() {
+    if (muted) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume();
+      var t0 = ac.currentTime, o = ac.createOscillator(), f = ac.createBiquadFilter(), g = ac.createGain(), o2 = ac.createOscillator(), g2 = ac.createGain();
+      o.type = 'sawtooth'; o2.type = 'square'; f.type = 'lowpass'; f.frequency.value = 2600; f.Q.value = 2;
+      var fr = o.frequency, t = t0;
+      fr.setValueAtTime(650, t);
+      for (var w = 0; w < 2; w++) { fr.linearRampToValueAtTime(1350, t + .55); fr.linearRampToValueAtTime(650, t + 1.1); t += 1.1; }           // wail
+      for (var y = 0; y < 8; y++) { fr.linearRampToValueAtTime(1450, t + .1); fr.linearRampToValueAtTime(700, t + .2); t += .2; }                    // yelp
+      o2.frequency.setValueAtTime(325, t0); for (var k = 0; k < 2; k++) { o2.frequency.linearRampToValueAtTime(675, t0 + k * 1.1 + .55); o2.frequency.linearRampToValueAtTime(325, t0 + (k + 1) * 1.1); }
+      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.09, t0 + .05); g.gain.setValueAtTime(.09, t - .15); g.gain.linearRampToValueAtTime(0, t + .1);
+      g2.gain.value = .025; o.connect(f); f.connect(g); g.connect(ac.destination); o2.connect(g2); g2.connect(g);
+      o.start(t0); o2.start(t0); o.stop(t + .15); o2.stop(t0 + 2.3);
+    } catch (e) {}
+  }
   var sirenTimer = null;
   function siren(name) {
     var r = $('siren'), t = $('sirenTxt'); if (!r) return;
     r.classList.add('on'); t.textContent = '🚔 ' + name.toUpperCase() + ' GOES TO JAIL!'; t.setAttribute('opacity', '1');
-    for (var i = 0; i < 8; i++) tone(i % 2 ? 900 : 640, .2, i * .22, 'square', .06);
+    policeSiren();
     buzz([120, 80, 120, 80, 120]);
-    clearTimeout(sirenTimer); sirenTimer = setTimeout(function () { r.classList.remove('on'); t.setAttribute('opacity', '0'); }, 3000);
+    clearTimeout(sirenTimer); sirenTimer = setTimeout(function () { r.classList.remove('on'); t.setAttribute('opacity', '0'); }, 3800);
   }
   function buzz(p) { if (!muted && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} }
   function events(a, b) {
