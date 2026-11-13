@@ -516,7 +516,7 @@ function syncRemotes() {
   Object.keys(players).forEach(function (u) {
     if (me && u === me.uid) return; const p = players[u]; if (now - (p.t || 0) > 45000) return; let r = remote[u];
     if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 4.5; m.add(lab); scene.add(m); r = remote[u] = { mesh: m, tractor: null, tcol: null }; m.position.set(p.x, 0, p.z); }
-    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; r.px = p.tx; r.pz = p.tz; r.pr = p.tr || 0; giveLevel(r.mesh, function () { const q = players[u]; return (q && q.lv) || 1; }, p.n);
+    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; r.px = p.tx; r.pz = p.tz; r.pr = p.tr || 0; giveLevel(r.mesh, function () { const q = players[u]; return (q && q.lv) || 1; }, p.n); if (avatarFor(u)) W.setAvatar(r.mesh, avatarFor(u));
     const col = colors[u] || '';
     if (!r.tractor || r.tcol !== col) { if (r.tractor) scene.remove(r.tractor); r.tcol = col; r.tractor = W.makeTractor(col ? parseInt(col.slice(1), 16) : undefined); scene.add(r.tractor); const t = r.tractor; t.position.set(r.driving ? p.x : (p.tx === undefined ? p.x : p.tx), 0, r.driving ? p.z : (p.tz === undefined ? p.z : p.tz)); }
   });
@@ -664,7 +664,7 @@ async function begin(user, myCode) {
     try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; }
     try { const pc = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/primary_color').once('value')).val(); if (hexOk(pc)) myColor = pc.trim(); } catch (e) {}
   }
-  giveLevel(farmer, level, myName); if (myAvatar) roomRef.child('avatars/' + me.uid).set(myAvatar);
+  giveLevel(farmer, level, myName); if (myAvatar) { W.setAvatar(farmer, myAvatar); roomRef.child('avatars/' + me.uid).set(myAvatar); }
   if (myColor) { paintTractor(parseInt(myColor.slice(1), 16)); roomRef.child('colors/' + me.uid).set(myColor); }
   // fields first (so we know which one is ours), then everything else
   ownedFields = (await roomRef.child('fields').once('value')).val() || {}; await autoClaim();

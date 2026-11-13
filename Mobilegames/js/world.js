@@ -157,12 +157,9 @@ export function setAvatar(g, url) {
       if (u.avatar) { u.head.remove(u.avatar); }
       const m = new THREE.Mesh(new THREE.CircleGeometry(.3, 24), new THREE.MeshBasicMaterial({ map: t, transparent: true, polygonOffset: true, polygonOffsetFactor: -2 }));
       m.position.set(0, 0, .325); u.head.add(m); u.avatar = m;
-      // a round badge floating above the head, readable from any angle (you see your own picture from behind)
-      if (u.badge) u.badge.parent.remove(u.badge);
-      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true })); sp.scale.set(1.05, 1.05, 1); sp.position.set(0, 3.45, 0); sp.renderOrder = 9; g.add(sp); u.badge = sp;
     } catch (e) { /* tainted or unreadable image: keep the plain face */ }
   };
-  img.onerror = function () { if (u.onAvatarFail) u.onAvatarFail(url); }; img.src = url;   // blocked by the image host's CORS rules -> caller shows a plain image badge instead
+  img.onerror = function () {}; img.src = url;   // blocked by the image host's CORS rules -> keep the plain face
 }
 export function animateFarmer(g, speed, dt) {
   const u = g.userData; u.phase += speed * dt * 1.7; const a = Math.sin(u.phase) * Math.min(1, speed / 3) * .8;
