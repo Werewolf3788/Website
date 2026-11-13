@@ -42,6 +42,19 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 .savebar{z-index:4}
 #authBox{max-width:560px}
 @media(min-width:900px){.container{max-width:none;width:80vw}}
+#tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px;column-span:all}
+.pill{border-radius:999px;padding:7px 16px;background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-main);font-weight:600;cursor:pointer}
+.pill.on{background:var(--primary);border-color:var(--primary);color:#fff}
+#wifiPane{column-span:all}
+#wifiPane .net{break-inside:avoid;margin-bottom:12px}
+#wifiPane .nets{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;align-items:start}
+#wifiPane .net .row{margin-top:8px}
+#wifiPane .pick{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+#wifiPane .pick label{display:flex;gap:8px;align-items:center;font-weight:500;margin:0}
+#wifiPane .pick input{width:auto}
+#wifiPane .qr{display:block;margin:10px auto 0;background:#fff;padding:8px;border-radius:8px;max-width:220px;width:100%;image-rendering:pixelated}
+#wifiPane .kv{display:flex;gap:8px;justify-content:space-between;font-size:.9rem;padding:2px 0}
+#wifiPane .kv span:first-child{color:var(--text-muted)}
 .hidden{display:none!important}
 .container{min-height:100vh}
 #msg{position:sticky;top:8px;z-index:5;padding:10px 14px;border-radius:6px;margin-bottom:12px;background:var(--bg-surface);border:1px solid var(--border-color)}
@@ -71,6 +84,13 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 <!-- SETTINGS -->
 <section id="app" class="hidden">
   <div class="row"><img id="av" class="avatar" alt="Your avatar"><div><strong id="who"></strong><div class="hint" id="whoSub"></div></div><button id="out" style="margin-left:auto">Sign out</button></div>
+
+  <div id="tabs" role="tablist">
+    <button type="button" class="pill on" data-tab="account">👤 Account</button>
+    <button type="button" class="pill" data-tab="privacy">🔒 Privacy settings</button>
+    <button type="button" class="pill" data-tab="sync">🎮 Game accounts</button>
+    <button type="button" class="pill" data-tab="wifi">📶 Wi-Fi networks</button>
+  </div>
 
   <div id="linkBox">
   <h2>Sign-in methods</h2>
@@ -164,6 +184,16 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <h2>Language</h2>
   <div class="row"><select id="lang"><option value="auto">Match my device</option></select></div>
   <p class="hint">The site translates automatically to your device language. Pick another here to override it.</p>
+
+  <div id="wifiPane" class="hidden" data-tab="wifi">
+    <p class="hint">Save Wi-Fi networks you own and choose who can see each one. Passwords are never shown on your profile; only you and the people you pick can read them here.</p>
+    <div class="row" style="margin:6px 0 12px">
+      <button type="button" class="pill on" data-wsub="mine">My networks</button>
+      <button type="button" class="pill" data-wsub="shared">Shared with me</button>
+    </div>
+    <div id="wifiMine"></div>
+    <div id="wifiShared" class="hidden"></div>
+  </div>
 
   <div class="savebar"><button class="primary" id="save">Save settings</button><span id="saveState" class="hint" role="status"></span></div>
 
@@ -631,11 +661,118 @@ $('save').onclick=async()=>{
     const card=document.createElement('div');card.className='card';parent.insertBefore(card,h);
     let n=h;
     while(n){
-      if(n!==h&&(n.tagName==='H2'||(n.nodeType===1&&(n.classList.contains('savebar')||n.querySelector('h2')))))break;
+      if(n!==h&&(n.tagName==='H2'||(n.nodeType===1&&(n.classList.contains('savebar')||n.id==='wifiPane'||n.querySelector('h2')))))break;
       const nx=n.nextSibling;card.appendChild(n);n=nx;
     }
   });
 })();
+// ---- Pills: Account / Privacy settings / Game accounts / Wi-Fi networks ----
+(function(){
+  const MAP=[[/sign-in methods|^profile|personal links|colors|language|delete account/i,'account'],[/linked accounts|tracking/i,'privacy'],[/playstation|steam|discord|xbox/i,'sync']];
+  $('app').querySelectorAll('.card').forEach(c=>{const h=c.querySelector('h2'),t=h?h.textContent.trim():'';const m=MAP.find(x=>x[0].test(t));c.dataset.tab=m?m[1]:'account'});
+  function show(tab){
+    try{sessionStorage.setItem('ww_set_tab',tab)}catch(e){}
+    $('tabs').querySelectorAll('.pill').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+    $('app').querySelectorAll('[data-tab]:not(.pill)').forEach(c=>c.classList.toggle('hidden',c.dataset.tab!==tab));
+    document.querySelector('#app .savebar').classList.toggle('hidden',tab==='wifi');
+    if(tab==='wifi'&&window.Wifi)Wifi.open();
+  }
+  $('tabs').onclick=e=>{const b=e.target.closest('.pill');if(b)show(b.dataset.tab)};
+  window.showTab=show;
+  let t='account';try{t=(location.hash.match(/tab=(\w+)/)||[])[1]||sessionStorage.getItem('ww_set_tab')||'account'}catch(e){}
+  show(['account','privacy','sync','wifi'].includes(t)?t:'account');
+})();
+
+// ---- Wi-Fi networks: wifi/{ownerKey}/{id} (rules decide who can read each one), wifi_index/{ownerKey}/{id}=true for shared ones ----
+window.Wifi=(function(){
+  const BANDS=['2.4 GHz','5 GHz','2.4 / 5 GHz','6 GHz'];
+  const newId=()=>'w'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  const qrText=(ssid,pw)=>{const q=v=>String(v).replace(/([\\;,:"])/g,'\\$1');return 'WIFI:T:'+(pw?'WPA':'nopass')+';S:'+q(ssid)+';'+(pw?'P:'+q(pw)+';':'')+';'};
+  const denied=e=>/permission_denied/i.test((e&&(e.code||e.message))||'');
+  let mine={},sub='mine',opened=false;
+  const friends=()=>Object.entries(D.friends||{}).map(([code,f])=>({code,name:(f&&f.username)||code,close:!!(f&&f.close_friend)}));
+  function loadQr(){return window.qrcode?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='../assets/qrcode.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+  async function showQr(box,ssid,pw){
+    const old=box.querySelector('.qr');if(old){old.remove();return}
+    try{await loadQr();const q=qrcode(0,'M');q.addData(qrText(ssid,pw));q.make();const i=document.createElement('img');i.className='qr';i.alt='Wi-Fi QR code for '+ssid;i.src=q.createDataURL(6,8);box.appendChild(i)}
+    catch(e){say('Could not make the QR code. Copy the password instead.',1)}
+  }
+  function wireMask(root){
+    root.querySelectorAll('[data-act="eye"]').forEach(b=>{const inp=b.parentNode.querySelector('input');let t;const mask=()=>{inp.type='password';clearTimeout(t)};
+      b.onclick=()=>{if(inp.type==='password'){inp.type='text';clearTimeout(t);t=setTimeout(mask,60000)}else mask()}});
+    root.querySelectorAll('[data-act="copy"]').forEach(b=>{b.onclick=()=>{const v=b.parentNode.querySelector('input').value;if(!v)return;navigator.clipboard.writeText(v).then(()=>say('Password copied.'),()=>say('Could not copy. Show the password and copy it by hand.',1))}});
+  }
+  function cardHtml(id,it){
+    const fr=friends(),to=it.to||{},sh=it.share||'private';
+    return `<div class="box net" data-id="${esc(id)}">
+      <label>Name</label><input data-f="label" maxlength="48" placeholder="e.g. Home Wi-Fi" value="${esc(it.label||'')}">
+      <div class="row"><input data-f="ssid" maxlength="64" placeholder="Network name (SSID)" value="${esc(it.ssid||'')}"><select data-f="band">${BANDS.map(b=>`<option${it.band===b?' selected':''}>${b}</option>`).join('')}</select></div>
+      <div class="row"><input data-f="password" type="password" maxlength="128" placeholder="Password (leave empty for an open network)" autocomplete="off" spellcheck="false" value="${esc(it.password||'')}"><button type="button" data-act="eye" title="Show / hide">👁</button><button type="button" data-act="copy">Copy</button></div>
+      <div class="row"><input data-f="note" maxlength="200" placeholder="Note (optional), e.g. router is in the office" value="${esc(it.note||'')}"></div>
+      <label>Who can see it</label>
+      <select data-f="share"><option value="private"${sh==='private'?' selected':''}>Only me</option><option value="close"${sh==='close'?' selected':''}>All my close friends</option><option value="picked"${sh==='picked'?' selected':''}>Friends I pick</option></select>
+      <div class="hint" data-closeinfo style="${sh==='close'?'':'display:none'};margin-top:6px">${(()=>{const c=fr.filter(f=>f.close);return c.length?'Close friends right now: '+c.map(f=>esc(f.name)).join(', ')+'. Change them under Privacy settings.':'You have no close friends ticked yet. Tick them under Privacy settings.'})()}</div>
+      <div class="pick" data-pick style="${sh==='picked'?'':'display:none'}">${fr.length?fr.map(f=>`<label><input type="checkbox" class="to" data-code="${esc(f.code)}"${to[f.code]?' checked':''}> ${esc(f.name)}${f.close?' ⭐':''}</label>`).join(''):'<span class="hint">No friends added yet.</span>'}</div>
+      <div class="row"><button type="button" class="primary" data-act="save">Save</button><button type="button" data-act="qr">QR code</button><button type="button" class="danger" data-act="del" style="margin-left:auto">Delete</button></div>
+    </div>`;
+  }
+  function drawMine(){
+    const ids=Object.keys(mine);
+    $('wifiMine').innerHTML=`<div class="nets">${ids.map(id=>cardHtml(id,mine[id]||{})).join('')}</div>${ids.length?'':'<p class="hint">No networks saved yet.</p>'}<div class="row" style="margin-top:10px"><button type="button" class="primary" id="wifiAdd">+ Add a network</button></div>`;
+    wireMask($('wifiMine'));
+    $('wifiAdd').onclick=()=>{mine[newId()]={_new:1};drawMine()};
+    $('wifiMine').querySelectorAll('.net').forEach(card=>{
+      const id=card.dataset.id,f=n=>card.querySelector('[data-f="'+n+'"]');
+      f('share').onchange=()=>{card.querySelector('[data-pick]').style.display=f('share').value==='picked'?'':'none';card.querySelector('[data-closeinfo]').style.display=f('share').value==='close'?'':'none'};
+      card.querySelector('[data-act="qr"]').onclick=()=>{if(!f('ssid').value.trim())return say('Type the network name first.',1);showQr(card,f('ssid').value.trim(),f('password').value)};
+      card.querySelector('[data-act="del"]').onclick=async()=>{
+        if(mine[id]&&mine[id]._new){delete mine[id];return drawMine()}
+        if(!confirm('Delete '+(f('label').value||f('ssid').value||'this network')+'? Anyone you shared it with loses it too.'))return;
+        try{await db.ref('wifi_index/'+K+'/'+id).remove();await db.ref('wifi/'+K+'/'+id).remove();delete mine[id];drawMine();say('Network deleted.')}catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
+      };
+      card.querySelector('[data-act="save"]').onclick=async()=>{
+        const ssid=f('ssid').value.trim();if(!ssid)return say('Type the network name (SSID).',1);
+        const share=f('share').value,to={};if(share==='picked')card.querySelectorAll('.to:checked').forEach(c=>{to[c.dataset.code]=true});
+        if(share==='picked'&&!Object.keys(to).length)return say('Tick at least one friend, or choose "Only me".',1);
+        const it={label:f('label').value.trim()||ssid,ssid,band:f('band').value,password:f('password').value,note:f('note').value.trim(),share,owner_name:D.username||'',updated_at:Date.now()};
+        if(share==='picked')it.to=to;
+        try{await db.ref('wifi/'+K+'/'+id).set(it);await db.ref('wifi_index/'+K+'/'+id).set(share==='private'?null:true);mine[id]=it;
+          say(share==='private'?'Saved. Only you can see it.':share==='close'?'Saved and shared with your close friends.':'Saved and shared with the friends you picked.')}
+        catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
+      };
+    });
+  }
+  async function ownerKey(code){
+    try{const v=(await db.ref('friend_codes/'+code).get()).val();return typeof v==='string'?v:(v&&(v.email_key||v.key))||null}catch(e){return null}
+  }
+  async function drawShared(){
+    const box=$('wifiShared');box.innerHTML='<p class="hint">Looking for networks your friends shared with you…</p>';
+    const out=[];
+    await Promise.all(friends().map(async fr=>{
+      const key=await ownerKey(fr.code);if(!key||key===K)return;
+      let ids={};try{ids=(await db.ref('wifi_index/'+key).get()).val()||{}}catch(e){return}
+      await Promise.all(Object.keys(ids).map(async id=>{try{const it=(await db.ref('wifi/'+key+'/'+id).get()).val();if(it&&it.ssid)out.push({from:fr.name,it})}catch(e){}}));   // not shared with you = permission denied, skipped
+    }));
+    if(sub!=='shared')return;
+    if(!out.length){box.innerHTML='<p class="hint">Nothing has been shared with you yet. A friend has to save a network and share it with their close friends or pick you.</p>';return}
+    out.sort((a,b)=>a.from.localeCompare(b.from)||String(a.it.label).localeCompare(String(b.it.label)));
+    box.innerHTML='<div class="nets">'+out.map((o,i)=>`<div class="box sec net" data-i="${i}"><strong>${esc(o.it.label||o.it.ssid)}</strong><div class="hint" style="margin:0">Shared by ${esc(o.from)}</div>
+      <div class="kv"><span>Network</span><span>${esc(o.it.ssid)}</span></div><div class="kv"><span>Band</span><span>${esc(o.it.band||'')}</span></div>${o.it.note?`<div class="kv"><span>Note</span><span>${esc(o.it.note)}</span></div>`:''}
+      ${o.it.password?`<div class="row"><input type="password" readonly value="${esc(o.it.password)}"><button type="button" data-act="eye" title="Show / hide">👁</button><button type="button" data-act="copy">Copy</button></div>`:'<div class="hint">Open network, no password.</div>'}
+      <div class="row"><button type="button" data-act="qr">QR code to join</button></div></div>`).join('')+'</div>';
+    wireMask(box);
+    box.querySelectorAll('.net').forEach(card=>{const o=out[+card.dataset.i];card.querySelector('[data-act="qr"]').onclick=()=>showQr(card,o.it.ssid,o.it.password)});
+  }
+  function setSub(v){sub=v;document.querySelectorAll('#wifiPane [data-wsub]').forEach(b=>b.classList.toggle('on',b.dataset.wsub===v));$('wifiMine').classList.toggle('hidden',v!=='mine');$('wifiShared').classList.toggle('hidden',v!=='shared');if(v==='shared')drawShared()}
+  document.querySelectorAll('#wifiPane [data-wsub]').forEach(b=>b.onclick=()=>setSub(b.dataset.wsub));
+  async function open(){
+    if(!K)return;
+    if(!opened){opened=true;try{mine=(await db.ref('wifi/'+K).get()).val()||{}}catch(e){mine={};if(denied(e))say('Wi-Fi sharing is not switched on in the database yet.',1)}}
+    if(sub==='mine')drawMine();else drawShared();
+  }
+  return {open,_qrText:qrText,reset(){opened=false;mine={}}};
+})();
+
 // ---- Link / unlink sign-in methods ----
 const DISCORD_AUTH='https://ww-discord-auth.onrender.com';
 let DL=null; // linked Discord account {id, username, avatar} or null
@@ -730,6 +867,7 @@ setTimeout(()=>{if($('app').classList.contains('hidden')&&$('authBox').classList
 auth.onAuthStateChanged(async u=>{
   U=u;$('authBox').classList.toggle('hidden',!!u);$('app').classList.toggle('hidden',!u);
   if(u){K=keyOf(u);try{await adoptUidData();await load()}catch(e){say(e.message,1)}
+    try{Wifi.reset();if(!$('wifiPane').classList.contains('hidden'))Wifi.open()}catch(e){}
     // Back from the Discord login server after "Link Discord"
     const h=location.hash,ok=/ww_discord_linked=1/.test(h),er=h.match(/ww_discord_link_error=([^&]+)/);
     if(ok||er){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}

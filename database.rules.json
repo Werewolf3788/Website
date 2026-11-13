@@ -66,6 +66,38 @@
       }
     },
 
+    "wifi": {
+      "$owner": {
+        ".read": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        ".write": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        "$id": {
+          ".read": "auth != null && auth.token.email != null && root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val() != null && (root.child('friend_codes').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || root.child('friend_codes').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).child('email_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')) && ((data.child('share').val() === 'close' && root.child('users').child($owner).child('friends').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).child('close_friend').val() === true) || (data.child('share').val() === 'picked' && data.child('to').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).val() === true))",
+          ".validate": "newData.hasChildren(['ssid','share'])",
+          "ssid": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 64"
+          },
+          "password": {
+            ".validate": "newData.isString() && newData.val().length <= 128"
+          },
+          "label": {
+            ".validate": "newData.isString() && newData.val().length <= 48"
+          },
+          "note": {
+            ".validate": "newData.isString() && newData.val().length <= 200"
+          },
+          "share": {
+            ".validate": "newData.isString() && newData.val().matches(/^(private|close|picked)$/)"
+          }
+        }
+      }
+    },
+    "wifi_index": {
+      "$owner": {
+        ".read": "auth != null",
+        ".write": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))"
+      }
+    },
+
     "pranks": {
       ".read": "auth != null",
       ".write": "auth != null && auth.token.email === 'raykevin71888@gmail.com'"
