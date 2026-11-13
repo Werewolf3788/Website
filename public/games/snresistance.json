@@ -4373,7 +4373,56 @@
           }
         ]
       },
-      "trophies": [],
+      "trophies": [
+        {
+          "trophyId": 54,
+          "name": "Take 5, and... ACHTUNG!",
+          "rank": "BRONZE",
+          "description": "Lights, Camera, ACHTUNG! - Kill Hitler 5 times."
+        },
+        {
+          "trophyId": 55,
+          "name": "Fast and Fuhrer-less",
+          "rank": "BRONZE",
+          "description": "Lights, Camera, ACHTUNG! - Kill only Hitler and exfiltrate."
+        },
+        {
+          "trophyId": 56,
+          "name": "He did Nazi-it Coming",
+          "rank": "BRONZE",
+          "description": "Lights, Camera, ACHTUNG! - Kill Hitler at a distance of 250 meters or more."
+        },
+        {
+          "trophyId": 57,
+          "name": "In The Dead Of Reich",
+          "rank": "SILVER",
+          "description": "Lights, Camera, ACHTUNG! - Kill Hitler and exfiltrate without ever being detected."
+        },
+        {
+          "trophyId": 58,
+          "name": "Blockbuster",
+          "rank": "SILVER",
+          "description": "Lights, Camera, ACHTUNG! - Complete the mission on Authentic difficulty."
+        },
+        {
+          "trophyId": 59,
+          "name": "That's a Wrap!",
+          "rank": "BRONZE",
+          "description": "Lights, Camera, ACHTUNG! - Complete the mission."
+        },
+        {
+          "trophyId": 60,
+          "name": "B-Movie",
+          "rank": "SILVER",
+          "description": "Lights, Camera, ACHTUNG! - Complete the mission with a 2 star rating."
+        },
+        {
+          "trophyId": 61,
+          "name": "Mein Juewel!",
+          "rank": "BRONZE",
+          "description": "Lights, Camera, ACHTUNG! - Kill Hitler with a testicle shot."
+        }
+      ],
       "starting_locations": [
         {
           "name": "Lighthouse",
@@ -4471,7 +4520,8 @@
         "approximate": true,
         "marked_mastermind_target": 20,
         "notes": "Film studio and town layout; Hitler is an optional target."
-      }
+      },
+      "completion_trophy": 59
     },
     "mission_11_dlc": {
       "number": 11,
@@ -4640,14 +4690,34 @@
           }
         ]
       },
-      "trophies": [],
+      "trophies": [
+        {
+          "trophyId": 62,
+          "name": "Mortar Combat",
+          "rank": "BRONZE",
+          "description": "Vercors Vendetta - Complete the mission."
+        },
+        {
+          "trophyId": 63,
+          "name": "Nein-a Blume",
+          "rank": "SILVER",
+          "description": "Vercors Vendetta - Complete the mission with a 2 star rating."
+        },
+        {
+          "trophyId": 64,
+          "name": "Vercors' Vengeance",
+          "rank": "GOLD",
+          "description": "Vercors Vendetta - Complete the mission on Authentic difficulty."
+        }
+      ],
       "source": "guides4gamers.com interactive map (collectibles); pushsquare.com (mission description, 19 collectibles: 5/5/3/3/3)",
       "enemy_count": {
         "base": 100,
         "approximate": true,
         "marked_mastermind_target": 20,
         "notes": "Full-sized map with 2 tanks and 2 alarm panels."
-      }
+      },
+      "completion_trophy": 62
     },
     "mission_12_dlc": {
       "number": 12,
@@ -4812,14 +4882,34 @@
           }
         ]
       },
-      "trophies": [],
+      "trophies": [
+        {
+          "trophyId": 65,
+          "name": "Vergeltungswaffe",
+          "rank": "BRONZE",
+          "description": "Striking Range - Complete the mission."
+        },
+        {
+          "trophyId": 66,
+          "name": "Communication Breakdown",
+          "rank": "SILVER",
+          "description": "Striking Range - Complete the mission with a 2 star rating."
+        },
+        {
+          "trophyId": 67,
+          "name": "Jailbreak",
+          "rank": "GOLD",
+          "description": "Striking Range - Complete the mission on Authentic difficulty."
+        }
+      ],
       "source": "guides4gamers.com interactive map (collectibles); thexboxhub.com + steamdeckhq.com (mission description, Striking Range Mission, Weapons and Skins Pack)",
       "enemy_count": {
         "base": 110,
         "approximate": true,
         "marked_mastermind_target": 20,
         "notes": "Coastal fortress and villa complex."
-      }
+      },
+      "completion_trophy": 65
     },
     "mission_13_dlc": {
       "number": 13,
@@ -4985,14 +5075,34 @@
           }
         ]
       },
-      "trophies": [],
+      "trophies": [
+        {
+          "trophyId": 68,
+          "name": "Mis-guided-missile",
+          "rank": "BRONZE",
+          "description": "Mud and Thunder - Complete the mission."
+        },
+        {
+          "trophyId": 69,
+          "name": "Lethal Love letter",
+          "rank": "SILVER",
+          "description": "Mud and Thunder - Complete the mission with a 2 star rating."
+        },
+        {
+          "trophyId": 70,
+          "name": "The Path of Most Resistance",
+          "rank": "GOLD",
+          "description": "Mud and Thunder - Complete the mission on Authentic difficulty."
+        }
+      ],
       "source": "guides4gamers.com interactive map (collectibles); eneba.com + steamdeckhq.com (mission description, Mud and Thunder Mission, Weapons and Skin Pack)",
       "enemy_count": {
         "base": 130,
         "approximate": true,
         "marked_mastermind_target": 20,
         "notes": "Largest DLC map; marshlands and V2 rocket facility."
-      }
+      },
+      "completion_trophy": 68
     }
   },
   "ribbons": {
@@ -7157,7 +7267,7 @@
     {
       "trophyId": 9,
       "name": "Climbing the Ranks",
-      "rank": "BRONZE",
+      "rank": "SILVER",
       "description": "Reach rank 40."
     },
     {
@@ -7175,7 +7285,7 @@
     {
       "trophyId": 12,
       "name": "Full English",
-      "rank": "SILVER",
+      "rank": "BRONZE",
       "description": "Complete 11 Optional objectives."
     },
     {
@@ -7199,7 +7309,7 @@
     {
       "trophyId": 16,
       "name": "Just a Scratch",
-      "rank": "BRONZE",
+      "rank": "SILVER",
       "description": "Complete any mission, excluding Mission 1 and Mission 9, on any difficulty without healing."
     },
     {
@@ -7221,19 +7331,19 @@
     {
       "trophyId": 19,
       "name": "Pistol Perfectionist",
-      "rank": "SILVER",
+      "rank": "BRONZE",
       "description": "Obtain Six Pistol-related Mastery Medals."
     },
     {
       "trophyId": 20,
       "name": "Secondary Supremacy",
-      "rank": "SILVER",
+      "rank": "BRONZE",
       "description": "Obtain Eight Secondary-related Mastery Medals."
     },
     {
       "trophyId": 21,
       "name": "Revered with Rifles",
-      "rank": "SILVER",
+      "rank": "BRONZE",
       "description": "Obtain Seven Rifle-related Mastery Medals."
     },
     {
@@ -7375,13 +7485,13 @@
     {
       "trophyId": 44,
       "name": "Innovator",
-      "rank": "BRONZE",
+      "rank": "SILVER",
       "description": "Interact with 21 Workbenches."
     },
     {
       "trophyId": 45,
       "name": "Survivalist",
-      "rank": "BRONZE",
+      "rank": "SILVER",
       "description": "Complete an entire Survival mission."
     },
     {
