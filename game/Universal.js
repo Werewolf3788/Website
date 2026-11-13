@@ -39,11 +39,14 @@ async function readPsnProgress(tag, commId) {
     if (!tag || !commId) return null;
     const dbs = [psnRtdb, rtdb].filter(Boolean);
     await psnReady;
+    const tags = [...new Set([String(tag).trim(), String(tag).trim().toLowerCase()])];
     for (const db of dbs) {
-        try {
-            const v = (await db.ref(`/psn/gamertags/${tag}/liveTrophyProgress/${commId}`).once('value')).val();
-            if (v) return v;
-        } catch (e) { console.warn('[PSN read]', e && e.message); }
+        for (const t of tags) {
+            try {
+                const v = (await db.ref(`/psn/gamertags/${t}/liveTrophyProgress/${commId}`).once('value')).val();
+                if (v) return v;
+            } catch (e) { console.warn('[PSN read]', e && e.message); }
+        }
     }
     return null;
 }
