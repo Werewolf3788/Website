@@ -26,6 +26,11 @@
       }
     },
 
+    "auth_links": {
+      "$uid": { ".read": "auth != null && $uid === auth.uid", ".write": false }
+    },
+    "discord_links": { ".read": false, ".write": false },
+
     "user_secrets": {
       "$k": {
         ".read":  "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",

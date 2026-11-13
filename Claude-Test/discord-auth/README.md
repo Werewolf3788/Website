@@ -11,3 +11,10 @@ Env vars (Render > Environment):
 
 Discord app: OAuth2 > Redirects must contain  https://ww-discord-auth.onrender.com/callback
 Firebase console: Authentication > Settings > Authorized domains is NOT needed (custom token, no popup).
+
+## Linking Discord to an existing account
+
+Settings > Sign-in methods shows Google, Email & password and Discord as Connected or Link.
+- `POST /link` (idToken + next): links Discord to the signed-in account, even if the Discord e-mail differs.
+- `POST /unlink` (idToken): unlinks; refused if it would be the only sign-in method. Unlinking also turns off e-mail matching for that account until it is linked again.
+- Writes (admin only): `discord_links/{discordId}` = uid and `auth_links/{uid}/discord`. Add the matching rules from `database.rules.json` (`auth_links` readable by its owner, `discord_links` closed).

@@ -63,11 +63,10 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 
   <div id="linkBox">
   <h2>Sign-in methods</h2>
-  <p class="hint">Link an email or Google so you can always get back in. Everything stays on the same profile.</p>
+  <p class="hint">Every way you can sign in to this profile. Connect more so you can always get back in; everything stays on the same profile.</p>
   <div id="methods" class="box"></div>
-  <div id="lEmailBox"><label>Link email &amp; password</label>
+  <div id="lEmailBox" class="hidden"><label>Link email &amp; password</label>
     <div class="row"><input id="lem" type="email" placeholder="Email" autocomplete="email"><input id="lpw" type="password" placeholder="New password (6+ characters)" autocomplete="new-password"><button id="lEmBtn">Link email</button></div></div>
-  <div class="row" style="margin-top:8px"><button id="lGoogle">Link Google</button></div>
   </div>
 
   <h2>Profile</h2>
@@ -450,7 +449,7 @@ async function load(){
   await resolveAvatar();
   showSteam();
   if($('psn_account_id').value.trim())fillPsnName();else fillPsnId();
-  renderMethods();
+  refreshMethods();
   loading=false;dirty=false;
   setState(D.updated_at?'Last saved: '+new Date(D.updated_at).toLocaleString():'Not saved yet');
 }
@@ -613,13 +612,49 @@ $('save').onclick=async()=>{
 };
 
 // ---- Link / unlink sign-in methods ----
-const PNAME={'google.com':'Google','password':'Email & password','phone':'Phone'};
+const DISCORD_AUTH='https://ww-discord-auth.onrender.com';
+let DL=null; // linked Discord account {id, username, avatar} or null
+async function loadDiscordLink(){
+  DL=null;
+  try{const sn=await db.ref('auth_links/'+U.uid+'/discord').get();if(sn.exists())DL=sn.val()}catch(e){}
+  if(!DL){try{const t=await U.getIdTokenResult();if(t.claims&&t.claims.discord_id)DL={id:t.claims.discord_id,username:''}}catch(e){}}
+}
+async function refreshMethods(){await loadDiscordLink();renderMethods()}
 function renderMethods(){
-  const pd=U.providerData,has=id=>pd.some(p=>p.providerId===id);
-  $('methods').innerHTML=pd.map(p=>`<div class="row" style="margin:4px 0"><span style="flex:1">${PNAME[p.providerId]||esc(p.providerId)}: ${esc(p.phoneNumber||p.email||'')}${p.providerId==='password'?(U.emailVerified?' (verified)':' (not verified)'):''}</span>${p.providerId==='phone'&&pd.length>1?'<button data-un="phone">Unlink</button>':''}</div>`).join('');
-  $('methods').querySelectorAll('[data-un]').forEach(b=>b.onclick=async()=>{if(!confirm('Remove this phone number from your sign-in methods?'))return;try{await U.unlink('phone');await afterLink()}catch(e){linkErr(e)}});
-  $('lEmailBox').classList.toggle('hidden',has('password'));
-  $('lGoogle').classList.toggle('hidden',has('google.com'));
+  const pd=U.providerData,g=pd.find(p=>p.providerId==='google.com'),pw=pd.find(p=>p.providerId==='password'),ph=pd.find(p=>p.providerId==='phone');
+  const total=pd.length+(DL?1:0);
+  const rows=[
+    {k:'google',n:'Google',on:!!g,d:g&&g.email},
+    {k:'email',n:'Email & password',on:!!pw,d:pw?pw.email+(U.emailVerified?' (verified)':' (not verified)'):''},
+    {k:'discord',n:'Discord',on:!!DL,d:DL&&DL.username}];
+  if(ph)rows.push({k:'phone',n:'Phone',on:true,d:ph.phoneNumber});
+  $('methods').innerHTML=rows.map(r=>`<div class="row" style="margin:6px 0;align-items:center"><strong style="min-width:150px">${r.n}</strong><span style="flex:1">${r.on?'<span style="color:var(--accent-green)">Connected</span>'+(r.d?' · '+esc(r.d):''):'<span class="hint">Not connected</span>'}</span>${r.on?(total>1?`<button data-un="${r.k}">Unlink</button>`:''):`<button data-ln="${r.k}">Link</button>`}</div>`).join('');
+  const PID={google:'google.com',email:'password',phone:'phone'};
+  $('methods').querySelectorAll('[data-un]').forEach(b=>b.onclick=async()=>{
+    const k=b.dataset.un;if(!confirm('Remove '+(rows.find(r=>r.k===k)||{}).n+' from your sign-in methods?'))return;
+    if(k==='discord')return unlinkDiscord();
+    try{await U.unlink(PID[k]);await afterLink()}catch(e){linkErr(e)}});
+  $('methods').querySelectorAll('[data-ln]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.ln;
+    if(k==='google')return U.linkWithPopup(new firebase.auth.GoogleAuthProvider()).then(afterLink).catch(linkErr);
+    if(k==='email'){$('lEmailBox').classList.remove('hidden');$('lem').focus();return}
+    if(k==='discord')return linkDiscord()});
+  if(pw)$('lEmailBox').classList.add('hidden');
+}
+async function linkDiscord(){
+  try{const t=await U.getIdToken(true);
+    const f=document.createElement('form');f.method='POST';f.action=DISCORD_AUTH+'/link';
+    [['idToken',t],['next',location.href.split('#')[0]]].forEach(([n,v])=>{const i=document.createElement('input');i.type='hidden';i.name=n;i.value=v;f.appendChild(i)});
+    document.body.appendChild(f);f.submit();
+  }catch(e){say(e.message,1)}
+}
+async function unlinkDiscord(){
+  try{const t=await U.getIdToken(true);
+    const r=await fetch(DISCORD_AUTH+'/unlink',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'idToken='+encodeURIComponent(t)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j.error||'Could not unlink Discord.');
+    await refreshMethods();say('Discord unlinked.');
+  }catch(e){say(e.message,1)}
 }
 const linkErr=e=>say({'auth/credential-already-in-use':'That phone number or email already belongs to another account. Sign in with it instead.','auth/email-already-in-use':'That email already belongs to another account. Sign in with it instead.','auth/provider-already-linked':'That method is already linked.','auth/requires-recent-login':'For security, sign out and sign in again, then retry.','auth/weak-password':'Password needs at least 6 characters.','auth/invalid-verification-code':'That code is not correct.'}[e.code]||e.message,1);
 async function migrate(a,b){
@@ -638,9 +673,8 @@ async function afterLink(){
   try{await U.reload();await U.getIdToken(true);
     const nk=keyOf(U);if(nk!==K){await migrate(K,nk);K=nk}
     await load();say('Sign-in methods updated.')}catch(e){say(e.message,1)}
-  renderMethods();
+  refreshMethods();
 }
-$('lGoogle').onclick=()=>U.linkWithPopup(new firebase.auth.GoogleAuthProvider()).then(afterLink).catch(linkErr);
 $('lEmBtn').onclick=()=>U.linkWithCredential(firebase.auth.EmailAuthProvider.credential($('lem').value.trim(),$('lpw').value))
   .then(async()=>{try{await U.sendEmailVerification()}catch(e){}await afterLink();say('Email linked. Check your inbox to verify it.')}).catch(linkErr);
 
@@ -661,7 +695,12 @@ $('del').onclick=async()=>{
 
 auth.onAuthStateChanged(async u=>{
   U=u;$('authBox').classList.toggle('hidden',!!u);$('app').classList.toggle('hidden',!u);
-  if(u){K=keyOf(u);try{await adoptUidData();await load()}catch(e){say(e.message,1)}}
+  if(u){K=keyOf(u);try{await adoptUidData();await load()}catch(e){say(e.message,1)}
+    // Back from the Discord login server after "Link Discord"
+    const h=location.hash,ok=/ww_discord_linked=1/.test(h),er=h.match(/ww_discord_link_error=([^&]+)/);
+    if(ok||er){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+      await refreshMethods();
+      if(ok)say('Discord linked. You can now sign in with it.');else say(decodeURIComponent(er[1]).replace(/\+/g,' '),1)}}
 });
 </script>
 </body>
