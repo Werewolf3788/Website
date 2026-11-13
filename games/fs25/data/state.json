@@ -18,14 +18,14 @@
   "sales.xml": null,
   "vehicles.xml": null
  },
- "lastCheck": "2026-11-13T00:43:06Z",
+ "lastCheck": "2026-11-13T07:23:32Z",
  "lastMode": "light",
  "lastFull": "2026-11-04T07:59:29Z",
- "lastLight": "2026-11-13T00:43:06Z",
- "lastChange": "2026-11-13T00:43:06Z",
+ "lastLight": "2026-11-13T07:23:32Z",
+ "lastChange": "2026-11-13T07:23:32Z",
  "farmColors": {
   "1": {
-   "primary": "#163dda",
+   "primary": "#da8816",
    "secondary": "#bd5b00"
   },
   "2": {
