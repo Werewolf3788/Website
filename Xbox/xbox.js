@@ -261,12 +261,19 @@ async function fetchOpenXBL(path, apiKey) {
     // Confirmed from a real response: the underlying Xbox Live service rejects a
     // request with no Accept-Language (400: "invalid locale value: *") - Node's
     // fetch doesn't send one by default, so it has to be set explicitly.
-    const res = await fetch(`${OPENXBL_BASE}${path}`, {
-        headers: { "X-Authorization": apiKey, Accept: "application/json", "Accept-Language": "en-US" }
-    });
-    const text = await res.text();
-    let json = null;
-    try { json = text ? JSON.parse(text) : null; } catch (e) { /* non-JSON error page */ }
+    // OpenXBL allows 60 requests per 5 minutes per key: when it says "Rate", wait for the window to clear and try once more.
+    let res, text, json = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+        res = await fetch(`${OPENXBL_BASE}${path}`, {
+            headers: { "X-Authorization": apiKey, Accept: "application/json", "Accept-Language": "en-US" }
+        });
+        text = await res.text(); json = null;
+        try { json = text ? JSON.parse(text) : null; } catch (e) { /* non-JSON error page */ }
+        const limited = res.status === 429 || (json && json.content && (json.content.code === 429 || json.content.limitType === "Rate"));
+        if (!limited || attempt) break;
+        console.warn(`[XBOX] rate limited on ${path.split("/").slice(0, 2).join("/")}; waiting 65s for the window to clear.`);
+        await new Promise((r) => setTimeout(r, 65000));
+    }
     if (!res.ok) {
         const msg = (json && (json.message || json.error)) || text.slice(0, 200) || `HTTP ${res.status}`;
         throw new Error(`OpenXBL ${path} -> ${res.status}: ${msg}`);

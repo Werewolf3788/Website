@@ -11,9 +11,9 @@ on:
     - cron: '*/23 * * * *'
   push:
     branches: [main]
-    paths-ignore:
-      - 'game/data/**'
-      - 'README.md'
+    paths:
+      - 'Xbox/**'
+      - '.github/workflows/xbox.yml'
 
 permissions:
   contents: read

@@ -263,6 +263,19 @@ function applyTheme() {
   b.classList.toggle('has-bg', ok);
 }
 
+/* ---------- one card per game: the same title (PS4/PS5 editions, repeated syncs, different save docs) collapses to the furthest-along entry ---------- */
+const normTitle = (t) => String(t || '').toLowerCase().replace(/[\u2122\u00ae\u00a9]/g, '').replace(/[^a-z0-9]+/g, ' ').replace(/\b(ps4|ps5|xbox one|xbox series x s|xbox series x|windows edition|pc|playstation (4|5)|director s cut|game of the year|goty|edition|digital|standard)\b/g, '').replace(/\s+/g, ' ').trim();
+function dedupeGames(list, keyOf, better) {
+  const seen = new Map();
+  for (const g of list) {
+    const k = keyOf(g); if (!k) { seen.set(Symbol(), g); continue; }
+    const cur = seen.get(k);
+    if (!cur || better(g, cur)) seen.set(k, g);
+  }
+  return [...seen.values()];
+}
+const furtherAlong = (a, b) => (a.playing && !b.playing) || (!(b.playing && !a.playing) && (num(a.progress) > num(b.progress) || (num(a.progress) === num(b.progress) && num(a.updated || a.lastPlayed) > num(b.updated || b.lastPlayed))));
+
 /* ---------- platform loaders ---------- */
 async function loadPlatforms() {
   S.plat = {}; S.psnRaw = null;
@@ -272,6 +285,7 @@ async function loadPlatforms() {
     if (!S.isOwner && !canSee(p)) return;                // never even fetch what the viewer may not see
     let d = null;
     try { d = await fns[p](id); } catch (e) { console.warn('[profile]', p, e); }
+    if (d && Array.isArray(d.games)) d.games = dedupeGames(d.games, g => normTitle(g.title), furtherAlong);
     // keep the platform visible even with no synced data, so it never silently disappears
     S.plat[p] = d || { platform:p, name:id, avatar:'', online:false, currentGame:'', activity:'', stats:[['Status','No data yet']], games:[], recent:[], empty:true };
   }));
@@ -409,7 +423,8 @@ async function readTracking(fs, ids) {
     });
   }
   out.sort((a, b) => num(b.updated) - num(a.updated));
-  return out;
+  // same game saved twice (or on two platforms with identical progress): show it once
+  return dedupeGames(dedupeGames(out, t => normTitle(t.title) + '|' + t.platform, furtherAlong), t => normTitle(t.title) + '|' + (t.progress == null ? 'x' : t.progress), furtherAlong);
 }
 const idsFor = (code, key) => [...new Set([String(code || '').toUpperCase(), String(code || ''), key].filter(Boolean))];
 
