@@ -9160,7 +9160,7 @@
     ]
   },
   "ribbon_categories": {
-    "total": 99,
+    "total": 103,
     "categories": [
       {
         "name": "Campaign / Survival",
@@ -9169,7 +9169,7 @@
       },
       {
         "name": "Multiplayer",
-        "total": 52,
+        "total": 56,
         "image": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/multiplayer.jpg"
       }
     ]
