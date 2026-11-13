@@ -82,7 +82,7 @@
   var name = function (rc) { return ROWS[rc[0]] + (rc[1] + 1); }, key = function (r, c) { return r + '_' + c; };
 
   // ------------------------------------------------------------ sound (synthesised, no files) + voice call-outs
-  var AC = null, muted = false, voice = true; try { muted = localStorage.getItem('bship_mute') === '1'; voice = localStorage.getItem('bship_voice') !== '0'; } catch (e) {}
+  var AC = null, muted = false, voice = false; try { muted = localStorage.getItem('bship_mute') === '1'; voice = localStorage.getItem('bship_voice') === '1'; } catch (e) {}
   function ac() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (AC && AC.state === 'suspended') AC.resume(); return AC; }
   function tone(f0, f1, dur, type, vol, delay) {
     var a = ac(); if (!a || muted) return; var t0 = a.currentTime + (delay || 0), o = a.createOscillator(), g = a.createGain();
@@ -304,9 +304,9 @@
     var f = draft.map(function (s) { return { id: s.id, len: s.len, h: s.h ? 1 : 0, r: s.r, c: s.c }; });
     sfx('ready'); apply(function (room) { return doReady(room, ME, f); });
   };
-  function paintBtns() { $('muteBtn').textContent = muted ? '🔇' : '🔊'; $('voiceBtn').style.opacity = voice ? 1 : .4; $('voiceBtn').title = voice ? 'Voice call-outs on' : 'Voice call-outs off'; }
+  function paintBtns() { $('muteBtn').textContent = muted ? '🔇' : '🔊'; $('voiceBtn').textContent = voice ? '🗣️ Voice on' : '🗣️ Voice off'; $('voiceBtn').style.opacity = voice ? 1 : .6; $('voiceBtn').title = 'Say each shot out loud (D3, hit, miss)'; }
   $('muteBtn').onclick = function () { muted = !muted; try { localStorage.setItem('bship_mute', muted ? '1' : '0'); } catch (e) {} paintBtns(); if (!muted) sfx('place'); };
-  $('voiceBtn').onclick = function () { voice = !voice; try { localStorage.setItem('bship_voice', voice ? '1' : '0'); } catch (e) {} paintBtns(); if (voice) speak('Voice on'); };
+  $('voiceBtn').onclick = function () { voice = !voice; try { localStorage.setItem('bship_voice', voice ? '1' : '0'); } catch (e) {} paintBtns(); if (voice) speak('Voice on'); else if (window.speechSynthesis) try { speechSynthesis.cancel(); } catch (e) {} };
   $('shareBtn').onclick = function () {
     if (!isMP) { say('Open "Host multiplayer" on the games page to play a friend.'); return; }
     var url = location.origin + location.pathname.replace(/[^\/]*$/, '') + 'battleship.html?room=' + encodeURIComponent(roomCode);
