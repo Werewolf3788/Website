@@ -301,7 +301,8 @@ html.ww-bn-mode .toast{bottom:calc(var(--ww-bn-h,66px) + var(--sab) + 16px)}
 <!-- Werewolf site menu (top menu / drawer on desktop, bottom nav on phones) -->
 <link rel="stylesheet" href="../assets/ww-shell.css">
 <script src="../assets/menu-sheet.js"></script>
-<script defer src="../assets/ww-shell.js"></script>
+<style id="ww-reserve">html:not(.ww-bar-ready) body::before{content:"";display:block;height:60px}</style>
+    <script defer src="../assets/ww-shell.js"></script>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>

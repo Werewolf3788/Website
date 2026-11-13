@@ -34,11 +34,13 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 .savebar{position:sticky;bottom:0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px;padding:12px 0;background:var(--bg-secondary);border-top:1px solid var(--border-color)}
 .savebar .hint{margin:0}
 .hidden{display:none!important}
+.container{min-height:100vh}
 #msg{position:sticky;top:8px;z-index:5;padding:10px 14px;border-radius:6px;margin-bottom:12px;background:var(--bg-surface);border:1px solid var(--border-color)}
 #google_translate_element,.goog-te-banner-frame,.skiptranslate,.goog-logo-link{display:none!important}
 </style>
     <link rel="stylesheet" href="../assets/ww-shell.css">
     <script src="../assets/menu-sheet.js"></script>
+    <style id="ww-reserve">html:not(.ww-bar-ready) body::before{content:"";display:block;height:60px}</style>
     <script defer src="../assets/ww-shell.js"></script>
 </head>
 <body>
@@ -49,7 +51,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 <div id="google_translate_element"></div>
 
 <!-- SIGN IN -->
-<section id="authBox">
+<section id="authBox" class="hidden">
   <h2>Sign in</h2>
   <div class="row"><button class="primary" id="gBtn">Continue with Google</button></div>
   <label>Email &amp; password</label>
@@ -693,6 +695,8 @@ $('del').onclick=async()=>{
   }catch(e){say(e.code==='auth/requires-recent-login'?'Records erased. Sign in again, then press delete once more to remove your login.':e.message,1)}
 };
 
+// If Firebase is slow or blocked, never leave the page blank
+setTimeout(()=>{if($('app').classList.contains('hidden')&&$('authBox').classList.contains('hidden'))$('authBox').classList.remove('hidden')},6000);
 auth.onAuthStateChanged(async u=>{
   U=u;$('authBox').classList.toggle('hidden',!!u);$('app').classList.toggle('hidden',!u);
   if(u){K=keyOf(u);try{await adoptUidData();await load()}catch(e){say(e.message,1)}

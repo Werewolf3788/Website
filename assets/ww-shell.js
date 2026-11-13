@@ -285,6 +285,8 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
             bar.innerHTML = `<a class="ww-brand" href="${esc(rootUrl('index.html'))}"><img src="${esc(rootUrl('icons/icon-192.png'))}" alt=""><span>WEREWOLF<b>PROJECT</b></span></a><div class="ww-nav-slot" data-ww-nav-slot></div>`;
             document.body.insertBefore(bar, document.body.firstChild);
         }
+        // The page reserves this space up front (see #ww-reserve in each page) so nothing jumps; release it now.
+        document.documentElement.classList.add('ww-bar-ready');
         if (!document.getElementById('ww-drawer')) {
             const bd = document.createElement('div'); bd.id = 'ww-drawer-backdrop'; document.body.appendChild(bd);
             const dr = document.createElement('aside'); dr.id = 'ww-drawer'; dr.setAttribute('aria-label', 'Site menu'); dr.setAttribute('aria-hidden', 'true'); document.body.appendChild(dr);
