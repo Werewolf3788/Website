@@ -182,10 +182,32 @@ async function boot() {
   if (!Object.keys(S.U).length) return fail('That profile could not be found.');
   await loadPlatforms();
   document.title = displayName() + ' | Pack Hub';
+  setTabIcon(avatarOf() || (S.isOwner && W.me.photoURL) || Object.values(S.plat).map(x => x && x.avatar).find(Boolean) || '');
   $('#state-msg').hidden = true; $('#profile-root').hidden = false;
   if (S.profile.defaultTab) S.tab = S.profile.defaultTab;
   render();
   watchPresence();
+}
+
+/* browser-tab icon = this profile's avatar (round); falls back to the plain image if the host blocks canvas use */
+function setTabIcon(url) {
+  if (!url) return;
+  const apply = (href) => {
+    document.querySelectorAll('link[rel~="icon"],link[rel="shortcut icon"]').forEach(l => l.remove());
+    const l = document.createElement('link'); l.rel = 'icon'; l.href = href; document.head.appendChild(l);
+  };
+  const img = new Image(); img.crossOrigin = 'anonymous'; img.referrerPolicy = 'no-referrer';
+  img.onload = () => {
+    try {
+      const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+      x.beginPath(); x.arc(32, 32, 32, 0, Math.PI * 2); x.clip();
+      const m = Math.min(img.naturalWidth, img.naturalHeight);
+      x.drawImage(img, (img.naturalWidth - m) / 2, (img.naturalHeight - m) / 2, m, m, 0, 0, 64, 64);
+      apply(c.toDataURL('image/png'));
+    } catch (e) { apply(url); }
+  };
+  img.onerror = () => apply(url);
+  img.src = url;
 }
 
 function fail(html) { $('#state-msg').innerHTML = html; }
