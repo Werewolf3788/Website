@@ -447,19 +447,58 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
     const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; refreshInstallButtons(); });
     window.addEventListener('appinstalled', () => { installPrompt = null; refreshInstallButtons(); toast('App installed.'); });
+    const isTouch = () => window.matchMedia('(pointer: coarse)').matches || window.matchMedia(BOTTOM_NAV_QUERY).matches;
+    const isAndroid = () => /android/i.test(navigator.userAgent);
+    const INSTALL_DISMISS_KEY = 'ww_install_dismissed_v1';
+    const INSTALL_DISMISS_MS = 7 * 24 * 3600 * 1000;
+    const installDismissed = () => { try { return Date.now() - Number(localStorage.getItem(INSTALL_DISMISS_KEY) || 0) < INSTALL_DISMISS_MS; } catch (e) { return false; } };
+
+    // How to install on this device when the browser has not handed us a one-tap prompt
+    function installHelp() {
+        if (isIos()) return 'Tap the Share button (square with an arrow), then "Add to Home Screen".';
+        if (isAndroid()) return 'Tap the browser menu (\u22ee), then "Install app" or "Add to Home screen".';
+        return 'Use your browser menu and choose "Install app" or "Add to Home screen".';
+    }
+
     function refreshInstallButtons() {
-        const show = !isStandalone() && (!!installPrompt || isIos());
+        // Drawer / "More" button: always offered on phones until the app is installed
+        const show = !isStandalone() && (!!installPrompt || isIos() || isTouch());
         document.querySelectorAll('[data-ww-install]').forEach(b => { b.hidden = !show; });
+        renderInstallBanner();
+    }
+
+    // Small banner above the bottom nav: one tap to install (or step-by-step help on iPhone / other browsers)
+    function renderInstallBanner() {
+        let el = document.getElementById('ww-install-banner');
+        const want = !OWN_PWA && !isStandalone() && !installDismissed() && (!!installPrompt || isTouch());
+        if (!want) { if (el) el.remove(); return; }
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'ww-install-banner';
+            el.setAttribute('role', 'region');
+            el.setAttribute('aria-label', 'Install the app');
+            document.body.appendChild(el);
+        }
+        const oneTap = !!installPrompt;
+        el.innerHTML = `<img src="${esc(rootUrl('icons/icon-192.png'))}" alt="">
+            <div class="ww-ib-text"><strong>Install Werewolf Project</strong><span>${oneTap ? 'Add it to your home screen for a full-screen app.' : esc(installHelp())}</span></div>
+            ${oneTap ? '<button type="button" class="ww-ib-go" data-ww-install>Install</button>' : ''}
+            <button type="button" class="ww-ib-x" data-ww-install-dismiss aria-label="Dismiss">\u2715</button>`;
+    }
+    function dismissInstallBanner() {
+        try { localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now())); } catch (e) { /* private mode */ }
+        const el = document.getElementById('ww-install-banner'); if (el) el.remove();
     }
     async function promptInstall() {
         if (installPrompt) {
             installPrompt.prompt();
             try { await installPrompt.userChoice; } catch (e) { /* ignore */ }
             installPrompt = null; refreshInstallButtons();
-        } else if (isIos()) {
-            toast('On iPhone/iPad: tap the Share button, then "Add to Home Screen".', 7000);
+        } else {
+            toast(installHelp(), 8000);
         }
     }
+    document.addEventListener('click', (e) => { if (e.target.closest('[data-ww-install-dismiss]')) dismissInstallBanner(); });
 
     // --------------------------------------------------------- service worker
     let swReg = null;
@@ -548,6 +587,8 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
         } catch (e) { console.warn('[ww-shell] menu:', e); }
         await registerSw();
         refreshPushState();
+        // give Chrome a moment to offer its one-tap install prompt, then show the banner
+        setTimeout(refreshInstallButtons, 2500);
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();

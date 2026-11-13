@@ -4,7 +4,7 @@
 //   - Web Push notifications sent by .github/workflows/send-push.yml
 // Bump CACHE_NAME when the app shell files change.
 // ============================================================================
-const CACHE_NAME = 'ww-shell-v1';
+const CACHE_NAME = 'ww-shell-v2';
 const SHELL = [
     './',
     'index.html',
