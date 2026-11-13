@@ -147,7 +147,7 @@ document.addEventListener('visibilitychange', function () { if (document.hidden)
 function setCoins(d) { save.coins = Math.max(0, save.coins + d); hud(); queueSave(); }
 function addItem(id, n) { save.bag[id] = (save.bag[id] || 0) + n; if (save.bag[id] <= 0) delete save.bag[id]; queueSave(); }
 function addXp(n) {
-  const old = level(); save.xp += n; const now = level();
+  const old = level(); save.xp += n * C.XP_SCALE; const now = level();
   if (now > old) {
     let bonus = 0, unlocked = [];
     for (let l = old + 1; l <= now; l++) { bonus += C.levelUpCoins(l); unlocked = unlocked.concat(C.unlocksAt(l)); }
@@ -185,7 +185,7 @@ function normalizeSave() {
 function stat(k, n) { save.stats[k] = (save.stats[k] || 0) + (n || 1); }
 function hud() {
   $('coins').textContent = save.coins; const l = level();
-  $('lvl').textContent = l; $('xpTxt').textContent = l >= C.MAX_LEVEL ? 'MAX LEVEL' : (save.xp - C.xpForLevel(l)) + '/' + C.xpToNext(l) + ' xp';
+  $('lvl').textContent = l; $('xpTxt').textContent = l >= C.MAX_LEVEL ? 'MAX LEVEL' : Math.floor(save.xp - C.xpForLevel(l)) + '/' + C.xpToNext(l) + ' xp';
   [].forEach.call($('bar').children, function (b) { const t = TOOLS.filter(function (x) { return x.id === b.dataset.id; })[0], lk = l < (C.TOOL_LEVEL[t.id] || 1); b.textContent = t.label + (lk ? ' 🔒' + C.TOOL_LEVEL[t.id] : t.id === 'fert' ? ' ×' + save.fert : ''); b.style.opacity = lk ? .5 : ''; });
   checkAchievements(); const badge = claimable() ? ' •' : ''; if ($('missionsBtn')) $('missionsBtn').textContent = '📜 Missions' + badge;
 }
@@ -365,7 +365,7 @@ function renderShop() {
     C.ACHIEVEMENTS.forEach(function (a) { const got = !!save.ach[a.id]; box.appendChild(row((got ? '✅ ' : '🔒 ') + a.icon + ' <b>' + a.name + '</b> <small>' + a.desc + '</small>', [])); });
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
-    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.XP_HARVEST + ' · egg +' + C.XP_PRODUCT.egg + ' · wool +' + C.XP_PRODUCT.wool + ' · milk +' + C.XP_PRODUCT.milk + '. XP only comes from harvesting your own crops and collecting animals (animal XP is shared by everyone on the farm). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (animal XP is shared by everyone on the farm). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
     daily.forEach(function (m, k) {
       const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
       box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward $' + m.coins + '</small>',
@@ -672,7 +672,7 @@ async function begin(user, myCode) {
   $('gate').style.display = 'none'; myName = ((user && user.displayName) || 'Farmer').split(' ')[0].slice(0, 12);
   try {
     const s = await WW.loadSave(saveKey);   // solo and every multiplayer farm each have their own progress, starting fresh
-    if (s) { save.coins = s.coins | 0; save.xp = s.xp | 0; save.seeds = s.seeds || { wheat: 0 }; save.bag = s.bag || {}; save.up = s.up || {}; save.orders = s.orders || { day: -1, done: [] }; save.harvested = s.harvested | 0;
+    if (s) { save.coins = s.coins | 0; save.xp = +s.xp || 0; save.seeds = s.seeds || { wheat: 0 }; save.bag = s.bag || {}; save.up = s.up || {}; save.orders = s.orders || { day: -1, done: [] }; save.harvested = s.harvested | 0;
       // legacy saves (before levels) kept only coins
       if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.fert = s.fert | 0; save.ach = s.ach || {}; save.skip = s.skip || {}; save.stats = s.stats || {}; save.daily = s.daily || { day: -1, base: {}, done: [] }; save.ms = s.ms || {}; if (s.ledKey) save.ledKey = s.ledKey; }
     normalizeSave();

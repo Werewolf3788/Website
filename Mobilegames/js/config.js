@@ -7,6 +7,8 @@ export const MAX_LEVEL = 50;
 export function xpForLevel(l) { return 25 * l * (l - 1) / 2; }                // total xp needed to reach level l
 export function xpToNext(l) { return 25 * l; }                                 // xp needed to go from level l to l+1
 export function levelFromXp(xp) { const l = Math.floor((1 + Math.sqrt(1 + 8 * Math.max(0, xp) / 25)) / 2); return Math.min(MAX_LEVEL, Math.max(1, l)); }
+export const XP_SCALE = 0.4;                                                   // every xp gain is multiplied by this (levels were coming too fast)
+export const xpShow = n => { const v = Math.round(n * XP_SCALE * 10) / 10; return v; };
 export const XP_HARVEST = 5;                                                   // every crop harvested
 export const XP_PRODUCT = { egg: 1, wool: 2, milk: 3, duckegg: 2, goatmilk: 4 };                        // chicken / sheep / cow
 export function levelUpCoins(l) { return 25 * l; }
