@@ -2710,7 +2710,11 @@ function buildCinemaFromCsv(text) {
           var get = async function (path) { try { return (await W.db.ref(path).once('value')).val(); } catch (e) { return null; } };
           var sk = String(u.steam_id || '').trim(), px = String(u.psn_username || '').trim(), xb = String(u.xbox_gamertag || '').trim();
           var jobs = [];
-          jobs.push(get('game_rooms/presence/' + c.code).then(function (pr) { if (pr && pr.title && pr.t && now - pr.t < 150000) plays.push({ icon: '\uD83C\uDFB2', where: 'Mobile', title: pr.title, status: pr.status || '' }); }));
+          jobs.push((async function () {
+            var pr = await get('game_rooms/presence/' + c.code);
+            if (!(pr && pr.title && pr.t && now - pr.t < 150000) && key) pr = u.now_playing && u.now_playing.title ? u.now_playing : null;   // fallback mirror kept on the user record
+            if (pr && pr.title && pr.t && now - pr.t < 150000) plays.push({ icon: '\uD83C\uDFB2', where: 'Mobile', title: pr.title, status: pr.status || '' });
+          })());
           if (px) jobs.push(get('psn/gamertags/' + px).then(function (ps) { if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && String(ps.currentGame).toLowerCase() !== 'idle') plays.push({ icon: '\uD83C\uDFAE', where: 'PlayStation', title: ps.currentGame, status: '' }); }));
           if (xb) jobs.push(get('psn/xbox_cards/' + xb.replace(/[.$#\[\]\/]/g, '_')).then(async function (xc) { if (!xc) xc = await get('xbox/gamertags/' + xb.replace(/[.$#\[\]\/]/g, '_')); if (xc && /online/i.test(xc.presenceState || '') && xc.presenceText) plays.push({ icon: '\uD83D\uDFE2', where: 'Xbox', title: String(xc.presenceText).replace(/^playing\s+/i, ''), status: '' }); }));
           if (sk) jobs.push((async function () { if (!/^7656119\d{10}$/.test(sk)) { var vn = await get('steam_vanity/' + sk.toLowerCase().replace(/[.$#\[\]\/]/g, '_')); sk = typeof vn === 'string' ? vn : ''; } if (!sk) return; var sp = await get('steam_users/' + sk + '/profile'); if (sp && sp.currentGame) plays.push({ icon: '\uD83D\uDCBB', where: 'Steam', title: sp.currentGame, status: '' }); })());
