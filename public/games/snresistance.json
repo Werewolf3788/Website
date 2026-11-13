@@ -4997,142 +4997,106 @@
   },
   "campaign_ribbons": [
     {
-      "id": "ribbon_assassin",
-      "name": "Assassin",
-      "requirement": "5 stealth takedowns",
-      "image_url": ""
+      "id": "ribbon_camofleur",
+      "name": "Reaper",
+      "requirement": "Kill 15 enemies while in Tall Grass.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/camofleur.jpg"
     },
     {
-      "id": "ribbon_engineer",
-      "name": "Engineer",
-      "requirement": "Destroy 1 vehicle using traps",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/engineer.jpg"
-    },
-    {
-      "id": "ribbon_ghost",
-      "name": "Ghost",
-      "requirement": "15 kills while remaining undetected",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/ghost.jpg"
+      "id": "ribbon_cleaner",
+      "name": "Crate Keeper",
+      "requirement": "Hide 3 bodies in crates.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/cleaner.jpg"
     },
     {
       "id": "ribbon_distraction",
-      "name": "Distraction Expert",
-      "requirement": "5 kills on distracted enemies",
+      "name": "Master of Distraction",
+      "requirement": "Kill 5 distracted enemies.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/distraction.jpg"
     },
     {
-      "id": "ribbon_wrecker",
-      "name": "Wrecker",
-      "requirement": "Destroy 5 vehicles",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/wrecker.jpg"
+      "id": "ribbon_ghost",
+      "name": "Invisible Annihilator",
+      "requirement": "Whilst undetected, kill 15 soldiers.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/ghost.jpg"
     },
     {
-      "id": "ribbon_brawler",
-      "name": "Brawler",
-      "requirement": "10 lethal melee takedowns",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/brawler.jpg"
+      "id": "ribbon_circuit_breaker",
+      "name": "Siren Suppressor",
+      "requirement": "Disable an alarm.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/circuit_breaker.jpg"
+    },
+    {
+      "id": "ribbon_sound_mask",
+      "name": "Saboteur's Symphony",
+      "requirement": "Sabotage 3 entities to create sound masks.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/sound_mask.jpg"
+    },
+    {
+      "id": "ribbon_partisan",
+      "name": "Resourceful Reaper",
+      "requirement": "Get 3 Environmental kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/partisan.jpg"
+    },
+    {
+      "id": "ribbon_trapper",
+      "name": "Trapper's Delight",
+      "requirement": "Kill 3 or more soldiers with booby traps.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/trapper.jpg"
+    },
+    {
+      "id": "ribbon_demolitionist",
+      "name": "Jinx",
+      "requirement": "Kill 2 on-foot enemies by shooting an explosive or trap.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/demolitionist.jpg"
+    },
+    {
+      "id": "ribbon_scout",
+      "name": "Tracker",
+      "requirement": "Tag 20 enemies with your binoculars.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/scout.jpg"
     },
     {
       "id": "ribbon_mechanic",
       "name": "Mechanic",
-      "requirement": "Disable 3 vehicle engines",
+      "requirement": "Use traps to destroy a vehicle.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/mechanic.jpg"
     },
     {
-      "id": "ribbon_sound_mask",
-      "name": "Sound Mask Expert",
-      "requirement": "Create or exploit 3 sound masks",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/sound_mask.jpg"
-    },
-    {
-      "id": "ribbon_skull_crusher",
-      "name": "Skull Crusher",
-      "requirement": "10 headshot kills",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/skull_crusher.jpg"
-    },
-    {
-      "id": "ribbon_scout",
-      "name": "Scout",
-      "requirement": "Tag 20 enemies using binoculars",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/scout.jpg"
-    },
-    {
-      "id": "ribbon_cleaner",
-      "name": "Cleaner",
-      "requirement": "Hide 3 bodies in crates or dumpsters",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/cleaner.jpg"
-    },
-    {
-      "id": "ribbon_boxer",
-      "name": "Boxer",
-      "requirement": "10 non-lethal takedowns",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/boxer.jpg"
-    },
-    {
-      "id": "ribbon_guerrilla",
-      "name": "Guerrilla",
-      "requirement": "3 enemy knockdowns using Schu-mines",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/guerrilla.jpg"
-    },
-    {
-      "id": "ribbon_camofleur",
-      "name": "Camofleur",
-      "requirement": "15 kills while hidden in tall grass",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/camofleur.jpg"
-    },
-    {
-      "id": "ribbon_knockout",
-      "name": "Knockout Expert",
-      "requirement": "4 enemy knockdowns with thrown bottles",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/knockout.jpg"
-    },
-    {
-      "id": "ribbon_circuit_breaker",
-      "name": "Circuit Breaker",
-      "requirement": "Disable an active alarm panel",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/circuit_breaker.jpg"
-    },
-    {
-      "id": "ribbon_partisan",
-      "name": "Partisan",
-      "requirement": "3 environmental hazard kills",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/partisan.jpg"
-    },
-    {
-      "id": "ribbon_merciful",
-      "name": "Merciful",
-      "requirement": "Hit 15 enemies with non-lethal ammunition",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/merciful.jpg"
-    },
-    {
-      "id": "ribbon_head_doctor",
-      "name": "Head Doctor",
-      "requirement": "15 non-lethal headshots",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/head_doctor.jpg"
-    },
-    {
-      "id": "ribbon_demolitionist",
-      "name": "Demolitionist",
-      "requirement": "Double kill by shooting placed TNT or trap",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/demolitionist.jpg"
-    },
-    {
-      "id": "ribbon_grenadier",
-      "name": "Grenadier",
-      "requirement": "5 grenade kills",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/grenadier.jpg"
-    },
-    {
-      "id": "ribbon_trapper",
-      "name": "Trapper",
-      "requirement": "3 booby trap kills",
-      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/trapper.jpg"
+      "id": "ribbon_wrecker",
+      "name": "Vehicle Vanguard",
+      "requirement": "Destroy 5 Vehicles.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/wrecker.jpg"
     },
     {
       "id": "ribbon_rifle_specialist",
-      "name": "Rifle Specialist",
-      "requirement": "20 kills with sniper rifle",
-      "image_url": ""
+      "name": "Rifle Expert",
+      "requirement": "Kill 20 enemies with a Rifle.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/rifle_specialist.jpg"
+    },
+    {
+      "id": "ribbon_grenadier",
+      "name": "Blast Boss",
+      "requirement": "Get 5 grenade kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/grenadier.jpg"
+    },
+    {
+      "id": "ribbon_skull_crusher",
+      "name": "Head Hunter",
+      "requirement": "Get 10 headshot kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/skull_crusher.jpg"
+    },
+    {
+      "id": "ribbon_brawler",
+      "name": "Close Quarters",
+      "requirement": "Perform 10 lethal takedowns.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/brawler.jpg"
+    },
+    {
+      "id": "ribbon_guerrilla",
+      "name": "Concussion Conductor",
+      "requirement": "Knock 3 enemies unconscious with schu-mines.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/guerrilla.jpg"
     },
     {
       "id": "ribbon_marked_mastermind",
@@ -5140,130 +5104,496 @@
       "requirement": "Complete a mission with at least 20 tagged enemies that have not been killed.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/marked_mastermind.jpg",
       "repeatable": true
+    },
+    {
+      "id": "ribbon_head_doctor",
+      "name": "Stunner",
+      "requirement": "Get 15 non-lethal ammo headshots.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/head_doctor.jpg"
+    },
+    {
+      "id": "ribbon_knockout",
+      "name": "Yeet Street",
+      "requirement": "Excluding grenades, use throwable items to knockout enemies 4 times.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/knockout.jpg"
+    },
+    {
+      "id": "ribbon_boxer",
+      "name": "Pugilist",
+      "requirement": "Perform 10 non-lethal takedowns.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/boxer.jpg"
+    },
+    {
+      "id": "ribbon_merciful",
+      "name": "Conscientious Affecter",
+      "requirement": "Knock 15 enemies unconscious with non-lethal ammo.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/merciful.jpg"
+    },
+    {
+      "id": "ribbon_wraiths_wrath",
+      "name": "Wraith's Wrath",
+      "requirement": "Achieve a total of 5 lethal takedowns classified as Ghost Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/wraiths_wrath.jpg"
+    },
+    {
+      "id": "ribbon_tank_terminator",
+      "name": "Tank Terminator",
+      "requirement": "Destroy a tank.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/tank_terminator.jpg"
+    },
+    {
+      "id": "ribbon_tagger",
+      "name": "Tagger",
+      "requirement": "While playing the campaign in Co-op, get 5 tag assists.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/tagger.jpg"
+    },
+    {
+      "id": "ribbon_the_more_the_merrier",
+      "name": "The More The Merrier",
+      "requirement": "Kill 2 on-foot enemies or more with a single trap or explosive.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/the_more_the_merrier.jpg"
+    },
+    {
+      "id": "ribbon_lifesaver",
+      "name": "Lifesaver",
+      "requirement": "Perform one teammate revive.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/lifesaver.jpg"
+    },
+    {
+      "id": "ribbon_armored_annihilator",
+      "name": "Armored Annihilator",
+      "requirement": "Destroy a 222 Armored Car.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/armored_annihilator.jpg"
+    },
+    {
+      "id": "ribbon_bagger",
+      "name": "Bagger",
+      "requirement": "While playing the campaign in Co-op, get 3 kill assists.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/bagger.jpg"
+    },
+    {
+      "id": "ribbon_pistol_expert",
+      "name": "Pistol Expert",
+      "requirement": "Kill 20 enemies with a Pistol.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/pistol_expert.jpg"
+    },
+    {
+      "id": "ribbon_secondary_expert",
+      "name": "Secondary Expert",
+      "requirement": "Kill 20 enemies with a Secondary Weapon.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/secondary_expert.jpg"
+    },
+    {
+      "id": "ribbon_organ_grinder",
+      "name": "Organ Grinder",
+      "requirement": "Get 10 organ shot kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/organ_grinder.jpg"
+    },
+    {
+      "id": "ribbon_rapid_rifle",
+      "name": "Rapid Rifle",
+      "requirement": "Achieve 5 Kills in less than 60 seconds with a rifle.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/rapid_rifle.jpg"
+    },
+    {
+      "id": "ribbon_ignition_inhibitor",
+      "name": "Ignition Inhibitor",
+      "requirement": "Disable the engine of 3 vehicles.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/ignition_inhibitor.jpg"
     }
   ],
   "survival_ribbons": [
     {
       "id": "surv_sentry_service",
       "name": "Sentry Service",
-      "requirement": "Kill 15 Nazis while you're near the Command Post.",
+      "requirement": "Get 15 kills while closely defending from inside the Command Post area.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/sentry_service.jpg"
     },
     {
       "id": "surv_survivor",
       "name": "Survivor",
-      "requirement": "Complete a Survival Mission.",
+      "requirement": "Complete an entire Survival mission.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/survivor.jpg"
     },
     {
       "id": "surv_boom_barrage",
       "name": "Boom Barrage",
-      "requirement": "Kill 10 Nazis with the Panzerfaust.",
+      "requirement": "Get 10 kills with a Panzerfaust or Flare Gun.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/boom_barrage.jpg"
     },
     {
       "id": "surv_high_achiever",
       "name": "High Achiever",
-      "requirement": "Kill 10 Nazis, with each kill worth at least 300 points.",
+      "requirement": "Get 10 kills each scoring 300 or more points.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/high_achiever.jpg"
     },
     {
       "id": "surv_post_protector",
       "name": "Post Protector",
-      "requirement": "Kill 5 Nazis that are actively taking your Command Post.",
+      "requirement": "Kill 5 enemies capturing a Command Post.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/post_protector.jpg"
     },
     {
       "id": "surv_flawless_fighter",
       "name": "Flawless Fighter",
-      "requirement": "Kill 10 Nazis without taking damage.",
+      "requirement": "Get 10 consecutive kills without taking any damage.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/flawless_fighter.jpg"
     },
     {
       "id": "surv_consecutive_carnage",
       "name": "Consecutive Carnage",
-      "requirement": "Get the most kills two waves in a row (Multiplayer only).",
+      "requirement": "Complete two consecutive Waves with most kills in each.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/consecutive_carnage.jpg"
     },
     {
       "id": "surv_no_quarter",
       "name": "No Quarter",
-      "requirement": "Complete an entire stage without losing your Command Post.",
+      "requirement": "Complete a Survival Stage without losing the Command Post.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/no_quarter.jpg"
     },
     {
       "id": "surv_steadfast",
       "name": "Steadfast",
-      "requirement": "Complete an entire stage without being incapacitated.",
+      "requirement": "Complete a Survival Stage without being Incapacitated.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/steadfast.jpg"
     },
     {
       "id": "surv_sniper_suppressor",
       "name": "Sniper Suppressor",
-      "requirement": "Kill 5 Nazi snipers with headshots.",
+      "requirement": "Headshot 5 enemy snipers.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/sniper_suppressor.jpg"
     },
     {
       "id": "surv_riders_remorse",
       "name": "Rider's Remorse",
-      "requirement": "Kill 10 Nazis without allowing them to leave their vehicles.",
+      "requirement": "Kill 10 enemies before they disembark their vehicles.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/riders_remorse.jpg"
     },
     {
       "id": "surv_machine_gun_maverick",
       "name": "Machine Gun Maverick",
-      "requirement": "Kill 10 Nazis with an MG42.",
+      "requirement": "Get 10 kills with a MG42.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/machine_gun_maverick.jpg"
     },
     {
       "id": "surv_fortress_keeper",
       "name": "Fortress Keeper",
-      "requirement": "Complete an entire stage without an enemy making it to the Command Post.",
+      "requirement": "Complete a Stage without the enemy breaching the Command Post.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/fortress_keeper.jpg"
     }
   ],
   "multiplayer_ribbons": [
     {
       "id": "mp_first_blood",
-      "name": "First Blood",
-      "requirement": "Score the first kill of the match.",
+      "name": "Trailblazer",
+      "requirement": "Score the first kill in a match.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/first_blood.jpg"
     },
     {
-      "id": "mp_longshot",
-      "name": "Longshot",
-      "requirement": "Kill an enemy player from over 150 meters away.",
-      "image_url": ""
-    },
-    {
-      "id": "mp_avenger",
-      "name": "Avenger",
-      "requirement": "Kill the enemy player who just eliminated your teammate.",
-      "image_url": ""
-    },
-    {
-      "id": "mp_spotter",
-      "name": "Spotter",
-      "requirement": "Tag 3 enemy players who are subsequently eliminated by allies.",
-      "image_url": ""
-    },
-    {
       "id": "mp_streak",
-      "name": "Dominator",
-      "requirement": "Achieve a killstreak of 5 players without dying.",
+      "name": "Kill Streak Captain",
+      "requirement": "Achieve a 5 Kill Streak.",
       "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/streak.jpg"
     },
     {
-      "id": "mp_axis_hunter",
-      "name": "Invader Down",
-      "requirement": "Eliminate an invading Axis Sniper Jäger during campaign co-op.",
-      "image_url": ""
+      "id": "mp_swift_shooter",
+      "name": "Swift Shooter",
+      "requirement": "10 Kills with a Semi-Automatic rifle.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/swift_shooter.jpg"
     },
     {
-      "id": "mp_axis_victory",
-      "name": "Invasion Master",
-      "requirement": "Successfully eliminate the Allied sniper host as the invading Jäger.",
-      "image_url": ""
+      "id": "mp_killometer_champion",
+      "name": "Kill-Ometer Champion",
+      "requirement": "Accumulate a total kill shot distance of 1000m.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/killometer_champion.jpg"
+    },
+    {
+      "id": "mp_expert_executioner",
+      "name": "Expert Executioner",
+      "requirement": "Attain a perfect shot/hit ratio over 5 kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/expert_executioner.jpg"
+    },
+    {
+      "id": "mp_ranged_reaper",
+      "name": "Ranged Reaper",
+      "requirement": "Achieve 3 kills over 250m.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/ranged_reaper.jpg"
+    },
+    {
+      "id": "mp_surgical_strike",
+      "name": "Surgical Strike",
+      "requirement": "Score 3 Kills from different organ shots.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/surgical_strike.jpg"
+    },
+    {
+      "id": "mp_naked_eye",
+      "name": "Naked Eye",
+      "requirement": "Score 5 Unscoped Rifle Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/naked_eye.jpg"
+    },
+    {
+      "id": "mp_bolt_action_beast",
+      "name": "Bolt-Action Beast",
+      "requirement": "10 Kills with Bolt-Action rifles.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/bolt_action_beast.jpg"
+    },
+    {
+      "id": "mp_quickfire_killer",
+      "name": "Quickfire Killer",
+      "requirement": "Score a 100m+ kill within 1 second of entering scope view.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/quickfire_killer.jpg"
+    },
+    {
+      "id": "mp_distance_dominance",
+      "name": "Distance Dominance",
+      "requirement": "Score 3 Kills at a range of 100m+.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/distance_dominance.jpg"
+    },
+    {
+      "id": "mp_sprinters_scourge",
+      "name": "Sprinter's Scourge",
+      "requirement": "Kill a Sprinting Player while Scoped.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/sprinters_scourge.jpg"
+    },
+    {
+      "id": "mp_precision_perforator",
+      "name": "Precision Perforator",
+      "requirement": "Score 2 Penetration Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/precision_perforator.jpg"
+    },
+    {
+      "id": "mp_cranium_crusher",
+      "name": "Cranium Crusher",
+      "requirement": "Score 5 Headshot Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/cranium_crusher.jpg"
+    },
+    {
+      "id": "mp_squadron_slayer",
+      "name": "Squadron Slayer",
+      "requirement": "Eliminate all members of an opposing team by yourself in a Squad Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/squadron_slayer.jpg"
+    },
+    {
+      "id": "mp_gregarious",
+      "name": "Gregarious",
+      "requirement": "Kill every opposing player in the match once.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/gregarious.jpg"
+    },
+    {
+      "id": "mp_punisher_payback",
+      "name": "Punisher Payback",
+      "requirement": "Score 3 Punisher Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/punisher_payback.jpg"
+    },
+    {
+      "id": "mp_kill_streak_commander",
+      "name": "Kill Streak Commander",
+      "requirement": "Achieve a 15 Kill Streak.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/kill_streak_commander.jpg"
+    },
+    {
+      "id": "mp_pistol_precisionist",
+      "name": "Pistol Precisionist",
+      "requirement": "Score 5 Pistol Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/pistol_precisionist.jpg"
+    },
+    {
+      "id": "mp_secondary_weapon_specialist",
+      "name": "Secondary Weapon Specialist",
+      "requirement": "Score 5 Secondary Weapon Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/secondary_weapon_specialist.jpg"
+    },
+    {
+      "id": "mp_troublemaker",
+      "name": "Troublemaker",
+      "requirement": "Initiate 3 Rivalries in a single match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/troublemaker.jpg"
+    },
+    {
+      "id": "mp_personal_touch",
+      "name": "Personal Touch",
+      "requirement": "Score 5 Melee Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/personal_touch.jpg"
+    },
+    {
+      "id": "mp_frag_fiend",
+      "name": "Frag Fiend",
+      "requirement": "Score 3 Grenade Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/frag_fiend.jpg"
+    },
+    {
+      "id": "mp_kill_streak_conqueror",
+      "name": "Kill Streak Conqueror",
+      "requirement": "Achieve a 10 Kill Streak.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/kill_streak_conqueror.jpg"
+    },
+    {
+      "id": "mp_nomad",
+      "name": "Nomad",
+      "requirement": "Relocate 3 times during a match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/nomad.jpg"
+    },
+    {
+      "id": "mp_pathfinder",
+      "name": "Pathfinder",
+      "requirement": "Disarm 3 Traps.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/pathfinder.jpg"
+    },
+    {
+      "id": "mp_opportunist",
+      "name": "Opportunist",
+      "requirement": "Kill an enemy by shooting an explosive or trap.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/opportunist.jpg"
+    },
+    {
+      "id": "mp_levelling_the_field",
+      "name": "Levelling The Field",
+      "requirement": "Get 3 kills against any 1st placed enemy.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/levelling_the_field.jpg"
+    },
+    {
+      "id": "mp_marked_menace",
+      "name": "Marked Menace",
+      "requirement": "Kill 5 tagged enemies.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/marked_menace.jpg"
+    },
+    {
+      "id": "mp_best_served_cold",
+      "name": "Best Served Cold",
+      "requirement": "Score a punisher kill on 3 different players in a match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/best_served_cold.jpg"
+    },
+    {
+      "id": "mp_bushwhacker",
+      "name": "Bushwhacker",
+      "requirement": "Score 5 Kills From Within Foliage.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/bushwhacker.jpg"
+    },
+    {
+      "id": "mp_exhaled_executions",
+      "name": "Exhaled Executions",
+      "requirement": "Score 8 Empty Lung Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/exhaled_executions.jpg"
+    },
+    {
+      "id": "mp_frequent_flyer",
+      "name": "Frequent Flyer",
+      "requirement": "Relocate 5 Times in a row.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/frequent_flyer.jpg"
+    },
+    {
+      "id": "mp_cunning_conqueror",
+      "name": "Cunning Conqueror",
+      "requirement": "Score 3 Trap Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/cunning_conqueror.jpg"
+    },
+    {
+      "id": "mp_triple_trap",
+      "name": "Triple Trap",
+      "requirement": "Kill 3 opponents with a single explosive.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/triple_trap.jpg"
+    },
+    {
+      "id": "mp_squad_match_victory",
+      "name": "Squad Match Victory",
+      "requirement": "Win a Squad Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/squad_match_victory.jpg"
+    },
+    {
+      "id": "mp_distance_dominator",
+      "name": "Distance Dominator",
+      "requirement": "Achieve the highest cumulative kill distance in a distance-based match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/distance_dominator.jpg"
+    },
+    {
+      "id": "mp_mvp",
+      "name": "MVP",
+      "requirement": "Have the most kills and fewest deaths at the end of the match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/mvp.jpg"
+    },
+    {
+      "id": "mp_annihilator",
+      "name": "Annihilator",
+      "requirement": "Achieve the highest kills in a kill-based match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/annihilator.jpg"
+    },
+    {
+      "id": "mp_decisive_action",
+      "name": "Decisive Action",
+      "requirement": "Get the match winning shot.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/decisive_action.jpg"
+    },
+    {
+      "id": "mp_squad_mvp",
+      "name": "Squad MVP",
+      "requirement": "Have the highest kills, fewest deaths, and longest shot on your team in a Squad Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/squad_mvp.jpg"
+    },
+    {
+      "id": "mp_no_cross_victory",
+      "name": "No Cross Victory",
+      "requirement": "Win a No Cross Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/no_cross_victory.jpg"
+    },
+    {
+      "id": "mp_decorated_soldier",
+      "name": "Decorated Soldier",
+      "requirement": "Earn 3 Accolades in a match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/decorated_soldier.jpg"
+    },
+    {
+      "id": "mp_squad_saviour",
+      "name": "Squad Saviour",
+      "requirement": "Revive every member of your team once in a Squad Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/squad_saviour.jpg"
+    },
+    {
+      "id": "mp_eagle_eye",
+      "name": "Eagle Eye",
+      "requirement": "Score 3 Tag Assists for the same ally.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/eagle_eye.jpg"
+    },
+    {
+      "id": "mp_tactical_tagger",
+      "name": "Tactical Tagger",
+      "requirement": "Earn 5 Tag Assists in a Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/tactical_tagger.jpg"
+    },
+    {
+      "id": "mp_interceptor",
+      "name": "Interceptor",
+      "requirement": "Score 3 Kills against targets who are performing Melee Kills.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/interceptor.jpg"
+    },
+    {
+      "id": "mp_team_tagger",
+      "name": "Team Tagger",
+      "requirement": "Score a tag assist for every member of your team in a Squad Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/team_tagger.jpg"
+    },
+    {
+      "id": "mp_deadly_duet",
+      "name": "Deadly Duet",
+      "requirement": "Earn 5 Kill Assists in a Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/deadly_duet.jpg"
+    },
+    {
+      "id": "mp_guardian_angel",
+      "name": "Guardian Angel",
+      "requirement": "Revive a team mate 5 times.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/guardian_angel.jpg"
+    },
+    {
+      "id": "mp_squad_supreme",
+      "name": "Squad Supreme",
+      "requirement": "As a team, eliminate all players on all 3 opposing teams once in a Squad Match without dying.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/squad_supreme.jpg"
+    },
+    {
+      "id": "mp_team_match_victory",
+      "name": "Team Match Victory",
+      "requirement": "Win a Team Match.",
+      "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/team_match_victory.jpg"
     }
   ],
   "multiplayer_ribbons_note": "Not verified against the game; some entries may be inaccurate.",
@@ -8811,16 +9141,16 @@
     ]
   },
   "ribbon_categories": {
-    "total": 104,
+    "total": 99,
     "categories": [
       {
         "name": "Campaign / Survival",
-        "total": 48,
+        "total": 47,
         "image": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/campaign-survival.jpg"
       },
       {
         "name": "Multiplayer",
-        "total": 56,
+        "total": 52,
         "image": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/ribbons/multiplayer.jpg"
       }
     ]
