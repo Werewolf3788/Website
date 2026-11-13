@@ -240,7 +240,10 @@ async function main() {
             let achFetched = 0;
             if (gamesPublic) {
                 const recentIds = new Set((recent?.response?.games || []).map((g) => String(g.appid)));
-                const played = (owned?.response?.games || []).filter((g) => (g.playtime_forever || 0) > 0)
+                // playtime can be hidden by the player's privacy settings (all zeros); then just go through the library
+                const ownedList = owned?.response?.games || [];
+                const anyPlaytime = ownedList.some((g) => (g.playtime_forever || 0) > 0);
+                const played = ownedList.filter((g) => !anyPlaytime || (g.playtime_forever || 0) > 0)
                     .sort((x, y) => (recentIds.has(String(y.appid)) - recentIds.has(String(x.appid))) || (y.playtime_forever - x.playtime_forever))
                     .slice(0, ACH_MAX_GAMES);
                 for (const g of played) {

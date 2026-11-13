@@ -273,6 +273,15 @@ async function loadPsn(tag) {
       progress:num(g.progress), earned:g.earnedTotal, total:g.definedTotal, hours:g.nativePlaytimeFormatted || '',
       lastPlayed:g.lastPlayedDateTime || g.lastUpdatedDateTime || '', playing: online && !!id && id === activeId };
   });
+  { // the same title often appears twice (PS4 + PS5 edition, repeated syncs): keep one card, the furthest along
+    const seen = new Map();
+    for (const g of list.splice(0)) {
+      const k = (g.title || g.id).toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\b(ps4|ps5|playstation (4|5)|director s cut|edition)\b/g, '').trim() || g.id;
+      const cur = seen.get(k);
+      if (!cur || (g.playing && !cur.playing) || (!(cur.playing && !g.playing) && g.progress > cur.progress)) seen.set(k, g);
+    }
+    list.push(...seen.values());
+  }
   if (activeId && !list.some(g => g.id === activeId)) {
     list.unshift({ platform:'psn', id:activeId, title:ah.title || u.currentGame || 'Active hunt', poster:secure(ah.art || ah.posterArt || u.currentGameArt || ''),
       progress:num(ah.progress), earned:undefined, total:undefined, hours:ah.nativePlaytimeFormatted || '', lastPlayed:u.lastUpdated || '', playing: online });
@@ -333,10 +342,16 @@ async function loadSteam(raw) {
     if (!id) return null;
   }
   const g = async (c) => (await W.db.ref(`steam_users/${id}/${c}`).once('value').catch(() => ({ val: () => null }))).val();
-  const [profile, games, ach, tot] = await Promise.all([g('profile'), g('games'), g('ach'), g('achTotals')]);
+  const [profile, games, ach, tot, lib] = await Promise.all([g('profile'), g('games'), g('ach'), g('achTotals'), g('library')]);
   if (!profile) return null;
   const achOf = (appid) => (ach && ach[appid]) || {};
-  const list = arr(games && games.recent).map(r => {
+  // every owned game (library), recently played first, then by last played / hours; falls back to the recent list
+  const recentIds = new Set(arr(games && games.recent).map(r => String(r.appid)));
+  const all = lib && typeof lib === 'object'
+    ? Object.entries(lib).map(([appid, v]) => ({ appid, name:v.n, minutesTotal:v.t || 0, last:v.l || 0 }))
+        .sort((a, b) => (recentIds.has(b.appid) - recentIds.has(a.appid)) || (b.last - a.last) || (b.minutesTotal - a.minutesTotal))
+    : arr(games && games.recent).map(r => ({ appid:String(r.appid), name:r.name, minutesTotal:r.minutesTotal || 0, last:0 }));
+  const list = all.map(r => {
     const a = achOf(r.appid), total = num(a.total), got = num(a.got);
     return { platform:'steam', id:String(r.appid), title:r.name || ('App ' + r.appid), progress: total ? Math.round(got / total * 100) : 0,
       poster:`https://cdn.cloudflare.steamstatic.com/steam/apps/${r.appid}/library_600x900.jpg`,
@@ -529,7 +544,7 @@ function renderTab(vp) {
   shownGames = [];
   const sections = plats.map(x => {
     const d = S.plat[x]; if (!d) return ''; if (d.empty) return `<section class="card mute" style="padding:1rem"><i class="${PLATS[x].icon}"></i> No synced ${esc(PLATS[x].name)} data found for <b>${esc(d.name)}</b> yet. Check the ID in Settings is exact.</section>`; if (!d.games.length) return '';
-    const gs = d.games.slice(0, tab === 'all' ? 6 : 18);
+    const gs = d.games.slice(0, tab === 'all' ? 6 : 300);
     const start = shownGames.length; shownGames.push(...gs);
     const cur = gs.find(g => g.playing);
     return `<section class="card" style="padding:1rem">
