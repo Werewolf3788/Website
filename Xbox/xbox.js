@@ -437,6 +437,16 @@ async function main() {
         }
     }
 
+    // Diagnostic: can the website (not signed in) read what was just written?
+    for (const [label, base] of [["Ray DB", "https://playstation-stats-default-rtdb.firebaseio.com/xbox"], ["Kevin DB", `${KEVIN_RTDB_URL}/xbox`]]) {
+        for (const tag of Object.keys(usersByGamerTag).slice(0, 1)) {
+            try {
+                const r = await fetch(`${base}/gamertags/${encodeURIComponent(tag)}.json?shallow=true`);
+                const t = (await r.text()).slice(0, 120);
+                console.log(`[CHECK] public read ${label} xbox/gamertags/${tag}: HTTP ${r.status} ${t}`);
+            } catch (e) { console.log(`[CHECK] ${label}: ${e.message}`); }
+        }
+    }
     await rtdbRef("usersByGamerTag").set(usersByGamerTag);
     await rtdbRef("meta").set(plain({ lastRun: nowEt(), lastRunMs: Date.now(), engineVersion: ENGINE_VERSION }));
     await rtdbRef("engineStatus").set(plain({
