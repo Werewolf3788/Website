@@ -163,6 +163,11 @@ window.appState = {
     campaignRankSource: null,
     activeMission: null,
     ranks: {},
+    // Per-mission "tagged, not killed" tally — a manual counter toward the
+    // Marked Mastermind ribbon (20+ tagged enemies alive at mission end).
+    // Keyed by mission key; resettable per attempt, separate from the
+    // ribbon's own lifetime earned-count.
+    taggedTally: {},
 
     getUserKey: function() {
         if (this.myFriendCode) return this.myFriendCode;
@@ -210,6 +215,7 @@ window.appState = {
         this.campaignRankSource = null;
         this.activeMission = null;
         this.ranks = {};
+        this.taggedTally = {};
 
         document.querySelectorAll('.game-pill').forEach(pill => {
             const key = pill.getAttribute('data-game-key');
@@ -545,6 +551,7 @@ window.appState = {
             campaignRank: this.campaignRank,
             campaignRankSource: this.campaignRankSource,
             activeMission: this.activeMission || null,
+            taggedTally: this.taggedTally || {},
             trophies: this.trophies
         };
     },
@@ -563,6 +570,7 @@ window.appState = {
         if (payload.carry && typeof payload.carry === 'object') this.carry = Object.assign({ primary: null, secondary: null, pack: [] }, payload.carry);
         migrateLoadouts(this);
         if (payload.activeMission !== undefined) this.activeMission = payload.activeMission;
+        if (payload.taggedTally && typeof payload.taggedTally === 'object') this.taggedTally = payload.taggedTally;
         if (payload.campaignRank !== undefined && payload.campaignRank !== null && !(this.campaignRankSource === 'psn' && payload.campaignRankSource !== 'psn')) {
             this.campaignRank = payload.campaignRank; this.campaignRankSource = payload.campaignRankSource || 'manual';
         }
@@ -859,6 +867,16 @@ window.appState.applyStateToUI = function() {
         const done = sec.querySelectorAll('.game-item-card.completed').length;
         badge.innerText = total ? `${done}/${total}` : '';
     });
+    document.querySelectorAll('.tagged-tally').forEach(wrap => {
+        const mKey = wrap.getAttribute('data-mission');
+        const n = (this.taggedTally && this.taggedTally[mKey]) || 0;
+        const target = Number(wrap.getAttribute('data-target')) || 20;
+        const countEl = wrap.querySelector('.tagged-tally-count');
+        if (countEl) countEl.textContent = n;
+        const noteEl = wrap.querySelector('.tagged-tally-note');
+        if (noteEl) noteEl.textContent = n >= target ? `✓ ${target}+ tagged — Marked Mastermind is in reach, finish the mission without killing them!` : `${Math.max(0, target - n)} more to reach ${target}`;
+        wrap.classList.toggle('tally-ready', n >= target);
+    });
     applyFriendMarks();
     updateGameMetrics();
 };
@@ -981,6 +999,22 @@ window.appState.setMedalProgress = function(id, value, source) {
 };
 window.appState.stepMedal = function(id, d) { this.setMedalProgress(id, (this.medals[id]?.progress || 0) + d); };
 window.appState.stepRibbon = function(id, d) { this.setRibbonCount(id, (this.ribbons[id]?.count || 0) + d); };
+// Per-mission "tagged, not killed" tally - a manual counter the player bumps
+// as they tag enemies with binoculars, to track progress toward Marked
+// Mastermind (20+ tagged-and-alive at mission completion) without this site
+// trying to read live game state. Resets per attempt via resetTagged.
+window.appState.stepTagged = function(mKey, d) {
+    const n = Math.max(0, (this.taggedTally[mKey] || 0) + d);
+    this.taggedTally[mKey] = n;
+    this.applyStateToUI();
+    clearTimeout(this._taggedSaveTimer);
+    this._taggedSaveTimer = setTimeout(() => this.saveProgress(), 600);
+};
+window.appState.resetTagged = function(mKey) {
+    this.taggedTally[mKey] = 0;
+    this.applyStateToUI();
+    this.saveProgress();
+};
 // Multi-level collectibles (e.g. Watch Dogs: Legion Tech Upgrades, bought in
 // Level 1/2/3 tiers): track how many levels are bought, not just owned/not-owned.
 // `collected` flips true once every level is bought, so it keeps counting
@@ -1680,6 +1714,15 @@ function ensureUniversalStyles() {
         .ribbon-count { width: 68px; min-height: 40px; padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18);
             background: #0f172a; color: #fff; font-size: 1rem; font-weight: 800; text-align: center; }
         .ribbon-count:focus { outline: none; border-color: var(--user-theme-accent, #ff5500); }
+        .tagged-tally { grid-column: 1 / -1; margin-top: 6px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: rgba(15,23,42,0.5); }
+        .tagged-tally.tally-ready { border-color: #facc15; background: rgba(250,204,21,0.08); }
+        .tagged-tally-head { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; margin-bottom: 6px; }
+        .tally-hint { text-transform: none; letter-spacing: normal; display: block; font-size: 0.72rem; color: #64748b; margin-top: 2px; }
+        .tagged-tally .ribbon-count-wrap { margin: 4px 0; }
+        .tagged-tally-count { min-width: 28px; text-align: center; font-size: 1.1rem; color: #fff; }
+        .tally-reset-btn { margin-left: 8px; font-size: 0.72rem; padding: 4px 10px; }
+        .tagged-tally-note { font-size: 0.78rem; color: #cbd5e1; margin-top: 4px; }
+        .tagged-tally.tally-ready .tagged-tally-note { color: #facc15; font-weight: 700; }
         .mission-detail { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); margin-top: 10px; }
         .mission-detail h4 { margin: 0 0 4px; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: #94a3b8; }
         .mission-detail p, .mission-detail li { margin: 0; font-size: 0.82rem; line-height: 1.45; color: #e2e8f0; }
@@ -2100,6 +2143,23 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     if (toArr(m.optional_objectives).length) detail.push(`<div><h4>Optional Objectives (${toArr(m.optional_objectives).length})</h4><ul>${toArr(m.optional_objectives).map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ul></div>`);
     if (m.kill_target || (typeof m.kill_challenge === 'string' && m.kill_challenge)) {
         detail.push(`<div><h4>Kill List</h4>${m.kill_target ? `<p><strong>${escapeHtml(m.kill_target)}</strong></p>` : ''}${typeof m.kill_challenge === 'string' && m.kill_challenge ? `<p>Kill challenge: ${escapeHtml(m.kill_challenge)}</p>` : ''}</div>`);
+    }
+    if (m.enemy_count && typeof m.enemy_count === 'object') {
+        const ec = m.enemy_count;
+        const target = ec.marked_mastermind_target || 20;
+        const n = (appState.taggedTally && appState.taggedTally[mKey]) || 0;
+        detail.push(`<div><h4>🎯 Enemy Count</h4>
+            <p><strong>${ec.approximate ? '~' : ''}${escapeHtml(ec.base)}</strong> enemies${ec.alarm_bonus ? ` (+${escapeHtml(ec.alarm_bonus)} if an alarm triggers)` : ''}.${ec.notes ? ` ${escapeHtml(ec.notes)}` : ''}</p>
+            <div class="tagged-tally${n >= target ? ' tally-ready' : ''}" data-mission="${escapeHtml(mKey)}" data-target="${escapeHtml(target)}">
+                <div class="tagged-tally-head">Tagged, not killed <span class="tally-hint">(tracks ${escapeHtml(target)} for Marked Mastermind — repeatable, no limit on times earned)</span></div>
+                <div class="ribbon-count-wrap" title="Tagged this attempt">
+                    <button type="button" class="step-btn" aria-label="One fewer tagged" onclick="appState.stepTagged('${escapeHtml(mKey)}', -1)">−</button>
+                    <span class="tagged-tally-count">${n}</span>
+                    <button type="button" class="step-btn" aria-label="One more tagged" onclick="appState.stepTagged('${escapeHtml(mKey)}', 1)">+</button>
+                    <button type="button" class="uni-search-btn tally-reset-btn" onclick="appState.resetTagged('${escapeHtml(mKey)}')">Reset for new attempt</button>
+                </div>
+                <div class="tagged-tally-note">${n >= target ? `✓ ${escapeHtml(target)}+ tagged — Marked Mastermind is in reach, finish the mission without killing them!` : `${target - n} more to reach ${escapeHtml(target)}`}</div>
+            </div></div>`);
     }
     const tot = m.collectible_totals;
     if (tot || m.starting_locations) {

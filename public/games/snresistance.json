@@ -86,7 +86,13 @@
           }
         ]
       },
-      "completion_trophy": 1
+      "completion_trophy": 1,
+      "enemy_count": {
+        "base": 15,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Short tutorial mission with minimal guards."
+      }
     },
     "mission_2": {
       "number": 2,
@@ -560,7 +566,13 @@
           "tip": "Find the dead drop at the Basilica: interact with the portrait at the top of the Basilica's tower.",
           "location_image_url": "/public/games/snresistance/images/locations/m2/obj_vertigo_dead_drop.jpg"
         }
-      ]
+      ],
+      "enemy_count": {
+        "base": 100,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Standard full-sized city map."
+      }
     },
     "mission_3": {
       "number": 3,
@@ -1022,7 +1034,13 @@
           "video_time": 658
         }
       ],
-      "completion_trophy": 3
+      "completion_trophy": 3,
+      "enemy_count": {
+        "base": 100,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Split rail yard map with extra snipers."
+      }
     },
     "mission_4": {
       "number": 4,
@@ -1485,7 +1503,14 @@
           "video_time": 433
         }
       ],
-      "completion_trophy": 4
+      "completion_trophy": 4,
+      "enemy_count": {
+        "base": 62,
+        "approximate": false,
+        "marked_mastermind_target": 20,
+        "notes": "Smaller dam map; adds +5 if an alarm triggers.",
+        "alarm_bonus": 5
+      }
     },
     "mission_5": {
       "number": 5,
@@ -1939,7 +1964,13 @@
           "video_time": 483
         }
       ],
-      "completion_trophy": 5
+      "completion_trophy": 5,
+      "enemy_count": {
+        "base": 100,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Standard full-sized map."
+      }
     },
     "mission_6": {
       "number": 6,
@@ -2455,7 +2486,13 @@
         }
       },
       "collectible_order_note": "Cards follow the in-game Collectibles screen order. Personal letters 4 and 5 (Fools Everywhere, Beautiful Views) were still undiscovered on the screenshot, so their order is a best guess.",
-      "completion_trophy": 6
+      "completion_trophy": 6,
+      "enemy_count": {
+        "base": 105,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Fortress and underground bunker layout."
+      }
     },
     "mission_7": {
       "number": 7,
@@ -3101,7 +3138,13 @@
           "name": "Bolt Cutters",
           "location": "Ground floor of the windmill, right next to the campfire."
         }
-      ]
+      ],
+      "enemy_count": {
+        "base": 100,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Vineyard and farmhouse estate."
+      }
     },
     "mission_8": {
       "number": 8,
@@ -3566,7 +3609,13 @@
           "video_time": 578
         }
       ],
-      "completion_trophy": 8
+      "completion_trophy": 8,
+      "enemy_count": {
+        "base": 105,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Final large-scale campaign map."
+      }
     },
     "mission_9": {
       "number": 9,
@@ -3707,7 +3756,13 @@
           "location": "Kill Kruger as he escapes (about 202 m in the photo). Headshot him for the Mastermind trophy.",
           "location_image_url": "/public/games/snresistance/images/locations/m9/kruger_shot.jpg"
         }
-      ]
+      ],
+      "enemy_count": {
+        "base": 5,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Short scripted epilogue shootout."
+      }
     },
     "mission_10_dlc": {
       "number": 10,
@@ -4361,7 +4416,13 @@
           }
         ]
       },
-      "collectibles_note": "Names and video times from Trophy Tom's guide. Location text and photos still to be added from in-game screenshots."
+      "collectibles_note": "Names and video times from Trophy Tom's guide. Location text and photos still to be added from in-game screenshots.",
+      "enemy_count": {
+        "base": 85,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Film studio and town layout; Hitler is an optional target."
+      }
     },
     "mission_11_dlc": {
       "number": 11,
@@ -4531,7 +4592,13 @@
         ]
       },
       "trophies": [],
-      "source": "guides4gamers.com interactive map (collectibles); pushsquare.com (mission description, 19 collectibles: 5/5/3/3/3)"
+      "source": "guides4gamers.com interactive map (collectibles); pushsquare.com (mission description, 19 collectibles: 5/5/3/3/3)",
+      "enemy_count": {
+        "base": 100,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Full-sized map with 2 tanks and 2 alarm panels."
+      }
     },
     "mission_12_dlc": {
       "number": 12,
@@ -4697,7 +4764,13 @@
         ]
       },
       "trophies": [],
-      "source": "guides4gamers.com interactive map (collectibles); thexboxhub.com + steamdeckhq.com (mission description, Striking Range Mission, Weapons and Skins Pack)"
+      "source": "guides4gamers.com interactive map (collectibles); thexboxhub.com + steamdeckhq.com (mission description, Striking Range Mission, Weapons and Skins Pack)",
+      "enemy_count": {
+        "base": 110,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Coastal fortress and villa complex."
+      }
     },
     "mission_13_dlc": {
       "number": 13,
@@ -4864,7 +4937,13 @@
         ]
       },
       "trophies": [],
-      "source": "guides4gamers.com interactive map (collectibles); eneba.com + steamdeckhq.com (mission description, Mud and Thunder Mission, Weapons and Skin Pack)"
+      "source": "guides4gamers.com interactive map (collectibles); eneba.com + steamdeckhq.com (mission description, Mud and Thunder Mission, Weapons and Skin Pack)",
+      "enemy_count": {
+        "base": 130,
+        "approximate": true,
+        "marked_mastermind_target": 20,
+        "notes": "Largest DLC map; marshlands and V2 rocket facility."
+      }
     }
   },
   "campaign_ribbons": [
@@ -5005,6 +5084,13 @@
       "name": "Rifle Specialist",
       "requirement": "20 kills with sniper rifle",
       "image_url": ""
+    },
+    {
+      "id": "ribbon_marked_mastermind",
+      "name": "Marked Mastermind",
+      "requirement": "Complete a mission with at least 20 tagged enemies that have not been killed.",
+      "image_url": "",
+      "repeatable": true
     }
   ],
   "survival_ribbons": [
@@ -8676,11 +8762,11 @@
     ]
   },
   "ribbon_categories": {
-    "total": 103,
+    "total": 104,
     "categories": [
       {
         "name": "Campaign / Survival",
-        "total": 47,
+        "total": 48,
         "image": "/public/games/snresistance/images/ribbons/campaign-survival.jpg"
       },
       {
