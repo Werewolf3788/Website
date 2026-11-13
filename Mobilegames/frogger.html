@@ -296,7 +296,7 @@
     if (!isMP) $('best').parentNode.style.display = ''; else $('best').parentNode.style.display = '';
   }
   function gameOver() {
-    over = true; $('ovT').textContent = '💀 Game over'; $('ovS').textContent = 'Score ' + score + ' · best ' + best + ' · level ' + level;
+    over = true; try { WW.postBest('frogger', Math.max(best, score)); } catch (e) {} $('ovT').textContent = '💀 Game over'; $('ovS').textContent = 'Score ' + score + ' · best ' + best + ' · level ' + level;
     $('ovBtn').textContent = 'Play again'; $('ovBtn').onclick = restartSolo; $('ovBtn2').style.display = 'none'; $('ov').style.display = 'flex';
   }
   function restartSolo() { $('ov').style.display = 'none'; level = 1; score = 0; deaths = 0; lives = 3; over = false; frog.seed = Math.floor(Math.random() * 1e6); regen(); respawn(); hud(); }

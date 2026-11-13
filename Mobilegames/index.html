@@ -69,6 +69,11 @@
   <h2 style="margin:0 0 6px;font-size:1.1rem"><span style="color:#22c55e">●</span> Friends playing now</h2>
   <div id="nowList" class="muted">Loading…</div>
 </div>
+<div class="card" id="leadCard">
+  <h2 style="margin:0 0 6px;font-size:1.1rem">🏆 Leaderboard</h2>
+  <div id="leadTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+  <div id="leadBody" class="muted">Sign in to see the leaderboard.</div>
+</div>
 <div class="card"><details id="hist"><summary style="cursor:pointer;font-weight:700">📜 Win / loss history</summary><div id="histBody" style="margin-top:8px" class="muted">Sign in or play a game to build your record.</div></details></div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 <p class="muted"><a href="../" style="color:#94a3b8">Back to the main site</a></p>
@@ -115,6 +120,25 @@
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'tycoon.html?room=' + encodeURIComponent(c);
   };
+  // ---- leaderboard
+  var LGAMES = [['all', 'All games'], ['wahoo', '🎲 Wahoo'], ['tycoon', '🏙️ Monopoly'], ['frogger', '🐸 Frogger'], ['battleship', '🚢 Battleship']], leadTab = 'all', leadData = null;
+  var BEST = { frogger: ['Best solo', function (v) { return v + ' crossed'; }, false], battleship: ['Fewest shots', function (v) { return v + ' shots'; }, true] };
+  function drawLeaders() {
+    $('leadTabs').innerHTML = LGAMES.map(function (g) { return '<button data-g="' + g[0] + '" style="padding:6px 12px;border-radius:999px;font-size:.8rem;font-weight:700;cursor:pointer;background:' + (leadTab === g[0] ? '#22c55e;color:#04210f' : '#334155;color:#e2e8f0') + '">' + g[1] + '</button>'; }).join('');
+    if (!WW.user) { $('leadBody').textContent = 'Sign in to see the leaderboard.'; return; }
+    if (!leadData) { $('leadBody').textContent = 'Loading…'; return; }
+    var rows = {}, games = leadTab === 'all' ? Object.keys(leadData) : [leadTab];
+    games.forEach(function (g) { var d = leadData[g] || {}; Object.keys(d).forEach(function (u) { var p = d[u] || {}, r = rows[u] = rows[u] || { n: p.n || 'Player', av: p.av || '', w: 0, l: 0, bw: 0, bl: 0, t: 0 }; r.w += p.w | 0; r.l += p.l | 0; r.bw += p.bw | 0; r.bl += p.bl | 0; if ((p.t || 0) > r.t) { r.t = p.t; r.n = p.n || r.n; r.av = p.av || r.av; } if (leadTab !== 'all' && typeof p.best === 'number') r.best = p.best; }); });
+    var bst = BEST[leadTab], list = Object.keys(rows).map(function (u) { rows[u].u = u; return rows[u]; }).filter(function (r) { return r.w + r.l + r.bw + r.bl > 0 || r.best; });
+    list.sort(function (a, b) { return (b.w - a.w) || (b.bw - a.bw) || ((a.l + a.bl) - (b.l + b.bl)) || (bst && a.best && b.best ? (bst[2] ? a.best - b.best : b.best - a.best) : (b.best ? 1 : 0) - (a.best ? 1 : 0)); });
+    if (!list.length) { $('leadBody').innerHTML = 'No finished games here yet. Finish a game and you are on the board.'; return; }
+    var medal = ['🥇', '🥈', '🥉'], h = '<div style="display:grid;grid-template-columns:auto 1fr auto auto' + (bst ? ' auto' : '') + ';gap:4px 12px;align-items:center;font-size:.85rem;color:#e2e8f0"><span></span><span class="muted">Player</span><span class="muted" title="Wins and losses against other people">vs friends</span><span class="muted" title="Wins and losses against bots or the computer">vs computer</span>' + (bst ? '<span class="muted">' + bst[0] + '</span>' : '');
+    list.slice(0, 25).forEach(function (r, i) { var me = WW.user && r.u === WW.user.uid; h += '<span>' + (medal[i] || (i + 1) + '.') + '</span><span style="display:flex;align-items:center;gap:6px;min-width:0;' + (me ? 'font-weight:800;color:#fde68a' : '') + '">' + WW.avatarHtml(r.av, r.n, 20) + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + WW.esc(r.n) + (me ? ' (you)' : '') + '</span></span><span><b>' + r.w + '</b> W · ' + r.l + ' L</span><span>' + r.bw + ' W · ' + r.bl + ' L</span>' + (bst ? '<span>' + (r.best ? bst[1](r.best) : '-') + '</span>' : ''); });
+    $('leadBody').innerHTML = h + '</div>';
+  }
+  $('leadTabs').addEventListener('click', function (e) { var b = e.target.closest('button[data-g]'); if (b) { leadTab = b.dataset.g; drawLeaders(); } });
+  function refreshLeaders() { drawLeaders(); if (!WW.user) return; WW.syncLeaders().then(WW.loadLeaders).then(function (d) { if (d === null) { $('leadBody').textContent = 'The leaderboard could not be loaded.'; return; } leadData = d; drawLeaders(); }); }
+  window.__lead = refreshLeaders;
   function refreshHist() { if (!$('hist').open) return; WW.loadHistory().then(function (l) { $('histBody').innerHTML = WW.historyHtml(l); }); }
   $('hist').addEventListener('toggle', refreshHist);
   var nowTimer = null;
@@ -146,7 +170,7 @@
   }
   WW.onReady(function (user, code) {
     clearInterval(nowTimer); if (user) { loadNow(); nowTimer = setInterval(loadNow, 30000); } else $('nowCard').style.display = 'none';
-    refreshHist();
+    refreshHist(); refreshLeaders();
     $('signedOut').style.display = user ? 'none' : '';
     $('signedIn').style.display = user ? '' : 'none';
     $('playNote').textContent = user ? 'Your table is saved online and friends can join with your code.' : 'Playing as a guest: games save on this device only.';

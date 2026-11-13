@@ -259,6 +259,8 @@
       var win = st.winner === ME, op = other(R, ME);
       if (recorded !== st.mid) {
         recorded = st.mid; setTimeout(function () { sfx(win ? 'win' : 'lose'); }, 1600);
+        if (!isMP) { WW.recordResult('battleship_solo_' + Date.now(), { game: 'battleship', title: 'Battleship', room: 'solo', result: win ? 'win' : 'loss', opp: [{ n: 'Computer', b: 1 }], winner: win ? { n: myName } : { n: 'Computer', b: 1 } }); }
+        if (win) try { WW.postBest('battleship', Object.keys(shotsBy(R, ME)).length, true); } catch (e) {}
         if (isMP) WW.recordResult('battleship_' + roomCode + '_' + (st.mid | 0), { game: 'battleship', title: 'Battleship', room: roomCode, result: win ? 'win' : 'loss', opp: [{ n: pname(R, op), u: op }], winner: { n: win ? myName : pname(R, op), u: st.winner } });
         setTimeout(function () { if (R.state.phase !== 'over') return; $('ovT').textContent = win ? '🏆 Victory!' : '💀 Defeated'; $('ovS').textContent = (win ? 'You sank all five ships' : pname(R, op) + ' sank all five of your ships') + ' in ' + Object.keys(shotsBy(R, st.winner)).length + ' shots.'; $('ovBtn').textContent = 'Play again'; $('ovBtn').onclick = function () { $('ov').style.display = 'none'; apply(doRematch); }; $('ovBtn2').textContent = 'Look at the boards'; $('ovBtn2').style.display = ''; $('ovBtn2').onclick = function () { $('ov').style.display = 'none'; }; $('ov').style.display = 'flex'; }, 2600);
       }

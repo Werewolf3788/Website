@@ -98,6 +98,43 @@
       }
     },
 
+    "game_leaders": {
+      ".read": "auth != null",
+      "$game": {
+        ".validate": "$game.matches(/^[a-z0-9_-]{2,24}$/)",
+        "$uid": {
+          ".write": "auth != null && $uid === auth.uid",
+          "w": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+          },
+          "l": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+          },
+          "bw": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+          },
+          "bl": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+          },
+          "best": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+          },
+          "t": {
+            ".validate": "newData.isNumber()"
+          },
+          "n": {
+            ".validate": "newData.isString() && newData.val().length <= 24"
+          },
+          "av": {
+            ".validate": "newData.isString() && newData.val().length <= 600"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+
     "pranks": {
       ".read": "auth != null",
       ".write": "auth != null && auth.token.email === 'raykevin71888@gmail.com'"

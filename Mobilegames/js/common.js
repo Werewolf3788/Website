@@ -183,9 +183,38 @@
     try {
       var r = histRef().child(String(key).replace(/[^A-Za-z0-9_-]/g, '_'));
       var ex = (await r.once('value')).val(); if (ex !== null && ex !== undefined) return false;
-      rec.t = Date.now(); await r.set(rec); return true;
+      rec.t = Date.now(); await r.set(rec); WW.syncLeaders(); return true;
     } catch (e) { console.warn('history', e); return false; }
   };
+
+  // ---- shared leaderboard (game_leaders/{game}/{uid}; everyone signed in can read, each player writes only their own row)
+  // The row is rebuilt from the player's own win / loss history, so it fixes itself and old games count too.
+  function leadersOn() { return WW.mode === 'cloud' && WW.user; }
+  function myTag() { var av = WW.avatar || ''; if (!/^https:\/\//.test(av) || av.length > 500) av = ''; return { n: String(WW.user.displayName || 'Player').split(' ')[0].slice(0, 16), av: av, t: Date.now() }; }
+  WW.syncLeaders = async function () {
+    if (!leadersOn()) return;
+    try {
+      var list = await WW.loadHistory(), per = {};
+      list.forEach(function (r) {
+        if (!r || !r.game) return; var g = per[r.game] = per[r.game] || { w: 0, l: 0, bw: 0, bl: 0 };
+        var people = (r.opp || []).some(function (o) { return o && !o.b; });
+        if (r.result === 'win') g[people ? 'w' : 'bw']++; else g[people ? 'l' : 'bl']++;
+      });
+      var tag = myTag(), up = {};
+      Object.keys(per).forEach(function (g) { if (!/^[a-z0-9_-]{2,24}$/.test(g)) return; ['w', 'l', 'bw', 'bl'].forEach(function (k) { up[g + '/' + WW.user.uid + '/' + k] = per[g][k]; }); ['n', 'av', 't'].forEach(function (k) { up[g + '/' + WW.user.uid + '/' + k] = tag[k]; }); });
+      if (Object.keys(up).length) await db.ref('game_leaders').update(up);
+    } catch (e) { console.warn('leaders', e); }
+  };
+  // best score for a game: higher is better unless lowerIsBetter (e.g. fewest shots)
+  WW.postBest = async function (game, score, lowerIsBetter) {
+    if (!leadersOn() || !(score > 0)) return;
+    try {
+      var ref = db.ref('game_leaders/' + game + '/' + WW.user.uid), cur = (await ref.child('best').once('value')).val();
+      var tag = myTag(); if (typeof cur !== 'number' || (lowerIsBetter ? score < cur : score > cur)) tag.best = score;
+      await ref.update(tag);
+    } catch (e) { console.warn('leaders', e); }
+  };
+  WW.loadLeaders = async function () { if (!leadersOn()) return null; try { return (await db.ref('game_leaders').once('value')).val() || {}; } catch (e) { console.warn('leaders', e); return null; } };
   WW.loadHistory = async function () {
     try { var v = (await histRef().once('value')).val() || {}; return Object.keys(v).map(function (k) { return v[k]; }).filter(Boolean).sort(function (a, b) { return (b.t || 0) - (a.t || 0); }); } catch (e) { return []; }
   };
