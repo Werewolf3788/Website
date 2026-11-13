@@ -225,6 +225,13 @@ async function readKevinXboxAccounts() {
         const fk = resolveOwnerKey(users, friendCodes, String(f.friend_code || code));
         if (fk) closeKeys.add(fk);
     }
+    // Spare keys: members who pasted a key but have no gamertag/XUID of their own to sync. They join the owner's key in a pool
+    // so the pulls for keyless close friends are split across every key instead of burning one.
+    const pool = [ownerApiKey].filter(Boolean);
+    for (const [ek, uu] of Object.entries(users).sort((x, y) => x[0].localeCompare(y[0]))) {
+        if (!uu || typeof uu !== "object" || ek === OWNER_KEY) continue;
+        const r = readUser(ek, uu); if (r.apiKey && !r.gamertag && !r.xuid && !pool.includes(r.apiKey)) pool.push(r.apiKey);
+    }
     let shared = 0, skippedOverCap = 0, borrowed = 0;
     for (const [emailKey, u] of Object.entries(users).sort((x, y) => x[0].localeCompare(y[0]))) {
         if (!u || typeof u !== "object") continue;
@@ -237,13 +244,13 @@ async function readKevinXboxAccounts() {
             accounts.push({ emailKey, gamertag: me.gamertag, apiKey: me.apiKey, backupKey: wantsOwner ? ownerApiKey : null, xuid: me.xuid || null, updatedAt: me.updatedAt, viaFriendKey: false });
         } else if (wantsOwner) {
             if (shared >= MAX_SHARED_FRIENDS_PER_KEY * 4) { skippedOverCap++; }
-            else { shared++; borrowed++; accounts.push({ emailKey, gamertag: me.gamertag || null, apiKey: ownerApiKey, backupKey: null, xuid: me.xuid || null,
+            else { shared++; borrowed++; const i = borrowed - 1; accounts.push({ emailKey, gamertag: me.gamertag || null, apiKey: pool[i % pool.length], backupKey: pool.length > 1 ? pool[(i + 1) % pool.length] : null, xuid: me.xuid || null,
                 updatedAt: me.updatedAt, viaFriendKey: !me.gamertag, keyOwnerEmailKey: OWNER_KEY }); }
         }
         if (me.gamertag && me.apiKey) keyOwnerByEmailKey.set(emailKey, me.apiKey);
     }
 
-    console.log(`[KEVIN DB] Xbox accounts with both a gamertag and a key: ${keyOwnerByEmailKey.size}; using the owner's key (no key of their own): ${borrowed}${skippedOverCap ? ` (${skippedOverCap} skipped over cap)` : ""}.`);
+    console.log(`[KEVIN DB] key pool size ${pool.length}. Xbox accounts with both a gamertag and a key: ${keyOwnerByEmailKey.size}; using the shared key pool (no key of their own): ${borrowed}${skippedOverCap ? ` (${skippedOverCap} skipped over cap)` : ""}.`);
     return { accounts, usersReadOk: ok };
 }
 
@@ -399,7 +406,7 @@ async function main() {
             try { got = await attempt(acc.apiKey); }
             catch (err) {
                 if (!acc.backupKey) throw err;
-                console.warn(`[XBOX] ${acc.gamertag || acc.xuid}: their own key failed (${err.message}); retrying with the owner's key.`);
+                console.warn(`[XBOX] ${acc.gamertag || acc.xuid}: their primary key failed (${err.message}); retrying with a backup key.`);
                 got = await attempt(acc.backupKey);
             }
             const profile = got.pr, titles = got.ti;
