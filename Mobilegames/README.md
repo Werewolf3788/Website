@@ -5,7 +5,7 @@ Browser board games that run on Android, iOS and desktop. Same setup as Neighbor
 - `index.html` – hub (login, friend code, join by code)
 - `wahoo.html` – Wahoo, 2-4 players. Empty seats can be filled with bots, and a friend can jump into a bot seat at any time. Live table state lives at `game_rooms/wahoo/{friendCode}/state`; wins save to `games_saves/{uid}/wahoo`.
 - `tycoon.html` – Monopoly, a property-trading game (original names and cards). 2-4 players with bots, same seats/rooms/saves as Wahoo. State at `game_rooms/tycoon/{friendCode}/state`; wins save to `games_saves/{uid}/tycoon`. Rents rise every few rounds so games always finish.
-- `frogger.html` – Frogger: solo (endless, levels, 3 lives) or multiplayer for up to 8 players. Everyone shares the same deterministic traffic (seeded by the room code + server clock); first to 10 crossings wins. Room state at `game_rooms/frogger/{friendCode}` (`players`, `state`).
+- `frogger.html` – Frogger: solo (endless, levels, 3 lives) or multiplayer for up to 8 players. Course: road (cars) → river (logs and turtles) → swamp (snakes, gators). Same deterministic hazards for everyone (room code + server clock); first to 5 crossings wins; live 🥇🥈🥉 leaderboard; synthesised sounds with a mute button. Room state at `game_rooms/frogger/{friendCode}` (`players`, `state`).
 - `js/common.js` – Firebase init, login, friend codes, saves, local (guest) fallback
 
 Planned next: a life-path game, built on the same table/seat/turn pattern.
