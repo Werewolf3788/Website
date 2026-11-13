@@ -17,6 +17,7 @@
     "steam_vanity":   { ".read": "auth != null", ".write": false },
 
     "users": {
+      ".indexOn": ["friend_code"],
       "$k": {
         ".read": "auth != null",
         ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",

@@ -90,12 +90,21 @@
   WW.ownerKeyOfCode = async function (code) {
     code = String(code || '').toUpperCase(); if (!code) return null;
     if (codeCache[code]) return codeCache[code];
+    var db = WW.db, mine = function (k) { return db.ref('users/' + k + '/friend_code').once('value').then(function (s) { return String(s.val() || '').toUpperCase() === code; }).catch(function () { return false; }); };
+    var key = null;
     try {
-      var raw = (await WW.db.ref('friend_codes/' + code).once('value')).val();
-      var key = typeof raw === 'string' ? raw : (raw && (raw.key || raw.user_key || raw.owner || raw.emailKey)) || null;
-      if (key) codeCache[code] = key;
-      return key;
-    } catch (e) { return null; }
+      var raw = (await db.ref('friend_codes/' + code).once('value')).val();
+      var cand = typeof raw === 'string' ? raw : (raw && (raw.key || raw.user_key || raw.owner || raw.emailKey)) || null;
+      if (cand && /^[^.$#\[\]\/]+$/.test(cand) && await mine(cand)) key = cand;          // the stored value really is that person's user key
+    } catch (e) {}
+    if (!key) {                                                                          // stored value missing or a login id instead of the user key: find the user who owns this code
+      try {
+        var q = (await db.ref('users').orderByChild('friend_code').equalTo(code).limitToFirst(1).once('value')).val();
+        if (q) key = Object.keys(q)[0];
+      } catch (e) {}
+    }
+    if (key) codeCache[code] = key;
+    return key;
   };
 
   async function boot() {
