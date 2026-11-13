@@ -11,16 +11,17 @@ export const XP_HARVEST = 5;                                                   /
 export const XP_PRODUCT = { egg: 1, wool: 2, milk: 3 };                        // chicken / sheep / cow
 export function levelUpCoins(l) { return 25 * l; }
 
-// ---- crops: grow = real minutes of growth after the crop is watered (every crop is ready within 1 hour)
+// ---- crops: grow = real minutes of growth after the crop is watered (every crop is ready within 1 hour).
+// Rule: the more a crop sells for, the longer it takes (a cheap crop never takes longer than a dearer one).
 export const CROPS = {
   carrot:     { name: 'Carrot',     icon: '🥕', level: 1,  grow: 3 * MIN,  seed: 1,  sell: 7 },
   wheat:      { name: 'Wheat',      icon: '🌾', level: 1,  grow: 5 * MIN,  seed: 2,  sell: 9 },
   radish:     { name: 'Radish',     icon: '🌸', level: 3,  grow: 4 * MIN,  seed: 2,  sell: 8 },
-  corn:       { name: 'Corn',       icon: '🌽', level: 5,  grow: 10 * MIN, seed: 3,  sell: 16 },
+  corn:       { name: 'Corn',       icon: '🌽', level: 5,  grow: 12 * MIN, seed: 3,  sell: 16 },
   potato:     { name: 'Potato',     icon: '🥔', level: 8,  grow: 8 * MIN,  seed: 2,  sell: 12 },
-  onion:      { name: 'Onion',      icon: '🧅', level: 11, grow: 12 * MIN, seed: 3,  sell: 15 },
+  onion:      { name: 'Onion',      icon: '🧅', level: 11, grow: 10 * MIN, seed: 3,  sell: 15 },
   cabbage:    { name: 'Cabbage',    icon: '🥬', level: 14, grow: 15 * MIN, seed: 4,  sell: 20 },
-  strawberry: { name: 'Strawberry', icon: '🍓', level: 18, grow: 12 * MIN, seed: 5,  sell: 26 },
+  strawberry: { name: 'Strawberry', icon: '🍓', level: 18, grow: 17 * MIN, seed: 5,  sell: 26 },
   tomato:     { name: 'Tomato',     icon: '🍅', level: 22, grow: 20 * MIN, seed: 7,  sell: 34 },
   eggplant:   { name: 'Eggplant',   icon: '🍆', level: 27, grow: 25 * MIN, seed: 8,  sell: 42 },
   sunflower:  { name: 'Sunflower',  icon: '🌻', level: 33, grow: 30 * MIN, seed: 10, sell: 50 },
@@ -63,8 +64,13 @@ RECIPES.forEach(function (r) { GOODS[r.id].level = r.level; });
 
 // ---- tractor upgrades
 export const UPGRADES = {
-  fast: { name: 'Turbo engine', desc: 'Tractor drives 30% faster', level: 5, cost: 250 },
-  wide: { name: 'Wide implements', desc: 'Tractor works 5 tiles at once instead of 3', level: 10, cost: 900 }
+  fast:      { name: 'Turbo engine',      desc: 'Tractor drives 30% faster', level: 5, cost: 250 },
+  whistle:   { name: 'Farm whistle',      desc: 'Collect animal products from twice as far away', level: 7, cost: 400 },
+  wide:      { name: 'Wide implements',   desc: 'Tractor works 5 tiles at once instead of 3', level: 10, cost: 900 },
+  sprinkler: { name: 'Sprinkler seeder',  desc: 'Seeds planted by the tractor are watered right away', level: 13, cost: 1500 },
+  nitro:     { name: 'Nitro engine',      desc: 'Tractor drives another 25% faster (needs Turbo engine)', level: 16, cost: 2500, needs: 'fast' },
+  combine:   { name: 'Combine header',    desc: 'Harvesting with the tractor sometimes gives a bonus crop (1 in 4)', level: 20, cost: 4000 },
+  mega:      { name: 'Mega implements',   desc: 'Tractor works 7 tiles at once (needs Wide implements)', level: 26, cost: 7500, needs: 'wide' }
 };
 
 // everything that unlocks at level l (for the level-up message)
@@ -119,18 +125,33 @@ export function skyAt(date) {
 // ---- market + orders (shared by UTC day so friends see the same prices)
 export function dayNumber(t) { return Math.floor(t / DAY); }
 export function priceOf(item, day) { const ids = Object.keys(GOODS), i = ids.indexOf(item); return Math.max(1, Math.round(GOODS[item].sell * (.8 + .5 * hash(day * 131 + i * 17 + 5)))); }
+// Orders come in two kinds. "Today" orders run out at the end of the UTC day. "Multi-day" orders are posted on a day and stay open for
+// 2 or 3 days (bigger, with a bonus). Each order has a stable id (postedDay-slot), so a delivery is remembered for as long as it is open.
+function makeOrder(postDay, k, level, days) {
+  const pool = Object.keys(GOODS).filter(function (g) { return (GOODS[g].level || 1) <= level; }), salt = days > 1 ? 900 : 0;
+  const item = pool[Math.floor(hash(postDay * 31 + k * 7 + 11 + salt) * pool.length)];
+  const base = Math.max(2, Math.round((4 + hash(postDay * 53 + k + salt) * 10) * (GOODS[item].sell > 40 ? .35 : 1) * (1 + Math.min(level, 30) * .1)));
+  const qty = days > 1 ? Math.max(3, Math.round(base * (1 + .6 * (days - 1)))) : base;
+  const reward = Math.round(qty * GOODS[item].sell * (days > 1 ? 1.6 + .15 * (days - 1) : 1.6));
+  return { id: postDay + '-' + (days > 1 ? 'm' : 'd') + k, item: item, qty: qty, reward: reward, xp: 10 + Math.min(level, 40) * 2, days: days, post: postDay, expires: (postDay + days) * DAY };
+}
+export function orderCounts(level) { return { today: Math.min(5, 3 + Math.floor(level / 10)), multi: Math.min(2, 1 + Math.floor(level / 25)) }; }
+// every order open on `day` (today's end-of-day orders first, then multi-day orders, soonest to expire first)
 export function ordersFor(day, level) {
-  const pool = Object.keys(GOODS).filter(function (g) { return (GOODS[g].level || 1) <= level; });
-  const out = [];
-  for (let k = 0; k < 3; k++) {
-    const item = pool[Math.floor(hash(day * 31 + k * 7 + 11) * pool.length)];
-    const qty = Math.max(2, Math.round((4 + hash(day * 53 + k) * 10) * (GOODS[item].sell > 40 ? .35 : 1) * (1 + Math.min(level, 30) * .1)));
-    out.push({ item: item, qty: qty, reward: Math.round(qty * GOODS[item].sell * 1.6), xp: 10 + Math.min(level, 40) * 2 });
+  const n = orderCounts(level), out = [];
+  for (let k = 0; k < n.today; k++) out.push(makeOrder(day, k, level, 1));
+  const multi = [];
+  for (let post = day - 2; post <= day; post++) {
+    for (let k = 0; k < n.multi; k++) {
+      const days = 2 + (hash(post * 19 + k * 3 + 5) < .5 ? 0 : 1);          // 2 or 3 days
+      if (post + days > day) multi.push(makeOrder(post, k, level, days));
+    }
   }
-  return out;
+  multi.sort(function (a, b) { return a.expires - b.expires || (a.id < b.id ? -1 : 1); });
+  return out.concat(multi);
 }
 
-// ---- missions (FarmVille style): 3 daily missions that reset at local midnight, plus never-ending milestone ladders.
+// ---- missions (FarmVille style): 5 daily missions that reset at local midnight, plus never-ending milestone ladders.
 // Counters live in save.stats: harvest, plant, sell, egg, wool, milk, orders.
 export const STATS = {
   harvest: { icon: '🧺', verb: 'Harvest', noun: 'crops',   level: 1 },
@@ -139,19 +160,26 @@ export const STATS = {
   egg:     { icon: '🥚', verb: 'Collect', noun: 'eggs',    level: ANIMALS.chicken.level },
   wool:    { icon: '🧶', verb: 'Collect', noun: 'wool',    level: ANIMALS.sheep.level },
   milk:    { icon: '🥛', verb: 'Collect', noun: 'milk',    level: ANIMALS.cow.level },
-  orders:  { icon: '📋', verb: 'Deliver', noun: 'orders',  level: 3 }
+  orders:  { icon: '📋', verb: 'Deliver', noun: 'orders',  level: 3 },
+  water:   { icon: '💧', verb: 'Water',   noun: 'crops',   level: 1 },
+  plow:    { icon: '⛏️', verb: 'Plow',    noun: 'tiles',   level: 1 },
+  cook:    { icon: '🍳', verb: 'Cook',    noun: 'dishes',  level: 2 },
+  buy:     { icon: '🛒', verb: 'Buy',     noun: 'seed packs', level: 1 }
 };
 const DAILY_GOAL = {
   harvest: function (l) { return Math.min(200, 10 + 3 * l); }, plant: function (l) { return Math.min(300, 20 + 6 * l); }, sell: function (l) { return Math.min(300, 15 + 4 * l); },
   egg: function (l) { return Math.min(40, 6 + Math.floor(l / 2)); }, wool: function (l) { return Math.min(30, 4 + Math.floor(l / 3)); }, milk: function (l) { return Math.min(24, 3 + Math.floor(l / 3)); },
-  orders: function (l) { return 1 + Math.floor(l / 15); }
+  orders: function (l) { return 1 + Math.floor(l / 15); },
+  water: function (l) { return Math.min(250, 15 + 4 * l); }, plow: function (l) { return Math.min(300, 20 + 5 * l); },
+  cook: function (l) { return Math.min(12, 2 + Math.floor(l / 6)); }, buy: function (l) { return Math.min(8, 1 + Math.floor(l / 8)); }
 };
-const XP_PER = { harvest: 2, plant: 1, sell: .5, egg: 2, wool: 3, milk: 4, orders: 25 }, COIN_PER = { harvest: 4, plant: 2, sell: 1, egg: 5, wool: 12, milk: 20, orders: 100 };
+const XP_PER = { harvest: 2, plant: 1, sell: .5, egg: 2, wool: 3, milk: 4, orders: 25, water: 1, plow: .5, cook: 10, buy: 15 }, COIN_PER = { harvest: 4, plant: 2, sell: 1, egg: 5, wool: 12, milk: 20, orders: 100, water: 2, plow: 1, cook: 25, buy: 40 };
+export const DAILY_COUNT = 5;
 export function localDayKey(d) { return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
 export function statUnlocked(stat, level) { return level >= STATS[stat].level; }
 export function dailyMissions(dayKey, level) {
   const pool = Object.keys(STATS).filter(function (s) { return statUnlocked(s, level); }), out = [], used = {};
-  for (let k = 0; out.length < 3 && k < 30; k++) {
+  for (let k = 0; out.length < DAILY_COUNT && k < 60; k++) {
     const stat = pool[Math.floor(hash(dayKey * 17 + k * 5 + 3) * pool.length)]; if (used[stat]) continue; used[stat] = 1;
     const goal = DAILY_GOAL[stat](level);
     out.push({ stat: stat, goal: goal, xp: Math.max(5, Math.round(goal * XP_PER[stat])), coins: Math.round(goal * COIN_PER[stat]), text: STATS[stat].verb + ' ' + goal + ' ' + STATS[stat].noun });

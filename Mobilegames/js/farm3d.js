@@ -12,11 +12,11 @@ const FORCE_WX = qs.get('weather');                                       // deb
 let me = null, myName = 'Farmer', myHue = Math.random(), roomRef = null, cloudCode = null;
 let tiles = {}, players = {}, animals = {}, tractorState = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry }, colors = {}, myColor = '', isMP = false, hostCode = '', saveKey = 'farm', ledger = {};
 let tool = 'hoe', saveTimer = null, toastTimer = null, lastDragAt = 0, avatars = {}, myAvatar = '';
-const save = { coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, up: {}, skip: {}, orders: { day: -1, done: [] }, harvested: 0, stats: {}, daily: { day: -1, base: {}, done: [] }, ms: {} };
+const save = { coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, up: {}, skip: {}, orders: { done: {} }, harvested: 0, stats: {}, daily: { day: -1, base: {}, done: [] }, ms: {} };
 const player = { x: 0, z: -1, ry: 0, speed: 0, driving: false };
 const tractorLocal = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry, speed: 0 };
 const level = () => C.levelFromXp(save.xp);
-const swath = () => save.up.wide ? 5 : 3;
+const swath = () => save.up.mega ? 7 : save.up.wide ? 5 : 3;
 const nowMs = () => WW.now();
 
 function say(t) { $('toast').textContent = t || ''; clearTimeout(toastTimer); if (t) toastTimer = setTimeout(function () { $('toast').textContent = ''; }, 3800); }
@@ -171,7 +171,7 @@ function applyLedger(v) {
 function arr(x) { if (Array.isArray(x)) return x; const out = []; if (x && typeof x === 'object') Object.keys(x).forEach(function (k) { out[+k] = x[k]; }); return out; }
 function normalizeSave() {
   save.seeds = save.seeds || {}; save.bag = save.bag || {}; save.up = save.up || {}; save.skip = save.skip || {}; save.stats = save.stats || {}; save.ms = save.ms || {};
-  save.orders = save.orders || { day: -1, done: [] }; save.orders.done = arr(save.orders.done);
+  save.orders = save.orders || {}; { const od = save.orders.done; save.orders.done = (od && typeof od === 'object' && !Array.isArray(od)) ? od : {}; }
   save.daily = save.daily || { day: -1, base: {}, done: [] }; save.daily.base = save.daily.base || {}; save.daily.done = arr(save.daily.done);
   if (save.daily.list) { save.daily.list = arr(save.daily.list).filter(Boolean); if (!save.daily.list.length) delete save.daily.list; }
 }
@@ -197,25 +197,25 @@ function actTile(i, quiet) {
   { const f = W.fieldOf(i); if (!isMine(f)) { if (!quiet) { const o = ownedFields[f]; say(o ? (o.n || 'Another farmer') + '\u2019s field. Work your own field.' : 'This land is for sale. Buy it at the barn (Land tab).'); } return; } }
   const cur = tiles[i], ref = roomRef.child('tiles/' + i), now = nowMs();
   if (tool === 'hoe') {
-    if (!cur) ref.set({ k: 't' });
+    if (!cur) { ref.set({ k: 't' }); stat('plow'); queueSave(); }
     else if (!quiet) {
       if (cur.k === 't') ref.remove();
       else if (clearConfirm.i === i && performance.now() < clearConfirm.until) { ref.set({ k: 't' }); clearConfirm.i = -1; say('Crop removed.'); }
       else { clearConfirm = { i: i, until: performance.now() + 2500 }; say('Press again to dig up this ' + C.CROPS[cur.c].name.toLowerCase() + ' (it will be lost).'); }
     }
   } else if (tool === 'water') {
-    if (cur && cur.k === 'c' && !cur.w) ref.child('w').set(now); else if (!quiet) say(cur && cur.k === 'c' ? 'Already watered.' : 'Nothing to water here.');
+    if (cur && cur.k === 'c' && !cur.w) { ref.child('w').set(now); stat('water'); queueSave(); } else if (!quiet) say(cur && cur.k === 'c' ? 'Already watered.' : 'Nothing to water here.');
   } else if (tool === 'harvest') {
     if (!cur || cur.k !== 'c') { if (!quiet) say('Nothing to harvest.'); return; }
     ref.transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
-      if (ok) { addItem(cur.c, 1); save.harvested++; stat('harvest'); addXp(C.XP_HARVEST); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
+      if (ok) { addItem(cur.c, 1); if (quiet && save.up.combine && Math.random() < .25) { addItem(cur.c, 1); } save.harvested++; stat('harvest'); addXp(C.XP_HARVEST); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
       else if (!quiet) say('Not ready yet (' + C.fmtTime(C.CROPS[cur.c].grow * (1 - progress(cur))) + ' left' + (cur.w ? '' : ', needs water') + ').');
     });
   } else if (tool === 'seed') {
     if (!cur || cur.k !== 't') { if (!quiet) say(cur ? 'Something is already growing there.' : 'Plow the soil first.'); return; }
     const pick = cropForTile(i);
     if (!pick) { if (!quiet || !outWarn()) say('No seeds to plant. Buy a pack at the barn (or switch a seed back on).'); return; }
-    save.seeds[pick]--; stat('plant'); hud(); queueSave(); buildSeedBar(); ref.set({ k: 'c', c: pick, p: now, w: 0 });
+    save.seeds[pick]--; stat('plant'); hud(); queueSave(); buildSeedBar(); ref.set({ k: 'c', c: pick, p: now, w: (quiet && save.up.sprinkler) ? now : 0 });
   }
 }
 let lastOut = 0; function outWarn() { const n = performance.now(); if (n - lastOut < 4000) return true; lastOut = n; return false; }
@@ -250,7 +250,7 @@ function updateAnimals(dt) {
   });
 }
 function nearestReadyAnimal() {
-  let best = null, bd = 4.2; const now = nowMs();
+  let best = null, bd = save.up.whistle ? 8.4 : 4.2; const now = nowMs();
   Object.keys(animalViews).forEach(function (id) { const a = animals[id]; if (!a || now < (a.r || 0)) return; const m = animalViews[id].mesh, d = Math.hypot(m.position.x - player.x, m.position.z - player.z); if (d < bd) { bd = d; best = id; } });
   return best;
 }
@@ -283,7 +283,7 @@ function renderShop() {
     C.CROP_IDS.forEach(function (id) {
       const c = C.CROPS[id], lock = l < c.level, price = C.priceOf(id, d);
       box.appendChild(row(c.icon + ' <b>' + c.name + '</b> <small>' + (lock ? 'Unlocks at level ' + c.level : 'sells ~$' + price + ' each · ' + c.grow / 60000 + ' min to grow · you have ' + (save.seeds[id] || 0) + ' seeds') + '</small>',
-        lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : C.PACKS.filter(function (n) { return n <= Math.max(C.FIELD_TILES, ownedCount() * C.FIELD_TILES); }).map(function (n) { const cost = C.packPrice(id, n); return { t: C.packLabel(n) + ' · $' + cost, off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.seeds[id] = (save.seeds[id] || 0) + n; hud(); queueSave(); buildSeedBar(); say('Bought ' + n + ' ' + c.name.toLowerCase() + ' seeds.'); } }; })));
+        lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : C.PACKS.filter(function (n) { return n <= Math.max(C.FIELD_TILES, ownedCount() * C.FIELD_TILES); }).map(function (n) { const cost = C.packPrice(id, n); return { t: C.packLabel(n) + ' · $' + cost, off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.seeds[id] = (save.seeds[id] || 0) + n; stat('buy'); hud(); queueSave(); buildSeedBar(); say('Bought ' + n + ' ' + c.name.toLowerCase() + ' seeds.'); } }; })));
     });
   } else if (shopTab === 'sell') {
     const ids = Object.keys(save.bag); if (!ids.length) addHtml(box, '<div class="item"><div>Your bag is empty. Harvest crops and collect eggs, milk and wool.</div></div>');
@@ -298,7 +298,7 @@ function renderShop() {
       const g = C.GOODS[r.id], lock = l < r.level, have = Object.keys(r.needs).every(function (k) { return (save.bag[k] || 0) >= r.needs[k]; });
       const need = Object.keys(r.needs).map(function (k) { return r.needs[k] + '× ' + C.GOODS[k].icon + ' (' + (save.bag[k] || 0) + ')'; }).join(' + ');
       box.appendChild(row(g.icon + ' <b>' + g.name + '</b> <small>' + (lock ? 'Unlocks at level ' + r.level : need + ' · worth ~$' + C.priceOf(r.id, d) + '') + '</small>',
-        [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k]); }); addItem(r.id, 1); say('Made ' + g.name.toLowerCase() + '!'); } }]));
+        [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k]); }); addItem(r.id, 1); stat('cook'); say('Made ' + g.name.toLowerCase() + '!'); } }]));
     });
   } else if (shopTab === 'animals') {
     const c = counts();
@@ -309,13 +309,18 @@ function renderShop() {
         [{ t: lock ? '🔒 Lv ' + a.level : 'Buy $' + a.cost, off: lock || !can || c[k] >= a.max || save.coins < a.cost, f: function () { if (save.coins < a.cost || counts()[k] >= a.max) return; setCoins(-a.cost); roomRef.child('animals/' + Date.now().toString(36) + Math.floor(Math.random() * 99)).set({ t: k, r: nowMs() + a.every }); say('Bought a ' + a.name.toLowerCase() + '!'); } }]));
     });
   } else if (shopTab === 'orders') {
-    if (save.orders.day !== d) { save.orders = { day: d, done: [] }; queueSave(); }
-    C.ordersFor(d, l).forEach(function (o, k) {
-      const g = C.GOODS[o.item], done = save.orders.done[k], have = (save.bag[o.item] || 0) >= o.qty;
-      box.appendChild(row('📋 <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' · you have ' + (save.bag[o.item] || 0) + '</small>',
-        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); stat('orders'); save.orders.done[k] = true; say('Order complete! +$' + o.reward + ''); } }]));
+    const nowT = nowMs(), list = C.ordersFor(d, l);
+    Object.keys(save.orders.done).forEach(function (id) { if (parseInt(id, 10) < d - 4) delete save.orders.done[id]; });
+    const left = function (ms) { const m = Math.max(0, Math.floor(ms / 60000)), dd = Math.floor(m / 1440), hh = Math.floor((m % 1440) / 60); return dd ? dd + 'd ' + hh + 'h' : hh + 'h ' + (m % 60) + 'm'; };
+    const endsAt = function (ms) { return new Date(ms).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }); };
+    let lastKind = '';
+    list.forEach(function (o) {
+      const g = C.GOODS[o.item], done = save.orders.done[o.id], have = (save.bag[o.item] || 0) >= o.qty, kind = o.days > 1 ? 'multi' : 'today';
+      if (kind !== lastKind) { lastKind = kind; addHtml(box, '<div class="item" style="border:0;padding:10px 0 2px"><b>' + (kind === 'today' ? '🌙 Today only' : '⏳ Multi-day orders') + '</b> <small>' + (kind === 'today' ? 'these end at the end of the day (UTC midnight)' : 'bigger orders that stay open for several days') + '</small></div>'); }
+      box.appendChild(row((o.days > 1 ? '⏳' : '📋') + ' <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' · you have ' + (save.bag[o.item] || 0) + ' · ' + (o.days > 1 ? left(o.expires - nowT) + ' left (until ' + endsAt(o.expires) + ')' : left(o.expires - nowT) + ' left today') + '</small>',
+        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); stat('orders'); save.orders.done[o.id] = true; say('Order complete! +$' + o.reward + ''); } }]));
     });
-    addHtml(box, '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight). Big orders are where a tractor really pays off.</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight). Multi-day orders stay open until their time is up, so you can work on them over several days.</small></div>');
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
     addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.XP_HARVEST + ' · egg +' + C.XP_PRODUCT.egg + ' · wool +' + C.XP_PRODUCT.wool + ' · milk +' + C.XP_PRODUCT.milk + '. XP only comes from harvesting your own crops and collecting animals (animal XP is shared by everyone on the farm). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
@@ -345,11 +350,11 @@ function renderShop() {
     });
   } else if (shopTab === 'upgrades') {
     Object.keys(C.UPGRADES).forEach(function (k) {
-      const u = C.UPGRADES[k], has = save.up[k], lock = l < u.level;
-      box.appendChild(row('🚜 <b>' + u.name + '</b> <small>' + u.desc + (lock ? ' · unlocks at level ' + u.level : '') + '</small>',
-        [{ t: has ? '✅ Owned' : lock ? '🔒 Lv ' + u.level : '$' + u.cost, off: has || lock || !can || save.coins < u.cost, f: function () { setCoins(-u.cost); save.up[k] = 1; say(u.name + ' installed!'); applyImplement(); queueSave(); } }]));
+      const u = C.UPGRADES[k], has = save.up[k], pre = u.needs && !save.up[u.needs], lock = l < u.level || pre;
+      box.appendChild(row('🚜 <b>' + u.name + '</b> <small>' + u.desc + (l < u.level ? ' · unlocks at level ' + u.level : pre ? ' · buy ' + C.UPGRADES[u.needs].name + ' first' : '') + '</small>',
+        [{ t: has ? '✅ Owned' : l < u.level ? '🔒 Lv ' + u.level : pre ? '🔒 Needs ' + C.UPGRADES[u.needs].name : '$' + u.cost, off: has || lock || !can || save.coins < u.cost, f: function () { setCoins(-u.cost); save.up[k] = 1; say(u.name + ' installed!'); applyImplement(); queueSave(); } }]));
     });
-    addHtml(box, '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected.</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected. The Farm whistle also works on foot.</small></div>');
   }
   commitShop(tabs, 'shopTabs'); commitShop(box, 'shopItems');
 }
@@ -508,15 +513,46 @@ function updateRemotes(dt) {
   });
 }
 
+// ------------------------------------------------------------ minimap: whole farm, with a red pin on every animal that is ready to collect (tap it to enlarge)
+const mini = document.createElement('canvas'); mini.id = 'mini';
+mini.style.cssText = 'position:fixed;left:auto;bottom:auto;right:8px;top:96px;z-index:6;border-radius:12px;border:2px solid #ffffff44;background:#13301c;touch-action:manipulation;cursor:pointer';
+document.body.appendChild(mini);
+let miniBig = false;
+function sizeMini() { const w = miniBig ? Math.min(window.innerWidth - 16, 330) : 150; mini.width = w; mini.height = Math.round(w * .76); mini.style.width = mini.width + 'px'; mini.style.height = mini.height + 'px'; }
+mini.addEventListener('click', function () { miniBig = !miniBig; sizeMini(); });
+sizeMini();
+const MM = { x0: -74, x1: 74, z0: -50, z1: 60 };
+function drawMini() {
+  const w = mini.width, h = mini.height, g = mini.getContext('2d'), k = Math.min(w / (MM.x1 - MM.x0), h / (MM.z1 - MM.z0));
+  const ox = (w - (MM.x1 - MM.x0) * k) / 2, oz = (h - (MM.z1 - MM.z0) * k) / 2, X = x => ox + (x - MM.x0) * k, Z = z => oz + (z - MM.z0) * k, t = performance.now();
+  g.clearRect(0, 0, w, h); g.fillStyle = '#1d3d27'; g.fillRect(0, 0, w, h);
+  W.FIELDS.forEach(function (F, f) { g.fillStyle = isMine(f) ? '#8a6a45' : ownedFields[f] ? '#5d4a39' : '#3f4a3f'; g.fillRect(X(F.x0), Z(F.z0), W.COLS * W.TILE * k, W.ROWS * W.TILE * k); if (isMine(f)) { g.strokeStyle = '#4ade80'; g.lineWidth = 1.5; g.strokeRect(X(F.x0), Z(F.z0), W.COLS * W.TILE * k, W.ROWS * W.TILE * k); } });
+  [[W.CHICKEN_PEN, '#c9a45c'], [W.COW_PASTURE, '#5f9a45']].forEach(function (pn) { const p = pn[0]; g.fillStyle = pn[1]; g.globalAlpha = .75; g.fillRect(X(p.x0), Z(p.z0), (p.x1 - p.x0) * k, (p.z1 - p.z0) * k); g.globalAlpha = 1; });
+  g.fillStyle = '#c0392b'; g.fillRect(X(W.SHOP_POS.x) - 4, Z(W.SHOP_POS.z) - 4, 8, 8);
+  g.fillStyle = '#facc15'; g.fillRect(X(tractorState.x) - 3, Z(tractorState.z) - 3, 6, 6);
+  Object.keys(remote).forEach(function (u) { const m = remote[u].mesh; if (!m || !m.visible) return; g.fillStyle = '#60a5fa'; g.beginPath(); g.arc(X(m.position.x), Z(m.position.z), 3, 0, 7); g.fill(); });
+  const now = nowMs(); let best = null, bd = 1e9;
+  Object.keys(animalViews).forEach(function (id) {
+    const a = animals[id]; if (!a) return; const m = animalViews[id].mesh, x = X(m.position.x), z = Z(m.position.z), ready = now >= (a.r || 0);
+    g.fillStyle = a.t === 'chicken' ? '#ffffff' : a.t === 'sheep' ? '#e5ded0' : '#f0f0f0'; g.beginPath(); g.arc(x, z, a.t === 'chicken' ? 2 : 3, 0, 7); g.fill(); g.strokeStyle = '#000a'; g.lineWidth = 1; g.stroke();
+    if (ready) { const d = Math.hypot(m.position.x - player.x, m.position.z - player.z); if (d < bd) { bd = d; best = { id: id, t: a.t }; }
+      const pulse = 1 + .25 * Math.sin(t / 220); g.fillStyle = '#ef4444'; g.beginPath(); g.arc(x, z - 7 * pulse, 4 * pulse, 0, 7); g.fill(); g.beginPath(); g.moveTo(x - 3, z - 5 * pulse); g.lineTo(x + 3, z - 5 * pulse); g.lineTo(x, z); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.arc(x, z - 7 * pulse, 1.6, 0, 7); g.fill(); }
+  });
+  g.save(); g.translate(X(player.x), Z(player.z)); g.rotate(Math.PI - player.ry); g.fillStyle = '#fff'; g.strokeStyle = '#000'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(0, -6); g.lineTo(4.5, 5); g.lineTo(-4.5, 5); g.closePath(); g.fill(); g.stroke(); g.restore();
+  g.fillStyle = '#fff'; g.font = 'bold 10px system-ui,sans-serif'; g.fillText('N ↑', 5, 12);
+  const label = best ? (C.ANIMALS[best.t].icon + ' ready · ' + Math.round(bd) + ' m') : (Object.keys(animalViews).length ? 'No animal ready yet' : 'No animals yet');
+  g.fillStyle = '#000a'; g.fillRect(0, h - 16, w, 16); g.fillStyle = '#fde68a'; g.fillText(label, 5, h - 4);
+}
+
 // ------------------------------------------------------------ main loop
-let last = performance.now(), lastSent = 0, lastBeat = 0, lastTrk = 0, camX = 0, camZ = 0, slow = 0;
+let mmT = 0, last = performance.now(), lastSent = 0, lastBeat = 0, lastTrk = 0, camX = 0, camZ = 0, slow = 0;
 function collide(p, rad) { W.COLLIDERS.forEach(function (c) { const dx = p.x - c.x, dz = p.z - c.z, d = Math.hypot(dx, dz), m = c.r + rad; if (d < m && d > 0) { p.x = c.x + dx / d * m; p.z = c.z + dz / d * m; } }); p.x = Math.max(-90, Math.min(90, p.x)); p.z = Math.max(-90, Math.min(90, p.z)); }
 function loop(ts) {
   const dt = Math.min(.05, (ts - last) / 1000); last = ts;
   let ix = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0) + joy.x, iz = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y;
   const mag = Math.hypot(ix, iz); if (mag > 1) { ix /= mag; iz /= mag; }
   if (player.driving) {
-    const T = tractorLocal, top = save.up.fast ? 11.7 : 9; T.speed += (iz * top - T.speed) * Math.min(1, dt * 2.2);
+    const T = tractorLocal, top = 9 * (save.up.fast ? 1.3 : 1) * (save.up.nitro ? 1.25 : 1); T.speed += (iz * top - T.speed) * Math.min(1, dt * 2.2);
     T.ry -= ix * dt * 1.5 * Math.max(-1, Math.min(1, T.speed / 3)); T.x += Math.sin(T.ry) * T.speed * dt; T.z += Math.cos(T.ry) * T.speed * dt;
     const p = { x: T.x, z: T.z }; collide(p, 2); T.x = p.x; T.z = p.z; player.x = T.x; player.z = T.z; player.ry = T.ry; player.speed = Math.abs(T.speed); tractorAuto();
   } else if (mag > .08) {
@@ -539,6 +575,7 @@ function loop(ts) {
   $('useBtn').textContent = c ? (c.kind === 'tile' ? 'Use' : c.kind === 'exit' ? 'Exit' : c.kind === 'drive' ? 'Drive' : c.kind === 'shop' ? 'Barn' : 'Collect') : 'Use';
   if (c && c.kind === 'tile') { const p = tilePos(c.i); pointer.position.set(p.x, .26, p.z); pointer.visible = true; } else pointer.visible = false;
   updateDomBadges(); updateRain(dt, isRaining()); updateSky(); updateAnimals(dt); updateRemotes(dt);
+  mmT += dt; if (mmT > .12) { mmT = 0; drawMini(); }
   slow += dt; if (slow > .5) { slow = 0; refreshField(); renderPeers(); }
   const now = performance.now();
   if (roomRef && me && now - lastSent > 100 && (player.speed > .1 || now - lastBeat > 8000)) { lastSent = lastBeat = now; roomRef.child('players/' + me.uid).set({ n: myName, x: +player.x.toFixed(2), z: +player.z.toFixed(2), r: +player.ry.toFixed(2), v: player.driving ? 1 : 0, h: +myHue.toFixed(2), lv: level(), tx: +(player.driving ? tractorLocal.x : tractorState.x).toFixed(1), tz: +(player.driving ? tractorLocal.z : tractorState.z).toFixed(1), tr: +(player.driving ? tractorLocal.ry : tractorState.ry).toFixed(2), t: firebase.database.ServerValue.TIMESTAMP }); }

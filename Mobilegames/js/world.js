@@ -256,9 +256,16 @@ export function makeAnimal(type) {
     sph(g, .38, 0xffffff, 0, .55, 0, 1, .9, 1.25); sph(g, .2, 0xffffff, 0, .98, .42); box(g, .1, .12, .05, 0xf2a900, 0, .95, .62); box(g, .06, .14, .22, 0xd62828, 0, 1.15, .42);
     box(g, .08, .35, .08, 0xf2a900, -.15, .18, 0); box(g, .08, .35, .08, 0xf2a900, .15, .18, 0); g.userData.speed = 1.1;
   } else if (type === 'sheep') {
-    sph(g, .62, 0xf2efe6, 0, 1.05, 0, 1, .85, 1.35); for (const [x, z] of [[-.35, .5], [.35, .5], [-.35, -.5], [.35, -.5], [0, 0]]) sph(g, .38, 0xf7f5ee, x, 1.35, z);
-    box(g, .42, .5, .5, 0x3a3a3a, 0, 1.25, 1.0); box(g, .12, .22, .12, 0x2a2a2a, -.27, 1.52, .95); box(g, .12, .22, .12, 0x2a2a2a, .27, 1.52, .95);
-    for (const x of [-.3, .3]) for (const z of [-.5, .5]) box(g, .14, .6, .14, 0x3a3a3a, x, .3, z); g.userData.speed = .8;
+    // woolly cream body on long dark legs, with a dark face, sideways ears and a short tail, so it reads as a sheep, not a cloud
+    sph(g, .5, 0xe3dac4, 0, 1.02, 0, 1, .78, 1.3);
+    for (const [x, y, z] of [[-.3, 1.3, .35], [.3, 1.3, .35], [0, 1.38, -.1], [-.28, 1.28, -.45], [.28, 1.28, -.45]]) sph(g, .2, 0xefe7d3, x, y, z);
+    sph(g, .16, 0xefe7d3, 0, 1.2, -.78);                                                       // tail tuft
+    box(g, .34, .4, .46, 0x2b2522, 0, 1.12, .88); box(g, .26, .1, .2, 0x4a3f39, 0, 1.0, 1.12);  // head + muzzle
+    sph(g, .13, 0xefe7d3, 0, 1.38, .8);                                                         // forehead tuft
+    box(g, .3, .07, .16, 0x2b2522, -.32, 1.22, .8); box(g, .3, .07, .16, 0x2b2522, .32, 1.22, .8);   // ears stick out sideways
+    box(g, .05, .05, .04, 0xffffff, -.1, 1.2, 1.09); box(g, .05, .05, .04, 0xffffff, .1, 1.2, 1.09);
+    for (const x of [-.24, .24]) for (const z of [-.45, .45]) box(g, .11, .6, .11, 0x2b2522, x, .3, z);
+    g.userData.speed = .8;
   } else {
     box(g, 1.3, 1.1, 2.2, 0xf4f4f4, 0, 1.45, 0); box(g, .5, .5, .4, 0x222222, .35, 1.7, .3).scale.set(1, 1, 1); box(g, .6, .5, .5, 0x222222, -.3, 1.45, -.5);
     box(g, .75, .8, .8, 0xf4f4f4, 0, 1.75, 1.5); box(g, .5, .35, .3, 0xf2b6b6, 0, 1.55, 1.95); box(g, .1, .25, .1, 0xe8e0c8, -.3, 2.25, 1.4); box(g, .1, .25, .1, 0xe8e0c8, .3, 2.25, 1.4);
