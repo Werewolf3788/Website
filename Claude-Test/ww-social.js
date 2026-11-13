@@ -127,6 +127,7 @@
           me.avatar = u.avatar_url || '';
         } catch (e) { /* rules may hide it; fine */ }
         me.name = me.username || user.displayName || user.email.split('@')[0];
+        try { var av = me.avatar || user.photoURL || ''; if (av && localStorage.getItem('ww_user_avatar') !== av) { localStorage.setItem('ww_user_avatar', av); window.dispatchEvent(new Event('ww-avatar')); } } catch (e) {}
         WW.me = me;
         startPresence(me);
         readyResolve(WW);

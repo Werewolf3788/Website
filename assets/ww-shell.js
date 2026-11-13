@@ -170,6 +170,7 @@
     }
     window.addEventListener('storage', (e) => { if (e.key === AVATAR_KEY) personalizeApp(); });
     window.addEventListener('ww-avatar', personalizeApp);
+    window.addEventListener('ww-avatar', () => { try { if (MENU.length) render(); } catch (e) {} });
 
     // ------------------------------------------------------------ menu data
     function parseMenu(data) {
@@ -234,7 +235,11 @@
     const linkTarget = (url) => {
         try { const u = new URL(url, location.href); return u.origin !== location.origin ? ' target="_blank" rel="noopener noreferrer"' : ''; } catch (e) { return ''; }
     };
-    const thumb = (it) => it.image ? `<img class="ww-thumb" src="${esc(it.image)}" alt="" loading="lazy" onerror="this.remove()">` : icon(iconFor(it.title));
+    // "My Profile" menu entry shows the signed-in member's own avatar as its icon
+    const isMyProfile = (it) => /^my[\s_-]*profile$/i.test(String(it.title || '').trim()) || /(^|\/)profile\.html(\?|#|$)/i.test(String(it.url || ''));
+    const myAvatar = () => { try { const a = localStorage.getItem(AVATAR_KEY) || ''; return /^(https:\/\/|data:image\/)/.test(a) ? a : ''; } catch (e) { return ''; } };
+    const thumb = (it) => (isMyProfile(it) && myAvatar()) ? `<img class="ww-thumb" src="${esc(myAvatar())}" alt="" style="border-radius:50%;object-fit:cover" onerror="this.remove()">` :
+        it.image ? `<img class="ww-thumb" src="${esc(it.image)}" alt="" loading="lazy" onerror="this.remove()">` : icon(iconFor(it.title));
 
     function homeEntry() {
         for (const e of MENU) {
