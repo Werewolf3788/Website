@@ -33,6 +33,9 @@ print("repo top-level nodes :", sorted(rr))
 print("ONLY in live (would be REMOVED by publishing):", sorted(set(lr) - set(rr)))
 print("ONLY in repo (would be ADDED):", sorted(set(rr) - set(lr)))
 print("changed nodes:", sorted(k for k in set(lr) & set(rr) if lr[k] != rr[k]))
+for k in sorted(k for k in set(lr) & set(rr) if lr[k] != rr[k]):
+    print(f"--- {k} LIVE: {json.dumps(lr[k])}")
+    print(f"--- {k} REPO: {json.dumps(rr[k])}")
 if MODE == "apply":
     code, body = call("PUT", tok, json.dumps(repo).encode())
     print(f"PUBLISH -> HTTP {code} {body[:300]}")
