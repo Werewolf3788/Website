@@ -55,9 +55,15 @@
 </div>
 <div class="card">
   <h2 style="margin:0 0 4px">🐸 Frogger</h2>
-  <div class="muted">Hop across ten lanes of traffic. <b>Solo</b> is endless with levels. <b>Multiplayer</b> is a race for up to 8 players: everyone sees the same traffic, first to 10 crossings wins.</div>
+  <div class="muted">Cross the road, ride the logs over the river, then dodge the swamp predators. <b>Solo</b> is endless with levels. <b>Multiplayer</b> is a race for up to 8 players: everyone sees the same hazards, first to 5 crossings wins.</div>
   <div class="row"><button id="playFrog">Play solo</button><button id="hostFrog" class="alt">Host multiplayer</button></div>
   <div class="row"><input id="joinCodeFrog" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinFrog" class="alt">Join</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🚢 Battleship</h2>
+  <div class="muted">The classic: hide five ships on a 10 × 10 grid, then take turns calling shots like D3 or B9 by tapping the square. Cannon, splash, hit and sinking sounds, with the shots called out loud. Play the <b>computer</b> or a <b>friend</b> (2 players).</div>
+  <div class="row"><button id="playShip">Play the computer</button><button id="hostShip" class="alt">Host vs a friend</button></div>
+  <div class="row"><input id="joinCodeShip" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinShip" class="alt">Join</button></div>
 </div>
 <div class="card" id="nowCard" style="display:none">
   <h2 style="margin:0 0 6px;font-size:1.1rem"><span style="color:#22c55e">●</span> Friends playing now</h2>
@@ -90,6 +96,13 @@
     location.href = 'farm.html?mp=' + encodeURIComponent(c);
   };
   $('playFrog').onclick = function () { location.href = 'frogger.html'; };
+  $('playShip').onclick = function () { location.href = 'battleship.html'; };
+  $('hostShip').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'battleship.html?room=' + encodeURIComponent(c); };
+  $('joinShip').onclick = function () {
+    var c = $('joinCodeShip').value.trim().toUpperCase();
+    if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
+    location.href = 'battleship.html?room=' + encodeURIComponent(c);
+  };
   $('hostFrog').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'frogger.html?room=' + encodeURIComponent(c); };
   $('joinFrog').onclick = function () {
     var c = $('joinCodeFrog').value.trim().toUpperCase();
