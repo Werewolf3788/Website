@@ -115,6 +115,17 @@ function createApp(deps) {
     toDiscord(res, next, { mode: 'link', uid }, 'identify');
   });
 
+  // Which Discord account is linked (lets Settings show it even before the database rules are published).
+  app.post('/status', async (req, res) => {
+    cors(req, res);
+    const uid = await uidFromIdToken(admin, req.body && req.body.idToken);
+    if (!uid) return res.status(401).json({ error: 'Sign in again, then retry.' });
+    try {
+      const d = (await db().ref('auth_links/' + uid + '/discord').once('value')).val();
+      res.json({ discord: d ? { id: d.id, username: d.username || '', avatar: d.avatar || '' } : null });
+    } catch (e) { console.error('[status]', e && e.message); res.status(500).json({ error: 'Could not read link status.' }); }
+  });
+
   // Unlink Discord (only if another sign-in method remains, so nobody gets locked out).
   app.post('/unlink', async (req, res) => {
     cors(req, res);

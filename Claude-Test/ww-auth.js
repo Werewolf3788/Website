@@ -121,6 +121,7 @@
 .ww-acct{position:relative;display:inline-flex;align-items:center;flex:0 0 auto;font-family:var(--ww-font,system-ui,sans-serif)}
 .ww-acct-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;max-width:46vw;padding:0 14px;border-radius:999px;cursor:pointer;
   border:1px solid var(--ww-accent,#38bdf8);background:var(--ww-accent,#38bdf8);color:#0b1120;font:800 .85rem var(--ww-font,system-ui,sans-serif);white-space:nowrap}
+@media(max-width:480px){.ww-acct-btn{min-height:36px;padding:0 10px;font-size:.78rem;max-width:34vw}.ww-acct-btn.is-in{padding:0 8px 0 4px}}
 .ww-acct-btn.is-in{background:var(--ww-bg-2,#1e293b);color:var(--ww-text,#e2e8f0);border-color:var(--ww-border,rgba(148,163,184,.3));padding:0 12px 0 5px}
 .ww-acct-btn img{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:0 0 auto}
 .ww-acct-btn span{overflow:hidden;text-overflow:ellipsis}

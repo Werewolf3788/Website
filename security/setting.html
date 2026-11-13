@@ -33,6 +33,15 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 .rgb input{width:64px;text-align:center}
 .savebar{position:sticky;bottom:0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px;padding:12px 0;background:var(--bg-secondary);border-top:1px solid var(--border-color)}
 .savebar .hint{margin:0}
+/* Desktop: use ~80% of the screen and lay the sections out as cards; phones stay stacked */
+#app{column-width:420px;column-gap:16px}
+#app>.row:first-child,#app>.savebar{column-span:all}
+#app>.card{break-inside:avoid;margin-bottom:16px}
+.card{background:rgba(255,255,255,.02);border:1px solid var(--border-color);border-radius:8px;padding:16px 18px;min-width:0}
+.card>h2:first-child{margin-top:0}
+.savebar{z-index:4}
+#authBox{max-width:560px}
+@media(min-width:900px){.container{max-width:none;width:80vw}}
 .hidden{display:none!important}
 .container{min-height:100vh}
 #msg{position:sticky;top:8px;z-index:5;padding:10px 14px;border-radius:6px;margin-bottom:12px;background:var(--bg-surface);border:1px solid var(--border-color)}
@@ -613,12 +622,33 @@ $('save').onclick=async()=>{
   finally{b.disabled=false;b.textContent='Save settings'}
 };
 
+// Turn each "h2 + its content" into a card so the page can sit in columns on wide screens
+(function(){
+  const app=$('app');
+  app.querySelectorAll('h2').forEach(h=>{
+    const parent=h.parentElement;
+    if(parent!==app){parent.classList.add('card');return}
+    const card=document.createElement('div');card.className='card';parent.insertBefore(card,h);
+    let n=h;
+    while(n){
+      if(n!==h&&(n.tagName==='H2'||(n.nodeType===1&&(n.classList.contains('savebar')||n.querySelector('h2')))))break;
+      const nx=n.nextSibling;card.appendChild(n);n=nx;
+    }
+  });
+})();
 // ---- Link / unlink sign-in methods ----
 const DISCORD_AUTH='https://ww-discord-auth.onrender.com';
 let DL=null; // linked Discord account {id, username, avatar} or null
 async function loadDiscordLink(){
   DL=null;
-  try{const sn=await db.ref('auth_links/'+U.uid+'/discord').get();if(sn.exists())DL=sn.val()}catch(e){}
+  let denied=false;
+  try{const sn=await db.ref('auth_links/'+U.uid+'/discord').get();if(sn.exists())DL=sn.val()}catch(e){denied=true}
+  // Rules not published yet (or read refused): ask the login server instead
+  if(!DL&&denied){
+    try{const t=await U.getIdToken();
+      const r=await fetch(DISCORD_AUTH+'/status',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'idToken='+encodeURIComponent(t)});
+      if(r.ok){const j=await r.json();if(j.discord)DL=j.discord}}catch(e){}
+  }
   if(!DL){try{const t=await U.getIdTokenResult();if(t.claims&&t.claims.discord_id)DL={id:t.claims.discord_id,username:''}}catch(e){}}
 }
 async function refreshMethods(){await loadDiscordLink();renderMethods()}
