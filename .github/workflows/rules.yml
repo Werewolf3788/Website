@@ -1,0 +1,21 @@
+# Compare / publish database.rules.json to the live Realtime Database rules.
+# Manual only: Actions -> "Database Rules" -> Run workflow (mode = compare or apply).
+name: Database Rules
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'compare (read-only) or apply (publish database.rules.json)'
+        default: compare
+permissions:
+  contents: read
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet google-auth requests
+      - run: python scripts/rules-sync.py
+        env:
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          RULES_MODE: ${{ github.event.inputs.mode }}
