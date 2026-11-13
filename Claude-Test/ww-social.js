@@ -94,8 +94,11 @@
     var key = null;
     try {
       var raw = (await db.ref('friend_codes/' + code).once('value')).val();
-      var cand = typeof raw === 'string' ? raw : (raw && (raw.key || raw.user_key || raw.owner || raw.emailKey)) || null;
-      if (cand && /^[^.$#\[\]\/]+$/.test(cand) && await mine(cand)) key = cand;          // the stored value really is that person's user key
+      // newer records store the user key as plain text; older ones store an object ({ email_key, email, username, avatar_url, ... })
+      var toKey = function (x) { x = typeof x === 'string' ? x.trim() : ''; return x.indexOf('@') > -1 ? x.toLowerCase().replace(/\./g, '_').replace('@', '_at_') : x; };
+      var cands = typeof raw === 'string' ? [raw] : raw && typeof raw === 'object' ? [raw.email_key, raw.emailKey, raw.user_key, raw.userKey, raw.key, raw.owner, raw.email, raw.uid].map(toKey) : [];
+      cands = cands.filter(function (c, i, a) { return c && /^[^.$#\[\]\/]+$/.test(c) && a.indexOf(c) === i; });
+      for (var ci = 0; ci < cands.length && !key; ci++) if (await mine(cands[ci])) key = cands[ci];   // the stored value really is that person's user key
     } catch (e) {}
     if (!key) {                                                                          // stored value missing or a login id instead of the user key: find the user who owns this code
       try {
