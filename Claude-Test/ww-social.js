@@ -453,6 +453,7 @@
 
   /* ---------- go ---------- */
   function start() {
+    try { var at = document.createElement('script'); at.src = new URL('ww-ach-toast.js', SCRIPT_SRC).href; at.defer = true; document.head.appendChild(at); } catch (e) {}
     boot().catch(function (e) { console.warn('[WW]', e.message || e); readyReject(e); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

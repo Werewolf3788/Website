@@ -97,6 +97,15 @@
       }
     },
 
+    "achFeed": {
+      ".read": "auth != null",
+      ".indexOn": ["ts"],
+      "$id": {
+        ".write": "auth != null && !data.exists()",
+        ".validate": "newData.hasChildren(['n', 'a', 't', 'ts']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isString() && newData.child('t').val().length <= 60"
+      }
+    },
+
     "presence": {
       "$k": {
         ".read": "auth != null",

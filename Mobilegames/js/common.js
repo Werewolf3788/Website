@@ -291,3 +291,6 @@
     if (vv) { vv.addEventListener('resize', check); vv.addEventListener('scroll', check); }
   } catch (e) {}
 })();
+
+// site-wide achievement pop-ups (shared with the rest of the site)
+(function () { try { var s = document.createElement('script'); s.src = '../Claude-Test/ww-ach-toast.js'; s.defer = true; document.head.appendChild(s); } catch (e) {} })();

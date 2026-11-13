@@ -39,7 +39,9 @@ export const FREE_FIELDS = [0, 1, 2];
 // Each player owns their own fields. The price (and level needed) of the NEXT field depends on how many fields you already own.
 export const LAND = [null, { cost: 500, level: 3 }, { cost: 1000, level: 6 }, { cost: 2000, level: 10 }, { cost: 5000, level: 20 }, { cost: 10000, level: 30 },
   { cost: 15000, level: 35 }, { cost: 22000, level: 38 }, { cost: 32000, level: 41 }, { cost: 45000, level: 44 }, { cost: 60000, level: 47 }, { cost: 80000, level: 50 }];
-// There are 12 field plots in all. Six are shown at first; whenever fewer than 2 unowned fields are on show, the next plot appears (so there is always land to buy).
+// There are 24 field plots in all. Six are shown at first; whenever fewer than 2 unowned fields are on show, the next plot appears (so there is always land to buy).
+export const MAX_FIELDS = 24;
+for (let i = LAND.length; i < MAX_FIELDS; i++) { const p = LAND[i - 1]; LAND.push({ cost: Math.round(p.cost * 1.2 / 1000) * 1000, level: p.level + 2 }); }   // keep adding pricier land so there is always another plot to buy
 export const MIN_FIELDS_FOR_SALE = 2, START_FIELDS = 6;
 export function packPrice(id, n) { return Math.max(1, Math.round(CROPS[id].seed * n * (n >= 240 ? .8 : n >= 60 ? .9 : 1))); }
 
@@ -211,3 +213,30 @@ export const LADDER = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000
 export function tierReward(goal) { return { xp: Math.max(5, Math.round(goal * .5)), coins: goal * 3 }; }
 
 export function fmtTime(ms) { const s = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(s / 60); return m + ':' + String(s % 60).padStart(2, '0'); }
+
+// ---- achievements: earned once, announced to everyone on the site. t(ctx) gets { s: save.stats, level, fields, coins, up }
+export const ACHIEVEMENTS = [
+  { id: 'h1', icon: '🌾', name: 'First Harvest', desc: 'Harvest your first crop', t: c => c.s.harvest >= 1 },
+  { id: 'h100', icon: '🧺', name: 'Green Thumb', desc: 'Harvest 100 crops', t: c => c.s.harvest >= 100 },
+  { id: 'h1000', icon: '🚜', name: 'Harvest Hero', desc: 'Harvest 1,000 crops', t: c => c.s.harvest >= 1000 },
+  { id: 'h10000', icon: '👑', name: 'Harvest Legend', desc: 'Harvest 10,000 crops', t: c => c.s.harvest >= 10000 },
+  { id: 'p500', icon: '🌱', name: 'Seed Sower', desc: 'Plant 500 seeds', t: c => c.s.plant >= 500 },
+  { id: 's200', icon: '💰', name: 'Market Mover', desc: 'Sell 200 goods', t: c => c.s.sell >= 200 },
+  { id: 'w500', icon: '💧', name: 'Rain Maker', desc: 'Water 500 crops', t: c => c.s.water >= 500 },
+  { id: 'pl500', icon: '⛏️', name: 'Soil Breaker', desc: 'Plow 500 tiles', t: c => c.s.plow >= 500 },
+  { id: 'cu300', icon: '🌿', name: 'Soil Whisperer', desc: 'Cultivate 300 tiles', t: c => c.s.cultivate >= 300 },
+  { id: 'fe100', icon: '🧪', name: 'Fertile Ground', desc: 'Fertilize 100 crops', t: c => c.s.fert >= 100 },
+  { id: 'an100', icon: '🐔', name: 'Animal Friend', desc: 'Collect 100 animal goods (eggs, wool, milk)', t: c => (c.s.egg || 0) + (c.s.wool || 0) + (c.s.milk || 0) >= 100 },
+  { id: 'ck20', icon: '🍳', name: 'Home Cook', desc: 'Cook 20 dishes', t: c => c.s.cook >= 20 },
+  { id: 'or10', icon: '📋', name: 'Reliable Neighbor', desc: 'Deliver 10 orders', t: c => c.s.orders >= 10 },
+  { id: 'or50', icon: '📦', name: 'Order Master', desc: 'Deliver 50 orders', t: c => c.s.orders >= 50 },
+  { id: 'lv5', icon: '⭐', name: 'Rising Farmer', desc: 'Reach level 5', t: c => c.level >= 5 },
+  { id: 'lv10', icon: '🌟', name: 'Seasoned Farmer', desc: 'Reach level 10', t: c => c.level >= 10 },
+  { id: 'lv25', icon: '💫', name: 'Farm Veteran', desc: 'Reach level 25', t: c => c.level >= 25 },
+  { id: 'lv50', icon: '🏆', name: 'Farm Legend', desc: 'Reach level 50', t: c => c.level >= 50 },
+  { id: 'f5', icon: '🏞️', name: 'Land Owner', desc: 'Own 5 fields', t: c => c.fields >= 5 },
+  { id: 'f10', icon: '🗺️', name: 'Land Baron', desc: 'Own 10 fields', t: c => c.fields >= 10 },
+  { id: 'up5', icon: '🔧', name: 'Gearhead', desc: 'Buy 5 tractor upgrades', t: c => Object.keys(c.up).length >= 5 },
+  { id: 'c10k', icon: '🪙', name: 'Well Off', desc: 'Hold $10,000', t: c => c.coins >= 10000 },
+  { id: 'c100k', icon: '💎', name: 'Farm Tycoon', desc: 'Hold $100,000', t: c => c.coins >= 100000 }
+];

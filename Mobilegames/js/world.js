@@ -3,8 +3,8 @@ import * as THREE from './three.min.js';
 
 export const TILE = 2, COLS = 20, ROWS = 12, FIELD_TILES = COLS * ROWS;     // one field: 20x12 tiles of 2 units (big enough to need a tractor)
 // six fields. Field 0 is the original one (saved farms keep working); the top row is open, the bottom row is land for sale.
-export const FIELDS = [{ x0: -20, z0: 2 }, { x0: -66, z0: 2 }, { x0: 26, z0: 2 }, { x0: -20, z0: 32 }, { x0: -66, z0: 32 }, { x0: 26, z0: 32 },
-  { x0: -20, z0: 62 }, { x0: -66, z0: 62 }, { x0: 26, z0: 62 }, { x0: -20, z0: 92 }, { x0: -66, z0: 92 }, { x0: 26, z0: 92 }];   // the last six appear one at a time as land gets bought
+// 24 plots in a grid of 3 columns; Field 0 is the original one (saved farms keep working). Plots appear on the map one at a time as land gets bought.
+export const FIELDS = Array.from({ length: 24 }, (_, i) => ({ x0: [-20, -66, 26][i % 3], z0: 2 + 30 * Math.floor(i / 3) }));
 export const NT = FIELDS.length * FIELD_TILES;
 export const fieldOf = i => Math.floor(i / FIELD_TILES);
 export function tilePos(i) { const f = FIELDS[Math.floor(i / FIELD_TILES)], li = i % FIELD_TILES; return { x: f.x0 + (li % COLS) * TILE + TILE / 2, z: f.z0 + Math.floor(li / COLS) * TILE + TILE / 2 }; }
@@ -77,7 +77,7 @@ function tree(scene, x, z, r) {
 export function buildWorld(scene) {
   const W = {};
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshLambertMaterial({ map: grassTexture() }));
-  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  ground.rotation.x = -Math.PI / 2; ground.scale.y = 1.9; ground.position.z = 150; ground.receiveShadow = true; scene.add(ground);
   // fields: stubble base + wooden border + number; a FOR SALE sign while the land is not owned yet
   W.fields = FIELDS.map(function (F, idx) {
     const cx = F.x0 + COLS * TILE / 2, cz = F.z0 + ROWS * TILE / 2, fw = COLS * TILE + 1.4, fd = ROWS * TILE + 1.4, g = new THREE.Group(); scene.add(g);
