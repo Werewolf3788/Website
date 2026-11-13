@@ -129,6 +129,7 @@
   background:var(--ww-bg,#0f172a);border:1px solid var(--ww-border,rgba(148,163,184,.3));box-shadow:0 16px 40px rgba(0,0,0,.55);color:var(--ww-text,#e2e8f0)}
 .ww-acct.is-open .ww-acct-pop{display:block}
 .ww-acct-pop small{display:block;opacity:.7;margin-bottom:8px;word-break:break-all}
+.ww-acct-pop a.ww-acct-prof{display:flex;align-items:center;justify-content:center;width:100%;min-height:40px;margin-bottom:6px;border-radius:10px;border:1px solid var(--ww-border,rgba(148,163,184,.3));background:var(--ww-accent,#ff5f1f);color:#fff;font:700 .85rem var(--ww-font,system-ui,sans-serif);text-decoration:none}
 .ww-acct-pop button{width:100%;min-height:40px;border-radius:10px;border:1px solid var(--ww-border,rgba(148,163,184,.3));background:var(--ww-bg-2,#1e293b);color:inherit;font:700 .85rem var(--ww-font,system-ui,sans-serif);cursor:pointer}
 .ww-acct-row{display:flex;align-items:center;gap:10px;padding:10px 4px 12px;border-bottom:1px solid var(--ww-border,rgba(148,163,184,.2));margin-bottom:6px}
 .ww-acct-row .ww-acct{flex:1 1 auto}
@@ -137,11 +138,17 @@
 `;
     document.head.appendChild(css);
 
+    const PROFILE_URL = (function () {
+        try { const sc = document.querySelector('script[src*="ww-auth.js"]'); return new URL('profile.html', sc ? sc.src : location.origin + '/Claude-Test/ww-auth.js').href; }
+        catch (e) { return '/Claude-Test/profile.html'; }
+    })();
+    const profileLink = () => `<a class="ww-acct-prof" href="${esc(PROFILE_URL)}">My profile</a>`;
+
     function chipHtml(inRow) {
         if (user) {
             const av = user.photo ? `<img src="${esc(user.photo)}" alt="" referrerpolicy="no-referrer">` : '';
             return `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn is-in" data-ww-acct-toggle aria-haspopup="true">${av}<span>${esc(user.name)}</span></button>
-<div class="ww-acct-pop"><small>${esc(user.email)}</small><button type="button" data-ww-acct-out>Sign out</button></div></div>`;
+<div class="ww-acct-pop"><small>${esc(user.email)}</small>${profileLink()}<button type="button" data-ww-acct-out>Sign out</button></div></div>`;
         }
         return `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn" data-ww-acct-in>Sign in</button>${DISCORD_AUTH ? '<button type="button" class="ww-acct-btn" data-ww-acct-discord>Discord</button>' : ''}</div>`;
     }
@@ -166,7 +173,7 @@
             const row = document.createElement('div');
             row.className = 'ww-acct-row'; row.setAttribute('data-ww-acct-mount', '');
             row.innerHTML = user
-                ? `<div class="ww-acct" data-ww-acct><div class="ww-acct-pop"><small>Signed in as ${esc(user.name)}<br>${esc(user.email)}</small><button type="button" data-ww-acct-out>Sign out</button></div></div>`
+                ? `<div class="ww-acct" data-ww-acct><div class="ww-acct-pop"><small>Signed in as ${esc(user.name)}<br>${esc(user.email)}</small>${profileLink()}<button type="button" data-ww-acct-out>Sign out</button></div></div>`
                 : `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn" data-ww-acct-in>Sign in with Google</button>${DISCORD_AUTH ? '<button type="button" class="ww-acct-btn" data-ww-acct-discord>Sign in with Discord</button>' : ''}</div>`;
             const first = box.querySelector('.ww-sheet-title, .ww-drawer-head');
             if (first) first.insertAdjacentElement('afterend', row); else box.insertBefore(row, box.firstChild);
