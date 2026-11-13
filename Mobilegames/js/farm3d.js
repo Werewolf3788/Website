@@ -455,6 +455,11 @@ window.addEventListener('keydown', function (e) {
   keys[k] = true; if (k.indexOf('arrow') === 0) e.preventDefault();
 });
 window.addEventListener('keyup', function (e) { delete keys[e.key.toLowerCase()]; });
+// A right-click menu, switching tabs or clicking another window swallows the key-up, which left the farmer walking forever: let go of everything then.
+function releaseAll() { Object.keys(keys).forEach(function (k) { delete keys[k]; }); drag = null; joyId = null; joy.x = joy.y = 0; knob.style.transform = ''; }
+window.addEventListener('blur', releaseAll); window.addEventListener('contextmenu', releaseAll); window.addEventListener('pagehide', releaseAll);
+document.addEventListener('visibilitychange', function () { if (document.hidden) releaseAll(); });
+canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });   // no browser menu over the farm, so right-drag can turn the camera
 let drag = null;
 canvas.addEventListener('pointerdown', function (e) { drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); });
 canvas.addEventListener('pointermove', function (e) { if (!drag || drag.id !== e.pointerId) return; lastDragAt = performance.now(); yaw -= (e.clientX - drag.x) * .006; pitch = Math.max(.12, Math.min(1.2, pitch + (e.clientY - drag.y) * .004)); drag.x = e.clientX; drag.y = e.clientY; });
