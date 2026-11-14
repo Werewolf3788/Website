@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 1.267732,
+  "dayTime": 241.32106,
   "currentDay": 65,
   "currentMonotonicDay": 92,
-  "realHourTimer": 3537000,
+  "realHourTimer": 3533800,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,17 +15,9 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 393,
+   "timeSinceLastRain": 633,
    "forecast": {
     "instance": [
-     {
-      "typeName": "SUN",
-      "season": "SUMMER",
-      "variationIndex": 2,
-      "startDay": 91,
-      "startDayTime": 61200000,
-      "duration": 39600000
-     },
      {
       "typeName": "CLOUDY",
       "season": "SUMMER",
@@ -281,11 +273,59 @@
       "startDay": 100,
       "startDayTime": 0,
       "duration": 10800000
+     },
+     {
+      "typeName": "RAIN",
+      "season": "SPRING",
+      "variationIndex": 3,
+      "startDay": 100,
+      "startDayTime": 10800000,
+      "duration": 10800000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "SPRING",
+      "variationIndex": 3,
+      "startDay": 100,
+      "startDayTime": 21600000,
+      "duration": 25200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "SPRING",
+      "variationIndex": 2,
+      "startDay": 100,
+      "startDayTime": 46800000,
+      "duration": 18000000
+     },
+     {
+      "typeName": "RAIN",
+      "season": "SPRING",
+      "variationIndex": 2,
+      "startDay": 100,
+      "startDayTime": 64800000,
+      "duration": 7200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "SPRING",
+      "variationIndex": 2,
+      "startDay": 100,
+      "startDayTime": 72000000,
+      "duration": 25200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "SPRING",
+      "variationIndex": 4,
+      "startDay": 101,
+      "startDayTime": 10800000,
+      "duration": 36000000
      }
     ]
    },
    "fog": {
-    "alpha": 0.021111,
+    "alpha": 1.0,
     "visibilityAlpha": 0.0,
     "duration": 3600000.0,
     "target": {
