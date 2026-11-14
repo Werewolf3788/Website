@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 241.32106,
+  "dayTime": 661.414429,
   "currentDay": 65,
   "currentMonotonicDay": 92,
-  "realHourTimer": 3533800,
+  "realHourTimer": 3528200,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,17 +15,9 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 633,
+   "timeSinceLastRain": 1053,
    "forecast": {
     "instance": [
-     {
-      "typeName": "CLOUDY",
-      "season": "SUMMER",
-      "variationIndex": 4,
-      "startDay": 92,
-      "startDayTime": 14400000,
-      "duration": 25200000
-     },
      {
       "typeName": "CLOUDY",
       "season": "SUMMER",
