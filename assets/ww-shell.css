@@ -115,6 +115,8 @@ html.ww-burger-mode .ww-burger { display: inline-flex; }
 html.ww-bn-mode #ww-topbar .ww-nav-slot,
 html.ww-bn-mode [data-ww-nav-slot] { display: none !important; }
 html.ww-bn-mode body { padding-bottom: calc(var(--ww-bn-h) + env(safe-area-inset-bottom, 0px)) !important; }
+/* Lift the floating chat button (Claude-Test/ww-social.js) clear of the bottom bar. */
+html.ww-bn-mode { --ww-fab-lift: var(--ww-bn-h); }
 html.ww-bn-mode #ww-bottom-nav {
     display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 9300;
     height: calc(var(--ww-bn-h) + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px);

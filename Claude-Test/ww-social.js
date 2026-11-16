@@ -175,10 +175,10 @@
   var CSS = [
     ':host{all:initial}',
     '*{box-sizing:border-box;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif}',
-    '.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;border:0;background:#ff5f1f;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:2147483000;display:flex;align-items:center;justify-content:center}',
+    '.fab{position:fixed;right:16px;bottom:calc(16px + var(--ww-fab-lift,0px) + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;border:0;background:#ff5f1f;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:2147483000;display:flex;align-items:center;justify-content:center}',
     '.fab:active{transform:scale(.96)}',
     '.badge{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#ef4444;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #0b0b10}',
-    '.panel{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));width:380px;max-width:calc(100vw - 24px);height:560px;max-height:calc(100vh - 110px);background:#14141b;color:#e8ecf3;border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.7);z-index:2147483001;display:flex;flex-direction:column;overflow:hidden}',
+    '.panel{position:fixed;right:16px;bottom:calc(84px + var(--ww-fab-lift,0px) + env(safe-area-inset-bottom));width:380px;max-width:calc(100vw - 24px);height:560px;max-height:calc(100vh - 110px);background:#14141b;color:#e8ecf3;border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.7);z-index:2147483001;display:flex;flex-direction:column;overflow:hidden}',
     '.panel[hidden],.badge[hidden],[hidden]{display:none!important}',
     '@media(max-width:640px){.panel{inset:0;right:0;bottom:0;width:100%;max-width:100%;height:100%;max-height:100%;border-radius:0}}',
     '.hd{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.1);padding-top:calc(12px + env(safe-area-inset-top))}',
