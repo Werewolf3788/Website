@@ -1867,7 +1867,13 @@ const COLLECTIBLE_LABELS = {
     classified_documents: '📜 Classified Document',
     hidden_items: '🏷️ Hidden Item',
     stone_eagles: '🦅 Stone Eagle',
-    workbenches: '⚙️ Workbench'
+    workbenches: '⚙️ Workbench',
+    letters_to_home: '✉️ Letter to Home',
+    letters_from_home: '📬 Letter from Home',
+    last_letters: '🕯️ Last Letter',
+    misc_documents: '📜 Document',
+    sniper_reports: '🎯 Sniper Report',
+    duty_rosters: '📋 Duty Roster'
 };
 
 function buildFolder(titleHtml, innerHtml) {

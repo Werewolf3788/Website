@@ -1,0 +1,1712 @@
+{
+  "schema_version": "1.0.0",
+  "game": "Sniper Elite 4",
+  "gameId": "SniperElite4",
+  "platforms": {
+    "steam": {
+      "appId": 312660,
+      "store_url": "https://store.steampowered.com/app/312660/Sniper_Elite_4/"
+    }
+  },
+  "metrics": [
+    {
+      "key": "letters_to_home",
+      "label": "Letters to Home",
+      "target": 50
+    },
+    {
+      "key": "letters_from_home",
+      "label": "Letters from Home",
+      "target": 50
+    },
+    {
+      "key": "last_letters",
+      "label": "Last Letters",
+      "target": 50
+    },
+    {
+      "key": "misc_documents",
+      "label": "Documents",
+      "target": 74
+    },
+    {
+      "key": "sniper_reports",
+      "label": "Sniper Reports",
+      "target": 28
+    },
+    {
+      "key": "duty_rosters",
+      "label": "Duty Rosters",
+      "target": 40
+    },
+    {
+      "key": "stone_eagles",
+      "label": "Stone Eagles",
+      "target": 30
+    }
+  ],
+  "missions": {
+    "mission_1": {
+      "number": 1,
+      "title": "San Celini Island",
+      "region": "Campaign",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m1_01",
+            "name": "Letter to Home 1/5",
+            "location": "On a log beside the campfire, east of the Sniper Report tower."
+          },
+          {
+            "id": "se4_lth_m1_02",
+            "name": "Letter to Home 2/5",
+            "location": "Two-tent camp beside the checkpoint road, just off the paved route."
+          },
+          {
+            "id": "se4_lth_m1_03",
+            "name": "Letter to Home 3/5",
+            "location": "Desk in the two-tent camp near the southern Stone Eagle ruin."
+          },
+          {
+            "id": "se4_lth_m1_04",
+            "name": "Letter to Home 4/5",
+            "location": "Seat at the crate-lined campfire, up the stairs opposite that ruin."
+          },
+          {
+            "id": "se4_lth_m1_05",
+            "name": "Letter to Home 5/5",
+            "location": "Office to the right of the stairs inside the village HQ."
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m1_01",
+            "name": "Letter from Home 1/5",
+            "location": "Camp tent west of the large central village."
+          },
+          {
+            "id": "se4_lfh_m1_02",
+            "name": "Letter from Home 2/5",
+            "location": "Desk in the collapsed-tunnel checkpoint, first door on the left."
+          },
+          {
+            "id": "se4_lfh_m1_03",
+            "name": "Letter from Home 3/5",
+            "location": "Camp overlooking the arrival route, reached by circling the starting canyon."
+          },
+          {
+            "id": "se4_lfh_m1_04",
+            "name": "Letter from Home 4/5",
+            "location": "Radio equipment table in the courtyard down the hill from the barn."
+          },
+          {
+            "id": "se4_lfh_m1_05",
+            "name": "Letter from Home 5/5",
+            "location": "Third-floor mansion office, reached by two scaffolding ladders."
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m1_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by the soldier escorting the officer in the north-central village."
+          },
+          {
+            "id": "se4_last_m1_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier at the sand encampment fire, through the lower central caves."
+          },
+          {
+            "id": "se4_last_m1_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier on the stone wall by the crane at the southern dock."
+          },
+          {
+            "id": "se4_last_m1_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier patrolling north of the village communications building, often in the motor pool."
+          },
+          {
+            "id": "se4_last_m1_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier patrolling the mansion's first floor near the kitchen."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m1_01",
+            "name": "Document 1/8",
+            "location": "Corner table by the pinkish wall in the north-central village."
+          },
+          {
+            "id": "se4_doc_m1_02",
+            "name": "Document 2/8",
+            "location": "Desk inside the office at the southern dock."
+          },
+          {
+            "id": "se4_doc_m1_03",
+            "name": "Document 3/8",
+            "location": "Second desk in the same southern dock office."
+          },
+          {
+            "id": "se4_doc_m1_04",
+            "name": "Document 4/8",
+            "location": "Behind a ruined house near a grey wall, off the western road."
+          },
+          {
+            "id": "se4_doc_m1_05",
+            "name": "Document 5/8",
+            "location": "On the communications equipment beside the barn's front door."
+          },
+          {
+            "id": "se4_doc_m1_06",
+            "name": "Document 6/8",
+            "location": "Workshop desk across from the officer HQ, reached from the southern road."
+          },
+          {
+            "id": "se4_doc_m1_07",
+            "name": "Document 7/8",
+            "location": "Second-floor desk right of the balcony door in the HQ."
+          },
+          {
+            "id": "se4_doc_m1_08",
+            "name": "Document 8/8",
+            "location": "Carried by General Schmidt; loot his body."
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m1_01",
+            "name": "Sniper Report 1/1",
+            "location": "On the table in the ruined tower near the start, left of the broken gates."
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m1_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by the officer in the north-central village."
+          },
+          {
+            "id": "se4_ros_m1_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by the officer at the southern dock."
+          },
+          {
+            "id": "se4_ros_m1_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by the officer guarding the camera in the east-central barn."
+          },
+          {
+            "id": "se4_ros_m1_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by the officer inside the metal-tower building south of the General."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m1_01",
+            "name": "Stone Eagle 1/3",
+            "location": "Atop a tall ruin to the northwest, visible from the first sniper tower by the entrance gate."
+          },
+          {
+            "id": "se4_eagle_m1_02",
+            "name": "Stone Eagle 2/3",
+            "location": "Highest point of the ruined tower above the southern docks."
+          },
+          {
+            "id": "se4_eagle_m1_03",
+            "name": "Stone Eagle 3/3",
+            "location": "On a ruin in the far southeast corner, seen from the high hill above the barn."
+          }
+        ]
+      },
+      "collectible_total": 31
+    },
+    "mission_2": {
+      "number": 2,
+      "title": "Bitanti Village",
+      "region": "Campaign",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m2_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m2_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m2_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m2_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m2_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m2_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m2_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m2_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m2_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m2_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m2_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m2_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m2_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m2_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m2_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m2_01",
+            "name": "Document 1/10"
+          },
+          {
+            "id": "se4_doc_m2_02",
+            "name": "Document 2/10"
+          },
+          {
+            "id": "se4_doc_m2_03",
+            "name": "Document 3/10"
+          },
+          {
+            "id": "se4_doc_m2_04",
+            "name": "Document 4/10"
+          },
+          {
+            "id": "se4_doc_m2_05",
+            "name": "Document 5/10"
+          },
+          {
+            "id": "se4_doc_m2_06",
+            "name": "Document 6/10"
+          },
+          {
+            "id": "se4_doc_m2_07",
+            "name": "Document 7/10"
+          },
+          {
+            "id": "se4_doc_m2_08",
+            "name": "Document 8/10"
+          },
+          {
+            "id": "se4_doc_m2_09",
+            "name": "Document 9/10"
+          },
+          {
+            "id": "se4_doc_m2_10",
+            "name": "Document 10/10"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m2_01",
+            "name": "Sniper Report 1/1"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m2_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m2_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m2_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m2_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m2_01",
+            "name": "Stone Eagle 1/3",
+            "location": "On a lone sailboat off the western edge of the starting docks."
+          },
+          {
+            "id": "se4_eagle_m2_02",
+            "name": "Stone Eagle 2/3",
+            "location": "Centre of the large archway at the village exit to the docks."
+          },
+          {
+            "id": "se4_eagle_m2_03",
+            "name": "Stone Eagle 3/3",
+            "location": "Far off, above the huge flag hanging from the hilltop castle keep."
+          }
+        ]
+      },
+      "collectible_total": 33
+    },
+    "mission_3": {
+      "number": 3,
+      "title": "Regilino Viaduct",
+      "region": "Campaign",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m3_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m3_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m3_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m3_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m3_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m3_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m3_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m3_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m3_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m3_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m3_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m3_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m3_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m3_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m3_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m3_01",
+            "name": "Document 1/6"
+          },
+          {
+            "id": "se4_doc_m3_02",
+            "name": "Document 2/6"
+          },
+          {
+            "id": "se4_doc_m3_03",
+            "name": "Document 3/6"
+          },
+          {
+            "id": "se4_doc_m3_04",
+            "name": "Document 4/6"
+          },
+          {
+            "id": "se4_doc_m3_05",
+            "name": "Document 5/6"
+          },
+          {
+            "id": "se4_doc_m3_06",
+            "name": "Document 6/6"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m3_01",
+            "name": "Sniper Report 1/2"
+          },
+          {
+            "id": "se4_rep_m3_02",
+            "name": "Sniper Report 2/2"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m3_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m3_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m3_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m3_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m3_01",
+            "name": "Stone Eagle 1/3",
+            "location": "On a rock jutting out of the lakeshore, seen from the big mill building."
+          },
+          {
+            "id": "se4_eagle_m3_02",
+            "name": "Stone Eagle 2/3",
+            "location": "On a very tall rock above the small motor pool, west of the supply depot."
+          },
+          {
+            "id": "se4_eagle_m3_03",
+            "name": "Stone Eagle 3/3",
+            "location": "On a shark-fin-shaped peak east of the supply base, seen from the watchtower."
+          }
+        ]
+      },
+      "collectible_total": 30
+    },
+    "mission_4": {
+      "number": 4,
+      "title": "Lorino Dockyard",
+      "region": "Campaign",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m4_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m4_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m4_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m4_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m4_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m4_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m4_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m4_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m4_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m4_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m4_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m4_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m4_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m4_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m4_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m4_01",
+            "name": "Document 1/8"
+          },
+          {
+            "id": "se4_doc_m4_02",
+            "name": "Document 2/8"
+          },
+          {
+            "id": "se4_doc_m4_03",
+            "name": "Document 3/8"
+          },
+          {
+            "id": "se4_doc_m4_04",
+            "name": "Document 4/8"
+          },
+          {
+            "id": "se4_doc_m4_05",
+            "name": "Document 5/8"
+          },
+          {
+            "id": "se4_doc_m4_06",
+            "name": "Document 6/8"
+          },
+          {
+            "id": "se4_doc_m4_07",
+            "name": "Document 7/8"
+          },
+          {
+            "id": "se4_doc_m4_08",
+            "name": "Document 8/8"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m4_01",
+            "name": "Sniper Report 1/2"
+          },
+          {
+            "id": "se4_rep_m4_02",
+            "name": "Sniper Report 2/2"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m4_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m4_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m4_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m4_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m4_01",
+            "name": "Stone Eagle 1/3",
+            "location": "In the rocky hills south of the train tracks, seen from a southern rooftop."
+          },
+          {
+            "id": "se4_eagle_m4_02",
+            "name": "Stone Eagle 2/3",
+            "location": "Near the southern map edge; look southwest from the red-roofed building toward the trees."
+          },
+          {
+            "id": "se4_eagle_m4_03",
+            "name": "Stone Eagle 3/3",
+            "location": "Beside the dock stairs under a large lamp, looking toward the distant lighthouse."
+          }
+        ]
+      },
+      "collectible_total": 32
+    },
+    "mission_5": {
+      "number": 5,
+      "title": "Abrunza Monastery",
+      "region": "Campaign",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m5_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m5_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m5_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m5_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m5_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m5_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m5_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m5_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m5_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m5_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m5_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m5_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m5_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m5_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m5_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m5_01",
+            "name": "Document 1/11"
+          },
+          {
+            "id": "se4_doc_m5_02",
+            "name": "Document 2/11"
+          },
+          {
+            "id": "se4_doc_m5_03",
+            "name": "Document 3/11"
+          },
+          {
+            "id": "se4_doc_m5_04",
+            "name": "Document 4/11"
+          },
+          {
+            "id": "se4_doc_m5_05",
+            "name": "Document 5/11"
+          },
+          {
+            "id": "se4_doc_m5_06",
+            "name": "Document 6/11"
+          },
+          {
+            "id": "se4_doc_m5_07",
+            "name": "Document 7/11"
+          },
+          {
+            "id": "se4_doc_m5_08",
+            "name": "Document 8/11"
+          },
+          {
+            "id": "se4_doc_m5_09",
+            "name": "Document 9/11"
+          },
+          {
+            "id": "se4_doc_m5_10",
+            "name": "Document 10/11"
+          },
+          {
+            "id": "se4_doc_m5_11",
+            "name": "Document 11/11"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m5_01",
+            "name": "Sniper Report 1/2"
+          },
+          {
+            "id": "se4_rep_m5_02",
+            "name": "Sniper Report 2/2"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m5_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m5_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m5_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m5_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m5_01",
+            "name": "Stone Eagle 1/3",
+            "location": "On a damaged rooftop with missing tiles beside the northernmost road up."
+          },
+          {
+            "id": "se4_eagle_m5_02",
+            "name": "Stone Eagle 2/3",
+            "location": "On the northernmost corner wall of the castle fort."
+          },
+          {
+            "id": "se4_eagle_m5_03",
+            "name": "Stone Eagle 3/3",
+            "location": "Upstairs in the interior courtyard, right of the door before the cathedral courtyard."
+          }
+        ]
+      },
+      "collectible_total": 35
+    },
+    "mission_6": {
+      "number": 6,
+      "title": "Magazzeno Facility",
+      "region": "Campaign",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m6_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m6_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m6_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m6_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m6_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m6_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m6_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m6_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m6_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m6_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m6_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m6_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m6_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m6_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m6_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m6_01",
+            "name": "Document 1/8"
+          },
+          {
+            "id": "se4_doc_m6_02",
+            "name": "Document 2/8"
+          },
+          {
+            "id": "se4_doc_m6_03",
+            "name": "Document 3/8"
+          },
+          {
+            "id": "se4_doc_m6_04",
+            "name": "Document 4/8"
+          },
+          {
+            "id": "se4_doc_m6_05",
+            "name": "Document 5/8"
+          },
+          {
+            "id": "se4_doc_m6_06",
+            "name": "Document 6/8"
+          },
+          {
+            "id": "se4_doc_m6_07",
+            "name": "Document 7/8"
+          },
+          {
+            "id": "se4_doc_m6_08",
+            "name": "Document 8/8"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m6_01",
+            "name": "Sniper Report 1/5"
+          },
+          {
+            "id": "se4_rep_m6_02",
+            "name": "Sniper Report 2/5"
+          },
+          {
+            "id": "se4_rep_m6_03",
+            "name": "Sniper Report 3/5"
+          },
+          {
+            "id": "se4_rep_m6_04",
+            "name": "Sniper Report 4/5"
+          },
+          {
+            "id": "se4_rep_m6_05",
+            "name": "Sniper Report 5/5"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m6_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m6_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m6_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m6_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m6_01",
+            "name": "Stone Eagle 1/3",
+            "location": "On a structure in the unreachable western area, near the officer objective on the shore."
+          },
+          {
+            "id": "se4_eagle_m6_02",
+            "name": "Stone Eagle 2/3",
+            "location": "On a concrete bunker east of the southeastern rooftop, beside a silver pipe."
+          },
+          {
+            "id": "se4_eagle_m6_03",
+            "name": "Stone Eagle 3/3",
+            "location": "On the roof of the hillside facility, reached by the tallest stairs near extraction."
+          }
+        ]
+      },
+      "collectible_total": 35,
+      "notes": "The mission-select screen shows 9 Stone Eagles here, but only 3 exist. It is a display glitch and does not block the trophies."
+    },
+    "mission_7": {
+      "number": 7,
+      "title": "Giovi Fiorini Mansion",
+      "region": "Campaign",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m7_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m7_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m7_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m7_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m7_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m7_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m7_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m7_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m7_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m7_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m7_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m7_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m7_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m7_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m7_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m7_01",
+            "name": "Document 1/5"
+          },
+          {
+            "id": "se4_doc_m7_02",
+            "name": "Document 2/5"
+          },
+          {
+            "id": "se4_doc_m7_03",
+            "name": "Document 3/5"
+          },
+          {
+            "id": "se4_doc_m7_04",
+            "name": "Document 4/5"
+          },
+          {
+            "id": "se4_doc_m7_05",
+            "name": "Document 5/5"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m7_01",
+            "name": "Sniper Report 1/2"
+          },
+          {
+            "id": "se4_rep_m7_02",
+            "name": "Sniper Report 2/2"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m7_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m7_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m7_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m7_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m7_01",
+            "name": "Stone Eagle 1/3",
+            "location": "Above the front door of the giant estate on the central island."
+          },
+          {
+            "id": "se4_eagle_m7_02",
+            "name": "Stone Eagle 2/3",
+            "location": "Under the flag on the northeast rooftop of a square building on a canal island."
+          },
+          {
+            "id": "se4_eagle_m7_03",
+            "name": "Stone Eagle 3/3",
+            "location": "Above the front doors of the large northern building on the village square."
+          }
+        ]
+      },
+      "collectible_total": 29,
+      "notes": "The mission-select screen shows 6 Documents and 1 Sniper Report, but there are really 5 Documents and 2 Sniper Reports. The second Sniper Report does not always spawn."
+    },
+    "mission_8": {
+      "number": 8,
+      "title": "Allagra Fortress",
+      "region": "Campaign",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m8_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m8_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m8_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m8_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m8_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m8_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m8_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m8_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m8_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m8_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m8_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m8_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m8_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m8_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m8_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m8_01",
+            "name": "Document 1/8"
+          },
+          {
+            "id": "se4_doc_m8_02",
+            "name": "Document 2/8"
+          },
+          {
+            "id": "se4_doc_m8_03",
+            "name": "Document 3/8"
+          },
+          {
+            "id": "se4_doc_m8_04",
+            "name": "Document 4/8"
+          },
+          {
+            "id": "se4_doc_m8_05",
+            "name": "Document 5/8"
+          },
+          {
+            "id": "se4_doc_m8_06",
+            "name": "Document 6/8"
+          },
+          {
+            "id": "se4_doc_m8_07",
+            "name": "Document 7/8"
+          },
+          {
+            "id": "se4_doc_m8_08",
+            "name": "Document 8/8"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m8_01",
+            "name": "Sniper Report 1/5"
+          },
+          {
+            "id": "se4_rep_m8_02",
+            "name": "Sniper Report 2/5"
+          },
+          {
+            "id": "se4_rep_m8_03",
+            "name": "Sniper Report 3/5"
+          },
+          {
+            "id": "se4_rep_m8_04",
+            "name": "Sniper Report 4/5"
+          },
+          {
+            "id": "se4_rep_m8_05",
+            "name": "Sniper Report 5/5"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m8_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m8_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m8_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m8_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m8_01",
+            "name": "Stone Eagle 1/3",
+            "location": "In the rocks above the small eastern bunker, up and right from the main entrance."
+          },
+          {
+            "id": "se4_eagle_m8_02",
+            "name": "Stone Eagle 2/3",
+            "location": "On the northern face of the narrow frozen-river canyon along the western ridge."
+          },
+          {
+            "id": "se4_eagle_m8_03",
+            "name": "Stone Eagle 3/3",
+            "location": "On the roof of the large concrete office where the mission ends."
+          }
+        ]
+      },
+      "collectible_total": 35
+    },
+    "mission_9": {
+      "number": 9,
+      "title": "Overwatch: Compound",
+      "region": "Co-op Overwatch",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m9_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m9_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m9_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m9_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m9_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m9_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m9_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m9_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m9_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m9_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m9_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m9_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m9_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m9_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m9_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m9_01",
+            "name": "Document 1/5"
+          },
+          {
+            "id": "se4_doc_m9_02",
+            "name": "Document 2/5"
+          },
+          {
+            "id": "se4_doc_m9_03",
+            "name": "Document 3/5"
+          },
+          {
+            "id": "se4_doc_m9_04",
+            "name": "Document 4/5"
+          },
+          {
+            "id": "se4_doc_m9_05",
+            "name": "Document 5/5"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m9_01",
+            "name": "Sniper Report 1/3"
+          },
+          {
+            "id": "se4_rep_m9_02",
+            "name": "Sniper Report 2/3"
+          },
+          {
+            "id": "se4_rep_m9_03",
+            "name": "Sniper Report 3/3"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m9_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m9_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m9_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m9_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m9_01",
+            "name": "Stone Eagle 1/3",
+            "location": "Lower rooftop of a small house southeast of the start, near the trucks."
+          },
+          {
+            "id": "se4_eagle_m9_02",
+            "name": "Stone Eagle 2/3",
+            "location": "Atop a partly ruined structure in the narrow canyon heading north from the start."
+          },
+          {
+            "id": "se4_eagle_m9_03",
+            "name": "Stone Eagle 3/3",
+            "location": "Roof of the western building that holds the partisan spy objective."
+          }
+        ]
+      },
+      "collectible_total": 30,
+      "notes": "Co-op only. These collectibles count toward the collectible trophies."
+    },
+    "mission_10": {
+      "number": 10,
+      "title": "Overwatch: Railyard",
+      "region": "Co-op Overwatch",
+      "collectibles": {
+        "letters_to_home": [
+          {
+            "id": "se4_lth_m10_01",
+            "name": "Letter to Home 1/5"
+          },
+          {
+            "id": "se4_lth_m10_02",
+            "name": "Letter to Home 2/5"
+          },
+          {
+            "id": "se4_lth_m10_03",
+            "name": "Letter to Home 3/5"
+          },
+          {
+            "id": "se4_lth_m10_04",
+            "name": "Letter to Home 4/5"
+          },
+          {
+            "id": "se4_lth_m10_05",
+            "name": "Letter to Home 5/5"
+          }
+        ],
+        "letters_from_home": [
+          {
+            "id": "se4_lfh_m10_01",
+            "name": "Letter from Home 1/5"
+          },
+          {
+            "id": "se4_lfh_m10_02",
+            "name": "Letter from Home 2/5"
+          },
+          {
+            "id": "se4_lfh_m10_03",
+            "name": "Letter from Home 3/5"
+          },
+          {
+            "id": "se4_lfh_m10_04",
+            "name": "Letter from Home 4/5"
+          },
+          {
+            "id": "se4_lfh_m10_05",
+            "name": "Letter from Home 5/5"
+          }
+        ],
+        "last_letters": [
+          {
+            "id": "se4_last_m10_01",
+            "name": "Last Letter 1/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m10_02",
+            "name": "Last Letter 2/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m10_03",
+            "name": "Last Letter 3/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m10_04",
+            "name": "Last Letter 4/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          },
+          {
+            "id": "se4_last_m10_05",
+            "name": "Last Letter 5/5",
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+          }
+        ],
+        "misc_documents": [
+          {
+            "id": "se4_doc_m10_01",
+            "name": "Document 1/5"
+          },
+          {
+            "id": "se4_doc_m10_02",
+            "name": "Document 2/5"
+          },
+          {
+            "id": "se4_doc_m10_03",
+            "name": "Document 3/5"
+          },
+          {
+            "id": "se4_doc_m10_04",
+            "name": "Document 4/5"
+          },
+          {
+            "id": "se4_doc_m10_05",
+            "name": "Document 5/5"
+          }
+        ],
+        "sniper_reports": [
+          {
+            "id": "se4_rep_m10_01",
+            "name": "Sniper Report 1/5"
+          },
+          {
+            "id": "se4_rep_m10_02",
+            "name": "Sniper Report 2/5"
+          },
+          {
+            "id": "se4_rep_m10_03",
+            "name": "Sniper Report 3/5"
+          },
+          {
+            "id": "se4_rep_m10_04",
+            "name": "Sniper Report 4/5"
+          },
+          {
+            "id": "se4_rep_m10_05",
+            "name": "Sniper Report 5/5"
+          }
+        ],
+        "duty_rosters": [
+          {
+            "id": "se4_ros_m10_01",
+            "name": "Duty Roster 1/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m10_02",
+            "name": "Duty Roster 2/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m10_03",
+            "name": "Duty Roster 3/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          },
+          {
+            "id": "se4_ros_m10_04",
+            "name": "Duty Roster 4/4",
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se4_eagle_m10_01",
+            "name": "Stone Eagle 1/3",
+            "location": "On the shoreline near the dock; scan left from the northwestern cliffs."
+          },
+          {
+            "id": "se4_eagle_m10_02",
+            "name": "Stone Eagle 2/3",
+            "location": "On a windowsill high in the ruined fortress wall, inside the central canyon caves."
+          },
+          {
+            "id": "se4_eagle_m10_03",
+            "name": "Stone Eagle 3/3",
+            "location": "On the large crane where the tracks leave the eastern edge of the map."
+          }
+        ]
+      },
+      "collectible_total": 32,
+      "notes": "Co-op only. These collectibles count toward the collectible trophies."
+    }
+  },
+  "image_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/312660/header.jpg",
+  "art": {
+    "poster": "https://cdn.cloudflare.steamstatic.com/steam/apps/312660/library_600x900_2x.jpg",
+    "wallpaper": "https://cdn.cloudflare.steamstatic.com/steam/apps/312660/library_hero.jpg"
+  },
+  "collectible_notes": "Collectibles only. 322 in total across the 8 campaign missions and the 2 co-op Overwatch missions. Written locations are filled in for all of Mission 1 and for every Stone Eagle; other items are listed by number until locations are added.",
+  "sources": [
+    "https://www.powerpyx.com/sniper-elite-4-collectible-locations-letters-deadeye-targets-reports-documents-duty-rosters/",
+    "https://gameranx.com/features/id/93003/article/sniper-elite-4-mission-1-san-celini-island-all-collectibles-guide/",
+    "https://gameranx.com/features/id/93804/article/sniper-elite-4-all-30-stone-eagle-collectibles-locations-guide/"
+  ]
+}
