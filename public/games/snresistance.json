@@ -1261,11 +1261,12 @@
           {
             "id": "eagle_m4_01",
             "name": "Dead-Eye Target 1",
-            "location": "Structural steel framework below spillway of dam.",
+            "location": "On top of the demolished tower on the southeastern side of the Vallée de l'Écluse area.",
             "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/icons/eagle.png",
             "video_time": 144,
             "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=144s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "map_url": "https://mapmaster.io/games/sniper-elite-resistance/maps/mission-4-collision-course"
           },
           {
             "id": "eagle_m4_02",
