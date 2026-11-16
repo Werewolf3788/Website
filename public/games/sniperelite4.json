@@ -3,9 +3,20 @@
   "game": "Sniper Elite 4",
   "gameId": "SniperElite4",
   "platforms": {
+    "playstation": {
+      "ps4": {
+        "titleId": "CUSA04220"
+      },
+      "productId": "UP4363-CUSA04220_00-SNIPERELITE40000",
+      "store_url": "https://store.playstation.com/en-us/product/UP4363-CUSA04220_00-SNIPERELITE40000"
+    },
     "steam": {
       "appId": 312660,
       "store_url": "https://store.steampowered.com/app/312660/Sniper_Elite_4/"
+    },
+    "xbox": {
+      "productId": "bz5vlvx84stw",
+      "store_url": "https://www.xbox.com/en-US/games/store/sniper-elite-4/bz5vlvx84stw"
     }
   },
   "metrics": [
