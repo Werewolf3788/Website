@@ -992,171 +992,245 @@
         "letters_to_home": [
           {
             "id": "se4_lth_m5_01",
-            "name": "Letter to Home 1/5"
+            "name": "Letter to Home 1/5",
+            "video_time": "5:28",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=328s"
           },
           {
             "id": "se4_lth_m5_02",
-            "name": "Letter to Home 2/5"
+            "name": "Letter to Home 2/5",
+            "video_time": "6:18",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=378s"
           },
           {
             "id": "se4_lth_m5_03",
-            "name": "Letter to Home 3/5"
+            "name": "Letter to Home 3/5",
+            "video_time": "8:30",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=510s"
           },
           {
             "id": "se4_lth_m5_04",
-            "name": "Letter to Home 4/5"
+            "name": "Letter to Home 4/5",
+            "video_time": "9:27",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=567s"
           },
           {
             "id": "se4_lth_m5_05",
-            "name": "Letter to Home 5/5"
+            "name": "Letter to Home 5/5",
+            "video_time": "9:43",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=583s"
           }
         ],
         "letters_from_home": [
           {
             "id": "se4_lfh_m5_01",
-            "name": "Letter from Home 1/5"
+            "name": "Letter from Home 1/5",
+            "video_time": "0:00",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M"
           },
           {
             "id": "se4_lfh_m5_02",
-            "name": "Letter from Home 2/5"
+            "name": "Letter from Home 2/5",
+            "video_time": "3:51",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=231s"
           },
           {
             "id": "se4_lfh_m5_03",
-            "name": "Letter from Home 3/5"
+            "name": "Letter from Home 3/5",
+            "video_time": "5:50",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=350s"
           },
           {
             "id": "se4_lfh_m5_04",
-            "name": "Letter from Home 4/5"
+            "name": "Letter from Home 4/5",
+            "video_time": "7:45",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=465s"
           },
           {
             "id": "se4_lfh_m5_05",
-            "name": "Letter from Home 5/5"
+            "name": "Letter from Home 5/5",
+            "video_time": "8:13",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=493s"
           }
         ],
         "last_letters": [
           {
             "id": "se4_last_m5_01",
             "name": "Last Letter 1/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "0:31",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=31s"
           },
           {
             "id": "se4_last_m5_02",
             "name": "Last Letter 2/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "2:09",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=129s"
           },
           {
             "id": "se4_last_m5_03",
             "name": "Last Letter 3/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "3:01",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=181s"
           },
           {
             "id": "se4_last_m5_04",
             "name": "Last Letter 4/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "4:29",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=269s"
           },
           {
             "id": "se4_last_m5_05",
             "name": "Last Letter 5/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "4:58",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=298s"
           }
         ],
         "misc_documents": [
           {
             "id": "se4_doc_m5_01",
-            "name": "Document 1/11"
+            "name": "Document 1/11",
+            "video_time": "6:12",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=372s"
           },
           {
             "id": "se4_doc_m5_02",
-            "name": "Document 2/11"
+            "name": "Document 2/11",
+            "video_time": "6:38",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=398s"
           },
           {
             "id": "se4_doc_m5_03",
-            "name": "Document 3/11"
+            "name": "Document 3/11",
+            "video_time": "6:48",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=408s"
           },
           {
             "id": "se4_doc_m5_04",
-            "name": "Document 4/11"
+            "name": "Document 4/11",
+            "video_time": "7:06",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=426s"
           },
           {
             "id": "se4_doc_m5_05",
-            "name": "Document 5/11"
+            "name": "Document 5/11",
+            "video_time": "7:55",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=475s"
           },
           {
             "id": "se4_doc_m5_06",
-            "name": "Document 6/11"
+            "name": "Document 6/11",
+            "video_time": "8:41",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=521s"
           },
           {
             "id": "se4_doc_m5_07",
-            "name": "Document 7/11"
+            "name": "Document 7/11",
+            "video_time": "9:17",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=557s"
           },
           {
             "id": "se4_doc_m5_08",
-            "name": "Document 8/11"
+            "name": "Document 8/11",
+            "video_time": "10:06",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=606s"
           },
           {
             "id": "se4_doc_m5_09",
-            "name": "Document 9/11"
+            "name": "Document 9/11",
+            "video_time": "10:21",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=621s"
           },
           {
             "id": "se4_doc_m5_10",
-            "name": "Document 10/11"
+            "name": "Document 10/11",
+            "video_time": "10:57",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=657s"
           },
           {
             "id": "se4_doc_m5_11",
-            "name": "Document 11/11"
+            "name": "Document 11/11",
+            "video_time": "11:17",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=677s"
           }
         ],
         "sniper_reports": [
           {
             "id": "se4_rep_m5_01",
-            "name": "Sniper Report 1/2"
+            "name": "Sniper Report 1/2",
+            "video_time": "1:39",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=99s"
           },
           {
             "id": "se4_rep_m5_02",
-            "name": "Sniper Report 2/2"
+            "name": "Sniper Report 2/2",
+            "video_time": "3:27",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=207s"
           }
         ],
         "duty_rosters": [
           {
             "id": "se4_ros_m5_01",
             "name": "Duty Roster 1/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "0:44",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=44s"
           },
           {
             "id": "se4_ros_m5_02",
             "name": "Duty Roster 2/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "1:12",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=72s"
           },
           {
             "id": "se4_ros_m5_03",
             "name": "Duty Roster 3/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "2:38",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=158s"
           },
           {
             "id": "se4_ros_m5_04",
             "name": "Duty Roster 4/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "4:22",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=262s"
           }
         ],
         "stone_eagles": [
           {
             "id": "se4_eagle_m5_01",
             "name": "Stone Eagle 1/3",
-            "location": "On a damaged rooftop with missing tiles beside the northernmost road up."
+            "location": "On a damaged rooftop with missing tiles beside the northernmost road up.",
+            "video_time": "7:21",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=441s"
           },
           {
             "id": "se4_eagle_m5_02",
             "name": "Stone Eagle 2/3",
-            "location": "On the northernmost corner wall of the castle fort."
+            "location": "On the northernmost corner wall of the castle fort.",
+            "video_time": "8:56",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=536s"
           },
           {
             "id": "se4_eagle_m5_03",
             "name": "Stone Eagle 3/3",
-            "location": "Upstairs in the interior courtyard, right of the door before the cathedral courtyard."
+            "location": "Upstairs in the interior courtyard, right of the door before the cathedral courtyard.",
+            "video_time": "10:40",
+            "video_url": "https://www.youtube.com/watch?v=CI8AKd51s8M&t=640s"
           }
         ]
       },
-      "collectible_total": 35
+      "collectible_total": 35,
+      "guide_video": {
+        "url": "https://www.youtube.com/watch?v=CI8AKd51s8M&list=PLRr5L69yg_kFn5_y79HSGHmgp2aLvI3vD",
+        "title": "Mission 5: Abrunza Monastery - all 35 collectibles"
+      }
     },
     "mission_6": {
       "number": 6,
@@ -1166,172 +1240,246 @@
         "letters_to_home": [
           {
             "id": "se4_lth_m6_01",
-            "name": "Letter to Home 1/5"
+            "name": "Letter to Home 1/5",
+            "video_time": "9:26",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=566s"
           },
           {
             "id": "se4_lth_m6_02",
-            "name": "Letter to Home 2/5"
+            "name": "Letter to Home 2/5",
+            "video_time": "9:44",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=584s"
           },
           {
             "id": "se4_lth_m6_03",
-            "name": "Letter to Home 3/5"
+            "name": "Letter to Home 3/5",
+            "video_time": "10:22",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=622s"
           },
           {
             "id": "se4_lth_m6_04",
-            "name": "Letter to Home 4/5"
+            "name": "Letter to Home 4/5",
+            "video_time": "13:02",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=782s"
           },
           {
             "id": "se4_lth_m6_05",
-            "name": "Letter to Home 5/5"
+            "name": "Letter to Home 5/5",
+            "video_time": "13:40",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=820s"
           }
         ],
         "letters_from_home": [
           {
             "id": "se4_lfh_m6_01",
-            "name": "Letter from Home 1/5"
+            "name": "Letter from Home 1/5",
+            "video_time": "2:30",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=150s"
           },
           {
             "id": "se4_lfh_m6_02",
-            "name": "Letter from Home 2/5"
+            "name": "Letter from Home 2/5",
+            "video_time": "4:03",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=243s"
           },
           {
             "id": "se4_lfh_m6_03",
-            "name": "Letter from Home 3/5"
+            "name": "Letter from Home 3/5",
+            "video_time": "4:36",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=276s"
           },
           {
             "id": "se4_lfh_m6_04",
-            "name": "Letter from Home 4/5"
+            "name": "Letter from Home 4/5",
+            "video_time": "5:32",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=332s"
           },
           {
             "id": "se4_lfh_m6_05",
-            "name": "Letter from Home 5/5"
+            "name": "Letter from Home 5/5",
+            "video_time": "13:22",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=802s"
           }
         ],
         "last_letters": [
           {
             "id": "se4_last_m6_01",
             "name": "Last Letter 1/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "0:44",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=44s"
           },
           {
             "id": "se4_last_m6_02",
             "name": "Last Letter 2/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "2:03",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=123s"
           },
           {
             "id": "se4_last_m6_03",
             "name": "Last Letter 3/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "3:16",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=196s"
           },
           {
             "id": "se4_last_m6_04",
             "name": "Last Letter 4/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "3:42",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=222s"
           },
           {
             "id": "se4_last_m6_05",
             "name": "Last Letter 5/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "5:06",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=306s"
           }
         ],
         "misc_documents": [
           {
             "id": "se4_doc_m6_01",
-            "name": "Document 1/8"
+            "name": "Document 1/8",
+            "video_time": "6:40",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=400s"
           },
           {
             "id": "se4_doc_m6_02",
-            "name": "Document 2/8"
+            "name": "Document 2/8",
+            "video_time": "7:37",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=457s"
           },
           {
             "id": "se4_doc_m6_03",
-            "name": "Document 3/8"
+            "name": "Document 3/8",
+            "video_time": "8:40",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=520s"
           },
           {
             "id": "se4_doc_m6_04",
-            "name": "Document 4/8"
+            "name": "Document 4/8",
+            "video_time": "8:58",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=538s"
           },
           {
             "id": "se4_doc_m6_05",
-            "name": "Document 5/8"
+            "name": "Document 5/8",
+            "video_time": "9:57",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=597s"
           },
           {
             "id": "se4_doc_m6_06",
-            "name": "Document 6/8"
+            "name": "Document 6/8",
+            "video_time": "10:49",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=649s"
           },
           {
             "id": "se4_doc_m6_07",
-            "name": "Document 7/8"
+            "name": "Document 7/8",
+            "video_time": "12:02",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=722s"
           },
           {
             "id": "se4_doc_m6_08",
-            "name": "Document 8/8"
+            "name": "Document 8/8",
+            "video_time": "12:19",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=739s"
           }
         ],
         "sniper_reports": [
           {
             "id": "se4_rep_m6_01",
-            "name": "Sniper Report 1/5"
+            "name": "Sniper Report 1/5",
+            "video_time": "6:05",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=365s"
           },
           {
             "id": "se4_rep_m6_02",
-            "name": "Sniper Report 2/5"
+            "name": "Sniper Report 2/5",
+            "video_time": "7:09",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=429s"
           },
           {
             "id": "se4_rep_m6_03",
-            "name": "Sniper Report 3/5"
+            "name": "Sniper Report 3/5",
+            "video_time": "7:52",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=472s"
           },
           {
             "id": "se4_rep_m6_04",
-            "name": "Sniper Report 4/5"
+            "name": "Sniper Report 4/5",
+            "video_time": "8:33",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=513s"
           },
           {
             "id": "se4_rep_m6_05",
-            "name": "Sniper Report 5/5"
+            "name": "Sniper Report 5/5",
+            "video_time": "11:47",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=707s"
           }
         ],
         "duty_rosters": [
           {
             "id": "se4_ros_m6_01",
             "name": "Duty Roster 1/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "0:00",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo"
           },
           {
             "id": "se4_ros_m6_02",
             "name": "Duty Roster 2/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "1:09",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=69s"
           },
           {
             "id": "se4_ros_m6_03",
             "name": "Duty Roster 3/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "1:35",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=95s"
           },
           {
             "id": "se4_ros_m6_04",
             "name": "Duty Roster 4/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "2:53",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=173s"
           }
         ],
         "stone_eagles": [
           {
             "id": "se4_eagle_m6_01",
             "name": "Stone Eagle 1/3",
-            "location": "On a structure in the unreachable western area, near the officer objective on the shore."
+            "location": "On a structure in the unreachable western area, near the officer objective on the shore.",
+            "video_time": "8:08",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=488s"
           },
           {
             "id": "se4_eagle_m6_02",
             "name": "Stone Eagle 2/3",
-            "location": "On a concrete bunker east of the southeastern rooftop, beside a silver pipe."
+            "location": "On a concrete bunker east of the southeastern rooftop, beside a silver pipe.",
+            "video_time": "11:21",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=681s"
           },
           {
             "id": "se4_eagle_m6_03",
             "name": "Stone Eagle 3/3",
-            "location": "On the roof of the hillside facility, reached by the tallest stairs near extraction."
+            "location": "On the roof of the hillside facility, reached by the tallest stairs near extraction.",
+            "video_time": "12:40",
+            "video_url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&t=760s"
           }
         ]
       },
       "collectible_total": 35,
-      "notes": "The mission-select screen shows 9 Stone Eagles here, but only 3 exist. It is a display glitch and does not block the trophies."
+      "notes": "The mission-select screen shows 9 Stone Eagles here, but only 3 exist. It is a display glitch and does not block the trophies.",
+      "guide_video": {
+        "url": "https://www.youtube.com/watch?v=TgPjtmbEaSo&list=PLRr5L69yg_kFn5_y79HSGHmgp2aLvI3vD",
+        "title": "Mission 6: Magazzeno Facility - all 35 collectibles"
+      }
     },
     "mission_7": {
       "number": 7,
@@ -1341,148 +1489,211 @@
         "letters_to_home": [
           {
             "id": "se4_lth_m7_01",
-            "name": "Letter to Home 1/5"
+            "name": "Letter to Home 1/5",
+            "video_time": "6:40",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=400s"
           },
           {
             "id": "se4_lth_m7_02",
-            "name": "Letter to Home 2/5"
+            "name": "Letter to Home 2/5",
+            "video_time": "7:31",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=451s"
           },
           {
             "id": "se4_lth_m7_03",
-            "name": "Letter to Home 3/5"
+            "name": "Letter to Home 3/5",
+            "video_time": "8:20",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=500s"
           },
           {
             "id": "se4_lth_m7_04",
-            "name": "Letter to Home 4/5"
+            "name": "Letter to Home 4/5",
+            "video_time": "8:39",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=519s"
           },
           {
             "id": "se4_lth_m7_05",
-            "name": "Letter to Home 5/5"
+            "name": "Letter to Home 5/5",
+            "video_time": "9:04",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=544s"
           }
         ],
         "letters_from_home": [
           {
             "id": "se4_lfh_m7_01",
-            "name": "Letter from Home 1/5"
+            "name": "Letter from Home 1/5",
+            "video_time": "5:35",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=335s"
           },
           {
             "id": "se4_lfh_m7_02",
-            "name": "Letter from Home 2/5"
+            "name": "Letter from Home 2/5",
+            "video_time": "6:25",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=385s"
           },
           {
             "id": "se4_lfh_m7_03",
-            "name": "Letter from Home 3/5"
+            "name": "Letter from Home 3/5",
+            "video_time": "6:56",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=416s"
           },
           {
             "id": "se4_lfh_m7_04",
-            "name": "Letter from Home 4/5"
+            "name": "Letter from Home 4/5",
+            "video_time": "9:25",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=565s"
           },
           {
             "id": "se4_lfh_m7_05",
-            "name": "Letter from Home 5/5"
+            "name": "Letter from Home 5/5",
+            "video_time": "9:39",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=579s"
           }
         ],
         "last_letters": [
           {
             "id": "se4_last_m7_01",
             "name": "Last Letter 1/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "0:00",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0"
           },
           {
             "id": "se4_last_m7_02",
             "name": "Last Letter 2/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "1:06",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=66s"
           },
           {
             "id": "se4_last_m7_03",
             "name": "Last Letter 3/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "1:49",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=109s"
           },
           {
             "id": "se4_last_m7_04",
             "name": "Last Letter 4/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "2:14",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=134s"
           },
           {
             "id": "se4_last_m7_05",
             "name": "Last Letter 5/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "3:04",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=184s"
           }
         ],
         "misc_documents": [
           {
             "id": "se4_doc_m7_01",
-            "name": "Document 1/5"
+            "name": "Document 1/5",
+            "video_time": "4:32",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=272s"
           },
           {
             "id": "se4_doc_m7_02",
-            "name": "Document 2/5"
+            "name": "Document 2/5",
+            "video_time": "5:05",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=305s"
           },
           {
             "id": "se4_doc_m7_03",
-            "name": "Document 3/5"
+            "name": "Document 3/5",
+            "video_time": "5:23",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=323s"
           },
           {
             "id": "se4_doc_m7_04",
-            "name": "Document 4/5"
+            "name": "Document 4/5",
+            "video_time": "5:29",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=329s"
           },
           {
             "id": "se4_doc_m7_05",
-            "name": "Document 5/5"
+            "name": "Document 5/5",
+            "video_time": "5:55",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=355s"
           }
         ],
         "sniper_reports": [
           {
             "id": "se4_rep_m7_01",
-            "name": "Sniper Report 1/2"
+            "name": "Sniper Report 1/2",
+            "video_time": "3:26",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=206s"
           },
           {
             "id": "se4_rep_m7_02",
-            "name": "Sniper Report 2/2"
+            "name": "Sniper Report 2/2",
+            "video_time": "10:19",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=619s",
+            "location": "Glitched: the game counts this one as Document #6 in mission select, and it does not always spawn."
           }
         ],
         "duty_rosters": [
           {
             "id": "se4_ros_m7_01",
             "name": "Duty Roster 1/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "0:42",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=42s"
           },
           {
             "id": "se4_ros_m7_02",
             "name": "Duty Roster 2/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "1:27",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=87s"
           },
           {
             "id": "se4_ros_m7_03",
             "name": "Duty Roster 3/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "2:41",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=161s"
           },
           {
             "id": "se4_ros_m7_04",
             "name": "Duty Roster 4/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "3:59",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=239s"
           }
         ],
         "stone_eagles": [
           {
             "id": "se4_eagle_m7_01",
             "name": "Stone Eagle 1/3",
-            "location": "Above the front door of the giant estate on the central island."
+            "location": "Above the front door of the giant estate on the central island.",
+            "video_time": "4:48",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=288s"
           },
           {
             "id": "se4_eagle_m7_02",
             "name": "Stone Eagle 2/3",
-            "location": "Under the flag on the northeast rooftop of a square building on a canal island."
+            "location": "Under the flag on the northeast rooftop of a square building on a canal island.",
+            "video_time": "7:54",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=474s"
           },
           {
             "id": "se4_eagle_m7_03",
             "name": "Stone Eagle 3/3",
-            "location": "Above the front doors of the large northern building on the village square."
+            "location": "Above the front doors of the large northern building on the village square.",
+            "video_time": "9:59",
+            "video_url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&t=599s"
           }
         ]
       },
       "collectible_total": 29,
-      "notes": "The mission-select screen shows 6 Documents and 1 Sniper Report, but there are really 5 Documents and 2 Sniper Reports. The second Sniper Report does not always spawn."
+      "notes": "The mission-select screen shows 6 Documents and 1 Sniper Report, but there are really 5 Documents and 2 Sniper Reports. The second Sniper Report does not always spawn.",
+      "guide_video": {
+        "url": "https://www.youtube.com/watch?v=qSRk2C_G0s0&list=PLRr5L69yg_kFn5_y79HSGHmgp2aLvI3vD",
+        "title": "Mission 7: Giovi Fiorini Mansion - all 29 collectibles"
+      }
     },
     "mission_8": {
       "number": 8,
@@ -1492,171 +1703,245 @@
         "letters_to_home": [
           {
             "id": "se4_lth_m8_01",
-            "name": "Letter to Home 1/5"
+            "name": "Letter to Home 1/5",
+            "video_time": "6:54",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=414s"
           },
           {
             "id": "se4_lth_m8_02",
-            "name": "Letter to Home 2/5"
+            "name": "Letter to Home 2/5",
+            "video_time": "8:39",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=519s"
           },
           {
             "id": "se4_lth_m8_03",
-            "name": "Letter to Home 3/5"
+            "name": "Letter to Home 3/5",
+            "video_time": "8:49",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=529s"
           },
           {
             "id": "se4_lth_m8_04",
-            "name": "Letter to Home 4/5"
+            "name": "Letter to Home 4/5",
+            "video_time": "9:30",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=570s"
           },
           {
             "id": "se4_lth_m8_05",
-            "name": "Letter to Home 5/5"
+            "name": "Letter to Home 5/5",
+            "video_time": "10:24",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=624s"
           }
         ],
         "letters_from_home": [
           {
             "id": "se4_lfh_m8_01",
-            "name": "Letter from Home 1/5"
+            "name": "Letter from Home 1/5",
+            "video_time": "5:56",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=356s"
           },
           {
             "id": "se4_lfh_m8_02",
-            "name": "Letter from Home 2/5"
+            "name": "Letter from Home 2/5",
+            "video_time": "7:11",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=431s"
           },
           {
             "id": "se4_lfh_m8_03",
-            "name": "Letter from Home 3/5"
+            "name": "Letter from Home 3/5",
+            "video_time": "8:00",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=480s"
           },
           {
             "id": "se4_lfh_m8_04",
-            "name": "Letter from Home 4/5"
+            "name": "Letter from Home 4/5",
+            "video_time": "8:13",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=493s"
           },
           {
             "id": "se4_lfh_m8_05",
-            "name": "Letter from Home 5/5"
+            "name": "Letter from Home 5/5",
+            "video_time": "10:17",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=617s"
           }
         ],
         "last_letters": [
           {
             "id": "se4_last_m8_01",
             "name": "Last Letter 1/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "0:50",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=50s"
           },
           {
             "id": "se4_last_m8_02",
             "name": "Last Letter 2/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "0:50",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=50s"
           },
           {
             "id": "se4_last_m8_03",
             "name": "Last Letter 3/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "2:43",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=163s"
           },
           {
             "id": "se4_last_m8_04",
             "name": "Last Letter 4/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "4:12",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=252s"
           },
           {
             "id": "se4_last_m8_05",
             "name": "Last Letter 5/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "5:01",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=301s"
           }
         ],
         "misc_documents": [
           {
             "id": "se4_doc_m8_01",
-            "name": "Document 1/8"
+            "name": "Document 1/8",
+            "video_time": "7:38",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=458s"
           },
           {
             "id": "se4_doc_m8_02",
-            "name": "Document 2/8"
+            "name": "Document 2/8",
+            "video_time": "7:45",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=465s"
           },
           {
             "id": "se4_doc_m8_03",
-            "name": "Document 3/8"
+            "name": "Document 3/8",
+            "video_time": "8:32",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=512s"
           },
           {
             "id": "se4_doc_m8_04",
-            "name": "Document 4/8"
+            "name": "Document 4/8",
+            "video_time": "8:56",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=536s"
           },
           {
             "id": "se4_doc_m8_05",
-            "name": "Document 5/8"
+            "name": "Document 5/8",
+            "video_time": "9:37",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=577s"
           },
           {
             "id": "se4_doc_m8_06",
-            "name": "Document 6/8"
+            "name": "Document 6/8",
+            "video_time": "9:48",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=588s"
           },
           {
             "id": "se4_doc_m8_07",
-            "name": "Document 7/8"
+            "name": "Document 7/8",
+            "video_time": "10:03",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=603s"
           },
           {
             "id": "se4_doc_m8_08",
-            "name": "Document 8/8"
+            "name": "Document 8/8",
+            "video_time": "10:54",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=654s"
           }
         ],
         "sniper_reports": [
           {
             "id": "se4_rep_m8_01",
-            "name": "Sniper Report 1/5"
+            "name": "Sniper Report 1/5",
+            "video_time": "2:04",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=124s"
           },
           {
             "id": "se4_rep_m8_02",
-            "name": "Sniper Report 2/5"
+            "name": "Sniper Report 2/5",
+            "video_time": "2:43",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=163s"
           },
           {
             "id": "se4_rep_m8_03",
-            "name": "Sniper Report 3/5"
+            "name": "Sniper Report 3/5",
+            "video_time": "2:43",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=163s"
           },
           {
             "id": "se4_rep_m8_04",
-            "name": "Sniper Report 4/5"
+            "name": "Sniper Report 4/5",
+            "video_time": "5:39",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=339s"
           },
           {
             "id": "se4_rep_m8_05",
-            "name": "Sniper Report 5/5"
+            "name": "Sniper Report 5/5",
+            "video_time": "5:56",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=356s"
           }
         ],
         "duty_rosters": [
           {
             "id": "se4_ros_m8_01",
             "name": "Duty Roster 1/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "0:00",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc"
           },
           {
             "id": "se4_ros_m8_02",
             "name": "Duty Roster 2/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "0:29",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=29s"
           },
           {
             "id": "se4_ros_m8_03",
             "name": "Duty Roster 3/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "2:43",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=163s"
           },
           {
             "id": "se4_ros_m8_04",
             "name": "Duty Roster 4/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "4:38",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=278s"
           }
         ],
         "stone_eagles": [
           {
             "id": "se4_eagle_m8_01",
             "name": "Stone Eagle 1/3",
-            "location": "In the rocks above the small eastern bunker, up and right from the main entrance."
+            "location": "In the rocks above the small eastern bunker, up and right from the main entrance.",
+            "video_time": "6:12",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=372s"
           },
           {
             "id": "se4_eagle_m8_02",
             "name": "Stone Eagle 2/3",
-            "location": "On the northern face of the narrow frozen-river canyon along the western ridge."
+            "location": "On the northern face of the narrow frozen-river canyon along the western ridge.",
+            "video_time": "6:36",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=396s"
           },
           {
             "id": "se4_eagle_m8_03",
             "name": "Stone Eagle 3/3",
-            "location": "On the roof of the large concrete office where the mission ends."
+            "location": "On the roof of the large concrete office where the mission ends.",
+            "video_time": "10:35",
+            "video_url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&t=635s"
           }
         ]
       },
-      "collectible_total": 35
+      "collectible_total": 35,
+      "guide_video": {
+        "url": "https://www.youtube.com/watch?v=e0gw9Kza0sc&list=PLRr5L69yg_kFn5_y79HSGHmgp2aLvI3vD",
+        "title": "Mission 8: Allagra Fortress - all 35 collectibles"
+      }
     },
     "mission_9": {
       "number": 9,
@@ -1666,152 +1951,264 @@
         "letters_to_home": [
           {
             "id": "se4_lth_m9_01",
-            "name": "Letter to Home 1/5"
+            "name": "Letter to Home 1/5",
+            "video_time": "2:05",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=125s",
+            "role": "Sniper",
+            "location": "Sniper side."
           },
           {
             "id": "se4_lth_m9_02",
-            "name": "Letter to Home 2/5"
+            "name": "Letter to Home 2/5",
+            "video_time": "2:46",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=166s",
+            "role": "Sniper",
+            "location": "Sniper side."
           },
           {
             "id": "se4_lth_m9_03",
-            "name": "Letter to Home 3/5"
+            "name": "Letter to Home 3/5",
+            "video_time": "4:03",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=243s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_lth_m9_04",
-            "name": "Letter to Home 4/5"
+            "name": "Letter to Home 4/5",
+            "video_time": "5:38",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=338s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_lth_m9_05",
-            "name": "Letter to Home 5/5"
+            "name": "Letter to Home 5/5",
+            "video_time": "8:50",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=530s",
+            "role": "Operative",
+            "location": "Operative side."
           }
         ],
         "letters_from_home": [
           {
             "id": "se4_lfh_m9_01",
-            "name": "Letter from Home 1/5"
+            "name": "Letter from Home 1/5",
+            "video_time": "0:31",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=31s",
+            "role": "Sniper",
+            "location": "Sniper side."
           },
           {
             "id": "se4_lfh_m9_02",
-            "name": "Letter from Home 2/5"
+            "name": "Letter from Home 2/5",
+            "video_time": "2:18",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=138s",
+            "role": "Sniper",
+            "location": "Sniper side."
           },
           {
             "id": "se4_lfh_m9_03",
-            "name": "Letter from Home 3/5"
+            "name": "Letter from Home 3/5",
+            "video_time": "3:38",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=218s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_lfh_m9_04",
-            "name": "Letter from Home 4/5"
+            "name": "Letter from Home 4/5",
+            "video_time": "7:03",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=423s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_lfh_m9_05",
-            "name": "Letter from Home 5/5"
+            "name": "Letter from Home 5/5",
+            "video_time": "9:05",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=545s",
+            "role": "Operative",
+            "location": "Operative side."
           }
         ],
         "last_letters": [
           {
             "id": "se4_last_m9_01",
             "name": "Last Letter 1/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Sniper side. Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "0:37",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=37s",
+            "role": "Sniper"
           },
           {
             "id": "se4_last_m9_02",
             "name": "Last Letter 2/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Operative side. Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "4:24",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=264s",
+            "role": "Operative"
           },
           {
             "id": "se4_last_m9_03",
             "name": "Last Letter 3/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Operative side. Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "6:30",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=390s",
+            "role": "Operative"
           },
           {
             "id": "se4_last_m9_04",
             "name": "Last Letter 4/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Operative side. Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "7:42",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=462s",
+            "role": "Operative"
           },
           {
             "id": "se4_last_m9_05",
             "name": "Last Letter 5/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body."
+            "location": "Operative side. Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "video_time": "8:06",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=486s",
+            "role": "Operative"
           }
         ],
         "misc_documents": [
           {
             "id": "se4_doc_m9_01",
-            "name": "Document 1/5"
+            "name": "Document 1/5",
+            "video_time": "4:50",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=290s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_doc_m9_02",
-            "name": "Document 2/5"
+            "name": "Document 2/5",
+            "video_time": "6:22",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=382s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_doc_m9_03",
-            "name": "Document 3/5"
+            "name": "Document 3/5",
+            "video_time": "6:52",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=412s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_doc_m9_04",
-            "name": "Document 4/5"
+            "name": "Document 4/5",
+            "video_time": "9:30",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=570s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_doc_m9_05",
-            "name": "Document 5/5"
+            "name": "Document 5/5",
+            "video_time": "9:41",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=581s",
+            "role": "Operative",
+            "location": "Operative side."
           }
         ],
         "sniper_reports": [
           {
             "id": "se4_rep_m9_01",
-            "name": "Sniper Report 1/3"
+            "name": "Sniper Report 1/3",
+            "video_time": "1:58",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=118s",
+            "role": "Sniper",
+            "location": "Sniper side."
           },
           {
             "id": "se4_rep_m9_02",
-            "name": "Sniper Report 2/3"
+            "name": "Sniper Report 2/3",
+            "video_time": "5:47",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=347s",
+            "role": "Operative",
+            "location": "Operative side."
           },
           {
             "id": "se4_rep_m9_03",
-            "name": "Sniper Report 3/3"
+            "name": "Sniper Report 3/3",
+            "video_time": "8:29",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=509s",
+            "role": "Operative",
+            "location": "Operative side."
           }
         ],
         "duty_rosters": [
           {
             "id": "se4_ros_m9_01",
             "name": "Duty Roster 1/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Sniper side. Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "0:00",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc",
+            "role": "Sniper"
           },
           {
             "id": "se4_ros_m9_02",
             "name": "Duty Roster 2/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Operative side. Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "3:06",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=186s",
+            "role": "Operative"
           },
           {
             "id": "se4_ros_m9_03",
             "name": "Duty Roster 3/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Operative side. Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "5:14",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=314s",
+            "role": "Operative"
           },
           {
             "id": "se4_ros_m9_04",
             "name": "Duty Roster 4/4",
-            "location": "Carried by an officer. Tag officers with binoculars, then loot the body."
+            "location": "Operative side. Carried by an officer. Tag officers with binoculars, then loot the body.",
+            "video_time": "7:14",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=434s",
+            "role": "Operative"
           }
         ],
         "stone_eagles": [
           {
             "id": "se4_eagle_m9_01",
             "name": "Stone Eagle 1/3",
-            "location": "Lower rooftop of a small house southeast of the start, near the trucks."
+            "location": "Sniper side. Lower rooftop of a small house southeast of the start, near the trucks.",
+            "video_time": "1:12",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=72s",
+            "role": "Sniper"
           },
           {
             "id": "se4_eagle_m9_02",
             "name": "Stone Eagle 2/3",
-            "location": "Atop a partly ruined structure in the narrow canyon heading north from the start."
+            "location": "Sniper side. Atop a partly ruined structure in the narrow canyon heading north from the start.",
+            "video_time": "1:35",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=95s",
+            "role": "Sniper"
           },
           {
             "id": "se4_eagle_m9_03",
             "name": "Stone Eagle 3/3",
-            "location": "Roof of the western building that holds the partisan spy objective."
+            "location": "Operative side. Roof of the western building that holds the partisan spy objective.",
+            "video_time": "6:01",
+            "video_url": "https://www.youtube.com/watch?v=nwn_oolgRjc&t=361s",
+            "role": "Operative"
           }
         ]
       },
       "collectible_total": 30,
-      "notes": "Co-op only. These collectibles count toward the collectible trophies."
+      "notes": "Co-op only: needs two players online. Each item is reached by either the Sniper or the Operative; you can collect them over more than one run. These collectibles count toward the collectible trophies.",
+      "guide_video": {
+        "url": "https://www.youtube.com/watch?v=nwn_oolgRjc&list=PLRr5L69yg_kFn5_y79HSGHmgp2aLvI3vD",
+        "title": "Mission 9: Overwatch: Compound - all 30 collectibles"
+      }
     },
     "mission_10": {
       "number": 10,
