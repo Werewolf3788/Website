@@ -139,38 +139,43 @@
         "last_letters": [
           {
             "id": "se4_last_m1_01",
-            "name": "Last Letter 1/5",
+            "name": "Last Letter 1/5: Family Concerns",
             "location": "Carried by the soldier escorting the officer in the north-central village.",
             "video_time": "1:49",
-            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=109s"
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=109s",
+            "title": "Family Concerns"
           },
           {
             "id": "se4_last_m1_02",
-            "name": "Last Letter 2/5",
+            "name": "Last Letter 2/5: The Meaning of Life",
             "location": "Carried by a soldier at the sand encampment fire, through the lower central caves.",
             "video_time": "2:16",
-            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=136s"
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=136s",
+            "title": "The Meaning of Life"
           },
           {
             "id": "se4_last_m1_03",
-            "name": "Last Letter 3/5",
+            "name": "Last Letter 3/5: Do Not Grieve",
             "location": "Carried by a soldier on the stone wall by the crane at the southern dock.",
             "video_time": "4:28",
-            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=268s"
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=268s",
+            "title": "Do Not Grieve"
           },
           {
             "id": "se4_last_m1_04",
-            "name": "Last Letter 4/5",
+            "name": "Last Letter 4/5: Paradise Regained",
             "location": "Carried by a soldier patrolling north of the village communications building, often in the motor pool.",
             "video_time": "7:47",
-            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=467s"
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=467s",
+            "title": "Paradise Regained"
           },
           {
             "id": "se4_last_m1_05",
-            "name": "Last Letter 5/5",
+            "name": "Last Letter 5/5: A Willing Sacrifice",
             "location": "Carried by a soldier patrolling the mansion's first floor near the kitchen.",
             "video_time": "9:17",
-            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=557s"
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=557s",
+            "title": "A Willing Sacrifice"
           }
         ],
         "misc_documents": [
@@ -372,38 +377,43 @@
         "last_letters": [
           {
             "id": "se4_last_m2_01",
-            "name": "Last Letter 1/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "name": "Last Letter 1/5: A Letter of Forgiveness",
+            "location": "Carried by the soldier on the right as you enter the docks, just after the start.",
             "video_time": "0:00",
-            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w"
+            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w",
+            "title": "A Letter of Forgiveness"
           },
           {
             "id": "se4_last_m2_02",
-            "name": "Last Letter 2/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "name": "Last Letter 2/5: The Poetry of Death",
+            "location": "On a body in the area you clear alongside the Partisans.",
             "video_time": "5:05",
-            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w&t=305s"
+            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w&t=305s",
+            "title": "The Poetry of Death"
           },
           {
             "id": "se4_last_m2_03",
-            "name": "Last Letter 3/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "name": "Last Letter 3/5: From Afar",
+            "location": "On a fallen soldier near the church, once the soldiers there are dead.",
             "video_time": "5:30",
-            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w&t=330s"
+            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w&t=330s",
+            "title": "From Afar"
           },
           {
             "id": "se4_last_m2_04",
-            "name": "Last Letter 4/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "name": "Last Letter 4/5: Saving For the Future",
+            "location": "Carried by one of the soldiers patrolling the large barn south of the castle entrance.",
             "video_time": "6:44",
-            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w&t=404s"
+            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w&t=404s",
+            "title": "Saving For the Future"
           },
           {
             "id": "se4_last_m2_05",
-            "name": "Last Letter 5/5",
-            "location": "Carried by a soldier. Tag enemies with binoculars to see who holds a letter, then loot the body.",
+            "name": "Last Letter 5/5: Fishy Berta",
+            "location": "Carried by a soldier named Clemens Ackermann near the castle entrance.",
             "video_time": "7:10",
-            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w&t=430s"
+            "video_url": "https://www.youtube.com/watch?v=H2rtNwH1k3w&t=430s",
+            "title": "Fishy Berta"
           }
         ],
         "misc_documents": [
@@ -2383,7 +2393,8 @@
   "sources": [
     "https://www.powerpyx.com/sniper-elite-4-collectible-locations-letters-deadeye-targets-reports-documents-duty-rosters/",
     "https://gameranx.com/features/id/93003/article/sniper-elite-4-mission-1-san-celini-island-all-collectibles-guide/",
-    "https://gameranx.com/features/id/93804/article/sniper-elite-4-all-30-stone-eagle-collectibles-locations-guide/"
+    "https://gameranx.com/features/id/93804/article/sniper-elite-4-all-30-stone-eagle-collectibles-locations-guide/",
+    "https://primagames.com/tips/sniper-elite-4-all-last-letter-locations"
   ],
   "guide_playlist": "https://www.youtube.com/playlist?list=PLRr5L69yg_kFn5_y79HSGHmgp2aLvI3vD"
 }
