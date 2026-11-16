@@ -63,6 +63,17 @@
   #tradeBox .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px} @media(max-width:480px){#tradeBox .cols{grid-template-columns:1fr}}
   #tradeBox .col{background:#0f172a;border-radius:10px;padding:8px} #tradeBox input[type=number]{width:90px;padding:6px;border-radius:8px;border:1px solid #475569;background:#0b1220;color:#e2e8f0;font:inherit}
   #tradeBox .sw{display:inline-block;width:.8em;height:.8em;border-radius:3px;flex:none}
+  .tvis{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:stretch;margin:8px 0}
+  .tvis .tside{background:#0f172a;border-radius:10px;padding:6px;min-width:0}
+  .tvis .thead{font-weight:800;font-size:.8rem;margin-bottom:5px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+  .tvis .tcards{display:flex;flex-wrap:wrap;gap:5px}
+  .tvis .deed.tcard{width:calc(50% - 3px);min-width:86px;flex:1 1 86px;font-size:.72rem}
+  .tvis .deed.tcard .band{font-size:.74rem;padding:5px 6px}
+  .tvis .deed.tcard .body{padding:4px 6px}
+  .tvis .cashc{flex:1 1 86px;min-width:86px;background:#14532d;border:1px solid #22c55e;border-radius:10px;padding:8px 6px;text-align:center;font-weight:800;font-size:.95rem}
+  .tvis .none{color:#94a3b8;font-size:.78rem;padding:6px 2px}
+  .tvis .tarrow{align-self:center;font-size:1.3rem}
+  @media(max-width:420px){.tvis{grid-template-columns:1fr}.tvis .tarrow{justify-self:center;transform:rotate(90deg)}}
   .plain{background:#1e293b;border-radius:10px;padding:10px;font-size:.85rem;line-height:1.5}
   details#hist{margin-top:10px;background:#0f172a;border-radius:10px;padding:8px 10px} details#hist summary{cursor:pointer;font-weight:700}
   .bankpulse{animation:pop .4s ease-out}
@@ -363,6 +374,20 @@
     var nm = function (a) { return (a || []).map(function (i) { return SP[i].n; }).join(', '); }, c = t.cash | 0;
     var left = [nm(t.give), c > 0 ? '$' + c : ''].filter(Boolean).join(' + ') || 'nothing', right = [nm(t.get), c < 0 ? '$' + (-c) : ''].filter(Boolean).join(' + ') || 'nothing';
     return NAMES[t.from] + ' offers ' + left + ' to ' + NAMES[t.to] + ' for ' + right;
+  }
+  // The same offer as pictures: each side's property cards and money, side by side.
+  function tradeCards(s, t) {
+    var c = t.cash | 0;
+    function card(i) {
+      var sp = SP[i], col = sp.c || (sp.t === 'rail' ? '#475569' : sp.t === 'util' ? '#0e7490' : '#475569');
+      var kind = sp.t === 'rail' ? 'Station' : sp.t === 'util' ? 'Utility' : 'Property';
+      return '<div class="deed tcard" data-c="' + i + '" title="Tap to see the full card"><div class="band" style="background:' + col + '">' + (sp.i ? sp.i + ' ' : '') + sp.n + '</div><div class="body">' + kind + ' · $' + sp.p + (mgOf(s, i) ? '<br>🏦 mortgaged' : '') + '</div></div>';
+    }
+    function side(p, list, money) {
+      var h = (list || []).map(card).join('') + (money > 0 ? '<div class="cashc">💵 $' + money + '</div>' : '');
+      return '<div class="tside"><div class="thead">' + WW.shapeIcon(p, 14, COLORS[p]) + ' ' + NAMES[p] + ' gives</div><div class="tcards">' + (h || '<div class="none">Nothing</div>') + '</div></div>';
+    }
+    return '<div class="tvis" aria-label="' + tradeText(t).replace(/"/g, '&quot;') + '">' + side(t.from, t.give, c > 0 ? c : 0) + '<div class="tarrow">⇄</div>' + side(t.to, t.get, c < 0 ? -c : 0) + '</div>';
   }
   function doPropose(s, t) { if (!manageOk(s) || s.trade || t.from !== s.turn || !tradeValid(s, t)) return false; s.trade = { from: t.from, to: t.to, give: (t.give || []).slice(), get: (t.get || []).slice(), cash: t.cash | 0 }; addLog(s, '🤝 ' + tradeText(s.trade) + '.'); return true; }
   function doTradeAnswer(s, yes) {
@@ -843,8 +868,8 @@
     if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else ban.style.display = 'none';
     // actions
     var a = '', bl = '', tr = playing ? s.trade : null, au = playing && s.phase === 'auction' ? s.au : null;
-    if (tr && ms === tr.to) a += '<div class="offer">🤝 <b>Trade offer:</b> ' + tradeText(tr) + '.<div style="margin-top:6px;display:flex;gap:8px"><button class="go" data-a="tradeyes">Accept</button><button data-a="tradeno">Decline</button></div></div>';
-    else if (tr && ms === tr.from) a += '<div class="offer">🤝 Offer sent: ' + tradeText(tr) + '. Waiting for an answer… <button data-a="tradecancel">Withdraw</button></div>';
+    if (tr && ms === tr.to) a += '<div class="offer">🤝 <b>Trade offer from ' + NAMES[tr.from] + '</b>' + tradeCards(s, tr) + '<div style="margin-top:6px;display:flex;gap:8px"><button class="go" data-a="tradeyes">Accept</button><button data-a="tradeno">Decline</button></div></div>';
+    else if (tr && ms === tr.from) a += '<div class="offer">🤝 <b>Offer sent to ' + NAMES[tr.to] + '</b>' + tradeCards(s, tr) + 'Waiting for an answer… <button data-a="tradecancel">Withdraw</button></div>';
     if (au) {
       var as = seatOf(s, au.cur), mq2 = ms >= 0 ? plOf(s, ms) : null;
       a += '<div class="offer">🔨 <b>Auction: ' + SP[au.i].n + '</b> (list price $' + SP[au.i].p + ') · ' + (au.by >= 0 ? 'high bid <b>$' + au.bid + '</b> by ' + NAMES[au.by] : 'no bids yet') + '<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">';
