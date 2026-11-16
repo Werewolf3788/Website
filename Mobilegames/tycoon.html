@@ -42,6 +42,8 @@
   #banner{background:#14532d;border-radius:10px;padding:10px;margin-bottom:8px;text-align:center;font-weight:700}
   #left{width:100%;max-width:640px;margin:0 auto}
   #deeds{margin-top:10px}
+  /* phones: the players list sits right under the dice (moved there by placeSeats) */
+  #left > #seatBox{background:#1e293b;border-radius:14px;padding:12px;margin-top:10px}
   .deeds{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
   .deed{background:#1e293b;border-radius:10px;overflow:hidden;font-size:.78rem;line-height:1.35;width:calc(50% - 4px);cursor:pointer}
   .deed.big{width:100%;cursor:default;font-size:.85rem}
@@ -112,15 +114,31 @@
     </div>
   </div>
   <div id="panel">
+    <div id="seatBox">
     <div id="seats"></div>
     <div id="lobbyActs" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"></div>
     <div id="emotes"></div>
+    </div>
     <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
     <div id="log"></div>
     <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 4 houses and then an apartment once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, your houses are sold and properties mortgaged automatically before you go bankrupt. Doubles roll again; three doubles go to jail. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
   </div>
 </div>
 <div id="tradeDlg"><div id="tradeBox"></div></div>
+<script>
+// On phones the players list goes straight under the dice; on wide screens it stays in the side panel.
+(function () {
+  var mq = window.matchMedia('(min-width:860px)');
+  function placeSeats() {
+    var box = document.getElementById('seatBox'), play = document.getElementById('play'), panel = document.getElementById('panel');
+    if (!box || !play || !panel) return;
+    if (mq.matches) { if (box.parentNode !== panel) panel.insertBefore(box, panel.firstChild); }
+    else if (box.previousElementSibling !== play) play.parentNode.insertBefore(box, play.nextSibling);
+  }
+  placeSeats();
+  if (mq.addEventListener) mq.addEventListener('change', placeSeats); else if (mq.addListener) mq.addListener(placeSeats);
+})();
+</script>
 <div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
