@@ -66,173 +66,239 @@
           {
             "id": "se4_lth_m1_01",
             "name": "Letter to Home 1/5",
-            "location": "On a log beside the campfire, east of the Sniper Report tower."
+            "location": "On a log beside the campfire, east of the Sniper Report tower.",
+            "video_time": "0:45",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=45s"
           },
           {
             "id": "se4_lth_m1_02",
             "name": "Letter to Home 2/5",
-            "location": "Two-tent camp beside the checkpoint road, just off the paved route."
+            "location": "Two-tent camp beside the checkpoint road, just off the paved route.",
+            "video_time": "3:01",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=181s"
           },
           {
             "id": "se4_lth_m1_03",
             "name": "Letter to Home 3/5",
-            "location": "Desk in the two-tent camp near the southern Stone Eagle ruin."
+            "location": "Desk in the two-tent camp near the southern Stone Eagle ruin.",
+            "video_time": "3:55",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=235s"
           },
           {
             "id": "se4_lth_m1_04",
             "name": "Letter to Home 4/5",
-            "location": "Seat at the crate-lined campfire, up the stairs opposite that ruin."
+            "location": "Seat at the crate-lined campfire, up the stairs opposite that ruin.",
+            "video_time": "4:07",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=247s"
           },
           {
             "id": "se4_lth_m1_05",
             "name": "Letter to Home 5/5",
-            "location": "Office to the right of the stairs inside the village HQ."
+            "location": "Office to the right of the stairs inside the village HQ.",
+            "video_time": "8:48",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=528s"
           }
         ],
         "letters_from_home": [
           {
             "id": "se4_lfh_m1_01",
             "name": "Letter from Home 1/5",
-            "location": "Camp tent west of the large central village."
+            "location": "Camp tent west of the large central village.",
+            "video_time": "0:59",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=59s"
           },
           {
             "id": "se4_lfh_m1_02",
             "name": "Letter from Home 2/5",
-            "location": "Desk in the collapsed-tunnel checkpoint, first door on the left."
+            "location": "Desk in the collapsed-tunnel checkpoint, first door on the left.",
+            "video_time": "2:44",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=164s"
           },
           {
             "id": "se4_lfh_m1_03",
             "name": "Letter from Home 3/5",
-            "location": "Camp overlooking the arrival route, reached by circling the starting canyon."
+            "location": "Camp overlooking the arrival route, reached by circling the starting canyon.",
+            "video_time": "3:20",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=200s"
           },
           {
             "id": "se4_lfh_m1_04",
             "name": "Letter from Home 4/5",
-            "location": "Radio equipment table in the courtyard down the hill from the barn."
+            "location": "Radio equipment table in the courtyard down the hill from the barn.",
+            "video_time": "6:00",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=360s"
           },
           {
             "id": "se4_lfh_m1_05",
             "name": "Letter from Home 5/5",
-            "location": "Third-floor mansion office, reached by two scaffolding ladders."
+            "location": "Third-floor mansion office, reached by two scaffolding ladders.",
+            "video_time": "9:53",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=593s"
           }
         ],
         "last_letters": [
           {
             "id": "se4_last_m1_01",
             "name": "Last Letter 1/5",
-            "location": "Carried by the soldier escorting the officer in the north-central village."
+            "location": "Carried by the soldier escorting the officer in the north-central village.",
+            "video_time": "1:49",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=109s"
           },
           {
             "id": "se4_last_m1_02",
             "name": "Last Letter 2/5",
-            "location": "Carried by a soldier at the sand encampment fire, through the lower central caves."
+            "location": "Carried by a soldier at the sand encampment fire, through the lower central caves.",
+            "video_time": "2:16",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=136s"
           },
           {
             "id": "se4_last_m1_03",
             "name": "Last Letter 3/5",
-            "location": "Carried by a soldier on the stone wall by the crane at the southern dock."
+            "location": "Carried by a soldier on the stone wall by the crane at the southern dock.",
+            "video_time": "4:28",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=268s"
           },
           {
             "id": "se4_last_m1_04",
             "name": "Last Letter 4/5",
-            "location": "Carried by a soldier patrolling north of the village communications building, often in the motor pool."
+            "location": "Carried by a soldier patrolling north of the village communications building, often in the motor pool.",
+            "video_time": "7:47",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=467s"
           },
           {
             "id": "se4_last_m1_05",
             "name": "Last Letter 5/5",
-            "location": "Carried by a soldier patrolling the mansion's first floor near the kitchen."
+            "location": "Carried by a soldier patrolling the mansion's first floor near the kitchen.",
+            "video_time": "9:17",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=557s"
           }
         ],
         "misc_documents": [
           {
             "id": "se4_doc_m1_01",
             "name": "Document 1/8",
-            "location": "Corner table by the pinkish wall in the north-central village."
+            "location": "Corner table by the pinkish wall in the north-central village.",
+            "video_time": "2:03",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=123s"
           },
           {
             "id": "se4_doc_m1_02",
             "name": "Document 2/8",
-            "location": "Desk inside the office at the southern dock."
+            "location": "Desk inside the office at the southern dock.",
+            "video_time": "5:25",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=325s"
           },
           {
             "id": "se4_doc_m1_03",
             "name": "Document 3/8",
-            "location": "Second desk in the same southern dock office."
+            "location": "Second desk in the same southern dock office.",
+            "video_time": "5:35",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=335s"
           },
           {
             "id": "se4_doc_m1_04",
             "name": "Document 4/8",
-            "location": "Behind a ruined house near a grey wall, off the western road."
+            "location": "Behind a ruined house near a grey wall, off the western road.",
+            "video_time": "5:42",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=342s"
           },
           {
             "id": "se4_doc_m1_05",
             "name": "Document 5/8",
-            "location": "On the communications equipment beside the barn's front door."
+            "location": "On the communications equipment beside the barn's front door.",
+            "video_time": "6:40",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=400s"
           },
           {
             "id": "se4_doc_m1_06",
             "name": "Document 6/8",
-            "location": "Workshop desk across from the officer HQ, reached from the southern road."
+            "location": "Workshop desk across from the officer HQ, reached from the southern road.",
+            "video_time": "8:27",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=507s"
           },
           {
             "id": "se4_doc_m1_07",
             "name": "Document 7/8",
-            "location": "Second-floor desk right of the balcony door in the HQ."
+            "location": "Second-floor desk right of the balcony door in the HQ.",
+            "video_time": "9:04",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=544s"
           },
           {
             "id": "se4_doc_m1_08",
             "name": "Document 8/8",
-            "location": "Carried by General Schmidt; loot his body."
+            "location": "Carried by General Schmidt; loot his body.",
+            "video_time": "10:23",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=623s"
           }
         ],
         "sniper_reports": [
           {
             "id": "se4_rep_m1_01",
             "name": "Sniper Report 1/1",
-            "location": "On the table in the ruined tower near the start, left of the broken gates."
+            "location": "On the table in the ruined tower near the start, left of the broken gates.",
+            "video_time": "0:00",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI"
           }
         ],
         "duty_rosters": [
           {
             "id": "se4_ros_m1_01",
             "name": "Duty Roster 1/4",
-            "location": "Carried by the officer in the north-central village."
+            "location": "Carried by the officer in the north-central village.",
+            "video_time": "1:17",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=77s"
           },
           {
             "id": "se4_ros_m1_02",
             "name": "Duty Roster 2/4",
-            "location": "Carried by the officer at the southern dock."
+            "location": "Carried by the officer at the southern dock.",
+            "video_time": "5:05",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=305s"
           },
           {
             "id": "se4_ros_m1_03",
             "name": "Duty Roster 3/4",
-            "location": "Carried by the officer guarding the camera in the east-central barn."
+            "location": "Carried by the officer guarding the camera in the east-central barn.",
+            "video_time": "6:10",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=370s"
           },
           {
             "id": "se4_ros_m1_04",
             "name": "Duty Roster 4/4",
-            "location": "Carried by the officer inside the metal-tower building south of the General."
+            "location": "Carried by the officer inside the metal-tower building south of the General.",
+            "video_time": "7:12",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=432s"
           }
         ],
         "stone_eagles": [
           {
             "id": "se4_eagle_m1_01",
             "name": "Stone Eagle 1/3",
-            "location": "Atop a tall ruin to the northwest, visible from the first sniper tower by the entrance gate."
+            "location": "Atop a tall ruin to the northwest, visible from the first sniper tower by the entrance gate.",
+            "video_time": "0:27",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=27s"
           },
           {
             "id": "se4_eagle_m1_02",
             "name": "Stone Eagle 2/3",
-            "location": "Highest point of the ruined tower above the southern docks."
+            "location": "Highest point of the ruined tower above the southern docks.",
+            "video_time": "3:35",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=215s"
           },
           {
             "id": "se4_eagle_m1_03",
             "name": "Stone Eagle 3/3",
-            "location": "On a ruin in the far southeast corner, seen from the high hill above the barn."
+            "location": "On a ruin in the far southeast corner, seen from the high hill above the barn.",
+            "video_time": "6:48",
+            "video_url": "https://www.youtube.com/watch?v=vQCKcouPODI&t=408s"
           }
         ]
       },
-      "collectible_total": 31
+      "collectible_total": 31,
+      "guide_video": {
+        "url": "https://www.youtube.com/watch?v=vQCKcouPODI&list=PLRr5L69yg_kFn5_y79HSGHmgp2aLvI3vD",
+        "title": "Mission 1: San Celini Island - all 31 collectibles"
+      }
     },
     "mission_2": {
       "number": 2,
@@ -1719,5 +1785,6 @@
     "https://www.powerpyx.com/sniper-elite-4-collectible-locations-letters-deadeye-targets-reports-documents-duty-rosters/",
     "https://gameranx.com/features/id/93003/article/sniper-elite-4-mission-1-san-celini-island-all-collectibles-guide/",
     "https://gameranx.com/features/id/93804/article/sniper-elite-4-all-30-stone-eagle-collectibles-locations-guide/"
-  ]
+  ],
+  "guide_playlist": "https://www.youtube.com/playlist?list=PLRr5L69yg_kFn5_y79HSGHmgp2aLvI3vD"
 }
