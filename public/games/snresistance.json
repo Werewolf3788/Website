@@ -1400,7 +1400,10 @@
               "bronze": null,
               "silver": null,
               "gold": 400
-            }
+            },
+            "tip": "Shoot from the very start of the mission, before taking the zipline. The target is a soldier to the northwest, past the sniper tower, standing on a cabin balcony. Leaves hide him, so tag him through the scope first.",
+            "notes": "Sniping spot from MapMaster's 'Long Shot Gold Medal Sniping Spot' for Collision Course. That entry lists the requirement as 400 m but describes the target as 300+ m away, so the exact distance of this shot is not confirmed.",
+            "map_url": "https://mapmaster.io/games/sniper-elite-resistance/maps/mission-4-collision-course"
           },
           {
             "id": "med_longshot_mission_4_authentic_long_shot",
