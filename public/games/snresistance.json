@@ -1102,7 +1102,7 @@
           {
             "id": "let_m4_01",
             "name": "A Gift, and a Name",
-            "location": "Pinned to tree trunk on right side post-zipline.",
+            "location": "Pinned to a tree on the hill you reach after climbing the vines (right side after the zipline).",
             "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "Chance Favors the Prepared",
             "author": "Corneille Noir",
@@ -1126,7 +1126,7 @@
           {
             "id": "let_m4_03",
             "name": "What a Discovery!",
-            "location": "Locked riverside cabin requiring lockpick or bolt cutters.",
+            "location": "On a crate inside the locked riverside cabin with the blue door (lockpick or bolt cutters). A Satchel Charge sits next to it.",
             "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "A New Type of Bomb.",
             "author": "Jürgen",
@@ -1301,7 +1301,7 @@
           {
             "id": "wb_m4_pistol",
             "name": "Pistol Workbench",
-            "location": "Top floor apartment via vines on exterior wall.",
+            "location": "Upper floor of the cabin; climb the vines on its eastern wall.",
             "image_url": "https://raw.githubusercontent.com/Werewolf3788/Website/main/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Pistol Power upgrades pack.",
             "unlocks": "Pistol Power upgrades pack",
