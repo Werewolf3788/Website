@@ -1876,6 +1876,15 @@ const COLLECTIBLE_LABELS = {
     duty_rosters: '📋 Duty Roster'
 };
 
+const COLLECTIBLE_PLURALS = { letters_to_home: '✉️ Letters to Home', letters_from_home: '📬 Letters from Home' };
+// Timestamp of an item in its guide video as m:ss ('' when it has none).
+function vidAt(it) {
+    if (!it || !it.video_url || it.video_time === undefined || it.video_time === null || it.video_time === '') return '';
+    if (typeof it.video_time === 'string') return it.video_time;
+    const n = Math.max(0, Math.floor(Number(it.video_time) || 0));
+    return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`;
+}
+
 function buildFolder(titleHtml, innerHtml) {
     return `
     <section class="category-section section-collapsed">
@@ -2143,14 +2152,14 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
             colCards.push(buildItemCard({
                 id: it.id, type: 'collectible', group: `${mKey}__${cat}`,
                 badge: COLLECTIBLE_LABELS[cat] || humanize(cat), badgeClass: 'rank-bronze',
-                title: it.name, sub: it.location,
+                title: it.name, sub: [vidAt(it) ? `🎬 Guide video ${vidAt(it)}` : '', it.location].filter(Boolean).join(' · '),
                 body: [it.headline, it.author ? `— ${it.author}` : '', it.summary, it.unlocks ? `Unlocks: ${it.unlocks}` : ''].filter(Boolean).join(' '),
                 img: it.image_url, ctx, locImg: it.location_image_url,
-                link: it.video_url, linkLabel: 'Watch guide'
+                link: it.video_url, linkLabel: vidAt(it) ? `Watch at ${vidAt(it)}` : 'Watch guide'
             }));
             groupCards.push(colCards[colCards.length - 1]);
         });
-        if (groupCards.length) colGroups.push(`<h4 class="col-group-title">${escapeHtml(({ workbenches: "⚙️ Workbenches" })[cat] || (COLLECTIBLE_LABELS[cat] || humanize(cat)) + "s")} (${groupCards.length})</h4>` + gridOf(groupCards));
+        if (groupCards.length) colGroups.push(`<h4 class="col-group-title">${escapeHtml(({ workbenches: "⚙️ Workbenches" })[cat] || COLLECTIBLE_PLURALS[cat] || (COLLECTIBLE_LABELS[cat] || humanize(cat)) + "s")} (${groupCards.length})</h4>` + gridOf(groupCards));
     });
     const detail = [];
     if (m.description) detail.push(`<div><h4>Description</h4><p>${escapeHtml(m.description)}</p></div>`);
