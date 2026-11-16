@@ -923,6 +923,11 @@
         h += '<div class="seat' + (playing && s.turn === p ? ' cur' : '') + (pq && pq.bankrupt ? ' out' : '') + '">' + dot(p) + (st.bot ? '' : WW.avatarHtml(st.avatar, st.name, 22)) + '<span class="nm">' + st.name + tag + info + '</span>' + emoOf(p) + btn + '</div>';
       }
     }
+    if (s.status === 'playing' || s.status === 'done') {
+      var tot = 0, free = 0;
+      for (var bi = 0; bi < 40; bi++) { var bt = SP[bi].t; if (bt === 'prop' || bt === 'rail' || bt === 'util') { tot++; if (ownerOf(s, bi) < 0) free++; } }
+      h += '<div class="muted" style="padding:6px 6px 0">🏷️ ' + (free ? free + ' of ' + tot + ' properties still for sale' : 'All ' + tot + ' properties are owned') + '</div>';
+    }
     $('seats').innerHTML = h;
     var la = '';
     if (s.status === 'lobby' && isHost()) la += '<button class="go" data-a="start"' + (seated(s).length < 2 ? ' disabled' : '') + '>Start game</button> <button data-a="fill">Fill with bots</button>';
