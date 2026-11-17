@@ -644,6 +644,44 @@ function trackingHtml() {
   return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${S.tracking.length ? trackingRows(S.tracking) : '<div class="mute" style="font-size:.85rem">No tracked games found yet.</div>'}${friendsInner()}</section>`;
 }
 
+/* ---------- PlayStation project Firestore (written by Playstation/psn.js): full trophy lists + per-player progress ---------- */
+let _psnFs = null;
+async function psnFs() {
+  if (_psnFs) return _psnFs;
+  _psnFs = (async () => {
+    try {
+      const fb = window.firebase; if (!fb.firestore) await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = `https://www.gstatic.com/firebasejs/${fb.SDK_VERSION}/firebase-firestore-compat.js`; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+      const app = fb.apps.find(a => a.name === 'psnstats') || fb.initializeApp({ apiKey: "AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI", authDomain: "playstation-stats.firebaseapp.com", databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com", projectId: "playstation-stats", storageBucket: "playstation-stats.firebasestorage.app", messagingSenderId: "748816703249", appId: "1:748816703249:web:3413fac9800148aa42b6b0" }, 'psnstats');
+      try { await fb.auth(app).signInAnonymously(); } catch (e) {}
+      return fb.firestore(app);
+    } catch (e) { console.warn('[psn firestore]', e); return null; }
+  })();
+  return _psnFs;
+}
+/** One player's trophies for one game: { trophyId: {name, detail, icon, earned, earnedDate, timestamp...} } or null */
+async function psnTrophyMap(tag, commId) {
+  const fs = await psnFs(); if (!fs || !tag || !commId) return null;
+  for (const t of [...new Set([String(tag), String(tag).toLowerCase()])]) {
+    try { const d = await fs.collection('players').doc(t).collection('trophyProgress').doc(String(commId)).get(); if (d.exists) return (d.data() || {}).trophies || null; } catch (e) {}
+  }
+  return null;
+}
+/** Friends who have a PlayStation name and share it (their own privacy setting), with their trophies for this game */
+async function friendTrophyMaps(commId) {
+  const friends = S.isOwner ? (S.U.friends || {}) : (S.myFriends || {}), out = [];
+  await Promise.all(Object.entries(friends).map(async ([fk, fo]) => {
+    try {
+      fo = fo || {}; const code = String(fo.friend_code || fk).toUpperCase(), key = await W.ownerKeyOfCode(code); if (!key) return;
+      const prof = (await W.db.ref('users/' + key).once('value')).val() || {}, tag = String(prof.psn_username || '').trim(), sc = prof.psn_username_scope || 'private';
+      if (!tag || sc === 'private') return;
+      if (sc === 'close' && !(prof.friends && prof.friends[S.viewerCode || W.me.friendCode] && prof.friends[S.viewerCode || W.me.friendCode].close_friend === true)) return;
+      const m = await psnTrophyMap(tag, commId); if (!m) return;
+      out.push({ code, name: prof.username || prof.display_name || tag, map: m });
+    } catch (e) {}
+  }));
+  return out;
+}
+
 /* ---------- game modal ---------- */
 window.closeModal = () => $('#modal').classList.remove('open');
 async function openGame(g) {
@@ -660,14 +698,20 @@ async function openGame(g) {
   $('#modal').classList.add('open');
   if (!canSee('trophies')) return;
 
-  let items = [];
+  let items = [], friendsMaps = [];
   if (g.platform === 'psn') {
     try {
-      const r = await fetch(`${S.psnSrc || DB()}/psn/games/${g.id}.json`); const s = r.ok ? await r.json() : null;
+      const r = await fetch(`${S.psnSrc || DB()}/psn/games/${g.id}.json`); const sk = r.ok ? await r.json() : null;
       const live = (S.psnRaw && S.psnRaw.liveTrophyProgress && S.psnRaw.liveTrophyProgress[g.id]) || {};
-      items = arr(s && s.trophies).map(t => { const l = live[t.trophyId] || live[String(t.trophyId)] || {};
-        return { name:t.trophyName || t.name, desc:t.trophyDetail || t.description, icon:secure(t.trophyIconUrl || t.icon || ''), earned:!!l.earned, at:l.earnedDate || l.earnedDateTime || l.timestamp || '' }; });
+      items = arr(sk && sk.trophies).map(t => { const l = live[t.trophyId] || live[String(t.trophyId)] || {};
+        return { id:String(t.trophyId), name:t.trophyName || t.name, desc:t.trophyDetail || t.description, icon:secure(t.trophyIconUrl || t.icon || ''), earned:!!l.earned, at:l.earnedDate || l.earnedDateTime || l.timestamp || '' }; });
     } catch (e) {}
+    // the synced Firestore copy has the whole trophy list with earned flags (the live RTDB copy only keeps recent games)
+    const tag = (S.psnRaw && S.psnRaw.onlineId) || platId('psn');
+    const [mine, fr] = await Promise.all([psnTrophyMap(tag, g.id), friendTrophyMaps(g.id)]);
+    friendsMaps = fr.filter(f => String(f.code).toUpperCase() !== String(S.U.friend_code || '').toUpperCase());
+    if (mine) items = Object.entries(mine).map(([id, t]) => ({ id:String(id), name:t.name || t.title, desc:t.detail || t.description, icon:secure(t.icon || ''), earned:!!t.earned,
+      at:t.timestamp || t.earnedDate || '', rarity:t.rarity || '', rank:t.rank || t.type || '', prog:(t.targetValue > 0 && !t.earned) ? `${t.currentValue || 0}/${t.targetValue}` : '' }));
   } else if (g.platform === 'steam' && g.steamUnlocks) {
     try {
       const sc = (await W.db.ref('steam_games/' + g.id + '/ach').once('value')).val() || {};
@@ -684,11 +728,19 @@ async function openGame(g) {
   if (!items.length) { box.textContent = 'No trophy/achievement list available for this game yet.'; return; }
   items.sort((a, b) => ((b.earned ? 1 : 0) - (a.earned ? 1 : 0)) || ((Number(b.at) || 0) - (Number(a.at) || 0)));
   box.classList.remove('mute');
-  box.innerHTML = items.map(t => `<div class="row" style="${t.earned ? '' : 'opacity:.55'}">
+  const earnedN = items.filter(t => t.earned).length;
+  const frEarned = (f) => items.filter(t => f.map[t.id] && f.map[t.id].earned).length;
+  let head = `<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem"><span class="chip live">${esc(S.U.username || 'Them')}: ${earnedN}/${items.length} earned</span>` +
+    friendsMaps.map(f => `<span class="chip">${esc(f.name)}: ${frEarned(f)}/${items.length}</span>`).join('') + '</div>';
+  box.innerHTML = head + items.map(t => {
+    const who = friendsMaps.filter(f => t.id && f.map[t.id] && f.map[t.id].earned);
+    return `<div class="row" style="${t.earned ? '' : 'opacity:.6'}">
       <img src="${esc(t.icon)}" alt="" onerror="this.src='${ph(64, 64, '🏆')}'">
-      <div style="min-width:0;flex:1"><div style="font-weight:800">${esc(t.name)}</div><div class="mute" style="font-size:.78rem">${esc(t.desc || '')}</div>
-      ${t.earned && t.at ? `<div style="font-size:.72rem;color:var(--ok)">${esc(fmtDate(t.at))}</div>` : ''}</div>
-      <span class="chip ${t.earned ? 'live' : ''}">${t.earned ? 'Earned' : 'Locked'}</span></div>`).join('');
+      <div style="min-width:0;flex:1"><div style="font-weight:800">${esc(t.name)}${t.rank ? ` <span class="mute" style="font-size:.7rem;font-weight:600">${esc(String(t.rank).toUpperCase())}${t.rarity ? ' &bull; ' + esc(t.rarity) : ''}</span>` : ''}</div><div class="mute" style="font-size:.78rem">${esc(t.desc || '')}</div>
+      ${t.earned && t.at ? `<div style="font-size:.72rem;color:var(--ok)">${esc(fmtDate(t.at))}</div>` : ''}${t.prog ? `<div class="mono mute" style="font-size:.72rem">Progress ${esc(t.prog)}</div>` : ''}
+      ${who.length ? `<div style="font-size:.72rem;margin-top:.2rem">Friends earned: ${who.map(f => esc(f.name)).join(', ')}</div>` : ''}</div>
+      <span class="chip ${t.earned ? 'live' : ''}">${t.earned ? 'Earned' : 'Locked'}</span></div>`;
+  }).join('');
 }
 
 function compressImage(file, maxW, quality, maxBytes) {
