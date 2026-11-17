@@ -63,7 +63,7 @@ async function youtubeTitle(key, sec, title) {
     return (await r.text()).slice(0, 120);
 }
 
-async function runUser({ key, cfg }) {
+async function runUser({ key, cfg, user }) {
     if (!cfg.twitch_login) return { skipped: "no twitch_login" };
     const broadcasterId = await twitch.userId(cfg.twitch_login);
     if (!broadcasterId) return { skipped: "unknown twitch_login" };
@@ -79,7 +79,7 @@ async function runUser({ key, cfg }) {
     const sec = await store.secrets(key);
     if (!m || m.streamId !== s.id) {
         const prev = await store.state(key);
-        m = { live: true, streamId: s.id, title: null, tagsDone: false, yt: null, kickTitle: null, kickCat: null };
+        m = { live: true, streamId: s.id, firstPsnCheckPending: true, title: null, tagsDone: false, yt: null, kickTitle: null, kickCat: null };
         mem.set(key, m);
         if (prev.alerted_stream_id !== s.id) {
             await discordLiveAlert(key, sec, cfg, s);
@@ -91,15 +91,17 @@ async function runUser({ key, cfg }) {
     chat.start(key, { cfg, broadcasterId });
 
     const squad = cfg.squad || {};
-    const snap = await psn.snapshot(key, Object.keys(squad)).catch((e) => ({ error: e.message }));
+    const myTag = cfg.psn_online_id || (user && (user.psn_username || user.psn_online_id)) || null;
+    const snap = await psn.snapshot(key, cfg, myTag, Object.keys(squad), m.firstPsnCheckPending).catch((e) => ({ error: e.message }));
+    m.firstPsnCheckPending = false;
     const out = { live: true, stream_id: s.id, twitch_category: s.game_name, checked_at: Date.now() };
     if (!snap || snap.error) {
-        out.psn = snap ? "PSN error: " + snap.error : "no psn_npsso saved";
+        out.psn = snap ? "PSN error: " + snap.error : "no PlayStation data (no psn_npsso and no psn_online_id)";
         await store.saveState(key, out);
         return out;
     }
     const me = snap.me;
-    out.psn_game = me.title || null;
+    out.psn_source = snap.source; out.psn_game = me.title || null;
     out.psn_status = me.status || null;
     if (!me.online || !me.title) { await store.saveState(key, out); return out; }
 

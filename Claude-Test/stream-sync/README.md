@@ -12,7 +12,7 @@ While you're **live on Twitch** it checks every 30 seconds and:
 | Posts one "now live" alert | Discord webhook |
 | Relays YouTube and TikTok chat into Twitch chat as the bot | Twitch |
 
-The PlayStation data is read live from PSN with your own NPSSO (the one already saved in Settings), not from the 21-minute GitHub sync.
+PlayStation limits how often its API can be called, so the live PSN check is rationed: once when the stream starts, then at most once every `psn_poll_minutes` (default 5), only while live, using your own NPSSO. In between (and if PSN says "too many requests") it reuses the last answer or reads the PlayStation database that the 21-minute GitHub sync writes. Set `psn_poll_minutes` to `0` to never call PSN from here and use only the database.
 
 Render's free plan sleeps after ~15 minutes without visits. The Apps Script **StreamHook** (`Claude-Test/apps-script/StreamHook.gs`) visits `/wake` every minute while you're live, so the service runs only during streams.
 
@@ -32,6 +32,8 @@ Written with starter values for the app owner on first run (`seed-owner.json`). 
 | `base_tags` | tags set every stream (max 10, letters/numbers only) |
 | `game_tags` | `{ "<game name>": ["Tag", ...] }` extra tags for one game |
 | `category_overrides` | `{ "<PSN game name>": "<category name>" }` when the automatic match is wrong |
+| `psn_online_id` | your PSN name (defaults to `psn_username` from Settings) |
+| `psn_poll_minutes` | minutes between live PSN checks while live (default 5, `0` = database only) |
 | `update_title` | `false` to leave the Twitch title alone |
 | `youtube_mode` | `same` (same title as Twitch), `base_plus_status` (`youtube_base | status`), or `off` |
 | `discord_live_alert` | `false` to skip the Discord alert |

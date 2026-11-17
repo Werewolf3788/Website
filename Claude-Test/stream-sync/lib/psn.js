@@ -6,7 +6,7 @@
 
 const psn = require("psn-api");
 const store = require("./store");
-const { readPresence } = require("./build");
+const { readPresence, cleanName } = require("./build");
 
 const auths = new Map(); // key -> { accessToken, refreshToken, exp, refreshExp, npsso }
 const ids = new Map();   // onlineId(lower) -> accountId
@@ -54,16 +54,21 @@ async function accountIdFor(a, onlineId) {
     return id ? String(id) : null;
 }
 
-async function presenceOf(a, accountId) {
+/* For you an error is thrown (so a rate limit isn't mistaken for "offline");
+ * for a friend it just means "not tagged". */
+async function presenceOf(a, accountId, strict) {
     try { return readPresence(await psn.getBasicPresence(a, accountId)); }
-    catch (e) { return { online: false, title: null, titleId: null, status: null, error: e.message }; }
+    catch (e) {
+        if (strict) throw e;
+        return { online: false, title: null, titleId: null, status: null, error: e.message };
+    }
 }
 
-/** { me, friends: { onlineId: presence } } or null when no NPSSO is saved. */
-async function snapshot(key, friendIds) {
+/** Straight from PSN: 1 call for you + 1 per squad member (only if you're in a game). */
+async function liveSnapshot(key, friendIds) {
     const a = await auth(key);
     if (!a) return null;
-    const me = await presenceOf(a, "me");
+    const me = await presenceOf(a, "me", true);
     const friends = {};
     if (me.online && me.title) {
         await Promise.all((friendIds || []).map(async (fid) => {
@@ -71,7 +76,47 @@ async function snapshot(key, friendIds) {
             friends[fid] = acc ? await presenceOf(a, acc) : { online: false };
         }));
     }
-    return { me, friends };
+    return { me, friends, source: "psn" };
+}
+
+/** From the PlayStation database the GitHub sync writes (no PSN calls at all). */
+async function cachedSnapshot(myTag, friendIds) {
+    if (!myTag) return null;
+    const one = async (tag) => {
+        const g = await store.psnCard(tag);
+        if (!g) return { online: false };
+        const title = g.currentGame && g.currentGame !== "Dashboard" ? cleanName(g.currentGame) : null;
+        return { online: !!g.online, title: g.online ? title : null, titleId: g.currentGameId || g.commId || null, status: g.online && g.gameStatus ? String(g.gameStatus).trim() || null : null, updated: g.lastUpdated || null };
+    };
+    const me = await one(myTag);
+    const friends = {};
+    if (me.online && me.title) await Promise.all((friendIds || []).map(async (f) => { friends[f] = await one(f); }));
+    return { me, friends, source: "firebase", updated: me.updated };
+}
+
+/* PlayStation limits how often its API can be called, so the live check is
+ * rationed: at most once every `psn_poll_minutes` (default 5) per streamer,
+ * and only while they're live. Between checks the last answer is reused.
+ * psn_poll_minutes = 0 turns direct PSN calls off and only the database is used. */
+const lastLive = new Map(); // key -> { at, snap }
+
+async function snapshot(key, cfg, myTag, friendIds, forceNow) {
+    const minutes = cfg.psn_poll_minutes === undefined ? 5 : Number(cfg.psn_poll_minutes) || 0;
+    if (minutes > 0) {
+        const prev = lastLive.get(key);
+        if (!forceNow && prev && Date.now() - prev.at < minutes * 60000) return prev.snap || cachedSnapshot(myTag, friendIds);
+        try {
+            const snap = await liveSnapshot(key, friendIds);
+            if (snap) { lastLive.set(key, { at: Date.now(), snap }); return snap; }
+        } catch (e) {
+            // rate-limited or cookie expired: back off for a full window and use the database
+            lastLive.set(key, { at: Date.now(), snap: null });
+            console.warn(`[psn ${key}] live check failed (${e.message}); using the database`);
+        }
+        const p = lastLive.get(key);
+        if (p && p.snap) return p.snap;
+    }
+    return cachedSnapshot(myTag, friendIds);
 }
 
 module.exports = { snapshot, normNpsso };

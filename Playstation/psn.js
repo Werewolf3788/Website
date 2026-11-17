@@ -56,7 +56,8 @@ const RAY_RTDB_URL = "https://playstation-stats-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
 const ENGINE_VERSION = "68.0.0";
 const AMAZON_TAG = "moviesanywhere02-20";
-const IS_MANUAL = process.env.GITHUB_EVENT_NAME === "workflow_dispatch";
+// A timer-started run (StreamHook.gs, mode=scheduled) behaves like the cron, not like the Run button.
+const IS_MANUAL = process.env.GITHUB_EVENT_NAME === "workflow_dispatch" && process.env.PSN_RUN_MODE !== "scheduled";
 
 const CORE_PACK = [
     { key: "wildhorse_spirit", tag: "WildHorse_Spirit", id: "4087137467908566201", emailMatch: "raykevin71888", env: "PSN_NPSSO_WEREWOLF" },

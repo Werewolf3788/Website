@@ -30,7 +30,7 @@ fake("twitch.js", {
     updateChannel: async (k, id, patch) => { calls.patch.push(patch); channel = { ...channel, ...patch }; },
     sendChat: async () => true
 });
-fake("psn.js", { snapshot: async () => presence });
+fake("psn.js", { snapshot: async () => ({ ...presence, source: "psn" }) });
 fake("chat.js", { start: () => {}, stop: () => {}, status: () => ({}) });
 fake("kick.js", {});
 

@@ -59,4 +59,20 @@ async function psnAccountId(onlineId) {
     return null;
 }
 
-module.exports = { db, get, update, set, enabledUsers, secrets, saveSecret, saveState, state, userByLogin, psnAccountId };
+/** The few player-card fields the GitHub PSN sync writes (public read). */
+const CARD_FIELDS = ["online", "currentGame", "currentGameId", "commId", "gameStatus", "lastUpdated"];
+async function psnCard(onlineId) {
+    for (const tag of [onlineId, String(onlineId).toLowerCase()]) {
+        try {
+            const base = `${PSN_DB_URL}/psn/gamertags/${encodeURIComponent(tag)}`;
+            const vals = await Promise.all(CARD_FIELDS.map((f) => fetch(`${base}/${f}.json`).then((r) => r.json()).catch(() => null)));
+            if (vals.every((v) => v === null)) continue;
+            const card = {};
+            CARD_FIELDS.forEach((f, i) => { card[f] = vals[i]; });
+            return card;
+        } catch (e) { /* try next */ }
+    }
+    return null;
+}
+
+module.exports = { psnCard, db, get, update, set, enabledUsers, secrets, saveSecret, saveState, state, userByLogin, psnAccountId };
