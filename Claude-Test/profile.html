@@ -673,7 +673,7 @@ function trackingRows(items) {
     <div style="min-width:0;flex:1"><div style="font-weight:800" class="nowrap-trunc">${esc(t.title)}</div>
       <div class="mute" style="font-size:.75rem">${[t.platform, t.status].filter(Boolean).map(esc).join(' &bull; ')}${t.note ? ' &mdash; ' + esc(t.note) : ''}</div>
       ${t.progress != null ? pctBar(t.progress) : ''}</div>
-    ${t.progress != null ? `<div class="mono" style="font-weight:800;color:${t.progress >= 100 ? '#67e8f9' : pctColor(t.progress)}">${t.progress}%</div>` : ''}</div>${t.wl ? wlCard(t.wl) : (t.empty && S.isOwner ? `<div class="mute" style="font-size:.75rem;margin:-.3rem 0 .8rem">Add your Wildlands profile in the Game Companion (My Wildlands profile) and it shows here.</div>` : '')}`).join('');
+    ${t.progress != null ? `<div class="mono" style="font-weight:800;color:${t.progress >= 100 ? '#67e8f9' : pctColor(t.progress)}">${t.progress}%</div>` : ''}</div>${t.wl ? wlCard(t.wl) : (t.empty && S.isOwner ? wlCard({}) + `<div class="mute" style="font-size:.75rem;margin:-.5rem 0 .8rem">Fill in My Wildlands profile in the Game Companion and this card updates.</div>` : '')}`).join('');
 }
 function trackingHtml() {
   if (!S.tracking || S.tracking.error) return `<div class="card mute" style="padding:1.5rem;text-align:center">Game tracking isn't available right now.</div>`;
