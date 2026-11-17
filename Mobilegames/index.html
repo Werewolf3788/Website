@@ -8,7 +8,16 @@
 <meta name="theme-color" content="#0f172a">
 <title>Werewolf Mobile Games</title>
 <style>
-  *{box-sizing:border-box} body{margin:0;font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;padding:16px;max-width:560px;margin:0 auto}
+  *{box-sizing:border-box} body{margin:0 auto;font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;padding:16px;max-width:560px}
+  /* desktop: use about 80% of the screen width, cards side by side; phones keep one column */
+  @media (min-width:900px){
+    body{max-width:none;width:80vw}
+    .top,.games,.bottom{display:grid;gap:0 16px;align-items:start}
+    .top{grid-template-columns:2fr 1fr} .top #nowCard[style*="none"]+#authCard{grid-column:1/-1}
+    .games{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));align-items:stretch}
+    .games .card{display:flex;flex-direction:column} .games .card>.row:first-of-type{margin-top:auto;padding-top:10px}
+    .bottom{grid-template-columns:2fr 1fr}
+  }
   h1{font-size:1.5rem;margin:8px 0} .card{background:#1e293b;border-radius:14px;padding:16px;margin:12px 0}
   .muted{color:#94a3b8;font-size:.85rem} button,input{font:inherit;border-radius:10px;border:0;padding:12px 14px}
   button{background:#22c55e;color:#04210f;font-weight:700;cursor:pointer} button.alt{background:#334155;color:#e2e8f0}
@@ -21,22 +30,11 @@
 <h1>🎮 Werewolf Mobile Games</h1>
 <p class="muted">Games for phones and computers. Play solo any time, or sign in and share your friend code so friends can join you.</p>
 
-<div class="card">
-  <h2 style="margin:0 0 4px">🌾 Neighborly Acre</h2>
-  <div class="muted">A 3D farm: crops, animals, a tractor, missions and levels. <b>Solo</b> is your private farm. In a <b>multiplayer</b> farm (up to 8 players) everyone starts fresh with their own field and progress, and only the animals are shared.</div>
-  <div class="row"><button id="playFarm">Play solo</button><button id="hostFarm" class="alt">Host multiplayer</button></div>
-  <div class="row"><input id="joinCodeFarm" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinFarm" class="alt">Join</button></div>
+<div class="top">
+<div class="card" id="nowCard" style="display:none">
+  <h2 style="margin:0 0 6px;font-size:1.1rem"><span style="color:#22c55e">●</span> Friends playing now</h2>
+  <div id="nowList" class="muted">Loading…</div>
 </div>
-
-<div class="card">
-  <h2 style="margin:0 0 4px">🎯 Wahoo</h2>
-  <div class="muted">2 to 4 players. Race four pegs around the board, bump rivals back home, fill your home lane first. Bots fill empty seats.</div>
-  <div class="row"><button id="playBtn">Play</button></div>
-  <div class="muted" id="playNote" style="margin-top:6px">Playing as a guest: games save on this device only.</div>
-  <div class="row"><input id="joinCode" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinBtn" class="alt">Join</button></div>
-  <div class="muted" id="msg" style="margin-top:8px;color:#fbbf24"></div>
-</div>
-
 <div class="card" id="authCard">
   <div id="signedOut"><button id="signInBtn" class="alt">Sign in with Google</button>
     <div class="muted" style="margin-top:6px">Optional. Saves your wins online and gives you a friend code so others can join your table.</div></div>
@@ -46,7 +44,23 @@
     <div class="code" id="myCode">--------</div>
   </div>
 </div>
+</div>
 
+<div class="games">
+<div class="card">
+  <h2 style="margin:0 0 4px">🌾 Neighborly Acre</h2>
+  <div class="muted">A 3D farm: crops, animals, a tractor, missions and levels. <b>Solo</b> is your private farm. In a <b>multiplayer</b> farm (up to 8 players) everyone starts fresh with their own field and progress, and only the animals are shared.</div>
+  <div class="row"><button id="playFarm">Play solo</button><button id="hostFarm" class="alt">Host multiplayer</button></div>
+  <div class="row"><input id="joinCodeFarm" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinFarm" class="alt">Join</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🎯 Wahoo</h2>
+  <div class="muted">2 to 4 players. Race four pegs around the board, bump rivals back home, fill your home lane first. Bots fill empty seats.</div>
+  <div class="row"><button id="playBtn">Play</button></div>
+  <div class="muted" id="playNote" style="margin-top:6px">Playing as a guest: games save on this device only.</div>
+  <div class="row"><input id="joinCode" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinBtn" class="alt">Join</button></div>
+  <div class="muted" id="msg" style="margin-top:8px;color:#fbbf24"></div>
+</div>
 <div class="card">
   <h2 style="margin:0 0 4px">🏙️ Monopoly</h2>
   <div class="muted">2 to 4 players. Buy streets, stations and utilities, collect rent, build houses and bankrupt your rivals. Bots fill empty seats.</div>
@@ -71,17 +85,17 @@
   <div class="row"><button id="playShip">Play the computer</button><button id="hostShip" class="alt">Host vs a friend</button></div>
   <div class="row"><input id="joinCodeShip" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinShip" class="alt">Join</button></div>
 </div>
-<div class="card" id="nowCard" style="display:none">
-  <h2 style="margin:0 0 6px;font-size:1.1rem"><span style="color:#22c55e">●</span> Friends playing now</h2>
-  <div id="nowList" class="muted">Loading…</div>
+<div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
+
+<div class="bottom">
 <div class="card" id="leadCard">
   <h2 style="margin:0 0 6px;font-size:1.1rem">🏆 Leaderboard</h2>
   <div id="leadTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
   <div id="leadBody" class="muted">Sign in to see the leaderboard.</div>
 </div>
 <div class="card"><details id="hist"><summary style="cursor:pointer;font-weight:700">📜 Win / loss history</summary><div id="histBody" style="margin-top:8px" class="muted">Sign in or play a game to build your record.</div></details></div>
-<div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
+</div>
 <p class="muted"><a href="../" style="color:#94a3b8">Back to the main site</a></p>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
