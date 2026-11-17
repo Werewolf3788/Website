@@ -3053,7 +3053,7 @@ window.appState.applyLevelUps = function() {
 };
 window.appState.setWalletText = function(field, value) {
     if (!/^pf_[a-z0-9_]+$/.test(field)) return;
-    this.wallet[field] = String(value || '').trim().slice(0, 60); this.saveProgress();
+    this.wallet[field] = String(value || '').trim().slice(0, 40); this.saveProgress();
 };
 window.appState.setWalletHours = function(field, value) {
     if (!/^pfh_[a-z0-9_]+$/.test(field)) return;
@@ -3218,20 +3218,19 @@ function playBetterHtml(data) {
 function profilePanelHtml(data) {
     const pp = data && data.player_profile; if (!pp) return '';
     const w = (appState.wallet) || {};
-    const fields = toArr(pp.fields).filter(f => f && f.id), stats = toArr(pp.stats).filter(f => f && f.id);
+    const groups = toArr(pp.groups).filter(g => g && toArr(g.fields).length);
     return `
     <section class="category-section">
         <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🪪 ${escapeHtml(pp.title || 'My profile')}</h2><span>▾</span></div>
         <div class="section-content">
             <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">${escapeHtml(pp.note || '')}</p>
-            <div class="res-grid">
+            <div class="res-grid" style="margin-bottom:8px">
                 <label class="res-box"><span class="res-name">🎖️ Player Level</span>
                     <input class="uni-search-input res-input" id="wildlandsLevelInput2" type="number" min="1" inputmode="numeric" value="${Number(w.level) || 1}" onchange="appState.setWallet('level', this.value)"></label>
-                ${fields.map(f => `<label class="res-box"><span class="res-name">${escapeHtml(f.emoji || '')} ${escapeHtml(f.name)}</span>
-                    <input class="uni-search-input res-input" data-pf="${escapeHtml(f.id)}" type="text" maxlength="60" value="${escapeHtml(w['pf_' + f.id] || '')}" onchange="appState.setWalletText('pf_${escapeHtml(f.id)}', this.value)"></label>`).join('')}
-                ${stats.map(f => `<label class="res-box"><span class="res-name">${escapeHtml(f.emoji || '')} ${escapeHtml(f.name)} (hours)</span>
-                    <input class="uni-search-input res-input" data-pfh="${escapeHtml(f.id)}" type="number" min="0" step="0.1" inputmode="decimal" value="${Number(w['pfh_' + f.id]) || 0}" onchange="appState.setWalletHours('pfh_${escapeHtml(f.id)}', this.value)"></label>`).join('')}
             </div>
+            ${groups.map(g => `<div style="font-weight:700;color:#e2e8f0;margin:10px 0 4px">${escapeHtml(g.name)}</div><div class="res-grid">${toArr(g.fields).filter(f => f && f.id).map(f => `
+                <label class="res-box"><span class="res-name">${escapeHtml(f.emoji || '')} ${escapeHtml(f.name)}${f.unit ? ' <span style="color:#94a3b8">(' + escapeHtml(f.unit.trim()) + ')</span>' : ''}</span>
+                    <input class="uni-search-input res-input" data-pf="${escapeHtml(f.id)}" type="text" maxlength="40" placeholder="${escapeHtml(f.hint || '')}" value="${escapeHtml(w['pf_' + f.id] || '')}" onchange="appState.setWalletText('pf_${escapeHtml(f.id)}', this.value)"></label>`).join('')}</div>`).join('')}
         </div>
     </section>`;
 }

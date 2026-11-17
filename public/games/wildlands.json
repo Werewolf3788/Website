@@ -1920,49 +1920,139 @@
   "resources_cost_note": "Skill costs are from IGN / Ghost Recon Wiki lists and have not been checked in-game. If your game shows a different cost, tell Claude and it gets fixed.",
   "player_profile": {
     "title": "My Wildlands profile",
-    "note": "Type these in from your in-game profile and loadout. They save automatically and show on your site profile.",
-    "fields": [
+    "note": "Copy these from your in-game Ghost profile screen (they update there every 15 minutes). They save automatically and show as your Wildlands profile on your site profile.",
+    "groups": [
       {
-        "id": "primary",
-        "name": "Primary weapon",
-        "emoji": "🔫"
+        "name": "Playstyle",
+        "fields": [
+          {
+            "id": "role",
+            "name": "Role / mode",
+            "emoji": "🛡️",
+            "unit": "",
+            "hint": "e.g. Overwatch"
+          },
+          {
+            "id": "avgkill",
+            "name": "Average kill distance",
+            "emoji": "💀",
+            "unit": " m",
+            "hint": ""
+          },
+          {
+            "id": "tactical",
+            "name": "Tactical",
+            "emoji": "🧠",
+            "unit": "%",
+            "hint": ""
+          },
+          {
+            "id": "stealth",
+            "name": "Stealth kills",
+            "emoji": "🥷",
+            "unit": "%",
+            "hint": ""
+          }
+        ]
       },
       {
-        "id": "secondary",
-        "name": "Secondary weapon",
-        "emoji": "🔫"
+        "name": "Combat",
+        "fields": [
+          {
+            "id": "lifetime",
+            "name": "Lifetime combat time",
+            "emoji": "⏱️",
+            "unit": "",
+            "hint": "e.g. 0h 21min"
+          },
+          {
+            "id": "longshot",
+            "name": "Longest shot",
+            "emoji": "🎯",
+            "unit": " m",
+            "hint": ""
+          },
+          {
+            "id": "precision",
+            "name": "Precision",
+            "emoji": "🔘",
+            "unit": "%",
+            "hint": ""
+          },
+          {
+            "id": "favweapon",
+            "name": "Favorite weapon",
+            "emoji": "🔫",
+            "unit": "",
+            "hint": ""
+          },
+          {
+            "id": "favweapon2",
+            "name": "2nd favorite weapon",
+            "emoji": "🔫",
+            "unit": "",
+            "hint": ""
+          }
+        ]
       },
       {
-        "id": "pistol",
-        "name": "Pistol",
-        "emoji": "🔫"
+        "name": "Support",
+        "fields": [
+          {
+            "id": "revived",
+            "name": "Teammates revived",
+            "emoji": "➕",
+            "unit": "",
+            "hint": ""
+          },
+          {
+            "id": "c4kills",
+            "name": "C4 / mine kills",
+            "emoji": "💥",
+            "unit": " kills",
+            "hint": ""
+          },
+          {
+            "id": "drone",
+            "name": "Drone used",
+            "emoji": "🛸",
+            "unit": "",
+            "hint": "e.g. 0h 52min"
+          }
+        ]
       },
       {
-        "id": "class",
-        "name": "Playstyle / class",
-        "emoji": "🎯"
-      }
-    ],
-    "stats": [
-      {
-        "id": "driving",
-        "name": "Driving time",
-        "emoji": "🚗"
-      },
-      {
-        "id": "air",
-        "name": "Air time (flying)",
-        "emoji": "🚁"
-      },
-      {
-        "id": "parachute",
-        "name": "Parachute time",
-        "emoji": "🪂"
-      },
-      {
-        "id": "played",
-        "name": "Total play time",
-        "emoji": "⏱️"
+        "name": "Travel",
+        "fields": [
+          {
+            "id": "air",
+            "name": "Air",
+            "emoji": "🚁",
+            "unit": "",
+            "hint": "e.g. 1h 57min"
+          },
+          {
+            "id": "ground",
+            "name": "Ground",
+            "emoji": "🚗",
+            "unit": "",
+            "hint": "e.g. 1h 54min"
+          },
+          {
+            "id": "parachute",
+            "name": "Parachute",
+            "emoji": "🪂",
+            "unit": " jumps",
+            "hint": ""
+          },
+          {
+            "id": "mapdisc",
+            "name": "Map discovered",
+            "emoji": "🗺️",
+            "unit": "%",
+            "hint": ""
+          }
+        ]
       }
     ]
   },
