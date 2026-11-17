@@ -709,6 +709,62 @@
           "image_url": "/public/games/wildlands/images/skills/spotting.png"
         }
       ]
+    },
+    "gunsmith_scopes": {
+      "quest_name": "Gunsmith Scopes",
+      "region": "Bolivia-wide",
+      "description": "Scope attachments and where each one is unlocked. The province comes from the game's own 'Locked' hint in Gunsmith.",
+      "items": [
+        {
+          "id": "part_scope_ta31h",
+          "name": "TA31H",
+          "region": "Unknown",
+          "location": "Location not recorded yet",
+          "guide": "Scope. Tick it once you have unlocked it."
+        },
+        {
+          "id": "part_scope_tars101",
+          "name": "TARS101",
+          "region": "Unknown",
+          "location": "Location not recorded yet",
+          "guide": "Scope. Tick it once you have unlocked it."
+        },
+        {
+          "id": "part_scope_t5xi_tactical",
+          "name": "T5Xi Tactical",
+          "region": "Unknown",
+          "location": "Location not recorded yet",
+          "guide": "Scope. Tick it once you have unlocked it."
+        },
+        {
+          "id": "part_scope_digital_scope",
+          "name": "Digital Scope",
+          "region": "Monte Puncu",
+          "location": "Explore Monte Puncu (or unlock it in the store)",
+          "guide": "Scope. Tick it once you have unlocked it."
+        },
+        {
+          "id": "part_scope_posp",
+          "name": "POSP",
+          "region": "Unknown",
+          "location": "Location not recorded yet",
+          "guide": "Scope. Tick it once you have unlocked it."
+        },
+        {
+          "id": "part_scope_pks_07",
+          "name": "PKS-07",
+          "region": "Unknown",
+          "location": "Location not recorded yet",
+          "guide": "Scope. Tick it once you have unlocked it."
+        },
+        {
+          "id": "part_scope_g28",
+          "name": "G28",
+          "region": "Unknown",
+          "location": "Location not recorded yet",
+          "guide": "Scope. Tick it once you have unlocked it."
+        }
+      ]
     }
   },
   "tips": [
