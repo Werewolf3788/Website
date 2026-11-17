@@ -1,5 +1,11 @@
 // Neighborly Acre: game rules shared by the game and tests (no DOM / three.js here).
 
+// ---- SEASON: every farm save and farm (solo + multiplayer) carries the season it was made in. When the season goes up,
+// everyone starts fresh the next time they open the game. Bump this number to reset everyone, or use the owner-only
+// "Reset farm for everyone" button in the game (it writes game_rooms/farm/_season in Firebase, which wins if it is higher).
+export const SEASON = 2;
+export const OWNER_EMAIL = 'raykevin71888@gmail.com';
+
 const MIN = 60000, HOUR = 3600000, DAY = 86400000;
 
 // ---- levels: level 1 -> 2 needs 25 xp, 2 -> 3 needs 50, 3 -> 4 needs 75 ... up to level 50

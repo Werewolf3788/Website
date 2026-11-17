@@ -366,6 +366,7 @@ function renderShop() {
     C.ACHIEVEMENTS.forEach(function (a) { const got = !!save.ach[a.id]; box.appendChild(row((got ? '✅ ' : '🔒 ') + a.icon + ' <b>' + a.name + '</b> <small>' + a.desc + '</small>', [])); });
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
+    if (me && me.email && me.email.toLowerCase() === C.OWNER_EMAIL) box.appendChild(row('🔄 <b>Reset farm for everyone</b> <small>Season ' + season + '. Everyone starts again at level 1.</small>', [{ t: 'Reset', off: false, f: resetEveryone }]));
     addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
     daily.forEach(function (m, k) {
       const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
@@ -651,6 +652,20 @@ $('shareBtn').onclick = function () {
   if (navigator.share) navigator.share({ title: 'Join my farm in Neighborly Acre', text: 'Farm code ' + hostCode, url: url }).catch(function () {});
   else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); }); else say('Share this code: ' + hostCode);
 };
+let season = C.SEASON;
+async function loadSeason() {
+  season = C.SEASON;
+  if (WW.mode === 'cloud') { try { const r = +(await WW.db.ref('game_rooms/farm/_season').once('value')).val(); if (r > season) season = r; } catch (e) {} }
+  return season;
+}
+// owner only: start a new season so every farmer (solo and multiplayer) begins again at level 1 next time they open the game
+async function resetEveryone() {
+  if (!me || !me.email || me.email.toLowerCase() !== C.OWNER_EMAIL) return;
+  if (!confirm('Reset Neighborly Acre for EVERYONE? All levels, coins, fields and animals go back to the start. This cannot be undone.')) return;
+  const next = (await loadSeason()) + 1;
+  try { await WW.db.ref('game_rooms/farm/_season').set(next); } catch (e) { say('Reset failed: ' + (e.code || e.message)); return; }
+  location.reload();
+}
 const hexOk = v => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v.trim());
 async function begin(user, myCode) {
   // ?mp=CODE (or the older ?room=CODE) joins the multiplayer farm of that host. No code = your private solo farm.
@@ -673,20 +688,23 @@ async function begin(user, myCode) {
         const others = Object.keys(live).filter(function (u) { return u !== user.uid && nowT - ((live[u] && live[u].t) || 0) < 45000; }).length;
         if (others >= 8) { gate('This farm is full (8 players). Try again in a minute, or start your own from the hub.', { back: true }); return; }
       }
+      await loadSeason();
+      if ((meta.season | 0) !== season) { meta = Object.assign({}, meta, { season: season }); await roomRef.set({ meta: meta }); }   // new season: this farm starts empty
       hostName = meta.host || ''; me = user; cloudCode = hostCode || myCode; hostIsMe = !isMP || hostCode === myCode;
       $('roomLabel').textContent = isMP ? 'Multiplayer · ' + (hostName ? hostName + '\u2019s farm' : hostCode) : 'Solo farm';
     } catch (e) { console.warn(e); gate('Your online farm could not be opened (' + (e.code || e.message || 'permission denied') + '). The game database rules need to be published in Firebase — nothing is saved to this device while you are signed in.', { back: true }); return; }
   } else {
     if (isMP) { gate('Sign in to join a multiplayer farm.', { signIn: true }); return; }
-    WW.useLocal(); roomRef = WW.roomRef('farm', 'solo'); me = { uid: 'local' }; $('roomLabel').textContent = 'Guest · this device';
+    WW.useLocal(); roomRef = WW.roomRef('farm', 'solo'); me = { uid: 'local' }; await loadSeason(); { const lm = (await roomRef.child('meta').once('value')).val() || {}; if ((lm.season | 0) !== season) await roomRef.set({ meta: { season: season } }); } $('roomLabel').textContent = 'Guest · this device';
   }
   $('gate').style.display = 'none'; myName = ((user && user.displayName) || 'Farmer').split(' ')[0].slice(0, 12);
   try {
-    const s = await WW.loadSave(saveKey);   // solo and every multiplayer farm each have their own progress, starting fresh
+    let s = await WW.loadSave(saveKey);   // solo and every multiplayer farm each have their own progress, starting fresh
+    if (s && (s.season | 0) !== season) s = null;   // saved in an older season: start again at level 1
     if (s) { save.coins = s.coins | 0; save.xp = +s.xp || 0; save.seeds = s.seeds || { wheat: 0 }; save.bag = s.bag || {}; save.up = s.up || {}; save.orders = s.orders || { day: -1, done: [] }; save.harvested = s.harvested | 0;
       // legacy saves (before levels) kept only coins
       if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.fert = s.fert | 0; save.ach = s.ach || {}; save.skip = s.skip || {}; save.stats = s.stats || {}; save.daily = s.daily || { day: -1, base: {}, done: [] }; save.ms = s.ms || {}; if (s.ledKey) save.ledKey = s.ledKey; }
-    normalizeSave();
+    normalizeSave(); save.season = season; if (!s) flushSave();
   } catch (e) { console.warn(e); gate('Your saved progress could not be loaded (' + (e.code || e.message) + '). Nothing was changed.', { back: true }); return; }
   if (user) {
     try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; }

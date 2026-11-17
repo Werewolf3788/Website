@@ -19,3 +19,20 @@ Add the block from `database.rules.addition.json` into the Realtime Database rul
 - Finished games are saved per player at `games_saves/{uid}/history` (win or loss, opponents, winner) and shown in the "Win / loss history" dropdown in the hub and in each game.
 - Player avatars come from `users/{emailKey}/avatar_url`. Player shapes: circle, triangle, square, egg.
 - Online tables use the generic `game_rooms/$game/$code` rule that is already in the site's `database.rules.json`, so `database.rules.addition.json` is only needed if that generic rule is ever removed.
+
+## Resetting Neighborly Acre for everyone
+Every farm save and every farm room carries a **season** number. When the season goes up, everyone (solo and multiplayer) starts again at level 1 with fresh fields, coins and animals the next time they open the game.
+- In the game, the site owner sees **🔄 Reset farm for everyone** at the top of the 📜 Missions tab. It raises the season in Firebase (`game_rooms/farm/_season`).
+- Or bump `SEASON` in `js/config.js`.
+
+## Where the mobile games keep their data in Firebase (Realtime Database)
+| Node | What it is |
+|---|---|
+| `games_saves/{uid}/farm` | Your solo Neighborly Acre progress (level/xp, coins, seeds, missions). `farm_mp_{CODE}` = your progress in a friend's multiplayer farm. `wahoo`, `tycoon`, `history` = board game wins and win/loss history. |
+| `game_rooms/farm/{friendCode}` | Your solo farm world (fields, crops, animals, tractor). `MP-{CODE}` = a multiplayer farm. `_season` = the reset number. |
+| `game_rooms/wahoo`, `tycoon`, `frogger`, `battleship` | Live tables for the other games. |
+| `game_rooms/presence/{friendCode}` | "Playing now" status the hub shows to friends. |
+| `game_leaders/{game}` | Leaderboards. |
+| `achFeed` | Achievement pop-ups shown to everyone on the site. |
+
+The other top-level nodes belong to the rest of the site, not the games: `users`, `friend_codes`, `presence`, `messages`, `userThreads` (profiles, friends, messenger); `psn`, `xbox`, `steam_*`, `games`, `games_catalog` (console/Steam sync); `user_secrets`, `auth_links`, `discord_links` (sign-in and keys); `music_releases`, `pranks`, `push_subscriptions`.
