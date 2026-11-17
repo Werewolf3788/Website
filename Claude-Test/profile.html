@@ -658,11 +658,33 @@ async function psnFs() {
   })();
   return _psnFs;
 }
-/** One player's trophies for one game: { trophyId: {name, detail, icon, earned, earnedDate, timestamp...} } or null */
+/** Full trophy catalog for a game (meta/gameIndex -> games/{key}.trophies): every trophy's name, icon, rank, rarity. Same source as the Game Companion. */
+const _skel = {};
+async function psnCatalog(commId) {
+  const id = String(commId || '').toUpperCase(); if (!id) return [];
+  if (_skel[id]) return _skel[id];
+  _skel[id] = (async () => {
+    try {
+      const fs = await psnFs(); if (!fs) return [];
+      const idx = await fs.collection('meta').doc('gameIndex').get();
+      const entry = idx.exists && (idx.data().entries || {})[id]; if (!entry || !entry.key) return [];
+      const doc = await fs.collection('games').doc(entry.key).get(); if (!doc.exists) return [];
+      return arr(doc.data().trophies);
+    } catch (e) { console.warn('[psn catalog]', e && e.message); return []; }
+  })();
+  return _skel[id];
+}
+/** One player's trophy progress for one game: { trophyId: {earned, earnedDate, timestamp, currentValue, targetValue...} } or null.
+ *  Tries the synced Firestore copy first, then the live copy in the PlayStation realtime database. */
 async function psnTrophyMap(tag, commId) {
-  const fs = await psnFs(); if (!fs || !tag || !commId) return null;
-  for (const t of [...new Set([String(tag), String(tag).toLowerCase()])]) {
-    try { const d = await fs.collection('players').doc(t).collection('trophyProgress').doc(String(commId)).get(); if (d.exists) return (d.data() || {}).trophies || null; } catch (e) {}
+  if (!tag || !commId) return null;
+  const tags = [...new Set([String(tag), String(tag).toLowerCase()])];
+  const fs = await psnFs();
+  if (fs) for (const t of tags) {
+    try { const d = await fs.collection('players').doc(t).collection('trophyProgress').doc(String(commId)).get(); if (d.exists && (d.data() || {}).trophies) return d.data().trophies; } catch (e) {}
+  }
+  for (const t of tags) {
+    try { const r = await fetch(`${RAY_DB}/psn/gamertags/${encodeURIComponent(t)}/liveTrophyProgress/${encodeURIComponent(commId)}.json`); if (r.ok) { const v = await r.json(); if (v) return v; } } catch (e) {}
   }
   return null;
 }
@@ -698,20 +720,20 @@ async function openGame(g) {
   $('#modal').classList.add('open');
   if (!canSee('trophies')) return;
 
-  let items = [], friendsMaps = [];
+  let items = [], friendsMaps = [], note = '';
   if (g.platform === 'psn') {
-    try {
-      const r = await fetch(`${S.psnSrc || DB()}/psn/games/${g.id}.json`); const sk = r.ok ? await r.json() : null;
-      const live = (S.psnRaw && S.psnRaw.liveTrophyProgress && S.psnRaw.liveTrophyProgress[g.id]) || {};
-      items = arr(sk && sk.trophies).map(t => { const l = live[t.trophyId] || live[String(t.trophyId)] || {};
-        return { id:String(t.trophyId), name:t.trophyName || t.name, desc:t.trophyDetail || t.description, icon:secure(t.trophyIconUrl || t.icon || ''), earned:!!l.earned, at:l.earnedDate || l.earnedDateTime || l.timestamp || '' }; });
-    } catch (e) {}
-    // the synced Firestore copy has the whole trophy list with earned flags (the live RTDB copy only keeps recent games)
     const tag = (S.psnRaw && S.psnRaw.onlineId) || platId('psn');
-    const [mine, fr] = await Promise.all([psnTrophyMap(tag, g.id), friendTrophyMaps(g.id)]);
+    const [cat, mine, fr] = await Promise.all([psnCatalog(g.id), psnTrophyMap(tag, g.id), friendTrophyMaps(g.id)]);
     friendsMaps = fr.filter(f => String(f.code).toUpperCase() !== String(S.U.friend_code || '').toUpperCase());
-    if (mine) items = Object.entries(mine).map(([id, t]) => ({ id:String(id), name:t.name || t.title, desc:t.detail || t.description, icon:secure(t.icon || ''), earned:!!t.earned,
-      at:t.timestamp || t.earnedDate || '', rarity:t.rarity || '', rank:t.rank || t.type || '', prog:(t.targetValue > 0 && !t.earned) ? `${t.currentValue || 0}/${t.targetValue}` : '' }));
+    const live = (S.psnRaw && S.psnRaw.liveTrophyProgress && S.psnRaw.liveTrophyProgress[g.id]) || {};
+    const prog = mine || live || {};
+    const base = cat.length ? cat : Object.values(prog);              // catalog first; the progress copy also carries names/icons
+    items = base.map(t => { const id = String(t.trophyId), l = prog[id] || {};
+      const tg = Number(l.targetValue ?? l.trophyProgressTargetValue) || 0, cv = Number(l.currentValue ?? l.trophyProgress) || 0;
+      return { id, name:t.name || t.trophyName || t.title || l.name, desc:t.detail || t.description || t.trophyDetail || l.detail || '', icon:secure(t.icon || t.trophyIconUrl || l.icon || ''),
+        earned:!!l.earned, at:l.timestamp || l.earnedDate || '', rarity:t.rarity || l.rarity || '', rank:t.type || t.rank || t.trophyType || l.type || '', prog:(tg > 0 && !l.earned) ? `${cv}/${tg}` : '' }; });
+    if (!cat.length && !items.length) note = 'The trophy list for this game has not been synced yet.';
+    else if (!mine && !Object.keys(live).length) note = 'Trophy list loaded. Your earned trophies for this game have not synced yet, so they show as locked.';
   } else if (g.platform === 'steam' && g.steamUnlocks) {
     try {
       const sc = (await W.db.ref('steam_games/' + g.id + '/ach').once('value')).val() || {};
@@ -725,12 +747,12 @@ async function openGame(g) {
     items = g.achievements.map(a => ({ name:a.name || a.title, desc:a.description || a.desc, icon:secure(a.icon || a.image || ''), earned:!!(a.earned ?? a.achieved ?? a.unlocked), at:a.earnedAt || a.unlockTime || '' }));
   }
   const box = $('#trophy-list');
-  if (!items.length) { box.textContent = 'No trophy/achievement list available for this game yet.'; return; }
+  if (!items.length) { box.textContent = note || 'No trophy/achievement list available for this game yet.'; return; }
   items.sort((a, b) => ((b.earned ? 1 : 0) - (a.earned ? 1 : 0)) || ((Number(b.at) || 0) - (Number(a.at) || 0)));
   box.classList.remove('mute');
   const earnedN = items.filter(t => t.earned).length;
   const frEarned = (f) => items.filter(t => f.map[t.id] && f.map[t.id].earned).length;
-  let head = `<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem"><span class="chip live">${esc(S.U.username || 'Them')}: ${earnedN}/${items.length} earned</span>` +
+  let head = (note ? `<div class="mute" style="font-size:.78rem;margin-bottom:.5rem">${esc(note)}</div>` : '') + `<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem"><span class="chip live">${esc(S.U.username || 'Them')}: ${earnedN}/${items.length} earned</span>` +
     friendsMaps.map(f => `<span class="chip">${esc(f.name)}: ${frEarned(f)}/${items.length}</span>`).join('') + '</div>';
   box.innerHTML = head + items.map(t => {
     const who = friendsMaps.filter(f => t.id && f.map[t.id] && f.map[t.id].earned);
