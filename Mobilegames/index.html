@@ -60,6 +60,12 @@
   <div class="row"><input id="joinCodeFrog" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinFrog" class="alt">Join</button></div>
 </div>
 <div class="card">
+  <h2 style="margin:0 0 4px">🏎️ Werewolf Racing</h2>
+  <div class="muted">3D car racing. <b>Solo</b> races you against 5 bots. <b>Multiplayer</b> puts up to 8 friends on the grid live, and the host can fill empty spots with bots. 3, 5 or 8 laps, best-lap leaderboard. Works with a Bluetooth controller (PS5, Xbox): R2 gas, L2 brake, left stick steer.</div>
+  <div class="row"><button id="playRace">Race solo</button><button id="hostRace" class="alt">Host multiplayer</button></div>
+  <div class="row"><input id="joinCodeRace" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinRace" class="alt">Join</button></div>
+</div>
+<div class="card">
   <h2 style="margin:0 0 4px">🚢 Battleship</h2>
   <div class="muted">The classic: hide five ships on a 10 × 10 grid, then take turns calling shots like D3 or B9 by tapping the square. Cannon, splash, hit and sinking sounds, and an optional voice that calls the shots. Play the <b>computer</b> or a <b>friend</b> (2 players).</div>
   <div class="row"><button id="playShip">Play the computer</button><button id="hostShip" class="alt">Host vs a friend</button></div>
@@ -114,6 +120,13 @@
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'frogger.html?room=' + encodeURIComponent(c);
   };
+  $('playRace').onclick = function () { location.href = 'race.html'; };
+  $('hostRace').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'race.html?room=' + encodeURIComponent(c); };
+  $('joinRace').onclick = function () {
+    var c = $('joinCodeRace').value.trim().toUpperCase();
+    if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
+    location.href = 'race.html?room=' + encodeURIComponent(c);
+  };
   $('playTy').onclick = function () { location.href = 'tycoon.html'; };
   $('joinTy').onclick = function () {
     var c = $('joinCodeTy').value.trim().toUpperCase();
@@ -121,8 +134,8 @@
     location.href = 'tycoon.html?room=' + encodeURIComponent(c);
   };
   // ---- leaderboard
-  var LGAMES = [['all', 'All games'], ['wahoo', '🎲 Wahoo'], ['tycoon', '🏙️ Monopoly'], ['frogger', '🐸 Frogger'], ['battleship', '🚢 Battleship']], leadTab = 'all', leadData = null;
-  var BEST = { frogger: ['Best solo', function (v) { return v + ' crossed'; }, false], battleship: ['Fewest shots', function (v) { return v + ' shots'; }, true] };
+  var LGAMES = [['all', 'All games'], ['wahoo', '🎲 Wahoo'], ['tycoon', '🏙️ Monopoly'], ['frogger', '🐸 Frogger'], ['race', '🏎️ Racing'], ['battleship', '🚢 Battleship']], leadTab = 'all', leadData = null;
+  var BEST = { frogger: ['Best solo', function (v) { return v + ' crossed'; }, false], battleship: ['Fewest shots', function (v) { return v + ' shots'; }, true], race: ['Best lap', function (v) { var t = v / 1000, m = Math.floor(t / 60); return m + ':' + (t % 60).toFixed(1).padStart(4, '0'); }, true] };
   function drawLeaders() {
     $('leadTabs').innerHTML = LGAMES.map(function (g) { return '<button data-g="' + g[0] + '" style="padding:6px 12px;border-radius:999px;font-size:.8rem;font-weight:700;cursor:pointer;background:' + (leadTab === g[0] ? '#22c55e;color:#04210f' : '#334155;color:#e2e8f0') + '">' + g[1] + '</button>'; }).join('');
     if (!WW.user) { $('leadBody').textContent = 'Sign in to see the leaderboard.'; return; }
