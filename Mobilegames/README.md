@@ -4,7 +4,7 @@ Browser board games that run on Android, iOS and desktop. Same setup as Neighbor
 
 - `index.html` – hub (login, friend code, join by code)
 - `wahoo.html` – Wahoo, 2-4 players. Empty seats can be filled with bots, and a friend can jump into a bot seat at any time. Live table state lives at `game_rooms/wahoo/{friendCode}/state`; wins save to `games_saves/{uid}/wahoo`.
-- `tycoon.html` – Monopoly, a property-trading game (original names and cards). 2-4 players with bots, same seats/rooms/saves as Wahoo. State at `game_rooms/tycoon/{friendCode}/state`; wins save to `games_saves/{uid}/tycoon`. Rents rise every few rounds so games always finish.
+- `tycoon.html` – Monopoly, a property-trading game (original names and cards). 2-4 players with bots, same seats/rooms/saves as Wahoo. State at `game_rooms/tycoon/{friendCode}/state`; wins save to `games_saves/{uid}/tycoon`. Rents rise every few rounds so games always finish. Rules: a blue Speed Die joins the two white dice once a player has passed or landed on Start (not used in jail; doubles count on the white dice only): 1/2/3 add to the move, Bus lets you move die 1, die 2 or the sum, Mr. Monopoly moves on to the next unowned property afterwards (or the next opponent property, paying rent), and a triple 1/2/3 lets you go anywhere. 4 houses make a hotel. Two doubles in a row goes to jail; bail is optional; Surprise and Community Fund cards can be followed or ignored.
 - `frogger.html` – Frogger: solo (endless, levels, 3 lives) or multiplayer for up to 8 players. Course: road (cars) → river (logs and turtles) → swamp (snakes, gators). Same deterministic hazards for everyone (room code + server clock); first to 5 crossings wins; live 🥇🥈🥉 leaderboard; synthesised sounds with a mute button. Room state at `game_rooms/frogger/{friendCode}` (`players`, `state`).
 - `battleship.html` – Battleship: classic 10 × 10 grid (rows A–J, columns 1–10), five ships, one shot per turn. Solo vs the computer, or 2 players in a room (`game_rooms/battleship/{code}`). Synthesised cannon / splash / hit / sinking sounds and spoken call-outs, each with its own toggle.
 - `js/common.js` – Firebase init, login, friend codes, saves, local (guest) fallback
@@ -15,7 +15,14 @@ Planned next: a life-path game, built on the same table/seat/turn pattern.
 Add the block from `database.rules.addition.json` into the Realtime Database rules (online tables are denied until then; solo play works without it).
 
 ## Friends and history
-- While you sit at a table online, the game publishes a status to `users/{emailKey}/now_playing` (game, room code, a one-line status such as properties / houses / apartments, who is playing and how many seats are open). It is removed when you leave. The hub's "Friends playing now" list and the squad roster on the game tracker read it and show a Join button; PlayStation and Steam activity shows there too when the site already has it.
+- While you sit at a table online, the game publishes a status to `users/{emailKey}/now_playing` (game, room code, a one-line status such as properties / houses / hotels, who is playing and how many seats are open). It is removed when you leave. The hub's "Friends playing now" list and the squad roster on the game tracker read it and show a Join button; PlayStation and Steam activity shows there too when the site already has it.
 - Finished games are saved per player at `games_saves/{uid}/history` (win or loss, opponents, winner) and shown in the "Win / loss history" dropdown in the hub and in each game.
 - Player avatars come from `users/{emailKey}/avatar_url`. Player shapes: circle, triangle, square, egg.
 - Online tables use the generic `game_rooms/$game/$code` rule that is already in the site's `database.rules.json`, so `database.rules.addition.json` is only needed if that generic rule is ever removed.
+
+## Neighborly Acre data layout (Firebase)
+- `games_saves/{uid}/farm` (solo) or `farm_mp_{code}` (multiplayer): your private full save (level/xp, coins, seeds, bag, upgrades, combine, trailer, haul, `epoch`).
+- `game_rooms/farm/{room}/farmers/{uid}`: one readable record per farmer: `name, level, xp, coins, fields, animals, harvested, combine, avatar, color, tractor{x,z,ry}, updated`.
+- `game_rooms/farm/{room}`: `meta` (host, `epoch`), `tiles` (k: t=plowed, c=crop; c=crop id, p=planted, w=watered time, u=cultivated, f=fertilized), `fields` (owners), `animals`, `players` (live positions), `ledger` (shared animal money/XP).
+- Reset: host opens barn > Settings > Reset. This wipes the room and bumps `meta/epoch`; every farmer's save restarts at level 1 the next time they connect.
+- Harvest chain: Combine harvester (tractor shop) > drive it over ripe crops > park beside the trailer to unload > walk to the trailer and send the truck to the grain elevator (+15% price). The truck and trailer are only drawn on your own screen.

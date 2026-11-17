@@ -12,9 +12,11 @@ const FORCE_WX = qs.get('weather');                                       // deb
 let me = null, myName = 'Farmer', myHue = Math.random(), roomRef = null, cloudCode = null;
 let tiles = {}, players = {}, animals = {}, tractorState = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry }, colors = {}, myColor = '', isMP = false, hostCode = '', saveKey = 'farm', ledger = {};
 let tool = 'hoe', saveTimer = null, toastTimer = null, lastDragAt = 0, avatars = {}, myAvatar = '';
-const save = { ach: {}, coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, fert: 0, up: {}, skip: {}, orders: { done: {} }, harvested: 0, stats: {}, daily: { day: -1, base: {}, done: [] }, ms: {} };
-const player = { x: 0, z: -1, ry: 0, speed: 0, driving: false };
+const save = { ach: {}, coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, fert: 0, up: {}, skip: {}, orders: { done: {} }, harvested: 0, stats: {}, daily: { day: -1, base: {}, done: [] }, ms: {}, combine: null, trailer: null, haul: null, epoch: 0 };
+const player = { x: 0, z: -1, ry: 0, speed: 0, driving: false, veh: 'tractor' };   // veh: which vehicle you are driving ('tractor' or 'combine')
 const tractorLocal = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry, speed: 0 };
+const combineLocal = { x: 0, z: 0, ry: 0, speed: 0 };
+let combine = null, trailer = null, truck = null, roomEpoch = 0;     // harvest-chain models: they exist once the Combine harvester is owned
 const level = () => C.levelFromXp(save.xp);
 const swath = () => save.up.mega ? 7 : save.up.wide ? 5 : 3;
 const nowMs = () => WW.now();
@@ -141,7 +143,21 @@ function rainTick() {
 }
 
 // ------------------------------------------------------------ economy helpers
-function flushSave() { clearTimeout(saveTimer); if (me) WW.writeSave(saveKey, JSON.parse(JSON.stringify(save))); }
+function flushSave() {
+  clearTimeout(saveTimer); if (!me) return;
+  if (player.driving && player.veh === 'combine' && save.combine) { save.combine.x = +combineLocal.x.toFixed(2); save.combine.z = +combineLocal.z.toFixed(2); save.combine.ry = +combineLocal.ry.toFixed(3); }
+  WW.writeSave(saveKey, JSON.parse(JSON.stringify(save))); pushFarmer();
+}
+async function persistNow() { clearTimeout(saveTimer); if (me) await WW.writeSave(saveKey, JSON.parse(JSON.stringify(save))); }
+// One readable record per farmer in the farm room: game_rooms/farm/{room}/farmers/{uid} = name, level, xp, coins, fields, animals, harvested, avatar, color, tractor.
+// (the full private save - seeds, bag, orders, stats ... - stays in games_saves/{uid}/{farm|farm_mp_CODE})
+function pushFarmer(extra) {
+  if (!roomRef || !me) return; let nAn = 0; Object.keys(animals).forEach(function (id) { if (mineAnimal(animals[id])) nAn++; });
+  const rec = Object.assign({ name: myName, level: level(), xp: Math.floor(save.xp), coins: save.coins, fields: myFieldCount(), animals: nAn, harvested: save.harvested | 0, combine: save.up.harvester ? 1 : 0, updated: firebase.database.ServerValue.TIMESTAMP }, extra || {});
+  try { roomRef.child('farmers/' + me.uid).update(rec); } catch (e) { console.warn(e); }
+}
+function freshSave(epoch) { return { ach: {}, coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, fert: 0, up: {}, skip: {}, orders: { done: {} }, harvested: 0, stats: {}, daily: { day: -1, base: {}, done: [] }, ms: {}, combine: null, trailer: null, haul: null, epoch: epoch | 0 }; }
+function resetSaveObject(epoch) { Object.keys(save).forEach(function (k) { delete save[k]; }); Object.assign(save, freshSave(epoch)); }
 function queueSave() { clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 1200); }
 document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); }); window.addEventListener('pagehide', flushSave);
 function setCoins(d) { save.coins = Math.max(0, save.coins + d); hud(); queueSave(); }
@@ -168,7 +184,8 @@ function applyLedger(v) {
   let changed = false;
   keys.forEach(function (k) {
     if (k <= save.ledKey) return; save.ledKey = k; changed = true; const e = ledger[k]; if (!e || e.by === me.uid) return;
-    // the shared herd is gone: every farmer has their own animals, sales and XP, so old shared entries are skipped
+    // animals stay yours, but the money and XP from every collection go to everyone on the farm (older entries of other kinds are skipped)
+    if (e.k === 'an' && C.GOODS[e.i]) { addXp(+e.xp || 0); setCoins(+e.c || 0); say('🐔 ' + (e.n || 'A friend') + ' collected ' + C.GOODS[e.i].name.toLowerCase() + ' - you share it: +$' + (+e.c || 0) + ' and XP!'); }
   });
   if (changed) queueSave();
 }
@@ -180,6 +197,8 @@ function normalizeSave() {
   save.orders = save.orders || {}; { const od = save.orders.done; save.orders.done = (od && typeof od === 'object' && !Array.isArray(od)) ? od : {}; }
   save.daily = save.daily || { day: -1, base: {}, done: [] }; save.daily.base = save.daily.base || {}; save.daily.done = arr(save.daily.done);
   if (save.daily.list) { save.daily.list = arr(save.daily.list).filter(Boolean); if (!save.daily.list.length) delete save.daily.list; }
+  ['combine', 'trailer', 'haul'].forEach(function (k) { const v = save[k]; if (!v || typeof v !== 'object') { save[k] = null; return; } if (!v.grain || typeof v.grain !== 'object') v.grain = {}; });
+  save.epoch = save.epoch | 0;
 }
 function stat(k, n) { save.stats[k] = (save.stats[k] || 0) + (n || 1); }
 function hud() {
@@ -287,7 +306,8 @@ function nearestReadyAnimal() {
 function collect(id) {
   const a = animals[id]; if (!mineAnimal(a)) return; const def = C.ANIMALS[a.t];
   roomRef.child('animals/' + id + '/r').transaction(function (r) { return nowMs() >= (r || 0) ? nowMs() + def.every : undefined; }, function (e, ok) {
-    if (ok) { addItem(def.prod, 1); stat(def.stat || def.prod); addXp(C.XP_PRODUCT[def.prod]); say(C.GOODS[def.prod].icon + ' Collected ' + def.prod + ' — in your bag.'); } else say('Not ready yet.');
+    if (ok) { addItem(def.prod, 1); stat(def.stat || def.prod); addXp(C.XP_PRODUCT[def.prod]); say(C.GOODS[def.prod].icon + ' Collected ' + def.prod + ' — in your bag' + (isMP ? ' (everyone on the farm shares the money and XP)' : '') + '.');
+      if (isMP) pushLedger({ k: 'an', i: def.prod, xp: C.XP_PRODUCT[def.prod], c: C.priceOf(def.prod, today()) }); } else say('Not ready yet.');
   });
 }
 
@@ -297,7 +317,7 @@ let shopTab = 'seeds';
 function ownedCount() { return Math.max(1, myFieldCount()); }
 function addHtml(box, html) { box.insertAdjacentHTML('beforeend', html); }   // never use innerHTML += here: it rebuilds the buttons already added and silently drops their click handlers
 function commitShop(n, id) { const cur = $(id); if (cur.innerHTML !== n.innerHTML) { cur.innerHTML = ''; while (n.firstChild) cur.appendChild(n.firstChild); } }
-const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['store', '🧪 Store'], ['orders', '📋 Orders'], ['missions', '📜 Missions'], ['ach', '🏆 Achievements'], ['land', '🏞️ Land'], ['upgrades', '🚜 Tractor']];
+const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['store', '🧪 Store'], ['orders', '📋 Orders'], ['missions', '📜 Missions'], ['ach', '🏆 Achievements'], ['land', '🏞️ Land'], ['upgrades', '🚜 Tractor'], ['settings', '⚙️ Settings']];
 const nearShop = () => Math.hypot(player.x - W.SHOP_POS.x, player.z - W.SHOP_POS.z) < 6;
 const today = () => C.dayNumber(nowMs());
 function counts() { const c = {}; Object.keys(C.ANIMALS).forEach(function (k) { c[k] = 0; }); Object.keys(animals).forEach(function (id) { if (mineAnimal(animals[id]) && c[animals[id].t] !== undefined) c[animals[id].t]++; }); return c; }
@@ -306,7 +326,7 @@ function renderShop() {
   const tabs = document.createElement('div');
   TABS.forEach(function (t) { const b = document.createElement('button'); b.textContent = t[1]; b.className = t[0] === shopTab ? 'sel' : ''; b.onclick = function () { shopTab = t[0]; renderShop(); }; tabs.appendChild(b); });
   const box = document.createElement('div'), l = level(), d = today(); box.innerHTML = '<div class="item" style="border:0;padding-top:0"><div><b style="color:#fde68a">$' + save.coins + '</b> · Level <b>' + l + '</b></div></div>';
-  if (!nearShop() && shopTab !== 'seeds' && shopTab !== 'missions') addHtml(box, '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>');
+  if (!nearShop() && shopTab !== 'seeds' && shopTab !== 'missions' && shopTab !== 'settings') addHtml(box, '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>');
   const can = nearShop();
   if (shopTab === 'seeds') {
     addHtml(box, '<div class="item" style="border:0"><small>One pack plants many tiles. A one-field pack covers a whole field. Every kind of seed you own is spread evenly across each field: one kind = all of it, two = half and half, three = thirds.</small></div>');
@@ -366,7 +386,7 @@ function renderShop() {
     C.ACHIEVEMENTS.forEach(function (a) { const got = !!save.ach[a.id]; box.appendChild(row((got ? '✅ ' : '🔒 ') + a.icon + ' <b>' + a.name + '</b> <small>' + a.desc + '</small>', [])); });
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
-    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions, but on a multiplayer farm the money and XP from collecting animal products are shared with everyone). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
     daily.forEach(function (m, k) {
       const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
       box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward $' + m.coins + '</small>',
@@ -380,7 +400,7 @@ function renderShop() {
     });
   } else if (shopTab === 'land') {
     const mine = myFieldCount(), nl = nextLand();
-    addHtml(box, '<div class="item" style="border:0"><small>Every player works their own fields; other people can look but not touch. You own ' + mine + ' fields (' + visibleFields() + ' plots on the map; a new plot appears whenever fewer than 2 are for sale)' + (nl ? '. Your next field costs $' + nl.cost.toLocaleString() + ' (level ' + nl.level + ').' : '.') + ' Animals are the one thing shared by everyone on the farm.</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>Every player works their own fields; other people can look but not touch. You own ' + mine + ' fields (' + visibleFields() + ' plots on the map; a new plot appears whenever fewer than 2 are for sale)' + (nl ? '. Your next field costs $' + nl.cost.toLocaleString() + ' (level ' + nl.level + ').' : '.') + ' Animals are yours, but the money and XP from collecting their products are shared with everyone on a multiplayer farm.</small></div>');
     W.FIELDS.slice(0, visibleFields()).forEach(function (F, f) {
       const o = ownedFields[f];
       if (o) { box.appendChild(row((isMine(f) ? '🌾' : '👤') + ' <b>Field ' + (f + 1) + '</b> <small>' + (isMine(f) ? 'yours' : 'owned by ' + WW.esc(o.n || 'a friend')) + ' · 240 tiles</small>', [])); return; }
@@ -395,9 +415,15 @@ function renderShop() {
     Object.keys(C.UPGRADES).forEach(function (k) {
       const u = C.UPGRADES[k], has = save.up[k], pre = u.needs && !save.up[u.needs], lock = l < u.level || pre;
       box.appendChild(row('🚜 <b>' + u.name + '</b> <small>' + u.desc + (l < u.level ? ' · unlocks at level ' + u.level : pre ? ' · buy ' + C.UPGRADES[u.needs].name + ' first' : '') + '</small>',
-        [{ t: has ? '✅ Owned' : l < u.level ? '🔒 Lv ' + u.level : pre ? '🔒 Needs ' + C.UPGRADES[u.needs].name : '$' + u.cost, off: has || lock || !can || save.coins < u.cost, f: function () { setCoins(-u.cost); save.up[k] = 1; say(u.name + ' installed!'); applyImplement(); queueSave(); } }]));
+        [{ t: has ? '✅ Owned' : l < u.level ? '🔒 Lv ' + u.level : pre ? '🔒 Needs ' + C.UPGRADES[u.needs].name : '$' + u.cost, off: has || lock || !can || save.coins < u.cost, f: function () { setCoins(-u.cost); save.up[k] = 1; say(k === 'harvester' ? '🚜 Your combine harvester, trailer and truck are parked by your first field!' : u.name + ' installed!'); applyImplement(); if (k === 'harvester') ensureFleet(); queueSave(); } }]));
     });
-    addHtml(box, '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected. The Farm whistle also works on foot.</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected. The Farm whistle also works on foot.' + (save.up.harvester ? ' Combine harvester: harvest with it, park it next to the trailer to unload, then walk up to the trailer and send the truck to the grain elevator (+' + Math.round((C.HARVEST.elevatorBonus - 1) * 100) + '% over the barn price).' : '') + '</small></div>');
+  } else if (shopTab === 'settings') {
+    const cn = counts(), nAn = Object.keys(cn).reduce(function (a, k) { return a + cn[k]; }, 0);
+    addHtml(box, '<div class="item" style="border:0"><div><b>Your farm record</b><small>Level ' + l + ' · ' + Math.floor(save.xp) + ' xp · $' + save.coins + ' · ' + myFieldCount() + ' fields · ' + nAn + ' animals · ' + (save.harvested | 0) + ' crops harvested</small></div></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>Where it lives in Firebase: your private save is games_saves/&lt;your id&gt;/' + saveKey + '. A readable summary of every farmer (name, level, xp, coins, fields, animals) is in the farm room under farmers/&lt;id&gt;, together with their colour, picture and tractor.</small></div>');
+    if (hostIsMe) box.appendChild(row('🔄 <b>Reset the farm</b> <small>Wipes every field, crop and animal and sets <b>everyone</b> back to level 1 with $100 and the starter seeds (other farmers are reset the next time their game connects). This cannot be undone.</small>', [{ t: 'Reset everything', f: function () { hostReset(); } }]));
+    else addHtml(box, '<div class="item" style="border:0"><small>Only the farm host can reset the farm.</small></div>');
   }
   commitShop(tabs, 'shopTabs'); commitShop(box, 'shopItems');
 }
@@ -421,6 +447,105 @@ function claimable() {
   return any;
 }
 function reward(r, label) { setCoins(r.coins); say('📜 ' + label + ' complete! +$' + r.coins); }   // missions pay coins only: XP comes from harvesting and animals
+
+
+// ------------------------------------------------------------ harvest chain: combine harvester -> trailer -> truck -> grain elevator
+const HARVEST = C.HARVEST, HAUL_D = 7.7;
+const grainTotal = g => { let n = 0; Object.keys(g || {}).forEach(function (k) { n += g[k] | 0; }); return n; };
+function grainTop(g) { let best = '', bn = 0; Object.keys(g || {}).forEach(function (k) { if ((g[k] | 0) > bn) { bn = g[k] | 0; best = k; } }); return best; }
+const CROP_COLOR = { wheat: 0xe6c84a, carrot: 0xf08a24, corn: 0xf2d21b, potato: 0xb8895a, cabbage: 0x9ed67a, strawberry: 0xe0314b, tomato: 0xe53935, sunflower: 0xf6c615, pumpkin: 0xf08a1f, radish: 0xe0457b, onion: 0xf0dca0, eggplant: 0x5b2a86, watermelon: 0x7bc46a };
+const cropColor = id => CROP_COLOR[id] || 0xe6c84a;
+// the combine, trailer and truck come with the "Combine harvester" upgrade; they are parked by your first field
+function ensureFleet() {
+  if (!save.up.harvester || !scene) return; const f = Math.max(0, firstMyField());
+  if (!save.combine) { const p = W.parkCombine(f); save.combine = { x: p.x, z: p.z, ry: p.ry, grain: {} }; }
+  if (!save.trailer) { const p = W.parkTrailer(f); save.trailer = { x: p.x, z: p.z, ry: p.ry, grain: {} }; }
+  if (!combine) { combine = W.makeCombine(myColor ? parseInt(myColor.slice(1), 16) : undefined, HARVEST.swath * W.TILE - .4); scene.add(combine); }
+  if (!trailer) { trailer = W.makeTrailer(); scene.add(trailer); trailer.position.set(save.trailer.x, 0, save.trailer.z); trailer.rotation.y = save.trailer.ry; }
+  if (!truck) { truck = W.makeTruck(0x2b5fa8); scene.add(truck); }
+  queueSave();
+}
+const dist2 = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
+// --- harvesting with the combine: cuts the crops in front of the header into the grain tank
+let grainBurst = 0, grainBurstT = null;
+function combineAuto() {
+  const V = combineLocal, Cb = save.combine; if (!Cb || Math.abs(V.speed) < .5) return;
+  const fx = Math.sin(V.ry), fz = Math.cos(V.ry), rx = fz, rz = -fx, now = performance.now(), half = (HARVEST.swath - 1) / 2;
+  for (let s = -half; s <= half; s++) {
+    const x = V.x + fx * 4.6 + rx * s * W.TILE, z = V.z + fz * 4.6 + rz * s * W.TILE, i = tileAt(x, z);
+    if (i < 0 || (cool[i] || 0) > now) continue; cool[i] = now + 900;
+    if (!isMine(W.fieldOf(i))) continue; const cur = tiles[i]; if (!cur || cur.k !== 'c' || progress(cur) < 1) continue;
+    if (grainTotal(Cb.grain) >= HARVEST.tank) { if (!outWarn()) say('🌾 Grain tank full! Park next to your trailer to unload.'); return; }
+    roomRef.child('tiles/' + i).transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
+      if (!ok || !save.combine) return; const g = save.combine.grain; g[cur.c] = (g[cur.c] | 0) + 1;
+      if (save.up.combine && Math.random() < .25 && grainTotal(g) < HARVEST.tank) g[cur.c]++;
+      save.harvested++; stat('harvest'); addXp(C.XP_HARVEST); queueSave();
+      grainBurst++; clearTimeout(grainBurstT); grainBurstT = setTimeout(function () { say('🌾 Cut ' + grainBurst + ' · tank ' + grainTotal(save.combine && save.combine.grain) + '/' + HARVEST.tank); grainBurst = 0; }, 500);
+    });
+  }
+}
+// --- unloading: park the combine within reach of the trailer and the tank empties into it
+let unloadAcc = 0, unloadNote = 0;
+function combineUnload(dt) {
+  const Cb = save.combine, T = save.trailer; if (!Cb || !T || save.haul) return; const n = grainTotal(Cb.grain); if (!n) { unloadAcc = 0; return; }
+  if (dist2(combineLocal, T) > 9 || Math.abs(combineLocal.speed) > 2.5) return;
+  const space = HARVEST.trailer - grainTotal(T.grain); if (space < 1) { if (!outWarn()) say('The trailer is full. Send the truck to the elevator first.'); return; }
+  unloadAcc += dt * 70; let move = Math.min(Math.floor(unloadAcc), n, space); if (move < 1) return; unloadAcc -= move;
+  Object.keys(Cb.grain).forEach(function (k) { if (move < 1) return; const m = Math.min(move, Cb.grain[k] | 0); if (m < 1) return; T.grain[k] = (T.grain[k] | 0) + m; Cb.grain[k] -= m; if (Cb.grain[k] <= 0) delete Cb.grain[k]; move -= m; });
+  queueSave(); if (!grainTotal(Cb.grain) && performance.now() - unloadNote > 3000) { unloadNote = performance.now(); say('✅ Tank unloaded. Trailer: ' + grainTotal(T.grain) + '/' + HARVEST.trailer + '. Walk up to the trailer to send the truck.'); }
+}
+// --- the truck: depot -> trailer -> elevator (paid) -> trailer back -> depot. Saved as save.haul so it carries on after a reload.
+const pathLen = p => { let L = 0; for (let i = 1; i < p.length; i++) L += Math.hypot(p[i].x - p[i - 1].x, p[i].z - p[i - 1].z); return L; };
+function pathAt(p, d) {
+  for (let i = 1; i < p.length; i++) {
+    const l = Math.hypot(p[i].x - p[i - 1].x, p[i].z - p[i - 1].z), k = l ? Math.max(0, Math.min(1, d / l)) : 1;
+    if (d <= l || i === p.length - 1) return { x: p[i - 1].x + (p[i].x - p[i - 1].x) * k, z: p[i - 1].z + (p[i].z - p[i - 1].z) * k, ry: Math.atan2(p[i].x - p[i - 1].x, p[i].z - p[i - 1].z) };
+    d -= l;
+  }
+  return { x: p[0].x, z: p[0].z, ry: 0 };
+}
+let plan = null, planKey = -1;
+function buildPlan(h) {
+  const E = W.ELEVATOR_POS, H = W.TRUCK_HOME, T0 = { x: h.x, z: h.z }, Ty = { x: h.x, z: E.z }, segs = []; let t = 0, lastRy = H.ry;
+  const clean = a => a.filter(function (q, i) { return i === 0 || Math.hypot(q.x - a[i - 1].x, q.z - a[i - 1].z) > .05; });
+  function drive(p, v, tr) { p = clean(p); const L = pathLen(p), dur = Math.max(.05, L / v); segs.push({ t0: t, t1: t + dur, p: p, L: L, tr: tr }); t += dur; lastRy = p.length > 1 ? pathAt(p, L).ry : lastRy; }
+  function wait(sec, tr, at) { segs.push({ t0: t, t1: t + sec, p: null, at: at, ry: lastRy, tr: tr }); t += sec; }
+  drive([H, Ty, T0], HARVEST.emptySpeed, false); wait(1.5, false, T0);
+  drive([T0, Ty, E], HARVEST.carrySpeed, true); const payAt = t; wait(3, true, E);
+  drive([E, Ty, T0], HARVEST.emptySpeed, true); drive([T0, Ty, H], HARVEST.emptySpeed, false);
+  return { segs: segs, total: t, payAt: payAt };
+}
+function startHaul() {
+  const T = save.trailer; if (!T || save.haul) return; const n = grainTotal(T.grain); if (n < 1) { say('The trailer is empty.'); return; }
+  const day = today(); let value = 0; Object.keys(T.grain).forEach(function (k) { value += (T.grain[k] | 0) * C.priceOf(k, day); }); value = Math.round(value * HARVEST.elevatorBonus);
+  save.haul = { t0: nowMs(), grain: T.grain, n: n, value: value, x: T.x, z: T.z, paid: false }; T.grain = {}; stat('haul'); queueSave();
+  say('🚚 The truck is on its way to pick up ' + n + ' crops (about $' + value + ' at the elevator).');
+}
+function updateFleet(dt) {
+  if (!combine || !trailer || !truck) return; const Cb = save.combine, T = save.trailer, h = save.haul; if (!Cb || !T) return;
+  const drivingC = player.driving && player.veh === 'combine';
+  if (drivingC) { combine.position.set(combineLocal.x, 0, combineLocal.z); combine.rotation.y = combineLocal.ry; combine.userData.wheels.forEach(function (w) { w.rotation.x += combineLocal.speed * dt / 1.0; }); combine.userData.reel.rotation.x += dt * 4 * (.3 + Math.min(1, Math.abs(combineLocal.speed))); }
+  else { combine.position.set(Cb.x, 0, Cb.z); combine.rotation.y = Cb.ry; }
+  combine.userData.setFill(grainTotal(Cb.grain) / HARVEST.tank, cropColor(grainTop(Cb.grain)));
+  let tgt = { x: T.x, z: T.z, ry: T.ry }, frac = grainTotal(T.grain) / HARVEST.trailer, topCrop = grainTop(T.grain), tp = { x: W.TRUCK_HOME.x, z: W.TRUCK_HOME.z, ry: W.TRUCK_HOME.ry }, moving = false;
+  if (h) {
+    if (planKey !== h.t0) { plan = buildPlan(h); planKey = h.t0; }
+    const el = (nowMs() - h.t0) / 1000;
+    if (el >= plan.payAt && !h.paid) { h.paid = true; setCoins(h.value); stat('sell', h.n); say('🚚 The truck delivered ' + h.n + ' crops to the grain elevator: +$' + h.value + ' (elevator bonus included)!'); queueSave(); }
+    if (el >= plan.total) { save.haul = null; queueSave(); }
+    else {
+      let seg = plan.segs[plan.segs.length - 1]; for (let i = 0; i < plan.segs.length; i++) if (el < plan.segs[i].t1) { seg = plan.segs[i]; break; }
+      const u = Math.max(0, Math.min(1, (el - seg.t0) / (seg.t1 - seg.t0)));
+      tp = seg.p ? pathAt(seg.p, u * seg.L) : { x: seg.at.x, z: seg.at.z, ry: seg.ry }; moving = !!seg.p;
+      if (seg.tr) tgt = { x: tp.x - Math.sin(tp.ry) * HAUL_D, z: tp.z - Math.cos(tp.ry) * HAUL_D, ry: tp.ry };
+      topCrop = grainTop(h.grain); frac = (h.n / HARVEST.trailer) * (el < plan.payAt ? 1 : Math.max(0, 1 - (el - plan.payAt) / 3));
+    }
+  }
+  truck.position.set(tp.x, 0, tp.z); truck.rotation.y = tp.ry; if (moving) truck.userData.wheels.forEach(function (w) { w.rotation.x += dt * 9; });
+  const k = Math.min(1, dt * 5); trailer.position.x += (tgt.x - trailer.position.x) * k; trailer.position.z += (tgt.z - trailer.position.z) * k;
+  let da = tgt.ry - trailer.rotation.y; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; trailer.rotation.y += da * k;
+  trailer.userData.setFill(frac, cropColor(topCrop));
+}
 
 // ------------------------------------------------------------ toolbar
 const TOOLS = [{ id: 'hoe', label: '⛏️ Plow', color: 0x8a6a4a }, { id: 'cultivate', label: '🌿 Cultivate', color: 0xb98a52 }, { id: 'seed', label: '🌱 Plant', color: 0x6abf4b }, { id: 'water', label: '💧 Water', color: 0x4aa3ff }, { id: 'fert', label: '🧪 Fertilize', color: 0xc084fc }, { id: 'harvest', label: '🧺 Harvest', color: 0xf2c200 }];
@@ -481,10 +606,18 @@ function tileInfo(i) {
   return c.icon + ' ' + c.name + ' — ' + (t.u || t.f ? ' ' + (t.u ? '🌿' : '') + (t.f ? '🧪' : '') + ' ' : '') + (!t.w ? 'waiting for water or rain' : p >= 1 ? 'ready to harvest!' : Math.round(p * 100) + '% · ' + C.fmtTime(growOf(t) * (1 - p)) + ' left');
 }
 function context() {
+  if (player.driving && player.veh === 'combine') { const n = grainTotal(save.combine && save.combine.grain), nt = grainTotal(save.trailer && save.trailer.grain); return { kind: 'exit', text: 'Exit combine (E)', info: '🌾 Tank ' + n + '/' + HARVEST.tank + ' · trailer ' + nt + '/' + HARVEST.trailer + (n ? ' · park next to the trailer to unload' : ' · drive over ripe crops to harvest') }; }
   if (player.driving) return { kind: 'exit', text: 'Exit tractor (E)', info: toolLabel() + ' · ' + swath() + ' tiles wide' + (tool === 'seed' ? ' · ' + mixText() : '') };
   const id = nearestReadyAnimal(); if (id) return { kind: 'collect', id: id, text: 'Collect ' + C.ANIMALS[animals[id].t].prod + ' (E)' };
   if (nearShop()) return { kind: 'shop', text: 'Open the barn (E)', info: 'Buy seeds · sell goods · orders · upgrades' };
   if (Math.hypot(player.x - tractorState.x, player.z - tractorState.z) < 4) return { kind: 'drive', text: 'Drive your tractor (E)' };
+  if (combine && save.combine && dist2(player, save.combine) < 6) return { kind: 'driveC', text: 'Drive your combine harvester (E)', info: '🌾 Tank ' + grainTotal(save.combine.grain) + '/' + HARVEST.tank };
+  if (trailer && save.trailer && dist2(player, save.trailer) < 5.5) {
+    const n = grainTotal(save.trailer.grain);
+    if (save.haul) return { kind: 'info', text: '🚚 The truck is out with your load…' };
+    if (n > 0) { let v = 0; Object.keys(save.trailer.grain).forEach(function (k) { v += (save.trailer.grain[k] | 0) * C.priceOf(k, today()); }); return { kind: 'haul', text: 'Send the truck to the elevator (E)', info: n + ' crops · about $' + Math.round(v * HARVEST.elevatorBonus) + ' at the elevator' }; }
+    return { kind: 'info', text: 'Grain trailer', info: 'Empty. Drive the combine next to it to unload.' };
+  }
   const i = facingTile(); if (i >= 0) return { kind: 'tile', i: i, text: toolLabel() + ' (E)', info: tool === 'seed' ? mixText() + ' · ' + tileInfo(i) : tileInfo(i) };
   return null;
 }
@@ -493,12 +626,20 @@ function useAction() {
   if (c.kind === 'collect') collect(c.id);
   else if (c.kind === 'shop') openShop('seeds');
   else if (c.kind === 'tile') actTile(c.i, false);
+  else if (c.kind === 'haul') startHaul();
+  else if (c.kind === 'driveC') {
+    const Cb = save.combine; player.driving = true; player.veh = 'combine'; combineLocal.x = Cb.x; combineLocal.z = Cb.z; combineLocal.ry = Cb.ry; combineLocal.speed = 0; player.x = Cb.x; player.z = Cb.z; unloadAcc = 0;
+    say('Combine: drive over ripe crops to cut them into the tank, then park beside the trailer to unload.');
+  }
   else if (c.kind === 'drive') {
-    player.driving = true; tractorLocal.x = tractorState.x; tractorLocal.z = tractorState.z; tractorLocal.ry = tractorState.ry; tractorLocal.speed = 0; player.x = tractorLocal.x; player.z = tractorLocal.z;
+    player.driving = true; player.veh = 'tractor'; tractorLocal.x = tractorState.x; tractorLocal.z = tractorState.z; tractorLocal.ry = tractorState.ry; tractorLocal.speed = 0; player.x = tractorLocal.x; player.z = tractorLocal.z;
     say('Tractor: your tool works on ' + swath() + ' tiles at once. W/S drive, A/D steer.'); applyImplement();
+  } else if (c.kind === 'exit' && player.veh === 'combine') {
+    player.driving = false; combineLocal.speed = 0; player.x = combineLocal.x + Math.cos(combineLocal.ry) * 4.6; player.z = combineLocal.z - Math.sin(combineLocal.ry) * 4.6;
+    save.combine.x = +combineLocal.x.toFixed(2); save.combine.z = +combineLocal.z.toFixed(2); save.combine.ry = +combineLocal.ry.toFixed(3); queueSave();
   } else if (c.kind === 'exit') {
     player.driving = false; tractorLocal.speed = 0; player.x = tractorLocal.x + Math.cos(tractorLocal.ry) * 2.8; player.z = tractorLocal.z - Math.sin(tractorLocal.ry) * 2.8;
-    tractorState = { x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }; roomRef.child('tractors/' + me.uid).set(tractorState);
+    tractorState = { x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }; roomRef.child('farmers/' + me.uid + '/tractor').set(tractorState);
   }
 }
 
@@ -589,6 +730,7 @@ function drawMini() {
   [[W.CHICKEN_PEN, '#c9a45c'], [W.COW_PASTURE, '#5f9a45']].forEach(function (pn) { const p = pn[0]; g.fillStyle = pn[1]; g.globalAlpha = .75; g.fillRect(X(p.x0), Z(p.z0), (p.x1 - p.x0) * k, (p.z1 - p.z0) * k); g.globalAlpha = 1; });
   g.fillStyle = '#c0392b'; g.fillRect(X(W.SHOP_POS.x) - 4, Z(W.SHOP_POS.z) - 4, 8, 8);
   g.fillStyle = '#facc15'; g.fillRect(X(tractorState.x) - 3, Z(tractorState.z) - 3, 6, 6);
+  if (combine && save.combine) { g.fillStyle = '#fb923c'; g.fillRect(X(save.combine.x) - 3, Z(save.combine.z) - 3, 6, 6); g.fillStyle = '#a16207'; g.fillRect(X(save.trailer.x) - 3, Z(save.trailer.z) - 3, 6, 6); }
   Object.keys(remote).forEach(function (u) { const m = remote[u].mesh; if (!m || !m.visible) return; g.fillStyle = '#60a5fa'; g.beginPath(); g.arc(X(m.position.x), Z(m.position.z), 3, 0, 7); g.fill(); });
   const now = nowMs(); let best = null, bd = 1e9;
   Object.keys(animalViews).forEach(function (id) {
@@ -611,36 +753,72 @@ function loop(ts) {
   const dt = Math.min(.05, (ts - last) / 1000); last = ts;
   let ix = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0) + joy.x, iz = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y;
   const mag = Math.hypot(ix, iz); if (mag > 1) { ix /= mag; iz /= mag; }
+  const jm = Math.hypot(joy.x, joy.y), comb = player.veh === 'combine', V = player.driving ? (comb ? combineLocal : tractorLocal) : null;
   if (player.driving) {
-    const T = tractorLocal, top = 9 * (save.up.fast ? 1.3 : 1) * (save.up.nitro ? 1.25 : 1); T.speed += (iz * top - T.speed) * Math.min(1, dt * 2.2);
-    T.ry -= ix * dt * 1.5 * Math.max(-1, Math.min(1, T.speed / 3)); T.x += Math.sin(T.ry) * T.speed * dt; T.z += Math.cos(T.ry) * T.speed * dt;
-    const p = { x: T.x, z: T.z }; collide(p, 2); T.x = p.x; T.z = p.z; player.x = T.x; player.z = T.z; player.ry = T.ry; player.speed = Math.abs(T.speed); tractorAuto();
+    const top = comb ? HARVEST.top : 9 * (save.up.fast ? 1.3 : 1) * (save.up.nitro ? 1.25 : 1);
+    if (jm > .12) {
+      // touch stick: push the way you want to go, as seen on screen. The vehicle turns toward that direction and drives, so left is always left.
+      const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw), sx = joy.x, sz = -joy.y, dx = fx * sz + rx * sx, dz = fz * sz + rz * sx;
+      let diff = Math.atan2(dx, dz) - V.ry; while (diff > Math.PI) diff -= 2 * Math.PI; while (diff < -Math.PI) diff += 2 * Math.PI;
+      const turn = 2.3 * dt; V.ry += Math.max(-turn, Math.min(turn, diff));
+      const want = top * Math.min(1, jm) * Math.max(0, Math.cos(diff)); V.speed += (want - V.speed) * Math.min(1, dt * 2.2);
+    } else {
+      // keyboard: W/S drive, A/D steer (screen-consistent: D always turns the nose to the right, also when backing up)
+      const kx = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0), kz = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0);
+      V.speed += (kz * top - V.speed) * Math.min(1, dt * 2.2); V.ry -= kx * dt * 1.5 * Math.max(.25, Math.min(1, Math.abs(V.speed) / 3)) * (Math.abs(V.speed) < .15 ? 0 : 1);
+    }
+    V.x += Math.sin(V.ry) * V.speed * dt; V.z += Math.cos(V.ry) * V.speed * dt;
+    const p = { x: V.x, z: V.z }; collide(p, comb ? 3 : 2); V.x = p.x; V.z = p.z; player.x = V.x; player.z = V.z; player.ry = V.ry; player.speed = Math.abs(V.speed);
+    if (comb) { combineAuto(); combineUnload(dt); } else tractorAuto();
   } else if (mag > .08) {
     const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw), dx = fx * iz + rx * ix, dz = fz * iz + rz * ix, m = Math.hypot(dx, dz) || 1, sp = 6.2 * Math.min(1, mag);
     player.x += dx / m * sp * dt; player.z += dz / m * sp * dt; const p = { x: player.x, z: player.z }; collide(p, .6); player.x = p.x; player.z = p.z;
     let da = Math.atan2(dx, dz) - player.ry; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; player.ry += da * Math.min(1, dt * 14); player.speed = sp;
   } else player.speed = 0;
+  mini.style.display = player.driving ? 'none' : '';      // the minimap is only for when you are out of the vehicle
   farmer.visible = !player.driving; farmer.position.set(player.x, 0, player.z); farmer.rotation.y = player.ry; W.animateFarmer(farmer, player.speed, dt);
-  if (player.driving) { tractor.position.set(tractorLocal.x, 0, tractorLocal.z); tractor.rotation.y = tractorLocal.ry; }
+  if (player.driving && !comb) { tractor.position.set(tractorLocal.x, 0, tractorLocal.z); tractor.rotation.y = tractorLocal.ry; }
   else { tractor.position.set(tractorState.x, 0, tractorState.z); tractor.rotation.y = tractorState.ry || 0; }
-  const spin = (player.driving ? tractorLocal.speed : 0) * dt / .9; tractor.userData.wheels.forEach(function (w) { w.rotation.x += spin; });
+  const spin = (player.driving && !comb ? tractorLocal.speed : 0) * dt / .9; tractor.userData.wheels.forEach(function (w) { w.rotation.x += spin; });
+  updateFleet(dt);
   world.clouds.position.x += dt * .6; if (world.clouds.position.x > 140) world.clouds.position.x = -140;
-  // chase camera: swing behind the farmer (or tractor) whenever they move forward or sideways; dragging overrides for a moment
-  const heading = (player.driving ? Math.abs(tractorLocal.speed) > .4 : (player.speed > .5 && (iz > .1 || Math.abs(ix) > .35)));
+  // chase camera: swing behind the farmer or vehicle, but only when going forward (a sideways push never spins the view, so left stays left)
+  const heading = player.driving ? (jm > .12 ? (-joy.y > .45 && Math.abs(V.speed) > .4) : Math.abs(V.speed) > .4) : (player.speed > .5 && iz > .35);
   if (heading && performance.now() - lastDragAt > 1200) { let da = player.ry + Math.PI - yaw; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; yaw += da * Math.min(1, dt * (player.driving ? 4 : 2.4)); }
-  const ty = player.driving ? 2.2 : 1.7, d = player.driving ? dist * 1.3 : dist;
+  const ty = player.driving ? (comb ? 3 : 2.2) : 1.7, d = player.driving ? dist * (comb ? 1.6 : 1.3) : dist;
   camX += (player.x - camX) * Math.min(1, dt * 8); camZ += (player.z - camZ) * Math.min(1, dt * 8);
   camera.position.set(camX + Math.sin(yaw) * Math.cos(pitch) * d, ty + Math.sin(pitch) * d, camZ + Math.cos(yaw) * Math.cos(pitch) * d); camera.lookAt(camX, ty, camZ);
   const c = me && context(); $('prompt').innerHTML = c ? '<span>' + c.text + (c.info ? '<small>' + c.info + '</small>' : '') + '</span>' : '';
-  $('useBtn').textContent = c ? (c.kind === 'tile' ? 'Use' : c.kind === 'exit' ? 'Exit' : c.kind === 'drive' ? 'Drive' : c.kind === 'shop' ? 'Barn' : 'Collect') : 'Use';
+  $('useBtn').textContent = c ? ({ tile: 'Use', exit: 'Exit', drive: 'Drive', driveC: 'Drive', shop: 'Barn', haul: 'Send', info: 'Use', collect: 'Collect' }[c.kind] || 'Use') : 'Use';
   if (c && c.kind === 'tile') { const p = tilePos(c.i); pointer.position.set(p.x, .26, p.z); pointer.visible = true; } else pointer.visible = false;
   updateDomBadges(); updateRain(dt, isRaining()); updateSky(); updateAnimals(dt); updateRemotes(dt);
   mmT += dt; if (mmT > .12) { mmT = 0; drawMini(); }
   slow += dt; if (slow > .5) { slow = 0; refreshField(); renderPeers(); }
   const now = performance.now();
   if (roomRef && me && now - lastSent > 100 && (player.speed > .1 || now - lastBeat > 8000)) { lastSent = lastBeat = now; roomRef.child('players/' + me.uid).set({ n: myName, x: +player.x.toFixed(2), z: +player.z.toFixed(2), r: +player.ry.toFixed(2), v: player.driving ? 1 : 0, h: +myHue.toFixed(2), lv: level(), tx: +(player.driving ? tractorLocal.x : tractorState.x).toFixed(1), tz: +(player.driving ? tractorLocal.z : tractorState.z).toFixed(1), tr: +(player.driving ? tractorLocal.ry : tractorState.ry).toFixed(2), t: firebase.database.ServerValue.TIMESTAMP }); }
-  if (player.driving && now - lastTrk > 1500) { lastTrk = now; roomRef.child('tractors/' + me.uid).set({ x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }); }
+  if (player.driving && player.veh === 'tractor' && now - lastTrk > 1500) { lastTrk = now; roomRef.child('farmers/' + me.uid + '/tractor').set({ x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }); }
   renderer.render(scene, camera); requestAnimationFrame(loop);
+}
+
+
+// ------------------------------------------------------------ reset: the host can send the whole farm (and everybody's progress) back to level 1
+let resetting = false;
+async function hostReset() {
+  if (!hostIsMe || !roomRef || resetting) return;
+  if (!confirm('Reset the whole farm? Every field, crop and animal is wiped and EVERYONE goes back to level 1 with $100. This cannot be undone.')) return;
+  if (!confirm('Last chance: really reset everything?')) return;
+  resetting = true; const e = nowMs();
+  try {
+    resetSaveObject(e); await persistNow();
+    await roomRef.update({ tiles: null, fields: null, animals: null, ledger: null, tractors: null, avatars: null, colors: null, farmers: null, 'meta/epoch': e });
+    location.reload();
+  } catch (err) { resetting = false; say('Reset failed: ' + ((err && err.message) || err)); }
+}
+// another farmer reset the farm: start over too (your own save is private, so each game resets its own)
+function followReset(e) {
+  if (resetting || e <= (save.epoch | 0)) return; resetting = true;
+  say('🔄 The host reset the farm. Starting again at level 1…'); resetSaveObject(e);
+  persistNow().then(function () { setTimeout(function () { location.reload(); }, 1200); }).catch(function () { resetting = false; });
 }
 
 // ------------------------------------------------------------ start / join
@@ -673,7 +851,7 @@ async function begin(user, myCode) {
         const others = Object.keys(live).filter(function (u) { return u !== user.uid && nowT - ((live[u] && live[u].t) || 0) < 45000; }).length;
         if (others >= 8) { gate('This farm is full (8 players). Try again in a minute, or start your own from the hub.', { back: true }); return; }
       }
-      hostName = meta.host || ''; me = user; cloudCode = hostCode || myCode; hostIsMe = !isMP || hostCode === myCode;
+      hostName = meta.host || ''; roomEpoch = (meta.epoch | 0); me = user; cloudCode = hostCode || myCode; hostIsMe = !isMP || hostCode === myCode;
       $('roomLabel').textContent = isMP ? 'Multiplayer · ' + (hostName ? hostName + '\u2019s farm' : hostCode) : 'Solo farm';
     } catch (e) { console.warn(e); gate('Your online farm could not be opened (' + (e.code || e.message || 'permission denied') + '). The game database rules need to be published in Firebase — nothing is saved to this device while you are signed in.', { back: true }); return; }
   } else {
@@ -685,22 +863,34 @@ async function begin(user, myCode) {
     const s = await WW.loadSave(saveKey);   // solo and every multiplayer farm each have their own progress, starting fresh
     if (s) { save.coins = s.coins | 0; save.xp = +s.xp || 0; save.seeds = s.seeds || { wheat: 0 }; save.bag = s.bag || {}; save.up = s.up || {}; save.orders = s.orders || { day: -1, done: [] }; save.harvested = s.harvested | 0;
       // legacy saves (before levels) kept only coins
-      if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.fert = s.fert | 0; save.ach = s.ach || {}; save.skip = s.skip || {}; save.stats = s.stats || {}; save.daily = s.daily || { day: -1, base: {}, done: [] }; save.ms = s.ms || {}; if (s.ledKey) save.ledKey = s.ledKey; }
+      if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.fert = s.fert | 0; save.ach = s.ach || {}; save.skip = s.skip || {}; save.stats = s.stats || {}; save.daily = s.daily || { day: -1, base: {}, done: [] }; save.ms = s.ms || {}; if (s.ledKey) save.ledKey = s.ledKey; save.combine = s.combine || null; save.trailer = s.trailer || null; save.haul = s.haul || null; save.epoch = s.epoch | 0; }
     normalizeSave();
+    if ((save.epoch | 0) < roomEpoch) { resetSaveObject(roomEpoch); await persistNow(); }      // the host reset this farm while you were away: you start again at level 1
   } catch (e) { console.warn(e); gate('Your saved progress could not be loaded (' + (e.code || e.message) + '). Nothing was changed.', { back: true }); return; }
   if (user) {
     try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; }
     try { const pc = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/primary_color').once('value')).val(); if (hexOk(pc)) myColor = pc.trim(); } catch (e) {}
   }
-  giveLevel(farmer, level, myName); if (myAvatar) { W.setAvatar(farmer, myAvatar); roomRef.child('avatars/' + me.uid).set(myAvatar); }
-  if (myColor) { paintTractor(parseInt(myColor.slice(1), 16)); roomRef.child('colors/' + me.uid).set(myColor); }
+  giveLevel(farmer, level, myName); if (myAvatar) W.setAvatar(farmer, myAvatar);
+  if (myColor) paintTractor(parseInt(myColor.slice(1), 16));
   // fields first (so we know which one is ours), then everything else
   ownedFields = (await roomRef.child('fields').once('value')).val() || {}; await autoClaim(); checkAchievements(true);
-  try { const t = (await roomRef.child('tractors/' + me.uid).once('value')).val(); if (t && t.x !== undefined) tractorState = { x: t.x, z: t.z, ry: t.ry || 0 }; else { const ff = firstMyField(), pk = W.parkFor(ff < 0 ? 0 : ff); tractorState = { x: pk.x, z: pk.z, ry: pk.ry }; roomRef.child('tractors/' + me.uid).set(tractorState); } } catch (e) {}
+  try {
+    // tidy layout: avatar, colour and tractor live in farmers/{uid} (older farms kept them in avatars/, colors/ and tractors/; those get moved over here)
+    let t = (await roomRef.child('farmers/' + me.uid + '/tractor').once('value')).val();
+    if (!t) { t = (await roomRef.child('tractors/' + me.uid).once('value')).val(); }
+    if (t && t.x !== undefined) tractorState = { x: t.x, z: t.z, ry: t.ry || 0 }; else { const ff = firstMyField(), pk = W.parkFor(ff < 0 ? 0 : ff); tractorState = { x: pk.x, z: pk.z, ry: pk.ry }; }
+    pushFarmer({ avatar: myAvatar || null, color: myColor || null, tractor: tractorState });
+    ['avatars', 'colors', 'tractors'].forEach(function (n) { roomRef.child(n + '/' + me.uid).remove().catch(function () {}); });
+  } catch (e) { console.warn(e); }
   const ff0 = firstMyField(); if (ff0 >= 0) { const p0 = W.tilePos(ff0 * C.FIELD_TILES + 10); player.x = p0.x; player.z = W.FIELDS[ff0].z0 - 2; }
-  normalizeSave(); hud(); buildSeedBar(); applyImplement();
-  roomRef.child('avatars').on('value', function (snap) { avatars = snap.val() || {}; syncRemotes(); });
-  roomRef.child('colors').on('value', function (snap) { colors = snap.val() || {}; syncRemotes(); });
+  normalizeSave(); hud(); buildSeedBar(); applyImplement(); ensureFleet();
+  let legacyAv = {}, legacyCol = {}, farmers = {};
+  const mergeFarmers = function () { avatars = Object.assign({}, legacyAv); colors = Object.assign({}, legacyCol); Object.keys(farmers).forEach(function (u) { const f = farmers[u] || {}; if (f.avatar) avatars[u] = f.avatar; if (f.color) colors[u] = f.color; }); syncRemotes(); };
+  roomRef.child('avatars').on('value', function (snap) { legacyAv = snap.val() || {}; mergeFarmers(); });
+  roomRef.child('colors').on('value', function (snap) { legacyCol = snap.val() || {}; mergeFarmers(); });
+  roomRef.child('farmers').on('value', function (snap) { farmers = snap.val() || {}; mergeFarmers(); });
+  roomRef.child('meta/epoch').on('value', function (snap) { const e = snap.val() | 0; if (e > (save.epoch | 0)) followReset(e); });
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); refreshField(); });
   roomRef.child('fields').on('value', function (snap) { ownedFields = snap.val() || {}; updateFieldVisuals(); });
   roomRef.child('animals').on('value', function (snap) { animals = snap.val() || {}; syncAnimals(); });
@@ -733,4 +923,4 @@ WW.onReady(function (user, code) {
   started = true; startedAsUser = !!user;
   begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), { back: true }); });
 });
-window.__farm = { hud: hud, isMP: function () { return isMP; }, applyLedger: applyLedger, get colors() { return colors; }, myFieldCount: myFieldCount, ownerOf: ownerOf, get tractorState() { return tractorState; }, renderPeers: renderPeers, level: level, tractorColor: function () { return tractor.children[0].material.color.getHex(); }, actTile: actTile, player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSkip: function (id, v) { if (v) save.skip[id] = 1; else delete save.skip[id]; buildSeedBar(); }, cropForTile: cropForTile, plantables: plantables, get yaw() { return yaw; }, setCam: function (y, p, d) { yaw = y; pitch = p; dist = d; lastDragAt = performance.now() + 60000; }, refreshField: refreshField, ownedFields: function () { return ownedFields; }, get avatars() { return avatars; }, get avatarOn() { return !!farmer.userData.avatar && !!farmer.userData.badge; }, faceCamera: function () { player.ry = yaw; } };
+window.__farm = { fleet: function () { return { combine: combine, trailer: trailer, truck: truck }; }, combineLocal: combineLocal, ensureFleet: ensureFleet, startHaul: startHaul, grainTotal: grainTotal, hud: hud, isMP: function () { return isMP; }, applyLedger: applyLedger, get colors() { return colors; }, myFieldCount: myFieldCount, ownerOf: ownerOf, get tractorState() { return tractorState; }, renderPeers: renderPeers, level: level, tractorColor: function () { return tractor.children[0].material.color.getHex(); }, actTile: actTile, player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSkip: function (id, v) { if (v) save.skip[id] = 1; else delete save.skip[id]; buildSeedBar(); }, cropForTile: cropForTile, plantables: plantables, get yaw() { return yaw; }, setCam: function (y, p, d) { yaw = y; pitch = p; dist = d; lastDragAt = performance.now() + 60000; }, refreshField: refreshField, ownedFields: function () { return ownedFields; }, get avatars() { return avatars; }, get avatarOn() { return !!farmer.userData.avatar && !!farmer.userData.badge; }, faceCamera: function () { player.ry = yaw; } };

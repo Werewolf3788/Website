@@ -29,6 +29,11 @@
   #dice{display:flex;align-items:center;gap:10px;margin:10px 0;min-height:58px}
   .die{width:58px;height:58px;border-radius:13px;background:#f8fafc;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px;gap:2px;border:0;flex:none;box-shadow:0 3px 0 #94a3b8}
   .die i{border-radius:50%;background:transparent} .die i.on{background:#0f172a}
+  .die.sd{background:#2563eb;box-shadow:0 3px 0 #1e3a8a;display:flex;align-items:center;justify-content:center;font-size:30px;line-height:1;color:#fff;padding:0}
+  .die.sd.pips{display:grid;padding:8px} .die.sd.pips i.on{background:#fff}
+  .die.sd.off{opacity:.35}
+  #sdnote{font-size:.78rem;color:#93c5fd;min-height:1em}
+  @media(max-width:420px){.die{width:48px;height:48px;padding:6px}.die.sd{font-size:24px}#dice{gap:6px}}
   .die.throw{animation:throw .55s ease-out}
   @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-22px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}100%{transform:translateY(0) rotate(720deg)}}
   #msg{color:#fbbf24;font-size:.9rem;line-height:1.25;max-height:58px;overflow:hidden;flex:1}
@@ -102,7 +107,8 @@
     <div id="play">
       <div id="banner" style="display:none"></div>
       <div id="turn"></div>
-      <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><div id="msg"></div></div>
+      <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><button class="die sd off" id="d3" aria-label="Speed die" title="Speed die"></button><div id="msg"></div></div>
+      <div id="sdnote"></div>
       <div id="acts"></div>
       <div id="buildList"></div>
     </div>
@@ -121,7 +127,7 @@
     </div>
     <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
     <div id="log"></div>
-    <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 4 houses and then an apartment once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, your houses are sold and properties mortgaged automatically before you go bankrupt. Doubles roll again; three doubles go to jail. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
+    <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 3 houses and then a hotel once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, your houses are sold and properties mortgaged automatically before you go bankrupt. The blue Speed Die joins your two white dice once you have passed or landed on Start: 1, 2 or 3 is added to your move; Mr. Monopoly moves you on again to the next property nobody owns (or, if everything is owned, to the next one an opponent owns, and you pay rent); the Bus lets you move just the first white die, just the second, or both added together; and three of a kind (1-1-1, 2-2-2 or 3-3-3) lets you jump to any space on the board. Only the white dice count as doubles and the Speed Die is not used while you are in jail. Doubles roll again, but a second set of doubles in a row goes to jail. When you land on a Surprise or Community Fund space you can follow the card or ignore it. In jail you can pay $50 bail or try for doubles. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
   </div>
 </div>
 <div id="tradeDlg"><div id="tradeBox"></div></div>
@@ -176,8 +182,14 @@
     { t: 'rail', n: 'West Station', p: 200, i: '🚉' }, { t: 'chance', n: 'Surprise', i: '❓' },
     P('Skyline Drive', BL, 'blue', 350, 35), { t: 'tax', n: 'Luxury Tax', p: 100, i: '💎' }, P('Royal Park', BL, 'blue', 400, 50)
   ];
-  // Rent as a share of the price: [no houses, full colour set, 1 house, 2, 3, 4 houses, apartment]. Unimproved rent is never below 25% of the price.
-  var LV = [0.25, 0.4, 0.6, 0.9, 1.25, 1.6, 2.2];
+  // Rent as a share of the price: no houses, full colour set, then each house level and the hotel. Unimproved rent is never below 25% of the price.
+  var LV = [0.25, 0.4];                       // [no houses, full colour set]
+  var HOUSE_RENT = [0.6, 0.9, 1.25, 1.6];     // 1, 2, 3, 4 houses
+  var HOTEL_RENT = 2.2;
+  var HOTEL = 4;                              // build level that is a hotel: 4 = three houses, then a hotel (set to 5 for four houses, then a hotel)
+  var DOUBLES_JAIL = 2;                       // this many doubles in a row go to jail (2 = the second set of doubles)
+  var SPEED_FACES = [1, 2, 3, 4, 5, 5];       // speed die: 1, 2, 3, 4 = Bus, 5 = Mr. Monopoly (two faces)
+  function lvMult(h) { return h >= HOTEL ? HOTEL_RENT : HOUSE_RENT[h - 1]; }
   var RAIL_RENT = [50, 100, 150, 200];
   var SURPRISE = [
     { k: 'move', to: 0, x: 'Advance to Start and collect $200.' }, { k: 'move', to: 5, x: 'Take a trip to North Station.' },
@@ -212,6 +224,7 @@
       if (Array.isArray(v)) { var o = {}; v.forEach(function (x, i) { if (x !== null && x !== undefined) o[i] = x; }); s[k] = o; }
     });
     if (!s.log) s.log = [];
+    Object.keys(s.hs).forEach(function (k) { if (s.hs[k] > HOTEL) s.hs[k] = HOTEL; });
   }
   function countOwned(s, p, t) { var n = 0; SP.forEach(function (sp, i) { if (sp.t === t && ownerOf(s, i) === p) n++; }); return n; }
   function ownsSet(s, p, g) { return group(g).every(function (j) { return ownerOf(s, j) === p; }); }
@@ -225,7 +238,7 @@
     var sp = SP[i], o = ownerOf(s, i), base, h;
     if (sp.t === 'rail') base = RAIL_RENT[Math.min(3, countOwned(s, o, 'rail') - 1)];
     else if (sp.t === 'util') base = Math.max(Math.ceil(sp.p * 0.25), (countOwned(s, o, 'util') === 2 ? 12 : 5) * sum);
-    else { h = housesOf(s, i); base = sp.p * (h > 0 ? LV[h + 1] : (ownsSet(s, o, sp.g) ? LV[1] : LV[0])); }
+    else { h = housesOf(s, i); base = sp.p * (h > 0 ? lvMult(h) : (ownsSet(s, o, sp.g) ? LV[1] : LV[0])); }
     return Math.round(base * rentMult(s));
   }
   function sellHouses(s, p, target) {
@@ -266,19 +279,47 @@
     var old = s.turn;
     for (var k = 1; k <= 4; k++) { var n = (s.turn + k) % 4; var q = plOf(s, n); if (seatOf(s, n) && q && !q.bankrupt) { s.turn = n; break; } }
     if (s.turn <= old) s.rd = (s.rd | 0) + 1;
-    s.phase = 'roll'; s.dc = 0; s.again = false; s.pend = -1; delete s.trade; delete s.au;
+    s.phase = 'roll'; s.dc = 0; s.again = false; s.pend = -1; s.mr = 0; delete s.trade; delete s.au; delete s.card; delete s.bus;
   }
   function fin(s) {
-    if (s.status === 'done') return;
+    if (s.status === 'done') { if (s.phase === 'move') s.phase = 'end'; return; }
     var q = plOf(s, s.turn);
     if (q.bankrupt) { advance(s); return; }
+    if (s.mr) {      // Mr. Monopoly: the extra move happens once the first space is completely finished (bought, auctioned, paid)
+      s.mr = 0;
+      if (q.jail === 0) {
+        s.phase = 'move'; s.pend = -1;
+        mrMove(s);
+        if (s.status === 'done') { if (s.phase === 'move') s.phase = 'end'; return; }
+        q = plOf(s, s.turn);
+        if (q.bankrupt) { advance(s); return; }
+        if (s.phase === 'buy' || s.phase === 'auction' || s.phase === 'card') return;
+      }
+    }
     s.pend = -1; s.phase = (s.again && q.jail === 0) ? 'roll' : 'end';
   }
+  // after a move has been resolved: carry on unless the player still has to decide something (buy, auction, card)
+  function settle(s) {
+    if (s.status === 'done') { if (s.phase === 'move') s.phase = 'end'; return; }
+    if (s.phase === 'buy' || s.phase === 'auction' || s.phase === 'card') return;
+    fin(s);
+  }
   function toJail(s, p) { var q = plOf(s, p); q.pos = 10; q.jail = 1; s.again = false; addLog(s, NAMES[p] + ' goes to jail.'); }
-  function moveBy(s, p, sum, cr) {
-    var q = plOf(s, p), np = (q.pos + sum) % 40;
-    if (np < q.pos) { q.cash += 200; addLog(s, NAMES[p] + ' passes Start: +$200'); }
+  function moveBy(s, p, sum, cr) { moveTo(s, p, (plOf(s, p).pos + sum) % 40, sum, cr); }
+  function moveTo(s, p, np, sum, cr) {
+    var q = plOf(s, p);
+    if (np < q.pos) { q.cash += 200; q.sp = 1; addLog(s, NAMES[p] + ' passes Start: +$200' + (q.sp && !q.spSeen ? ' · ⚡ Speed die unlocked!' : '')); q.spSeen = 1; }
     q.pos = np; land(s, p, sum, cr, false);
+  }
+  // Mr. Monopoly: on to the next property nobody owns; if everything is owned, the next one an opponent owns (rent is due)
+  function mrMove(s) {
+    var p = s.turn, q = plOf(s, p), sum = ((s.dice || [0, 0])[0] | 0) + ((s.dice || [0, 0])[1] | 0), t = -1, k, i;
+    function isProp(j) { var x = SP[j].t; return x === 'prop' || x === 'rail' || x === 'util'; }
+    for (k = 1; k < 40 && t < 0; k++) { i = (q.pos + k) % 40; if (isProp(i) && ownerOf(s, i) < 0) t = i; }
+    for (k = 1; k < 40 && t < 0; k++) { i = (q.pos + k) % 40; if (isProp(i) && ownerOf(s, i) >= 0 && ownerOf(s, i) !== p && !mgOf(s, i)) t = i; }
+    if (t < 0) { addLog(s, '🎩 Mr. Monopoly has nowhere to send ' + NAMES[p] + '.'); return; }
+    addLog(s, '🎩 Mr. Monopoly moves ' + NAMES[p] + ' on to ' + SP[t].n + '.');
+    moveTo(s, p, t, sum, s.cr | 0);
   }
   function land(s, p, sum, cr, nocard) {
     var q = plOf(s, p), sp = SP[q.pos], nm = NAMES[p];
@@ -300,18 +341,45 @@
     else if ((sp.t === 'chance' || sp.t === 'chest') && !nocard) {
       var deck = sp.t === 'chance' ? SURPRISE : FUND, c = deck[cr % 12];
       addLog(s, nm + ' - ' + (sp.t === 'chance' ? 'Surprise: ' : 'Community Fund: ') + c.x);
-      if (c.k === 'gain') q.cash += c.v;
-      else if (c.k === 'pay') pay(s, p, -1, c.v);
-      else if (c.k === 'jail') toJail(s, p);
-      else if (c.k === 'move') { if (c.to < q.pos) { q.cash += 200; } q.pos = c.to; land(s, p, 7, cr, true); }
-      else if (c.k === 'back') { q.pos = (q.pos + 37) % 40; land(s, p, 7, cr, true); }
-      else if (c.k === 'collect') alive(s).forEach(function (o2) { if (o2 !== p) { var amt = Math.min(c.v, plOf(s, o2).cash); plOf(s, o2).cash -= amt; q.cash += amt; } });
-      else if (c.k === 'payall') alive(s).forEach(function (o2) { if (o2 !== p && !q.bankrupt) pay(s, p, o2, c.v); });
+      s.phase = 'card'; s.card = { k: c.k, v: c.v | 0, to: c.to === undefined ? -1 : c.to, x: c.x, d: sp.t === 'chance' ? 'Surprise' : 'Community Fund' };   // the player decides: follow it or ignore it
     }
   }
-  function doRoll(s, r1, r2, cr) {
-    var p = s.turn, q = plOf(s, p), dbl = r1 === r2, sum = r1 + r2;
-    s.dice = [r1, r2]; s.again = false;
+  function applyCard(s, p, c, cr) {
+    var q = plOf(s, p);
+    if (c.k === 'gain') q.cash += c.v;
+    else if (c.k === 'pay') pay(s, p, -1, c.v);
+    else if (c.k === 'jail') toJail(s, p);
+    else if (c.k === 'move') { if (c.to < q.pos || c.to === 0) { q.cash += 200; q.sp = 1; q.spSeen = 1; } q.pos = c.to; land(s, p, 7, cr, true); }
+    else if (c.k === 'back') { q.pos = (q.pos + 37) % 40; land(s, p, 7, cr, true); }
+    else if (c.k === 'collect') alive(s).forEach(function (o2) { if (o2 !== p) { var amt = Math.min(c.v, plOf(s, o2).cash); plOf(s, o2).cash -= amt; q.cash += amt; } });
+    else if (c.k === 'payall') alive(s).forEach(function (o2) { if (o2 !== p && !q.bankrupt) pay(s, p, o2, c.v); });
+  }
+  function doCard(s, follow) {
+    if (s.phase !== 'card' || !s.card) return false;
+    var p = s.turn, c = s.card; delete s.card; s.phase = 'move';
+    if (follow) { addLog(s, NAMES[p] + ' follows the card.'); applyCard(s, p, c, s.cr | 0); } else addLog(s, NAMES[p] + ' ignores the card.');
+    settle(s); return true;
+  }
+  // bus: the player picks one of the offered distances
+  function doBus(s, n) {
+    if (s.phase !== 'bus' || !s.bus || s.bus.indexOf(n) < 0) return false;
+    var p = s.turn; delete s.bus; s.phase = 'move';
+    addLog(s, '🚌 ' + NAMES[p] + ' takes the bus ' + n + ' space' + (n === 1 ? '' : 's') + '.');
+    moveBy(s, p, n, s.cr | 0); settle(s); return true;
+  }
+  // three of a kind: jump to any space (not Go to Jail)
+  function doAny(s, i) {
+    if (s.phase !== 'any') return false; i = i | 0;
+    if (i < 0 || i > 39 || SP[i].t === 'gotojail') return false;
+    var p = s.turn, q = plOf(s, p), sum = ((s.dice || [0, 0])[0] | 0) + ((s.dice || [0, 0])[1] | 0) + (s.sd | 0);
+    s.phase = 'move';
+    addLog(s, '🚀 ' + NAMES[p] + ' jumps to ' + SP[i].n + '.');
+    if (i === 0) { q.cash += 200; q.sp = 1; q.spSeen = 1; addLog(s, NAMES[p] + ' lands on Start: +$200'); }
+    q.pos = i; land(s, p, sum, s.cr | 0, false); settle(s); return true;
+  }
+  function doRoll(s, r1, r2, cr, sd) {
+    var p = s.turn, q = plOf(s, p), dbl = r1 === r2, sum = r1 + r2, spd = 0, trip = false;
+    s.dice = [r1, r2]; s.again = false; s.sd = 0; s.cr = cr | 0; delete s.bus; delete s.card;
     if (q.jail > 0) {
       if (dbl) { q.jail = 0; addLog(s, NAMES[p] + ' rolled doubles and leaves jail.'); }
       else {
@@ -319,14 +387,25 @@
         if (q.jail > 3) { q.jail = 0; addLog(s, NAMES[p] + ' pays $50 to leave jail.'); if (!pay(s, p, -1, 50)) { fin(s); return true; } }
         else { addLog(s, NAMES[p] + ' rolled ' + sum + ' and stays in jail.'); s.phase = 'end'; return true; }
       }
-    } else if (dbl) {
-      s.dc = (s.dc | 0) + 1;
-      if (s.dc >= 3) { s.dc = 0; addLog(s, NAMES[p] + ' rolled three doubles!'); toJail(s, p); s.phase = 'end'; return true; }
-      s.again = true;
-    } else s.dc = 0;
-    moveBy(s, p, sum, cr);
+    } else {
+      if (q.sp) { spd = (sd | 0) >= 1 && (sd | 0) <= 5 ? (sd | 0) : 1; s.sd = spd; }      // the Speed Die only joins in after the first trip past Start
+      trip = dbl && spd >= 1 && spd <= 3 && spd === r1;
+      if (trip) { s.again = true; s.dc = 0; }                                                // triples never go to jail
+      else if (dbl) {
+        s.dc = (s.dc | 0) + 1;
+        if (s.dc >= DOUBLES_JAIL) { s.dc = 0; addLog(s, NAMES[p] + ' rolled doubles ' + DOUBLES_JAIL + ' times in a row!'); toJail(s, p); s.phase = 'end'; return true; }
+        s.again = true;
+      } else s.dc = 0;
+    }
+    if (trip) { addLog(s, NAMES[p] + ' rolled triple ' + r1 + 's! Pick any space on the board.'); s.phase = 'any'; return true; }
+    if (spd === 4) {
+      var opts = []; [r1, r2, sum].forEach(function (n) { if (opts.indexOf(n) < 0) opts.push(n); });
+      addLog(s, NAMES[p] + ' rolled ' + r1 + ' + ' + r2 + ' and the Bus: move ' + opts.join(', ') + ' (your choice).'); s.bus = opts; s.phase = 'bus'; return true;
+    }
+    if (spd === 5) s.mr = 1;
+    moveBy(s, p, sum + (spd >= 1 && spd <= 3 ? spd : 0), cr);
     if (s.status === 'done') return true;
-    if (s.phase !== 'buy' && s.phase !== 'auction') fin(s);
+    settle(s);
     return true;
   }
   function doBuy(s) {
@@ -342,21 +421,21 @@
   }
   function canBuild(s, p, i) {
     var sp = SP[i], q = plOf(s, p); if (sp.t !== 'prop' || ownerOf(s, i) !== p || !ownsSet(s, p, sp.g) || group(sp.g).some(function (j) { return mgOf(s, j); })) return false;
-    var h = housesOf(s, i); if (h >= 5) return false;
+    var h = housesOf(s, i); if (h >= HOTEL) return false;
     var mn = Math.min.apply(null, group(sp.g).map(function (j) { return housesOf(s, j); }));
     return h <= mn && q.cash >= Math.floor(sp.p / 2);
   }
   function buildable(s, p) { var a = []; for (var i = 0; i < 40; i++) if (canBuild(s, p, i)) a.push(i); return a; }
   function doBuild(s, i) {
     var p = s.turn; if ((s.phase !== 'roll' && s.phase !== 'end') || !canBuild(s, p, i)) return false;
-    var c = Math.floor(SP[i].p / 2); plOf(s, p).cash -= c; s.hs[i] = housesOf(s, i) + 1; addLog(s, NAMES[p] + (s.hs[i] >= 5 ? ' built an apartment on ' : ' added a house to ') + SP[i].n + ' ($' + c + ').'); return true;
+    var c = Math.floor(SP[i].p / 2); plOf(s, p).cash -= c; s.hs[i] = housesOf(s, i) + 1; addLog(s, NAMES[p] + (s.hs[i] >= HOTEL ? ' built a hotel on ' : ' added a house to ') + SP[i].n + ' ($' + c + ').'); return true;
   }
   // ---- selling, mortgaging
   function canSellHouse(s, p, i) { if (ownerOf(s, i) !== p) return false; var h = housesOf(s, i); if (h < 1) return false; return h >= Math.max.apply(null, group(SP[i].g).map(function (j) { return housesOf(s, j); })); }
   function doSellHouse(s, i) {
     var p = s.turn; if (!manageOk(s) || !canSellHouse(s, p, i)) return false;
     var was = housesOf(s, i), c = Math.floor(SP[i].p / 4); s.hs[i] = was - 1; if (!s.hs[i]) delete s.hs[i]; plOf(s, p).cash += c;
-    addLog(s, NAMES[p] + ' sold ' + (was >= 5 ? 'the apartment' : 'a house') + ' on ' + SP[i].n + ' (+$' + c + ').'); return true;
+    addLog(s, NAMES[p] + ' sold ' + (was >= HOTEL ? 'the hotel' : 'a house') + ' on ' + SP[i].n + ' (+$' + c + ').'); return true;
   }
   function canMortgage(s, p, i) { return !!SP[i].p && ownerOf(s, i) === p && !mgOf(s, i) && !setHasHouses(s, i); }
   function doMortgage(s, i) { var p = s.turn; if (!manageOk(s) || !canMortgage(s, p, i)) return false; s.mg[i] = 1; plOf(s, p).cash += mgValue(i); addLog(s, NAMES[p] + ' mortgaged ' + SP[i].n + ' (+$' + mgValue(i) + ').'); return true; }
@@ -429,8 +508,37 @@
     return gain >= loss * 1.1 && plOf(s, b).cash + (t.cash | 0) >= 100;
   }
 
+  // how good is it for player p to end up on space i? (used by bots for the bus, triples and optional cards)
+  function spaceScore(s, p, i) {
+    var sp = SP[i], q = plOf(s, p), o, sc = 0;
+    if (sp.t === 'gotojail') return -1000;
+    if (sp.t === 'prop' || sp.t === 'rail' || sp.t === 'util') {
+      o = ownerOf(s, i);
+      if (o < 0) { var mates = setOf(i).filter(function (j) { return j !== i && ownerOf(s, j) === p; }).length, all = setOf(i).length; sc = q.cash >= sp.p + 50 ? 40 + mates * 60 + (mates === all - 1 ? 150 : 0) : 5; }
+      else if (o === p || mgOf(s, i)) sc = 0;
+      else sc = -rentOf(s, i, 7) * 1.5;
+    } else if (sp.t === 'park') sc = (s.pot | 0) * 0.8;
+    else if (sp.t === 'tax') sc = -sp.p;
+    else if (sp.t === 'go') sc = 200;
+    else if (sp.t === 'chance' || sp.t === 'chest') sc = 10;
+    return sc;
+  }
   function botAct(s) {
     var p = s.turn, q = plOf(s, p), b;
+    if (s.phase === 'bus' && s.bus) {
+      var bb = s.bus[0], bs = -1e9; s.bus.forEach(function (n) { var dest = (q.pos + n) % 40, sc = spaceScore(s, p, dest) + (dest < q.pos ? 100 : 0); if (sc > bs) { bs = sc; bb = n; } });
+      return { k: 'bus', v: bb };
+    }
+    if (s.phase === 'any') {
+      var bi = 0, bsc = -1e9; for (var ai = 0; ai < 40; ai++) { if (ai === q.pos) continue; var asc = spaceScore(s, p, ai); if (asc > bsc) { bsc = asc; bi = ai; } }
+      return { k: 'any', i: bi };
+    }
+    if (s.phase === 'card' && s.card) {
+      var c = s.card, yes = false;
+      if (c.k === 'gain' || c.k === 'collect') yes = true;
+      else if (c.k === 'move') yes = spaceScore(s, p, c.to) + (c.to < q.pos ? 100 : 0) > 0;
+      return { k: 'card', v: yes };
+    }
     if (s.phase === 'auction' && s.au) {
       var a = s.au, bq = plOf(s, a.cur), mates = setOf(a.i).filter(function (j) { return ownerOf(s, j) === a.cur; }).length;
       var lim = Math.min(bq.cash - 80, Math.round(SP[a.i].p * (mates ? 1.25 : 0.85))), room = Math.floor((lim - a.bid) / 10) * 10;
@@ -450,8 +558,8 @@
   }
   function startState(s) {
     s.pl = {}; s.own = {}; s.hs = {};
-    seated(s).forEach(function (p) { s.pl[p] = { pos: 0, cash: 1500, jail: 0, bankrupt: false }; });
-    s.status = 'playing'; s.turn = seated(s)[0]; s.phase = 'roll'; s.dice = [0, 0]; s.dc = 0; s.again = false; s.pend = -1; s.winner = -1; s.rd = 0; s.pot = 0;
+    seated(s).forEach(function (p) { s.pl[p] = { pos: 0, cash: 1500, jail: 0, bankrupt: false, sp: 0 }; });
+    s.status = 'playing'; s.turn = seated(s)[0]; s.phase = 'roll'; s.dice = [0, 0]; s.dc = 0; s.again = false; s.pend = -1; s.winner = -1; s.rd = 0; s.pot = 0; s.sd = 0; s.mr = 0; delete s.card; delete s.bus;
     s.gid = (s.gid | 0) + 1; s.log = []; addLog(s, 'Game on! ' + NAMES[s.turn] + ' goes first.');
   }
 
@@ -518,7 +626,10 @@
   }
   function actorOk(s) { var st = seatOf(s, s.turn); if (!st) return false; return (!st.bot && st.uid === me.uid) || isDriver(); }
   function turnAct(fn) { mutate(function (s) { if (s.status !== 'playing' || !actorOk(s)) return false; return fn(s); }); }
-  function actRoll(r1, r2, cr) { turnAct(function (s) { if (s.phase !== 'roll') return false; return doRoll(s, r1, r2, cr); }); }
+  function actRoll(r1, r2, cr, sd) { turnAct(function (s) { if (s.phase !== 'roll') return false; return doRoll(s, r1, r2, cr, sd); }); }
+  function actBus(n) { turnAct(function (s) { return doBus(s, n); }); }
+  function actAny(i) { turnAct(function (s) { return doAny(s, i); }); }
+  function actCard(yes) { turnAct(function (s) { return doCard(s, yes); }); }
   function actBuy() { turnAct(doBuy); } function actPass() { turnAct(doPass); } function actEnd() { turnAct(doEnd); }
   function actorSeat(s) { return (s.phase === 'auction' && s.au) ? s.au.cur : s.turn; }
   function seatAct(seatFn, fn) { mutate(function (s) { if (s.status !== 'playing') return false; var st = seatOf(s, seatFn(s)); if (!st || !((!st.bot && st.uid === me.uid) || isDriver())) return false; return fn(s); }); }
@@ -532,12 +643,20 @@
 
   // ---------- dice, sound
   function drawDie(el, v) { var h = '', on = PIPS[v] || []; for (var i = 0; i < 9; i++) h += '<i' + (on.indexOf(i) > -1 ? ' class="on"' : '') + '></i>'; el.innerHTML = h; }
+  // the blue Speed Die: 1-3 pips, 4 = bus, 5 = Mr. Monopoly, 0 = not in play
+  function drawSpeed(v, active) {
+    var e = $('d3'); e.classList.toggle('off', !active);
+    if (v >= 1 && v <= 3) { e.className = 'die sd pips' + (active ? '' : ' off'); var h = '', on = PIPS[v]; for (var i = 0; i < 9; i++) h += '<i' + (on.indexOf(i) > -1 ? ' class="on"' : '') + '></i>'; e.innerHTML = h; e.title = 'Speed die: add ' + v; }
+    else { e.className = 'die sd' + (active ? '' : ' off'); e.innerHTML = v === 4 ? '🚌' : v === 5 ? '🎩' : (active ? '⚡' : '🔒'); e.title = v === 4 ? 'Speed die: Bus' : v === 5 ? 'Speed die: Mr. Monopoly' : (active ? 'Speed die' : 'The Speed Die joins in after you pass Start'); }
+  }
   function spinThen(cb) {
     if (rolling) return; rolling = true; var n = 0;
-    ['d1', 'd2'].forEach(function (id) { var e = $(id); e.classList.remove('throw'); void e.offsetWidth; e.classList.add('throw'); });
+    var cq = (S && S.pl) ? plOf(S, S.turn) : null, useSpeed = !!(cq && cq.sp && cq.jail === 0);
+    ['d1', 'd2'].concat(useSpeed ? ['d3'] : []).forEach(function (id) { var e = $(id); e.classList.remove('throw'); void e.offsetWidth; e.classList.add('throw'); });
     var iv = setInterval(function () {
       drawDie($('d1'), 1 + Math.floor(Math.random() * 6)); drawDie($('d2'), 1 + Math.floor(Math.random() * 6));
-      if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 1200)); }
+      if (useSpeed) drawSpeed(SPEED_FACES[Math.floor(Math.random() * 6)], true);
+      if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 1200), SPEED_FACES[Math.floor(Math.random() * 6)]); }
     }, 70);
   }
   function tryRoll() {
@@ -545,7 +664,7 @@
     var st = seatOf(S, S.turn); if (!st || st.bot || st.uid !== me.uid) return;
     spinThen(actRoll);
   }
-  $('d1').onclick = $('d2').onclick = tryRoll;
+  $('d1').onclick = $('d2').onclick = $('d3').onclick = tryRoll;
   document.addEventListener('keydown', function (e) { if (!e.repeat && (e.key === ' ' || e.key === 'Enter') && e.target.tagName !== 'BUTTON') { e.preventDefault(); tryRoll(); } });
   function enableShake() {
     if (shakeOn) return; shakeOn = true;
@@ -615,6 +734,7 @@
     if (a.k === 'roll') spinThen(actRoll); else if (a.k === 'buy') actBuy(); else if (a.k === 'pass') actPass();
     else if (a.k === 'end') actEnd(); else if (a.k === 'bail') actBail(); else if (a.k === 'build') actBuild(a.i);
     else if (a.k === 'bid') actBid(a.v); else if (a.k === 'drop') actDrop(); else if (a.k === 'unmort') actUnmort(a.i);
+    else if (a.k === 'bus') actBus(a.v); else if (a.k === 'any') actAny(a.i); else if (a.k === 'card') actCard(a.v);
   }
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
@@ -708,7 +828,7 @@
   function addBot(slot) { mutate(function (s) { if (s.status !== 'lobby' || seatOf(s, slot) || s.hostUid !== me.uid) return false; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
   function fillBots() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid) return false; for (var i = 0; i < 4; i++) if (!seatOf(s, i)) s.seats[i] = { uid: 'bot' + i, name: NAMES[i] + ' Bot', bot: true }; }); }
   function removeBot(slot) { mutate(function (s) { var c = seatOf(s, slot); if (s.status !== 'lobby' || !c || !c.bot || s.hostUid !== me.uid) return false; delete s.seats[slot]; }); }
-  function resetToLobby(s) { s.status = 'lobby'; s.pl = {}; s.own = {}; s.hs = {}; s.winner = -1; s.log = []; s.msg = ''; s.pot = 0; s.phase = 'roll'; s.dice = [0, 0]; s.pend = -1; }
+  function resetToLobby(s) { s.status = 'lobby'; s.pl = {}; s.own = {}; s.hs = {}; s.winner = -1; s.log = []; s.msg = ''; s.pot = 0; s.phase = 'roll'; s.dice = [0, 0]; s.pend = -1; s.sd = 0; s.mr = 0; delete s.card; delete s.bus; }
   function beginGame(s) { startState(s); markStarted(s); }
   function startGame() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false; beginGame(s); }); }
   function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; resetToLobby(s); }); }
@@ -743,7 +863,7 @@
     }
     $('board').addEventListener('click', function (e) {
       var c = e.target.closest ? e.target.closest('[data-c]') : null; if (!c) return;
-      sel = +c.dataset.c; renderInfo();
+      sel = +c.dataset.c; renderInfo(); if (S && S.phase === 'any') render();
     });
   }
   var OFF = [[-2.3, -2.3], [2.3, -2.3], [-2.3, 2.3], [2.3, 2.3]];
@@ -757,7 +877,7 @@
       if (rc[1] === 10) sy = y + 8.5; else if (rc[1] === 0) sy = y; else if (rc[0] === 0) { sx = x; sw = 1.5; sh = 10; } else { sx = x + 8.5; sw = 1.5; sh = 10; }
       h += '<rect x="' + sx + '" y="' + sy + '" width="' + sw + '" height="' + sh + '" fill="' + COLORS[o] + '"/>';
       var n = housesOf(s, i);
-      if (n >= 5) {
+      if (n >= HOTEL) {
         var ax, ay, aw, ah;
         if (rc[1] === 10) { ax = x + 2.2; ay = y + .4; aw = 5.6; ah = 2; } else if (rc[1] === 0) { ax = x + 2.2; ay = y + 7.6; aw = 5.6; ah = 2; } else if (rc[0] === 0) { ax = x + 7.6; ay = y + 2.2; aw = 2; ah = 5.6; } else { ax = x + .4; ay = y + 2.2; aw = 2; ah = 5.6; }
         h += '<rect x="' + ax + '" y="' + ay + '" width="' + aw + '" height="' + ah + '" rx=".4" fill="#facc15" stroke="#7c2d12" stroke-width=".25"/>';
@@ -774,7 +894,7 @@
   function emoOf(p) { var e = emotes && emotes[p]; return (e && WW.now() - (e.t || 0) < 4000) ? ' <span class="emo">' + e.e + '</span>' : ''; }
   function money(n) { return '$' + n; }
 
-  function lvlLabel(n) { return n >= 5 ? '🏢 Apartment' : (n ? '🏠 ' + n + (n === 1 ? ' house' : ' houses') : 'No houses yet'); }
+  function lvlLabel(n) { return n >= HOTEL ? '🏨 Hotel' : (n ? '🏠 ' + n + (n === 1 ? ' house' : ' houses') : 'No houses yet'); }
   var GNAME = { brown: 'Brown', sky: 'Light blue', pink: 'Pink', orange: 'Orange', red: 'Red', yellow: 'Yellow', green: 'Green', blue: 'Dark blue' };
   function ownerLabel(s, j) { var o = ownerOf(s, j); return o < 0 ? 'for sale' : NAMES[o] + ' owns it'; }
   // why (not) buildable, and how many more are needed
@@ -784,11 +904,11 @@
     if (miss.length) return '🚫 Cannot build yet: ' + miss.length + ' more ' + GNAME[sp.g].toLowerCase() + ' propert' + (miss.length === 1 ? 'y' : 'ies') + ' needed (' + miss.map(function (j) { return SP[j].n + ' - ' + ownerLabel(s, j); }).join('; ') + ').';
     var mg = g.filter(function (j) { return mgOf(s, j); });
     if (mg.length) return '🚫 Cannot build: pay off the mortgage on ' + mg.map(function (j) { return SP[j].n; }).join(', ') + ' first.';
-    if (h >= 5) return '🏢 Fully built.';
+    if (h >= HOTEL) return '🏨 Fully built (hotel).';
     var low = g.filter(function (j) { return housesOf(s, j) < h; });
     if (low.length) return '🚫 Build evenly: add a house to ' + low.map(function (j) { return SP[j].n; }).join(', ') + ' first.';
-    if (q && q.cash < cost) return '🚫 Full set, but you need $' + (cost - q.cash) + ' more for the next ' + (h >= 4 ? 'apartment' : 'house') + ' ($' + cost + ').';
-    return '✅ You can build here: next ' + (h >= 4 ? 'apartment' : 'house') + ' costs $' + cost + '. ' + (4 - Math.min(4, h)) + ' house' + (4 - Math.min(4, h) === 1 ? '' : 's') + ' + 1 apartment still to go.';
+    if (q && q.cash < cost) return '🚫 Full set, but you need $' + (cost - q.cash) + ' more for the next ' + (h >= HOTEL - 1 ? 'hotel' : 'house') + ' ($' + cost + ').';
+    return '✅ You can build here: next ' + (h >= HOTEL - 1 ? 'hotel' : 'house') + ' costs $' + cost + '. ' + (HOTEL - 1 - Math.min(HOTEL - 1, h)) + ' house' + (HOTEL - 1 - Math.min(HOTEL - 1, h) === 1 ? '' : 's') + ' + 1 hotel still to go.';
   }
   function deedHtml(s, i, big) {
     var sp = SP[i], o = ownerOf(s, i), lvl = housesOf(s, i), m = rentMult(s), ms = mySeat(), rows, k;
@@ -797,14 +917,16 @@
     var who = o >= 0 ? WW.shapeIcon(o, 14, COLORS[o]) + ' ' + NAMES[o] + ' owns this' + (mgOf(s, i) ? ' · 🏦 mortgaged (no rent)' : '') : 'For sale · $' + sp.p;
     if (sp.t === 'prop') {
       h += who + (o >= 0 ? ' · ' + lvlLabel(lvl) : '');
-      rows = [['Rent (no houses)', sp.p * LV[0]], ['Full colour set', sp.p * LV[1]], ['1 house', sp.p * LV[2]], ['2 houses', sp.p * LV[3]], ['3 houses', sp.p * LV[4]], ['4 houses', sp.p * LV[5]], ['Apartment', sp.p * LV[6]]];
+      rows = [['Rent (no houses)', sp.p * LV[0]], ['Full colour set', sp.p * LV[1]]];
+      for (k = 1; k < HOTEL; k++) rows.push([k + (k === 1 ? ' house' : ' houses'), sp.p * lvMult(k)]);
+      rows.push(['Hotel', sp.p * HOTEL_RENT]);
       var cur = lvl > 0 ? lvl + 1 : (o >= 0 && ownsSet(s, o, sp.g) ? 1 : 0);
       h += '<table>'; rows.forEach(function (r, j) { h += '<tr' + (o >= 0 && j === cur ? ' class="cur"' : '') + '><td>' + r[0] + '</td><td>$' + Math.round(r[1] * m) + '</td></tr>'; }); h += '</table>';
-      h += 'Price $' + sp.p + '. Each house or apartment costs $' + Math.floor(sp.p / 2) + '.';
+      h += 'Price $' + sp.p + '. Each house or hotel costs $' + Math.floor(sp.p / 2) + '.';
       if (m > 1) h += '<div class="muted">Rents are x' + m + ' right now.</div>';
       if (o >= 0 && o === ms && s.status === 'playing') h += '<div style="margin-top:4px;font-weight:700">' + buildStatus(s, i, ms) + '</div>';
       if (o >= 0 && o === ms && s.status === 'playing' && ms === s.turn && (s.phase === 'roll' || s.phase === 'end') && canBuild(s, ms, i))
-        h += '<button class="go" data-a="build" data-i="' + i + '">' + (lvl >= 4 ? '🏢 Build apartment' : '🏠 Add house ' + (lvl + 1)) + ' · $' + Math.floor(sp.p / 2) + '</button>';
+        h += '<button class="go" data-a="build" data-i="' + i + '">' + (lvl >= HOTEL - 1 ? '🏨 Build hotel' : '🏠 Add house ' + (lvl + 1)) + ' · $' + Math.floor(sp.p / 2) + '</button>';
     } else if (sp.t === 'rail') {
       h += who + '<table>'; RAIL_RENT.forEach(function (r, j) { h += '<tr><td>' + (j + 1) + ' station' + (j ? 's' : '') + '</td><td>$' + Math.round(r * m) + '</td></tr>'; }); h += '</table>Price $200.';
     } else if (sp.t === 'util') {
@@ -828,18 +950,18 @@
       if (sp.t !== 'prop') st = miss.length ? miss.length + ' more would raise the rent (' + miss.map(function (j) { return SP[j].n + ' - ' + ownerLabel(s, j); }).join('; ') + ').' : 'You own them all: top rent.';
       else if (miss.length) st = '🚫 ' + miss.length + ' more needed before you can build: ' + miss.map(function (j) { return SP[j].n + ' (' + ownerLabel(s, j) + ')'; }).join(', ');
       else if (set.some(function (j) { return mgOf(s, j); })) st = '🚫 Full set, but pay off the mortgage before building.';
-      else if (set.every(function (j) { return housesOf(s, j) >= 5; })) st = '🏢 Fully built.';
+      else if (set.every(function (j) { return housesOf(s, j) >= HOTEL; })) st = '🏨 Fully built.';
       else { var nx = set.filter(function (j) { return canBuild(s, ms, j); }); st = nx.length ? '✅ Full set: you can build' + (can ? '' : ' on your turn') + '.' : '✅ Full set, but not enough cash for the next house ($' + Math.floor(SP[set[0]].p / 2) + '+).'; }
       h += '<div class="grp"><div class="gh" style="background:' + col + '"><span>' + title + '</span><span>' + mineL.length + ' / ' + set.length + '</span></div><div class="gs">' + st + '</div>';
       mineL.forEach(function (j) {
         var lv = housesOf(s, j), mg = mgOf(s, j), b = '';
         if (can) {
-          if (canBuild(s, ms, j)) b += '<button class="go" data-a="build" data-i="' + j + '">' + (lv >= 4 ? '🏢' : '🏠') + '+ $' + Math.floor(SP[j].p / 2) + '</button>';
+          if (canBuild(s, ms, j)) b += '<button class="go" data-a="build" data-i="' + j + '">' + (lv >= HOTEL - 1 ? '🏨' : '🏠') + '+ $' + Math.floor(SP[j].p / 2) + '</button>';
           if (canSellHouse(s, ms, j)) b += '<button data-a="sellh" data-i="' + j + '">🏠− +$' + Math.floor(SP[j].p / 4) + '</button>';
           if (mg) b += '<button data-a="unmort" data-i="' + j + '"' + (q.cash < unmgCost(j) ? ' disabled' : '') + '>Pay off $' + unmgCost(j) + '</button>';
           else if (canMortgage(s, ms, j)) b += '<button data-a="mort" data-i="' + j + '">🏦 Mortgage +$' + mgValue(j) + '</button><button data-a="sellp" data-i="' + j + '">Sell +$' + bankValue(j) + '</button>';
         }
-        h += '<div class="pr' + (mg ? ' mgd' : '') + '"><span class="n" data-c="' + j + '">' + SP[j].n + (SP[j].t === 'prop' ? ' · ' + (lv >= 5 ? '🏢' : lv ? '🏠×' + lv : 'no houses') : '') + (mg ? ' · 🏦 mortgaged' : '') + '</span>' + b + '</div>';
+        h += '<div class="pr' + (mg ? ' mgd' : '') + '"><span class="n" data-c="' + j + '">' + SP[j].n + (SP[j].t === 'prop' ? ' · ' + (lv >= HOTEL ? '🏨' : lv ? '🏠×' + lv : 'no houses') : '') + (mg ? ' · 🏦 mortgaged' : '') + '</span>' + b + '</div>';
       });
       h += '</div>';
     }
@@ -874,8 +996,13 @@
     for (p = 0; p < 4; p++) { var em = emotes && emotes[p]; if (em && seatOf(s, p) && WW.now() - (em.t || 0) < 4000 && (!best || em.t > best.t)) best = { e: em.e, t: em.t, p: p }; }
     if (best) eo = '<circle cx="42" cy="67" r="2.2" fill="' + COLORS[best.p] + '" stroke="#fff" stroke-width=".5"/><text class="emoB" x="55" y="69" text-anchor="middle" dominant-baseline="central" font-size="11">' + best.e + '</text>';
     $('emoLayer').innerHTML = eo;
-    if (!rolling) { drawDie($('d1'), s.dice ? s.dice[0] : 0); drawDie($('d2'), s.dice ? s.dice[1] : 0); }
     var q0 = playing ? plOf(s, s.turn) : null, cs = seatOf(s, s.turn);
+    if (!rolling) {
+      drawDie($('d1'), s.dice ? s.dice[0] : 0); drawDie($('d2'), s.dice ? s.dice[1] : 0);
+      drawSpeed(s.sd | 0, !!(s.sd | 0) || !!(q0 && q0.sp && q0.jail === 0));
+      var mp = (ms >= 0 && s.pl) ? plOf(s, ms) : null;
+      $('sdnote').textContent = (playing && mp && !mp.bankrupt && !mp.sp) ? '⚡ The blue Speed Die joins in once you pass or land on Start.' : '';
+    }
     var mq = (ms >= 0 && s.pl) ? plOf(s, ms) : null, bk = $('bank'), bt = mq ? '$' + mq.cash : '—';
     if (bk.textContent !== bt) { bk.textContent = bt; bk.classList.remove('bankpulse'); void bk.offsetWidth; bk.classList.add('bankpulse'); }
     if (q0) { var sk = s.turn + ':' + q0.pos; if (sk !== lastSelKey) { lastSelKey = sk; sel = q0.pos; } }
@@ -894,6 +1021,15 @@
       if (ms === au.cur && mq2) { [10, 50, 100].forEach(function (v) { a += '<button class="go" data-a="bid" data-v="' + v + '"' + (mq2.cash < au.bid + v ? ' disabled' : '') + '>Bid $' + (au.bid + v) + '</button>'; }); a += '<button data-a="drop">Drop out</button>'; }
       else a += '<span class="muted">' + (as ? as.name : NAMES[au.cur]) + ' is bidding…' + (ms >= 0 && auOut(s, ms) ? ' You are out of this auction.' : '') + '</span>';
       a += '</div></div>';
+    } else if (myTurn && s.phase === 'bus' && s.bus) {
+      a += '<span class="muted" style="width:100%">🚌 Bus: how far do you want to move?</span>';
+      s.bus.forEach(function (n) { var dest = (q0.pos + n) % 40; a += '<button class="go" data-a="bus" data-v="' + n + '">Move ' + n + ' → ' + (SP[dest].i ? SP[dest].i + ' ' : '') + SP[dest].n + '</button>'; });
+    } else if (myTurn && s.phase === 'any') {
+      a += '<span class="muted" style="width:100%">🚀 Triple! Tap a space on the board or pick one here, then go.</span><select id="anySel" style="flex:1;min-width:150px;padding:9px;border-radius:10px;background:#0f172a;color:#e2e8f0;border:1px solid #475569;font:inherit">';
+      for (var ai = 0; ai < 40; ai++) { if (SP[ai].t === 'gotojail') continue; a += '<option value="' + ai + '"' + (ai === sel ? ' selected' : '') + '>' + ai + ' · ' + (SP[ai].i ? SP[ai].i + ' ' : '') + SP[ai].n + '</option>'; }
+      a += '</select><button class="go" data-a="any">Go there</button>';
+    } else if (myTurn && s.phase === 'card' && s.card) {
+      a += '<div class="offer" style="width:100%">🃏 <b>' + s.card.d + ':</b> ' + s.card.x + '<div style="margin-top:6px;display:flex;gap:8px"><button class="go" data-a="cardyes">Follow the card</button><button data-a="cardno">Ignore it</button></div></div>';
     } else if (myTurn) {
       var can = buildable(s, s.turn);
       if (s.phase === 'roll') { a += '<button class="go" data-a="roll">🎲 Roll dice</button>'; if (q0.jail > 0 && q0.cash >= 50) a += '<button data-a="bail">Pay $50 bail</button>'; }
@@ -901,8 +1037,8 @@
       else if (s.phase === 'end') a += '<button class="go" data-a="end">End turn</button>';
       if (can.length && (s.phase === 'roll' || s.phase === 'end')) a += '<button data-a="togglebuild">🏠 Build (' + can.length + ')</button>';
       if (manageOk(s) && !s.trade && alive(s).length > 1) a += '<button data-a="trade">🤝 Trade</button>';
-      if (showBuild && can.length && (s.phase === 'roll' || s.phase === 'end')) can.forEach(function (j) { bl += '<button data-a="build" data-i="' + j + '">' + (housesOf(s, j) >= 4 ? '🏢 Apartment' : '🏠 House ' + (housesOf(s, j) + 1)) + ' · ' + SP[j].n + ' · $' + Math.floor(SP[j].p / 2) + '</button>'; });
-    } else if (playing) a += '<span class="muted">Waiting for ' + (cs ? cs.name : NAMES[s.turn]) + '…</span>';
+      if (showBuild && can.length && (s.phase === 'roll' || s.phase === 'end')) can.forEach(function (j) { bl += '<button data-a="build" data-i="' + j + '">' + (housesOf(s, j) >= HOTEL - 1 ? '🏨 Hotel' : '🏠 House ' + (housesOf(s, j) + 1)) + ' · ' + SP[j].n + ' · $' + Math.floor(SP[j].p / 2) + '</button>'; });
+    } else if (playing) a += '<span class="muted">Waiting for ' + (cs ? cs.name : NAMES[s.turn]) + (s.phase === 'card' && s.card ? ' (deciding about a card: ' + s.card.x + ')' : s.phase === 'any' ? ' (picking any space)' : s.phase === 'bus' ? ' (choosing a bus move)' : '') + '…</span>';
     $('acts').innerHTML = a; $('buildList').innerHTML = bl;
     // seats
     var h = '';
@@ -942,9 +1078,10 @@
     renderInfo();
   }
 
+  $('main').addEventListener('change', function (e) { if (e.target && e.target.id === 'anySel') { sel = +e.target.value; renderInfo(); } });
   $('main').addEventListener('click', function (e) {
     var dc = e.target.closest ? e.target.closest('.deed[data-c], #mine .n[data-c]') : null;
-    if (dc && !(e.target.closest('button'))) { sel = +dc.dataset.c; renderInfo(); return; }
+    if (dc && !(e.target.closest('button'))) { sel = +dc.dataset.c; renderInfo(); if (S && S.phase === 'any') render(); return; }
     var eb = e.target.closest ? e.target.closest('button[data-e]') : null;
     if (eb) {
       var ms = mySeat(); if (ms < 0 || !roomRefG || Date.now() - lastEmo < 800) return;
@@ -956,6 +1093,7 @@
     var a = b.dataset.a, p = +b.dataset.p;
     if (a === 'sit') sit(p); else if (a === 'bot') addBot(p); else if (a === 'rm') removeBot(p); else if (a === 'leave') { if (!S || S.status !== 'playing' || confirm('Leave this game? If you are the last player the game ends, and this game will not count toward your record.')) leave(p); }
     else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
+    else if (a === 'bus') actBus(+b.dataset.v); else if (a === 'any') actAny(sel); else if (a === 'cardyes') actCard(true); else if (a === 'cardno') actCard(false);
     else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail();
     else if (a === 'togglebuild') { showBuild = !showBuild; render(); } else if (a === 'build') actBuild(+b.dataset.i);
     else if (a === 'sellh') actSellH(+b.dataset.i); else if (a === 'mort') actMort(+b.dataset.i); else if (a === 'unmort') actUnmort(+b.dataset.i);
@@ -1017,8 +1155,8 @@
     var tail = c.open ? ' · ' + c.open + ' open seat' + (c.open === 1 ? '' : 's') : ' · table full';
     if (s.status === 'playing' && ms >= 0) {
       var np = 0, hs = 0, ap = 0;
-      for (var i = 0; i < 40; i++) if (SP[i].p && ownerOf(s, i) === ms) { np++; var l = housesOf(s, i); if (l >= 5) ap++; else hs += l; }
-      return np + ' propert' + (np === 1 ? 'y' : 'ies') + ' · ' + hs + ' house' + (hs === 1 ? '' : 's') + ' · ' + ap + ' apartment' + (ap === 1 ? '' : 's') + ' · ' + people + tail;
+      for (var i = 0; i < 40; i++) if (SP[i].p && ownerOf(s, i) === ms) { np++; var l = housesOf(s, i); if (l >= HOTEL) ap++; else hs += l; }
+      return np + ' propert' + (np === 1 ? 'y' : 'ies') + ' · ' + hs + ' house' + (hs === 1 ? '' : 's') + ' · ' + ap + ' hotel' + (ap === 1 ? '' : 's') + ' · ' + people + tail;
     }
     return (s.status === 'done' ? 'Game over' : 'Lobby') + ' · ' + people + tail;
   }

@@ -17,6 +17,10 @@ export const COW_PASTURE = { x0: -43, x1: -29, z0: -44, z1: -30 };
 export const SHOP_POS = { x: 22, z: -2.5 };
 export const TRACTOR_HOME = { x: -9, z: -3, ry: .6 };
 export function parkFor(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + 6, z: F.z0 - 3.5, ry: .6 }; }
+export const ELEVATOR_POS = { x: 31, z: -3.2 };          // where the truck tips its load at the grain elevator (the silo)
+export const TRUCK_HOME = { x: 34, z: -3.2, ry: -Math.PI / 2 };
+export function parkCombine(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + 13.5, z: F.z0 - 3.5, ry: .6 }; }
+export function parkTrailer(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + 20.5, z: F.z0 - 3.5, ry: Math.PI / 2 }; }
 export const COLLIDERS = [{ x: -24, z: -8, r: 6.2 }, { x: 22, z: -9, r: 8 }, { x: 30.5, z: -9, r: 3 }];
 
 const M = {}; // shared materials
@@ -114,6 +118,9 @@ export function buildWorld(scene) {
   // silo
   const silo = new THREE.Group(); silo.position.set(30.5, 0, -9); scene.add(silo);
   cyl(silo, 2.2, 2.2, 10, 0xcfd3d8, 0, 5, 0, 20); const dome = new THREE.Mesh(new THREE.SphereGeometry(2.2, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x8e949b)); dome.position.y = 10; dome.castShadow = true; silo.add(dome);
+  { const es = makeLabel('GRAIN ELEVATOR', '#ffe08a', 384); es.position.set(30.5, 12.6, -9); es.scale.set(7.2, 1.2, 1); scene.add(es);
+    const hop = new THREE.Group(); hop.position.set(ELEVATOR_POS.x, 0, -6.2); scene.add(hop);
+    box(hop, 3.2, .35, 3.6, 0x777f88, 0, .18, 0); box(hop, 2.4, 1.1, 2.6, 0x9aa3ad, 0, .9, 0); const fn = new THREE.Mesh(new THREE.ConeGeometry(1.5, 1.4, 4), mat(0x8e949b)); fn.rotation.y = Math.PI / 4; fn.position.set(0, 2.1, 0); fn.rotation.x = Math.PI; fn.castShadow = true; hop.add(fn); }
   // pens
   fence(scene, CHICKEN_PEN.x0 - 1, CHICKEN_PEN.z0 - 1, CHICKEN_PEN.x1 + 1, CHICKEN_PEN.z1 + 1, 'w');
   fence(scene, COW_PASTURE.x0 - 1, COW_PASTURE.z0 - 1, COW_PASTURE.x1 + 1, COW_PASTURE.z1 + 1, 'e');
@@ -181,6 +188,49 @@ export function makeTractor(color) {
   return g;
 }
 export function setImplement(tractor, color) { tractor.userData.impl.material = mat(color); }
+
+// ---- harvest chain: combine harvester, grain trailer, truck
+function wheelAt(g, x, y, z, r, w) { const c = cyl(g, r, r, w, 0x1a1a1a, x, y, z, 18); c.rotation.z = Math.PI / 2; const h = cyl(g, r * .5, r * .5, w + .04, 0xe6c200, x, y, z, 12); h.rotation.z = Math.PI / 2; return [c, h]; }
+export function makeCombine(color, width) {
+  const g = new THREE.Group(), base = new THREE.Color(color || 0x2e8b3a), bodyC = base.getHex(), lightC = base.clone().lerp(new THREE.Color(0xffffff), .25).getHex(), roofC = base.clone().multiplyScalar(.7).getHex();
+  box(g, 3.2, 1.7, 5.6, bodyC, 0, 2.0, -.6);                       // body
+  box(g, 2.6, 1.5, 2.6, lightC, 0, 3.7, -1.9);                       // grain tank
+  box(g, 2.4, 1.7, 1.9, lightC, 0, 3.55, 1.5);                       // cab
+  const gl = box(g, 2.2, 1.2, .08, 0x9fd4ff, 0, 3.65, 2.48); gl.material = new THREE.MeshLambertMaterial({ color: 0x9fd4ff, transparent: true, opacity: .55 });
+  box(g, 2.8, .15, 2.3, roofC, 0, 4.5, 1.5);                         // cab roof
+  const aug = box(g, .35, .35, 4.2, 0xf2c200, 1.75, 4.5, -1.2); aug.rotation.y = 0;   // unloading auger
+  box(g, .35, 1.2, .35, 0xf2c200, 1.75, 3.9, -3.1);
+  const hw = width || 9.6, hd = new THREE.Group(); hd.position.set(0, 0, 4.4); g.add(hd); g.userData.header = hd;
+  box(hd, hw, .55, 1.4, 0xf2c200, 0, 1.0, 0); box(hd, hw, .9, .12, 0xd9ad00, 0, 1.5, -.7);
+  const reel = cyl(hd, .45, .45, hw - .3, 0x9a6b1f, 0, 1.55, .5, 10); reel.rotation.z = Math.PI / 2; g.userData.reel = reel;
+  box(hd, .12, .5, 1.4, 0xd9ad00, -hw / 2, 1.15, 0); box(hd, .12, .5, 1.4, 0xd9ad00, hw / 2, 1.15, 0);
+  g.userData.wheels = [].concat(wheelAt(g, -1.75, 1.05, 1.4, 1.05, .8), wheelAt(g, 1.75, 1.05, 1.4, 1.05, .8), wheelAt(g, -1.4, .65, -2.9, .65, .55), wheelAt(g, 1.4, .65, -2.9, .65, .55));
+  const fill = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1, 2.4), mat(0xe6c84a)); fill.position.set(0, 4.5, -1.9); fill.visible = false; g.add(fill); g.userData.fill = fill;
+  g.userData.setFill = function (frac, color) { fill.visible = frac > .02; fill.scale.y = Math.max(.02, frac) * .5; fill.position.y = 4.4 + Math.max(.02, frac) * .25; if (color) fill.material = mat(color); };
+  return g;
+}
+export function setHeaderWidth(combine, w) { combine.userData.header.scale.x = w / 9.6; }
+export function makeTrailer(color) {
+  const g = new THREE.Group(), c = color || 0x8a6a3a;
+  box(g, 3.4, .3, 6.6, 0x555b61, 0, 1.0, 0);                               // bed
+  box(g, .2, 1.2, 6.6, c, -1.65, 1.7, 0); box(g, .2, 1.2, 6.6, c, 1.65, 1.7, 0); box(g, 3.4, 1.2, .2, c, 0, 1.7, -3.2); box(g, 3.4, 1.2, .2, c, 0, 1.7, 3.2);
+  box(g, .3, .3, 2, 0x333333, 0, .9, 4.3);                                 // drawbar
+  g.userData.wheels = [].concat(wheelAt(g, -1.75, .8, -1.6, .8, .5), wheelAt(g, 1.75, .8, -1.6, .8, .5), wheelAt(g, -1.75, .8, -.6, .8, .5), wheelAt(g, 1.75, .8, -.6, .8, .5));
+  const fill = new THREE.Mesh(new THREE.BoxGeometry(3.0, 1, 6.0), mat(0xe6c84a)); fill.visible = false; g.add(fill); g.userData.fill = fill;
+  g.userData.setFill = function (frac, color) { fill.visible = frac > .01; const h = Math.max(.02, frac) * 1.1; fill.scale.y = h; fill.position.y = 1.15 + h / 2; if (color) fill.material = mat(color); };
+  return g;
+}
+export function makeTruck(color) {
+  const g = new THREE.Group(), c = color || 0xc0392b;
+  box(g, 2.5, .5, 8.0, 0x333a40, 0, 1.0, -.2);                              // chassis
+  box(g, 2.4, 2.0, 2.2, c, 0, 2.2, 2.8);                                    // cab
+  const gl = box(g, 2.0, .9, .08, 0x9fd4ff, 0, 2.6, 3.92); gl.material = new THREE.MeshLambertMaterial({ color: 0x9fd4ff, transparent: true, opacity: .6 });
+  box(g, 2.2, 1.0, 1.4, c, 0, 1.7, 4.5);                                    // hood
+  box(g, 2.5, .22, 2.2, 0x555b61, 0, 1.4, -2.4);                            // hitch plate
+  for (const x of [-.7, .7]) sph(g, .16, 0xfff3b0, x, 1.55, 5.25);
+  g.userData.wheels = [].concat(wheelAt(g, -1.3, .75, 3.6, .75, .5), wheelAt(g, 1.3, .75, 3.6, .75, .5), wheelAt(g, -1.3, .75, -1.2, .75, .5), wheelAt(g, 1.3, .75, -1.2, .75, .5), wheelAt(g, -1.3, .75, -2.6, .75, .5), wheelAt(g, 1.3, .75, -2.6, .75, .5));
+  return g;
+}
 
 // ---- crops: one InstancedMesh per crop type (growing part + ripe part) so a 240-tile field costs ~20 draw calls
 function part(geo, color, x, y, z, sx, sy, sz, rx, rz) {
