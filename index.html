@@ -465,6 +465,7 @@
         html.ww-bn-mode .kf-watermark { display: none; }
     </style>
     <link rel="stylesheet" href="assets/ww-shell.css">
+    <script src="assets/psn-source.js"></script>
     <script src="assets/menu-sheet.js"></script>
     <style id="ww-reserve">@media (min-width:768px) and (pointer:fine){[data-ww-nav-slot]:empty{min-height:44px}}</style>
     <script defer src="assets/ww-shell.js"></script>
@@ -2689,6 +2690,14 @@ function buildCinemaFromCsv(text) {
 (function () {
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var secure = function (u) { u = String(u || '').trim(); if (!u) return ''; if (u.indexOf('//') === 0) return 'https:' + u; return u.replace(/^http:\/\//i, 'https://'); };
+  // PlayStation presence lives in the playstation-stats database, not the site's own one.
+  function psnCard(tag) {
+    var path = '/psn/gamertags/' + String(tag).replace(/[.$#\[\]\/]/g, '_');
+    if (window.wwPsn && window.wwPsn.get) return window.wwPsn.get(path).catch(function () { return null; });
+    var base = 'https://playstation-stats-default-rtdb.firebaseio.com', tries = [path]; if (path.toLowerCase() !== path) tries.push(path.toLowerCase());
+    var i = 0; function next() { if (i >= tries.length) return Promise.resolve(null); return fetch(base + tries[i++] + '.json?t=' + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).then(function (v) { return v == null ? next() : v; }).catch(next); }
+    return next();
+  }
   function start() {
     var W = window.WW; if (!W || !W.ready) return false;
     W.ready.then(async function () {
@@ -2718,7 +2727,7 @@ function buildCinemaFromCsv(text) {
             if (!(pr && pr.title && pr.t && now - pr.t < 150000) && key) pr = u.now_playing && u.now_playing.title ? u.now_playing : null;   // fallback mirror kept on the user record
             if (pr && pr.title && pr.t && now - pr.t < 150000) plays.push({ icon: '\uD83C\uDFB2', where: 'Mobile', title: pr.title, status: pr.status || '' });
           })());
-          if (px) jobs.push(get('psn/gamertags/' + px).then(function (ps) { if (ps && (ps.avatar || ps.avatarUrl)) pav.push(ps.avatar || ps.avatarUrl); if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && String(ps.currentGame).toLowerCase() !== 'idle') plays.push({ icon: '\uD83C\uDFAE', where: 'PlayStation', title: ps.currentGame, status: '' }); }));
+          if (px) jobs.push(psnCard(px).then(function (ps) { if (ps && (ps.avatar || ps.avatarUrl)) pav.push(ps.avatar || ps.avatarUrl); if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && !/^(idle|standby)$/i.test(String(ps.currentGame))) { var gs = String(ps.gameStatus || ps.currentGameActivity || '').trim(); plays.push({ icon: '\uD83C\uDFAE', where: 'PlayStation', title: ps.currentGame, status: gs && gs.toLowerCase() !== String(ps.currentGame).toLowerCase() ? gs : '' }); } }));
           if (xb) jobs.push(get('psn/xbox_cards/' + xb.replace(/[.$#\[\]\/]/g, '_')).then(async function (xc) { if (!xc) xc = await get('xbox/gamertags/' + xb.replace(/[.$#\[\]\/]/g, '_')); if (xc && xc.gamerPicture) pav.push(xc.gamerPicture); if (xc && /online/i.test(xc.presenceState || '') && xc.presenceText) plays.push({ icon: '\uD83D\uDFE2', where: 'Xbox', title: String(xc.presenceText).replace(/^playing\s+/i, ''), status: '' }); }));
           if (sk) jobs.push((async function () { if (!/^7656119\d{10}$/.test(sk)) { var vn = await get('steam_vanity/' + sk.toLowerCase().replace(/[.$#\[\]\/]/g, '_')); sk = typeof vn === 'string' ? vn : ''; } if (!sk) return; var sp = await get('steam_users/' + sk + '/profile'); if (sp && sp.avatar) pav.push(sp.avatar); if (sp && sp.currentGame) plays.push({ icon: '\uD83D\uDCBB', where: 'Steam', title: sp.currentGame, status: '' }); })());
           await Promise.all(jobs);

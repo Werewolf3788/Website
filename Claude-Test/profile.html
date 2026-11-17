@@ -343,7 +343,7 @@ async function loadPsn(tag) {
   const total = sm.total !== undefined ? sm.total : g4('platinum') + g4('gold') + g4('silver') + g4('bronze');
   return {
     platform:'psn', name:u.onlineId || tag, avatar:secure(u.avatar || u.image || (u.allAvatars && u.allAvatars[0]) || ''),
-    online, currentGame:online ? (u.currentGame || '') : '', activity:u.currentGameActivity || '', plus:!!u.plus,
+    online, currentGame:online ? (u.currentGame || '') : '', activity:u.currentGameActivity || (u.gameStatus && String(u.gameStatus).toLowerCase() !== String(u.currentGame || '').toLowerCase() ? u.gameStatus : '') || '', plus:!!u.plus,
     stats:[['Level', u.level || sm.trophyLevel || '--'], ['Trophies', num(total).toLocaleString()], ['Games', u.gamesPlayed || list.length]],
     breakdown:{ platinum:g4('platinum'), gold:g4('gold'), silver:g4('silver'), bronze:g4('bronze') },
     games:list, recent:arr(u.mostRecentTrophies)

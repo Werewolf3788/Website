@@ -269,8 +269,10 @@
           if (!item.plays.length && np && np.t && now - np.t < 150000) item.plays.push({ kind: 'mobile', game: np.game, title: np.title, status: np.status || '', room: np.room, open: np.open | 0 });
           var tag = prof.psn_username || fo.psn_username;
           if (tag) {
-            var ps = (await db.ref('psn/gamertags/' + tag).once('value')).val();
-            if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && String(ps.currentGame).toLowerCase() !== 'idle') item.plays.push({ kind: 'console', platform: ps.displayPlatform || ps.platform || 'PlayStation', title: ps.currentGame, status: '' });
+            // PlayStation presence lives in the playstation-stats database, not the site's own one.
+            var ps = null, psTags = [tag]; if (String(tag).toLowerCase() !== tag) psTags.push(String(tag).toLowerCase());
+            for (var pi = 0; pi < psTags.length && !ps; pi++) { try { var pr2 = await fetch('https://playstation-stats-default-rtdb.firebaseio.com/psn/gamertags/' + encodeURIComponent(psTags[pi]) + '.json?t=' + Date.now()); if (pr2.ok) ps = await pr2.json(); } catch (e) {} }
+            if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && !/^(idle|standby)$/i.test(String(ps.currentGame))) { var gs = String(ps.gameStatus || ps.currentGameActivity || '').trim(); item.plays.push({ kind: 'console', platform: ps.displayPlatform || ps.platform || 'PlayStation', title: ps.currentGame, status: gs && gs.toLowerCase() !== String(ps.currentGame).toLowerCase() ? gs : '' }); }
           }
           var sid = String(prof.steam_id || '').trim();
           if (sid) {
