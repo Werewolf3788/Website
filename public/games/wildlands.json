@@ -1965,5 +1965,17 @@
         "emoji": "⏱️"
       }
     ]
+  },
+  "play_better": {
+    "title": "Play better: recommended",
+    "tips": [
+      "Spend Skill Points on the cheap early ranks first (1 SP each) across Physical, Weapon and Drone trees before chasing the 4 SP ranks.",
+      "Drone first: the Drone tree (range, marking, battery) makes every outpost easier because you can tag guards and supplies before you move.",
+      "Tag supplies with the drone or binoculars as you go. Tagged Gasoline, Medication, Comms and Food are what pay for the higher skill ranks.",
+      "In co-op, split roles: one person on sniper plus Stable Aim and Stealth, the other on assault plus Squad skills like sync shots.",
+      "Run a suppressor on your primary for stealth, and keep a pistol suppressed for cleaning up lone guards without alerting the camp.",
+      "Do Rebel Support skills early: vehicle drop-off and reinforcements save a lot of driving and let you reset a mission quickly.",
+      "Mark Unidad and Santa Blanca outposts from a distance, take out alarms and commanders first, then clear the rest."
+    ]
   }
 }

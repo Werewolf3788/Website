@@ -771,6 +771,7 @@ window.appState.applyStateToUI = function() {
         if (document.activeElement === el) return;
         el.value = (this.wallet && this.wallet['res_' + el.dataset.res]) || 0;
     });
+    const wn = document.getElementById('wlNext'); if (wn && typeof nextUnlocksHtml === 'function') wn.innerHTML = nextUnlocksHtml();
     const lvl2 = document.getElementById('wildlandsLevelInput2'); if (lvl2 && document.activeElement !== lvl2) lvl2.value = (this.wallet && this.wallet.level) || 1;
     const lvlInput = document.getElementById('wildlandsLevelInput');
     if (lvlInput && document.activeElement !== lvlInput) lvlInput.value = (this.wallet && this.wallet.level) || 1;
@@ -3176,6 +3177,44 @@ window.fillWatchDefaults = fillWatchDefaults;
 
 // Editable "what I have" counters (skill points, gasoline, ...). Listed in the
 // game JSON as resources: [{ id, name, emoji, hint }]. Saved with the wallet.
+// "What can I unlock next?": every skill's next rank, checked against the numbers typed into the resource counters.
+function nextUnlocksList() {
+    const out = [], have = {};
+    Object.keys(RES_LABELS).forEach(k => { have[k] = resHave(k); });
+    Object.entries(appState.collectibles || {}).forEach(([gk, grp]) => {
+        Object.values((grp && grp.items) || {}).forEach(it => {
+            if (!it || !Array.isArray(it.rank_costs)) return;
+            const lvl = Number(it.level) || 0; if (lvl >= it.rank_costs.length) return;
+            const c = it.rank_costs[lvl], parts = rankCostParts(c); if (!parts.length) return;
+            const lock = it.unlock_level && (Number(appState.wallet && appState.wallet.level) || 1) < Number(it.unlock_level) ? Number(it.unlock_level) : 0;
+            const missing = parts.filter(([k, n]) => have[k] < n).map(([k, n]) => [k, n - have[k]]);
+            out.push({ name: it.name, rank: lvl + 1, effect: c.effect || '', parts, missing, lock, total: parts.reduce((a, [, n]) => a + n, 0) });
+        });
+    });
+    out.sort((a, b) => ((a.lock ? 1 : 0) - (b.lock ? 1 : 0)) || (a.missing.length - b.missing.length) || (a.total - b.total));
+    return out;
+}
+function nextUnlocksHtml() {
+    const list = nextUnlocksList();
+    if (!list.length) return '<div class="muted">Nothing left to unlock, or the skill list is still loading.</div>';
+    const fmt = (parts) => parts.map(([k, n]) => `${RES_LABELS[k].emoji} ${Number(n).toLocaleString()}`).join(' ');
+    const row = (r) => `<div style="padding:6px 0;border-top:1px solid #334155;font-size:0.82rem;color:#e2e8f0"><b>${escapeHtml(r.name)}</b> rank ${r.rank}${r.effect ? ' (' + escapeHtml(r.effect) + ')' : ''} <span style="color:#94a3b8">costs ${fmt(r.parts)}</span>${r.lock ? ` <span style="color:#fbbf24">needs level ${r.lock}</span>` : (r.missing.length ? ` <span style="color:#f87171">short ${fmt(r.missing)}</span>` : ' <span style="color:#22c55e;font-weight:700">you can buy this now</span>')}</div>`;
+    const now = list.filter(r => !r.lock && !r.missing.length), soon = list.filter(r => !(!r.lock && !r.missing.length));
+    return (now.length ? `<div style="font-weight:700;color:#22c55e;margin-bottom:2px">Affordable now (${now.length})</div>` + now.slice(0, 8).map(row).join('') : '<div class="muted">Nothing affordable with the numbers you entered.</div>')
+        + (soon.length ? `<div style="font-weight:700;color:#94a3b8;margin:10px 0 2px">Closest next</div>` + soon.slice(0, 6).map(row).join('') : '');
+}
+function playBetterHtml(data) {
+    const pb = data && data.play_better; const tips = pb ? toArr(pb.tips) : [];
+    return `
+    <section class="category-section">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🧭 ${escapeHtml((pb && pb.title) || 'What to unlock next')}</h2><span>▾</span></div>
+        <div class="section-content">
+            <div id="wlNext">${nextUnlocksHtml()}</div>
+            ${tips.length ? `<div style="font-weight:700;color:#e2e8f0;margin:12px 0 4px">Tips</div><ul style="margin:0;padding-left:18px;color:#cbd5e1;font-size:0.82rem;line-height:1.5">${tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}
+        </div>
+    </section>`;
+}
+
 function profilePanelHtml(data) {
     const pp = data && data.player_profile; if (!pp) return '';
     const w = (appState.wallet) || {};
@@ -3201,7 +3240,7 @@ function resourcePanelHtml(data) {
     const list = toArr(data && data.resources).filter(r => r && r.id && r.name);
     if (!list.length) return '';
     return `
-    <section class="category-section section-collapsed">
+    <section class="category-section">
         <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🎒 ${escapeHtml(data.resources_title || 'Resources I have')}</h2><span>▾</span></div>
         <div class="section-content">
             <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">${escapeHtml(data.resources_note || 'Type in what your game shows. It saves automatically.')}</p>
@@ -3494,7 +3533,7 @@ function renderUniversalCompanion(data) {
 
     // Legacy fallback renderer
     let html = '';
-    let pinnedHtml = profilePanelHtml(appState.gameData) + resourcePanelHtml(appState.gameData);
+    let pinnedHtml = profilePanelHtml(appState.gameData) + resourcePanelHtml(appState.gameData) + (appState.gameData && appState.gameData.play_better ? playBetterHtml(appState.gameData) : '');
     // Pinned groups (e.g. tech_upgrades) render first, above missions, trophies,
     // and every other collectible category, so progress toward them — and what
     // each one costs — is always visible at the top of the page.
