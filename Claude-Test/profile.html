@@ -388,7 +388,24 @@ async function loadSteam(raw) {
     if (!id) return null;
   }
   const g = async (c) => (await W.db.ref(`steam_users/${id}/${c}`).once('value').catch(() => ({ val: () => null }))).val();
-  const [profile, games, ach, tot, lib] = await Promise.all([g('profile'), g('games'), g('ach'), g('achTotals'), g('library')]);
+  let [profile, games, ach, tot, lib] = await Promise.all([g('profile'), g('games'), g('ach'), g('achTotals'), g('library')]);
+  if (!profile || !lib) { // Firestore copy (steam_players/{id} + library/page_N) covers everyone the sync has seen
+    try {
+      const fs = await W.loadFirestore(), root = fs.collection('steam_players').doc(id);
+      const head = await root.get();
+      if (head.exists) {
+        const pages = await root.collection('library').get(), merged = {};
+        pages.forEach(d => Object.assign(merged, (d.data() || {}).games || {}));
+        if (Object.keys(merged).length) lib = merged;
+        if (!ach) { // per-game achievement counts, if the sync stored them
+          const as = await root.collection('ach').get().catch(() => null), o = {};
+          if (as) as.forEach(d => { const v = d.data() || {}; Object.entries(v.games || v).forEach(([k, x]) => { if (x && typeof x === 'object' && ('total' in x || 'got' in x)) o[k] = x; }); });
+          if (Object.keys(o).length) ach = o;
+        }
+        if (!profile) profile = { name: (head.data() || {}).name || id, avatar: (head.data() || {}).avatar || '' };
+      }
+    } catch (e) { console.warn('[profile] steam firestore', e); }
+  }
   if (!profile) return null;
   const achOf = (appid) => (ach && ach[appid]) || {};
   // every owned game (library), recently played first, then by last played / hours; falls back to the recent list
