@@ -312,7 +312,7 @@ async function loadPsn(tag) {
   const online = u.online === true || u.online === 'true';
   const list = arr(u.recentGames).map(g => {
     const id = String(g.npCommunicationId || g.commId || '').toUpperCase();
-    return { platform:'psn', id, title:g.name || g.trophyTitleName || 'Game', poster:secure(g.posterArt || g.art || ''),
+    return { platform:'psn', id, gameKey:g.gameKey || '', title:g.name || g.trophyTitleName || 'Game', poster:secure(g.posterArt || g.art || ''),
       progress:num(g.progress), earned:g.earnedTotal, total:g.definedTotal, hours:g.nativePlaytimeFormatted || '',
       lastPlayed:g.lastPlayedDateTime || g.lastUpdatedDateTime || '', playing: online && !!id && id === activeId };
   });
@@ -660,15 +660,16 @@ async function psnFs() {
 }
 /** Full trophy catalog for a game (meta/gameIndex -> games/{key}.trophies): every trophy's name, icon, rank, rarity. Same source as the Game Companion. */
 const _skel = {};
-async function psnCatalog(commId) {
+async function psnCatalog(commId, gameKey) {
   const id = String(commId || '').toUpperCase(); if (!id) return [];
   if (_skel[id]) return _skel[id];
   _skel[id] = (async () => {
     try {
       const fs = await psnFs(); if (!fs) return [];
-      const idx = await fs.collection('meta').doc('gameIndex').get();
-      const entry = idx.exists && (idx.data().entries || {})[id]; if (!entry || !entry.key) return [];
-      const doc = await fs.collection('games').doc(entry.key).get(); if (!doc.exists) return [];
+      let key = gameKey || '';
+      if (!key) { const idx = await fs.collection('meta').doc('gameIndex').get(); const entry = idx.exists && (idx.data().entries || {})[id]; key = entry && entry.key || ''; }
+      if (!key) return [];
+      const doc = await fs.collection('games').doc(key).get(); if (!doc.exists) return [];
       return arr(doc.data().trophies);
     } catch (e) { console.warn('[psn catalog]', e && e.message); return []; }
   })();
@@ -723,7 +724,7 @@ async function openGame(g) {
   let items = [], friendsMaps = [], note = '';
   if (g.platform === 'psn') {
     const tag = (S.psnRaw && S.psnRaw.onlineId) || platId('psn');
-    const [cat, mine, fr] = await Promise.all([psnCatalog(g.id), psnTrophyMap(tag, g.id), friendTrophyMaps(g.id)]);
+    const [cat, mine, fr] = await Promise.all([psnCatalog(g.id, g.gameKey), psnTrophyMap(tag, g.id), friendTrophyMaps(g.id)]);
     friendsMaps = fr.filter(f => String(f.code).toUpperCase() !== String(S.U.friend_code || '').toUpperCase());
     const live = (S.psnRaw && S.psnRaw.liveTrophyProgress && S.psnRaw.liveTrophyProgress[g.id]) || {};
     const prog = mine || live || {};
