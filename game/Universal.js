@@ -762,6 +762,11 @@ function applyUserProfileStyling(uData) {
 
 // Section 6: UI State Toggles & Renderers
 window.appState.applyStateToUI = function() {
+    // Editable resource counters ("resources" in the game JSON): show the saved amounts.
+    document.querySelectorAll('.res-input[data-res]').forEach(el => {
+        if (document.activeElement === el) return;
+        el.value = (this.wallet && this.wallet['res_' + el.dataset.res]) || 0;
+    });
     this.recalculateMetrics();
     if (typeof renderWalletUI === 'function') renderWalletUI();
     if (typeof renderRankUI === 'function') renderRankUI();
@@ -1746,6 +1751,11 @@ function ensureUniversalStyles() {
         .game-overview { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
         .game-chip { padding: 6px 12px; border-radius: 999px; background: #1e293b; border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; font-size: 0.78rem; font-weight: 700; }
         .game-chip.on { border-color: #22c55e; color: #86efac; }
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .res-box { display: flex; flex-direction: column; gap: 5px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: rgba(15,23,42,0.5); }
+        .res-name { font-size: 0.78rem; font-weight: 700; color: #fff; }
+        .res-input { width: 100%; font-size: 1.05rem; font-weight: 700; text-align: center; }
+        .res-hint { font-size: 0.68rem; color: #94a3b8; line-height: 1.3; }
         .wallet-meter { font-size: 0.78rem; color: #cbd5e1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
         .wm-num { font-weight: 800; color: #fbbf24; }
         .wm-num.ok { color: #86efac; }
@@ -3069,6 +3079,28 @@ function fillWatchDefaults(form) {
 }
 window.fillWatchDefaults = fillWatchDefaults;
 
+// Editable "what I have" counters (skill points, gasoline, ...). Listed in the
+// game JSON as resources: [{ id, name, emoji, hint }]. Saved with the wallet.
+function resourcePanelHtml(data) {
+    const list = toArr(data && data.resources).filter(r => r && r.id && r.name);
+    if (!list.length) return '';
+    return `
+    <section class="category-section">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🎒 ${escapeHtml(data.resources_title || 'Resources I have')}</h2><span>▾</span></div>
+        <div class="section-content">
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">${escapeHtml(data.resources_note || 'Type in what your game shows. It saves automatically.')}</p>
+            <div class="res-grid">
+                ${list.map(r => `
+                <label class="res-box" title="${escapeHtml(r.hint || '')}">
+                    <span class="res-name">${escapeHtml(r.emoji || '')} ${escapeHtml(r.name)}</span>
+                    <input class="uni-search-input res-input" data-res="${escapeHtml(r.id)}" type="number" min="0" inputmode="numeric" value="${Number(appState.wallet && appState.wallet['res_' + r.id]) || 0}" onchange="appState.setWallet('res_${escapeHtml(r.id)}', this.value)">
+                    ${r.hint ? `<span class="res-hint">${escapeHtml(r.hint)}</span>` : ''}
+                </label>`).join('')}
+            </div>
+        </div>
+    </section>`;
+}
+
 function walletPanelHtml(data) {
     const speciesOpts = toArr(data.species).map(s => s && s.name).filter(Boolean).sort().map(n => `<option>${escapeHtml(n)}</option>`).join('');
     const inp = 'class="uni-search-input hunt-input"';
@@ -3340,7 +3372,7 @@ function renderUniversalCompanion(data) {
 
     // Legacy fallback renderer
     let html = '';
-    let pinnedHtml = '';
+    let pinnedHtml = resourcePanelHtml(appState.gameData);
     // Pinned groups (e.g. tech_upgrades) render first, above missions, trophies,
     // and every other collectible category, so progress toward them — and what
     // each one costs — is always visible at the top of the page.

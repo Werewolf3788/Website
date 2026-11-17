@@ -52,6 +52,40 @@
   },
   "lastUpdated": "",
   "overallProgress": 0,
+  "resources_title": "Skill points & resources I have",
+  "resources_note": "Type in the numbers from the top of your Skills menu. It saves automatically.",
+  "resources": [
+    {
+      "id": "skill_points",
+      "name": "Skill Points",
+      "emoji": "⬆️",
+      "hint": "From levelling up and Skill Point pickups."
+    },
+    {
+      "id": "gasoline",
+      "name": "Gasoline",
+      "emoji": "⛽",
+      "hint": "Tag fuel supplies and trucks."
+    },
+    {
+      "id": "medication",
+      "name": "Medication",
+      "emoji": "💊",
+      "hint": "Tag medical supplies."
+    },
+    {
+      "id": "comms",
+      "name": "Comms Tools",
+      "emoji": "📡",
+      "hint": "Tag comms supplies."
+    },
+    {
+      "id": "food",
+      "name": "Food Rations",
+      "emoji": "🥫",
+      "hint": "Tag food supplies."
+    }
+  ],
   "collectibles": {
     "weapon_skills": {
       "quest_name": "Weapon Skills",
