@@ -1,10 +1,11 @@
 /* ============================================================================
  * File: scripts/destiny-sync.js
- * Description: Destiny 2 sync (Bungie.net API) -> Kevin's RTDB (entertainment-71888).
+ * Description: Destiny 2 sync (Bungie.net API). Game data -> Firestore (entertainment-71888) destiny_players/{emailKey};
+ *   RTDB only keeps the user's own link info at /destiny_users/{emailKey} { name, updated_at }. Needs the Admin SDK (GCP_SA_KEY_WEBSITE).
  *   INPUT : /users/{emailKey}.bungie_name   ("Name#1234")
  *   KEY   : /user_secrets/{emailKey}.bungie_api_key (own), else the owner's key in
  *           /user_secrets/{OWNER}.bungie_api_key (or BUNGIE_API_KEY secret) for the owner's close friends.
- *   OUTPUT: /destiny_users/{emailKey} { name, membershipType, membershipId, updated_at,
+ *   OUTPUT: Firestore destiny_players/{emailKey} { name, membershipType, membershipId, updated_at,
  *             characters:[{ cls, race, light, minutes, last }], totals:{ minutes, kills, deaths, activities } }
  *   Only public data is read; nothing secret is written.
  * ============================================================================ */
@@ -14,7 +15,7 @@ const BNET = "https://www.bungie.net/Platform";
 const OWNER = (process.env.OWNER_EMAIL_KEY || "raykevin71888_at_gmail_com").trim();
 let SITE_KEY = (process.env.BUNGIE_API_KEY || "").trim();
 const CLS = ["Titan", "Hunter", "Warlock"], RACE = ["Human", "Awoken", "Exo"];
-let adminDb = null;
+let adminDb = null, fs = null;
 function initAdmin() {
     const raw = (process.env.GCP_SA_KEY_WEBSITE || "").trim(); if (!raw) return;
     try {
@@ -22,7 +23,9 @@ function initAdmin() {
         const { getDatabase } = require("firebase-admin/database");
         const c = raw.startsWith("{") ? JSON.parse(raw) : JSON.parse(Buffer.from(raw, "base64").toString("utf-8"));
         if (typeof c.private_key === "string") c.private_key = c.private_key.replace(/\\n/g, "\n");
-        adminDb = getDatabase(initializeApp({ credential: cert(c), databaseURL: DB }, "kevinDestiny"));
+        const app = initializeApp({ credential: cert(c), databaseURL: DB }, "kevinDestiny");
+        adminDb = getDatabase(app);
+        fs = require("firebase-admin/firestore").getFirestore(app);
     } catch (e) { console.warn(`[DB] Admin SDK unavailable (${e.message}); using REST.`); }
 }
 const q = () => (process.env.FIREBASE_AUTH_SECRET ? `?auth=${encodeURIComponent(process.env.FIREBASE_AUTH_SECRET.trim())}` : "");
@@ -50,15 +53,18 @@ async function syncOne(key, emailKey, bungieName) {
     const stats = await bnet(key, `/Destiny2/${t}/Account/${id}/Stats/`);
     const all = stats.Response?.mergedAllCharacters?.merged?.allTime || {};
     const v = (k) => Math.round(all[k]?.basic?.value || 0);
-    await dbSet(`destiny_users/${emailKey}`, {
-        name: `${p.bungieGlobalDisplayName || m[1]}#${String(p.bungieGlobalDisplayNameCode || m[2]).padStart(4, "0")}`,
+    const name = `${p.bungieGlobalDisplayName || m[1]}#${String(p.bungieGlobalDisplayNameCode || m[2]).padStart(4, "0")}`;
+    await fs.collection("destiny_players").doc(emailKey).set({
+        name,
         membershipType: t, membershipId: String(id), updated_at: Date.now(),
         characters: chars.map((c) => ({ cls: CLS[c.classType] || "Guardian", race: RACE[c.raceType] || "", light: c.light | 0, minutes: Number(c.minutesPlayedTotal) || 0, last: c.dateLastPlayed || "" })),
         totals: { minutes: Math.round(v("secondsPlayed") / 60), kills: v("kills"), deaths: v("deaths"), activities: v("activitiesEntered") },
     });
+    await dbSet(`destiny_users/${emailKey}`, { name, updated_at: Date.now() });
 }
 async function main() {
     initAdmin();
+    if (!fs) throw new Error("Destiny sync needs GCP_SA_KEY_WEBSITE (Firestore via the Admin SDK).");
     const users = (await dbGet("users")) || {}, secrets = (await dbGet("user_secrets").catch(() => null)) || {};
     if (!SITE_KEY) SITE_KEY = String((secrets[OWNER] || {}).bungie_api_key || (secrets._site || {}).bungie_api_key || "").trim();
     const close = new Set([OWNER]);
