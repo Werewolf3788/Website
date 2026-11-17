@@ -434,6 +434,14 @@ async function loadSteam(raw) {
 
 /* Game Companion saves (Firestore user/{key}/platform/{p}/game/{name}) */
 // Game Companion saves under the friend code (fallback: account key). Returns rows for one person.
+const PF_LABELS = { primary:'Primary', secondary:'Secondary', pistol:'Pistol', class:'Style', driving:'Driving', air:'Air time', parachute:'Parachute', played:'Played' };
+function profileBits(w) {
+  if (!w) return [];
+  const out = []; if (num(w.level) > 1) out.push('Level ' + num(w.level));
+  Object.keys(PF_LABELS).forEach(k => { if (w['pf_' + k]) out.push(PF_LABELS[k] + ': ' + w['pf_' + k]); });
+  Object.keys(PF_LABELS).forEach(k => { if (num(w['pfh_' + k]) > 0) out.push(PF_LABELS[k] + ': ' + num(w['pfh_' + k]) + ' h'); });
+  return out;
+}
 async function readTracking(fs, ids) {
   const out = [], seen = new Set();
   for (const id of ids) for (const p of Object.keys(TRACK_PLATS)) {
@@ -446,7 +454,7 @@ async function readTracking(fs, ids) {
       const done = sets.reduce((n, a) => n + a.filter(x => x && (x.earned || x.completed)).length, 0)
                  + Object.values(d.collectibles || {}).reduce((n, c) => n + Object.values((c && c.items) || {}).filter(i => i && i.collected).length, 0);
       out.push({ title:doc.id, platform:({ ps:'PlayStation', xbox:'Xbox', steam:'Steam', pc:'PC' })[p], status: total && done >= total ? 'Completed' : (done ? 'In progress' : 'Started'),
-        progress: total ? Math.round(Math.min(done, total) / total * 100) : null, poster:'', note: total ? `${Math.min(done, total)}/${total} tracked` : '', updated:d.updatedAt || 0 });
+        progress: total ? Math.round(Math.min(done, total) / total * 100) : null, poster:'', note: total ? `${Math.min(done, total)}/${total} tracked` : '', updated:d.updatedAt || 0, extra: profileBits(d.wallet) });
     });
   }
   out.sort((a, b) => num(b.updated) - num(a.updated));
@@ -656,7 +664,7 @@ function trackingRows(items) {
   return items.map(t => `<div class="row">
     ${t.poster ? `<img src="${esc(t.poster)}" alt="" onerror="this.style.display='none'">` : '<div style="width:48px;height:48px;border-radius:.6rem;background:rgba(127,127,127,.2);display:flex;align-items:center;justify-content:center;flex:none"><i class="fas fa-gamepad mute"></i></div>'}
     <div style="min-width:0;flex:1"><div style="font-weight:800" class="nowrap-trunc">${esc(t.title)}</div>
-      <div class="mute" style="font-size:.75rem">${[t.platform, t.status].filter(Boolean).map(esc).join(' &bull; ')}${t.note ? ' &mdash; ' + esc(t.note) : ''}</div>
+      <div class="mute" style="font-size:.75rem">${[t.platform, t.status].filter(Boolean).map(esc).join(' &bull; ')}${t.note ? ' &mdash; ' + esc(t.note) : ''}</div>${(t.extra && t.extra.length) ? `<div class="mute" style="font-size:.72rem;margin-top:.2rem">${t.extra.map(esc).join(' &bull; ')}</div>` : ''}
       ${t.progress != null ? pctBar(t.progress) : ''}</div>
     ${t.progress != null ? `<div class="mono" style="font-weight:800;color:${t.progress >= 100 ? '#67e8f9' : pctColor(t.progress)}">${t.progress}%</div>` : ''}</div>`).join('');
 }

@@ -1917,5 +1917,53 @@
     "Rebel Support's Vehicle Drop-Off is the one skill with explicitly documented per-rank differences: Rank 1 calls an SUV, Rank 2 an armored vehicle, Rank 3 a helicopter.",
     "The last column of the Weapon, Drone, Physical and Squad trees unlocks at player level 14, 15, 17 and 16. Rank counts and costs now come from the IGN / Ghost Recon Wiki skill lists."
   ],
-  "resources_cost_note": "Skill costs are from IGN / Ghost Recon Wiki lists and have not been checked in-game. If your game shows a different cost, tell Claude and it gets fixed."
+  "resources_cost_note": "Skill costs are from IGN / Ghost Recon Wiki lists and have not been checked in-game. If your game shows a different cost, tell Claude and it gets fixed.",
+  "player_profile": {
+    "title": "My Wildlands profile",
+    "note": "Type these in from your in-game profile and loadout. They save automatically and show on your site profile.",
+    "fields": [
+      {
+        "id": "primary",
+        "name": "Primary weapon",
+        "emoji": "🔫"
+      },
+      {
+        "id": "secondary",
+        "name": "Secondary weapon",
+        "emoji": "🔫"
+      },
+      {
+        "id": "pistol",
+        "name": "Pistol",
+        "emoji": "🔫"
+      },
+      {
+        "id": "class",
+        "name": "Playstyle / class",
+        "emoji": "🎯"
+      }
+    ],
+    "stats": [
+      {
+        "id": "driving",
+        "name": "Driving time",
+        "emoji": "🚗"
+      },
+      {
+        "id": "air",
+        "name": "Air time (flying)",
+        "emoji": "🚁"
+      },
+      {
+        "id": "parachute",
+        "name": "Parachute time",
+        "emoji": "🪂"
+      },
+      {
+        "id": "played",
+        "name": "Total play time",
+        "emoji": "⏱️"
+      }
+    ]
+  }
 }

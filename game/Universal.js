@@ -771,6 +771,7 @@ window.appState.applyStateToUI = function() {
         if (document.activeElement === el) return;
         el.value = (this.wallet && this.wallet['res_' + el.dataset.res]) || 0;
     });
+    const lvl2 = document.getElementById('wildlandsLevelInput2'); if (lvl2 && document.activeElement !== lvl2) lvl2.value = (this.wallet && this.wallet.level) || 1;
     const lvlInput = document.getElementById('wildlandsLevelInput');
     if (lvlInput && document.activeElement !== lvlInput) lvlInput.value = (this.wallet && this.wallet.level) || 1;
     // Next-rank price on each skill card, coloured by what you can afford.
@@ -3049,6 +3050,14 @@ window.appState.applyLevelUps = function() {
         next = xpNeededFor(w.level);
     }
 };
+window.appState.setWalletText = function(field, value) {
+    if (!/^pf_[a-z0-9_]+$/.test(field)) return;
+    this.wallet[field] = String(value || '').trim().slice(0, 60); this.saveProgress();
+};
+window.appState.setWalletHours = function(field, value) {
+    if (!/^pfh_[a-z0-9_]+$/.test(field)) return;
+    this.wallet[field] = Math.max(0, Math.round((Number(value) || 0) * 10) / 10); this.saveProgress();
+};
 window.appState.setWallet = function(field, value) {
     if (field === 'gameTime') this.wallet.gameTime = value || '00:00';
     else {
@@ -3167,6 +3176,27 @@ window.fillWatchDefaults = fillWatchDefaults;
 
 // Editable "what I have" counters (skill points, gasoline, ...). Listed in the
 // game JSON as resources: [{ id, name, emoji, hint }]. Saved with the wallet.
+function profilePanelHtml(data) {
+    const pp = data && data.player_profile; if (!pp) return '';
+    const w = (appState.wallet) || {};
+    const fields = toArr(pp.fields).filter(f => f && f.id), stats = toArr(pp.stats).filter(f => f && f.id);
+    return `
+    <section class="category-section">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🪪 ${escapeHtml(pp.title || 'My profile')}</h2><span>▾</span></div>
+        <div class="section-content">
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">${escapeHtml(pp.note || '')}</p>
+            <div class="res-grid">
+                <label class="res-box"><span class="res-name">🎖️ Player Level</span>
+                    <input class="uni-search-input res-input" id="wildlandsLevelInput2" type="number" min="1" inputmode="numeric" value="${Number(w.level) || 1}" onchange="appState.setWallet('level', this.value)"></label>
+                ${fields.map(f => `<label class="res-box"><span class="res-name">${escapeHtml(f.emoji || '')} ${escapeHtml(f.name)}</span>
+                    <input class="uni-search-input res-input" data-pf="${escapeHtml(f.id)}" type="text" maxlength="60" value="${escapeHtml(w['pf_' + f.id] || '')}" onchange="appState.setWalletText('pf_${escapeHtml(f.id)}', this.value)"></label>`).join('')}
+                ${stats.map(f => `<label class="res-box"><span class="res-name">${escapeHtml(f.emoji || '')} ${escapeHtml(f.name)} (hours)</span>
+                    <input class="uni-search-input res-input" data-pfh="${escapeHtml(f.id)}" type="number" min="0" step="0.1" inputmode="decimal" value="${Number(w['pfh_' + f.id]) || 0}" onchange="appState.setWalletHours('pfh_${escapeHtml(f.id)}', this.value)"></label>`).join('')}
+            </div>
+        </div>
+    </section>`;
+}
+
 function resourcePanelHtml(data) {
     const list = toArr(data && data.resources).filter(r => r && r.id && r.name);
     if (!list.length) return '';
@@ -3464,7 +3494,7 @@ function renderUniversalCompanion(data) {
 
     // Legacy fallback renderer
     let html = '';
-    let pinnedHtml = resourcePanelHtml(appState.gameData);
+    let pinnedHtml = profilePanelHtml(appState.gameData) + resourcePanelHtml(appState.gameData);
     // Pinned groups (e.g. tech_upgrades) render first, above missions, trophies,
     // and every other collectible category, so progress toward them — and what
     // each one costs — is always visible at the top of the page.
