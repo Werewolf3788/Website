@@ -341,6 +341,10 @@ window.appState = {
                             unlock_requirement: cItem.unlock_requirement || '',
                             level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null,
                             tier_notes: Array.isArray(cItem.tier_notes) ? cItem.tier_notes : null,
+                            // Per-rank prices in several currencies (Wildlands skills: Skill Points
+                            // + Gasoline/Medication/Comms/Food), paid from the resource counters.
+                            rank_costs: Array.isArray(cItem.rank_costs) ? cItem.rank_costs : null,
+                            unlock_level: cItem.unlock_level != null ? cItem.unlock_level : null,
                             // Bonus medal: a one-off perk independent of the tier/level above
                             // (e.g. a skill's associated bonus medal), toggled by its own star button.
                             bonus: cItem.bonus || null,
@@ -767,6 +771,37 @@ window.appState.applyStateToUI = function() {
         if (document.activeElement === el) return;
         el.value = (this.wallet && this.wallet['res_' + el.dataset.res]) || 0;
     });
+    // Next-rank price on each skill card, coloured by what you can afford.
+    document.querySelectorAll('.rank-cost[data-rc-id]').forEach(el => {
+        const it = this.collectibles[el.dataset.rcGroup]?.items?.[el.dataset.rcId];
+        if (!it || !Array.isArray(it.rank_costs)) return;
+        const lvl = it.level || 0;
+        const costs = it.rank_costs;
+        if (lvl >= costs.length) { el.innerHTML = '<span class="rc-done">✓ All ranks bought</span>'; return; }
+        const next = costs[lvl] || {};
+        const parts = rankCostParts(next).map(([k, n]) => {
+            const have = resHave(k);
+            return `<span class="rc-part ${have >= n ? 'rc-ok' : 'rc-short'}" title="You have ${fmtNum(have)}">${RES_LABELS[k].emoji} ${fmtNum(n)} ${RES_LABELS[k].short}</span>`;
+        }).join('');
+        const ok = canAffordRank(next);
+        const req = (lvl === 0 && it.unlock_level) ? ` <span class="rc-req">needs player level ${escapeHtml(String(it.unlock_level))}</span>` : '';
+        el.innerHTML = `<div class="rc-head">Next: Rank ${lvl + 1}${next.effect ? ` (${escapeHtml(next.effect)})` : ''}${req}</div>
+            <div class="rc-parts">${parts}</div>
+            <button type="button" class="uni-search-btn rc-buy${ok ? '' : ' rc-buy-short'}" onclick="appState.buyRank('${escapeHtml(el.dataset.rcId)}', '${escapeHtml(el.dataset.rcGroup)}')">${ok ? 'Buy rank ' + (lvl + 1) : 'Not enough yet'}</button>`;
+    });
+    // "Still needed to max everything" line in the resource panel.
+    const remEl = document.getElementById('resRemaining');
+    if (remEl) {
+        const need = {};
+        Object.values(this.collectibles || {}).forEach(g => Object.values(g.items || {}).forEach(it => {
+            if (!Array.isArray(it.rank_costs)) return;
+            it.rank_costs.slice(it.level || 0).forEach(c => rankCostParts(c).forEach(([k, n]) => { need[k] = (need[k] || 0) + n; }));
+        }));
+        const keys = Object.keys(RES_LABELS).filter(k => need[k]);
+        remEl.innerHTML = keys.length
+            ? '<b>Still needed to max every skill:</b> ' + keys.map(k => `<span class="rc-part ${resHave(k) >= need[k] ? 'rc-ok' : 'rc-short'}">${RES_LABELS[k].emoji} ${fmtNum(need[k])} ${RES_LABELS[k].short}</span>`).join('')
+            : '<span class="rc-done">✓ Every skill is maxed</span>';
+    }
     this.recalculateMetrics();
     if (typeof renderWalletUI === 'function') renderWalletUI();
     if (typeof renderRankUI === 'function') renderRankUI();
@@ -1751,6 +1786,17 @@ function ensureUniversalStyles() {
         .game-overview { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
         .game-chip { padding: 6px 12px; border-radius: 999px; background: #1e293b; border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; font-size: 0.78rem; font-weight: 700; }
         .game-chip.on { border-color: #22c55e; color: #86efac; }
+        .res-remaining { font-size: 0.78rem; color: #cbd5e1; margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .rank-cost { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: rgba(15,23,42,0.55); border: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; }
+        .rc-head { color: #cbd5e1; margin-bottom: 5px; }
+        .rc-req { color: #fbbf24; }
+        .rc-parts { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+        .rc-part { padding: 2px 7px; border-radius: 999px; font-weight: 700; }
+        .rc-ok { background: rgba(34,197,94,0.15); color: #86efac; }
+        .rc-short { background: rgba(239,68,68,0.15); color: #fca5a5; }
+        .rc-done { color: #86efac; font-weight: 700; }
+        .rc-buy { font-size: 0.72rem; padding: 4px 10px; }
+        .rc-buy-short { opacity: 0.55; }
         .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
         .res-box { display: flex; flex-direction: column; gap: 5px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: rgba(15,23,42,0.5); }
         .res-name { font-size: 0.78rem; font-weight: 700; color: #fff; }
@@ -1965,6 +2011,7 @@ function buildItemCard(o) {
         ${o.progressGoal ? `<div class="medal-meter wallet-meter" data-medal="${escapeHtml(o.id)}"></div>` : ''}
         ${o.type === 'trophy' ? `<div class="wallet-meter trophy-psn" data-trophy="${escapeHtml(o.id)}" hidden></div><div class="trophy-link" data-trophy="${escapeHtml(o.id)}" hidden></div>` : ''}
         ${o.price ? `<div class="price-meter wallet-meter" data-price="${Number(o.price) || 0}"></div>` : ''}
+        ${o.rankCosts ? `<div class="rank-cost" data-rc-id="${escapeHtml(o.id)}" data-rc-group="${escapeHtml(o.group || '')}"></div>` : ''}
     </div>`;
 }
 
@@ -3079,6 +3126,46 @@ function fillWatchDefaults(form) {
 }
 window.fillWatchDefaults = fillWatchDefaults;
 
+// Multi-currency rank prices: { sp, gasoline, medication, comms, food } -> resource counters.
+const RES_LABELS = {
+    sp: { res: 'skill_points', emoji: '⬆️', short: 'SP' },
+    gasoline: { res: 'gasoline', emoji: '⛽', short: 'Gas' },
+    medication: { res: 'medication', emoji: '💊', short: 'Meds' },
+    comms: { res: 'comms', emoji: '📡', short: 'Comms' },
+    food: { res: 'food', emoji: '🥫', short: 'Food' }
+};
+function rankCostParts(c) {
+    return Object.keys(RES_LABELS).filter(k => Number(c && c[k]) > 0).map(k => [k, Number(c[k])]);
+}
+function resHave(k) {
+    return Number(appState.wallet && appState.wallet['res_' + RES_LABELS[k].res]) || 0;
+}
+function canAffordRank(c) {
+    return rankCostParts(c).every(([k, n]) => resHave(k) >= n);
+}
+// "Buy rank" pays the next rank from the resource counters and marks it.
+// Clicking the rank boxes only marks ranks (for ones you bought before typing
+// your numbers in), so nothing is ever taken away twice.
+window.appState.buyRank = function(id, group) {
+    const it = this.collectibles[group]?.items?.[id];
+    if (!it || !Array.isArray(it.rank_costs)) return;
+    const lvl = it.level || 0;
+    const c = it.rank_costs[lvl];
+    if (!c) return;
+    const short = rankCostParts(c).filter(([k, n]) => resHave(k) < n);
+    if (short.length) {
+        this.updateStatus('Not enough: need ' + short.map(([k, n]) => `${fmtNum(n - resHave(k))} more ${RES_LABELS[k].short}`).join(', ') + '.');
+        return;
+    }
+    rankCostParts(c).forEach(([k, n]) => { this.wallet['res_' + RES_LABELS[k].res] = resHave(k) - n; });
+    const max = Number(it.levels) || it.rank_costs.length;
+    it.level = Math.min(max, lvl + 1);
+    it.collected = it.level >= max;
+    this.updateStatus(`${it.name}: bought rank ${it.level}.`);
+    this.applyStateToUI();
+    this.saveProgress();
+};
+
 // Editable "what I have" counters (skill points, gasoline, ...). Listed in the
 // game JSON as resources: [{ id, name, emoji, hint }]. Saved with the wallet.
 function resourcePanelHtml(data) {
@@ -3089,6 +3176,8 @@ function resourcePanelHtml(data) {
         <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🎒 ${escapeHtml(data.resources_title || 'Resources I have')}</h2><span>▾</span></div>
         <div class="section-content">
             <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">${escapeHtml(data.resources_note || 'Type in what your game shows. It saves automatically.')}</p>
+            ${data.resources_cost_note ? `<p style="color:#94a3b8; font-size:0.72rem; margin:-4px 0 10px;">${escapeHtml(data.resources_cost_note)}</p>` : ''}
+            <div id="resRemaining" class="res-remaining"></div>
             <div class="res-grid">
                 ${list.map(r => `
                 <label class="res-box" title="${escapeHtml(r.hint || '')}">
@@ -3517,7 +3606,8 @@ function renderUniversalCompanion(data) {
                             badge: it.region || humanize(cKey), badgeClass: 'rank-silver',
                             title: it.name || id, sub: it.location || '',
                             body: it.guide || '', img: it.image_url,
-                            levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null
+                            levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null,
+                            rankCosts: !!(it.rank_costs && it.rank_costs.length)
                         })).join('')}
                     </div>
                 </div>

@@ -103,7 +103,29 @@
           "bonus": {
             "name": "Stable Aim",
             "desc": "Reduces aim sway by 15%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "15%",
+              "sp": 1,
+              "food": 75
+            },
+            {
+              "effect": "30%",
+              "sp": 2,
+              "comms": 625
+            },
+            {
+              "effect": "45%",
+              "sp": 3,
+              "food": 2100
+            },
+            {
+              "effect": "65%",
+              "sp": 4,
+              "gasoline": 5000
+            }
+          ]
         },
         {
           "id": "skill_hip_fire_spread",
@@ -116,7 +138,29 @@
           "bonus": {
             "name": "Hip Fire Spread",
             "desc": "Reduces hip-fire spread by 10%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "10%",
+              "sp": 1,
+              "gasoline": 50
+            },
+            {
+              "effect": "20%",
+              "sp": 2,
+              "comms": 625
+            },
+            {
+              "effect": "30%",
+              "sp": 3,
+              "food": 1750
+            },
+            {
+              "effect": "40%",
+              "sp": 4,
+              "medication": 5500
+            }
+          ]
         },
         {
           "id": "skill_grenade_launcher",
@@ -125,7 +169,30 @@
           "location": "Weapon Skill Tree",
           "guide": "Unlocks an under-barrel launcher that fires frag grenades quickly. To use it: buy this skill, pick up a launcher attachment case in the world (the M203 is reported to be in the village of Poco in Remanzo), then open Gunsmith on a compatible assault rifle and fit it in the Underbarrel slot.",
           "levels": 4,
-          "image_url": "/public/games/wildlands/images/skills/grenade_launcher.png"
+          "image_url": "/public/games/wildlands/images/skills/grenade_launcher.png",
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 2,
+              "comms": 450
+            },
+            {
+              "effect": "+1 Ammo",
+              "sp": 3,
+              "medication": 1875
+            },
+            {
+              "effect": "+2 Ammo",
+              "sp": 4,
+              "gasoline": 4725
+            },
+            {
+              "effect": "+3 Ammo",
+              "sp": 5,
+              "food": 7000
+            }
+          ],
+          "unlock_level": 5
         },
         {
           "id": "skill_ammo_capacity",
@@ -138,7 +205,30 @@
           "bonus": {
             "name": "Ammo Capacity",
             "desc": "Raises maximum reserve ammo by 25%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+25%",
+              "sp": 2,
+              "food": 300
+            },
+            {
+              "effect": "+50%",
+              "sp": 3,
+              "medication": 1250
+            },
+            {
+              "effect": "+75%",
+              "sp": 4,
+              "gasoline": 3500
+            },
+            {
+              "effect": "+100%",
+              "sp": 5,
+              "comms": 6000
+            }
+          ],
+          "unlock_level": 5
         },
         {
           "id": "skill_vhc_destruction",
@@ -151,7 +241,30 @@
           "bonus": {
             "name": "VHC Destruction",
             "desc": "Increases vehicle damage by 20%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+20%",
+              "sp": 2,
+              "gasoline": 550
+            },
+            {
+              "effect": "+40%",
+              "sp": 3,
+              "gasoline": 1500
+            },
+            {
+              "effect": "+60%",
+              "sp": 4,
+              "comms": 4725
+            },
+            {
+              "effect": "+80%",
+              "sp": 5,
+              "food": 7400
+            }
+          ],
+          "unlock_level": 5
         },
         {
           "id": "skill_adv_suppressor",
@@ -159,10 +272,16 @@
           "region": "Weapon",
           "location": "Weapon Skill Tree · unlocks at Level 14",
           "guide": "Keeps full weapon damage while a suppressor is attached.",
-          "levels": 3,
+          "levels": 1,
           "image_url": "/public/games/wildlands/images/skills/adv_suppressor.png",
           "unlock_level": 14,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "No Damage Loss",
+              "sp": 3,
+              "food": 6000
+            }
+          ]
         },
         {
           "id": "skill_time_to_aim",
@@ -170,14 +289,35 @@
           "region": "Weapon",
           "location": "Weapon Skill Tree · unlocks at Level 14",
           "guide": "Shortens the time it takes to aim scoped weapons.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/time_to_aim.png",
           "bonus": {
             "name": "Time to Aim",
             "desc": "Cuts aim-in time by 10%."
           },
           "unlock_level": 14,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "-10%",
+              "sp": 3,
+              "comms": 1500
+            },
+            {
+              "effect": "-20%",
+              "sp": 4,
+              "food": 4375
+            },
+            {
+              "effect": "-30%",
+              "sp": 5,
+              "medication": 8750
+            },
+            {
+              "effect": "-40%",
+              "sp": 6,
+              "gasoline": 11000
+            }
+          ]
         },
         {
           "id": "skill_ammo_retention",
@@ -185,10 +325,16 @@
           "region": "Weapon",
           "location": "Weapon Skill Tree · unlocks at Level 14",
           "guide": "Refills all carried ammo whenever you respawn.",
-          "levels": 3,
+          "levels": 1,
           "image_url": "/public/games/wildlands/images/skills/ammo_retention.png",
           "unlock_level": 14,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "Full Ammo on Respawn",
+              "sp": 3,
+              "medication": 5000
+            }
+          ]
         },
         {
           "id": "skill_epic_ranged_elite",
@@ -197,7 +343,17 @@
           "location": "Weapon Skill Tree · Epic Skill",
           "guide": "The Weapon tree's Epic Skill, the final unlock at the end of the tree.",
           "levels": 1,
-          "epic": true
+          "epic": true,
+          "rank_costs": [
+            {
+              "effect": "Epic skill",
+              "sp": 5,
+              "gasoline": 5000,
+              "medication": 5000,
+              "comms": 5000,
+              "food": 5000
+            }
+          ]
         }
       ]
     },
@@ -213,7 +369,29 @@
           "location": "Drone Skill Tree",
           "guide": "Extends how long the drone can stay airborne before needing to recharge.",
           "levels": 4,
-          "image_url": "/public/games/wildlands/images/skills/battery_increase.png"
+          "image_url": "/public/games/wildlands/images/skills/battery_increase.png",
+          "rank_costs": [
+            {
+              "effect": "+50%",
+              "sp": 1,
+              "gasoline": 75
+            },
+            {
+              "effect": "+125%",
+              "sp": 2,
+              "comms": 750
+            },
+            {
+              "effect": "+200%",
+              "sp": 3,
+              "medication": 2100
+            },
+            {
+              "effect": "Infinite",
+              "sp": 4,
+              "medication": 5000
+            }
+          ]
         },
         {
           "id": "skill_night_vision",
@@ -222,7 +400,14 @@
           "location": "Drone Skill Tree",
           "guide": "Improves the drone's camera for use in low light.",
           "levels": 1,
-          "image_url": "/public/games/wildlands/images/skills/night_vision.png"
+          "image_url": "/public/games/wildlands/images/skills/night_vision.png",
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 1,
+              "comms": 75
+            }
+          ]
         },
         {
           "id": "skill_range",
@@ -235,7 +420,29 @@
           "bonus": {
             "name": "Range",
             "desc": "Increases drone range by 25%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+25%",
+              "sp": 1,
+              "medication": 50
+            },
+            {
+              "effect": "+50%",
+              "sp": 2,
+              "food": 875
+            },
+            {
+              "effect": "+85%",
+              "sp": 3,
+              "medication": 2625
+            },
+            {
+              "effect": "+130%",
+              "sp": 4,
+              "gasoline": 5500
+            }
+          ]
         },
         {
           "id": "skill_speed",
@@ -248,7 +455,20 @@
           "bonus": {
             "name": "Speed",
             "desc": "Adds a 20% speed bonus."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+40%",
+              "sp": 2,
+              "comms": 300
+            },
+            {
+              "effect": "+60%",
+              "sp": 3,
+              "food": 1250
+            }
+          ],
+          "unlock_level": 7
         },
         {
           "id": "skill_mark_area",
@@ -261,7 +481,30 @@
           "bonus": {
             "name": "Mark Area",
             "desc": "Doubles mark-area efficiency."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+40%",
+              "sp": 2,
+              "gasoline": 450
+            },
+            {
+              "effect": "+80%",
+              "sp": 3,
+              "medication": 1625
+            },
+            {
+              "effect": "+120%",
+              "sp": 4,
+              "food": 4375
+            },
+            {
+              "effect": "+180%",
+              "sp": 5,
+              "comms": 8000
+            }
+          ],
+          "unlock_level": 7
         },
         {
           "id": "skill_stealth",
@@ -270,7 +513,15 @@
           "location": "Drone Skill Tree",
           "guide": "Reduces the noise the drone makes in flight.",
           "levels": 1,
-          "image_url": "/public/games/wildlands/images/skills/stealth.png"
+          "image_url": "/public/games/wildlands/images/skills/stealth.png",
+          "rank_costs": [
+            {
+              "effect": "-50% Noise",
+              "sp": 2,
+              "comms": 500
+            }
+          ],
+          "unlock_level": 7
         },
         {
           "id": "skill_cooldown",
@@ -283,7 +534,30 @@
           "bonus": {
             "name": "Cooldown",
             "desc": "Shortens cooldown by 8 seconds."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "35s",
+              "sp": 2,
+              "medication": 550
+            },
+            {
+              "effect": "30s",
+              "sp": 3,
+              "food": 1750
+            },
+            {
+              "effect": "25s",
+              "sp": 4,
+              "medication": 4725
+            },
+            {
+              "effect": "20s",
+              "sp": 5,
+              "gasoline": 7000
+            }
+          ],
+          "unlock_level": 7
         },
         {
           "id": "skill_noisemaker",
@@ -292,7 +566,30 @@
           "location": "Drone Skill Tree",
           "guide": "Lets the drone emit noise to distract and lure enemies.",
           "levels": 4,
-          "image_url": "/public/games/wildlands/images/skills/noisemaker.png"
+          "image_url": "/public/games/wildlands/images/skills/noisemaker.png",
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 2,
+              "gasoline": 400
+            },
+            {
+              "effect": "30m",
+              "sp": 3,
+              "medication": 1375
+            },
+            {
+              "effect": "40m",
+              "sp": 4,
+              "food": 3850
+            },
+            {
+              "effect": "50m",
+              "sp": 5,
+              "comms": 8000
+            }
+          ],
+          "unlock_level": 7
         },
         {
           "id": "skill_zoom",
@@ -300,10 +597,16 @@
           "region": "Drone",
           "location": "Drone Skill Tree · unlocks at Level 15",
           "guide": "Increases the drone camera's maximum zoom.",
-          "levels": 3,
+          "levels": 1,
           "image_url": "/public/games/wildlands/images/skills/zoom.png",
           "unlock_level": 15,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "3x Zoom",
+              "sp": 3,
+              "comms": 5500
+            }
+          ]
         },
         {
           "id": "skill_explosive",
@@ -311,10 +614,31 @@
           "region": "Drone",
           "location": "Drone Skill Tree · unlocks at Level 15",
           "guide": "Equips the drone with a remotely detonated explosive charge.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/explosive.png",
           "unlock_level": 15,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 3,
+              "gasoline": 1500
+            },
+            {
+              "effect": "8m",
+              "sp": 4,
+              "medication": 3375
+            },
+            {
+              "effect": "11m",
+              "sp": 5,
+              "food": 7000
+            },
+            {
+              "effect": "13m",
+              "sp": 6,
+              "gasoline": 9400
+            }
+          ]
         },
         {
           "id": "skill_emp",
@@ -322,10 +646,31 @@
           "region": "Drone",
           "location": "Drone Skill Tree · unlocks at Level 15",
           "guide": "Equips the drone with an EMP charge that disables nearby vehicles and electronics.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/emp.png",
           "unlock_level": 15,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 3,
+              "food": 1500
+            },
+            {
+              "effect": "25m",
+              "sp": 4,
+              "comms": 3375
+            },
+            {
+              "effect": "40m",
+              "sp": 5,
+              "gasoline": 6650
+            },
+            {
+              "effect": "50m",
+              "sp": 6,
+              "medication": 10000
+            }
+          ]
         },
         {
           "id": "skill_armor",
@@ -333,14 +678,35 @@
           "region": "Drone",
           "location": "Drone Skill Tree · unlocks at Level 15",
           "guide": "Lets the drone absorb more damage before being destroyed.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/armor.png",
           "bonus": {
             "name": "Armor",
             "desc": "Doubles the drone's damage resistance."
           },
           "unlock_level": 15,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "+200%",
+              "sp": 3,
+              "medication": 1200
+            },
+            {
+              "effect": "+400%",
+              "sp": 4,
+              "gasoline": 3125
+            },
+            {
+              "effect": "+600%",
+              "sp": 5,
+              "comms": 5425
+            },
+            {
+              "effect": "+800%",
+              "sp": 6,
+              "food": 10000
+            }
+          ]
         },
         {
           "id": "skill_thermal_vision",
@@ -348,10 +714,16 @@
           "region": "Drone",
           "location": "Drone Skill Tree · unlocks at Level 15",
           "guide": "Gives the drone a thermal camera mode.",
-          "levels": 3,
+          "levels": 1,
           "image_url": "/public/games/wildlands/images/skills/thermal_vision.png",
           "unlock_level": 15,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 3,
+              "comms": 4500
+            }
+          ]
         },
         {
           "id": "skill_epic_medic",
@@ -360,7 +732,17 @@
           "location": "Drone Skill Tree · Epic Skill",
           "guide": "The Drone tree's Epic Skill, the final unlock at the end of the tree.",
           "levels": 1,
-          "epic": true
+          "epic": true,
+          "rank_costs": [
+            {
+              "effect": "Epic skill",
+              "sp": 5,
+              "gasoline": 5000,
+              "medication": 5000,
+              "comms": 5000,
+              "food": 5000
+            }
+          ]
         }
       ]
     },
@@ -376,7 +758,14 @@
           "location": "Item Skill Tree",
           "guide": "Lets you deploy a parachute to land safely after jumping or falling from aircraft.",
           "levels": 1,
-          "image_url": "/public/games/wildlands/images/skills/parachute.png"
+          "image_url": "/public/games/wildlands/images/skills/parachute.png",
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 1,
+              "comms": 550
+            }
+          ]
         },
         {
           "id": "skill_binocular_zoom",
@@ -389,7 +778,14 @@
           "bonus": {
             "name": "Binocular Zoom",
             "desc": "Raises maximum binocular zoom by 25%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+25%",
+              "sp": 1,
+              "comms": 500
+            }
+          ]
         },
         {
           "id": "skill_mine",
@@ -402,7 +798,29 @@
           "bonus": {
             "name": "Mine",
             "desc": "Grants one extra mine."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 1,
+              "medication": 75
+            },
+            {
+              "effect": "Max 3",
+              "sp": 2,
+              "food": 1000
+            },
+            {
+              "effect": "Max 4",
+              "sp": 3,
+              "comms": 2625
+            },
+            {
+              "effect": "Max 5",
+              "sp": 4,
+              "medication": 5000
+            }
+          ]
         },
         {
           "id": "skill_diversion_lure",
@@ -415,7 +833,29 @@
           "bonus": {
             "name": "Diversion Lure",
             "desc": "Grants one extra lure."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 1,
+              "medication": 50
+            },
+            {
+              "effect": "Max 5",
+              "sp": 2,
+              "gasoline": 500
+            },
+            {
+              "effect": "Max 7",
+              "sp": 3,
+              "food": 2625
+            },
+            {
+              "effect": "Max 10",
+              "sp": 4,
+              "comms": 6000
+            }
+          ]
         },
         {
           "id": "skill_frag_grenade",
@@ -428,7 +868,30 @@
           "bonus": {
             "name": "Frag Grenade",
             "desc": "Grants two extra frag grenades."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "Max 3",
+              "sp": 2,
+              "gasoline": 600
+            },
+            {
+              "effect": "Max 4",
+              "sp": 3,
+              "comms": 1750
+            },
+            {
+              "effect": "Max 5",
+              "sp": 4,
+              "food": 4375
+            },
+            {
+              "effect": "Max 6",
+              "sp": 5,
+              "medication": 6500
+            }
+          ],
+          "unlock_level": 4
         },
         {
           "id": "skill_c4",
@@ -441,7 +904,30 @@
           "bonus": {
             "name": "C4",
             "desc": "Grants one extra C4 pack."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 2,
+              "medication": 650
+            },
+            {
+              "effect": "Max 3",
+              "sp": 3,
+              "gasoline": 1500
+            },
+            {
+              "effect": "Max 4",
+              "sp": 4,
+              "comms": 3500
+            },
+            {
+              "effect": "Max 5",
+              "sp": 5,
+              "food": 6000
+            }
+          ],
+          "unlock_level": 4
         },
         {
           "id": "skill_binocular_recon",
@@ -454,7 +940,30 @@
           "bonus": {
             "name": "Binocular Recon",
             "desc": "Boosts recon efficiency by 15%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+10%",
+              "sp": 2,
+              "medication": 400
+            },
+            {
+              "effect": "+20%",
+              "sp": 3,
+              "gasoline": 1250
+            },
+            {
+              "effect": "+30%",
+              "sp": 4,
+              "comms": 3850
+            },
+            {
+              "effect": "+40%",
+              "sp": 5,
+              "food": 7000
+            }
+          ],
+          "unlock_level": 4
         },
         {
           "id": "skill_thermal_vision",
@@ -463,7 +972,15 @@
           "location": "Item Skill Tree",
           "guide": "Gives you a handheld thermal-vision mode.",
           "levels": 1,
-          "image_url": "/public/games/wildlands/images/skills/thermal_vision.png"
+          "image_url": "/public/games/wildlands/images/skills/thermal_vision.png",
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 2,
+              "comms": 1750
+            }
+          ],
+          "unlock_level": 4
         },
         {
           "id": "skill_flashbang_grenade",
@@ -476,7 +993,30 @@
           "bonus": {
             "name": "Flashbang Grenade",
             "desc": "Grants two extra flashbangs."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 3,
+              "comms": 1500
+            },
+            {
+              "effect": "Max 4",
+              "sp": 4,
+              "food": 3125
+            },
+            {
+              "effect": "Max 5",
+              "sp": 5,
+              "medication": 7000
+            },
+            {
+              "effect": "Max 6",
+              "sp": 6,
+              "gasoline": 10000
+            }
+          ],
+          "unlock_level": 10
         },
         {
           "id": "skill_flare_gun",
@@ -489,7 +1029,30 @@
           "bonus": {
             "name": "Flare Gun",
             "desc": "Grants two extra flares."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "Unlock",
+              "sp": 3,
+              "gasoline": 1500
+            },
+            {
+              "effect": "Max 4",
+              "sp": 4,
+              "medication": 3750
+            },
+            {
+              "effect": "Max 5",
+              "sp": 5,
+              "food": 7875
+            },
+            {
+              "effect": "Max 6",
+              "sp": 6,
+              "food": 12000
+            }
+          ],
+          "unlock_level": 10
         },
         {
           "id": "skill_epic_explosion_radius",
@@ -498,7 +1061,17 @@
           "location": "Item Skill Tree · Epic Skill",
           "guide": "The Item tree's Epic Skill, the final unlock at the end of the tree.",
           "levels": 1,
-          "epic": true
+          "epic": true,
+          "rank_costs": [
+            {
+              "effect": "Epic skill",
+              "sp": 5,
+              "gasoline": 5000,
+              "medication": 5000,
+              "comms": 5000,
+              "food": 5000
+            }
+          ]
         }
       ]
     },
@@ -514,7 +1087,29 @@
           "location": "Physical Skill Tree",
           "guide": "Extends how long you can sprint before running out of breath.",
           "levels": 4,
-          "image_url": "/public/games/wildlands/images/skills/stamina.png"
+          "image_url": "/public/games/wildlands/images/skills/stamina.png",
+          "rank_costs": [
+            {
+              "effect": "+20%",
+              "sp": 1,
+              "comms": 50
+            },
+            {
+              "effect": "+40%",
+              "sp": 2,
+              "food": 625
+            },
+            {
+              "effect": "+60%",
+              "sp": 3,
+              "medication": 2100
+            },
+            {
+              "effect": "Infinite",
+              "sp": 4,
+              "gasoline": 5000
+            }
+          ]
         },
         {
           "id": "skill_no_pain",
@@ -527,7 +1122,29 @@
           "bonus": {
             "name": "No Pain",
             "desc": "Extends the resistant window by 50%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+30%",
+              "sp": 1,
+              "food": 50
+            },
+            {
+              "effect": "+60%",
+              "sp": 2,
+              "medication": 750
+            },
+            {
+              "effect": "+90%",
+              "sp": 3,
+              "gasoline": 2275
+            },
+            {
+              "effect": "+120%",
+              "sp": 4,
+              "comms": 5000
+            }
+          ]
         },
         {
           "id": "skill_car_shield",
@@ -540,7 +1157,30 @@
           "bonus": {
             "name": "Car Shield",
             "desc": "Reduces incoming damage by 10% while driving."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "-10% Dmg",
+              "sp": 2,
+              "medication": 300
+            },
+            {
+              "effect": "-20% Dmg",
+              "sp": 3,
+              "gasoline": 1250
+            },
+            {
+              "effect": "-30% Dmg",
+              "sp": 4,
+              "comms": 3500
+            },
+            {
+              "effect": "-40% Dmg",
+              "sp": 5,
+              "food": 6500
+            }
+          ],
+          "unlock_level": 6
         },
         {
           "id": "skill_quiet_running",
@@ -553,7 +1193,30 @@
           "bonus": {
             "name": "Quiet Running",
             "desc": "Reduces running noise by 10%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "-5% Noise",
+              "sp": 2,
+              "medication": 450
+            },
+            {
+              "effect": "-10% Noise",
+              "sp": 3,
+              "gasoline": 1875
+            },
+            {
+              "effect": "-15% Noise",
+              "sp": 4,
+              "comms": 4375
+            },
+            {
+              "effect": "-20% Noise",
+              "sp": 5,
+              "food": 7400
+            }
+          ],
+          "unlock_level": 6
         },
         {
           "id": "skill_bullet_resistance",
@@ -567,7 +1230,30 @@
             "name": "Bullet Resistance",
             "desc": "5% damage reduction. Found in Itacua (Bonus Medal #1): in a dirt-yard camp with tents and a helipad, on the ground beside the small concrete building.",
             "province": "Itacua"
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "-5% Dmg",
+              "sp": 2,
+              "gasoline": 650
+            },
+            {
+              "effect": "-10% Dmg",
+              "sp": 3,
+              "comms": 1875
+            },
+            {
+              "effect": "-15% Dmg",
+              "sp": 4,
+              "food": 4900
+            },
+            {
+              "effect": "-20% Dmg",
+              "sp": 5,
+              "medication": 8000
+            }
+          ],
+          "unlock_level": 6
         },
         {
           "id": "skill_detection",
@@ -575,14 +1261,35 @@
           "region": "Physical",
           "location": "Physical Skill Tree · unlocks at Level 17",
           "guide": "Makes you harder for enemies to spot while crouched or prone.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/detection.png",
           "bonus": {
             "name": "Detection",
             "desc": "Slows the enemy detection rate by 5%."
           },
           "unlock_level": 17,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "-5%",
+              "sp": 3,
+              "medication": 1500
+            },
+            {
+              "effect": "-10%",
+              "sp": 4,
+              "comms": 3375
+            },
+            {
+              "effect": "-15%",
+              "sp": 5,
+              "gasoline": 6650
+            },
+            {
+              "effect": "-25%",
+              "sp": 6,
+              "medication": 10000
+            }
+          ]
         },
         {
           "id": "skill_explosion_resistance",
@@ -590,14 +1297,35 @@
           "region": "Physical",
           "location": "Physical Skill Tree · unlocks at Level 17",
           "guide": "Reduces the damage you take from explosions.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/explosion_resistance.png",
           "bonus": {
             "name": "Explosion Resistance",
             "desc": "Reduces explosion damage by 15%."
           },
           "unlock_level": 17,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "-10% Dmg",
+              "sp": 3,
+              "gasoline": 1500
+            },
+            {
+              "effect": "-20% Dmg",
+              "sp": 4,
+              "comms": 3500
+            },
+            {
+              "effect": "-30% Dmg",
+              "sp": 5,
+              "food": 7000
+            },
+            {
+              "effect": "-40% Dmg",
+              "sp": 6,
+              "medication": 10000
+            }
+          ]
         },
         {
           "id": "skill_aircraft_shield",
@@ -605,14 +1333,35 @@
           "region": "Physical",
           "location": "Physical Skill Tree · unlocks at Level 17",
           "guide": "Reduces weapon damage taken while piloting an aircraft.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/aircraft_shield.png",
           "bonus": {
             "name": "Aircraft Shield",
             "desc": "Reduces incoming damage by 10% while piloting."
           },
           "unlock_level": 17,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "-5% Dmg",
+              "sp": 3,
+              "medication": 1250
+            },
+            {
+              "effect": "-10% Dmg",
+              "sp": 4,
+              "food": 3125
+            },
+            {
+              "effect": "-15% Dmg",
+              "sp": 5,
+              "gasoline": 7000
+            },
+            {
+              "effect": "-20% Dmg",
+              "sp": 6,
+              "medication": 10000
+            }
+          ]
         },
         {
           "id": "skill_epic_faster_regen",
@@ -621,7 +1370,17 @@
           "location": "Physical Skill Tree · Epic Skill",
           "guide": "The Physical tree's Epic Skill, the final unlock at the end of the tree.",
           "levels": 1,
-          "epic": true
+          "epic": true,
+          "rank_costs": [
+            {
+              "effect": "Epic skill",
+              "sp": 5,
+              "gasoline": 5000,
+              "medication": 5000,
+              "comms": 5000,
+              "food": 5000
+            }
+          ]
         }
       ]
     },
@@ -641,7 +1400,29 @@
           "bonus": {
             "name": "Revive Speed",
             "desc": "Speeds up revives by 30%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+6%",
+              "sp": 1,
+              "medication": 50
+            },
+            {
+              "effect": "+12%",
+              "sp": 2,
+              "comms": 500
+            },
+            {
+              "effect": "+18%",
+              "sp": 3,
+              "food": 1750
+            },
+            {
+              "effect": "+24%",
+              "sp": 4,
+              "gasoline": 4000
+            }
+          ]
         },
         {
           "id": "skill_extra_sync_shot",
@@ -650,7 +1431,19 @@
           "location": "Squad Skill Tree",
           "guide": "Adds extra targets to your Sync Shot marks.",
           "levels": 2,
-          "image_url": "/public/games/wildlands/images/skills/extra_sync_shot.png"
+          "image_url": "/public/games/wildlands/images/skills/extra_sync_shot.png",
+          "rank_costs": [
+            {
+              "effect": "+1 Target",
+              "sp": 1,
+              "gasoline": 50
+            },
+            {
+              "effect": "+2 Targets",
+              "sp": 2,
+              "comms": 1500
+            }
+          ]
         },
         {
           "id": "skill_trained_rebels",
@@ -663,7 +1456,30 @@
           "bonus": {
             "name": "Trained Rebels",
             "desc": "Increases rebel damage by 5%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+5% Dmg",
+              "sp": 2,
+              "food": 450
+            },
+            {
+              "effect": "+10% Dmg",
+              "sp": 3,
+              "medication": 1500
+            },
+            {
+              "effect": "+15% Dmg",
+              "sp": 4,
+              "gasoline": 3500
+            },
+            {
+              "effect": "+20% Dmg",
+              "sp": 5,
+              "comms": 8500
+            }
+          ],
+          "unlock_level": 5
         },
         {
           "id": "skill_squad_resilience",
@@ -676,7 +1492,30 @@
           "bonus": {
             "name": "Squad Resilience",
             "desc": "Increases teammate resistance by 5%."
-          }
+          },
+          "rank_costs": [
+            {
+              "effect": "+5%",
+              "sp": 2,
+              "food": 500
+            },
+            {
+              "effect": "+10%",
+              "sp": 3,
+              "medication": 1625
+            },
+            {
+              "effect": "+15%",
+              "sp": 4,
+              "gasoline": 4375
+            },
+            {
+              "effect": "+20%",
+              "sp": 5,
+              "comms": 8400
+            }
+          ],
+          "unlock_level": 5
         },
         {
           "id": "skill_bleed_out_time",
@@ -684,14 +1523,35 @@
           "region": "Squad",
           "location": "Squad Skill Tree · unlocks at Level 16",
           "guide": "Extends how long you survive while waiting to be revived.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/bleed_out_time.png",
           "bonus": {
             "name": "Bleed Out Time",
             "desc": "Lengthens bleed-out time by 20%."
           },
           "unlock_level": 16,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "+10%",
+              "sp": 3,
+              "medication": 1450
+            },
+            {
+              "effect": "+20%",
+              "sp": 4,
+              "comms": 3625
+            },
+            {
+              "effect": "+30%",
+              "sp": 5,
+              "food": 7875
+            },
+            {
+              "effect": "+40%",
+              "sp": 6,
+              "gasoline": 11000
+            }
+          ]
         },
         {
           "id": "skill_born_leader",
@@ -699,14 +1559,35 @@
           "region": "Squad",
           "location": "Squad Skill Tree · unlocks at Level 16",
           "guide": "Makes your AI teammates more effective overall.",
-          "levels": 3,
+          "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/born_leader.png",
           "bonus": {
             "name": "Born Leader",
             "desc": "Increases teammate efficiency by 8%."
           },
           "unlock_level": 16,
-          "levels_unconfirmed": true
+          "rank_costs": [
+            {
+              "effect": "+8%",
+              "sp": 3,
+              "food": 1500
+            },
+            {
+              "effect": "+16%",
+              "sp": 4,
+              "medication": 4750
+            },
+            {
+              "effect": "+24%",
+              "sp": 5,
+              "gasoline": 7875
+            },
+            {
+              "effect": "+32%",
+              "sp": 6,
+              "comms": 11000
+            }
+          ]
         },
         {
           "id": "skill_epic_last_chance",
@@ -715,7 +1596,17 @@
           "location": "Squad Skill Tree · Epic Skill",
           "guide": "The Squad tree's Epic Skill, the final unlock at the end of the tree.",
           "levels": 1,
-          "epic": true
+          "epic": true,
+          "rank_costs": [
+            {
+              "effect": "Epic skill",
+              "sp": 5,
+              "gasoline": 5000,
+              "medication": 5000,
+              "comms": 5000,
+              "food": 5000
+            }
+          ]
         }
       ]
     },
@@ -1024,6 +1915,7 @@
     "Skills have between 1 and 4 ranks (Rebel Support skills have 3). Click a rank box to jump straight to that rank; click the already-active top box again to drop back one rank.",
     "A skill with a Bonus Medal (shown as a star) has that medal as a separate, independent toggle from its tier boxes — the medal is a one-off map pickup, not another rank.",
     "Rebel Support's Vehicle Drop-Off is the one skill with explicitly documented per-rank differences: Rank 1 calls an SUV, Rank 2 an armored vehicle, Rank 3 a helicopter.",
-    "The last column of the Weapon, Drone, Physical and Squad trees unlocks at player level 14, 15, 17 and 16. Rank counts for those locked skills are not confirmed yet."
-  ]
+    "The last column of the Weapon, Drone, Physical and Squad trees unlocks at player level 14, 15, 17 and 16. Rank counts and costs now come from the IGN / Ghost Recon Wiki skill lists."
+  ],
+  "resources_cost_note": "Skill costs are from IGN / Ghost Recon Wiki lists and have not been checked in-game. If your game shows a different cost, tell Claude and it gets fixed."
 }
