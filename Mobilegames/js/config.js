@@ -3,7 +3,7 @@
 // ---- SEASON: every farm save and farm (solo + multiplayer) carries the season it was made in. When the season goes up,
 // everyone starts fresh the next time they open the game. Bump this number to reset everyone, or use the owner-only
 // "Reset farm for everyone" button in the game (it writes game_rooms/farm/_season in Firebase, which wins if it is higher).
-export const SEASON = 2;
+export const SEASON = 3;
 export const OWNER_EMAIL = 'raykevin71888@gmail.com';
 
 const MIN = 60000, HOUR = 3600000, DAY = 86400000;
@@ -19,10 +19,11 @@ export const XP_HARVEST = 5;                                                   /
 export const XP_PRODUCT = { egg: 1, wool: 2, milk: 3, duckegg: 2, goatmilk: 4 };                        // chicken / sheep / cow
 export function levelUpCoins(l) { return 25 * l; }
 
+// ---- crops: a new farmer starts with ONE crop (wheat) and enough seed for one whole field; every other crop unlocks by level.
 // ---- crops: grow = real minutes of growth after the crop is watered (every crop is ready within 1 hour).
 // Rule: the more a crop sells for, the longer it takes (a cheap crop never takes longer than a dearer one).
 export const CROPS = {
-  carrot:     { name: 'Carrot',     icon: '🥕', level: 1,  grow: 3 * MIN,  seed: 1,  sell: 7 },
+  carrot:     { name: 'Carrot',     icon: '🥕', level: 2,  grow: 3 * MIN,  seed: 1,  sell: 7 },
   wheat:      { name: 'Wheat',      icon: '🌾', level: 1,  grow: 5 * MIN,  seed: 2,  sell: 9 },
   radish:     { name: 'Radish',     icon: '🌸', level: 3,  grow: 4 * MIN,  seed: 2,  sell: 8 },
   corn:       { name: 'Corn',       icon: '🌽', level: 5,  grow: 12 * MIN, seed: 3,  sell: 16 },

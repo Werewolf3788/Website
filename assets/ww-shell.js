@@ -379,6 +379,7 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
         document.getElementById('ww-drawer').classList.add('is-open');
         document.getElementById('ww-drawer').setAttribute('aria-hidden', 'false');
         document.getElementById('ww-drawer-backdrop').classList.add('is-open');
+        document.documentElement.classList.add('ww-drawer-open');
         document.querySelectorAll('[data-ww-open-drawer]').forEach(b => b.setAttribute('aria-expanded', 'true'));
         const f = document.querySelector('#ww-drawer .ww-close'); if (f) f.focus({ preventScroll: true });
     }
@@ -386,12 +387,14 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
         const d = document.getElementById('ww-drawer'); if (!d) return;
         d.classList.remove('is-open'); d.setAttribute('aria-hidden', 'true');
         document.getElementById('ww-drawer-backdrop').classList.remove('is-open');
+        document.documentElement.classList.remove('ww-drawer-open');
         document.querySelectorAll('[data-ww-open-drawer]').forEach(b => b.setAttribute('aria-expanded', 'false'));
     }
     function closeSheets() {
         document.querySelectorAll('.ww-sheet.is-open').forEach(s => s.classList.remove('is-open'));
         document.querySelectorAll('#ww-bottom-nav [aria-expanded]').forEach(b => b.setAttribute('aria-expanded', 'false'));
         const bd = document.getElementById('ww-sheet-backdrop'); if (bd) bd.classList.remove('is-open');
+        document.documentElement.classList.remove('ww-sheet-open');
     }
     function toggleSheet(id) {
         const sheet = document.getElementById(`ww-sheet-${id}`);
@@ -403,6 +406,7 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
             sheet.classList.add('is-open');
             btn && btn.setAttribute('aria-expanded', 'true');
             document.getElementById('ww-sheet-backdrop').classList.add('is-open');
+            document.documentElement.classList.add('ww-sheet-open');   // floating bars step aside so the menu is clear
         }
     }
 

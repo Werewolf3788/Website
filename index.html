@@ -386,6 +386,8 @@
             max-width: 400px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        /* nothing upcoming in music_releases = no badge at all (the id rule above would otherwise beat .hidden) */
+        #album-countdown-badge.hidden { display: none !important; }
         #album-countdown-badge.minimized {
             transform: translateY(100px);
             opacity: 0;

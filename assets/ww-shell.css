@@ -220,3 +220,10 @@ html.ww-bn-mode #ww-install-banner { bottom: calc(var(--ww-bn-h) + 10px + env(sa
 #ww-update-banner .ww-ub-x {
     flex: 0 0 auto; width: 36px; min-height: 36px; border: 0; background: none; color: var(--ww-muted); font-size: 1rem; cursor: pointer;
 }
+
+/* While a menu (bottom-bar sheet or side drawer) is open, floating bars (install banner, music release badge,
+   messenger bubble and anything else marked .ww-float) get out of the way so nothing covers the menu options. */
+html.ww-sheet-open #ww-install-banner, html.ww-drawer-open #ww-install-banner,
+html.ww-sheet-open #album-countdown-badge, html.ww-drawer-open #album-countdown-badge,
+html.ww-sheet-open #ww-social-host, html.ww-drawer-open #ww-social-host,
+html.ww-sheet-open .ww-float, html.ww-drawer-open .ww-float { display: none !important; }
