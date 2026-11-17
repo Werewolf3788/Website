@@ -9,6 +9,7 @@
     &twitch=werewolf3788    fallback game name / box art when PSN has no game
     &accent=9333ea          accent colour (hex, no #)
     &label=NOW%20PLAYING    small heading above the game name (label=0 hides it)
+    &status=top             put the game status in a banner at the top centre instead of the dock
     &hide=1                 hide the whole dock when not playing anything
     &scale=1.25             make the dock bigger / smaller
     &sec=15                 refresh every N seconds
@@ -39,9 +40,12 @@ html,body{width:1600px;height:900px;overflow:hidden;background:transparent;font-
 #dock.idle #status::before{background:#6b7280;box-shadow:none}
 #art{width:138px;height:193px;border-radius:9px;border:3px solid var(--accent);box-shadow:0 0 22px var(--glow),0 6px 16px rgba(0,0,0,.7);object-fit:cover;background:#0b0f19;transition:opacity .5s}
 #art.blank{display:none}
+#top{position:absolute;top:16px;left:50%;transform:translateX(-50%);max-width:1000px;padding:9px 26px;border-bottom:3px solid var(--accent);border-radius:10px;background:rgba(8,10,18,.82);box-shadow:0 0 18px var(--glow);font-size:24px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:.5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 5px #000;transition:opacity .6s}
+#top.off{opacity:0}
 </style>
 </head>
 <body>
+<div id="top" class="off"></div>
 <div id="dock" class="off">
   <div id="info">
     <div id="label">Now Playing</div>
@@ -59,6 +63,7 @@ html,body{width:1600px;height:900px;overflow:hidden;background:transparent;font-
     accent: (q.get('accent') || '9333ea').replace(/[^0-9a-f]/gi, ''),
     label: q.get('label'),
     hide: q.get('hide') === '1',
+    top: /^(top|center|centre)$/i.test(q.get('status') || ''),
     scale: Math.min(3, Math.max(0.4, parseFloat(q.get('scale')) || 1)),
     sec: Math.max(5, parseInt(q.get('sec'), 10) || 15)
   };
@@ -89,6 +94,12 @@ html,body{width:1600px;height:900px;overflow:hidden;background:transparent;font-
     img.src = url;
   }
 
+  function setStatus(txt) {
+    txt = String(txt || '').trim();
+    if (CFG.top) { $('status').textContent = ''; $('top').textContent = txt; $('top').classList.toggle('off', !txt); }
+    else $('status').textContent = txt;
+  }
+
   function paint() {
     const c = card || {};
     const hunt = c.activeHunt || {};
@@ -98,16 +109,16 @@ html,body{width:1600px;height:900px;overflow:hidden;background:transparent;font-
     const dock = $('dock');
     if (!name) {
       dock.classList.add('idle');
-      if (CFG.hide) { dock.classList.add('off'); return; }
+      if (CFG.hide) { dock.classList.add('off'); setStatus(''); return; }
       $('title').textContent = 'Not playing';
-      $('status').textContent = c.online ? 'On the PlayStation dashboard' : 'Offline';
+      if (CFG.top) setStatus(''); else setStatus(c.online ? 'On the PlayStation dashboard' : 'Offline');
       setArt('');
       dock.classList.remove('off');
       return;
     }
     dock.classList.remove('idle');
     $('title').textContent = name;
-    $('status').textContent = playing ? String(c.gameStatus || hunt.gameStatus || '').trim() : '';
+    setStatus(playing ? (c.gameStatus || hunt.gameStatus || '') : '');
     const psnArt = c.currentGameArt || c.posterArt || c.art || c.image || hunt.art || hunt.posterArt || '';
     if (playing && psnArt) setArt(psnArt);
     else setArt(`https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(name)}-285x380.jpg`);
