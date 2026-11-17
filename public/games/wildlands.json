@@ -766,6 +766,97 @@
           "guide": "Scope. Tick it once you have unlocked it."
         }
       ]
+    },
+    "recommended_weapons": {
+      "quest_name": "Recommended Weapons",
+      "region": "Bolivia-wide",
+      "description": "Community-favourite weapons by type and, where known, the province to find them in. Locations come from a search summary and have not been checked in game. Tick a weapon once you own it.",
+      "items": [
+        {
+          "id": "wpn_m4a1",
+          "name": "M4A1",
+          "region": "Assault Rifle",
+          "location": "Location not recorded yet",
+          "guide": "All-rounder: fast fire rate, solid damage, and quiet with a suppressor."
+        },
+        {
+          "id": "wpn_tar_21",
+          "name": "TAR-21",
+          "region": "Assault Rifle",
+          "location": "Choza Padre, Montuyoc (reported, not confirmed)",
+          "guide": "Balanced rifle that works at close and mid range."
+        },
+        {
+          "id": "wpn_acr",
+          "name": "ACR",
+          "region": "Assault Rifle",
+          "location": "La Loma base, Media Luna (reported, not confirmed)",
+          "guide": "Very accurate with good damage and steady handling in long fights."
+        },
+        {
+          "id": "wpn_mk17",
+          "name": "MK17",
+          "region": "Assault Rifle",
+          "location": "Location not recorded yet",
+          "guide": "Hard-hitting with long range; plays like a battle rifle."
+        },
+        {
+          "id": "wpn_hti",
+          "name": "HTI",
+          "region": "Sniper Rifle",
+          "location": "Montuyoc Training Base, Montuyoc (reported, not confirmed)",
+          "guide": "Highest-damage sniper; can take out vehicles and helicopters."
+        },
+        {
+          "id": "wpn_msr",
+          "name": "MSR",
+          "region": "Sniper Rifle",
+          "location": "Location not recorded yet",
+          "guide": "Bolt-action pick for clean long-range kills."
+        },
+        {
+          "id": "wpn_g28",
+          "name": "G28",
+          "region": "Sniper Rifle",
+          "location": "Location not recorded yet",
+          "guide": "Semi-automatic marksman rifle for quick follow-up shots."
+        },
+        {
+          "id": "wpn_mk14",
+          "name": "MK14",
+          "region": "Sniper Rifle",
+          "location": "Location not recorded yet",
+          "guide": "Semi-automatic marksman rifle for medium to long range."
+        },
+        {
+          "id": "wpn_vector_45_acp",
+          "name": "Vector .45 ACP",
+          "region": "Submachine Gun",
+          "location": "Location not recorded yet",
+          "guide": "Close-quarters favourite: very high fire rate."
+        },
+        {
+          "id": "wpn_mk249",
+          "name": "MK249",
+          "region": "Light Machine Gun",
+          "location": "Malca (reported, not confirmed)",
+          "guide": "150-round magazine for suppression and convoys."
+        },
+        {
+          "id": "wpn_5_7_usg_lady_killer_variant",
+          "name": "5.7 USG (Lady Killer variant)",
+          "region": "Handgun",
+          "location": "Location not recorded yet",
+          "guide": "Comes with a suppressor and fires fast."
+        },
+        {
+          "id": "wpn_d_50",
+          "name": "D-50",
+          "region": "Handgun",
+          "location": "Libertad (reported, not confirmed)",
+          "guide": ".50-calibre sidearm that drops armoured targets in a shot or two."
+        }
+      ]
     }
   },
   "tips": [
