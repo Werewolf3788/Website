@@ -58,7 +58,7 @@
           "name": "Grenade Launcher",
           "region": "Weapon",
           "location": "Weapon Skill Tree",
-          "guide": "Unlocks an under-barrel launcher that fires frag grenades quickly.",
+          "guide": "Unlocks an under-barrel launcher that fires frag grenades quickly. To use it: buy this skill, pick up a launcher attachment case in the world (the M203 is reported to be in the village of Poco in Remanzo), then open Gunsmith on a compatible assault rifle and fit it in the Underbarrel slot.",
           "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/grenade_launcher.png"
         },
