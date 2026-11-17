@@ -1291,6 +1291,11 @@ let swReg = null;
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('movies-sw.js', { scope: './Movies' }).then(r => { swReg = r; }).catch(err => console.warn('[SW]', err));
   navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'open' && e.data.url) { location.href = e.data.url; } });
+  let moviesPageSettled = false;
+  window.addEventListener('load', () => { moviesPageSettled = true; });
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (moviesPageSettled && window.wwShowUpdateBanner) window.wwShowUpdateBanner();
+  });
 }
 
 /* ---------------- alerts (FCM push, with on-open fallback) ---------------- */

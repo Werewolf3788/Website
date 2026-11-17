@@ -509,10 +509,49 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
 
     // --------------------------------------------------------- service worker
     let swReg = null;
+    function showUpdateBanner() {
+        if (document.getElementById('ww-update-banner')) return;
+        const el = document.createElement('div');
+        el.id = 'ww-update-banner';
+        el.innerHTML = `<span>A new version of the site is ready.</span>
+            <button type="button" class="ww-ub-go">Refresh</button>
+            <button type="button" class="ww-ub-x" aria-label="Dismiss">✕</button>`;
+        el.querySelector('.ww-ub-go').addEventListener('click', () => location.reload());
+        el.querySelector('.ww-ub-x').addEventListener('click', () => el.remove());
+        document.body.appendChild(el);
+    }
+    // Pages with their own separate service worker (data-ww-own-pwa: Movies.html,
+    // Ray/monopoly.html) still load this file for its CSS/markup, so they call
+    // this directly from their own controllerchange listener instead of
+    // duplicating the banner markup.
+    window.wwShowUpdateBanner = showUpdateBanner;
+    // A fresh page load (not this banner's own reload) already has the latest
+    // files, so a controllerchange that fires before the page finished its own
+    // first load is the initial SW taking control, not an update - skip it.
+    let pageSettled = false;
+    window.addEventListener('load', () => { pageSettled = true; });
     async function registerSw() {
         if (OWN_PWA || !('serviceWorker' in navigator) || location.protocol === 'file:') return null;
         try {
             swReg = await navigator.serviceWorker.register(rootUrl('sw.js'), { scope: SITE_ROOT });
+            // New sw.js on the server activates (it calls skipWaiting + clients.claim
+            // itself) and takes over every open tab - this fires when that happens.
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (pageSettled) showUpdateBanner();
+            });
+            // A build that finished installing while this tab sat idle: catch it too.
+            swReg.addEventListener('updatefound', () => {
+                const installing = swReg.installing;
+                if (!installing) return;
+                installing.addEventListener('statechange', () => {
+                    if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdateBanner();
+                });
+            });
+            // Browsers only re-check sw.js for changes on navigation (and at most
+            // once a day even then), so ask explicitly whenever the tab becomes
+            // visible and every 10 minutes while it stays open and in the foreground.
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') swReg.update().catch(() => {}); });
+            setInterval(() => { if (document.visibilityState === 'visible') swReg.update().catch(() => {}); }, 10 * 60 * 1000);
             return swReg;
         } catch (e) { console.warn('[ww-shell] service worker:', e); return null; }
     }

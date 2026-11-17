@@ -697,7 +697,14 @@ function share(){
 
 /* ---------- offline / install support ---------- */
 if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){
-  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+  var monoPageSettled=false;
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+    monoPageSettled=true;
+  });
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(monoPageSettled&&window.wwShowUpdateBanner) window.wwShowUpdateBanner();
+  });
 }
 })();
 </script>
