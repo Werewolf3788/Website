@@ -1659,6 +1659,9 @@
         let musicCarouselTimer = null;
         let musicTickInterval = null;
         let isMusicPaused = false;
+        // Once a release's date arrives, it stays on the badge (as "OUT NOW")
+        // for this long before it drops out of the carousel for good.
+        const MUSIC_RELEASE_VISIBLE_MS = 5 * 24 * 60 * 60 * 1000;
 
         function parseDittoDate(rawDate) {
             if (!rawDate) return NaN;
@@ -1694,8 +1697,9 @@
 
                         const parsedTime = parseDittoDate(rawDate);
                         if (isNaN(parsedTime)) return;
-                        // Badge is countdown-only: skip anything already released
-                        if (parsedTime <= Date.now()) return;
+                        // Skip anything whose release was more than 5 days ago -
+                        // an upcoming or just-out (<=5 days) release stays in.
+                        if (parsedTime <= Date.now() - MUSIC_RELEASE_VISIBLE_MS) return;
 
                         let img = item.image || item.img || item.icon || '';
                         if (img && !img.startsWith('http') && !img.startsWith('//')) {
@@ -1723,7 +1727,7 @@
                         if (currentMusicIndex >= musicReleases.length) {
                             currentMusicIndex = 0;
                         }
-                        if (badge) { badge.classList.remove('hidden'); badge.classList.add('is-flashing'); }
+                        if (badge) badge.classList.remove('hidden'); // is-flashing is set per-item by updateMusicTimerDisplay
 
                         renderMusicRelease(currentMusicIndex);
                         startMusicCarousel();
@@ -1780,20 +1784,29 @@
 
             const now = Date.now();
             const diff = item.date - now;
+            const badge = document.getElementById('album-countdown-badge');
 
             if (diff <= 0) {
-                // Countdown finished - it's out now, so it leaves the badge
-                musicReleases = musicReleases.filter(r => r.date > now);
-                if (musicReleases.length === 0) {
-                    if (musicTickInterval) { clearInterval(musicTickInterval); musicTickInterval = null; }
-                    const badge = document.getElementById('album-countdown-badge');
-                    if (badge) { badge.classList.add('hidden'); badge.classList.remove('is-flashing'); }
+                // Released. It stays on the badge (as "OUT NOW", not a countdown)
+                // until MUSIC_RELEASE_VISIBLE_MS after its date, then drops out.
+                const sinceRelease = -diff;
+                if (sinceRelease >= MUSIC_RELEASE_VISIBLE_MS) {
+                    musicReleases = musicReleases.filter(r => (r.date > now) || (now - r.date < MUSIC_RELEASE_VISIBLE_MS));
+                    if (musicReleases.length === 0) {
+                        if (musicTickInterval) { clearInterval(musicTickInterval); musicTickInterval = null; }
+                        if (badge) { badge.classList.add('hidden'); badge.classList.remove('is-flashing'); }
+                        return;
+                    }
+                    if (currentMusicIndex >= musicReleases.length) currentMusicIndex = 0;
+                    renderMusicRelease(currentMusicIndex);
                     return;
                 }
-                if (currentMusicIndex >= musicReleases.length) currentMusicIndex = 0;
-                renderMusicRelease(currentMusicIndex);
-                return;
+                if (badge) badge.classList.remove('is-flashing'); // no longer counting down
+                if (badgeLabel) badgeLabel.textContent = "NEW RELEASE";
+                timerDisplay.textContent = "Out now!";
+                timerDisplay.className = "text-xs font-mono font-bold text-orange-400 mt-0.5";
             } else {
+                if (badge) badge.classList.add('is-flashing');
                 if (badgeLabel) badgeLabel.textContent = "UPCOMING RELEASE";
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
