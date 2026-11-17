@@ -500,7 +500,8 @@
           "image_url": "/public/games/wildlands/images/skills/bullet_resistance.png",
           "bonus": {
             "name": "Bullet Resistance",
-            "desc": "Reduces bullet damage by 5%."
+            "desc": "5% damage reduction. Found in Itacua (Bonus Medal #1): in a dirt-yard camp with tents and a helipad, on the ground beside the small concrete building.",
+            "province": "Itacua"
           }
         },
         {
