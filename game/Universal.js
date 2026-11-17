@@ -601,7 +601,7 @@ window.appState = {
                             // Multi-level items (e.g. Tech Upgrades with Level 1/2/3) store how many
                             // levels are bought so far; restore it alongside the collected flag.
                             const lvl = Number(payload.collectibles[cKey].items[itemId].level);
-                            if (Number.isFinite(lvl)) this.collectibles[cKey].items[itemId].level = Math.max(0, lvl);
+                            if (Number.isFinite(lvl)) { const cap = Number(this.collectibles[cKey].items[itemId].levels) || 0; this.collectibles[cKey].items[itemId].level = Math.max(0, cap > 0 ? Math.min(lvl, cap) : lvl); }
                             // Bonus medal star, restored independently of the tier/level above.
                             if (payload.collectibles[cKey].items[itemId].bonusEarned !== undefined) {
                                 this.collectibles[cKey].items[itemId].bonusEarned = !!payload.collectibles[cKey].items[itemId].bonusEarned;
