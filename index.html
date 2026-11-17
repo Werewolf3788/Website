@@ -561,6 +561,67 @@
         </div>
     </header>
 
+    <!-- Live now: Twitch players for channels that are live (hidden when nobody is) -->
+    <section id="live-now" class="py-4 sm:py-6" style="display:none" data-channels="werewolf3788,raymystyro,terrdog420,phoenix_darkfire">
+        <div class="w-[92vw] md:w-[80vw] mx-auto">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="live-chip on"><span class="live-dot"></span> Live now on Twitch</span>
+                <span class="text-xs text-slate-400">Unmute to listen, and say hi in chat on Twitch!</span>
+            </div>
+            <div id="live-now-grid" class="live-grid"></div>
+        </div>
+    </section>
+    <style>
+        .live-grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+        @media (min-width: 900px) { .live-grid.two { grid-template-columns: 1fr 1fr; } }
+        .live-card { border-radius: 1.25rem; overflow: hidden; background: rgba(12,10,20,.7); border: 1px solid rgba(145,70,255,.45); }
+        .live-card .frame { position: relative; width: 100%; aspect-ratio: 16 / 9; min-height: 300px; }
+        .live-card iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+        .live-card .bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; font: 700 13px 'Inter', sans-serif; color: var(--bone); }
+        .live-card .bar a { color: #c4a8ff; text-decoration: none; }
+    </style>
+    <script>
+    (function () {
+        var sec = document.getElementById('live-now');
+        if (!sec) return;
+        var channels = (sec.getAttribute('data-channels') || '').split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+        var parents = ['entertainment-71888.web.app', 'entertainment-71888.firebaseapp.com', 'werewolf3788.github.io', location.hostname]
+            .filter(function (h, i, a) { return h && a.indexOf(h) === i; });
+        var shown = {};
+        function isLive(ch) {
+            return fetch('https://decapi.me/twitch/uptime/' + encodeURIComponent(ch), { cache: 'no-store' })
+                .then(function (r) { return r.text(); })
+                .then(function (t) { t = t.toLowerCase(); return t.indexOf('offline') === -1 && t.indexOf('error') === -1 && t.indexOf('not found') === -1; })
+                .catch(function () { return false; });
+        }
+        function card(ch) {
+            var src = 'https://player.twitch.tv/?channel=' + encodeURIComponent(ch) + '&muted=true&autoplay=true' +
+                parents.map(function (p) { return '&parent=' + encodeURIComponent(p); }).join('');
+            var d = document.createElement('div');
+            d.className = 'live-card';
+            d.setAttribute('data-ch', ch);
+            d.innerHTML = '<div class="frame"><iframe allowfullscreen title="' + ch + ' live on Twitch"></iframe></div>' +
+                '<div class="bar"><span>' + ch + '</span><a target="_blank" rel="noopener" href="https://twitch.tv/' + ch + '">Open on Twitch &rarr;</a></div>';
+            d.querySelector('iframe').src = src;
+            return d;
+        }
+        function check() {
+            Promise.all(channels.map(isLive)).then(function (res) {
+                var grid = document.getElementById('live-now-grid');
+                channels.forEach(function (ch, i) {
+                    if (res[i] && !shown[ch]) { shown[ch] = card(ch); grid.appendChild(shown[ch]); }
+                    if (!res[i] && shown[ch]) { shown[ch].remove(); delete shown[ch]; }
+                });
+                var n = Object.keys(shown).length;
+                grid.classList.toggle('two', n > 1);
+                sec.style.display = n ? '' : 'none';
+            });
+        }
+        check();
+        setInterval(check, 120000);
+    })();
+    </script>
+
     <!-- Players: swipeable on phones -->
     <section id="team" class="py-6 sm:py-10" style="display:none" aria-hidden="true">
         <div class="w-[92vw] md:w-[80vw] mx-auto">
