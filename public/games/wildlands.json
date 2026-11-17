@@ -770,14 +770,15 @@
     "recommended_weapons": {
       "quest_name": "Recommended Weapons",
       "region": "Bolivia-wide",
-      "description": "Community-favourite weapons by type and, where known, the province to find them in. Locations come from a search summary and have not been checked in game. Tick a weapon once you own it.",
+      "description": "Community-favourite weapons by type, including the quietest picks for suppressed play, and where known the province to find them in. Locations and detection distances come from search summaries and have not been checked in game. Tick a weapon once you own it.",
       "items": [
         {
           "id": "wpn_m4a1",
           "name": "M4A1",
           "region": "Assault Rifle",
           "location": "Location not recorded yet",
-          "guide": "All-rounder: fast fire rate, solid damage, and quiet with a suppressor."
+          "guide": "All-rounder: fast fire rate, solid damage, and quiet with a suppressor. Stealth pick: among the quietest assault rifles when suppressed.",
+          "stealth": true
         },
         {
           "id": "wpn_tar_21",
@@ -819,21 +820,24 @@
           "name": "G28",
           "region": "Sniper Rifle",
           "location": "Location not recorded yet",
-          "guide": "Semi-automatic marksman rifle for quick follow-up shots."
+          "guide": "Semi-automatic marksman rifle for quick follow-up shots. Stealth pick for suppressed marksman work at medium range.",
+          "stealth": true
         },
         {
           "id": "wpn_mk14",
           "name": "MK14",
           "region": "Sniper Rifle",
           "location": "Location not recorded yet",
-          "guide": "Semi-automatic marksman rifle for medium to long range."
+          "guide": "Semi-automatic marksman rifle for medium to long range. Stealth pick for suppressed marksman work at medium range.",
+          "stealth": true
         },
         {
           "id": "wpn_vector_45_acp",
           "name": "Vector .45 ACP",
           "region": "Submachine Gun",
           "location": "Location not recorded yet",
-          "guide": "Close-quarters favourite: very high fire rate."
+          "guide": "Close-quarters favourite: very high fire rate. Stealth pick: subsonic rounds keep it discreet; pair it with an extended magazine.",
+          "stealth": true
         },
         {
           "id": "wpn_mk249",
@@ -847,7 +851,8 @@
           "name": "5.7 USG (Lady Killer variant)",
           "region": "Handgun",
           "location": "Location not recorded yet",
-          "guide": "Comes with a suppressor and fires fast."
+          "guide": "Comes with a suppressor and fires fast. Stealth pick: quieter up close than most suppressed rifles; the 5.7 USG is reported audible only within about 47-50 m.",
+          "stealth": true
         },
         {
           "id": "wpn_d_50",
@@ -855,6 +860,62 @@
           "region": "Handgun",
           "location": "Libertad (reported, not confirmed)",
           "guide": ".50-calibre sidearm that drops armoured targets in a shot or two."
+        },
+        {
+          "id": "wpn_mp7",
+          "name": "MP7",
+          "region": "Submachine Gun",
+          "location": "Location not recorded yet",
+          "guide": "Stealth pick: one of the quietest SMGs; enemies are reported to hear it only within about 59 m.",
+          "stealth": true
+        },
+        {
+          "id": "wpn_psg_9mm",
+          "name": "PSG 9mm",
+          "region": "Submachine Gun",
+          "location": "Location not recorded yet",
+          "guide": "Stealth pick: players report an even shorter detection distance than other compact SMGs.",
+          "stealth": true
+        },
+        {
+          "id": "wpn_scorpion_evo_3",
+          "name": "Scorpion EVO 3",
+          "region": "Submachine Gun",
+          "location": "Location not recorded yet",
+          "guide": "Stealth pick for close quarters with a suppressor, long barrel and angled grip.",
+          "stealth": true
+        },
+        {
+          "id": "wpn_r5_rgp",
+          "name": "R5 RGP",
+          "region": "Assault Rifle",
+          "location": "Location not recorded yet",
+          "guide": "Stealth pick: strong suppressed damage with clean handling.",
+          "stealth": true
+        },
+        {
+          "id": "wpn_m1911",
+          "name": "M1911",
+          "region": "Handgun",
+          "location": "Location not recorded yet",
+          "guide": "Stealth pick: one of the most recommended suppressed pistols.",
+          "stealth": true
+        },
+        {
+          "id": "wpn_p12",
+          "name": "P12",
+          "region": "Handgun",
+          "location": "Location not recorded yet",
+          "guide": "Stealth pick: regularly mentioned as a quiet sidearm.",
+          "stealth": true
+        },
+        {
+          "id": "wpn_whisper_pistol",
+          "name": "Whisper pistol",
+          "region": "Handgun",
+          "location": "Location not recorded yet",
+          "guide": "Stealth pick: among the quietest handguns, reported audible only within about 47-50 m.",
+          "stealth": true
         }
       ]
     }
