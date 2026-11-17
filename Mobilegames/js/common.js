@@ -50,6 +50,7 @@
         child: function (c) { return ref(p + '/' + c); },
         set: function (v) { put(p, v); return Promise.resolve(); },
         remove: function () { put(p, null); return Promise.resolve(); },
+        update: function (o) { Object.keys(o || {}).forEach(function (k) { put(p + '/' + k, o[k]); }); return Promise.resolve(); },
         once: function () { return Promise.resolve(snap(p)); },
         on: function (e, cb) { (ls[p] = ls[p] || []).push(cb); cb(snap(p)); },
         transaction: function (fn, done) {

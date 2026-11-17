@@ -98,9 +98,13 @@ export const UPGRADES = {
   wide:      { name: 'Wide implements',   desc: 'Tractor works 5 tiles at once instead of 3', level: 10, cost: 900 },
   sprinkler: { name: 'Sprinkler seeder',  desc: 'Seeds planted by the tractor are watered right away', level: 13, cost: 1500 },
   nitro:     { name: 'Nitro engine',      desc: 'Tractor drives another 25% faster (needs Turbo engine)', level: 16, cost: 2500, needs: 'fast' },
+  harvester: { name: 'Combine harvester', desc: 'A real combine you can drive: it harvests 5 tiles wide into its grain tank (400 crops). Park it next to your trailer to unload, then send the truck to the grain elevator for a better price than the barn. Comes with a trailer and a truck.', level: 8, cost: 2000 },
   combine:   { name: 'Combine header',    desc: 'Harvesting with the tractor sometimes gives a bonus crop (1 in 4)', level: 20, cost: 4000 },
   mega:      { name: 'Mega implements',   desc: 'Tractor works 7 tiles at once (needs Wide implements)', level: 26, cost: 7500, needs: 'wide' }
 };
+
+// ---- the harvest chain (combine harvester -> trailer -> truck -> grain elevator)
+export const HARVEST = { tank: 400, trailer: 1500, swath: 5, top: 6.5, elevatorBonus: 1.15, carrySpeed: 8, emptySpeed: 11 };
 
 // everything that unlocks at level l (for the level-up message)
 export function unlocksAt(l) {
