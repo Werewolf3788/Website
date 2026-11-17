@@ -1,0 +1,35 @@
+# File: .github/workflows/destiny.yml
+# Destiny 2 sync -> RTDB /destiny_users. Key comes from Settings (user_secrets) or the optional BUNGIE_API_KEY secret.
+# No key is stored in code.
+name: Destiny 2 Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */2 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/destiny-sync.js'
+      - '.github/workflows/destiny.yml'
+
+concurrency:
+  group: destiny-sync-runner
+  cancel-in-progress: false
+
+jobs:
+  destiny-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Dependencies
+        run: npm install firebase-admin
+      - name: Run Destiny 2 Sync
+        env:
+          BUNGIE_API_KEY: ${{ secrets.BUNGIE_API_KEY }}
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
+        run: node scripts/destiny-sync.js

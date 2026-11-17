@@ -173,6 +173,13 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
     <p id="xboxKeyState" class="hint"></p></div>
 
+  <h2>Destiny 2</h2>
+  <p class="hint">Enter your Bungie name (like <code>Guardian#1234</code>) in the Destiny 2 box under Linked accounts. Find it in Destiny 2 under Settings, or on <a href="https://www.bungie.net" target="_blank" rel="noopener">bungie.net</a>. Your PlayStation account must be linked to Bungie, and Destiny's privacy settings must allow public activity. The site checks every 2 hours.</p>
+  <label for="bungie_api_key">Bungie API key (private, optional)</label><div class="row" data-secret="bungie_api_key"></div>
+  <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
+    <p>Free key from <a href="https://www.bungie.net/en/Application" target="_blank" rel="noopener">bungie.net/en/Application</a>. Create an app, then paste the API Key here. Close friends of the owner use the owner's key.</p>
+    <p id="bungieKeyState" class="hint"></p></div>
+
   <h2>Personal links (up to 5)</h2>
   <div id="links"></div>
 
@@ -240,7 +247,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const say=(t,bad)=>{const m=$('msg');m.textContent=t;m.style.borderColor=bad?'var(--danger)':'var(--accent-green)';m.classList.remove('hidden');clearTimeout(say.t);say.t=setTimeout(()=>m.classList.add('hidden'),6000)};
 // same key style as your existing data: cartnalray9_at_gmail_com
 const keyOf=u=>u.email?u.email.toLowerCase().replace(/\./g,'_').replace('@','_at_'):u.uid;
-const HANDLES=[['psn_username','PlayStation username','psn_username_scope'],['steam_id','Steam ID','steam_id_scope'],['xbox_gamertag','Xbox gamertag','xbox_gamertag_scope'],['twitch_username','Twitch username','twitch_scope']];
+const HANDLES=[['psn_username','PlayStation username','psn_username_scope'],['steam_id','Steam ID','steam_id_scope'],['xbox_gamertag','Xbox gamertag','xbox_gamertag_scope'],['twitch_username','Twitch username','twitch_scope'],['bungie_name','Destiny 2 Bungie name (Name#1234)','bungie_name_scope']];
 const SCOPES=[['private','No One (Private)'],['friends','Friends'],['public','Public']];
 let U,K,D={},S={};
 let loading=true,dirty=false;
@@ -478,6 +485,7 @@ async function load(){
   $('psn_account_id').value=D.psn_account_id||S.psn_account_id||'';$('psn_npsso').value=S.psn_npsso||'';
   $('steam_api_key').value=S.steam_api_key||'';$('steamKeyState').textContent=S.steam_api_key?(D.steam_api_key_valid===false?'Steam rejected the saved key. Paste a new one.':'Key saved.'):'';
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
+  $('bungie_api_key').value=S.bungie_api_key||'';$('bungieKeyState').textContent=S.bungie_api_key?'Key saved.':'';
   $('xbox_api_key').value=S.xbox_api_key||'';$('xboxKeyState').textContent=S.xbox_api_key?(D.xbox_api_key_valid===false?'xbl.io rejected the saved key. Paste a new one.':'Key saved.'):'';
   $('xbox_user_id').value=D.xbox_user_id||S.xbox_user_id||'';$('xuidState').textContent=D.xbox_user_id?(D.xbox_user_id_valid===false?'xbl.io could not match this XUID. Double-check it.':'XUID saved.'):'';
   (D.links||[]).slice(0,5).forEach((l,i)=>$('lk'+i).value=l);
@@ -621,6 +629,8 @@ $('save').onclick=async()=>{
     const skey=$('steam_api_key').value.trim().toUpperCase();
     if(skey&&!/^[0-9A-F]{32}$/.test(skey))return say('Steam API key must be exactly 32 characters (0-9, A-F).',1);
     if(skey&&skey!==S.steam_api_key)pub.steam_api_key_valid=true;
+    const bkey=$('bungie_api_key').value.trim();
+    if(bkey&&!/^[0-9a-f]{32}$/i.test(bkey))return say('Bungie API key must be 32 characters (letters and numbers).',1);
     const xkey=$('xbox_api_key').value.trim();
     if(xkey&&xkey.length<20)return say('That Microsoft/Xbox API key looks too short. Double-check the paste from xbl.io.',1);
     if(xkey&&xkey!==S.xbox_api_key)pub.xbox_api_key_valid=true;
@@ -642,9 +652,9 @@ $('save').onclick=async()=>{
     D=back;dirty=false;
     {const av=D.avatar_url||'';try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){}}
     let ok=true;
-    const secretsUpdate={psn_npsso:npsso,steam_api_key:skey,xbox_api_key:xkey,updated_at:now};
+    const secretsUpdate={psn_npsso:npsso,steam_api_key:skey,xbox_api_key:xkey,bungie_api_key:bkey,updated_at:now};
     if(!$('discordBox').classList.contains('hidden'))secretsUpdate.discord_signin_key=dKey;
-    try{await db.ref('user_secrets/'+K).update(secretsUpdate);S.psn_npsso=npsso;S.steam_api_key=skey;S.xbox_api_key=xkey;if('discord_signin_key' in secretsUpdate)S.discord_signin_key=dKey}catch(e){ok=false}
+    try{await db.ref('user_secrets/'+K).update(secretsUpdate);S.psn_npsso=npsso;S.steam_api_key=skey;S.xbox_api_key=xkey;S.bungie_api_key=bkey;if('discord_signin_key' in secretsUpdate)S.discord_signin_key=dKey}catch(e){ok=false}
     const t=new Date(now).toLocaleString();
     if(ok){say('Saved to your account.');setState('Saved to cloud: '+t+' ✓','var(--accent-green)')}
     else{say('Profile saved, but the NPSSO, Steam key and Microsoft key could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. Private keys not saved.','var(--danger)')}

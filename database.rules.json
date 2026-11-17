@@ -13,6 +13,7 @@
     "psn":            { ".read": true, ".write": "auth != null" },
     "xbox":           { ".read": true, ".write": false },
     "steam_users":    { ".read": true, ".write": false },
+    "destiny_users":  { ".read": true, ".write": false },
     "steam_games":    { ".read": true, ".write": false },
     "steam_vanity":   { ".read": "auth != null", ".write": false },
 
