@@ -949,6 +949,41 @@
           "stealth": true
         }
       ]
+    },
+    "dlc_weapons": {
+      "quest_name": "DLC Weapons",
+      "region": "DLC",
+      "description": "Weapons that come from the DLC you own (Year 2 Pass and Fallen Ghosts). Pack weapons need no pickup. Tick each once you have used or unlocked it.",
+      "items": [
+        {
+          "id": "dlcw_u100",
+          "name": "U100",
+          "region": "Year 2 Pass · Soldier Equipment Pack",
+          "location": "Already in your loadout: comes with the pack, no pickup needed",
+          "guide": "Weapon included in the Soldier Equipment Pack."
+        },
+        {
+          "id": "dlcw_ump_45",
+          "name": "UMP 45",
+          "region": "Year 2 Pass · Active Duty Pack",
+          "location": "Already in your loadout: comes with the pack, no pickup needed",
+          "guide": "Weapon included in the Active Duty Pack."
+        },
+        {
+          "id": "dlcw_splinter_cell_weapon",
+          "name": "Splinter Cell Pack weapon",
+          "region": "Year 2 Pass · Splinter Cell Pack",
+          "location": "Already in your loadout: comes with the pack, no pickup needed",
+          "guide": "The pack includes one weapon and a weapon skin. The store text does not name the weapon."
+        },
+        {
+          "id": "dlcw_fallen_ghosts_weapons",
+          "name": "Fallen Ghosts exclusive weapons",
+          "region": "Fallen Ghosts",
+          "location": "Unlocked by playing the Fallen Ghosts expansion",
+          "guide": "The expansion adds exclusive weapons. Their names are not recorded yet."
+        }
+      ]
     }
   },
   "tips": [
