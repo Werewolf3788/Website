@@ -505,6 +505,9 @@ const pctBar = (p) => { const c = pctColor(p), d = p >= 100; return `<div class=
 
 function watchPresence() {
   W.db.ref('presence/' + S.ownerKey).on('value', s => { S.presence = s.val(); renderHeroStatus(); });
+  // mobile-games status (game_rooms/presence/{friendCode}, refreshed by the games every ~minute)
+  const code = String(S.U.friend_code || '').toUpperCase();
+  if (code) { const poll = () => W.db.ref('game_rooms/presence/' + code).once('value').then(s => { const v = s.val(); S.mobile = v && v.t && Date.now() - v.t < 150000 ? v : null; renderHeroStatus(); }).catch(() => {}); poll(); setInterval(poll, 30000); }
 }
 
 /* ---------- render ---------- */
@@ -573,10 +576,11 @@ function renderHeroStatus() {
   const box = $('#hero-status'); if (!box) return;
   const vp = visiblePlats(); let h = '';
   if (canSee('activity')) {
-    const online = (S.presence && S.presence.online) || vp.some(x => S.plat[x].online);
+    const online = (S.presence && S.presence.online) || !!S.mobile || vp.some(x => S.plat[x].online);
     const now = vp.map(x => S.plat[x]).find(x => x.online && x.currentGame);
     h += `<span class="chip ${online ? 'live' : ''}"><i class="fas fa-circle" style="font-size:.5rem"></i> ${online ? 'Online' : (S.presence && S.presence.ts ? 'Seen ' + ago(S.presence.ts) : 'Offline')}</span>`;
     if (now) h += `<span class="chip live"><i class="fas fa-gamepad"></i> ${esc(now.currentGame)}${now.activity ? ' &bull; ' + esc(now.activity) : ''}</span>`;
+    if (S.mobile && S.mobile.title) h += `<span class="chip live"><i class="fas fa-dice"></i> ${esc(S.mobile.title)}${S.mobile.status ? ' &bull; ' + esc(S.mobile.status) : ''}</span>`;
   }
   if (S.isOwner) h += `<span class="chip">${S.viewAs === null ? 'This is you' : REL_LABEL[S.viewAs]}</span>`;
   else h += `<span class="chip">${['Public','Friend','Close friend'][S.rel]}</span>`;

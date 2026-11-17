@@ -275,6 +275,8 @@
             for (var pi = 0; pi < psTags.length && !ps; pi++) { try { var pr2 = await fetch('https://playstation-stats-default-rtdb.firebaseio.com/psn/gamertags/' + encodeURIComponent(psTags[pi]) + '.json?t=' + Date.now()); if (pr2.ok) ps = await pr2.json(); } catch (e) {} }
             if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && !/^(idle|standby)$/i.test(String(ps.currentGame))) { var gs = String(ps.gameStatus || ps.currentGameActivity || '').trim(); item.plays.push({ kind: 'console', platform: ps.displayPlatform || ps.platform || 'PlayStation', title: ps.currentGame, status: gs && gs.toLowerCase() !== String(ps.currentGame).toLowerCase() ? gs : '' }); }
           }
+          var xt = String(prof.xbox_gamertag || fo.xbox_gamertag || '').trim();
+          if (xt) { try { var xr = await fetch('https://playstation-stats-default-rtdb.firebaseio.com/xbox/gamertags/' + encodeURIComponent(xt) + '.json?t=' + Date.now()); var xd = xr.ok ? await xr.json() : null; if (xd && /online/i.test(xd.presenceState || '') && xd.presenceText && !/^(home|online)$/i.test(String(xd.presenceText).trim())) item.plays.push({ kind: 'console', platform: 'Xbox', title: String(xd.presenceText), status: '' }); } catch (e) {} }
           var sid = String(prof.steam_id || '').trim();
           if (sid) {
             if (!/^7656119\d{10}$/.test(sid)) { var vn = (await db.ref('steam_vanity/' + sid.toLowerCase()).once('value')).val(); sid = typeof vn === 'string' ? vn : ''; }
