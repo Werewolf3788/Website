@@ -771,6 +771,8 @@ window.appState.applyStateToUI = function() {
         if (document.activeElement === el) return;
         el.value = (this.wallet && this.wallet['res_' + el.dataset.res]) || 0;
     });
+    const lvlInput = document.getElementById('wildlandsLevelInput');
+    if (lvlInput && document.activeElement !== lvlInput) lvlInput.value = (this.wallet && this.wallet.level) || 1;
     // Next-rank price on each skill card, coloured by what you can afford.
     document.querySelectorAll('.rank-cost[data-rc-id]').forEach(el => {
         const it = this.collectibles[el.dataset.rcGroup]?.items?.[el.dataset.rcId];
@@ -783,11 +785,9 @@ window.appState.applyStateToUI = function() {
             const have = resHave(k);
             return `<span class="rc-part ${have >= n ? 'rc-ok' : 'rc-short'}" title="You have ${fmtNum(have)}">${RES_LABELS[k].emoji} ${fmtNum(n)} ${RES_LABELS[k].short}</span>`;
         }).join('');
-        const ok = canAffordRank(next);
         const req = (lvl === 0 && it.unlock_level) ? ` <span class="rc-req">needs player level ${escapeHtml(String(it.unlock_level))}</span>` : '';
-        el.innerHTML = `<div class="rc-head">Next: Rank ${lvl + 1}${next.effect ? ` (${escapeHtml(next.effect)})` : ''}${req}</div>
-            <div class="rc-parts">${parts}</div>
-            <button type="button" class="uni-search-btn rc-buy${ok ? '' : ' rc-buy-short'}" onclick="appState.buyRank('${escapeHtml(el.dataset.rcId)}', '${escapeHtml(el.dataset.rcGroup)}')">${ok ? 'Buy rank ' + (lvl + 1) : 'Not enough yet'}</button>`;
+        el.innerHTML = `<div class="rc-head">Next: Rank ${lvl + 1}${next.effect ? ` (${escapeHtml(next.effect)})` : ''}${req} <span class="rc-hint">— click the box above to buy it</span></div>
+            <div class="rc-parts">${parts}</div>`;
     });
     // "Still needed to max everything" line in the resource panel.
     const remEl = document.getElementById('resRemaining');
@@ -1078,13 +1078,53 @@ window.appState.resetTagged = function(mKey) {
 // (the "Tech Points you have" box), using the same level_costs the per-card
 // "Credits needed" meter reads from — so the top total always reflects what's
 // left after the purchase, not just what the bottom meter still wants.
+// Multi-currency rank prices (Wildlands: Skill Points + a resource per rank).
+// { sp, gasoline, medication, comms, food } -> resource counters in the top panel.
+const RES_LABELS = {
+    sp: { res: 'skill_points', emoji: '⬆️', short: 'SP' },
+    gasoline: { res: 'gasoline', emoji: '⛽', short: 'Gas' },
+    medication: { res: 'medication', emoji: '💊', short: 'Meds' },
+    comms: { res: 'comms', emoji: '📡', short: 'Comms' },
+    food: { res: 'food', emoji: '🥫', short: 'Food' }
+};
+function rankCostParts(c) {
+    return Object.keys(RES_LABELS).filter(k => Number(c && c[k]) > 0).map(k => [k, Number(c[k])]);
+}
+function resHave(k) {
+    return Number(appState.wallet && appState.wallet['res_' + RES_LABELS[k].res]) || 0;
+}
+
 window.appState.setTechLevel = function(id, group, value) {
     const it = this.collectibles[group]?.items?.[id]; if (!it) return;
     const max = Number(it.levels) || 1;
     const target = Math.max(0, Math.min(max, Math.floor(Number(value) || 0)));
     const oldLevel = it.level || 0;
     const costs = Array.isArray(it.level_costs) ? it.level_costs : null;
-    if (costs && target > oldLevel) {
+    const rankCosts = Array.isArray(it.rank_costs) ? it.rank_costs : null;
+
+    if (rankCosts) {
+        // Marking a rank box pays for every rank between where you are and the
+        // box you clicked, straight out of the resource counters above.
+        if (target > oldLevel) {
+            if (it.unlock_level && (Number(this.wallet && this.wallet.level) || 1) < Number(it.unlock_level)) {
+                this.updateStatus(`${it.name}: needs player level ${it.unlock_level}.`);
+                return;
+            }
+            const need = {};
+            for (let i = oldLevel; i < target; i++) rankCostParts(rankCosts[i] || {}).forEach(([k, n]) => { need[k] = (need[k] || 0) + n; });
+            const short = Object.entries(need).filter(([k, n]) => resHave(k) < n);
+            if (short.length) {
+                this.updateStatus(`${it.name}: not enough ` + short.map(([k, n]) => `${RES_LABELS[k].short} (need ${fmtNum(n - resHave(k))} more)`).join(', ') + '.');
+                return;
+            }
+            Object.entries(need).forEach(([k, n]) => { this.wallet['res_' + RES_LABELS[k].res] = resHave(k) - n; });
+        } else if (target < oldLevel) {
+            // Giving back a rank refunds what it cost, in case of a mis-click.
+            const refund = {};
+            for (let i = target; i < oldLevel; i++) rankCostParts(rankCosts[i] || {}).forEach(([k, n]) => { refund[k] = (refund[k] || 0) + n; });
+            Object.entries(refund).forEach(([k, n]) => { this.wallet['res_' + RES_LABELS[k].res] = resHave(k) + n; });
+        }
+    } else if (costs && target > oldLevel) {
         let total = 0;
         for (let i = oldLevel; i < target; i++) total += Number(costs[i]) || 0;
         if (total > 0) {
@@ -1795,8 +1835,7 @@ function ensureUniversalStyles() {
         .rc-ok { background: rgba(34,197,94,0.15); color: #86efac; }
         .rc-short { background: rgba(239,68,68,0.15); color: #fca5a5; }
         .rc-done { color: #86efac; font-weight: 700; }
-        .rc-buy { font-size: 0.72rem; padding: 4px 10px; }
-        .rc-buy-short { opacity: 0.55; }
+        .rc-hint { color: #64748b; font-weight: 400; font-size: 0.7rem; }
         .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
         .res-box { display: flex; flex-direction: column; gap: 5px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: rgba(15,23,42,0.5); }
         .res-name { font-size: 0.78rem; font-weight: 700; color: #fff; }
@@ -3126,59 +3165,23 @@ function fillWatchDefaults(form) {
 }
 window.fillWatchDefaults = fillWatchDefaults;
 
-// Multi-currency rank prices: { sp, gasoline, medication, comms, food } -> resource counters.
-const RES_LABELS = {
-    sp: { res: 'skill_points', emoji: '⬆️', short: 'SP' },
-    gasoline: { res: 'gasoline', emoji: '⛽', short: 'Gas' },
-    medication: { res: 'medication', emoji: '💊', short: 'Meds' },
-    comms: { res: 'comms', emoji: '📡', short: 'Comms' },
-    food: { res: 'food', emoji: '🥫', short: 'Food' }
-};
-function rankCostParts(c) {
-    return Object.keys(RES_LABELS).filter(k => Number(c && c[k]) > 0).map(k => [k, Number(c[k])]);
-}
-function resHave(k) {
-    return Number(appState.wallet && appState.wallet['res_' + RES_LABELS[k].res]) || 0;
-}
-function canAffordRank(c) {
-    return rankCostParts(c).every(([k, n]) => resHave(k) >= n);
-}
-// "Buy rank" pays the next rank from the resource counters and marks it.
-// Clicking the rank boxes only marks ranks (for ones you bought before typing
-// your numbers in), so nothing is ever taken away twice.
-window.appState.buyRank = function(id, group) {
-    const it = this.collectibles[group]?.items?.[id];
-    if (!it || !Array.isArray(it.rank_costs)) return;
-    const lvl = it.level || 0;
-    const c = it.rank_costs[lvl];
-    if (!c) return;
-    const short = rankCostParts(c).filter(([k, n]) => resHave(k) < n);
-    if (short.length) {
-        this.updateStatus('Not enough: need ' + short.map(([k, n]) => `${fmtNum(n - resHave(k))} more ${RES_LABELS[k].short}`).join(', ') + '.');
-        return;
-    }
-    rankCostParts(c).forEach(([k, n]) => { this.wallet['res_' + RES_LABELS[k].res] = resHave(k) - n; });
-    const max = Number(it.levels) || it.rank_costs.length;
-    it.level = Math.min(max, lvl + 1);
-    it.collected = it.level >= max;
-    this.updateStatus(`${it.name}: bought rank ${it.level}.`);
-    this.applyStateToUI();
-    this.saveProgress();
-};
-
 // Editable "what I have" counters (skill points, gasoline, ...). Listed in the
 // game JSON as resources: [{ id, name, emoji, hint }]. Saved with the wallet.
 function resourcePanelHtml(data) {
     const list = toArr(data && data.resources).filter(r => r && r.id && r.name);
     if (!list.length) return '';
     return `
-    <section class="category-section">
+    <section class="category-section section-collapsed">
         <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🎒 ${escapeHtml(data.resources_title || 'Resources I have')}</h2><span>▾</span></div>
         <div class="section-content">
             <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">${escapeHtml(data.resources_note || 'Type in what your game shows. It saves automatically.')}</p>
             ${data.resources_cost_note ? `<p style="color:#94a3b8; font-size:0.72rem; margin:-4px 0 10px;">${escapeHtml(data.resources_cost_note)}</p>` : ''}
             <div id="resRemaining" class="res-remaining"></div>
             <div class="res-grid">
+                <label class="res-box" title="Your in-game player level. Skills locked behind a level show it here once you're high enough.">
+                    <span class="res-name">🎖️ Player Level</span>
+                    <input class="uni-search-input res-input" id="wildlandsLevelInput" type="number" min="1" inputmode="numeric" value="${Number(appState.wallet && appState.wallet.level) || 1}" onchange="appState.setWallet('level', this.value)">
+                </label>
                 ${list.map(r => `
                 <label class="res-box" title="${escapeHtml(r.hint || '')}">
                     <span class="res-name">${escapeHtml(r.emoji || '')} ${escapeHtml(r.name)}</span>
@@ -3195,7 +3198,7 @@ function walletPanelHtml(data) {
     const inp = 'class="uni-search-input hunt-input"';
     const two = (formHtml, cardsHtml) => `<div class="hunt-2col"><div class="hunt-form-col">${formHtml}</div><div class="hunt-cards-col">${cardsHtml}</div></div>`;
     return `
-    <section class="category-section">
+    <section class="category-section section-collapsed">
         <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>💰 Hunter Wallet & Clock</h2><span class="sec-progress"></span><span>▾</span></div>
         <div class="section-content">
             <div class="mission-detail">
@@ -3503,7 +3506,7 @@ function renderUniversalCompanion(data) {
                     <ul>${grp.priority_order.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>
                 </div>` : '';
             pinnedHtml += `
-            <section class="category-section" data-pinned="true">
+            <section class="category-section section-collapsed" data-pinned="true">
                 <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                     <h2>📌 ${escapeHtml(humanize(cKey))} (${items.length})</h2>
                     <span>▾</span>
@@ -3545,7 +3548,7 @@ function renderUniversalCompanion(data) {
     const rawMissions = data.walkthrough_missions ? (Array.isArray(data.walkthrough_missions) ? data.walkthrough_missions : Object.values(data.walkthrough_missions)) : [];
     if (rawMissions.length > 0) {
         html += `
-        <section class="category-section">
+        <section class="category-section section-collapsed">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                 <h2>📖 Story Operations & Quests (${rawMissions.length})</h2>
                 <span>▾</span>
@@ -3572,7 +3575,7 @@ function renderUniversalCompanion(data) {
     const trophyEntries = Object.entries(appState.trophies);
     if (trophyEntries.length > 0) {
         html += `
-        <section class="category-section">
+        <section class="category-section section-collapsed">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                 <h2>🏆 Trophies & Achievements (${trophyEntries.length})</h2>
                 <span>▾</span>
@@ -3594,7 +3597,7 @@ function renderUniversalCompanion(data) {
         collectibleGroups.forEach(([cKey, grp]) => {
             const items = Object.entries(grp.items || {});
             html += `
-            <section class="category-section">
+            <section class="category-section section-collapsed">
                 <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                     <h2>🗂️ ${escapeHtml(humanize(cKey))} (${items.length})</h2>
                     <span>▾</span>
