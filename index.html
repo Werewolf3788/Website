@@ -390,6 +390,23 @@
             transform: translateY(100px);
             opacity: 0;
             pointer-events: none;
+            animation: none;
+        }
+        /* Only shown while a countdown is running. Slow, even blink:
+           2s visible, 2s hidden (short fade at each edge). Holds steady
+           while hovered/focused so it can still be clicked. */
+        #album-countdown-badge.is-flashing {
+            animation: ww-album-flash 4s ease-in-out infinite;
+        }
+        #album-countdown-badge.is-flashing:hover,
+        #album-countdown-badge.is-flashing:focus-within {
+            animation-play-state: paused;
+            opacity: 1;
+        }
+        @keyframes ww-album-flash {
+            0%, 45%   { opacity: 1; }
+            50%, 95%  { opacity: 0; }
+            100%      { opacity: 1; }
         }
         .album-cover-thumb {
             width: 54px;
@@ -1006,6 +1023,9 @@
             <button type="button" onclick="nextMusicRelease(event)" aria-label="Next Release" class="text-slate-400 hover:text-white p-1 text-xs">
                 <i class="fa-solid fa-chevron-right"></i>
             </button>
+            <a href="Claude-Test/music.html" aria-label="All releases" title="All releases" class="text-slate-400 hover:text-orange-400 p-1 text-xs">
+                <i class="fa-solid fa-compact-disc"></i>
+            </a>
             <button type="button" onclick="toggleAlbumCountdown(event)" aria-label="Minimize release badge" class="text-slate-400 hover:text-red-400 p-1 ml-0.5 text-xs">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -1674,6 +1694,8 @@
 
                         const parsedTime = parseDittoDate(rawDate);
                         if (isNaN(parsedTime)) return;
+                        // Badge is countdown-only: skip anything already released
+                        if (parsedTime <= Date.now()) return;
 
                         let img = item.image || item.img || item.icon || '';
                         if (img && !img.startsWith('http') && !img.startsWith('//')) {
@@ -1701,7 +1723,7 @@
                         if (currentMusicIndex >= musicReleases.length) {
                             currentMusicIndex = 0;
                         }
-                        if (badge) badge.classList.remove('hidden');
+                        if (badge) { badge.classList.remove('hidden'); badge.classList.add('is-flashing'); }
 
                         renderMusicRelease(currentMusicIndex);
                         startMusicCarousel();
@@ -1709,7 +1731,9 @@
                         if (musicTickInterval) clearInterval(musicTickInterval);
                         musicTickInterval = setInterval(updateMusicTimerDisplay, 1000);
                     } else {
-                        if (badge) badge.classList.add('hidden');
+                        musicReleases = [];
+                        if (musicTickInterval) { clearInterval(musicTickInterval); musicTickInterval = null; }
+                        if (badge) { badge.classList.add('hidden'); badge.classList.remove('is-flashing'); }
                     }
                 }, (error) => {
                     console.error("Firebase RTDB Music Releases Error:", error);
@@ -1758,9 +1782,17 @@
             const diff = item.date - now;
 
             if (diff <= 0) {
-                if (badgeLabel) badgeLabel.textContent = "OUT NOW - STREAMING";
-                timerDisplay.textContent = "ALBUM IS NOW STREAMING!";
-                timerDisplay.className = "text-xs font-mono font-black text-orange-400 mt-0.5 animate-pulse";
+                // Countdown finished - it's out now, so it leaves the badge
+                musicReleases = musicReleases.filter(r => r.date > now);
+                if (musicReleases.length === 0) {
+                    if (musicTickInterval) { clearInterval(musicTickInterval); musicTickInterval = null; }
+                    const badge = document.getElementById('album-countdown-badge');
+                    if (badge) { badge.classList.add('hidden'); badge.classList.remove('is-flashing'); }
+                    return;
+                }
+                if (currentMusicIndex >= musicReleases.length) currentMusicIndex = 0;
+                renderMusicRelease(currentMusicIndex);
+                return;
             } else {
                 if (badgeLabel) badgeLabel.textContent = "UPCOMING RELEASE";
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
