@@ -471,7 +471,7 @@ function friendsInner() {
   if (!S.friendsProg) return '';
   const head = `<div class="h2" style="margin:1rem 0 .5rem"><i class="fas fa-user-group"></i> Friends</div>`;
   if (!S.friendsProg.length) return head + '<div class="mute" style="font-size:.85rem">No friends added yet.</div>';
-  return head + S.friendsProg.map(f => `<div style="margin-bottom:.8rem"><div style="font-weight:800;margin-bottom:.3rem">${esc(f.name)}</div>` +
+  return head + S.friendsProg.map(f => `<div style="margin-bottom:.8rem"><div style="font-weight:800;margin-bottom:.3rem"><a href="profile.html#${encodeURIComponent(f.code)}" onclick="setTimeout(()=>location.reload(),0)" style="color:inherit;text-decoration:none" title="Open ${esc(f.name)}'s profile">${esc(f.name)} <i class="fas fa-chevron-right" style="font-size:.7em;opacity:.6"></i></a></div>` +
     (f.hidden ? '<div class="mute" style="font-size:.8rem">Keeps their tracking private.</div>' : f.games.length ? trackingRows(f.games) : '<div class="mute" style="font-size:.8rem">No tracked games yet.</div>') + '</div>').join('');
 }
 
