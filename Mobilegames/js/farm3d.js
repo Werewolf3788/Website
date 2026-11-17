@@ -570,6 +570,7 @@ function buildSeedBar() {
 setTool('hoe'); buildSeedBar();
 
 // ------------------------------------------------------------ input
+let FOLLOW = true; try { FOLLOW = localStorage.getItem('farm_cam') !== 'fixed'; } catch (e) {}
 const keys = {}; let yaw = Math.PI, pitch = .42, dist = 10, joy = { x: 0, y: 0 };
 window.addEventListener('keydown', function (e) {
   if (e.target && /input|textarea/i.test(e.target.tagName)) return; const k = e.key.toLowerCase();
@@ -757,7 +758,7 @@ function loop(ts) {
   const jm = Math.hypot(joy.x, joy.y), comb = player.veh === 'combine', V = player.driving ? (comb ? combineLocal : tractorLocal) : null;
   if (player.driving) {
     const top = comb ? HARVEST.top : 9 * (save.up.fast ? 1.3 : 1) * (save.up.nitro ? 1.25 : 1);
-    if (jm > .12) {
+    if (jm > .12 && !FOLLOW) {
       // touch stick: push the way you want to go, as seen on screen. The vehicle turns toward that direction and drives, so left is always left.
       const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw), sx = joy.x, sz = -joy.y, dx = fx * sz + rx * sx, dz = fz * sz + rz * sx;
       let diff = Math.atan2(dx, dz) - V.ry; while (diff > Math.PI) diff -= 2 * Math.PI; while (diff < -Math.PI) diff += 2 * Math.PI;
@@ -765,12 +766,20 @@ function loop(ts) {
       const want = top * Math.min(1, jm) * Math.max(0, Math.cos(diff)); V.speed += (want - V.speed) * Math.min(1, dt * 2.2);
     } else {
       // keyboard: W/S drive, A/D steer (screen-consistent: D always turns the nose to the right, also when backing up)
-      const kx = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0), kz = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0);
+      const kx = Math.max(-1, Math.min(1, (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0) + (FOLLOW ? joy.x : 0))), kz = Math.max(-1, Math.min(1, (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) + (FOLLOW ? -joy.y : 0)));
       V.speed += (kz * top - V.speed) * Math.min(1, dt * 2.2); V.ry -= kx * dt * 1.5 * Math.max(.25, Math.min(1, Math.abs(V.speed) / 3)) * (Math.abs(V.speed) < .15 ? 0 : 1);
     }
     V.x += Math.sin(V.ry) * V.speed * dt; V.z += Math.cos(V.ry) * V.speed * dt;
     const p = { x: V.x, z: V.z }; collide(p, comb ? 3 : 2); V.x = p.x; V.z = p.z; player.x = V.x; player.z = V.z; player.ry = V.ry; player.speed = Math.abs(V.speed);
     if (comb) { combineAuto(); combineUnload(dt); } else tractorAuto();
+  } else if (FOLLOW && !player.driving) {
+    // follow camera: left/right turn the farmer (and the view swings with them), up/down walk forward/back, so you always see their back
+    if (Math.abs(ix) > .08 && performance.now() - lastDragAt > 300) yaw -= ix * 2.2 * dt;
+    let da0 = yaw + Math.PI - player.ry; while (da0 > Math.PI) da0 -= 2 * Math.PI; while (da0 < -Math.PI) da0 += 2 * Math.PI; player.ry += da0 * Math.min(1, dt * 12);
+    if (Math.abs(iz) > .08) {
+      const dx = -Math.sin(yaw) * iz, dz = -Math.cos(yaw) * iz, sp = 6.2 * Math.min(1, Math.abs(iz)) * (iz < 0 ? .6 : 1);
+      player.x += dx / Math.abs(iz) * sp * dt; player.z += dz / Math.abs(iz) * sp * dt; const p = { x: player.x, z: player.z }; collide(p, .6); player.x = p.x; player.z = p.z; player.speed = sp;
+    } else player.speed = 0;
   } else if (mag > .08) {
     const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw), dx = fx * iz + rx * ix, dz = fz * iz + rz * ix, m = Math.hypot(dx, dz) || 1, sp = 6.2 * Math.min(1, mag);
     player.x += dx / m * sp * dt; player.z += dz / m * sp * dt; const p = { x: player.x, z: player.z }; collide(p, .6); player.x = p.x; player.z = p.z;
@@ -784,7 +793,7 @@ function loop(ts) {
   updateFleet(dt);
   world.clouds.position.x += dt * .6; if (world.clouds.position.x > 140) world.clouds.position.x = -140;
   // chase camera: swing behind the farmer or vehicle, but only when going forward (a sideways push never spins the view, so left stays left)
-  const heading = player.driving ? (jm > .12 ? (-joy.y > .45 && Math.abs(V.speed) > .4) : Math.abs(V.speed) > .4) : (player.speed > .5 && iz > .35);
+  const heading = FOLLOW ? (player.driving ? Math.abs(V.speed) > .3 : false) : player.driving ? (jm > .12 ? (-joy.y > .45 && Math.abs(V.speed) > .4) : Math.abs(V.speed) > .4) : (player.speed > .5 && iz > .35);
   if (heading && performance.now() - lastDragAt > 1200) { let da = player.ry + Math.PI - yaw; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; yaw += da * Math.min(1, dt * (player.driving ? 4 : 2.4)); }
   const ty = player.driving ? (comb ? 3 : 2.2) : 1.7, d = player.driving ? dist * (comb ? 1.6 : 1.3) : dist;
   camX += (player.x - camX) * Math.min(1, dt * 8); camZ += (player.z - camZ) * Math.min(1, dt * 8);
@@ -942,3 +951,6 @@ WW.onReady(function (user, code) {
   begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), { back: true }); });
 });
 window.__farm = { fleet: function () { return { combine: combine, trailer: trailer, truck: truck }; }, combineLocal: combineLocal, ensureFleet: ensureFleet, startHaul: startHaul, grainTotal: grainTotal, hud: hud, isMP: function () { return isMP; }, applyLedger: applyLedger, get colors() { return colors; }, myFieldCount: myFieldCount, ownerOf: ownerOf, get tractorState() { return tractorState; }, renderPeers: renderPeers, level: level, tractorColor: function () { return tractor.children[0].material.color.getHex(); }, actTile: actTile, player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSkip: function (id, v) { if (v) save.skip[id] = 1; else delete save.skip[id]; buildSeedBar(); }, cropForTile: cropForTile, plantables: plantables, get yaw() { return yaw; }, setCam: function (y, p, d) { yaw = y; pitch = p; dist = d; lastDragAt = performance.now() + 60000; }, refreshField: refreshField, ownedFields: function () { return ownedFields; }, get avatars() { return avatars; }, get avatarOn() { return !!farmer.userData.avatar && !!farmer.userData.badge; }, faceCamera: function () { player.ry = yaw; } };
+
+(function () { var b = document.getElementById('camBtn'); if (!b) return; function paint() { b.textContent = FOLLOW ? '🎥 Follow' : '🎥 Fixed'; } paint();
+  b.onclick = function () { FOLLOW = !FOLLOW; try { localStorage.setItem('farm_cam', FOLLOW ? 'follow' : 'fixed'); } catch (e) {} paint(); }; })();
