@@ -1,7 +1,7 @@
 /* ============================================================================
  * File: scripts/destiny-sync.js
- * Description: Destiny 2 sync (Bungie.net API). Game data -> Firestore (entertainment-71888) destiny_players/{emailKey};
- *   RTDB only keeps the user's own link info at /destiny_users/{emailKey} { name, updated_at }. Needs the Admin SDK (GCP_SA_KEY_WEBSITE).
+ * Description: Destiny 2 sync (Bungie.net API). Game data -> Firestore (entertainment-71888) destiny_players/{emailKey} (name, characters, totals, updated_at).
+ *   Nothing is written to RTDB (free tier); RTDB is only read for the Bungie names/keys. Needs the Admin SDK (GCP_SA_KEY_WEBSITE).
  *   INPUT : /users/{emailKey}.bungie_name   ("Name#1234")
  *   KEY   : /user_secrets/{emailKey}.bungie_api_key (own), else the owner's key in
  *           /user_secrets/{OWNER}.bungie_api_key (or BUNGIE_API_KEY secret) for the owner's close friends.
@@ -60,7 +60,6 @@ async function syncOne(key, emailKey, bungieName) {
         characters: chars.map((c) => ({ cls: CLS[c.classType] || "Guardian", race: RACE[c.raceType] || "", light: c.light | 0, minutes: Number(c.minutesPlayedTotal) || 0, last: c.dateLastPlayed || "" })),
         totals: { minutes: Math.round(v("secondsPlayed") / 60), kills: v("kills"), deaths: v("deaths"), activities: v("activitiesEntered") },
     });
-    await dbSet(`destiny_users/${emailKey}`, { name, updated_at: Date.now() });
 }
 async function main() {
     initAdmin();
