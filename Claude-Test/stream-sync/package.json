@@ -1,0 +1,16 @@
+{
+  "name": "ww-stream-sync",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PlayStation game + status -> Twitch/YouTube/Kick stream info, plus YouTube/TikTok chat relay into Twitch",
+  "main": "server.js",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node server.js", "test": "node --test test/*.test.js" },
+  "dependencies": {
+    "express": "^4.19.2",
+    "firebase-admin": "^12.6.0",
+    "psn-api": "^2.13.0",
+    "tiktok-live-connector": "^2.0.0",
+    "youtube-chat": "^2.2.0"
+  }
+}

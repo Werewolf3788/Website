@@ -1,0 +1,16 @@
+{
+  "_note": "Written once to users/{STREAM_SYNC_APP_OWNER_KEY}/stream_sync if that node is empty. Edit the live copy in Firebase, not this file.",
+  "enabled": true,
+  "twitch_login": "werewolf3788",
+  "bot_login": "modem3788",
+  "kick_login": "werewolf71888",
+  "squad": { "OneLIVIDMAN": "raymystyro", "Darkwing69420": "terrdog420" },
+  "base_tags": ["English", "friends", "NoDiscNoBuy", "physicalmediaforever"],
+  "game_tags": {},
+  "category_overrides": {},
+  "update_title": true,
+  "youtube_mode": "same",
+  "youtube_base": "",
+  "discord_live_alert": true,
+  "chat": { "youtube_channel_id": "UCYrxPkCw_Q2Fw02VFfumfyQ", "tiktok_username": "k082412" }
+}
