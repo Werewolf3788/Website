@@ -8,7 +8,35 @@
       "commId": "NPWR09395_00",
       "titleId": "CUSA02902",
       "productId": "UP0001-CUSA02902_00-GRWNCSANORMAL000",
-      "store_url": "https://store.playstation.com/en-us/product/UP0001-CUSA02902_00-GRWNCSANORMAL000"
+      "store_url": "https://store.playstation.com/en-us/product/UP0001-CUSA02902_00-GRWNCSANORMAL000",
+      "dlc": [
+        {
+          "name": "Year 2 Pass",
+          "productId": "UP0001-CUSA02902_00-GRWY2PASSBUNDLE0",
+          "store_url": "https://store.playstation.com/en-us/product/UP0001-CUSA02902_00-GRWY2PASSBUNDLE0",
+          "type": "Item bundle",
+          "contents": [
+            "Splinter Cell Pack: a weapon, a weapon skin, 2 NVG goggles, a pair of gloves and 3 camos",
+            "Soldier Equipment Pack: U100 weapon, JPC vest and military shirt",
+            "Infantry Forces Pack: ACU shirt, Mayflower APC and covered advanced combat helmet",
+            "Active Duty Pack: UMP 45, PenCott LN and Blast Face Shield"
+          ]
+        },
+        {
+          "name": "Fallen Ghosts",
+          "productId": "UP0001-CUSA02902_00-GRWDLCFALLEN0000",
+          "store_url": "https://store.playstation.com/en-us/product/UP0001-CUSA02902_00-GRWDLCFALLEN0000",
+          "type": "Story expansion",
+          "summary": "Your helicopter is shot down during an evacuation and ex-US Special Forces mercenaries hunt your squad. Adds a new enemy, new skills and exclusive weapons."
+        },
+        {
+          "name": "Narco Road",
+          "productId": "UP0001-CUSA02902_00-GRWDLCSMUGGLERS0",
+          "store_url": "https://store.playstation.com/en-us/product/UP0001-CUSA02902_00-GRWDLCSMUGGLERS0",
+          "type": "Story expansion",
+          "name_unconfirmed": true
+        }
+      ]
     },
     "steam": {
       "appId": 460930,
