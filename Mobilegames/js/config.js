@@ -10,9 +10,10 @@ const MIN = 60000, HOUR = 3600000, DAY = 86400000;
 
 // ---- levels: level 1 -> 2 needs 25 xp, 2 -> 3 needs 50, 3 -> 4 needs 75 ... up to level 50
 export const MAX_LEVEL = 50;
-export function xpForLevel(l) { return 25 * l * (l - 1) / 2; }                // total xp needed to reach level l
-export function xpToNext(l) { return 25 * l; }                                 // xp needed to go from level l to l+1
-export function levelFromXp(xp) { const l = Math.floor((1 + Math.sqrt(1 + 8 * Math.max(0, xp) / 25)) / 2); return Math.min(MAX_LEVEL, Math.max(1, l)); }
+export const XP_STEP = 250;                                                    // xp per level step: level n -> n+1 costs XP_STEP * n (was 25, far too fast)
+export function xpForLevel(l) { return XP_STEP * l * (l - 1) / 2; }                // total xp needed to reach level l
+export function xpToNext(l) { return XP_STEP * l; }                                 // xp needed to go from level l to l+1
+export function levelFromXp(xp) { const l = Math.floor((1 + Math.sqrt(1 + 8 * Math.max(0, xp) / XP_STEP)) / 2); return Math.min(MAX_LEVEL, Math.max(1, l)); }
 export const XP_SCALE = 0.4;                                                   // every xp gain is multiplied by this (levels were coming too fast)
 export const xpShow = n => { const v = Math.round(n * XP_SCALE * 10) / 10; return v; };
 export const XP_HARVEST = 5;                                                   // every crop harvested
@@ -229,20 +230,20 @@ export function fmtTime(ms) { const s = Math.max(0, Math.ceil(ms / 1000)), m = M
 
 // ---- achievements: earned once, announced to everyone on the site. t(ctx) gets { s: save.stats, level, fields, coins, up }
 export const ACHIEVEMENTS = [
-  { id: 'h1', icon: '🌾', name: 'First Harvest', desc: 'Harvest your first crop', t: c => c.s.harvest >= 1 },
-  { id: 'h100', icon: '🧺', name: 'Green Thumb', desc: 'Harvest 100 crops', t: c => c.s.harvest >= 100 },
-  { id: 'h1000', icon: '🚜', name: 'Harvest Hero', desc: 'Harvest 1,000 crops', t: c => c.s.harvest >= 1000 },
-  { id: 'h10000', icon: '👑', name: 'Harvest Legend', desc: 'Harvest 10,000 crops', t: c => c.s.harvest >= 10000 },
-  { id: 'p500', icon: '🌱', name: 'Seed Sower', desc: 'Plant 500 seeds', t: c => c.s.plant >= 500 },
-  { id: 's200', icon: '💰', name: 'Market Mover', desc: 'Sell 200 goods', t: c => c.s.sell >= 200 },
-  { id: 'w500', icon: '💧', name: 'Rain Maker', desc: 'Water 500 crops', t: c => c.s.water >= 500 },
-  { id: 'pl500', icon: '⛏️', name: 'Soil Breaker', desc: 'Plow 500 tiles', t: c => c.s.plow >= 500 },
-  { id: 'cu300', icon: '🌿', name: 'Soil Whisperer', desc: 'Cultivate 300 tiles', t: c => c.s.cultivate >= 300 },
-  { id: 'fe100', icon: '🧪', name: 'Fertile Ground', desc: 'Fertilize 100 crops', t: c => c.s.fert >= 100 },
-  { id: 'an100', icon: '🐔', name: 'Animal Friend', desc: 'Collect 100 animal goods (eggs, wool, milk)', t: c => (c.s.egg || 0) + (c.s.wool || 0) + (c.s.milk || 0) >= 100 },
-  { id: 'ck20', icon: '🍳', name: 'Home Cook', desc: 'Cook 20 dishes', t: c => c.s.cook >= 20 },
-  { id: 'or10', icon: '📋', name: 'Reliable Neighbor', desc: 'Deliver 10 orders', t: c => c.s.orders >= 10 },
-  { id: 'or50', icon: '📦', name: 'Order Master', desc: 'Deliver 50 orders', t: c => c.s.orders >= 50 },
+  { id: 'h1', icon: '🌾', name: 'First Harvest', desc: 'Harvest your first full field (240 crops)', t: c => c.s.harvest >= 240 },
+  { id: 'h100', icon: '🧺', name: 'Green Thumb', desc: 'Harvest 2,500 crops', t: c => c.s.harvest >= 2500 },
+  { id: 'h1000', icon: '🚜', name: 'Harvest Hero', desc: 'Harvest 25,000 crops', t: c => c.s.harvest >= 25000 },
+  { id: 'h10000', icon: '👑', name: 'Harvest Legend', desc: 'Harvest 250,000 crops', t: c => c.s.harvest >= 250000 },
+  { id: 'p500', icon: '🌱', name: 'Seed Sower', desc: 'Plant 5,000 seeds', t: c => c.s.plant >= 5000 },
+  { id: 's200', icon: '💰', name: 'Market Mover', desc: 'Sell 2,000 goods', t: c => c.s.sell >= 2000 },
+  { id: 'w500', icon: '💧', name: 'Rain Maker', desc: 'Water 5,000 crops', t: c => c.s.water >= 5000 },
+  { id: 'pl500', icon: '⛏️', name: 'Soil Breaker', desc: 'Plow 5,000 tiles', t: c => c.s.plow >= 5000 },
+  { id: 'cu300', icon: '🌿', name: 'Soil Whisperer', desc: 'Cultivate 3,000 tiles', t: c => c.s.cultivate >= 3000 },
+  { id: 'fe100', icon: '🧪', name: 'Fertile Ground', desc: 'Fertilize 1,000 crops', t: c => c.s.fert >= 1000 },
+  { id: 'an100', icon: '🐔', name: 'Animal Friend', desc: 'Collect 500 animal goods (eggs, wool, milk)', t: c => (c.s.egg || 0) + (c.s.wool || 0) + (c.s.milk || 0) >= 500 },
+  { id: 'ck20', icon: '🍳', name: 'Home Cook', desc: 'Cook 100 dishes', t: c => c.s.cook >= 100 },
+  { id: 'or10', icon: '📋', name: 'Reliable Neighbor', desc: 'Deliver 25 orders', t: c => c.s.orders >= 25 },
+  { id: 'or50', icon: '📦', name: 'Order Master', desc: 'Deliver 150 orders', t: c => c.s.orders >= 150 },
   { id: 'lv5', icon: '⭐', name: 'Rising Farmer', desc: 'Reach level 5', t: c => c.level >= 5 },
   { id: 'lv10', icon: '🌟', name: 'Seasoned Farmer', desc: 'Reach level 10', t: c => c.level >= 10 },
   { id: 'lv25', icon: '💫', name: 'Farm Veteran', desc: 'Reach level 25', t: c => c.level >= 25 },
@@ -250,6 +251,6 @@ export const ACHIEVEMENTS = [
   { id: 'f5', icon: '🏞️', name: 'Land Owner', desc: 'Own 5 fields', t: c => c.fields >= 5 },
   { id: 'f10', icon: '🗺️', name: 'Land Baron', desc: 'Own 10 fields', t: c => c.fields >= 10 },
   { id: 'up5', icon: '🔧', name: 'Gearhead', desc: 'Buy 5 tractor upgrades', t: c => Object.keys(c.up).length >= 5 },
-  { id: 'c10k', icon: '🪙', name: 'Well Off', desc: 'Hold $10,000', t: c => c.coins >= 10000 },
-  { id: 'c100k', icon: '💎', name: 'Farm Tycoon', desc: 'Hold $100,000', t: c => c.coins >= 100000 }
+  { id: 'c10k', icon: '🪙', name: 'Well Off', desc: 'Hold $50,000', t: c => c.coins >= 50000 },
+  { id: 'c100k', icon: '💎', name: 'Farm Tycoon', desc: 'Hold $500,000', t: c => c.coins >= 500000 }
 ];
