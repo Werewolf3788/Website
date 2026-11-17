@@ -5,13 +5,7 @@ name: Destiny 2 Sync
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 */6 * * *'
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/destiny-sync.js'
-      - '.github/workflows/destiny.yml'
+  # Paused: schedule and push triggers removed. Run manually from the Actions tab if needed.
 
 concurrency:
   group: destiny-sync-runner
