@@ -449,7 +449,7 @@ function wlCard(w) {
     ${WL_GROUPS.map(g => `<div><div class="mute" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">${g[0]}</div>${g[1].map(f => `<div style="display:flex;justify-content:space-between;gap:.6rem;font-size:.82rem;padding:.12rem 0"><span class="mute">${f[1]}</span><b>${val(f[0], f[2])}</b></div>`).join('')}</div>`).join('')}
     </div></div>`;
 }
-async function readTracking(async function readTracking(fs, ids) {
+async function readTracking(fs, ids) {
   const out = [], seen = new Set();
   for (const id of ids) for (const p of Object.keys(TRACK_PLATS)) {
     let snap; try { snap = await fs.collection('user').doc(id).collection('platform').doc(p).collection('game').get(); } catch (e) { continue; }
