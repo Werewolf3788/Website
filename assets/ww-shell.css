@@ -201,3 +201,22 @@ html.ww-bn-mode #ww-install-banner { bottom: calc(var(--ww-bn-h) + 10px + env(sa
 #ww-install-banner .ww-ib-x {
     flex: 0 0 auto; width: 44px; min-height: 44px; border: 0; background: none; color: var(--ww-muted); font-size: 1rem; cursor: pointer;
 }
+
+/* ---------- Update banner (new deploy detected while the page is open) ---------- */
+#ww-update-banner {
+    position: fixed; left: 10px; right: 10px; z-index: 9500; box-sizing: border-box;
+    top: calc(10px + env(safe-area-inset-top, 0px));
+    display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px;
+    background: var(--ww-bg-2); color: var(--ww-text); border: 1px solid var(--ww-accent); border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .55); font-family: var(--ww-font); max-width: 480px; margin: 0 auto;
+    animation: ww-update-in .25s ease-out;
+}
+@keyframes ww-update-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+#ww-update-banner span { flex: 1 1 auto; font-size: .85rem; font-weight: 700; }
+#ww-update-banner .ww-ub-go {
+    flex: 0 0 auto; min-height: 40px; padding: 0 16px; border: 0; border-radius: 10px; cursor: pointer;
+    background: var(--ww-accent); color: #04121f; font: 800 .82rem var(--ww-font);
+}
+#ww-update-banner .ww-ub-x {
+    flex: 0 0 auto; width: 36px; min-height: 36px; border: 0; background: none; color: var(--ww-muted); font-size: 1rem; cursor: pointer;
+}
