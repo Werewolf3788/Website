@@ -30,6 +30,8 @@
   .die{width:58px;height:58px;border-radius:13px;background:#f8fafc;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px;gap:2px;border:0;flex:none;box-shadow:0 3px 0 #94a3b8}
   .die i{border-radius:50%;background:transparent} .die i.on{background:#0f172a}
   .die.throw{animation:throw .55s ease-out}
+  .die.speed{background:#fb923c;box-shadow:0 3px 0 #c2410c} .die.speed i.on{background:#fff} .die.speed.face{display:flex;align-items:center;justify-content:center;font-size:30px;padding:0}
+  .modepick{display:flex;gap:6px;flex-wrap:wrap;align-items:center;width:100%}
   @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-22px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}100%{transform:translateY(0) rotate(720deg)}}
   #msg{color:#fbbf24;font-size:.9rem;line-height:1.25;max-height:58px;overflow:hidden;flex:1}
   #acts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;min-height:44px;align-items:center}
@@ -102,7 +104,7 @@
     <div id="play">
       <div id="banner" style="display:none"></div>
       <div id="turn"></div>
-      <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><div id="msg"></div></div>
+      <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><button class="die speed" id="d3" aria-label="Speed die" style="display:none"></button><div id="msg"></div></div>
       <div id="acts"></div>
       <div id="buildList"></div>
     </div>
@@ -121,7 +123,7 @@
     </div>
     <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
     <div id="log"></div>
-    <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 4 houses and then an apartment once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, your houses are sold and properties mortgaged automatically before you go bankrupt. Doubles roll again; three doubles go to jail. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
+    <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 4 houses and then an apartment once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, your houses are sold and properties mortgaged automatically before you go bankrupt. Doubles roll again; three doubles go to jail. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. <b>Speed Die</b> (the host picks Classic or Speed Die before starting): once you have passed Start, you roll a third die too. 1, 2 or 3 adds to your move; 🚌 Bus lets you move by either die or both; 🎩 Mr. Monopoly moves you, then sends you on to the next property nobody owns (or, if all are owned, the next one you owe rent on); triples let you move to any space you choose. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
   </div>
 </div>
 <div id="tradeDlg"><div id="tradeBox"></div></div>
@@ -272,12 +274,13 @@
     if (s.status === 'done') return;
     var q = plOf(s, s.turn);
     if (q.bankrupt) { advance(s); return; }
+    if (s.mrm) { delete s.mrm; if (q.jail === 0 && mrMonopoly(s, s.turn)) return; if (s.status === 'done') return; if (q.bankrupt) { advance(s); return; } }
     s.pend = -1; s.phase = (s.again && q.jail === 0) ? 'roll' : 'end';
   }
   function toJail(s, p) { var q = plOf(s, p); q.pos = 10; q.jail = 1; s.again = false; addLog(s, NAMES[p] + ' goes to jail.'); }
   function moveBy(s, p, sum, cr) {
     var q = plOf(s, p), np = (q.pos + sum) % 40;
-    if (np < q.pos) { q.cash += 200; addLog(s, NAMES[p] + ' passes Start: +$200'); }
+    if (np < q.pos) { q.cash += 200; q.lap = 1; addLog(s, NAMES[p] + ' passes Start: +$200'); }
     q.pos = np; land(s, p, sum, cr, false);
   }
   function land(s, p, sum, cr, nocard) {
@@ -309,9 +312,41 @@
       else if (c.k === 'payall') alive(s).forEach(function (o2) { if (o2 !== p && !q.bankrupt) pay(s, p, o2, c.v); });
     }
   }
-  function doRoll(s, r1, r2, cr) {
+  // ---------- Speed Die mode (official Speed Die rules). Faces: 1, 2, 3, Mr. Monopoly (x2), Bus. It joins in once you have
+  // passed Start for the first time, and never on a roll from jail.
+  var SPEED = [1, 2, 3, 'mr', 'mr', 'bus'];
+  function isBuyable(i) { var t = SP[i].t; return t === 'prop' || t === 'rail' || t === 'util'; }
+  function stepTo(s, p, to) { var q = plOf(s, p); if (to < q.pos) { q.cash += 200; q.lap = 1; addLog(s, NAMES[p] + ' passes Start: +$200'); } q.pos = to; }
+  // Mr. Monopoly: go on to the next property nobody owns (buy it or it goes to auction). If everything is owned, go to the
+  // next property someone else owns and pay them rent. Returns true when it left the turn waiting (buy / auction).
+  function mrMonopoly(s, p) {
+    var q = plOf(s, p), to = -1, k, i;
+    for (k = 1; k < 40 && to < 0; k++) { i = (q.pos + k) % 40; if (isBuyable(i) && ownerOf(s, i) < 0) to = i; }
+    if (to < 0) for (k = 1; k < 40 && to < 0; k++) { i = (q.pos + k) % 40; if (isBuyable(i) && ownerOf(s, i) >= 0 && ownerOf(s, i) !== p && !mgOf(s, i)) to = i; }
+    if (to < 0) { addLog(s, '🎩 Mr. Monopoly has nowhere to go.'); return false; }
+    addLog(s, '🎩 Mr. Monopoly sends ' + NAMES[p] + ' on to ' + SP[to].n + '.');
+    stepTo(s, p, to); land(s, p, (s.dice[0] | 0) + (s.dice[1] | 0), 0, true);
+    if (s.status === 'done') return true;
+    if (s.phase === 'buy' || s.phase === 'auction') return true;
+    fin(s); return true;
+  }
+  function doBus(s, n) {        // bus: move by one white die or by both
+    if (s.phase !== 'bus') return false; var d = s.dice, opts = [d[0], d[1], d[0] + d[1]]; if (opts.indexOf(n) < 0) return false;
+    var p = s.turn; s.phase = 'roll'; addLog(s, '🚌 ' + NAMES[p] + ' takes the bus ' + n + ' space' + (n > 1 ? 's' : '') + '.');
+    moveBy(s, p, n, s.cr | 0); if (s.status === 'done') return true;
+    if (s.phase !== 'buy' && s.phase !== 'auction') fin(s); return true;
+  }
+  function doPick(s, to) {      // triples: go to any space
+    if (s.phase !== 'pick' || !(to >= 0 && to < 40)) return false; var p = s.turn; s.phase = 'roll';
+    addLog(s, '🎯 ' + NAMES[p] + ' rolled triples and goes straight to ' + SP[to].n + '.');
+    stepTo(s, p, to); s.again = false; s.dc = 0; land(s, p, (s.dice[0] | 0) + (s.dice[1] | 0), s.cr | 0, false);
+    if (s.status === 'done') return true;
+    if (s.phase !== 'buy' && s.phase !== 'auction') fin(s); return true;
+  }
+  function doRoll(s, r1, r2, cr, sdi) {
     var p = s.turn, q = plOf(s, p), dbl = r1 === r2, sum = r1 + r2;
-    s.dice = [r1, r2]; s.again = false;
+    var sd = (s.mode === 'speed' && q.lap && q.jail === 0) ? SPEED[(sdi | 0) % 6] : 0;
+    s.dice = [r1, r2, sd]; s.again = false; delete s.mrm; s.cr = cr;
     if (q.jail > 0) {
       if (dbl) { q.jail = 0; addLog(s, NAMES[p] + ' rolled doubles and leaves jail.'); }
       else {
@@ -324,6 +359,12 @@
       if (s.dc >= 3) { s.dc = 0; addLog(s, NAMES[p] + ' rolled three doubles!'); toJail(s, p); s.phase = 'end'; return true; }
       s.again = true;
     } else s.dc = 0;
+    if (sd) {
+      if (typeof sd === 'number' && dbl && sd === r1) { s.again = false; s.dc = 0; s.phase = 'pick'; addLog(s, '🎯 ' + NAMES[p] + ' rolled triple ' + r1 + 's! Pick any space to move to.'); return true; }
+      if (sd === 'bus') { s.phase = 'bus'; addLog(s, '🚌 ' + NAMES[p] + ' rolled ' + r1 + ' + ' + r2 + ' and the Bus: move ' + r1 + ', ' + r2 + ' or ' + sum + '.'); return true; }
+      if (sd === 'mr') { s.mrm = 1; addLog(s, '🎩 ' + NAMES[p] + ' rolled ' + r1 + ' + ' + r2 + ' and Mr. Monopoly.'); }
+      else { sum += sd; addLog(s, '⚡ ' + NAMES[p] + ' rolled ' + r1 + ' + ' + r2 + ' + ' + sd + ' = ' + sum + '.'); }
+    }
     moveBy(s, p, sum, cr);
     if (s.status === 'done') return true;
     if (s.phase !== 'buy' && s.phase !== 'auction') fin(s);
@@ -438,6 +479,15 @@
       return { k: 'bid', v: Math.max(10, Math.min(room, Math.round((lim - a.bid) / 30) * 10)) };
     }
     for (var u = 0; u < 40; u++) if (manageOk(s) && ownerOf(s, u) === p && mgOf(s, u) && q.cash - unmgCost(u) >= 300) return { k: 'unmort', i: u };
+    if (s.phase === 'bus') {      // prefer a move that lands on something to buy, else the longest move
+      var d = s.dice, best = d[0] + d[1];
+      [d[0], d[1], d[0] + d[1]].forEach(function (n) { var t = (q.pos + n) % 40; if (isBuyable(t) && ownerOf(s, t) < 0 && SP[t].p <= q.cash - 50) best = n; });
+      return { k: 'bus', v: best };
+    }
+    if (s.phase === 'pick') {     // dearest property it can still buy, else Free Parking
+      var pick = 20, pv = -1; for (var t = 0; t < 40; t++) if (isBuyable(t) && ownerOf(s, t) < 0 && SP[t].p <= q.cash - 50 && SP[t].p > pv) { pv = SP[t].p; pick = t; }
+      return { k: 'pick', i: pick };
+    }
     if (s.phase === 'buy') { var sp = SP[s.pend]; return { k: (q.cash - sp.p >= 50) ? 'buy' : 'pass' }; }
     b = buildable(s, p).filter(function (i) { return q.cash - Math.floor(SP[i].p / 2) >= 250; });
     if (s.phase === 'roll') {
@@ -518,7 +568,9 @@
   }
   function actorOk(s) { var st = seatOf(s, s.turn); if (!st) return false; return (!st.bot && st.uid === me.uid) || isDriver(); }
   function turnAct(fn) { mutate(function (s) { if (s.status !== 'playing' || !actorOk(s)) return false; return fn(s); }); }
-  function actRoll(r1, r2, cr) { turnAct(function (s) { if (s.phase !== 'roll') return false; return doRoll(s, r1, r2, cr); }); }
+  function actRoll(r1, r2, cr, sd) { turnAct(function (s) { if (s.phase !== 'roll') return false; return doRoll(s, r1, r2, cr, sd); }); }
+  function actBus(n) { turnAct(function (s) { return doBus(s, n); }); } function actPick(i) { turnAct(function (s) { return doPick(s, i); }); }
+  function setMode(m) { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || (m !== 'classic' && m !== 'speed')) return false; s.mode = m; }); }
   function actBuy() { turnAct(doBuy); } function actPass() { turnAct(doPass); } function actEnd() { turnAct(doEnd); }
   function actorSeat(s) { return (s.phase === 'auction' && s.au) ? s.au.cur : s.turn; }
   function seatAct(seatFn, fn) { mutate(function (s) { if (s.status !== 'playing') return false; var st = seatOf(s, seatFn(s)); if (!st || !((!st.bot && st.uid === me.uid) || isDriver())) return false; return fn(s); }); }
@@ -531,13 +583,18 @@
   function actBail() { turnAct(doBail); } function actBuild(i) { turnAct(function (s) { return doBuild(s, i); }); }
 
   // ---------- dice, sound
+  function drawSpeed(v) {
+    var el = $('d3'); if (!el) return; var on = S && S.mode === 'speed'; el.style.display = on ? '' : 'none'; if (!on) return;
+    if (v === 'mr' || v === 'bus') { el.classList.add('face'); el.innerHTML = v === 'mr' ? '🎩' : '🚌'; el.title = v === 'mr' ? 'Mr. Monopoly' : 'Bus'; }
+    else { el.classList.remove('face'); el.title = 'Speed die'; drawDie(el, v | 0); }
+  }
   function drawDie(el, v) { var h = '', on = PIPS[v] || []; for (var i = 0; i < 9; i++) h += '<i' + (on.indexOf(i) > -1 ? ' class="on"' : '') + '></i>'; el.innerHTML = h; }
   function spinThen(cb) {
     if (rolling) return; rolling = true; var n = 0;
-    ['d1', 'd2'].forEach(function (id) { var e = $(id); e.classList.remove('throw'); void e.offsetWidth; e.classList.add('throw'); });
+    ['d1', 'd2', 'd3'].forEach(function (id) { var e = $(id); if (!e) return; e.classList.remove('throw'); void e.offsetWidth; e.classList.add('throw'); });
     var iv = setInterval(function () {
-      drawDie($('d1'), 1 + Math.floor(Math.random() * 6)); drawDie($('d2'), 1 + Math.floor(Math.random() * 6));
-      if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 1200)); }
+      drawDie($('d1'), 1 + Math.floor(Math.random() * 6)); drawDie($('d2'), 1 + Math.floor(Math.random() * 6)); drawSpeed(SPEED[Math.floor(Math.random() * 6)]);
+      if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 1200), Math.floor(Math.random() * 6)); }
     }, 70);
   }
   function tryRoll() {
@@ -545,7 +602,7 @@
     var st = seatOf(S, S.turn); if (!st || st.bot || st.uid !== me.uid) return;
     spinThen(actRoll);
   }
-  $('d1').onclick = $('d2').onclick = tryRoll;
+  $('d1').onclick = $('d2').onclick = $('d3').onclick = tryRoll;
   document.addEventListener('keydown', function (e) { if (!e.repeat && (e.key === ' ' || e.key === 'Enter') && e.target.tagName !== 'BUTTON') { e.preventDefault(); tryRoll(); } });
   function enableShake() {
     if (shakeOn) return; shakeOn = true;
@@ -612,7 +669,7 @@
 
   // ---------- bots, away players, auto-end
   function perform(a) {
-    if (a.k === 'roll') spinThen(actRoll); else if (a.k === 'buy') actBuy(); else if (a.k === 'pass') actPass();
+    if (a.k === 'roll') spinThen(actRoll); else if (a.k === 'bus') actBus(a.v); else if (a.k === 'pick') actPick(a.i); else if (a.k === 'buy') actBuy(); else if (a.k === 'pass') actPass();
     else if (a.k === 'end') actEnd(); else if (a.k === 'bail') actBail(); else if (a.k === 'build') actBuild(a.i);
     else if (a.k === 'bid') actBid(a.v); else if (a.k === 'drop') actDrop(); else if (a.k === 'unmort') actUnmort(a.i);
   }
@@ -874,7 +931,7 @@
     for (p = 0; p < 4; p++) { var em = emotes && emotes[p]; if (em && seatOf(s, p) && WW.now() - (em.t || 0) < 4000 && (!best || em.t > best.t)) best = { e: em.e, t: em.t, p: p }; }
     if (best) eo = '<circle cx="42" cy="67" r="2.2" fill="' + COLORS[best.p] + '" stroke="#fff" stroke-width=".5"/><text class="emoB" x="55" y="69" text-anchor="middle" dominant-baseline="central" font-size="11">' + best.e + '</text>';
     $('emoLayer').innerHTML = eo;
-    if (!rolling) { drawDie($('d1'), s.dice ? s.dice[0] : 0); drawDie($('d2'), s.dice ? s.dice[1] : 0); }
+    if (!rolling) { drawDie($('d1'), s.dice ? s.dice[0] : 0); drawDie($('d2'), s.dice ? s.dice[1] : 0); drawSpeed(s.dice ? s.dice[2] : 0); }
     var q0 = playing ? plOf(s, s.turn) : null, cs = seatOf(s, s.turn);
     var mq = (ms >= 0 && s.pl) ? plOf(s, ms) : null, bk = $('bank'), bt = mq ? '$' + mq.cash : '—';
     if (bk.textContent !== bt) { bk.textContent = bt; bk.classList.remove('bankpulse'); void bk.offsetWidth; bk.classList.add('bankpulse'); }
@@ -899,6 +956,8 @@
       if (s.phase === 'roll') { a += '<button class="go" data-a="roll">🎲 Roll dice</button>'; if (q0.jail > 0 && q0.cash >= 50) a += '<button data-a="bail">Pay $50 bail</button>'; }
       else if (s.phase === 'buy') { var sp = SP[s.pend]; a += '<button class="go" data-a="buy">Buy ' + sp.n + ' · $' + sp.p + '</button><button data-a="pass">Pass</button>'; }
       else if (s.phase === 'end') a += '<button class="go" data-a="end">End turn</button>';
+      else if (s.phase === 'bus') { var bd = s.dice; [bd[0], bd[1], bd[0] + bd[1]].forEach(function (n, k) { if (k === 1 && bd[1] === bd[0]) return; a += '<button class="go" data-a="bus" data-v="' + n + '">🚌 Move ' + n + ' → ' + SP[(q0.pos + n) % 40].n + '</button>'; }); }
+      else if (s.phase === 'pick') { var opt = ''; for (var oi = 0; oi < 40; oi++) opt += '<option value="' + oi + '"' + (oi === sel ? ' selected' : '') + '>' + SP[oi].n + (SP[oi].p && isBuyable(oi) ? (ownerOf(s, oi) < 0 ? ' · for sale $' + SP[oi].p : ' · ' + NAMES[ownerOf(s, oi)]) : '') + '</option>'; a += '<select id="pickSel">' + opt + '</select> <button class="go" data-a="pick">🎯 Go there</button>'; }
       if (can.length && (s.phase === 'roll' || s.phase === 'end')) a += '<button data-a="togglebuild">🏠 Build (' + can.length + ')</button>';
       if (manageOk(s) && !s.trade && alive(s).length > 1) a += '<button data-a="trade">🤝 Trade</button>';
       if (showBuild && can.length && (s.phase === 'roll' || s.phase === 'end')) can.forEach(function (j) { bl += '<button data-a="build" data-i="' + j + '">' + (housesOf(s, j) >= 4 ? '🏢 Apartment' : '🏠 House ' + (housesOf(s, j) + 1)) + ' · ' + SP[j].n + ' · $' + Math.floor(SP[j].p / 2) + '</button>'; });
@@ -930,6 +989,11 @@
     }
     $('seats').innerHTML = h;
     var la = '';
+    var md = s.mode === 'speed' ? 'speed' : 'classic';
+    if (s.status === 'lobby') la += '<div class="modepick"><b>Game:</b>' + (isHost()
+      ? '<button data-a="mode" data-v="classic"' + (md === 'classic' ? ' class="go"' : '') + '>🎲🎲 Classic</button><button data-a="mode" data-v="speed"' + (md === 'speed' ? ' class="go"' : '') + '>⚡ Speed Die</button>'
+      : '<span>' + (md === 'speed' ? '⚡ Speed Die' : '🎲🎲 Classic') + ' (host picks)</span>') + '</div>';
+    else if (md === 'speed') la += '<span class="muted">⚡ Speed Die game</span>';
     if (s.status === 'lobby' && isHost()) la += '<button class="go" data-a="start"' + (seated(s).length < 2 ? ' disabled' : '') + '>Start game</button> <button data-a="fill">Fill with bots</button>';
     if (s.status === 'lobby' && !isHost()) la += '<span class="muted">Waiting for the host to start.</span>';
     if (s.status === 'done' && isHost()) la += '<button class="go" data-a="again">Play again</button>';
@@ -956,6 +1020,7 @@
     var a = b.dataset.a, p = +b.dataset.p;
     if (a === 'sit') sit(p); else if (a === 'bot') addBot(p); else if (a === 'rm') removeBot(p); else if (a === 'leave') { if (!S || S.status !== 'playing' || confirm('Leave this game? If you are the last player the game ends, and this game will not count toward your record.')) leave(p); }
     else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
+    else if (a === 'mode') setMode(b.dataset.v); else if (a === 'bus') actBus(+b.dataset.v); else if (a === 'pick') { var ps = document.getElementById('pickSel'); if (ps) actPick(+ps.value); }
     else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail();
     else if (a === 'togglebuild') { showBuild = !showBuild; render(); } else if (a === 'build') actBuild(+b.dataset.i);
     else if (a === 'sellh') actSellH(+b.dataset.i); else if (a === 'mort') actMort(+b.dataset.i); else if (a === 'unmort') actUnmort(+b.dataset.i);
