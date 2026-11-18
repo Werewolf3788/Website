@@ -778,8 +778,47 @@ function drawMini() {
 // ------------------------------------------------------------ main loop
 let mmT = 0, last = performance.now(), lastSent = 0, lastBeat = 0, lastTrk = 0, camX = 0, camZ = 0, slow = 0;
 function collide(p, rad) { W.COLLIDERS.forEach(function (c) { const dx = p.x - c.x, dz = p.z - c.z, d = Math.hypot(dx, dz), m = c.r + rad; if (d < m && d > 0) { p.x = c.x + dx / d * m; p.z = c.z + dz / d * m; } }); p.x = Math.max(-90, Math.min(90, p.x)); p.z = Math.max(-90, Math.min(250, p.z)); }
+// ------------------------------------------------------------ controller (PS5 / PS4 / Xbox / any standard pad)
+// left stick = steer (left/right), right stick = forward / back (L2 / R2 also work), X (Cross) = Use, R-stick sideways = look around,
+// L1 / R1 = previous / next tool, Options = barn menu. In the barn menu: D-pad or stick to move, X to press, Circle or Options to close.
+const PAD = window.WWPad; let padSel = 0, padNext = 0;
+function shopButtons() { return [].slice.call(document.querySelectorAll('#shopTabs button, #shopItems button:not(:disabled), #shopClose')); }
+function padFrame(dt) {
+  if (!PAD || !PAD.supported()) return;
+  PAD.poll(); const ps = PAD.state(), now = performance.now();
+  if (!ps) { if (document.body.classList.contains('pad')) { document.body.classList.remove('pad'); joy.x = joy.y = 0; } return; }
+  document.body.classList.add('pad');
+  const clamp = function (v) { return Math.max(-1, Math.min(1, v)); };
+  if ($('shop').style.display === 'flex') {
+    joy.x = joy.y = 0; const b = shopButtons(); if (!b.length) return; padSel = Math.max(0, Math.min(b.length - 1, padSel));
+    if (PAD.pressed('down') || PAD.pressed('right')) padSel = (padSel + 1) % b.length;
+    if (PAD.pressed('up') || PAD.pressed('left')) padSel = (padSel - 1 + b.length) % b.length;
+    if (PAD.pressed('r1')) { const i = TABS.findIndex(function (t) { return t[0] === shopTab; }); shopTab = TABS[(i + 1) % TABS.length][0]; renderShop(); padSel = 0; }
+    if (PAD.pressed('l1')) { const i = TABS.findIndex(function (t) { return t[0] === shopTab; }); shopTab = TABS[(i - 1 + TABS.length) % TABS.length][0]; renderShop(); padSel = 0; }
+    const nb = shopButtons(); nb.forEach(function (x, i) { x.classList.toggle('padsel', i === padSel); });
+    if (nb[padSel] && nb[padSel].scrollIntoView) nb[padSel].scrollIntoView({ block: 'nearest' });
+    if (PAD.pressed('cross') && nb[padSel]) nb[padSel].click();
+    if (PAD.pressed('circle') || PAD.pressed('options')) $('shop').style.display = 'none';
+    return;
+  }
+  [].forEach.call(document.querySelectorAll('.padsel'), function (x) { x.classList.remove('padsel'); });
+  let px = ps.lx || (PAD.state().moveX()), py = ps.ry || ps.ly || ps.moveY(); py += ps.l2 - ps.r2;
+  joy.x = clamp(px); joy.y = clamp(py);
+  if (Math.abs(ps.rx) > .25) { yaw -= ps.rx * 2.4 * dt; lastDragAt = now; }
+  if (PAD.pressed('cross')) { useAction(); padNext = now + 380; } else if (PAD.held('cross') && now > padNext) { useAction(); padNext = now + 200; }
+  const ids = TOOLS.map(function (t) { return t.id; }), ti = ids.indexOf(tool);
+  if (PAD.pressed('r1')) setTool(ids[(ti + 1) % ids.length]);
+  if (PAD.pressed('l1')) setTool(ids[(ti - 1 + ids.length) % ids.length]);
+  if (PAD.pressed('options')) openShop();
+}
+if (PAD) {
+  PAD.on('connect', function (n) { say('🎮 ' + n + ' connected: left stick steer · right stick forward/back · X use · L1/R1 tool · Options barn', 6000); });
+  PAD.on('disconnect', function (n) { say('🎮 ' + n + ' disconnected', 3000); });
+}
+
 function loop(ts) {
   const dt = Math.min(.05, (ts - last) / 1000); last = ts;
+  padFrame(dt);
   let ix = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0) + joy.x, iz = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y;
   const mag = Math.hypot(ix, iz); if (mag > 1) { ix /= mag; iz /= mag; }
   const jm = Math.hypot(joy.x, joy.y), comb = player.veh === 'combine', V = player.driving ? (comb ? combineLocal : tractorLocal) : null;

@@ -37,6 +37,9 @@
     #bars{padding:3px 8px 4px} .row button{padding:5px 8px}
     #shop .box{max-height:94vh;width:min(92vw,620px)}
   }
+  /* controller connected: hide the touch controls */
+  body.pad #joy,body.pad #joyR,body.pad #useBtn{display:none!important}
+  .padsel{outline:3px solid #fde68a!important;outline-offset:1px}
   #shop{inset:0;display:none;align-items:center;justify-content:center;background:#000a;z-index:20}
   #shop .box{background:#1e293b;border-radius:16px;padding:14px;width:min(96vw,460px);max-height:88vh;display:flex;flex-direction:column}
   #shop h2{margin:0 0 8px;font-size:1.1rem} #shopTabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
@@ -77,6 +80,7 @@ try{var K='werewolf_mobilegames_local_v1',O='neighborly_acre_local_v1',o=localSt
 if(!nd.game_rooms.farm&&od.game_rooms&&od.game_rooms.farm)nd.game_rooms.farm=od.game_rooms.farm;if(!nd.games_saves.local.farm&&od.games_saves&&od.games_saves.local&&od.games_saves.local.farm)nd.games_saves.local.farm=od.games_saves.local.farm;localStorage.setItem(K,JSON.stringify(nd));localStorage.setItem('neighborly_acre_migrated','1');}}catch(e){}</script>
 <script>document.write('<script src="js/common.js"><\/script>');</script>
 <script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/gamepad.js"><\/script>');</script>
 <script>document.write('<script type="module" src="js/farm3d.js"><\/script>');</script>
 </body>
 </html>
