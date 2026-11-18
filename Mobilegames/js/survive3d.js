@@ -107,10 +107,35 @@ function addToPile(id, n) {
   const pp = Object.keys(pads).filter(k => pads[k].id === 'pp' && (padLeft(k, pads[k])[r] || 0) > 0);
   if (bld.length) { const cut = n * SHARE_BUILD; n -= cut - feedPads(pads, bld, r, cut); st.overflowAt = NOW(); }
   else if (pp.length) { const cut = n * SHARE_PP; n -= cut - feedPads(pads, pp, r, cut); st.overflowAt = NOW(); }
+  // you're online and in town (the home area): it goes straight into your stockpile instead of the building's pile
+  if (!tour && !awayNow && inTown()) { st.res[r] = (st.res[r] || 0) + n; st.stats.collected = (st.stats.collected || 0) + n; return; }
   const capP = 40 * lvl(id) * PILE_STOP, have = st.piles[id] || 0;
   if (have + n <= capP) { st.piles[id] = have + n; return; }
   const extra = have + n - Math.max(have, capP); st.piles[id] = Math.max(have, capP);
   feedPads(pads, bld.length ? bld : pp, r, extra); st.overflowAt = NOW();   // a full pile's extra goes to the builds too
+}
+// While you're off your map (game closed, or visiting an ally) the town keeps going at 5% speed, so a little gets done
+// but it never stops. Your crews (lumberjacks, miners, deer hunters) put their haul into the town's builds first, a
+// small share goes to your allies, and what's left lands in the piles. Upgrade timers keep running in real time.
+const AWAY_RATE = .05, AWAY_MAX = 7 * 86400;
+let awayNow = false;   // true while catching up on time away (that output goes to the buildings, not your pocket)
+function inTown() { const [i, j] = zoneAt(player.x, player.z); return i === 2 && j === 2; }
+function awayCatchUp(sec, quiet) {
+  sec = Math.min(AWAY_MAX, sec); const eff = sec * AWAY_RATE; if (eff < 1) return;
+  awayNow = true; try { economy(eff); } finally { awayNow = false; }
+  const pads = wantedPads(), built = {}, toAllies = {}; let piled = {};
+  Object.keys(ROLES).forEach(id => {
+    const n = lvl(id) >= 1 ? Math.min(4, lvl(id)) : 0; if (!n) return; const R = ROLES[id], r = R.res;
+    let amt = n * R.load * eff / 25;   // one trip about every 25 seconds per worker
+    const ally = amt * .05; toAllies[r] = (toAllies[r] || 0) + ally; amt -= ally;
+    const keys = Object.keys(pads).filter(k => pads[k].kind !== 'zone' && (padLeft(k, pads[k])[r] || 0) > 0);
+    const left = feedPads(pads, keys, r, amt); built[r] = (built[r] || 0) + (amt - left);
+    const capP = 40 * lvl(id), have = st.piles[id] || 0, add = Math.min(left, Math.max(0, capP - have)); st.piles[id] = have + add; piled[r] = (piled[r] || 0) + add;
+  });
+  st.allyPending = st.allyPending || {}; Object.keys(toAllies).forEach(r => { st.allyPending[r] = (st.allyPending[r] || 0) + toAllies[r]; });
+  const fl = o => { const x = {}; Object.keys(o).forEach(k => { if (o[k] >= 1) x[k] = Math.floor(o[k]); }); return x; };
+  const b = fl(built), p = fl(piled);
+  if (!quiet || Object.keys(b).length) setTimeout(() => toast('👋 While you were away (' + fmt(sec) + ', at 5% speed): ' + (Object.keys(b).length ? 'your crews put ' + costTxt(b) + ' into builds' : 'your town kept ticking') + (Object.keys(p).length ? ' · ' + costTxt(p) + ' in the piles' : ''), 5000), 600);
 }
 function economy(dt) {
   const ev = [], now = NOW(), e = efficiency();
@@ -582,7 +607,7 @@ function goHome(quiet) {
   if (Object.keys(toPads).length) msg.push('🏗️ Your builds: ' + costTxt(toPads));
   if (Object.keys(theirs.res).length || Object.keys(theirs.paid).length) msg.push('🤝 ' + t.name + ' gets the other half');
   if (msg.length) setTimeout(() => toast(msg.join(' · '), 4500), 900);
-  const off = Math.min(4 * 3600, (NOW() - t.at) / 1000); if (off > 1) economy(off);
+  const off = (NOW() - t.at) / 1000; if (off > 1) awayCatchUp(off, true);
   player.x = t.hx; player.z = t.hz; loadWorld(); setRoom(code); applyHelps(); applyGifts(); persist(); if (!quiet) { toast('🏠 Back home'); closeSheet(); }
 }
 function publishPub() {
@@ -617,11 +642,12 @@ function shareTick() {
   if (!shareAllies) { loadAllyList(); return; }
   const A = shareAllies.filter(f => f.code !== code); st.shareMark = st.shareMark || {}; st.shareCarry = st.shareCarry || {};
   const pct = sharePct(A.length), out = {};
+  if (A.length && st.allyPending) Object.keys(st.allyPending).forEach(k => { const each = Math.floor(st.allyPending[k] / A.length); if (each >= 1) { out[k] = (out[k] || 0) + each; st.allyPending[k] -= each * A.length; } });   // your crews' share from while you were away
   ['wood', 'metal', 'food'].forEach(k => {
     const now = st.stats[k] || 0, last = st.shareMark[k] === undefined ? now : st.shareMark[k]; st.shareMark[k] = now; if (!A.length) return;
     st.shareCarry[k] = (st.shareCarry[k] || 0) + Math.max(0, now - last) * pct;   // per ally
     const each = Math.floor(st.shareCarry[k]); if (each < 1) return;
-    const can = Math.min(each, Math.floor((st.res[k] || 0) / A.length)); if (can < 1) return; st.shareCarry[k] -= can; st.res[k] -= can * A.length; out[k] = can;
+    const can = Math.min(each, Math.floor((st.res[k] || 0) / A.length)); if (can < 1) return; st.shareCarry[k] -= can; st.res[k] -= can * A.length; out[k] = (out[k] || 0) + can;
   });
   if (!Object.keys(out).length) return;
   const from = WW.nick || String((WW.user && WW.user.displayName) || 'An ally').split(' ')[0];
@@ -817,13 +843,13 @@ function loadWorld() {
 function boot() {
   let s = null; try { s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) {}
   st = fix(s && s.v === 3 ? s : fresh());
-  const off = Math.min(4 * 3600, (NOW() - (st.last || NOW())) / 1000); if (off > 10) { economy(off); setTimeout(() => toast('Welcome back! Your survivors kept working for ' + fmt(off) + '.', 4000), 400); }
+  const off = (NOW() - (st.last || NOW())) / 1000; if (off > 10) awayCatchUp(off);
   player.hpMax = 100; if (st.hp <= 0) st.hp = 100;
   loadWorld(); persist();
   if (!localStorage.getItem('ts3_intro')) { localStorage.setItem('ts3_intro', '1'); show('<h3>🎖️ Sarge: “Glad you made it, survivor.”</h3><div class="muted" style="font-size:.95rem;line-height:1.5">The power plant is all we have left. <b>Drag anywhere</b> to walk (or WASD / a controller). Walk up to trees, rocks and animals and you’ll chop, mine and hunt on your own. Carry resources to the <b>yellow pads</b> to build, and the <b>blue pads</b> to push back the fog. Follow the mission at the bottom-left — the yellow arrow shows the way.</div>'); }
   if (WW && WW.onReady) WW.onReady(async (user, fc) => {
     uid = user && user.uid; code = fc; if (!user) return;
-    try { const c = await WW.loadSave(CLOUD_KEY); if (c && c.v === 3 && (c.saved || 0) > (st.saved || 0)) { st = fix(c); const o = Math.min(4 * 3600, (NOW() - (st.last || NOW())) / 1000); if (o > 10) economy(o); loadWorld(); } } catch (e) {}
+    try { const c = await WW.loadSave(CLOUD_KEY); if (c && c.v === 3 && (c.saved || 0) > (st.saved || 0)) { st = fix(c); const o = (NOW() - (st.last || NOW())) / 1000; if (o > 10) awayCatchUp(o); loadWorld(); } } catch (e) {}
     listenHelps(); listenGifts(); publishPub(); publishPlaying(); setRoom(code);
   });
 }

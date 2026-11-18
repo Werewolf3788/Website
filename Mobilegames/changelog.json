@@ -2,6 +2,15 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 17,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Away from your map (game closed or visiting), your town keeps going at 5% speed with no time limit: crews put their haul into your builds first, a little goes to allies, the rest to the piles",
+        "Online and standing in town: what your buildings and crews make goes straight into your stockpile. Out exploring: it piles up at the buildings"
+      ]
+    },
+    {
       "id": 16,
       "date": "Nov 18",
       "game": "survive",
