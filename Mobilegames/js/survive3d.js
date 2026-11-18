@@ -117,6 +117,8 @@ function addToPile(id, n) {
 // While you're off your map (game closed, or visiting an ally) the town keeps going at 1% speed, so a little gets done
 // but it never stops. Your crews (lumberjacks, miners, deer hunters) put their haul into the town's builds first, a
 // small share goes to your allies, and what's left lands in the piles. Upgrade timers keep running in real time.
+// crews: one more worker than the building's level while you play (level 4 = 5), up to 8; 2 per building keep going while you're away
+const crewSize = L => L >= 1 ? Math.min(8, L + 1) : 0, AWAY_CREW = 2;
 const AWAY_RATE = .01, AWAY_MAX = 7 * 86400;
 let awayNow = false;   // true while catching up on time away (that output goes to the buildings, not your pocket)
 function inTown() { const [i, j] = zoneAt(player.x, player.z); return i === 2 && j === 2; }
@@ -125,7 +127,7 @@ function awayCatchUp(sec, quiet) {
   awayNow = true; try { economy(eff); } finally { awayNow = false; }
   const pads = wantedPads(), built = {}, toAllies = {}; let piled = {};
   Object.keys(ROLES).forEach(id => {
-    const n = lvl(id) >= 1 ? Math.min(4, lvl(id)) : 0; if (!n) return; const R = ROLES[id], r = R.res;
+    const n = lvl(id) >= 1 ? AWAY_CREW : 0; if (!n) return; const R = ROLES[id], r = R.res;
     let amt = n * R.load * eff / 25;   // one trip about every 25 seconds per worker
     const ally = amt * .05; toAllies[r] = (toAllies[r] || 0) + ally; amt -= ally;
     const keys = Object.keys(pads).filter(k => pads[k].kind !== 'zone' && (padLeft(k, pads[k])[r] || 0) > 0);
@@ -150,7 +152,7 @@ const cv = $('c'), renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: t
 renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x9fd3f0); scene.fog = new THREE.Fog(0x9fd3f0, 60, 120);
 const camera = new THREE.PerspectiveCamera(40, 1, .5, 300);
-scene.add(new THREE.HemisphereLight(0xffffff, 0x4a6b3a, 1.6));
+const hemi = new THREE.HemisphereLight(0xffffff, 0x4a6b3a, 1.6); scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xfff2d8, 2.2); sun.castShadow = true; sun.shadow.mapSize.set(1536, 1536);
 Object.assign(sun.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 120 }); sun.shadow.bias = -.0005; scene.add(sun, sun.target);
 
@@ -528,7 +530,7 @@ function workshopPanel() {
 function bInfo(id, L) {
   const D = BD[id];
   if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : '') + ' It only levels up once every building has caught up to it.'; }
-  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '. 3% of what it makes helps build your other buildings (5% to the Power Plant once they\u2019re all caught up), and a full pile\u2019s extra goes there too.' + (ROLES[id] ? ' ' + Math.min(4, L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + (Math.min(4, L) > 1 ? 's' : '') + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
+  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '. 3% of what it makes helps build your other buildings (5% to the Power Plant once they\u2019re all caught up), and a full pile\u2019s extra goes there too.' + (ROLES[id] ? ' ' + crewSize(L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + 's (' + AWAY_CREW + ' keep working while you\u2019re away)' + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
   if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
   if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '. ' + Math.min(4, L) + ' infected hunter' + (Math.min(4, L) > 1 ? 's' : '') + ' (❤️' + (60 + 25 * L) + ', ' + (6 + 3 * L) + ' damage) hunt down the infected for you.';
   if (id === 'workshop') return 'Your weapon can be upgraded up to level ' + (L + 1) + ' (' + weaponDmg(L + 1) + ' damage).';
@@ -776,7 +778,7 @@ const workers = [];
 function syncWorkers() {
   if (tour) { workers.splice(0).forEach(w => scene.remove(w.mesh)); return; }   // crews stay home
   Object.keys(ROLES).forEach(id => {
-    const R = ROLES[id], B = BD[id], mine = workers.filter(w => w.role === id), want = lvl(id) >= 1 ? Math.min(4, lvl(id)) : 0;
+    const R = ROLES[id], B = BD[id], mine = workers.filter(w => w.role === id), want = crewSize(lvl(id));
     for (let k = mine.length; k > want; k--) { const w = mine[k - 1]; scene.remove(w.mesh); workers.splice(workers.indexOf(w), 1); }
     for (let k = mine.length; k < want; k++) {
       const m = human({ skin: [0xf1c27d, 0xc68642, 0x8d5524, 0xe0ac69][k % 4], shirt: R.shirt, pants: 0x1f2937, hat: R.hat, tool: R.tool, s: .9 });
@@ -796,7 +798,7 @@ function updateWorkers(dt, now) {
     const R = ROLES[w.role], B = BD[w.role]; let sp = 0;
     const walk = (tx, tz, near) => { const d = Math.hypot(tx - w.x, tz - w.z); if (d < (near || .9)) return true; sp = w.role === 'farm' ? 3.8 : 3.2; const nx = w.x + (tx - w.x) / d * sp * dt, nz = w.z + (tz - w.z) / d * sp * dt; moveTo(w, nx, nz, .35); w.mesh.rotation.y = Math.atan2(tx - w.x, tz - w.z); return false; };
     if (w.state === 'seek') {
-      let best = null, bd = 1e9; R.list().forEach(o => { if (o.down || workers.some(q => q !== w && q.tgt === o)) return; const d = Math.hypot(o.x - B.x, o.z - B.z); if (d < bd) { bd = d; best = o; } });
+      let best = null, bd = 1e9; R.list().forEach(o => { if (o.down || workers.some(q => q !== w && q.tgt === o) || guards.some(q => q.job && q.job.o === o)) return; const d = Math.hypot(o.x - B.x, o.z - B.z); if (d < bd) { bd = d; best = o; } });
       if (best) { w.tgt = best; w.state = 'walk'; }   // nothing left standing: wait for things to grow back / come back
     } else if (w.state === 'walk') {
       if (!w.tgt || w.tgt.down) { w.state = 'seek'; w.tgt = null; }
@@ -857,6 +859,23 @@ function syncGuards() {
   }
   const L = Math.max(1, lvl('hall')); guards.forEach(g => { const mx = 60 + 25 * L; if (g.max !== mx) { g.hp = Math.min(mx, g.hp === 1 ? mx : g.hp); g.max = mx; } });
 }
+// an infected hunter with nothing to fight helps out: chops a tree, breaks a rock or hunts a deer (whichever is closest
+// and has a building to take it to), carries the haul there, then checks for infected again
+const JOB_OF = { tree: 'lumber', rock: 'smelter', deer: 'farm' };
+function guardHelp(g, dt, now, walk) {
+  const J = g.job;
+  if (!J) {
+    let best = null, bd = 1e9; [trees, rocks, deer].forEach(list => list.forEach(o => { const bid = JOB_OF[o.kind]; if (o.down || lvl(bid) < 1 || workers.some(w => w.tgt === o) || guards.some(q => q !== g && q.job && q.job.o === o)) return; const d = Math.hypot(o.x - g.x, o.z - g.z); if (d < bd) { bd = d; best = o; } }));
+    if (best) g.job = { o: best, st: 'walk' }; else walk(BD.hall.x + (guards.indexOf(g) - 1.5) * 1.2, BD.hall.z + BD.hall.r + 1.2, .8);
+    return;
+  }
+  const o = J.o, bid = JOB_OF[o.kind], R = ROLES[bid], Bd = BD[bid];
+  if (J.st === 'walk') { if (o.down) { g.job = null; return; } if (walk(o.x, o.z, o.kind === 'deer' ? 1.6 : (o.r || .5) + .5)) { J.st = 'work'; J.t = R.work; } }
+  else if (J.st === 'work') { if (o.down) { g.job = null; return; } if (o.kind === 'deer' && Math.hypot(o.x - g.x, o.z - g.z) > 2.2) { J.st = 'walk'; return; }
+    g.mesh.rotation.y = Math.atan2(o.x - g.x, o.z - g.z); J.t -= dt; if (Math.floor(J.t * 2.5) !== Math.floor((J.t + dt) * 2.5)) { g.mesh.userData.swing = 1; o.shake = .25; }
+    if (J.t <= 0) { knockDown(o, now); J.st = 'carry'; } }
+  else if (J.st === 'carry') { if (walk(Bd.x + (Bd.r + 1) * .7, Bd.z + (Bd.r + 1) * .7, .9)) { addToPile(bid, R.load); fly(RES[R.res], g, { x: Bd.x, z: Bd.z }); g.job = null; } }
+}
 function updateGuards(dt, now) {
   const B = BD.hall, dmg = 6 + 3 * Math.max(1, lvl('hall'));
   guards.forEach(g => {
@@ -869,8 +888,8 @@ function updateGuards(dt, now) {
     else {
       if (!g.tgt || g.tgt.dead) { let best = null, bd = 1e9; zombies.forEach(z => { if (z.dead || z.boss) return; const d = Math.hypot(z.x - g.x, z.z - g.z); if (d < bd) { bd = d; best = z; } }); g.tgt = best; }
       const z = g.tgt;
-      if (z) { if (walk(z.x, z.z, 4.5) && g.cd <= 0) { g.mesh.rotation.y = Math.atan2(z.x - g.x, z.z - g.z); hitZombie(z, dmg, g.id); tracer(g, z, 0xfca5a5); g.cd = .9; g.mesh.userData.swing = 1; } }
-      else walk(B.x + (guards.indexOf(g) - 1.5) * 1.2, B.z + B.r + 1.2, .8);   // nothing to hunt: wait by the hall
+      if (z) { g.job = null; if (walk(z.x, z.z, 4.5) && g.cd <= 0) { g.mesh.rotation.y = Math.atan2(z.x - g.x, z.z - g.z); hitZombie(z, dmg, g.id); tracer(g, z, 0xfca5a5); g.cd = .9; g.mesh.userData.swing = 1; } }
+      else guardHelp(g, dt, now, walk);   // no infected around: they help the crews (trees, rocks, deer)
     }
     g.mesh.position.set(g.x, 0, g.z); animHuman(g.mesh, sp, dt); setBar(g.bar, g.hp / g.max); faceCam(g.bar);
   });
@@ -903,6 +922,21 @@ function boot() {
 }
 
 // ------------------------------------------------------------ main loop
+// day and night follow your device's clock (like the farm): bright days, orange dawn and dusk, dark blue nights.
+// Debug: add ?time=21.5 to the address to see a given hour.
+const FORCE_HOUR = (() => { const q = new URLSearchParams(location.search).get('time'); return q === null ? null : +q; })();
+const SKY_DAY = new THREE.Color(0x9fd3f0), SKY_NIGHT = new THREE.Color(0x0f1a3a), SKY_DUSK = new THREE.Color(0xf59e6b), _sky = new THREE.Color();
+let dnT = 0;
+function dayNight() {
+  if (performance.now() - dnT < 500) return; dnT = performance.now();
+  const d = new Date(), h = FORCE_HOUR !== null ? FORCE_HOUR : d.getHours() + d.getMinutes() / 60;
+  const ramp = (a, b) => Math.max(0, Math.min(1, (h - a) / (b - a)));
+  const k = h < 12 ? ramp(5.5, 7.5) : 1 - ramp(18, 20);                     // 0 = night, 1 = day
+  const dusk = Math.max(0, 1 - Math.abs(h - (h < 12 ? 6.5 : 19)) / 1.2) * .55;  // orange glow around sunrise / sunset
+  _sky.copy(SKY_NIGHT).lerp(SKY_DAY, k).lerp(SKY_DUSK, dusk);
+  scene.background.copy(_sky); scene.fog.color.copy(_sky);
+  hemi.intensity = .45 + 1.15 * k; sun.intensity = .35 + 1.85 * k; sun.color.set(k < .2 ? 0x8ea4e8 : dusk > .2 ? 0xffc28a : 0xfff2d8);
+}
 let userZoom = 1, overview = false, camZ = 1, youPin = null;
 cv.addEventListener('wheel', e => { e.preventDefault(); overview = false; userZoom = Math.max(.6, Math.min(3.2, userZoom * (e.deltaY > 0 ? 1.12 : .89))); }, { passive: false });
 { // two-finger pinch zoom (one finger still walks)
@@ -1021,6 +1055,7 @@ function frame() {
   const big = camZ > 2.2; Object.keys(others).forEach(u => { const o = others[u]; if (!o.pin) { o.pin = iconSprite('🤝', 4); o.pin.position.y = 6; o.mesh.add(o.pin); } o.pin.visible = big; });
   if (!youPin) { youPin = iconSprite('📍', 4); youPin.position.y = 6; pMesh.add(youPin); } youPin.visible = big;
   sun.position.set(player.x + 20, 40, player.z + 10); sun.target.position.set(player.x, 0, player.z);
+  dayNight();
   renderer.render(scene, camera); requestAnimationFrame(frame);
 }
 addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child(uid).remove(); } catch (e) {} persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });

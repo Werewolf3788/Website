@@ -2,6 +2,16 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 19,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Bigger crews: one more worker than the building's level while you play (level 4 = 5, up to 8); 2 per building keep working while you're away",
+        "Infected hunters help out when there are no infected around: they chop trees, break rocks and hunt deer, and bring it to the right building",
+        "Day and night follow your device's clock, like the farm"
+      ]
+    },
+    {
       "id": 18,
       "date": "Nov 18",
       "game": "survive",
