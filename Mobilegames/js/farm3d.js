@@ -645,7 +645,7 @@ function combineAuto() {
     if (!isMine(W.fieldOf(i))) continue; const cur = tiles[i]; if (!cur || cur.k !== 'c' || progress(cur) < 1) continue;
     if (grainTotal(Cb.grain) >= HARVEST.tank) { if (!outWarn()) say('🌾 Grain tank full! Park next to your trailer to unload.'); return; }
     roomRef.child('tiles/' + i).transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
-      if (!ok || !save.combine) return; const g = save.combine.grain; g[cur.c] = (g[cur.c] | 0) + 1;
+      if (!ok || !save.combine) return; trailerToField(W.fieldOf(i)); const g = save.combine.grain; g[cur.c] = (g[cur.c] | 0) + 1;
       if (save.up.combine && Math.random() < .25 && grainTotal(g) < HARVEST.tank) g[cur.c]++;
       save.harvested++; stat('harvest'); addXp(C.XP_HARVEST + (cur.f ? C.XP_FERT_BONUS : 0)); queueSave();
       grainBurst++; clearTimeout(grainBurstT); grainBurstT = setTimeout(function () { say('🌾 Cut ' + grainBurst + ' · tank ' + grainTotal(save.combine && save.combine.grain) + '/' + HARVEST.tank); grainBurst = 0; }, 500);
@@ -658,9 +658,10 @@ function combineUnload(dt) {
   const Cb = save.combine, T = save.trailer; if (!Cb || !T || save.haul) return; const n = grainTotal(Cb.grain); if (!n) { unloadAcc = 0; return; }
   if (dist2(combineLocal, T) > 9 || Math.abs(combineLocal.speed) > 2.5) return;
   const space = HARVEST.trailer - grainTotal(T.grain); if (space < 1) { unloadAcc = 0; startHaul(); return; }   // trailer full: the truck takes it to the elevator by itself, then unloading carries on
-  unloadAcc += dt * 70; let move = Math.min(Math.floor(unloadAcc), n, space); if (move < 1) return; unloadAcc -= move;
+  unloadAcc += dt * 70; let move = Math.min(Math.floor(unloadAcc), n, space, Math.max(1, HARVEST.haulAt - grainTotal(T.grain))); if (move < 1) return; unloadAcc -= move;
   Object.keys(Cb.grain).forEach(function (k) { if (move < 1) return; const m = Math.min(move, Cb.grain[k] | 0); if (m < 1) return; T.grain[k] = (T.grain[k] | 0) + m; Cb.grain[k] -= m; if (Cb.grain[k] <= 0) delete Cb.grain[k]; move -= m; });
-  queueSave(); if (!grainTotal(Cb.grain) || grainTotal(T.grain) >= HARVEST.trailer) { unloadAcc = 0; startHaul(); }   // tank empty or trailer full -> the truck takes the loaded trailer to the elevator by itself   // tank empty -> the truck takes the loaded trailer to the elevator by itself
+  if (!grainTotal(Cb.grain)) unloadAcc = 0;
+  queueSave(); if (grainTotal(T.grain) >= HARVEST.haulAt) { unloadAcc = 0; startHaul(); }   // a field's worth (240) in the trailer -> the truck takes it to the elevator by itself (smaller loads wait; send them from the trailer)   // tank empty or trailer full -> the truck takes the loaded trailer to the elevator by itself   // tank empty -> the truck takes the loaded trailer to the elevator by itself
 }
 // --- the truck: depot -> trailer -> elevator (paid) -> trailer back -> depot. Saved as save.haul so it carries on after a reload.
 const pathLen = p => { let L = 0; for (let i = 1; i < p.length; i++) L += Math.hypot(p[i].x - p[i - 1].x, p[i].z - p[i - 1].z); return L; };
@@ -673,21 +674,26 @@ function pathAt(p, d) {
   return { x: p[0].x, z: p[0].z, ry: 0 };
 }
 let plan = null, planKey = -1;
+// the truck and trailer drive over and park beside whichever field the combine is cutting, so unloading is a short hop
+function trailerToField(f) {
+  const T = save.trailer; if (!T || save.haul || f < 0 || T.f === f) return;
+  const p = W.parkTrailer(f); T.x = p.x; T.z = p.z; T.ry = p.ry; T.f = f; queueSave();
+}
 function buildPlan(h) {
-  const E = W.ELEVATOR_POS, H = W.TRUCK_HOME, T0 = { x: h.x, z: h.z }, Ty = { x: h.x, z: E.z }, segs = []; let t = 0, lastRy = H.ry;
+  const E = W.ELEVATOR_POS, ry0 = h.ry || 0, H = { x: h.x + Math.sin(ry0) * HAUL_D, z: h.z + Math.cos(ry0) * HAUL_D, ry: ry0 }, Hy = { x: H.x, z: E.z }, segs = []; let t = 0, lastRy = H.ry;
   const clean = a => a.filter(function (q, i) { return i === 0 || Math.hypot(q.x - a[i - 1].x, q.z - a[i - 1].z) > .05; });
   function drive(p, v, tr) { p = clean(p); const L = pathLen(p), dur = Math.max(.05, L / v); segs.push({ t0: t, t1: t + dur, p: p, L: L, tr: tr }); t += dur; lastRy = p.length > 1 ? pathAt(p, L).ry : lastRy; }
   function wait(sec, tr, at) { segs.push({ t0: t, t1: t + sec, p: null, at: at, ry: lastRy, tr: tr }); t += sec; }
-  drive([H, Ty, T0], HARVEST.emptySpeed, false); wait(1.5, false, T0);
-  drive([T0, Ty, E], HARVEST.carrySpeed, true); const payAt = t; wait(3, true, E);
-  drive([E, Ty, T0], HARVEST.emptySpeed, true); drive([T0, Ty, H], HARVEST.emptySpeed, false);
+  wait(1, true, H);
+  drive([H, Hy, E], HARVEST.carrySpeed, true); const payAt = t; wait(3, true, E);
+  drive([E, Hy, H], HARVEST.emptySpeed, true);
   return { segs: segs, total: t, payAt: payAt };
 }
 function startHaul() {
   const T = save.trailer; if (!T || save.haul) return; const n = grainTotal(T.grain); if (n < 1) { say('The trailer is empty.'); return; }
   const day = today(); let value = 0; Object.keys(T.grain).forEach(function (k) { value += (T.grain[k] | 0) * C.priceOf(k, day); }); value = Math.round(value * HARVEST.elevatorBonus);
-  save.haul = { t0: nowMs(), grain: T.grain, n: n, value: value, x: T.x, z: T.z, paid: false }; T.grain = {}; stat('haul'); queueSave();
-  say('🚚 The truck is on its way to pick up ' + n + ' crops (about $' + value + ' at the elevator).');
+  save.haul = { t0: nowMs(), grain: T.grain, n: n, value: value, x: T.x, z: T.z, ry: T.ry || 0, paid: false }; T.grain = {}; stat('haul'); queueSave();
+  say('🚚 The truck is taking ' + n + ' crops to the elevator (about $' + value + ').');
 }
 function updateFleet(dt) {
   if (!combine || !trailer || !truck) return; const Cb = save.combine, T = save.trailer, h = save.haul; if (!Cb || !T) return;
@@ -709,9 +715,15 @@ function updateFleet(dt) {
       topCrop = grainTop(h.grain); frac = (h.n / HARVEST.trailer) * (el < plan.payAt ? 1 : Math.max(0, 1 - (el - plan.payAt) / 3));
     }
   }
+  if (h && save.haul) { const k = Math.min(1, dt * 5); trailer.position.x += (tgt.x - trailer.position.x) * k; trailer.position.z += (tgt.z - trailer.position.z) * k; let da = tgt.ry - trailer.rotation.y; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; trailer.rotation.y += da * k; }
+  else {
+    // not hauling: the trailer drives to its parking spot at road speed, the truck hitched in front of it
+    const dx = tgt.x - trailer.position.x, dz = tgt.z - trailer.position.z, d = Math.hypot(dx, dz), step = Math.min(d, 16 * dt);
+    if (d > .05) { trailer.position.x += dx / d * step; trailer.position.z += dz / d * step; moving = d > .5; }
+    const want = d > 1.5 ? Math.atan2(dx, dz) : tgt.ry; let da = want - trailer.rotation.y; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; trailer.rotation.y += da * Math.min(1, dt * 4);
+    tp = { x: trailer.position.x + Math.sin(trailer.rotation.y) * HAUL_D, z: trailer.position.z + Math.cos(trailer.rotation.y) * HAUL_D, ry: trailer.rotation.y };
+  }
   truck.position.set(tp.x, 0, tp.z); truck.rotation.y = tp.ry; if (moving) truck.userData.wheels.forEach(function (w) { w.rotation.x += dt * 9; });
-  const k = Math.min(1, dt * 5); trailer.position.x += (tgt.x - trailer.position.x) * k; trailer.position.z += (tgt.z - trailer.position.z) * k;
-  let da = tgt.ry - trailer.rotation.y; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; trailer.rotation.y += da * k;
   trailer.userData.setFill(frac, cropColor(topCrop));
 }
 

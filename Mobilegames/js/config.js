@@ -112,7 +112,7 @@ export const UPGRADES = {
 // ---- the harvest chain (combine harvester -> trailer -> truck -> grain elevator)
 // combine header levels: level 0 is the header the combine comes with; each level widens the cut (tiles per pass) and costs more
 export const HEADER_LEVELS = [{ swath: 5 }, { swath: 7, cost: 3000, level: 12 }, { swath: 9, cost: 7000, level: 20 }, { swath: 12, cost: 15000, level: 30 }, { swath: 15, cost: 30000, level: 40 }];
-export const HARVEST = { tank: FIELD_TILES * 6, trailer: 1500, swath: 5, top: 6.5, elevatorBonus: 1.15, carrySpeed: 8, emptySpeed: 11 };
+export const HARVEST = { tank: FIELD_TILES * 6, haulAt: FIELD_TILES, trailer: 1500, swath: 5, top: 6.5, elevatorBonus: 1.15, carrySpeed: 8, emptySpeed: 11 };
 
 // everything that unlocks at level l (for the level-up message)
 export function unlocksAt(l) {
