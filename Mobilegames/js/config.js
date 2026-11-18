@@ -274,7 +274,7 @@ export const ACHIEVEMENTS = [
   { id: 'f5', icon: '🏞️', name: 'Land Owner', desc: 'Own 5 fields', v: c => c.fields, goal: 5 },
   { id: 'f10', icon: '🗺️', name: 'Land Baron', desc: 'Own 10 fields', v: c => c.fields, goal: 10 },
   { id: 'up5', icon: '🔧', name: 'Gearhead', desc: 'Buy 5 tractor upgrades', v: c => Object.keys(c.up).length, goal: 5 },
-  { id: 'c10k', icon: '🪙', name: 'Well Off', desc: 'Hold $50,000', v: c => c.coins, goal: 50000 },
+  { id: 'c10k', icon: '💰', name: 'Well Off', desc: 'Hold $50,000', v: c => c.coins, goal: 50000 },
   { id: 'c100k', icon: '💎', name: 'Farm Tycoon', desc: 'Hold $500,000', v: c => c.coins, goal: 500000 }
 ];
 // t(ctx) = earned?  v(ctx) = progress so far, goal = target (for the progress bars)

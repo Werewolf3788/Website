@@ -5,13 +5,13 @@ import * as THREE from './three.min.js';
 const $ = id => document.getElementById(id);
 const WW = window.WW || null;
 const Z = 24, G = 5, HALF = Z * G / 2, NOW = () => Date.now();
-const RES = { wood: '🪵', food: '🍖', metal: '🔩', gems: '💎' };
+const RES = { wood: '🌲', food: '🍖', metal: '🔩', gems: '💎' };
 const SAVE_KEY = 'ts3_save', CLOUD_KEY = 'survive3', MAX_HELPS = 5, HELP_CUT = .15, CAMP_RESPAWN = 10 * 60000, BOSS_RESPAWN = 60 * 60000;
 
 // ------------------------------------------------------------ buildings (all in the home area around the Power Plant)
 const BD = {
   pp:       { n: 'Power Plant', i: '🔌', x: 0,  z: 0,  r: 2.7, need: 1, cost: { wood: 40, food: 20 } },
-  lumber:   { n: 'Lumberyard',  i: '🪓', x: -8, z: -8, r: 2.2, need: 1, cost: { wood: 15 }, out: 'wood', rate: .12 },
+  lumber:   { n: 'Lumberyard',  i: '⚔️', x: -8, z: -8, r: 2.2, need: 1, cost: { wood: 15 }, out: 'wood', rate: .12 },
   farm:     { n: 'Farm',        i: '🌽', x: 8,  z: -8, r: 2.2, need: 1, cost: { wood: 35 }, out: 'food', rate: .1 },
   house1:   { n: 'House',       i: '🏠', x: -8, z: 0,  r: 2.0, need: 1, cost: { wood: 30, food: 10 } },
   smelter:  { n: 'Smelter',     i: '🏭', x: 8,  z: 0,  r: 2.2, need: 2, cost: { wood: 60, food: 20 }, out: 'metal', rate: .05 },
@@ -21,7 +21,7 @@ const BD = {
   house3:   { n: 'House',       i: '🏠', x: 0,  z: 8,  r: 2.0, need: 3, cost: { wood: 80, food: 30 } }
 };
 const HEROES = {
-  sarge: { n: 'Sarge', i: '🪖', role: 'Tank · front line', hp: 150, atk: 9, cd: 1, range: 1.6, shirt: 0x4d6b3a, hat: 0x3f5a2e, cost: {} },
+  sarge: { n: 'Sarge', i: '🎖️', role: 'Tank · front line', hp: 150, atk: 9, cd: 1, range: 1.6, shirt: 0x4d6b3a, hat: 0x3f5a2e, cost: {} },
   rusty: { n: 'Rusty', i: '🔧', role: 'Damage · shoots from range', hp: 80, atk: 14, cd: .9, range: 5.5, shirt: 0xd97706, hat: 0x7c2d12, cost: { metal: 40 } },
   leila: { n: 'Leila', i: '💉', role: 'Healer · patches up the squad', hp: 90, atk: 5, heal: 14, cd: 1.4, range: 5, shirt: 0xf1f5f9, hat: 0xdb2777, cost: { metal: 100, food: 60 } }
 };
@@ -284,7 +284,7 @@ function wantedPads() {
 function padCost(p) { return p.kind === 'zone' ? unlockCost(p.i, p.j) : costFor(p.id, p.to); }
 function padLeft(key, p) { const c = padCost(p), paid = st.paid[key] || {}, o = {}; Object.keys(c).forEach(k => { const r = c[k] - (paid[k] || 0); if (r > 0) o[k] = r; }); return o; }
 function syncPads() {
-  const w = wantedPads();
+  const w = tour ? {} : wantedPads();   // nothing to build in a friend's settlement
   Object.keys(pads).forEach(k => { if (!w[k]) { scene.remove(pads[k].mesh); delete pads[k]; } });
   Object.keys(w).forEach(k => {
     if (!pads[k]) {
@@ -409,6 +409,7 @@ const QUESTS = [
   ['Unlock every area on the map', () => st.stats.zones, 24, { gems: 100 }, () => nearestPadKey('z:')]
 ];
 function checkQuest() {
+  if (tour) { const t = '👀 Visiting ' + WW.esc(tour.name) + '’s settlement<small>Tap here (or 🤝 Allies) to go home</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; return null; }
   const q = QUESTS[st.q]; if (!q) { if (checkQuest.h === 'done') return null; checkQuest.h = 'done'; $('quest').innerHTML = '🏆 All of Sarge’s missions done!<small>Keep upgrading, farming bosses and helping allies.</small>'; return null; }
   const cur = Math.min(q[1](), q[2]);
   if (cur >= q[2]) { give(q[3]); toast('📜 Mission complete: ' + q[0] + ' · +' + costTxt(q[3]), 3500); sfx(784, .15, .07); sfx(1046, .3, .07, .12); st.q++; persist(); return checkQuest(); }
@@ -438,7 +439,7 @@ function heroPanel() {
 }
 function workshopPanel() {
   const w = st.weapon, c = weaponCost(w), max = lvl('workshop') + 1;
-  show('<h3>🔨 Workshop</h3><div class="muted">Better weapons hit harder and chop faster. Weapon level is limited to Workshop level + 1.</div><div class="row"><div class="g"><b>🪓 Weapon Lv' + w + '</b> <span class="muted">⚔️ ' + weaponDmg(w) + ' damage</span></div><button class="b" data-a="weapon" ' + (w < max && canPay(c) ? '' : 'disabled') + '>' + (w >= max ? 'Upgrade the Workshop' : '⬆ ' + costTxt(c) + ' → ⚔️' + weaponDmg(w + 1)) + '</button></div>');
+  show('<h3>🔨 Workshop</h3><div class="muted">Better weapons hit harder and chop faster. Weapon level is limited to Workshop level + 1.</div><div class="row"><div class="g"><b>⚔️ Weapon Lv' + w + '</b> <span class="muted">⚔️ ' + weaponDmg(w) + ' damage</span></div><button class="b" data-a="weapon" ' + (w < max && canPay(c) ? '' : 'disabled') + '>' + (w >= max ? 'Upgrade the Workshop' : '⬆ ' + costTxt(c) + ' → ⚔️' + weaponDmg(w + 1)) + '</button></div>');
 }
 function buildingPanel(id) {
   if (id === 'hall') return heroPanel(); if (id === 'workshop') return workshopPanel();
@@ -456,30 +457,43 @@ function doAct(a, d) {
   if (a === 'close') return closeSheet();
   if (a === 'recruit') { const c = HEROES[d.id].cost; if (!canPay(c)) return; pay(c); st.heroes[d.id] = { lvl: 1 }; syncHeroes(); toast(HEROES[d.id].n + ' joined your squad!'); heroPanel(); }
   if (a === 'herolvl') { const o = st.heroes[d.id], c = heroUpCost(o.lvl); if (!canPay(c)) return; pay(c); o.lvl++; syncHeroes(); heroes[d.id].hp = heroes[d.id].max; heroPanel(); }
-  if (a === 'weapon') { const c = weaponCost(st.weapon); if (!canPay(c)) return; pay(c); st.weapon++; toast('🪓 Weapon level ' + st.weapon); workshopPanel(); }
+  if (a === 'weapon') { const c = weaponCost(st.weapon); if (!canPay(c)) return; pay(c); st.weapon++; toast('⚔️ Weapon level ' + st.weapon); workshopPanel(); }
   if (a === 'finish') { if (st.res.gems < 5) return; st.res.gems -= 5; st.b[d.id].up.end = NOW(); economy(0); syncBuildings(); syncPads(); closeSheet(); }
   if (a === 'visit') return visit(($('vcode').value || '').trim().toUpperCase());
   if (a === 'visitf') return visit(d.code);
-  if (a === 'back') { visiting = null; return alliesPanel(); }
+  if (a === 'back') { if (tour) return goHome(); visiting = null; return alliesPanel(); }
   if (a === 'help') return helpFriend(d.k);
   persist(); hud();
 }
-$('bHeroes').onclick = heroPanel; $('bQuests').onclick = questsPanel; $('quest').onclick = questsPanel; $('bAllies').onclick = () => alliesPanel();
+$('bHeroes').onclick = heroPanel; $('bQuests').onclick = questsPanel; $('quest').onclick = () => tour ? goHome() : questsPanel(); $('bAllies').onclick = () => alliesPanel();
 $('bMute').onclick = () => { muted = !muted; localStorage.setItem('ts3_mute', muted ? '1' : '0'); $('bMute').firstChild.textContent = muted ? '🔇' : '🔊'; };
 $('bMute').firstChild.textContent = muted ? '🔇' : '🔊';
 let actTarget = null;
-function actPress() { if (actTarget) buildingPanel(actTarget); }
+function actPress() { if (tour) return alliesPanel(); if (actTarget) buildingPanel(actTarget); }
 $('act').onclick = actPress;
 
 // ------------------------------------------------------------ allies (other players help your upgrade timers)
-let uid = null, code = null, visiting = null;
+let uid = null, code = null, visiting = null, tour = null;
+// walk around a friend's settlement (built from what they publish); your own stays safe in tour.home and keeps being saved
+function startTour(c, p) {
+  if (!p || !p.w) return false;
+  if (!tour) tour = { home: st, at: NOW(), hx: player.x, hz: player.z }; tour.code = c; tour.name = p.name || 'Survivor';
+  const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: w.heroes || fresh().heroes, paid: w.paid || {} }));
+  st.res = { wood: 0, food: 0, metal: 0, gems: 0 }; st.hp = player.hpMax || 100; player.x = 3; player.z = 6;
+  loadWorld(); toast('👀 Welcome to ' + tour.name + '’s settlement!'); return true;
+}
+function goHome() {
+  if (!tour) return; const t = tour; tour = null; visiting = null; st = t.home; checkQuest.h = null;
+  const off = Math.min(4 * 3600, (NOW() - t.at) / 1000); if (off > 1) economy(off);
+  player.x = t.hx; player.z = t.hz; loadWorld(); applyHelps(); persist(); toast('🏠 Back home'); closeSheet();
+}
 function publishPub() {
-  if (!code || !WW || WW.mode !== 'cloud') return;
+  if (tour || !code || !WW || WW.mode !== 'cloud') return;
   const ups = Object.keys(BD).filter(id => st.b[id].up).map(id => { const u = st.b[id].up; return { id: id, k: id + '_' + u.to, n: BD[id].n, i: BD[id].i, to: u.to, end: u.end, total: u.total, c: Object.keys(u.h || {}).length }; });
-  try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, at: NOW() }); } catch (e) {}
+  try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {} }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
 }
 function alliesPanel(note) {
-  let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn 🪵15 (10 a day).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
+  let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn 🌲15 (10 a day).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
   if (!WW || WW.mode !== 'cloud' || !WW.user) h += '<div class="row muted">Sign in on the games hub to team up with allies.</div>';
   else {
     // your friends list (the same friends as everywhere else on the site): no codes to type
@@ -488,7 +502,7 @@ function alliesPanel(note) {
       else if (!allyList.length) h += '<div class="row muted">No friends yet. Add friends with their friend code on the games hub, and they show up here.</div>';
       else h += allyList.map(f => '<div class="row"><div class="g"><b>' + WW.esc(f.name) + '</b><div class="muted">' + (f.pub ? 'Power Plant Lv' + (f.pub.pp || 1) + ' · ' + (f.pub.zones || 0) + ' areas · ' + (f.open ? '<b style="color:#fde68a">' + f.open + ' upgrade' + (f.open > 1 ? 's' : '') + ' to help</b>' : 'nothing to help right now') : 'hasn\u2019t started Tile Survival yet') + '</div></div><button class="b" data-a="visitf" data-code="' + f.code + '"' + (f.pub ? '' : ' disabled') + '>Visit</button></div>').join('');
       h += '<details class="muted" style="margin-top:6px"><summary>Visit someone not on your friends list</summary><div class="row"><input id="vcode" maxlength="8" placeholder="FRIEND\'S CODE"><button class="b" data-a="visit">Visit</button></div></details>';
-    } else h += '<div class="row"><button class="b alt" data-a="back">← All friends</button></div>';
+    } else h += '<div class="row"><button class="b alt" data-a="back">🏠 Go home</button></div>';
     if (visiting) { const p = visiting.pub, ups = (p.ups || []).filter(u => u.end > NOW());
       h += '<div class="muted"><b>' + WW.esc(p.name || 'Survivor') + '</b> · Power Plant Lv' + (p.pp || 1) + ' · ' + (p.zones || 0) + ' areas unlocked</div>';
       h += ups.length ? ups.map(u => { const done = visiting.mine[u.k]; return '<div class="row"><div class="g"><b>' + u.i + ' ' + u.n + ' → Lv' + u.to + '</b><div class="muted">' + fmt((u.end - NOW()) / 1000) + ' left · ' + (u.c || 0) + '/' + MAX_HELPS + ' helps</div></div><button class="b" data-a="help" data-k="' + u.k + '" ' + (done || (u.c || 0) >= MAX_HELPS ? 'disabled' : '') + '>' + (done ? 'Helped ✔' : '🤝 Help') + '</button></div>'; }).join('') : '<div class="row muted">They have nothing upgrading right now.</div>'; }
@@ -516,26 +530,30 @@ async function visit(c) {
   if (!c) return;
   try { const ref = WW.roomRef('survive', c), p = (await ref.child('pub').once('value')).val(); if (!p) return alliesPanel('No settlement found for that code.');
     const mine = {}; for (const u of (p.ups || [])) mine[u.k] = !!(await ref.child('helps/' + u.k + '/' + uid).once('value')).val();
-    visiting = { code: c, pub: p, mine: mine }; alliesPanel(); } catch (e) { alliesPanel('Could not reach that settlement (' + (e && e.code || e) + ').'); }
+    visiting = { code: c, pub: p, mine: mine }; const walked = startTour(c, p); alliesPanel(walked ? null : 'Their settlement shows up here once they play Tile Survival again with this update. You can still help their timers.'); } catch (e) { alliesPanel('Could not reach that settlement (' + (e && e.code || e) + ').'); }
 }
 async function helpFriend(k) {
   if (!visiting) return; const day = new Date().toDateString(); if (st.helpDay !== day) { st.helpDay = day; st.helpsToday = 0; }
   try { await WW.roomRef('survive', visiting.code).child('helps/' + k + '/' + uid).set(NOW()); visiting.mine[k] = true; const u = (visiting.pub.ups || []).find(x => x.k === k); if (u) u.c = (u.c || 0) + 1;
-    if (st.helpsToday < 10) { st.helpsToday++; st.res.wood += 15; toast('🤝 Helped! +15 🪵'); } else toast('🤝 Helped!'); persist(); alliesPanel(); } catch (e) { alliesPanel('Help failed: ' + (e && e.code || e)); }
+    if (st.helpsToday < 10) { st.helpsToday++; st.res.wood += 15; toast('🤝 Helped! +15 🌲'); } else toast('🤝 Helped!'); persist(); alliesPanel(); } catch (e) { alliesPanel('Help failed: ' + (e && e.code || e)); }
 }
 function listenHelps() {
   if (!code || !WW || WW.mode !== 'cloud') return;
-  WW.roomRef('survive', code).child('helps').on('value', s => { const v = s.val() || {}; let n = 0;
+  WW.roomRef('survive', code).child('helps').on('value', s => { lastHelps = s.val() || {}; applyHelps(); });
+}
+let lastHelps = null;
+function applyHelps() {
+  { if (tour || !lastHelps) return; const v = lastHelps; let n = 0;
     Object.keys(BD).forEach(id => { const u = st.b[id].up; if (!u) return; const who = v[id + '_' + u.to]; if (!who) return; u.h = u.h || {};
       Object.keys(who).forEach(w => { if (!u.h[w] && Object.keys(u.h).length < MAX_HELPS) { u.h[w] = 1; u.end = Math.max(NOW() + 1000, u.end - u.total * HELP_CUT); n++; } }); });
-    if (n) { toast('🤝 Allies helped your buildings ' + n + ' time' + (n > 1 ? 's' : '') + '!'); persist(); publishPub(); } });
+    if (n) { toast('🤝 Allies helped your buildings ' + n + ' time' + (n > 1 ? 's' : '') + '!'); persist(); publishPub(); } }
 }
 
 // ------------------------------------------------------------ save / load
 let cloudT = 0;
-function persist() { st.last = NOW(); st.saved = NOW(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(st)); } catch (e) {} }
-function cloudSave() { if (WW && WW.user && WW.writeSave) try { WW.writeSave(CLOUD_KEY, JSON.parse(JSON.stringify(st))); } catch (e) {} }
-function publishPlaying() { if (WW && WW.publishPlaying) try { WW.publishPlaying({ game: 'survive', title: 'Tile Survival', status: 'Power Plant Lv' + lvl('pp') + ' · ' + st.stats.zones + ' areas · mission ' + (st.q + 1), open: 0 }); } catch (e) {} }
+function persist() { const h = tour ? tour.home : st; h.last = NOW(); h.saved = NOW(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(h)); } catch (e) {} }   // while visiting a friend, your own settlement is what gets saved
+function cloudSave() { if (WW && WW.user && WW.writeSave) try { WW.writeSave(CLOUD_KEY, JSON.parse(JSON.stringify(tour ? tour.home : st))); } catch (e) {} }
+function publishPlaying() { if (tour) return; if (WW && WW.publishPlaying) try { WW.publishPlaying({ game: 'survive', title: 'Tile Survival', status: 'Power Plant Lv' + lvl('pp') + ' · ' + st.stats.zones + ' areas · mission ' + (st.q + 1), open: 0 }); } catch (e) {} }
 function hud() {
   Object.keys(RES).forEach(k => { const el = $('r_' + k), prod = producers().filter(id => BD[id].out === k); el.innerHTML = RES[k] + ' ' + Math.floor(st.res[k]); });
   $('ppl').textContent = lvl('pp'); $('surv').textContent = survivors(); $('hp').style.width = Math.max(0, st.hp / player.hpMax * 100) + '%';
@@ -557,7 +575,7 @@ function boot() {
   const off = Math.min(4 * 3600, (NOW() - (st.last || NOW())) / 1000); if (off > 10) { economy(off); setTimeout(() => toast('Welcome back! Your survivors kept working for ' + fmt(off) + '.', 4000), 400); }
   player.hpMax = 100; if (st.hp <= 0) st.hp = 100;
   loadWorld(); persist();
-  if (!localStorage.getItem('ts3_intro')) { localStorage.setItem('ts3_intro', '1'); show('<h3>🪖 Sarge: “Glad you made it, survivor.”</h3><div class="muted" style="font-size:.95rem;line-height:1.5">The power plant is all we have left. <b>Drag anywhere</b> to walk (or WASD / a controller). Walk up to trees, rocks and animals and you’ll chop, mine and hunt on your own. Carry resources to the <b>yellow pads</b> to build, and the <b>blue pads</b> to push back the fog. Follow the mission at the bottom-left — the yellow arrow shows the way.</div>'); }
+  if (!localStorage.getItem('ts3_intro')) { localStorage.setItem('ts3_intro', '1'); show('<h3>🎖️ Sarge: “Glad you made it, survivor.”</h3><div class="muted" style="font-size:.95rem;line-height:1.5">The power plant is all we have left. <b>Drag anywhere</b> to walk (or WASD / a controller). Walk up to trees, rocks and animals and you’ll chop, mine and hunt on your own. Carry resources to the <b>yellow pads</b> to build, and the <b>blue pads</b> to push back the fog. Follow the mission at the bottom-left — the yellow arrow shows the way.</div>'); }
   if (WW && WW.onReady) WW.onReady(async (user, fc) => {
     uid = user && user.uid; code = fc; if (!user) return;
     try { const c = await WW.loadSave(CLOUD_KEY); if (c && c.v === 3 && (c.saved || 0) > (st.saved || 0)) { st = fix(c); const o = Math.min(4 * 3600, (NOW() - (st.last || NOW())) / 1000); if (o > 10) economy(o); loadWorld(); } } catch (e) {}
@@ -577,7 +595,7 @@ function frame() {
   if (PAD && PAD.poll()) { const s = PAD.state(); ix += s.moveX(); iy -= s.moveY(); document.body.classList.add('pad'); if (PAD.pressed('cross')) actPress(); if (PAD.pressed('options')) questsPanel(); if (PAD.pressed('circle')) closeSheet(); if (PAD.pressed('triangle')) heroPanel(); }
   const m = Math.hypot(ix, iy); if (m > 1) { ix /= m; iy /= m; }
   // --- player
-  if (player.dead) { if (now > player.dead) { player.dead = 0; st.hp = player.hpMax; player.x = 3; player.z = 6; pMesh.visible = true; toast('🪖 Sarge dragged you back to base. Heal up and try again.'); } }
+  if (player.dead) { if (now > player.dead) { player.dead = 0; st.hp = player.hpMax; player.x = 3; player.z = 6; pMesh.visible = true; toast('🎖️ Sarge dragged you back to base. Heal up and try again.'); } }
   else {
     const sp = 6 * Math.min(1, m); player.speed = sp;
     if (m > .05) { const dx = (RIGHT.x * ix + FWD.x * iy), dz = (RIGHT.z * ix + FWD.z * iy); moveTo(player, player.x + dx * sp * dt, player.z + dz * sp * dt, .4); player.ry = Math.atan2(dx, dz); }
@@ -672,4 +690,4 @@ function frame() {
 addEventListener('beforeunload', () => { persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 boot(); requestAnimationFrame(frame);
-window.__ts = { get st() { return st; }, pads: pads, player: player, zombies: zombies, trees: trees };
+window.__ts = { get st() { return st; }, startTour: startTour, goHome: goHome, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
