@@ -356,6 +356,13 @@ function animalProgress(r) {
   return any ? '<small style="color:#cbd5e1">' + out.join('<br>') + '</small>' : '';
 }
 function counts() { const c = {}; Object.keys(C.ANIMALS).forEach(function (k) { c[k] = 0; }); Object.keys(animals).forEach(function (id) { if (mineAnimal(animals[id]) && c[animals[id].t] !== undefined) c[animals[id].t]++; }); return c; }
+// kitchen: how many of a recipe your bag can make right now, and making n at once
+function canMake(r) { return Math.max(0, Math.min.apply(null, Object.keys(r.needs).map(function (k) { return Math.floor((save.bag[k] || 0) / r.needs[k]); }))); }
+function cook(r, n) {
+  n = Math.min(n | 0, canMake(r)); if (n < 1) return; const g = C.GOODS[r.id];
+  Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k] * n); }); addItem(r.id, n); stat('cook', n);
+  say('Made ' + (n > 1 ? n + '× ' : '') + g.name.toLowerCase() + '!');
+}
 function row(html, buttons) { const r = document.createElement('div'); r.className = 'item'; r.innerHTML = '<div>' + html + '</div>'; const b = document.createElement('div'); b.className = 'btns'; (buttons || []).forEach(function (x) { const el = document.createElement('button'); el.className = 'b'; el.textContent = x.t; el.disabled = !!x.off; el.onclick = function () { x.f(); renderShop(); }; b.appendChild(el); }); r.appendChild(b); return r; }
 function renderShop() {
   const tabs = document.createElement('div');
@@ -383,7 +390,7 @@ function renderShop() {
       const g = C.GOODS[r.id], lock = l < r.level, have = Object.keys(r.needs).every(function (k) { return (save.bag[k] || 0) >= r.needs[k]; });
       const need = Object.keys(r.needs).map(function (k) { return r.needs[k] + '× ' + C.GOODS[k].icon + ' (' + (save.bag[k] || 0) + ')'; }).join(' + ');
       const rw = row(g.icon + ' <b>' + g.name + '</b> <small>' + (lock ? 'Unlocks at level ' + r.level : need + ' · worth ~$' + C.priceOf(r.id, d) + '') + '</small>',
-        [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k]); }); addItem(r.id, 1); stat('cook'); say('Made ' + g.name.toLowerCase() + '!'); } }]);
+        [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { cook(r, 1); } }].concat(lock ? [] : [{ t: 'Make all' + (canMake(r) > 1 ? ' ×' + canMake(r) : ''), off: !have || !can, f: function () { cook(r, canMake(r)); } }]));
       box.appendChild(rw);
       if (!lock) { const pr = animalProgress(r); if (pr) { const el = document.createElement('div'); el.className = 'item'; el.style.cssText = 'border:0;padding-top:0'; el.innerHTML = pr; box.appendChild(el); } }
     });
