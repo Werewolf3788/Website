@@ -301,7 +301,7 @@ function wantedPads() {
 function padCost(p) { return p.kind === 'zone' ? unlockCost(p.i, p.j) : costFor(p.id, p.to); }
 function padLeft(key, p) { const c = padCost(p), paid = st.paid[key] || {}, o = {}; Object.keys(c).forEach(k => { const r = c[k] - (paid[k] || 0); if (r > 0) o[k] = r; }); return o; }
 function syncPads() {
-  const w = tour ? {} : wantedPads();   // nothing to build in a friend's settlement
+  const w = wantedPads();   // while visiting, these are your ally's pads: what you put on them is split 50/50 (see deliver / goHome)
   Object.keys(pads).forEach(k => { if (!w[k]) { scene.remove(pads[k].mesh); delete pads[k]; } });
   Object.keys(w).forEach(k => {
     if (!pads[k]) {
@@ -319,10 +319,16 @@ function deliver(dt) {
   padAcc += dt; if (padAcc < .05) return; const mult = Math.min(10, Math.max(1, Math.round(padAcc / .05))); padAcc = 0;
   Object.keys(pads).forEach(key => {
     const p = pads[key]; if (Math.abs(player.x - p.x) > 1.4 || Math.abs(player.z - p.z) > 1.4) return;
-    const left = padLeft(key, p), ks = Object.keys(left); if (!ks.length) return complete(key, p);
+    const left = padLeft(key, p), ks = Object.keys(left); if (!ks.length) return tour ? null : complete(key, p);
     const k = ks.find(r => st.res[r] >= 1);
     if (!k) { if (NOW() - needNote > 3000) { needNote = NOW(); toast('Need more ' + ks.map(r => RES[r]).join(' ') + ' — gather it around the map'); } return; }
     const n = Math.min(Math.floor(st.res[k]), left[k], Math.max(1, Math.ceil(padCost(p)[k] / 30)) * mult);
+    if (tour) {   // at an ally's: half counts for their pad (shown here), half for the same pad at home
+      const half = n / 2; st.res[k] -= n; (st.paid[key] = st.paid[key] || {})[k] = ((st.paid[key] || {})[k] || 0) + half;
+      const D = tour.D[key] = tour.D[key] || {}; D[k] = (D[k] || 0) + n; fly(RES[k], player, p); sfx(520 + Math.random() * 80, .03, .03);
+      if (!Object.keys(padLeft(key, p)).length && NOW() - needNote > 3000) { needNote = NOW(); toast('✅ Paid in full! ' + tour.name + ' finishes it next time they play.'); }
+      syncPads(); return;
+    }
     st.res[k] -= n; (st.paid[key] = st.paid[key] || {})[k] = ((st.paid[key] || {})[k] || 0) + n; fly(RES[k], player, p); sfx(520 + Math.random() * 80, .03, .03);
     if (!Object.keys(padLeft(key, p)).length) complete(key, p); else syncPads();
   });
@@ -521,20 +527,36 @@ let uid = null, code = null, visiting = null, tour = null;
 // walk around a friend's settlement (built from what they publish); your own stays safe in tour.home and keeps being saved
 function startTour(c, p) {
   if (!p || !p.w) return false;
-  if (!tour) tour = { home: st, at: NOW(), hx: player.x, hz: player.z }; tour.code = c; tour.name = p.name || 'Survivor';
+  if (tour) goHome(true);
+  tour = { home: st, at: NOW(), hx: player.x, hz: player.z, D: {} }; tour.code = c; tour.name = p.name || 'Survivor';
   // visiting an ally pays off: a daily visit bonus for each friend, and whatever you gather there comes home with you
   const H = tour.home, day = new Date().toDateString(); if (H.visitDay !== day) { H.visitDay = day; H.visited = {}; }
   if (!H.visited[c]) { H.visited[c] = 1; const bonus = { wood: 25, food: 15, metal: 5 }; Object.keys(bonus).forEach(k => { H.res[k] = (H.res[k] || 0) + bonus[k]; }); setTimeout(() => toast('🎁 Visit bonus for your settlement: +' + costTxt(bonus), 3500), 1600); }
   const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: w.heroes || fresh().heroes, paid: w.paid || {} }));
-  st.res = { wood: 0, food: 0, metal: 0, gems: 0 }; st.hp = player.hpMax || 100; player.x = 3; player.z = 6;
+  tour.S = Object.assign({ wood: 0, food: 0, metal: 0, gems: 0 }, JSON.parse(JSON.stringify(tour.home.res))); tour.D = tour.D || {};
+  st.res = Object.assign({}, tour.S); st.hp = player.hpMax || 100; player.x = 3; player.z = 6;   // you bring your own resources to build with
   loadWorld(); toast('👀 Welcome to ' + tour.name + '’s settlement!'); return true;
 }
-function goHome() {
-  if (!tour) return; const t = tour, got = {}; Object.keys(st.res || {}).forEach(k => { if (st.res[k] > 0) got[k] = Math.floor(st.res[k]); });
-  tour = null; visiting = null; st = t.home; checkQuest.h = null; Object.keys(got).forEach(k => { st.res[k] = (st.res[k] || 0) + got[k]; });
-  if (Object.keys(got).length) setTimeout(() => toast('🎒 Brought home ' + costTxt(got) + ' from your visit', 3500), 900);
+function goHome(quiet) {
+  if (!tour) return; const t = tour, keysR = ['wood', 'food', 'metal', 'gems'];
+  // what you spent on their pads, and what you gathered there (end - start + spent)
+  const spent = {}; Object.keys(t.D).forEach(key => Object.keys(t.D[key]).forEach(k => { spent[k] = (spent[k] || 0) + t.D[key][k]; }));
+  const gath = {}; keysR.forEach(k => { const g = Math.floor((st.res[k] || 0) - (t.S[k] || 0) + (spent[k] || 0)); if (g > 0) gath[k] = g; });
+  tour = null; visiting = null; st = t.home; checkQuest.h = null;
+  const mine = {}, theirs = { res: {}, paid: {} }, homePads = wantedPads(), toPads = {};
+  keysR.forEach(k => { st.res[k] = Math.max(0, (st.res[k] || 0) - (spent[k] || 0)); const g = gath[k] || 0, a = Math.floor(g / 2); if (a) { mine[k] = a; st.res[k] += a; } if (g - a) theirs.res[k] = g - a; });
+  Object.keys(t.D).forEach(key => Object.keys(t.D[key]).forEach(k => { const n = t.D[key][k], half = n / 2;
+    (theirs.paid[key] = theirs.paid[key] || {})[k] = half;
+    if (homePads[key]) { (st.paid[key] = st.paid[key] || {})[k] = (st.paid[key][k] || 0) + half; toPads[k] = (toPads[k] || 0) + half; }   // the same build at home gets the other half
+    else { st.res[k] = (st.res[k] || 0) + half; mine[k] = (mine[k] || 0) + half; } }));                                                    // nothing to match at home: you keep that half
+  if ((Object.keys(theirs.res).length || Object.keys(theirs.paid).length) && WW && WW.roomRef) try { WW.roomRef('survive', t.code).child('gifts').push({ from: WW.nick || String((WW.user && WW.user.displayName) || 'An ally').split(' ')[0], res: theirs.res, paid: theirs.paid, at: NOW() }); } catch (e) {}
+  const msg = [];
+  if (Object.keys(mine).length) msg.push('🎒 Your half: ' + costTxt(mine));
+  if (Object.keys(toPads).length) msg.push('🏗️ Your builds: ' + costTxt(toPads));
+  if (Object.keys(theirs.res).length || Object.keys(theirs.paid).length) msg.push('🤝 ' + t.name + ' gets the other half');
+  if (msg.length) setTimeout(() => toast(msg.join(' · '), 4500), 900);
   const off = Math.min(4 * 3600, (NOW() - t.at) / 1000); if (off > 1) economy(off);
-  player.x = t.hx; player.z = t.hz; loadWorld(); applyHelps(); persist(); toast('🏠 Back home'); closeSheet();
+  player.x = t.hx; player.z = t.hz; loadWorld(); applyHelps(); applyGifts(); persist(); if (!quiet) { toast('🏠 Back home'); closeSheet(); }
 }
 function publishPub() {
   if (tour || !code || !WW || WW.mode !== 'cloud') return;
@@ -590,7 +612,22 @@ function listenHelps() {
   if (!code || !WW || WW.mode !== 'cloud') return;
   WW.roomRef('survive', code).child('helps').on('value', s => { lastHelps = s.val() || {}; applyHelps(); });
 }
-let lastHelps = null;
+let lastHelps = null, giftQ = [];
+// allies' halves arrive in game_rooms/survive/{my code}/gifts: resources go to the stockpile, pad payments to the matching pad
+function listenGifts() {
+  if (!code || !WW || WW.mode !== 'cloud') return;
+  WW.roomRef('survive', code).child('gifts').on('child_added', snap => { const g = snap.val(); try { snap.ref.remove(); } catch (e) {} if (g) { giftQ.push(g); applyGifts(); } });
+}
+function applyGifts() {
+  if (tour || !giftQ.length) return; const pads = wantedPads();
+  giftQ.splice(0).forEach(g => {
+    const got = {}; Object.keys(g.res || {}).forEach(k => { const n = +g.res[k] || 0; if (n > 0) { st.res[k] = (st.res[k] || 0) + n; got[k] = (got[k] || 0) + n; } });
+    Object.keys(g.paid || {}).forEach(key => Object.keys(g.paid[key] || {}).forEach(k => { const n = +g.paid[key][k] || 0; if (n <= 0) return;
+      if (pads[key]) (st.paid[key] = st.paid[key] || {})[k] = (st.paid[key][k] || 0) + n; else st.res[k] = (st.res[k] || 0) + n; got[k] = (got[k] || 0) + n; }));
+    if (Object.keys(got).length) toast('🤝 ' + (g.from || 'An ally') + ' worked on your settlement: +' + costTxt(got), 4500);
+  });
+  syncPads(); persist(); publishPub();
+}
 function applyHelps() {
   { if (tour || !lastHelps) return; const v = lastHelps; let n = 0;
     Object.keys(BD).forEach(id => { const u = st.b[id].up; if (!u) return; const who = v[id + '_' + u.to]; if (!who) return; u.h = u.h || {};
@@ -663,7 +700,7 @@ function boot() {
   if (WW && WW.onReady) WW.onReady(async (user, fc) => {
     uid = user && user.uid; code = fc; if (!user) return;
     try { const c = await WW.loadSave(CLOUD_KEY); if (c && c.v === 3 && (c.saved || 0) > (st.saved || 0)) { st = fix(c); const o = Math.min(4 * 3600, (NOW() - (st.last || NOW())) / 1000); if (o > 10) economy(o); loadWorld(); } } catch (e) {}
-    listenHelps(); publishPub(); publishPlaying();
+    listenHelps(); listenGifts(); publishPub(); publishPlaying();
   });
 }
 
