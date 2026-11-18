@@ -517,7 +517,7 @@ function combineUnload(dt) {
   const space = HARVEST.trailer - grainTotal(T.grain); if (space < 1) { if (!outWarn()) say('The trailer is full. Send the truck to the elevator first.'); return; }
   unloadAcc += dt * 70; let move = Math.min(Math.floor(unloadAcc), n, space); if (move < 1) return; unloadAcc -= move;
   Object.keys(Cb.grain).forEach(function (k) { if (move < 1) return; const m = Math.min(move, Cb.grain[k] | 0); if (m < 1) return; T.grain[k] = (T.grain[k] | 0) + m; Cb.grain[k] -= m; if (Cb.grain[k] <= 0) delete Cb.grain[k]; move -= m; });
-  queueSave(); if (!grainTotal(Cb.grain) && performance.now() - unloadNote > 3000) { unloadNote = performance.now(); say('✅ Tank unloaded. Trailer: ' + grainTotal(T.grain) + '/' + HARVEST.trailer + '. Walk up to the trailer to send the truck.'); }
+  queueSave(); if (!grainTotal(Cb.grain)) { unloadAcc = 0; startHaul(); }   // tank empty -> the truck takes the loaded trailer to the elevator by itself
 }
 // --- the truck: depot -> trailer -> elevator (paid) -> trailer back -> depot. Saved as save.haul so it carries on after a reload.
 const pathLen = p => { let L = 0; for (let i = 1; i < p.length; i++) L += Math.hypot(p[i].x - p[i - 1].x, p[i].z - p[i - 1].z); return L; };
