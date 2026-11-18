@@ -459,6 +459,8 @@ function doAct(a, d) {
   if (a === 'weapon') { const c = weaponCost(st.weapon); if (!canPay(c)) return; pay(c); st.weapon++; toast('🪓 Weapon level ' + st.weapon); workshopPanel(); }
   if (a === 'finish') { if (st.res.gems < 5) return; st.res.gems -= 5; st.b[d.id].up.end = NOW(); economy(0); syncBuildings(); syncPads(); closeSheet(); }
   if (a === 'visit') return visit(($('vcode').value || '').trim().toUpperCase());
+  if (a === 'visitf') return visit(d.code);
+  if (a === 'back') { visiting = null; return alliesPanel(); }
   if (a === 'help') return helpFriend(d.k);
   persist(); hud();
 }
@@ -477,15 +479,38 @@ function publishPub() {
   try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, at: NOW() }); } catch (e) {}
 }
 function alliesPanel(note) {
-  let h = '<h3>🤝 Allies</h3><div class="muted">Your ally code: <b>' + (code || '—') + '</b>. Friends enter it to visit and <b>help</b> your upgrade timers (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn 🪵15 (10 a day).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
+  let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn 🪵15 (10 a day).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
   if (!WW || WW.mode !== 'cloud' || !WW.user) h += '<div class="row muted">Sign in on the games hub to team up with allies.</div>';
   else {
-    h += '<div class="row"><input id="vcode" maxlength="8" placeholder="FRIEND\'S CODE" value="' + (visiting ? visiting.code : '') + '"><button class="b" data-a="visit">Visit</button></div>';
+    // your friends list (the same friends as everywhere else on the site): no codes to type
+    if (!visiting) {
+      if (!allyList) { h += '<div class="row muted">Loading your friends…</div>'; loadAllyList(); }
+      else if (!allyList.length) h += '<div class="row muted">No friends yet. Add friends with their friend code on the games hub, and they show up here.</div>';
+      else h += allyList.map(f => '<div class="row"><div class="g"><b>' + WW.esc(f.name) + '</b><div class="muted">' + (f.pub ? 'Power Plant Lv' + (f.pub.pp || 1) + ' · ' + (f.pub.zones || 0) + ' areas · ' + (f.open ? '<b style="color:#fde68a">' + f.open + ' upgrade' + (f.open > 1 ? 's' : '') + ' to help</b>' : 'nothing to help right now') : 'hasn\u2019t started Tile Survival yet') + '</div></div><button class="b" data-a="visitf" data-code="' + f.code + '"' + (f.pub ? '' : ' disabled') + '>Visit</button></div>').join('');
+      h += '<details class="muted" style="margin-top:6px"><summary>Visit someone not on your friends list</summary><div class="row"><input id="vcode" maxlength="8" placeholder="FRIEND\'S CODE"><button class="b" data-a="visit">Visit</button></div></details>';
+    } else h += '<div class="row"><button class="b alt" data-a="back">← All friends</button></div>';
     if (visiting) { const p = visiting.pub, ups = (p.ups || []).filter(u => u.end > NOW());
       h += '<div class="muted"><b>' + WW.esc(p.name || 'Survivor') + '</b> · Power Plant Lv' + (p.pp || 1) + ' · ' + (p.zones || 0) + ' areas unlocked</div>';
       h += ups.length ? ups.map(u => { const done = visiting.mine[u.k]; return '<div class="row"><div class="g"><b>' + u.i + ' ' + u.n + ' → Lv' + u.to + '</b><div class="muted">' + fmt((u.end - NOW()) / 1000) + ' left · ' + (u.c || 0) + '/' + MAX_HELPS + ' helps</div></div><button class="b" data-a="help" data-k="' + u.k + '" ' + (done || (u.c || 0) >= MAX_HELPS ? 'disabled' : '') + '>' + (done ? 'Helped ✔' : '🤝 Help') + '</button></div>'; }).join('') : '<div class="row muted">They have nothing upgrading right now.</div>'; }
   }
   show(h);
+}
+// friends from users/{key}/friends, each with their settlement summary (their survive room is keyed by their friend code)
+let allyList = null, allyLoading = false;
+async function loadAllyList() {
+  if (allyLoading) return; allyLoading = true;
+  try {
+    const key = WW.emailKey(WW.user.email), fr = (await WW.db.ref('users/' + key + '/friends').once('value')).val() || {};
+    allyList = await Promise.all(Object.keys(fr).map(async fk => {
+      const fo = fr[fk] || {}, c = String(fo.friend_code || fk).toUpperCase(); let pub = null;
+      try { pub = (await WW.roomRef('survive', c).child('pub').once('value')).val(); } catch (e) {}
+      const open = pub ? (pub.ups || []).filter(u => u.end > NOW() && (u.c || 0) < MAX_HELPS).length : 0;
+      return { code: c, name: fo.username || (pub && pub.name) || c, pub: pub, open: open };
+    }));
+    allyList.sort((a, b) => b.open - a.open || (b.pub ? 1 : 0) - (a.pub ? 1 : 0));
+  } catch (e) { allyList = []; }
+  allyLoading = false; if (sheet.style.display === 'flex' && !visiting && card.innerHTML.indexOf('🤝 Allies') >= 0) alliesPanel();
+  setTimeout(() => { allyList = null; }, 60000);   // refresh the list after a minute
 }
 async function visit(c) {
   if (!c) return;

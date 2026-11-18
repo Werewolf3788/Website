@@ -2,6 +2,14 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 6,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Allies: your friends list shows up automatically with who needs help — no more typing friend codes"
+      ]
+    },
+    {
       "id": 5,
       "date": "Nov 18",
       "game": "farm",
