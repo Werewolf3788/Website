@@ -18,7 +18,7 @@ export const XP_SCALE = 0.4;                                                   /
 export const xpShow = n => { const v = Math.round(n * XP_SCALE * 10) / 10; return v; };
 export const XP_FERT_BONUS = 5;                                                // extra xp for harvesting a fertilized crop (shows as +2, same as the displayed harvest xp)
 export const XP_HARVEST = 5;                                                   // every crop harvested
-export const XP_PRODUCT = { egg: 1, wool: 2, milk: 3, duckegg: 2, goatmilk: 4 };                        // chicken / sheep / cow
+export const XP_PRODUCT = { egg: 1, wool: 2, milk: 3, duckegg: 2, goatmilk: 4, truffle: 3 };                        // chicken / sheep / cow
 export function levelUpCoins(l) { return 25 * l; }
 
 // ---- crops: a new farmer starts with ONE crop (wheat) and enough seed for one whole field; every other crop unlocks by level.
@@ -62,6 +62,7 @@ export const ANIMALS = {
   sheep:   { name: 'Sheep',   icon: '🐑', level: 6,  cost: 120, max: 6, every: 6 * MIN,  prod: 'wool', pen: 'pasture' },
   cow:     { name: 'Cow',     icon: '🐄', level: 12, cost: 250, max: 4, every: 10 * MIN, prod: 'milk', pen: 'pasture' },
   duck:    { name: 'Duck',    icon: '🦆', level: 3,  cost: 70,  max: 8, every: 4 * MIN,  prod: 'duckegg',  pen: 'chicken', stat: 'egg' },
+  pig:     { name: 'Pig',     icon: '🐖', level: 9,  cost: 180, max: 4, every: 7 * MIN,  prod: 'truffle',  pen: 'pasture' },
   goat:    { name: 'Goat',    icon: '🐐', level: 16, cost: 400, max: 4, every: 8 * MIN,  prod: 'goatmilk', pen: 'pasture', stat: 'milk' }
 };
 
@@ -78,7 +79,7 @@ export const GOODS = {
   egg: { name: 'Egg', icon: '🥚', sell: 6 }, wool: { name: 'Wool', icon: '🧶', sell: 22 }, milk: { name: 'Milk', icon: '🥛', sell: 40 },
   bread: { name: 'Bread', icon: '🍞', sell: 45 }, cheese: { name: 'Cheese', icon: '🧀', sell: 110 }, jam: { name: 'Strawberry jam', icon: '🍯', sell: 95 },
   fries: { name: 'Fries', icon: '🍟', sell: 48 }, sweater: { name: 'Sweater', icon: '🧥', sell: 70 }, omelet: { name: 'Omelet', icon: '🍳', sell: 32 },
-  duckegg: { name: 'Duck egg', icon: '🥚', sell: 9 }, goatmilk: { name: 'Goat milk', icon: '🥛', sell: 55 },
+  duckegg: { name: 'Duck egg', icon: '🥚', sell: 9 }, goatmilk: { name: 'Goat milk', icon: '🥛', sell: 55 }, truffle: { name: 'Truffle', icon: '🍄', sell: 30 },
   pancake: { name: 'Pancakes', icon: '🥞', sell: 55 }, soup: { name: 'Hearty soup', icon: '🍲', sell: 85 }, cake: { name: 'Cake', icon: '🍰', sell: 160 },
   salad: { name: 'Garden salad', icon: '🥗', sell: 140 }, pie: { name: 'Pumpkin pie', icon: '🥧', sell: 300 }
 };
@@ -90,8 +91,10 @@ RECIPES.forEach(function (r) { GOODS[r.id].level = r.level; });
 // Cultivated soil grows its crop 10% faster; fertilizer makes a growing crop grow 25% faster. Both are lost when the crop is harvested.
 export const TOOL_LEVEL = { hoe: 1, cultivate: 2, water: 1, harvest: 1, seed: 1, fert: 4 };
 export const GROW_CULTIVATED = .9, GROW_FERTILIZED = .75;
-export const FERT = { name: 'Fertilizer', icon: '🧪', cost: 6, packs: [10, 50, 200] };
-export function fertPrice(n) { return Math.round(FERT.cost * n * (n >= 200 ? .75 : n >= 50 ? .85 : 1)); }
+export const FERT = { name: 'Fertilizer', icon: '🧪' };
+// Fertilizer can't be bought: the compost tower by the pasture fills up from the farm's cows, pigs and sheep, and you collect it there.
+// On a farm the fertilizer is one shared supply for everybody on it.
+export const COMPOST = { cap: 600, perHour: { cow: 12, pig: 10, sheep: 6 } };
 
 // ---- tractor upgrades
 export const UPGRADES = {
@@ -99,6 +102,7 @@ export const UPGRADES = {
   whistle:   { name: 'Farm whistle',      desc: 'Collect animal products from twice as far away', level: 7, cost: 400 },
   wide:      { name: 'Wide implements',   desc: 'Tractor works 5 tiles at once instead of 3', level: 7, cost: 900 },
   sprinkler: { name: 'Sprinkler seeder',  desc: 'Seeds planted by the tractor are watered right away', level: 13, cost: 1500 },
+  fertseeder: { name: 'Fertilizer seeder', desc: 'Seeds planted by the tractor are fertilized right away (uses 1 fertilizer per seed while you have some)', level: 15, cost: 2500 },
   nitro:     { name: 'Nitro engine',      desc: 'Tractor drives another 25% faster (needs Turbo engine)', level: 16, cost: 2500, needs: 'fast' },
   harvester: { name: 'Combine harvester', desc: 'A real combine you can drive (the tractor then stops harvesting): it harvests 5 tiles wide into its grain tank (240 crops, exactly one field). Park it next to your trailer to unload, then send the truck to the grain elevator for a better price than the barn. Comes with a trailer and a truck.', level: 8, cost: 2000 },
   combine:   { name: 'Combine header',    desc: 'Harvesting with the tractor sometimes gives a bonus crop (1 in 4)', level: 20, cost: 4000 },

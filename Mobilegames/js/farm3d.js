@@ -153,6 +153,47 @@ function rainTick() {
   });
 }
 
+// ------------------------------------------------------------ compost tower + shared fertilizer
+// game_rooms/farm/{room}/fertStore = { pool, tower, t, m: { uid: 1 } }
+//   pool  = the fertilizer everyone on this farm uses (one shared number)
+//   tower = what the compost tower held at time t; it keeps filling from the farm's cows, pigs and sheep until collected
+//   m     = farmers whose old personal fertilizer was already merged in (the first time you come in, the pool is raised
+//           to whichever is higher, yours or the farm's, so if Ray has 200 and you have 0 you both end up with 200)
+let fertStore = { pool: 0, tower: 0, t: 0 }, fertPending = 0, fertFlushT = null;
+function compostRate() { let r = 0; Object.keys(animals).forEach(function (k) { const a = animals[k]; if (a) r += C.COMPOST.perHour[a.t] || 0; }); return r; }
+function compostNow() { const st = fertStore || {}; if (!st.t) return Math.floor(st.tower || 0); return Math.floor(Math.min(C.COMPOST.cap, (st.tower || 0) + compostRate() * Math.max(0, nowMs() - st.t) / 3600000)); }
+function compostCheckpoint() { if (!roomRef) return; const now = nowMs(), rate = compostRate(); roomRef.child('fertStore').transaction(function (c) { c = c || { pool: 0 }; c.tower = Math.min(C.COMPOST.cap, (c.tower || 0) + (c.t ? rate * Math.max(0, now - c.t) / 3600000 : 0)); c.t = now; return c; }, function () {}, false); }
+function startFertStore() {
+  const mine = save.fert | 0, uid = me && me.uid;
+  roomRef.child('fertStore').transaction(function (c) {
+    c = c || { pool: 0, tower: 0, t: nowMs() }; c.m = c.m || {};
+    if (uid && !c.m[uid]) { c.pool = Math.max(c.pool || 0, mine); c.m[uid] = 1; }
+    if (!c.t) c.t = nowMs(); return c;
+  }, function () {}, false);
+  roomRef.child('fertStore').on('value', function (snap) { fertStore = snap.val() || { pool: 0, tower: 0, t: 0 }; save.fert = Math.max(0, (fertStore.pool | 0) - fertPending); hud(); });
+}
+// using fertilizer: take it off the shown amount right away, and from the shared pool in one write a moment later
+function useFert(n) {
+  if (save.fert < n) return false; save.fert -= n; fertPending += n;
+  if (!fertFlushT) fertFlushT = setTimeout(function () {
+    fertFlushT = null; const k = fertPending; if (!k || !roomRef) return;
+    roomRef.child('fertStore/pool').transaction(function (p) { return Math.max(0, (p || 0) - k); }, function (e, ok) { if (ok) fertPending = Math.max(0, fertPending - k); }, false);
+  }, 900);
+  return true;
+}
+function collectCompost() {
+  const now = nowMs(), rate = compostRate(); let got = 0;
+  if (compostNow() < 1) { say(rate ? 'The compost tower is still filling (' + rate + ' an hour). Come back later.' : 'The compost tower is empty. Cows, pigs and sheep fill it up; buy some at the barn (Animals tab).'); return; }
+  roomRef.child('fertStore').transaction(function (c) {
+    c = c || { pool: 0, tower: 0, t: now };
+    got = Math.floor(Math.min(C.COMPOST.cap, (c.tower || 0) + (c.t ? rate * Math.max(0, now - c.t) / 3600000 : 0)));
+    if (got < 1) return; c.pool = (c.pool || 0) + got; c.tower = Math.min(C.COMPOST.cap, (c.tower || 0) + (c.t ? rate * Math.max(0, now - c.t) / 3600000 : 0)) - got; c.t = now; return c;
+  }, function (e, ok) {
+    if (!ok) { say('Nothing to collect yet.'); return; }
+    Sound.collect('compost'); say('🧪 Collected ' + got + ' fertilizer' + (isMP ? ' for the whole farm' : '') + '!');
+  }, false);
+}
+
 // ------------------------------------------------------------ economy helpers
 function flushSave() {
   clearTimeout(saveTimer); if (!me) return;
@@ -178,7 +219,7 @@ function addXp(n) {
   if (now > old) {
     let bonus = 0, unlocked = [];
     for (let l = old + 1; l <= now; l++) { bonus += C.levelUpCoins(l); unlocked = unlocked.concat(C.unlocksAt(l)); }
-    save.coins += bonus; Sound.levelUp(); say('🎉 Level ' + now + '! +$' + bonus + (unlocked.length ? ' · Unlocked: ' + unlocked.join(', ') : '')); buildSeedBar();
+    save.coins += bonus; Sound.levelUp(); for (let l = old + 1; l <= now; l++) if (l % 10 === 0) levelMilestone(l); say('🎉 Level ' + now + '! +$' + bonus + (unlocked.length ? ' · Unlocked: ' + unlocked.join(', ') : '')); buildSeedBar();
   }
   hud(); queueSave();
 }
@@ -219,6 +260,11 @@ function hud() {
   checkAchievements(); const badge = claimable() ? ' •' : ''; if ($('missionsBtn')) $('missionsBtn').textContent = '📜 Missions' + badge;
 }
 // ------------------------------------------------------------ achievements: checked whenever the HUD refreshes; new ones pop up here and on every page of the site
+// every 10 levels (10, 20, 30 ...): a toast card for everyone on the site, like an achievement
+function levelMilestone(l) {
+  save.ach = save.ach || {}; const id = 'lvl' + l; if (save.ach[id]) return; save.ach[id] = Date.now(); queueSave();
+  try { WW.db.ref('achFeed').push({ n: myName, a: id, t: 'Level ' + l, i: l >= 50 ? '👑' : '🎖️', d: 'Reached level ' + l + ' in Neighborly Acre', g: 'Neighborly Acre', av: myAvatar || '', ts: firebase.database.ServerValue.TIMESTAMP }); } catch (e) {}
+}
 let achReady = false;
 function checkAchievements(boot) {
   if (!me || !save.stats || (!achReady && !boot)) return; const ctx = { s: new Proxy(save.stats, { get: function (o, k) { return o[k] || 0; } }), level: level(), fields: myFieldCount(), coins: save.coins, up: save.up || {} }, fresh = [];
@@ -265,8 +311,8 @@ function actTile(i, quiet) {
     else if (!quiet) say(!cur ? 'Plow the soil first, then cultivate it.' : cur.k === 't' ? 'Already cultivated.' : 'Cultivate the soil before planting.');
   } else if (tool === 'fert') {
     if (cur && cur.k === 'c' && !cur.f && progress(cur) < 1) {
-      if (save.fert < 1) { if (!quiet || !outWarn()) say('Out of fertilizer. Buy some at the barn (Store tab).'); return; }
-      save.fert--; ref.child('f').set(1); stat('fert'); addXp(1); hud(); queueSave();
+      if (save.fert < 1) { if (!quiet || !outWarn()) say('Out of fertilizer. Collect it at the compost tower by the animal pasture.'); return; }
+      useFert(1); ref.child('f').set(1); stat('fert'); addXp(1); hud(); queueSave();
     } else if (!quiet) say(!cur || cur.k !== 'c' ? 'Fertilize a growing crop.' : cur.f ? 'Already fertilized.' : 'Ready to harvest already.');
   } else if (tool === 'water') {
     if (cur && cur.k === 'c' && !cur.w) { ref.child('w').set(now); stat('water'); queueSave(); } else if (!quiet) say(cur && cur.k === 'c' ? 'Already watered.' : 'Nothing to water here.');
@@ -281,7 +327,7 @@ function actTile(i, quiet) {
     if (!cur || cur.k !== 't') { if (!quiet) say(cur ? 'Something is already growing there.' : 'Plow the soil first.'); return; }
     const pick = cropForTile(i);
     if (!pick) { if (!quiet || !outWarn()) say('No seeds to plant. Buy a pack at the barn (or switch a seed back on).'); return; }
-    save.seeds[pick]--; Sound.plant(); stat('plant'); hud(); queueSave(); buildSeedBar(); { const nt = { k: 'c', c: pick, p: now, w: (quiet && save.up.sprinkler) ? now : 0 }; if (cur.u) nt.u = 1; ref.set(nt); }
+    save.seeds[pick]--; Sound.plant(); stat('plant'); hud(); queueSave(); buildSeedBar(); { const nt = { k: 'c', c: pick, p: now, w: (quiet && save.up.sprinkler) ? now : 0 }; if (cur.u) nt.u = 1; if (quiet && save.up.fertseeder && save.fert >= 1) { useFert(1); nt.f = 1; stat('fert'); } ref.set(nt); }
   }
 }
 let lastOut = 0; function outWarn() { const n = performance.now(); if (n - lastOut < 4000) return true; lastOut = n; return false; }
@@ -400,12 +446,11 @@ function renderShop() {
     Object.keys(C.ANIMALS).forEach(function (k) {
       const a = C.ANIMALS[k], lock = l < a.level, sells = C.priceOf(a.prod, d), perHour = Math.round(3600000 / a.every * sells);
       box.appendChild(row(a.icon + ' <b>' + a.name + '</b> · <b style="color:#fde68a">$' + a.cost + '</b> <small>' + (lock ? 'Unlocks at level ' + a.level + ' · ' : '') + 'you own ' + c[k] + '/' + a.max + ' · gives ' + a.prod + ' every ' + a.every / 60000 + ' min · ' + a.prod + ' sells ~$' + sells + ' (about $' + perHour + '/hour each) · +' + C.XP_PRODUCT[a.prod] + ' xp each</small>',
-        [{ t: lock ? '🔒 Lv ' + a.level : 'Buy $' + a.cost, off: lock || !can || c[k] >= a.max || save.coins < a.cost, f: function () { if (save.coins < a.cost || counts()[k] >= a.max) return; setCoins(-a.cost); roomRef.child('animals/' + Date.now().toString(36) + Math.floor(Math.random() * 99)).set({ t: k, o: me.uid, n: myName, r: nowMs() + a.every }); say('Bought a ' + a.name.toLowerCase() + '!'); } }]));
+        [{ t: lock ? '🔒 Lv ' + a.level : 'Buy $' + a.cost, off: lock || !can || c[k] >= a.max || save.coins < a.cost, f: function () { if (save.coins < a.cost || counts()[k] >= a.max) return; setCoins(-a.cost); compostCheckpoint(); roomRef.child('animals/' + Date.now().toString(36) + Math.floor(Math.random() * 99)).set({ t: k, o: me.uid, n: myName, r: nowMs() + a.every }); say('Bought a ' + a.name.toLowerCase() + '!'); } }]));
     });
   } else if (shopTab === 'store') {
     addHtml(box, '<div class="item" style="border:0"><small>Field work goes: plow → cultivate → plant → water → fertilize → harvest. Cultivated soil grows crops 10% faster and fertilizer makes a growing crop 25% faster (both are used up when you harvest). You have <b>' + save.fert + '</b> fertilizer.</small></div>');
-    C.FERT.packs.forEach(function (n) { const cost = C.fertPrice(n); box.appendChild(row(C.FERT.icon + ' <b>Fertilizer ×' + n + '</b> <small>$' + (cost / n).toFixed(1) + ' each · unlocks with the Fertilize tool at level ' + C.TOOL_LEVEL.fert + '</small>',
-      [{ t: 'Buy $' + cost, off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.fert += n; stat('buy'); hud(); queueSave(); say('Bought ' + n + ' fertilizer.'); } }])); });
+    addHtml(box, '<div class="item" style="border:0"><small>🧪 Fertilizer isn\u2019t sold here any more. The <b>compost tower</b> next to the animal pasture fills up from the farm\u2019s cows, pigs and sheep (' + compostRate() + ' an hour right now, holds ' + C.COMPOST.cap + '). Walk up to it to collect.' + (isMP ? ' Everyone on this farm shares one fertilizer supply.' : '') + '</small></div>');
     let dry = 0; Object.keys(tiles).forEach(function (k) { const t = tiles[k]; if (t && t.k === 'c' && !t.w && isMine(W.fieldOf(+k))) dry++; });
     box.appendChild(row('🌧️ <b>Rain dance</b> <small>Waters every dry crop in your fields right now · ' + dry + ' waiting</small>', [{ t: 'Call rain $60', off: !can || save.coins < 60 || !dry, f: function () {
       if (save.coins < 60) return; const now = nowMs(); let n = 0; Object.keys(tiles).forEach(function (k) { const t = tiles[k]; if (t && t.k === 'c' && !t.w && isMine(W.fieldOf(+k))) { roomRef.child('tiles/' + k + '/w').set(now); n++; } });
@@ -684,6 +729,7 @@ function context() {
   if (player.driving && player.veh === 'combine') { const n = grainTotal(save.combine && save.combine.grain), nt = grainTotal(save.trailer && save.trailer.grain); return { kind: 'exit', text: 'Exit combine (E)', info: '🌾 Tank ' + n + '/' + HARVEST.tank + ' · trailer ' + nt + '/' + HARVEST.trailer + (n ? ' · park next to the trailer to unload' : ' · drive over ripe crops to harvest') }; }
   if (player.driving) return { kind: 'exit', text: 'Exit tractor (E)', info: toolLabel() + ' · ' + swath() + ' tiles wide' + (tool === 'seed' ? ' · ' + mixText() : '') };
   const id = nearestReadyAnimal(); if (id) return { kind: 'collect', id: id, text: 'Collect ' + C.ANIMALS[animals[id].t].prod + ' (E)' };
+  if (Math.hypot(player.x - W.COMPOST_POS.x, player.z - W.COMPOST_POS.z) < 4.2) { const n = compostNow(), r = compostRate(); return { kind: 'compost', text: n >= 1 ? 'Collect ' + n + ' fertilizer (E)' : 'Compost tower', info: '🧪 ' + n + '/' + C.COMPOST.cap + ' ready · ' + (r ? r + ' an hour from your farm\u2019s cows, pigs and sheep' : 'get cows, pigs or sheep to make fertilizer') + ' · ' + (isMP ? 'shared supply ' : 'you have ') + save.fert }; }
   const atTractor = Math.hypot(player.x - tractorState.x, player.z - tractorState.z) < 4, atCombine = !!(combine && save.combine && dist2(player, save.combine) < 6);
   if (nearShop() && !atTractor && !atCombine) return { kind: 'shop', text: 'Open the barn (E)', info: 'Buy seeds · sell goods · orders · upgrades' };
   if (Math.hypot(player.x - tractorState.x, player.z - tractorState.z) < 4) return { kind: 'drive', text: 'Drive your tractor (E)' };
@@ -700,6 +746,7 @@ function context() {
 function useAction() {
   if (!me || $('shop').style.display === 'flex') return; const c = context(); if (!c) return;
   if (c.kind === 'collect') collect(c.id);
+  else if (c.kind === 'compost') collectCompost();
   else if (c.kind === 'shop') openShop('seeds');
   else if (c.kind === 'tile') actTile(c.i, false);
   else if (c.kind === 'haul') startHaul();
@@ -931,11 +978,11 @@ function frame(ts) {
   camX += (player.x - camX) * Math.min(1, dt * 8); camZ += (player.z - camZ) * Math.min(1, dt * 8);
   camera.position.set(camX + Math.sin(yaw) * Math.cos(pitch) * d, ty + Math.sin(pitch) * d, camZ + Math.cos(yaw) * Math.cos(pitch) * d); camera.lookAt(camX, ty, camZ);
   const c = me && context(); $('prompt').innerHTML = c ? '<span>' + c.text + (c.info ? '<small>' + c.info + '</small>' : '') + '</span>' : '';
-  $('useBtn').textContent = c ? ({ tile: 'Use', exit: 'Exit', drive: 'Drive', driveC: 'Drive', shop: 'Barn', haul: 'Send', info: 'Use', collect: 'Collect' }[c.kind] || 'Use') : 'Use';
+  $('useBtn').textContent = c ? ({ tile: 'Use', exit: 'Exit', drive: 'Drive', driveC: 'Drive', shop: 'Barn', haul: 'Send', info: 'Use', collect: 'Collect', compost: 'Collect' }[c.kind] || 'Use') : 'Use';
   if (c && c.kind === 'tile') { const p = tilePos(c.i); pointer.position.set(p.x, .26, p.z); pointer.visible = true; } else pointer.visible = false;
   updateDomBadges(); updateRain(dt, isRaining()); updateSky(); updateAnimals(dt); updateRemotes(dt);
   mmT += dt; if (mmT > .12) { mmT = 0; drawMini(); }
-  slow += dt; if (slow > .5) { slow = 0; refreshField(); renderPeers(); }
+  slow += dt; if (slow > .5) { slow = 0; refreshField(); renderPeers(); if (world.compostFill) world.compostFill.scale.y = Math.max(.01, compostNow() / C.COMPOST.cap); }
   const now = performance.now();
   if (roomRef && me && now - lastSent > 100 && (player.speed > .1 || now - lastBeat > 8000)) { lastSent = lastBeat = now; roomRef.child('players/' + me.uid).set({ n: myName, x: +player.x.toFixed(2), z: +player.z.toFixed(2), r: +player.ry.toFixed(2), v: player.driving ? 1 : 0, h: +myHue.toFixed(2), lv: level(), tx: +(player.driving ? tractorLocal.x : tractorState.x).toFixed(1), tz: +(player.driving ? tractorLocal.z : tractorState.z).toFixed(1), tr: +(player.driving ? tractorLocal.ry : tractorState.ry).toFixed(2), t: firebase.database.ServerValue.TIMESTAMP }); }
   if (player.driving && player.veh === 'tractor' && now - lastTrk > 1500) { lastTrk = now; roomRef.child('farmers/' + me.uid + '/tractor').set({ x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }); }
@@ -951,7 +998,7 @@ async function hostReset() {
   resetting = true; const e = nowMs();
   try {
     resetSaveObject(e); await persistNow();
-    await roomRef.update({ tiles: null, fields: null, animals: null, ledger: null, tractors: null, avatars: null, colors: null, farmers: null, 'meta/epoch': e });
+    await roomRef.update({ fertStore: null, tiles: null, fields: null, animals: null, ledger: null, tractors: null, avatars: null, colors: null, farmers: null, 'meta/epoch': e });
     location.reload();
   } catch (err) { resetting = false; say('Reset failed: ' + ((err && err.message) || err)); }
 }
@@ -1053,6 +1100,7 @@ async function begin(user, myCode) {
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { if (okTile(v[k])) tiles[+k] = v[k]; else if (me && isMine(W.fieldOf(+k))) roomRef.child('tiles/' + k).remove(); }); refreshField(); });
   roomRef.child('fields').on('value', function (snap) { ownedFields = snap.val() || {}; updateFieldVisuals(); });
   roomRef.child('animals').on('value', function (snap) { animals = snap.val() || {}; syncAnimals(); });
+  startFertStore();
   roomRef.child('players').on('value', function (snap) { players = snap.val() || {}; syncRemotes(); });
   if (isMP) roomRef.child('ledger').on('value', function (snap) { applyLedger(snap.val()); });
   updateFieldVisuals(); renderPeers();

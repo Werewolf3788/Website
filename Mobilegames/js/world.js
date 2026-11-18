@@ -15,6 +15,7 @@ export function tileAt(x, z) {
 export const CHICKEN_PEN = { x0: 29, x1: 39, z0: -38, z1: -28 };
 export const COW_PASTURE = { x0: -43, x1: -29, z0: -44, z1: -30 };
 export const SHOP_POS = { x: 22, z: -2.5 };
+export const COMPOST_POS = { x: -26.6, z: -27.6 };   // compost tower: just outside the pasture's corner, toward the farmyard
 export const TRACTOR_HOME = { x: -9, z: -3, ry: .6 };
 // field 1 sits right beside the barn, silo and truck, so its vehicles park further along the field edge, clear of them
 const NEAR_BARN = f => f === 0;
@@ -24,7 +25,7 @@ export const ELEVATOR_POS = { x: 31, z: -3.2 };          // where the truck tips
 export const TRUCK_HOME = { x: 37.5, z: -10, ry: -Math.PI / 2 };   // parked behind the silo, well clear of the shop door and the yard
 export function parkCombine(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + (NEAR_BARN(f) ? 24 : 13.5), z: F.z0 - 3.5, ry: .6 }; }
 export function parkTrailer(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + (NEAR_BARN(f) ? 32 : 20.5), z: F.z0 - 3.5, ry: Math.PI / 2 }; }
-export const COLLIDERS = [{ x: -24, z: -8, r: 6.2 }, { x: 22, z: -9, rect: { x0: 15.5, x1: 28.5, z0: -13.5, z1: -4.6 } }, { x: 30.5, z: -9, r: 3 }];
+export const COLLIDERS = [{ x: -26.6, z: -27.6, r: 1.7 }, { x: -24, z: -8, r: 6.2 }, { x: 22, z: -9, rect: { x0: 15.5, x1: 28.5, z0: -13.5, z1: -4.6 } }, { x: 30.5, z: -9, r: 3 }];
 
 const M = {}; // shared materials
 function mat(color, opts) { const k = color + JSON.stringify(opts || {}); return M[k] || (M[k] = new THREE.MeshLambertMaterial(Object.assign({ color: color }, opts || {}))); }
@@ -128,6 +129,13 @@ export function buildWorld(scene) {
   fence(scene, CHICKEN_PEN.x0 - 1, CHICKEN_PEN.z0 - 1, CHICKEN_PEN.x1 + 1, CHICKEN_PEN.z1 + 1, 'w');
   fence(scene, COW_PASTURE.x0 - 1, COW_PASTURE.z0 - 1, COW_PASTURE.x1 + 1, COW_PASTURE.z1 + 1, 'e');
   const coop = new THREE.Group(); coop.position.set(37.5, 0, -30); scene.add(coop); box(coop, 3, 2, 2.4, 0xd9b26f, 0, 1, 0); const cr = new THREE.Mesh(new THREE.ConeGeometry(2.5, 1.2, 4), mat(0x8a3b2d)); cr.rotation.y = Math.PI / 4; cr.position.y = 2.6; cr.scale.z = .8; coop.add(cr);
+  // compost tower (fertilizer from the cows, pigs and sheep): a green silo with a see-through window that fills up
+  { const ct = new THREE.Group(); ct.position.set(COMPOST_POS.x, 0, COMPOST_POS.z); scene.add(ct);
+    cyl(ct, 1.4, 1.5, .4, 0x6b5a45, 0, .2, 0, 16); cyl(ct, 1.25, 1.25, 4.6, 0x3f7d3a, 0, 2.7, 0, 16);
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(1.45, 1.1, 16), mat(0x2f5e2b)); cap.position.y = 5.55; cap.castShadow = true; ct.add(cap);
+    box(ct, .7, 4.2, .08, 0x1c2a1a, 0, 2.6, 1.27);                                         // window
+    const fill = box(ct, .58, 4.0, .06, 0x6b4a2b, 0, 0.6, 1.3); fill.geometry.translate(0, 2.0, 0); fill.position.y = 0.6; fill.scale.y = .01; W.compostFill = fill;
+    const lb = makeLabel('🧪 COMPOST', '#bbf7d0'); lb.position.set(0, 6.9, 0); lb.scale.set(3.6, .9, 1); ct.add(lb); }
   // trees (seeded, away from play areas)
   const r = rng(42), keep = (x, z) => !(x > -74 && x < 74 && z > -10 && z < 124) && !(x > 25 && x < 45 && z > -41 && z < -25) && !(x < -26 && x > -48 && z > -48 && z < -27) && !(Math.abs(x + 24) < 8 && Math.abs(z + 8) < 8) && !(Math.abs(x - 24) < 12 && Math.abs(z + 9) < 10);
   let n = 0; while (n < 150) { const x = (r() - .5) * 170, z = (r() - .5) * 170; if (keep(x, z)) { tree(scene, x, z, r); n++; } }
@@ -325,15 +333,22 @@ export function makeAnimal(type) {
     box(g, .05, .05, .04, 0xffffff, -.1, 1.2, 1.09); box(g, .05, .05, .04, 0xffffff, .1, 1.2, 1.09);
     for (const x of [-.24, .24]) for (const z of [-.45, .45]) box(g, .11, .6, .11, 0x2b2522, x, .3, z);
     g.userData.speed = .8;
+  } else if (type === 'pig') {
+    sph(g, .55, 0xf2a7b8, 0, .78, 0, 1, .82, 1.4); sph(g, .36, 0xf2a7b8, 0, .9, .78); box(g, .3, .22, .12, 0xe58ca2, 0, .84, 1.12);
+    box(g, .05, .07, .02, 0x7a3b4b, -.07, .84, 1.19); box(g, .05, .07, .02, 0x7a3b4b, .07, .84, 1.19);
+    box(g, .16, .18, .06, 0xe58ca2, -.2, 1.22, .8).rotation.z = .4; box(g, .16, .18, .06, 0xe58ca2, .2, 1.22, .8).rotation.z = -.4;
+    box(g, .05, .05, .03, 0x111111, -.14, 1.02, 1.08); box(g, .05, .05, .03, 0x111111, .14, 1.02, 1.08); sph(g, .08, 0xe58ca2, 0, .95, -.78);
+    for (const x of [-.25, .25]) for (const z of [-.42, .42]) box(g, .14, .4, .14, 0xe58ca2, x, .2, z);
+    g.userData.speed = .75;
   } else {
     box(g, 1.3, 1.1, 2.2, 0xf4f4f4, 0, 1.45, 0); box(g, .5, .5, .4, 0x222222, .35, 1.7, .3).scale.set(1, 1, 1); box(g, .6, .5, .5, 0x222222, -.3, 1.45, -.5);
     box(g, .75, .8, .8, 0xf4f4f4, 0, 1.75, 1.5); box(g, .5, .35, .3, 0xf2b6b6, 0, 1.55, 1.95); box(g, .1, .25, .1, 0xe8e0c8, -.3, 2.25, 1.4); box(g, .1, .25, .1, 0xe8e0c8, .3, 2.25, 1.4);
     for (const x of [-.45, .45]) for (const z of [-.8, .8]) box(g, .22, .95, .22, 0xf4f4f4, x, .48, z);
     g.userData.speed = .7;
   }
-  const small = type === 'chicken' || type === 'duck', icon = new THREE.Mesh(small ? new THREE.SphereGeometry(.22, 10, 8) : new THREE.BoxGeometry(.4, .45, .4), new THREE.MeshBasicMaterial({ color: small ? 0xfff6e0 : (type === 'sheep' ? 0xf0e6ff : type === 'goat' ? 0xffe9b0 : 0x9fd8ff) }));
+  const small = type === 'chicken' || type === 'duck', icon = new THREE.Mesh(small ? new THREE.SphereGeometry(.22, 10, 8) : new THREE.BoxGeometry(.4, .45, .4), new THREE.MeshBasicMaterial({ color: small ? 0xfff6e0 : (type === 'sheep' ? 0xf0e6ff : type === 'goat' ? 0xffe9b0 : type === 'pig' ? 0xd9b38c : 0x9fd8ff) }));
   if (small) icon.scale.set(.8, 1.1, .8);
-  icon.position.y = small ? 2 : (type === 'sheep' || type === 'goat' ? 2.4 : 3.3); icon.visible = false; g.add(icon); g.userData.icon = icon;
+  icon.position.y = small ? 2 : (type === 'sheep' || type === 'goat' ? 2.4 : type === 'pig' ? 1.9 : 3.3); icon.visible = false; g.add(icon); g.userData.icon = icon;
   return g;
 }
 export { THREE };
