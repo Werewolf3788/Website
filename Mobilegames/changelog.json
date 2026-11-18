@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 31,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Fixed helping an ally's build getting stuck on 1 and slowly draining your resources. It now finishes and shows ✅ Paid",
+    "Help you gave an ally now shows on their pads on your next visit, even if they haven't played since",
+    "A build that's been paid in full (by allies or by your crews) now starts by itself, without you standing on the pad"
+   ]
+  },
+  {
    "id": 30,
    "date": "Nov 18",
    "game": "survive",

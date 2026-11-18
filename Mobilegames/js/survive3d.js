@@ -383,6 +383,7 @@ function syncPads() {
       const lb = textSprite(5); lb.position.y = 2; g.add(lb); scene.add(g); p.mesh = g; p.label = lb; p.plane = pl; pads[k] = p;
     }
     const p = pads[k], left = padLeft(k, p), D = p.kind === 'build' ? BD[p.id] : null;
+    if (tour && !Object.keys(left).length) { p.label.userData.set('✅ Paid · ' + tour.name + ' finishes it when they play', '#86efac'); return; }
     p.label.userData.set((p.kind === 'zone' ? '🔓 ' : p.to === 1 ? D.i + ' Build ' : '⬆ ' + D.i + ' Lv' + p.to + ' ') + costTxt(left), p.kind === 'zone' ? '#bfdbfe' : '#fef08a');
   });
 }
@@ -394,9 +395,9 @@ function deliver(dt) {
     const left = padLeft(key, p), ks = Object.keys(left); if (!ks.length) return tour ? null : complete(key, p);
     const k = ks.find(r => st.res[r] >= 1);
     if (!k) { if (NOW() - needNote > 3000) { needNote = NOW(); toast('Need more ' + ks.map(r => RES[r]).join(' ') + ' — gather it around the map'); } return; }
-    const n = Math.min(Math.floor(st.res[k]), left[k], Math.max(1, Math.ceil(padCost(p)[k] / 30)) * mult);
-    if (tour) {   // at an ally's: half counts for their pad (shown here), half for the same pad at home
-      const half = n / 2; st.res[k] -= n; (st.paid[key] = st.paid[key] || {})[k] = ((st.paid[key] || {})[k] || 0) + half;
+    const n = Math.min(Math.floor(st.res[k]), tour ? Math.ceil(left[k] * 2) : left[k], Math.max(1, Math.ceil(padCost(p)[k] / 30)) * mult);
+    if (tour) {   // at an ally's: half counts for their pad (shown here), half for the same pad at home, so it takes twice what the pad shows
+      const half = n / 2, cost = padCost(p)[k] || 0; st.res[k] -= n; (st.paid[key] = st.paid[key] || {})[k] = Math.min(cost, ((st.paid[key] || {})[k] || 0) + half);
       const D = tour.D[key] = tour.D[key] || {}; D[k] = (D[k] || 0) + n; fly(RES[k], player, p); sfx(520 + Math.random() * 80, .03, .03);
       if (!Object.keys(padLeft(key, p)).length && NOW() - needNote > 3000) { needNote = NOW(); toast('✅ Paid in full! ' + tour.name + ' finishes it next time they play.'); }
       syncPads(); return;
@@ -405,6 +406,8 @@ function deliver(dt) {
     if (!Object.keys(padLeft(key, p)).length) complete(key, p); else syncPads();
   });
 }
+// a build that's been paid in full (by allies, or by your crews feeding the builds) starts by itself: no need to stand on it
+function autoComplete() { if (tour) return; const k = Object.keys(pads).find(key => pads[key] && !Object.keys(padLeft(key, pads[key])).length); if (k) complete(k, pads[k]); }
 function complete(key, p) {
   delete st.paid[key];
   if (p.kind === 'zone') { const k = p.i + ',' + p.j; st.zones[k] = 1; st.stats.zones++; clearFog(k); spawnZoneContents(p.i, p.j); toast('🔓 New area: ' + ZNAME[zoneType(p.i, p.j)] + '!'); sfx(660, .2, .08); sfx(880, .3, .06, .15); }
@@ -890,6 +893,8 @@ function duelEnd() {
 async function visit(c) {
   if (!c) return;
   try { const ref = WW.roomRef('survive', c), p = (await ref.child('pub').once('value')).val(); if (!p) return alliesPanel('No settlement found for that code.');
+    try { const gs = (await ref.child('gifts').once('value')).val() || {}; p.w = p.w || {}; const P = p.w.paid = p.w.paid || {};   // help they haven't opened the game to collect yet still shows on their pads
+      Object.keys(gs).forEach(g => { const pd = (gs[g] || {}).paid || {}; Object.keys(pd).forEach(key => Object.keys(pd[key] || {}).forEach(r => { (P[key] = P[key] || {})[r] = (P[key][r] || 0) + (+pd[key][r] || 0); })); }); } catch (e) {}
     const mine = {}; for (const u of (p.ups || [])) mine[u.k] = !!(await ref.child('helps/' + u.k + '/' + uid).once('value')).val();
     visiting = { code: c, pub: p, mine: mine }; const walked = startTour(c, p); alliesPanel(walked ? null : 'Their settlement shows up here once they play Tile Survival again with this update. You can still help their timers.'); } catch (e) { alliesPanel('Could not reach that settlement (' + (e && e.code || e) + ').'); }
 }
@@ -1257,7 +1262,7 @@ function frameInner() {
   // --- once a second
   accSec += dt; if (accSec >= 1) { const ev = economy(accSec); accSec = 0; ev.forEach(e => toast(e)); if (ev.length) { syncPads(); publishPub(); persist(); }
     if (st.overflowAt && NOW() - st.overflowAt < 1500) syncPads();   // builds being fed by full piles
-    syncBuildings(); syncWorkers(); syncGuards(); tbTick(); duelTick(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
+    autoComplete(); syncBuildings(); syncWorkers(); syncGuards(); tbTick(); duelTick(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
   accSave += dt; if (accSave > 4) { accSave = 0; persist(); }
   accCloud += dt; if (accCloud > 30) { accCloud = 0; cloudSave(); }
   accPub += dt; if (accPub > 90) { accPub = 0; publishPlaying(); publishPub(); }
