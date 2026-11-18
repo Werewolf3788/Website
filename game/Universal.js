@@ -1838,10 +1838,10 @@ function ensureUniversalStyles() {
         .rc-short { background: rgba(239,68,68,0.15); color: #fca5a5; }
         .rc-done { color: #86efac; font-weight: 700; }
         .rc-hint { color: #64748b; font-weight: 400; font-size: 0.7rem; }
-        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
         .res-box { display: flex; flex-direction: column; gap: 5px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: rgba(15,23,42,0.5); }
         .res-name { font-size: 0.78rem; font-weight: 700; color: #fff; }
-        .res-input { width: 100%; font-size: 1.05rem; font-weight: 700; text-align: center; }
+        .res-input { width: 100%; flex: 0 0 auto; height: auto; min-height: 0; padding: 8px 10px; font-size: 1.05rem; font-weight: 700; text-align: center; }   /* flex: 0 stops the search box's 260px flex size turning into a 260px-tall box inside these columns */
         .res-hint { font-size: 0.68rem; color: #94a3b8; line-height: 1.3; }
         .wallet-meter { font-size: 0.78rem; color: #cbd5e1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
         .wm-num { font-weight: 800; color: #fbbf24; }
