@@ -279,7 +279,8 @@ export function makeCropField(scene, N) {
     kinds[id] = { gm: mk(mergeGeoms(parts[0]), mat), rm: mk(mergeGeoms(parts[1]), mat) };
   });
   const soil = mk(new THREE.BoxGeometry(TILE - .12, .22, TILE - .12), new THREE.MeshLambertMaterial({ color: 0xffffff })); soil.receiveShadow = true;
-  const SOIL = [null, new THREE.Color(0x7a5230), new THREE.Color(0x4a2e17), new THREE.Color(0xa87846), new THREE.Color(0x6b4423)];   // plowed dry / wet, cultivated dry / wet (lighter, loosened soil)
+  const SOIL = [null, new THREE.Color(0x7a5230), new THREE.Color(0x4a2e17), new THREE.Color(0xa87846), new THREE.Color(0x6b4423),   // plowed dry / wet, cultivated dry / wet (lighter, loosened soil)
+    new THREE.Color(0x6f8a2e), new THREE.Color(0x46661c), new THREE.Color(0x7f9a38), new THREE.Color(0x52742a)];   // the same four, fertilized: olive-green soil so you can see what's covered
   // put a matrix for tile i into mesh m (adds a slot if the tile is new)
   function put(m, i, matrix) { const u = m.userData; let s = u.map.get(i); if (s === undefined) { s = u.tiles.length; u.tiles.push(i); u.map.set(i, s); m.count = u.tiles.length; } m.setMatrixAt(s, matrix); dirty.add(m); return s; }
   // take tile i out of mesh m: the last instance moves into the freed slot
@@ -291,8 +292,8 @@ export function makeCropField(scene, N) {
   const state = new Array(N).fill(null);
   return {
     // hasSoil: tile is plowed; wet: crop has been watered; type: crop id or null; scale: growth 0..1; ripe: ready to harvest
-    set: function (i, x, z, hasSoil, wet, type, scale, ripe, cult) {
-      type = type || null; const sq = type ? Math.round(scale * 20) : 0, rp = !!(type && ripe), sv = hasSoil ? (wet ? 2 : 1) + (cult ? 2 : 0) : 0, old = state[i];
+    set: function (i, x, z, hasSoil, wet, type, scale, ripe, cult, fert) {
+      type = type || null; const sq = type ? Math.round(scale * 20) : 0, rp = !!(type && ripe), sv = hasSoil ? (wet ? 2 : 1) + (cult ? 2 : 0) + (fert ? 4 : 0) : 0, old = state[i];
       if (old && old.soil === sv && old.type === type && old.sq === sq && old.ripe === rp) return;
       if (!old || old.soil !== sv) { if (sv === 0) drop(soil, i); else { tmp.makeTranslation(x, .11, z); const s = put(soil, i, tmp); soil.setColorAt(s, SOIL[sv]); } }
       if (old && old.type && old.type !== type) { drop(kinds[old.type].gm, i); drop(kinds[old.type].rm, i); }

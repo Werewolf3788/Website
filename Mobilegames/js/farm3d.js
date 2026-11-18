@@ -129,7 +129,7 @@ function refreshField() {
     const i = +k, t = tiles[i], p = tilePos(i); if (!okTile(t) || !p) return; seen[i] = 1;
     if (t.k === 't') { field.set(i, p.x, p.z, true, false, null, 0, false, !!t.u); return; }
     const pr = progress(t, now), wet = !!t.w;
-    field.set(i, p.x, p.z, true, wet, t.c, wet ? .18 + .82 * pr : .12, pr >= 1, !!t.u);
+    field.set(i, p.x, p.z, true, wet, t.c, wet ? .18 + .82 * pr : .12, pr >= 1, !!t.u, !!t.f);
     if (!wet) dry++; else if (pr >= 1) ready++; else { growing++; next = Math.min(next, growOf(t) * (1 - pr)); }
   });
   Object.keys(drawn).forEach(function (k) { if (!seen[k]) { const p = tilePos(+k); field.set(+k, p.x, p.z, false); } });
