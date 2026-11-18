@@ -44,6 +44,8 @@ button{font:inherit;color:inherit}
 .hero{padding:22px 0 8px}
 .hero h1{font-size:clamp(24px,3vw,36px);font-weight:800;letter-spacing:.3px}
 .hero h1 span{color:var(--accent)}
+.live-dot{font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--muted);vertical-align:middle;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin-left:6px;opacity:.6}
+.live-dot.on{color:var(--ok);border-color:var(--ok);opacity:1}
 .hero p{color:var(--muted);margin-top:4px;max-width:70ch}
 .disclosure{margin-top:10px;font-size:12.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:inline-block}
 
@@ -173,7 +175,7 @@ footer a{color:var(--muted)}
 <body>
 
 <div class="wrap hero">
-  <h1>Werewolf <span>Deals Hub</span></h1>
+  <h1>Werewolf <span>Deals Hub</span> <small class="live-dot" id="liveDot" title="Live updates">● LIVE</small></h1>
   <p>Hand-picked Amazon finds, gaming gear, home deals and movies. Updated live from my list.</p>
   <div class="disclosure">As an Amazon Associate I earn from qualifying purchases. Prices and availability are shown on Amazon.</div>
   <div class="spotlight" id="spotlight"></div>
@@ -462,17 +464,75 @@ function parseAmazonMovies(csv, info) {
 const S = { deals: [], movies: [], q: '', cat: 'all', sort: 'new', shown: CFG.pageSize, loaded: { deals: false, movies: false } };
 
 /* ---------------- loading (cache first, then live) ---------------- */
-async function loadDeals() {
-  const cached = lsGet('ww_deals_cache_v1');
-  if (cached) { try { S.deals = parseDeals(JSON.parse(cached)); S.loaded.deals = true; render(); } catch (e) {} }
+/* Deals: live stream from Firebase (only changes are sent), with a cached copy shown first
+   and a 10-minute fallback poll if live streaming isn't available. */
+let dealsTree = null, dealsStream = null, streamRetry = 0, renderTimer = 0;
+function applyDeals(save) {
+  S.deals = parseDeals(dealsTree); S.loaded.deals = true;
+  if (save) lsSet('ww_deals_cache_v1', JSON.stringify(dealsTree || {}));
+  clearTimeout(renderTimer); renderTimer = setTimeout(render, 120); // batch quick bursts of updates
+}
+function setAtPath(path, data, merge) {
+  const parts = String(path || '/').split('/').filter(Boolean);
+  if (!parts.length) {
+    if (merge) { dealsTree = Object.assign({}, dealsTree || {}); for (const [k, v] of Object.entries(data || {})) { if (v === null) delete dealsTree[k]; else dealsTree[k] = v; } }
+    else dealsTree = data;
+    return;
+  }
+  if (!dealsTree || typeof dealsTree !== 'object') dealsTree = {};
+  let node = dealsTree;
+  for (let i = 0; i < parts.length - 1; i++) {
+    if (!node[parts[i]] || typeof node[parts[i]] !== 'object') node[parts[i]] = {};
+    node = node[parts[i]];
+  }
+  const last = parts[parts.length - 1];
+  if (merge) {
+    if (!node[last] || typeof node[last] !== 'object') node[last] = {};
+    for (const [k, v] of Object.entries(data || {})) { if (v === null) delete node[last][k]; else node[last][k] = v; }
+  } else if (data === null) delete node[last];
+  else node[last] = data;
+}
+async function pollDeals() {
   try {
     const res = await fetch(CFG.dealsUrl, { cache: 'no-store' });
     if (!res.ok) throw new Error(res.status);
-    const text = await res.text();
-    if (text !== cached) { lsSet('ww_deals_cache_v1', text); S.deals = parseDeals(JSON.parse(text)); }
-  } catch (e) { console.warn('Deals load failed', e); }
-  S.loaded.deals = true; render();
+    dealsTree = await res.json(); applyDeals(true);
+  } catch (e) { console.warn('Deals load failed', e); S.loaded.deals = true; render(); }
 }
+function openDealsStream() {
+  if (dealsStream || document.hidden) return;
+  if (!('EventSource' in window)) { pollDeals(); return; }
+  const es = new EventSource(CFG.dealsUrl);
+  dealsStream = es;
+  const onData = merge => ev => {
+    try { const m = JSON.parse(ev.data); setAtPath(m.path, m.data, merge); applyDeals(true); streamRetry = 0; setLiveDot(true); } catch (e) {}
+  };
+  es.addEventListener('put', onData(false));
+  es.addEventListener('patch', onData(true));
+  es.addEventListener('cancel', () => closeDealsStream(true));
+  es.addEventListener('auth_revoked', () => closeDealsStream(true));
+  es.onerror = () => {
+    // Browser retries by itself; after a few failures, fall back to polling for a while
+    if (++streamRetry >= 4) { closeDealsStream(true); }
+    setLiveDot(false);
+  };
+}
+function closeDealsStream(fallback) {
+  if (dealsStream) { dealsStream.close(); dealsStream = null; }
+  setLiveDot(false);
+  if (fallback) { pollDeals(); setTimeout(() => { streamRetry = 0; openDealsStream(); }, CFG.refreshMs); }
+}
+function setLiveDot(on) { const d = document.getElementById('liveDot'); if (d) d.classList.toggle('on', !!on); }
+function loadDeals() {
+  const cached = lsGet('ww_deals_cache_v1');
+  if (cached) { try { dealsTree = JSON.parse(cached); applyDeals(false); } catch (e) {} }
+  openDealsStream();
+  // If the stream hasn't answered in 6 seconds, load once the normal way
+  setTimeout(() => { if (!S.loaded.deals || !dealsTree) pollDeals(); }, 6000);
+}
+// Close the live connection while the tab is hidden (saves Firebase connections), reopen on return
+document.addEventListener('visibilitychange', () => { if (document.hidden) closeDealsStream(false); else openDealsStream(); });
+
 async function readMovieCache() {
   // Shares the Movies page's device cache for the main list when it's there
   try { if ('caches' in window) { const c = await caches.open('ww-cinema-data-v1'); const r = await c.match('catalog.csv'); if (r) return await r.text(); } } catch (e) {}
@@ -751,7 +811,7 @@ window.addEventListener('pointerup', () => {
 fromHash();
 loadDeals();
 loadMovies();
-setInterval(() => { if (!document.hidden) { loadDeals(); } }, CFG.refreshMs);
+
 </script>
 <script>
 /* =========================================================================
