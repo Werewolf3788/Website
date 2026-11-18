@@ -114,10 +114,10 @@ function addToPile(id, n) {
   const extra = have + n - Math.max(have, capP); st.piles[id] = Math.max(have, capP);
   feedPads(pads, bld.length ? bld : pp, r, extra); st.overflowAt = NOW();   // a full pile's extra goes to the builds too
 }
-// While you're off your map (game closed, or visiting an ally) the town keeps going at 5% speed, so a little gets done
+// While you're off your map (game closed, or visiting an ally) the town keeps going at 1% speed, so a little gets done
 // but it never stops. Your crews (lumberjacks, miners, deer hunters) put their haul into the town's builds first, a
 // small share goes to your allies, and what's left lands in the piles. Upgrade timers keep running in real time.
-const AWAY_RATE = .05, AWAY_MAX = 7 * 86400;
+const AWAY_RATE = .01, AWAY_MAX = 7 * 86400;
 let awayNow = false;   // true while catching up on time away (that output goes to the buildings, not your pocket)
 function inTown() { const [i, j] = zoneAt(player.x, player.z); return i === 2 && j === 2; }
 function awayCatchUp(sec, quiet) {
@@ -135,7 +135,7 @@ function awayCatchUp(sec, quiet) {
   st.allyPending = st.allyPending || {}; Object.keys(toAllies).forEach(r => { st.allyPending[r] = (st.allyPending[r] || 0) + toAllies[r]; });
   const fl = o => { const x = {}; Object.keys(o).forEach(k => { if (o[k] >= 1) x[k] = Math.floor(o[k]); }); return x; };
   const b = fl(built), p = fl(piled);
-  if (!quiet || Object.keys(b).length) setTimeout(() => toast('👋 While you were away (' + fmt(sec) + ', at 5% speed): ' + (Object.keys(b).length ? 'your crews put ' + costTxt(b) + ' into builds' : 'your town kept ticking') + (Object.keys(p).length ? ' · ' + costTxt(p) + ' in the piles' : ''), 5000), 600);
+  if (!quiet || Object.keys(b).length) setTimeout(() => toast('👋 While you were away (' + fmt(sec) + ', at ' + Math.round(AWAY_RATE * 100) + '% speed): ' + (Object.keys(b).length ? 'your crews put ' + costTxt(b) + ' into builds' : 'your town kept ticking') + (Object.keys(p).length ? ' · ' + costTxt(p) + ' in the piles' : ''), 5000), 600);
 }
 function economy(dt) {
   const ev = [], now = NOW(), e = efficiency();
@@ -352,7 +352,7 @@ function wantedPads() {
 function padCost(p) { return p.kind === 'zone' ? unlockCost(p.i, p.j) : costFor(p.id, p.to); }
 function padLeft(key, p) { const c = padCost(p), paid = st.paid[key] || {}, o = {}; Object.keys(c).forEach(k => { const r = c[k] - (paid[k] || 0); if (r > 0) o[k] = r; }); return o; }
 function syncPads() {
-  const w = wantedPads();   // while visiting, these are your ally's pads: what you put on them is split 50/50 (see deliver / goHome)
+  const w = tour && tour.raid ? {} : wantedPads();   // while visiting, these are your ally's pads: what you put on them is split 50/50 (see deliver / goHome)
   Object.keys(pads).forEach(k => { if (!w[k]) { scene.remove(pads[k].mesh); delete pads[k]; } });
   Object.keys(w).forEach(k => {
     if (!pads[k]) {
@@ -454,6 +454,7 @@ function nearestZombie(o, r) { let best = null, bd = r; zombies.forEach(z => { i
 
 function hitZombie(z, dmg, by) {
   z.hp -= dmg; z.mesh.userData.flash = .12;
+  if (z.hp <= 0 && !z.dead && z.def) { z.dead = true; scene.remove(z.mesh); sfx(260, .12, .07); raidCheck(); return; }
   if (z.hp <= 0 && !z.dead) {
     z.dead = true; scene.remove(z.mesh); st.stats.kills++; const loot = z.boss ? { gems: 25, metal: 120, food: 80 } : { food: 2 + Math.floor(Math.random() * 3), wood: 2 }; give(loot); fly(z.boss ? '💎' : '🍖', z, player);
     if (z.boss) { st.stats.bosses++; st.boss[z.zone] = NOW() + BOSS_RESPAWN; toast('👹 Boss defeated! +' + costTxt(loot) + ' · it returns in 1 hour', 4000); sfx(330, .3, .09); sfx(660, .5, .08, .2); }
@@ -491,7 +492,7 @@ const QUESTS = [
   ['Unlock every area on the map', () => st.stats.zones, 24, { gems: 100 }, () => nearestPadKey('z:')]
 ];
 function checkQuest() {
-  if (tour) { const t = '👀 Visiting ' + WW.esc(tour.name) + '’s settlement<small>Tap here (or 🤝 Allies) to go home</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; return null; }
+  if (tour) { const t = tour.raid ? (tour.raid.won ? '🏆 Raid won! ' : '⚔️ Raiding ' + WW.esc(tour.name) + ' · ' + zombies.filter(z => z.def && !z.dead).length + ' defenders left') + '<small>Tap here to go home' + (tour.raid.won ? ' with the loot' : ' (gives up the raid)') + '</small>' : '👀 Visiting ' + WW.esc(tour.name) + '’s settlement<small>Tap here (or 🤝 Allies) to go home</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; return null; }
   const q = QUESTS[st.q]; if (!q) { if (checkQuest.h === 'done') return null; checkQuest.h = 'done'; $('quest').innerHTML = '🏆 All of Sarge’s missions done!<small>Keep upgrading, farming bosses and helping allies.</small>'; return null; }
   const cur = Math.min(q[1](), q[2]);
   if (cur >= q[2]) { give(q[3]); toast('📜 Mission complete: ' + q[0] + ' · +' + costTxt(q[3]), 3500); sfx(784, .15, .07); sfx(1046, .3, .07, .12); st.q++; persist(); return checkQuest(); }
@@ -562,6 +563,7 @@ function doAct(a, d) {
   if (a === 'finish') { if (st.res.gems < 5) return; st.res.gems -= 5; st.b[d.id].up.end = NOW(); economy(0); syncBuildings(); syncPads(); closeSheet(); }
   if (a === 'visit') return visit(($('vcode').value || '').trim().toUpperCase());
   if (a === 'visitf') return visit(d.code);
+  if (a === 'raid') return raid(d.code);
   if (a === 'back') { if (tour) return goHome(); visiting = null; return alliesPanel(); }
   if (a === 'help') return helpFriend(d.k);
   if (a === 'bopen') return buildingPanel(d.id);
@@ -577,14 +579,14 @@ $('act').onclick = actPress;
 // ------------------------------------------------------------ allies (other players help your upgrade timers)
 let uid = null, code = null, visiting = null, tour = null;
 // walk around a friend's settlement (built from what they publish); your own stays safe in tour.home and keeps being saved
-function startTour(c, p) {
+function startTour(c, p, raiding) {
   if (!p || !p.w) return false;
   if (tour) goHome(true);
   tour = { home: st, at: NOW(), hx: player.x, hz: player.z, D: {} }; tour.code = c; tour.name = p.name || 'Survivor';
   // visiting an ally pays off: a daily visit bonus for each friend, and whatever you gather there comes home with you
   const H = tour.home, day = new Date().toDateString(); if (H.visitDay !== day) { H.visitDay = day; H.visited = {}; }
-  if (!H.visited[c]) { H.visited[c] = 1; const bonus = { wood: 25, food: 15, metal: 5 }; Object.keys(bonus).forEach(k => { H.res[k] = (H.res[k] || 0) + bonus[k]; }); setTimeout(() => toast('🎁 Visit bonus for your settlement: +' + costTxt(bonus), 3500), 1600); }
-  const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: w.heroes || fresh().heroes, paid: w.paid || {} }));
+  if (!raiding && !H.visited[c]) { H.visited[c] = 1; const bonus = { wood: 25, food: 15, metal: 5 }; Object.keys(bonus).forEach(k => { H.res[k] = (H.res[k] || 0) + bonus[k]; }); setTimeout(() => toast('🎁 Visit bonus for your settlement: +' + costTxt(bonus), 3500), 1600); }
+  const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: JSON.parse(JSON.stringify(tour.home.heroes || {})), weapon: tour.home.weapon || 1, paid: w.paid || {} }));   // your own squad and weapon come with you
   tour.S = Object.assign({ wood: 0, food: 0, metal: 0, gems: 0 }, JSON.parse(JSON.stringify(tour.home.res))); tour.D = tour.D || {};
   st.res = Object.assign({}, tour.S); st.hp = player.hpMax || 100; player.x = 3; player.z = 6;   // you bring your own resources to build with
   loadWorld(); setRoom(c); toast('👀 Welcome to ' + tour.name + '’s settlement!'); return true;
@@ -595,6 +597,14 @@ function goHome(quiet) {
   const spent = {}; Object.keys(t.D).forEach(key => Object.keys(t.D[key]).forEach(k => { spent[k] = (spent[k] || 0) + t.D[key][k]; }));
   const gath = {}; keysR.forEach(k => { const g = Math.floor((st.res[k] || 0) - (t.S[k] || 0) + (spent[k] || 0)); if (g > 0) gath[k] = g; });
   tour = null; visiting = null; st = t.home; checkQuest.h = null;
+  if (t.raid) {
+    st.raids = st.raids || {}; st.raids[t.code] = NOW(); if (t.raid.rev && st.raidedBy) delete st.raidedBy[t.code];
+    if (t.raid.won && Object.keys(t.raid.loot).length) {
+      Object.keys(t.raid.loot).forEach(k => { st.res[k] = (st.res[k] || 0) + t.raid.loot[k]; }); setTimeout(() => toast('⚔️ Raid loot: +' + costTxt(t.raid.loot), 4000), 400);
+      const neg = {}; Object.keys(t.raid.loot).forEach(k => { neg[k] = -t.raid.loot[k]; });
+      try { WW.roomRef('survive', t.code).child('gifts').push({ from: WW.nick || String((WW.user && WW.user.displayName) || 'An ally').split(' ')[0], code: code, res: neg, raid: 1, at: NOW() }); } catch (e) {}
+    }
+  }
   const mine = {}, theirs = { res: {}, paid: {} }, homePads = wantedPads(), toPads = {};
   keysR.forEach(k => { st.res[k] = Math.max(0, (st.res[k] || 0) - (spent[k] || 0)); const g = gath[k] || 0, a = Math.floor(g / 2); if (a) { mine[k] = a; st.res[k] += a; } if (g - a) theirs.res[k] = g - a; });
   Object.keys(t.D).forEach(key => Object.keys(t.D[key]).forEach(k => { const n = t.D[key][k], half = n / 2;
@@ -613,7 +623,7 @@ function goHome(quiet) {
 function publishPub() {
   if (tour || !code || !WW || WW.mode !== 'cloud') return;
   const ups = Object.keys(BD).filter(id => st.b[id].up).map(id => { const u = st.b[id].up; return { id: id, k: id + '_' + u.to, n: BD[id].n, i: BD[id].i, to: u.to, end: u.end, total: u.total, c: Object.keys(u.h || {}).length }; });
-  try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {} }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
+  try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {} }, res: { wood: Math.floor(st.res.wood), food: Math.floor(st.res.food), metal: Math.floor(st.res.metal) }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
 }
 function alliesPanel(note) {
   let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn ' + RES.wood + '15 (10 a day). While you play on your own map, each ally gets ' + Math.round(sharePct((shareAllies || []).length) * 100 || 5) + '% of what you gather (5% with one ally, down to 1% each with five or more).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
@@ -623,7 +633,7 @@ function alliesPanel(note) {
     if (!visiting) {
       if (!allyList) { h += '<div class="row muted">Loading your friends…</div>'; loadAllyList(); }
       else if (!allyList.length) h += '<div class="row muted">No friends yet. Add friends with their friend code on the games hub, and they show up here.</div>';
-      else h += allyList.map(f => '<div class="row"><div class="g"><b>' + WW.esc(f.name) + '</b><div class="muted">' + (f.pub ? 'Power Plant Lv' + (f.pub.pp || 1) + ' · ' + (f.pub.zones || 0) + ' areas · ' + (f.open ? '<b style="color:#fde68a">' + f.open + ' upgrade' + (f.open > 1 ? 's' : '') + ' to help</b>' : 'nothing to help right now') : 'hasn\u2019t started Tile Survival yet') + '</div></div><button class="b" data-a="visitf" data-code="' + f.code + '"' + (f.pub ? '' : ' disabled') + '>Visit</button></div>').join('');
+      else h += allyList.map(f => '<div class="row"><div class="g"><b>' + WW.esc(f.name) + '</b><div class="muted">' + (f.pub ? 'Power Plant Lv' + (f.pub.pp || 1) + ' · ' + (f.pub.zones || 0) + ' areas · ' + (f.open ? '<b style="color:#fde68a">' + f.open + ' upgrade' + (f.open > 1 ? 's' : '') + ' to help</b>' : 'nothing to help right now') : 'hasn\u2019t started Tile Survival yet') + '</div></div><button class="b" data-a="visitf" data-code="' + f.code + '"' + (f.pub ? '' : ' disabled') + '>Visit</button>' + raidBtn(f) + '</div>').join('');
       h += '<details class="muted" style="margin-top:6px"><summary>Visit someone not on your friends list</summary><div class="row"><input id="vcode" maxlength="8" placeholder="FRIEND\'S CODE"><button class="b" data-a="visit">Visit</button></div></details>';
     } else h += '<div class="row"><button class="b alt" data-a="back">' + (tour ? '🏠 Go home' : '← All friends') + '</button></div>';
     if (visiting) { const p = visiting.pub, ups = (p.ups || []).filter(u => u.end > NOW());
@@ -671,6 +681,39 @@ async function loadAllyList() {
   allyLoading = false; if (sheet.style.display === 'flex' && !visiting && card.innerHTML.indexOf('🤝 Allies') >= 0) alliesPanel();
   setTimeout(() => { allyList = null; }, 60000);   // refresh the list after a minute
 }
+// ------------------------------------------------------------ raids: attack an ally's settlement. Their heroes and infected hunters
+// defend it on their own (they don't need to be online). Beat every defender and you take 10% of their stockpile; they get
+// a message and a revenge raid. One raid per ally every 8 hours (revenge skips the wait).
+const RAID_CD = 8 * 3600 * 1000, RAID_TAKE = .1;
+function raidReady(c) { const H = tour ? tour.home : st, last = (H.raids || {})[c] || 0, rev = (H.raidedBy || {})[c] && NOW() - H.raidedBy[c] < 86400000; return { ok: rev || NOW() - last > RAID_CD, rev: !!rev, wait: last + RAID_CD - NOW() }; }
+function raidBtn(f) {
+  if (!f.pub || !f.pub.w) return ''; const r = raidReady(f.code);
+  return '<button class="b" style="background:#b91c1c;color:#fff;margin-left:6px" data-a="raid" data-code="' + f.code + '"' + (r.ok ? '' : ' disabled title="Ready in ' + fmt(r.wait / 1000) + '"') + '>' + (r.rev ? '⚔️ Revenge' : r.ok ? '⚔️ Raid' : '⚔️ ' + fmt(r.wait / 1000)) + '</button>';
+}
+function makeDefender(x, z, name, hp, dmg, shirt, hat, ranged) {
+  const g = human({ skin: 0xf1c27d, shirt: shirt, pants: 0x111827, hat: hat, tool: ranged ? 'gun' : 'axe' }); g.position.set(x, 0, z); scene.add(g);
+  const bar = hpBar(1, 0xef4444); bar.position.y = 2.35; g.add(bar); const nm = textSprite(3.4); nm.position.y = 2.8; nm.userData.set('🛡️ ' + name, '#fca5a5'); g.add(nm);
+  const d = { mesh: g, bar: bar, x: x, z: z, hx: x, hz: z, hp: hp, max: hp, dmg: dmg, cd: 0, boss: false, zone: 'raid', def: true, dead: false, speed: 3, reach: ranged ? 4 : 1.3, wt: 0 };
+  zombies.push(d); return d;
+}
+function spawnDefenders(w) {
+  const hs = w.heroes || {}, hall = ((w.b || {}).hall || {}).lvl | 0; let k = 0; const spot = () => { const a = k++ * 2.1; return [Math.cos(a) * 5, Math.sin(a) * 5]; };
+  Object.keys(hs).forEach(id => { const H = HEROES[id]; if (!H) return; const S = heroStat(id, hs[id].lvl || 1), p = spot(); makeDefender(p[0], p[1], H.n + ' L' + (hs[id].lvl || 1), S.hp, Math.max(3, Math.round(S.atk * .6)), H.shirt, H.hat, H.range > 2); });
+  for (let n = 0; n < Math.min(4, hall); n++) { const p = spot(); makeDefender(p[0], p[1], 'Hunter', 60 + 25 * hall, 6 + 3 * hall, 0x7f1d1d, 0x1f2937, true); }
+  if (!zombies.some(z => z.def && !z.dead)) { const p = spot(); makeDefender(p[0], p[1], 'Watchman', 60, 5, 0x334155, 0x1f2937, false); }   // nobody home: a watchman still stands guard
+}
+async function raid(c) {
+  const r = raidReady(c); if (!r.ok) return alliesPanel('You can raid them again in ' + fmt(r.wait / 1000) + '.');
+  try { const p = (await WW.roomRef('survive', c).child('pub').once('value')).val(); if (!p || !p.w) return alliesPanel('Their settlement isn’t visitable yet.');
+    if (!startTour(c, p, true)) return; const res = p.res || {}, loot = {}; ['wood', 'food', 'metal'].forEach(k => { const n = Math.floor((res[k] || 0) * RAID_TAKE); if (n > 0) loot[k] = n; });
+    tour.raid = { loot: loot, won: false, rev: r.rev }; spawnDefenders(p.w); closeSheet();
+    toast('⚔️ Raid on ' + tour.name + '! Beat all ' + zombies.filter(z => z.def).length + ' defenders' + (Object.keys(loot).length ? ' to take ' + costTxt(loot) : ''), 5000);
+  } catch (e) { alliesPanel('Could not reach that settlement (' + (e && e.code || e) + ').'); }
+}
+function raidCheck() {
+  if (!tour || !tour.raid || tour.raid.won || tour.raid.lost) return;
+  if (!zombies.some(z => z.def && !z.dead)) { tour.raid.won = true; sfx(784, .2, .08); sfx(1046, .35, .08, .15); toast('🏆 Victory! ' + (Object.keys(tour.raid.loot).length ? costTxt(tour.raid.loot) + ' is yours.' : '') + ' Tap the bar at the top to go home.', 6000); }
+}
 async function visit(c) {
   if (!c) return;
   try { const ref = WW.roomRef('survive', c), p = (await ref.child('pub').once('value')).val(); if (!p) return alliesPanel('No settlement found for that code.');
@@ -695,6 +738,9 @@ function listenGifts() {
 function applyGifts() {
   if (tour || !giftQ.length) return; const pads = wantedPads();
   giftQ.splice(0).forEach(g => {
+    if (g.raid) { const lost = {}; Object.keys(g.res || {}).forEach(k => { const n = Math.min(st.res[k] || 0, -(+g.res[k] || 0)); if (n > 0) { st.res[k] -= n; lost[k] = n; } });
+      if (g.code) { st.raidedBy = st.raidedBy || {}; st.raidedBy[g.code] = NOW(); }
+      toast('⚔️ ' + (g.from || 'An ally') + ' raided your settlement' + (Object.keys(lost).length ? ' and took ' + costTxt(lost) : '') + '! Get revenge in 🤝 Allies.', 6000); return; }
     const got = {}; Object.keys(g.res || {}).forEach(k => { const n = +g.res[k] || 0; if (n > 0) { st.res[k] = (st.res[k] || 0) + n; got[k] = (got[k] || 0) + n; } });
     Object.keys(g.paid || {}).forEach(key => Object.keys(g.paid[key] || {}).forEach(k => { const n = +g.paid[key][k] || 0; if (n <= 0) return;
       if (pads[key]) (st.paid[key] = st.paid[key] || {})[k] = (st.paid[key][k] || 0) + n; else st.res[k] = (st.res[k] || 0) + n; got[k] = (got[k] || 0) + n; }));
@@ -728,6 +774,7 @@ const ROLES = {
 };
 const workers = [];
 function syncWorkers() {
+  if (tour) { workers.splice(0).forEach(w => scene.remove(w.mesh)); return; }   // crews stay home
   Object.keys(ROLES).forEach(id => {
     const R = ROLES[id], B = BD[id], mine = workers.filter(w => w.role === id), want = lvl(id) >= 1 ? Math.min(4, lvl(id)) : 0;
     for (let k = mine.length; k > want; k--) { const w = mine[k - 1]; scene.remove(w.mesh); workers.splice(workers.indexOf(w), 1); }
@@ -799,6 +846,7 @@ function updateOthers(dt, now) {
 // hunts down the infected anywhere you've unlocked, then heads back to the hall to heal. Loot from their kills is yours.
 const guards = [];
 function syncGuards() {
+  if (tour) { guards.splice(0).forEach(g => scene.remove(g.mesh)); return; }
   const want = lvl('hall') >= 1 ? Math.min(4, lvl('hall')) : 0, B = BD.hall;
   while (guards.length > want) scene.remove(guards.pop().mesh);
   while (guards.length < want) {
@@ -875,6 +923,7 @@ function frame() {
   if (PAD && PAD.poll()) { const s = PAD.state(); ix += s.moveX(); iy -= s.moveY(); document.body.classList.add('pad'); if (PAD.pressed('cross')) actPress(); if (PAD.pressed('options')) questsPanel(); if (PAD.pressed('circle')) closeSheet(); if (PAD.pressed('triangle')) heroPanel(); }
   const m = Math.hypot(ix, iy); if (m > 1) { ix /= m; iy /= m; }
   // --- player
+  if (player.dead && tour && tour.raid && !tour.raid.won && !tour.raid.lost) { tour.raid.lost = true; toast('💀 ' + tour.name + '’s defenders won this time. Heading home…', 3500); setTimeout(() => { player.dead = 0; pMesh.visible = true; st.hp = player.hpMax; goHome(true); }, 2500); }
   if (player.dead) { if (now > player.dead) { player.dead = 0; st.hp = player.hpMax; player.x = 3; player.z = 6; pMesh.visible = true; toast('🎖️ Sarge dragged you back to base. Heal up and try again.'); } }
   else {
     const sp = 6 * Math.min(1, m); player.speed = sp;
@@ -977,4 +1026,4 @@ function frame() {
 addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child(uid).remove(); } catch (e) {} persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 boot(); requestAnimationFrame(frame);
-window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
+window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, raidTest: (p) => { startTour('R', p, true); tour.raid = { loot: { wood: 10 }, won: false }; spawnDefenders(p.w); }, get zombies2() { return zombies; }, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
