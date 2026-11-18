@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Tile Match</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;height:100%}
+  #top{padding:6px 12px;font-size:.85rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.5}
+  #top button,#top a{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;text-decoration:none;padding:0 2px}
+  #stage{position:relative;flex:1;min-height:0;background:radial-gradient(circle at 50% 40%,#14532d,#0b2a1a)}
+  canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulation}
+  #toast{position:absolute;top:8px;left:0;right:0;text-align:center;color:#fde68a;font-weight:700;text-shadow:0 1px 4px #000;pointer-events:none;min-height:1.3em}
+  #bar{display:flex;gap:8px;justify-content:center;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0f172a}
+  #bar button{flex:1;max-width:150px;background:#334155;color:#e2e8f0;border:0;border-radius:12px;padding:12px 6px;font:inherit;font-weight:700;cursor:pointer}
+  #bar button:disabled{opacity:.4}
+  #ov{position:fixed;inset:0;z-index:20;background:#000b;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px}
+  #ov button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:12px 18px;font:inherit;cursor:pointer}
+  #ov button.alt{background:#334155;color:#e2e8f0}
+  #ovT{font-size:1.5rem;font-weight:800} #ovS{color:#cbd5e1}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top"><span>🀄 <b>Tile Match</b></span><span>Level <b id="lvl">1</b> · <span id="layoutName"></span></span><span>⏱ <b id="time">0:00</b> · 🀫 <b id="left">0</b></span><span><button id="muteBtn">🔊</button> <button id="gamesBtn">☰ Games</button></span></div>
+  <div id="stage"><canvas id="c"></canvas><div id="toast"></div></div>
+  <div id="bar"><button id="undo">↩ Undo</button><button id="hint">💡 Hint</button><button id="shuf">🔀 Shuffle</button><button id="restart">⟲ Restart</button></div>
+</div>
+<div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button><button id="ovBtn2" class="alt" style="display:none"></button></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>document.write('<script src="js/common.js"><\/script>');</script>
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  // Mahjong-solitaire: tiles sit on layers. A tile is FREE when nothing lies on top of it and its left or right side is open.
+  // Positions are in half-tile units (a tile is 2 x 2), so a layer can sit half a tile off the one below. Boards are built by
+  // playing the game backwards (always removing two free tiles and giving them the same face), so every deal can be solved.
+  var FACES = ['🌸','🍀','🐉','🦊','🍎','🍋','🐟','🌙','⭐','🔥','💎','🍄','🦋','🐢','🌵','🍇','🐝','🎈','🍓','🦉','🌻','🐙','⚡','🍩'];
+  function rects(list) { var out = []; list.forEach(function (r) { for (var j = 0; j < r[4]; j++) for (var i = 0; i < r[3]; i++) out.push({ x: (r[1] + i) * 2, y: (r[2] + j) * 2, z: r[0] }); }); return out; }
+  var LAYOUTS = [
+    { name: 'Pyramid', t: function () { return rects([[0,0,0,8,5],[1,1,1,6,3],[2,2,2,4,1]]); } },
+    { name: 'Fortress', t: function () { return rects([[0,0,0,10,6],[1,1,1,8,4],[2,2,2,6,2]]); } },
+    { name: 'Twin Towers', t: function () { return rects([[0,0,0,4,6],[0,6,0,4,6],[0,4,2,2,2],[1,0.5,0.5,3,5],[1,6.5,0.5,3,5],[2,1,1,2,4],[2,7,1,2,4],[3,1.5,2,1,2],[3,7.5,2,1,2]]); } },
+    { name: 'Turtle', t: function () { return rects([[0,0,0,10,1],[0,1,1,8,1],[0,0,2,10,3],[0,1,5,8,1],[0,0,6,10,1],[1,2,1,6,5],[2,3,2,4,3],[3,4,3,2,1]]); } },
+    { name: 'Diamond', t: function () { var o = [], w = [2,4,6,8,10,8,6,4,2]; w.forEach(function (n, r) { for (var i = 0; i < n; i++) o.push({ x: (5 - n / 2 + i) * 2, y: r * 2, z: 0 }); }); w.slice(1, 8).forEach(function (n, r) { n = Math.max(2, n - 2); for (var i = 0; i < n; i++) o.push({ x: (5 - n / 2 + i) * 2, y: (r + 1) * 2, z: 1 }); }); [[4,3],[5,3],[4,4],[5,4]].forEach(function (p) { o.push({ x: p[0] * 2, y: p[1] * 2, z: 2 }); }); return o; } },
+    { name: 'Castle', t: function () { return rects([[0,0,0,12,7],[1,1,1,10,5],[2,2,2,8,3],[3,3,3,6,1],[1,0,0,1,1],[1,11,0,1,1],[1,0,6,1,1],[1,11,6,1,1]]); } }
+  ];
+  var cv = $('c'), ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), W = 300, H = 300;
+  var tiles = [], sel = null, history = [], level = 1, startT = 0, elapsed = 0, ended = false, hintPair = null, hintUntil = 0, muted = localStorage.getItem('mj_mute') === '1', shuffles = 0, hints = 0;
+  var progress = {}; try { progress = JSON.parse(localStorage.getItem('mj_progress') || '{}') || {}; } catch (e) {}
+  level = Math.max(1, Math.min((progress.level | 0) || 1, 999));
+  var ac = null; function beep(f, d, v) { if (muted) return; try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); var o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = f; o.type = 'sine'; g.gain.value = v || .06; g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + d); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + d); } catch (e) {} }
+  function say(t, ms) { $('toast').textContent = t || ''; clearTimeout(say.t); if (t) say.t = setTimeout(function () { $('toast').textContent = ''; }, ms || 2200); }
+  function alive() { return tiles.filter(function (t) { return !t.gone; }); }
+  function blocked(t, set) {
+    var left = false, right = false;
+    for (var i = 0; i < set.length; i++) { var o = set[i]; if (o === t || o.gone) continue;
+      if (o.z === t.z + 1 && Math.abs(o.x - t.x) < 2 && Math.abs(o.y - t.y) < 2) return true;
+      if (o.z === t.z && Math.abs(o.y - t.y) < 2) { var dx = o.x - t.x; if (dx === -2 || dx === -1) left = true; else if (dx === 1 || dx === 2) right = true; } }
+    return left && right;
+  }
+  function freeList(set) { return set.filter(function (t) { return !t.gone && !blocked(t, set); }); }
+  // assign faces by playing the board backwards (guarantees a solution)
+  function deal(set, nTypes) {
+    var pool = set.filter(function (t) { return !t.gone; }), faces = FACES.slice(0, nTypes), done = [];
+    pool.forEach(function (t) { t.rm = false; });
+    var work = pool.map(function (t) { return t; }), guard = 0;
+    while (work.length > 1 && guard++ < 5000) {
+      var live = work.filter(function (t) { return !t.rm; }), fr = live.filter(function (t) { return !blockedRm(t, live); });
+      if (fr.length < 2) return false;
+      var a = fr.splice(Math.floor(Math.random() * fr.length), 1)[0], b = fr.splice(Math.floor(Math.random() * fr.length), 1)[0], f = faces[Math.floor(Math.random() * faces.length)];
+      a.face = b.face = f; a.rm = b.rm = true; work = work.filter(function (t) { return !t.rm; });
+    }
+    pool.forEach(function (t) { delete t.rm; });
+    return work.length === 0;
+  }
+  function blockedRm(t, live) { var left = false, right = false; for (var i = 0; i < live.length; i++) { var o = live[i]; if (o === t) continue; if (o.z === t.z + 1 && Math.abs(o.x - t.x) < 2 && Math.abs(o.y - t.y) < 2) return true; if (o.z === t.z && Math.abs(o.y - t.y) < 2) { var dx = o.x - t.x; if (dx === -2 || dx === -1) left = true; else if (dx === 1 || dx === 2) right = true; } } return left && right; }
+  function build() {
+    var L = LAYOUTS[(level - 1) % LAYOUTS.length], n = Math.min(24, 10 + level * 2), tries = 0, ok = false;
+    do {
+      var pos = L.t(); if (pos.length % 2) pos.pop();
+      tiles = pos.map(function (p) { return { x: p.x, y: p.y, z: p.z, face: '', gone: false }; });
+      ok = deal(tiles, n); tries++;
+    } while (!ok && tries < 40);
+    sel = null; history = []; ended = false; hintPair = null; shuffles = 0; hints = 0; startT = performance.now(); elapsed = 0;
+    $('lvl').textContent = level; $('layoutName').textContent = L.name + (level > LAYOUTS.length ? ' ' + (Math.floor((level - 1) / LAYOUTS.length) + 1) : '');
+    measure(); updateUi(); publish();
+  }
+  var sc = 20, ox = 0, oy = 0, DEP = 5;
+  function measure() {
+    var mx = 0, my = 0, mz = 0; tiles.forEach(function (t) { mx = Math.max(mx, t.x + 2); my = Math.max(my, t.y + 2); mz = Math.max(mz, t.z); });
+    var pad = 14; sc = Math.max(8, Math.min((W - pad * 2 - mz * DEP) / mx, (H - pad * 2 - mz * DEP) / my));
+    ox = (W - mx * sc) / 2 + 0; oy = (H - my * sc) / 2 + 0;
+  }
+  function rectOf(t) { return { x: ox + t.x * sc - t.z * DEP, y: oy + t.y * sc - t.z * DEP, w: 2 * sc - 3, h: 2 * sc - 3 }; }
+  function resize() { var r = $('stage').getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; measure(); }
+  function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  function draw() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    var set = tiles, fr = {}; freeList(set).forEach(function (t) { fr[set.indexOf(t)] = 1; });
+    var order = set.map(function (t, i) { return i; }).filter(function (i) { return !set[i].gone; }).sort(function (a, b) { var A = set[a], B = set[b]; return A.z - B.z || A.y - B.y || A.x - B.x; });
+    var hintOn = performance.now() < hintUntil && hintPair;
+    order.forEach(function (i) {
+      var t = set[i], r = rectOf(t), free = !!fr[i], isSel = sel === t, isHint = hintOn && (hintPair[0] === t || hintPair[1] === t);
+      ctx.fillStyle = '#6b4f2a'; rr(r.x + 3, r.y + 3, r.w, r.h, 6); ctx.fill();            // thickness
+      ctx.fillStyle = isSel ? '#fde68a' : isHint ? '#bbf7d0' : free ? '#fffbeb' : '#c9c1ae'; rr(r.x, r.y, r.w, r.h, 6); ctx.fill();
+      ctx.strokeStyle = isSel ? '#f59e0b' : isHint ? '#16a34a' : '#00000033'; ctx.lineWidth = isSel || isHint ? 3 : 1; ctx.stroke();
+      ctx.globalAlpha = free ? 1 : .55; ctx.font = Math.floor(r.h * .62) + 'px system-ui,"Apple Color Emoji","Segoe UI Emoji",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#000';
+      ctx.fillText(t.face, r.x + r.w / 2, r.y + r.h / 2 + 1); ctx.globalAlpha = 1;
+    });
+  }
+  function hit(px, py) {
+    var best = null; tiles.forEach(function (t) { if (t.gone) return; var r = rectOf(t); if (px >= r.x && px <= r.x + r.w + 3 && py >= r.y && py <= r.y + r.h + 3 && (!best || t.z > best.z)) best = t; }); return best;
+  }
+  cv.addEventListener('pointerdown', function (e) {
+    if (ended) return; var b = cv.getBoundingClientRect(), t = hit(e.clientX - b.left, e.clientY - b.top); if (!t) return;
+    if (blocked(t, tiles)) { beep(160, .12); say('That tile is blocked — it needs a free left or right side and nothing on top.', 1600); return; }
+    if (sel === t) { sel = null; return; }
+    if (!sel) { sel = t; beep(520, .07); return; }
+    if (sel.face === t.face) { sel.gone = t.gone = true; history.push([sel, t]); beep(760, .12, .09); sel = null; hintPair = null; afterMove(); }
+    else { beep(200, .12); sel = t; }
+  });
+  function pairs() { var fr = freeList(tiles), out = []; for (var i = 0; i < fr.length; i++) for (var j = i + 1; j < fr.length; j++) if (fr[i].face === fr[j].face) out.push([fr[i], fr[j]]); return out; }
+  function afterMove() {
+    updateUi(); var rest = alive();
+    if (!rest.length) return win();
+    if (!pairs().length) { say('No moves left — shuffling the tiles!', 2600); setTimeout(function () { doShuffle(true); }, 600); }
+  }
+  function doShuffle(free) {
+    var rest = alive(); if (!rest.length) return;
+    var n = Math.min(24, 10 + level * 2), ok = false, tries = 0, old = rest.map(function (t) { return t.face; });
+    while (!ok && tries++ < 40) ok = deal(tiles, n);
+    if (!ok) rest.forEach(function (t, i) { t.face = old[i]; });
+    sel = null; if (!free) shuffles++; beep(330, .2); updateUi();
+  }
+  $('shuf').onclick = function () { if (!ended) { doShuffle(false); say('Shuffled — every board stays solvable.'); } };
+  $('undo').onclick = function () { if (ended || !history.length) return; var p = history.pop(); p[0].gone = p[1].gone = false; sel = null; hintPair = null; updateUi(); };
+  $('hint').onclick = function () { if (ended) return; var p = pairs(); if (!p.length) { say('No moves — shuffle!'); return; } hintPair = p[Math.floor(Math.random() * p.length)]; hintUntil = performance.now() + 2500; hints++; };
+  $('restart').onclick = function () { build(); };
+  $('muteBtn').onclick = function () { muted = !muted; localStorage.setItem('mj_mute', muted ? '1' : '0'); $('muteBtn').textContent = muted ? '🔇' : '🔊'; };
+  $('muteBtn').textContent = muted ? '🔇' : '🔊';
+  function fmt(s) { s = Math.floor(s); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function updateUi() { $('left').textContent = alive().length; $('undo').disabled = !history.length; }
+  function win() {
+    ended = true; elapsed = (performance.now() - startT) / 1000; beep(660, .15); setTimeout(function () { beep(880, .25); }, 160);
+    var key = 'best' + level, prev = progress[key], isBest = !prev || elapsed < prev; if (isBest) progress[key] = Math.round(elapsed);
+    progress.level = Math.max(progress.level | 0, level + 1); progress.cleared = (progress.cleared | 0) + 1; try { localStorage.setItem('mj_progress', JSON.stringify(progress)); } catch (e) {}
+    $('ovT').textContent = '🎉 Board cleared!'; $('ovS').textContent = fmt(elapsed) + (isBest ? ' — new best time!' : ' (best ' + fmt(prev) + ')') + ' · ' + hints + ' hints · ' + shuffles + ' shuffles';
+    $('ovBtn').textContent = 'Next level ▶'; $('ovBtn').onclick = function () { $('ov').style.display = 'none'; level++; build(); };
+    $('ovBtn2').style.display = ''; $('ovBtn2').textContent = 'Replay'; $('ovBtn2').onclick = function () { $('ov').style.display = 'none'; build(); };
+    $('ov').style.display = 'flex'; publish();
+  }
+  function publish() { if (window.WW && WW.publishPlaying) try { WW.publishPlaying({ game: 'mahjong', title: 'Tile Match', status: 'Solo · level ' + level + ' · ' + (progress.cleared | 0) + ' boards cleared', open: 0 }); } catch (e) {} }
+  setInterval(function () { if (!ended) { $('time').textContent = fmt((performance.now() - startT) / 1000); } }, 500);
+  (function loop() { draw(); requestAnimationFrame(loop); })();
+  window.addEventListener('resize', resize); window.addEventListener('orientationchange', function () { setTimeout(resize, 200); });
+  window.addEventListener('beforeunload', function () { if (window.WW && WW.clearPlaying) WW.clearPlaying(); });
+  resize(); build();
+  if (window.WW && WW.onReady) WW.onReady(function () { publish(); });
+})();
+</script>
+</body>
+</html>

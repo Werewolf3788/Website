@@ -85,6 +85,11 @@
   <div class="row"><button id="playShip">Play the computer</button><button id="hostShip" class="alt">Host vs a friend</button></div>
   <div class="row"><input id="joinCodeShip" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinShip" class="alt">Join</button></div>
 </div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🀄 Tile Match</h2>
+  <div class="muted">Mahjong-style tile matching: remove pairs of identical <b>free</b> tiles (nothing on top, and the left or right side open) to clear the board. Six layouts that get harder, endless levels, undo, hints and a shuffle. Every deal is solvable. Free, no ads, no paywall.</div>
+  <div class="row"><button id="playMj">Play</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -120,6 +125,7 @@
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'farm.html?mp=' + encodeURIComponent(c);
   };
+  $('playMj').onclick = function () { location.href = 'mahjong.html'; };
   $('playFrog').onclick = function () { location.href = 'frogger.html'; };
   $('playShip').onclick = function () { location.href = 'battleship.html'; };
   $('hostShip').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'battleship.html?room=' + encodeURIComponent(c); };
