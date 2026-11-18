@@ -116,12 +116,17 @@ export const HEADER_LEVELS = [{ swath: 5 }, { swath: 7, cost: 3000, level: 12 },
 export const HARVEST = { tank: FIELD_TILES * 6, haulAt: FIELD_TILES, trailer: 1500, swath: 5, top: 6.5, elevatorBonus: 1.15, carrySpeed: 8, emptySpeed: 11 };
 
 // everything that unlocks at level l (for the level-up message)
+// the next level (after l) that unlocks something, or 0
+export function nextUnlockAfter(l) { for (let k = l + 1; k <= MAX_LEVEL; k++) if (unlocksAt(k).length) return k; return 0; }
 export function unlocksAt(l) {
   const out = [];
   CROP_IDS.forEach(function (c) { if (CROPS[c].level === l && l > 1) out.push(CROPS[c].icon + ' ' + CROPS[c].name); });
   Object.keys(ANIMALS).forEach(function (a) { if (ANIMALS[a].level === l && l > 1) out.push(ANIMALS[a].icon + ' ' + ANIMALS[a].name); });
   RECIPES.forEach(function (r) { if (r.level === l && l > 1) out.push(GOODS[r.id].icon + ' ' + GOODS[r.id].name + ' recipe'); });
   Object.keys(UPGRADES).forEach(function (u) { if (UPGRADES[u].level === l) out.push('🚜 ' + UPGRADES[u].name); });
+  const TOOL_NAMES = { cultivate: '🌿 Cultivate tool', fert: '🧪 Fertilize tool', hoe: '⛏️ Plow', water: '💧 Water', harvest: '🧺 Harvest', seed: '🌱 Plant' };
+  Object.keys(TOOL_LEVEL).forEach(function (t) { if (TOOL_LEVEL[t] === l && l > 1) out.push(TOOL_NAMES[t] || t); });
+  HEADER_LEVELS.forEach(function (h) { if (h.level === l) out.push('🌾 Combine header: ' + h.swath + ' tiles wide'); });
   return out;
 }
 

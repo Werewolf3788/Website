@@ -286,7 +286,7 @@ function setXp(x) {
   if (now > old) {
     let bonus = 0, unlocked = [];
     for (let l = old + 1; l <= now; l++) { bonus += C.levelUpCoins(l); unlocked = unlocked.concat(C.unlocksAt(l)); }
-    save.coins += bonus; Sound.levelUp(); for (let l = old + 1; l <= now; l++) if (l % 10 === 0) levelMilestone(l); say('🎉 Level ' + now + '! +$' + bonus + (unlocked.length ? ' · Unlocked: ' + unlocked.join(', ') : '')); buildSeedBar();
+    save.coins += bonus; Sound.levelUp(); for (let l = old + 1; l <= now; l++) if (l % 10 === 0) levelMilestone(l); say('🎉 Level ' + now + '! +$' + bonus); levelCard(old, now, bonus, unlocked); buildSeedBar();
   }
   hud(); queueSave();
 }
@@ -327,6 +327,19 @@ function hud() {
   checkAchievements(); const badge = claimable() ? ' •' : ''; if ($('missionsBtn')) $('missionsBtn').textContent = '📜 Missions' + badge;
 }
 // ------------------------------------------------------------ achievements: checked whenever the HUD refreshes; new ones pop up here and on every page of the site
+// level-up card: what you just unlocked, and what's coming next. Stays ~9 s (tap to close).
+function levelCard(old, now, bonus, unlocked) {
+  let el = $('lvlCard');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'lvlCard';
+    el.style.cssText = 'position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%);z-index:9000;width:min(92vw,380px);background:linear-gradient(135deg,#14532d,#1e3a8a);color:#fff;border:2px solid #facc15;border-radius:16px;padding:12px 14px;font:14px/1.4 system-ui,sans-serif;box-shadow:0 10px 30px #0009;cursor:pointer';
+    el.onclick = function () { el.style.display = 'none'; }; document.body.appendChild(el);
+  }
+  const nx = C.nextUnlockAfter(now), list = unlocked.length ? '<div style="margin-top:6px"><b>Unlocked:</b></div><ul style="margin:4px 0 0;padding-left:18px">' + unlocked.map(function (u) { return '<li>' + u + '</li>'; }).join('') + '</ul>' : '<div style="margin-top:6px;opacity:.85">Nothing new unlocks at this level.</div>';
+  el.innerHTML = '<div style="font-size:18px;font-weight:800">🎉 Level ' + (now - old > 1 ? old + 1 + '–' : '') + now + '!</div><div style="color:#fde68a">+$' + bonus.toLocaleString() + ' level bonus</div>' + list +
+    (nx ? '<div style="margin-top:8px;font-size:12px;opacity:.85">Next unlock at level ' + nx + ': ' + C.unlocksAt(nx).join(', ') + '</div>' : '') + '<div style="margin-top:6px;font-size:11px;opacity:.6">Tap to close</div>';
+  el.style.display = 'block'; clearTimeout(levelCard.t); levelCard.t = setTimeout(function () { el.style.display = 'none'; }, 9000);
+}
 // every 10 levels (10, 20, 30 ...): a toast card for everyone on the site, like an achievement
 function levelMilestone(l) {
   save.ach = save.ach || {}; const id = 'lvl' + l; if (save.ach[id]) return; save.ach[id] = Date.now(); queueSave();
