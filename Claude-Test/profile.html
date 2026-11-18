@@ -648,6 +648,7 @@ function renderTab(vp) {
       <div class="games">${gs.map((g, i) => gameCard(g, start + i)).join('')}</div></section>`;
   }).join('');
   html += sections;
+  if (tab === 'all') html += mobileHtml();
 
   // latest trophy unlocks (PSN)
   if (canSee('trophies') && plats.includes('psn') && S.plat.psn && S.plat.psn.recent.length) {
@@ -667,6 +668,25 @@ function renderTab(vp) {
   const mt = $('#more-track'); if (mt) mt.onclick = () => { S.tab = 'tracking'; render(); };
 }
 
+/* ---------- mobile games progress (users/{key}/mobile_progress/{game}, written by the games in /Mobilegames) ---------- */
+const MG = { farm: ['🌾', 'Neighborly Acre'], farm_mp: ['🌾', 'Neighborly Acre (multiplayer)'], survive: ['🏚️', 'Tile Survival'], wahoo: ['🎲', 'Wahoo'], tycoon: ['🏙️', 'Monopoly'],
+  frogger: ['🐸', 'Frogger'], race: ['🏎️', 'Werewolf Racing'], battleship: ['🚢', 'Battleship'], mahjong: ['🀄', 'Tile Match'] };
+function mobileHtml() {
+  const mp = S.U.mobile_progress || {}, keys = Object.keys(mp).filter(k => mp[k]).sort((a, b) => (mp[b].t || 0) - (mp[a].t || 0));
+  if (!keys.length) return `<section class="card mute" style="padding:1rem"><div class="h2"><i class="fas fa-mobile-screen"></i> Mobile games</div>No mobile game progress yet.${S.isOwner ? ' Play Neighborly Acre, Tile Survival or the board games and it shows up here.' : ''}</section>`;
+  const n = v => Number(v || 0).toLocaleString();
+  const rows = keys.map(k => {
+    const d = mp[k], m = MG[k] || ['🎮', k], when = d.t ? ago(d.t) : '';
+    let line = '', bar = '';
+    if (k === 'farm' || k === 'farm_mp') { line = `Level <b>${n(d.level)}</b> · $${n(d.coins)} · ${n(d.fields)} field${d.fields == 1 ? '' : 's'} · ${n(d.animals)} animals · ${n(d.harvested)} crops harvested`; if (d.achTotal) { const p = Math.round((d.ach || 0) / d.achTotal * 100); line += ` · 🏆 ${n(d.ach)}/${n(d.achTotal)} achievements`; bar = pctBar(p); } }
+    else if (k === 'survive') { line = `🔌 Power Plant Lv<b>${n(d.pp)}</b> · ${n(d.zones)}/25 areas · ${n(d.buildings)} building levels · ${n(d.kills)} infected defeated · mission ${n(d.mission)}${d.heroes ? ' · ' + esc(d.heroes) : ''}${d.raids ? ' · ⚔️ ' + n(d.raids) + ' raided' : ''}`; bar = pctBar(Math.round((d.zones || 0) / 25 * 100)); }
+    else if (d.kind === 'record') { const w = (d.w || 0) + (d.bw || 0), l = (d.l || 0) + (d.bl || 0); line = `vs friends <b>${n(d.w)}–${n(d.l)}</b> · vs bots ${n(d.bw)}–${n(d.bl)}`; bar = w + l ? pctBar(Math.round(w / (w + l) * 100)) : ''; }
+    else line = esc(JSON.stringify(d)).slice(0, 120);
+    return `<div class="row"><div style="width:48px;height:48px;border-radius:.6rem;background:rgba(127,127,127,.18);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex:none">${m[0]}</div>
+      <div style="min-width:0;flex:1"><div style="font-weight:800">${esc(m[1])} <span class="mute" style="font-weight:500;font-size:.75rem">${esc(when)}</span></div><div class="mute" style="font-size:.78rem">${line}</div>${bar}</div></div>`;
+  }).join('');
+  return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-mobile-screen"></i> Mobile games</div>${rows}</section>`;
+}
 function trackingRows(items) {
   return items.map(t => `<div class="row">
     ${t.poster ? `<img src="${esc(t.poster)}" alt="" onerror="this.style.display='none'">` : '<div style="width:48px;height:48px;border-radius:.6rem;background:rgba(127,127,127,.2);display:flex;align-items:center;justify-content:center;flex:none"><i class="fas fa-gamepad mute"></i></div>'}

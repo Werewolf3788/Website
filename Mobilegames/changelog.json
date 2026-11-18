@@ -2,6 +2,14 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 23,
+      "date": "Nov 18",
+      "game": "all",
+      "items": [
+        "Your profile page now shows your mobile game progress: Neighborly Acre (level, coins, fields, achievements), Tile Survival (Power Plant, areas, heroes, raids) and your board-game records"
+      ]
+    },
+    {
       "id": 22,
       "date": "Nov 18",
       "game": "survive",

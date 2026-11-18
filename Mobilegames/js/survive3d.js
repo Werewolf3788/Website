@@ -783,7 +783,8 @@ function applyHelps() {
 let cloudT = 0;
 function persist() { const h = tour ? tour.home : st; h.last = NOW(); h.saved = NOW(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(h)); } catch (e) {} }   // while visiting a friend, your own settlement is what gets saved
 function cloudSave() { if (WW && WW.user && WW.writeSave) try { WW.writeSave(CLOUD_KEY, JSON.parse(JSON.stringify(tour ? tour.home : st))); } catch (e) {} }
-function publishPlaying() { if (tour) return; if (WW && WW.publishPlaying) try { WW.publishPlaying({ game: 'survive', title: 'Tile Survival', status: 'Power Plant Lv' + lvl('pp') + ' · ' + st.stats.zones + ' areas · mission ' + (st.q + 1), open: 0 }); } catch (e) {} }
+function publishProgress() { if (tour || !WW || !WW.publishProgress) return; const bl = Object.keys(BD).reduce((a, id) => a + (st.b[id].lvl | 0), 0); WW.publishProgress('survive', { title: 'Tile Survival', pp: lvl('pp'), zones: st.stats.zones, buildings: bl, heroes: Object.keys(st.heroes).map(id => HEROES[id] ? HEROES[id].n + ' L' + st.heroes[id].lvl : '').filter(Boolean).join(', '), kills: st.stats.kills | 0, mission: st.q + 1, raids: Object.keys(st.raids || {}).length }); }
+function publishPlaying() { if (tour) return; publishProgress(); if (WW && WW.publishPlaying) try { WW.publishPlaying({ game: 'survive', title: 'Tile Survival', status: 'Power Plant Lv' + lvl('pp') + ' · ' + st.stats.zones + ' areas · mission ' + (st.q + 1), open: 0 }); } catch (e) {} }
 function hud() {
   Object.keys(RES).forEach(k => { const el = $('r_' + k), prod = producers().filter(id => BD[id].out === k); el.innerHTML = RH(RES[k]) + ' ' + Math.floor(st.res[k]); });
   $('ppl').textContent = lvl('pp'); $('surv').textContent = survivors(); $('hp').style.width = Math.max(0, st.hp / player.hpMax * 100) + '%';

@@ -177,6 +177,17 @@
       } catch (e) { if (i === 0) WW.presenceError = e; }
     });
   };
+  // ---- progress shown on the player's profile page: users/{key}/mobile_progress/{game} = { title, icon, line, stats..., t }
+  // Each game sends a small summary now and then (at most once a minute per game, and only when it changed).
+  var progLast = {};
+  WW.publishProgress = function (game, info) {
+    var r = playRef(); if (!r || !/^[a-z0-9_-]{2,24}$/.test(game)) return;
+    var body = JSON.stringify(info), now = Date.now(), L = progLast[game];
+    if (L && (L.body === body || now - L.t < 60000)) { if (L.body !== body) L.pending = info; return; }
+    progLast[game] = { body: body, t: now };
+    try { r.parent.child('mobile_progress/' + game).set(Object.assign({}, info, { t: firebase.database.ServerValue.TIMESTAMP })).catch(function () {}); } catch (e) {}
+  };
+  setInterval(function () { Object.keys(progLast).forEach(function (g) { var L = progLast[g]; if (L.pending) { var p = L.pending; L.pending = null; L.t = 0; WW.publishProgress(g, p); } }); }, 60000);
   WW.clearPlaying = function () { [presenceRef(), playRef()].forEach(function (r) { if (r) r.remove().catch(function () {}); }); };
 
   // ---- win / loss history (games_saves/{uid}/history, private to each player)
@@ -205,6 +216,7 @@
       var tag = myTag(), up = {};
       Object.keys(per).forEach(function (g) { if (!/^[a-z0-9_-]{2,24}$/.test(g)) return; ['w', 'l', 'bw', 'bl'].forEach(function (k) { up[g + '/' + WW.user.uid + '/' + k] = per[g][k]; }); ['n', 'av', 't'].forEach(function (k) { up[g + '/' + WW.user.uid + '/' + k] = tag[k]; }); });
       if (Object.keys(up).length) await db.ref('game_leaders').update(up);
+      Object.keys(per).forEach(function (g) { if (!/^[a-z0-9_-]{2,24}$/.test(g)) return; var p = per[g]; WW.publishProgress(g, { kind: 'record', w: p.w, l: p.l, bw: p.bw, bl: p.bl }); });
     } catch (e) { console.warn('leaders', e); }
   };
   // best score for a game: higher is better unless lowerIsBetter (e.g. fewest shots)
