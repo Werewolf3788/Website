@@ -535,7 +535,7 @@ function startTour(c, p) {
   const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: w.heroes || fresh().heroes, paid: w.paid || {} }));
   tour.S = Object.assign({ wood: 0, food: 0, metal: 0, gems: 0 }, JSON.parse(JSON.stringify(tour.home.res))); tour.D = tour.D || {};
   st.res = Object.assign({}, tour.S); st.hp = player.hpMax || 100; player.x = 3; player.z = 6;   // you bring your own resources to build with
-  loadWorld(); toast('👀 Welcome to ' + tour.name + '’s settlement!'); return true;
+  loadWorld(); setRoom(c); toast('👀 Welcome to ' + tour.name + '’s settlement!'); return true;
 }
 function goHome(quiet) {
   if (!tour) return; const t = tour, keysR = ['wood', 'food', 'metal', 'gems'];
@@ -556,7 +556,7 @@ function goHome(quiet) {
   if (Object.keys(theirs.res).length || Object.keys(theirs.paid).length) msg.push('🤝 ' + t.name + ' gets the other half');
   if (msg.length) setTimeout(() => toast(msg.join(' · '), 4500), 900);
   const off = Math.min(4 * 3600, (NOW() - t.at) / 1000); if (off > 1) economy(off);
-  player.x = t.hx; player.z = t.hz; loadWorld(); applyHelps(); applyGifts(); persist(); if (!quiet) { toast('🏠 Back home'); closeSheet(); }
+  player.x = t.hx; player.z = t.hz; loadWorld(); setRoom(code); applyHelps(); applyGifts(); persist(); if (!quiet) { toast('🏠 Back home'); closeSheet(); }
 }
 function publishPub() {
   if (tour || !code || !WW || WW.mode !== 'cloud') return;
@@ -714,6 +714,34 @@ function updateWorkers(dt, now) {
     if (w.mesh.userData.logs !== carrying) { w.mesh.userData.logs = carrying; if (carrying) { const col = R.res === 'wood' ? 0xa0703f : R.res === 'metal' ? 0x9ca3af : 0xb45309, lg = R.res === 'wood' ? cyl(w.mesh, .12, .12, .8, col, 0, 1.3, -.3, 6) : box(w.mesh, .45, .35, .35, col, 0, 1.3, -.3); if (R.res === 'wood') lg.rotation.z = Math.PI / 2; w.mesh.userData.logMesh = lg; } else if (w.mesh.userData.logMesh) { w.mesh.remove(w.mesh.userData.logMesh); w.mesh.userData.logMesh = null; } }
   });
 }
+// ------------------------------------------------------------ who else is here: everyone standing in the same settlement sees each other walk around
+// game_rooms/survive/{settlement code}/players/{uid} = { n, x, z, ry, t } while you're in that settlement (removed when you leave)
+let hereRoom = null, hereRef = null, hereCb = null, lastSent = { x: 0, z: 0, t: 0 };
+const others = {}, SNOW = () => (WW && WW.now ? WW.now() : Date.now());   // server-synced clock, so friends' devices agree
+function setRoom(c) {
+  if (!WW || WW.mode !== 'cloud' || !uid || c === hereRoom) return;
+  if (hereRef) { try { hereRef.off('value', hereCb); hereRef.child(uid).remove(); } catch (e) {} }
+  Object.keys(others).forEach(u => { scene.remove(others[u].mesh); delete others[u]; });
+  hereRoom = c; if (!c) { hereRef = null; return; }
+  hereRef = WW.roomRef('survive', c).child('players');
+  try { hereRef.child(uid).onDisconnect().remove(); } catch (e) {}
+  hereCb = snap => { const v = snap.val() || {}, now = SNOW();
+    Object.keys(v).forEach(u => { if (u === uid) return; const p = v[u]; if (!p || now - (p.t || 0) > 15000) { if (others[u]) { scene.remove(others[u].mesh); delete others[u]; } return; }
+      let o = others[u]; if (!o) { const m = human({ skin: 0xf1c27d, shirt: 0x7c3aed, pants: 0x1e293b, hat: 0x22d3ee, tool: 'axe' }); const nm = textSprite(4); nm.position.y = 2.6; nm.userData.set('🤝 ' + (p.n || 'Ally'), '#a5f3fc'); m.add(nm); m.position.set(p.x, 0, p.z); scene.add(m); o = others[u] = { mesh: m, x: p.x, z: p.z }; }
+      o.tx = p.x; o.tz = p.z; o.ry = p.ry || 0; o.t = p.t; });
+    Object.keys(others).forEach(u => { if (!v[u]) { scene.remove(others[u].mesh); delete others[u]; } }); };
+  hereRef.on('value', hereCb);
+  lastSent.t = 0;
+}
+function updateOthers(dt, now) {
+  if (hereRef && uid && (now - lastSent.t > 3000 || (now - lastSent.t > 250 && Math.hypot(player.x - lastSent.x, player.z - lastSent.z) > .3))) {
+    lastSent = { x: player.x, z: player.z, t: now };
+    try { hereRef.child(uid).set({ n: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], x: +player.x.toFixed(2), z: +player.z.toFixed(2), ry: +player.ry.toFixed(2), t: SNOW() }); } catch (e) {}
+  }
+  Object.keys(others).forEach(u => { const o = others[u]; if (SNOW() - (o.t || 0) > 15000) { scene.remove(o.mesh); delete others[u]; return; }
+    const dx = o.tx - o.x, dz = o.tz - o.z, d = Math.hypot(dx, dz), step = Math.min(d, 7 * dt); if (d > .01) { o.x += dx / d * step; o.z += dz / d * step; } if (d > 12) { o.x = o.tx; o.z = o.tz; }
+    o.mesh.position.set(o.x, 0, o.z); if (d > .05) o.mesh.rotation.y = Math.atan2(dx, dz); animHuman(o.mesh, d > .05 ? 5 : 0, dt); });
+}
 function loadWorld() {
   workers.forEach(w => scene.remove(w.mesh)); workers.length = 0;
   // clear old entities, then rebuild everything from the save
@@ -736,7 +764,7 @@ function boot() {
   if (WW && WW.onReady) WW.onReady(async (user, fc) => {
     uid = user && user.uid; code = fc; if (!user) return;
     try { const c = await WW.loadSave(CLOUD_KEY); if (c && c.v === 3 && (c.saved || 0) > (st.saved || 0)) { st = fix(c); const o = Math.min(4 * 3600, (NOW() - (st.last || NOW())) / 1000); if (o > 10) economy(o); loadWorld(); } } catch (e) {}
-    listenHelps(); listenGifts(); publishPub(); publishPlaying();
+    listenHelps(); listenGifts(); publishPub(); publishPlaying(); setRoom(code);
   });
 }
 
@@ -814,7 +842,7 @@ function frame() {
     const pd = d2(d, player); if (pd < 4 && !player.dead) { d.vx = (d.x - player.x) / pd * 2.2; d.vz = (d.z - player.z) / pd * 2.2; }
     const nx = d.x + d.vx * dt, nz = d.z + d.vz * dt; if (Math.hypot(nx - d.hx, nz - d.hz) < 8 && !blockedAt(nx, nz)) { d.x = nx; d.z = nz; }
     d.mesh.position.set(d.x, 0, d.z); if (d.vx || d.vz) d.mesh.rotation.y = Math.atan2(d.vx, d.vz); if (d.bar.visible) faceCam(d.bar); });
-  updateWorkers(dt, now);
+  updateWorkers(dt, now); updateOthers(dt, now);
   trees.concat(rocks).forEach(n => {
     if (n.down && now > n.at && d2(n, player) > 2) { n.down = false; n.hp = n.max; n.top.visible = true; n.mesh.visible = true; if (n.trunk) n.trunk.scale.y = 1; }
     if (n.shake > 0) { n.shake -= dt; n.mesh.rotation.z = Math.sin(n.shake * 60) * .06; } else n.mesh.rotation.z = 0;
@@ -845,7 +873,7 @@ function frame() {
   sun.position.set(player.x + 20, 40, player.z + 10); sun.target.position.set(player.x, 0, player.z);
   renderer.render(scene, camera); requestAnimationFrame(frame);
 }
-addEventListener('beforeunload', () => { persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
+addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child(uid).remove(); } catch (e) {} persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 boot(); requestAnimationFrame(frame);
 window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
