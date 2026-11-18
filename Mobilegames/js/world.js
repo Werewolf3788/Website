@@ -21,10 +21,10 @@ const NEAR_BARN = f => f === 0;
 export function parkFor(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + (NEAR_BARN(f) ? 16 : 6), z: F.z0 - 3.5, ry: .6 }; }
 export const inBarnZone = p => !!p && p.x > 14 && p.x < 40 && p.z > -14 && p.z < 2;
 export const ELEVATOR_POS = { x: 31, z: -3.2 };          // where the truck tips its load at the grain elevator (the silo)
-export const TRUCK_HOME = { x: 34, z: -3.2, ry: -Math.PI / 2 };
+export const TRUCK_HOME = { x: 37.5, z: -10, ry: -Math.PI / 2 };   // parked behind the silo, well clear of the shop door and the yard
 export function parkCombine(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + (NEAR_BARN(f) ? 24 : 13.5), z: F.z0 - 3.5, ry: .6 }; }
 export function parkTrailer(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + (NEAR_BARN(f) ? 32 : 20.5), z: F.z0 - 3.5, ry: Math.PI / 2 }; }
-export const COLLIDERS = [{ x: -24, z: -8, r: 6.2 }, { x: 22, z: -9, r: 8 }, { x: 30.5, z: -9, r: 3 }];
+export const COLLIDERS = [{ x: -24, z: -8, r: 6.2 }, { x: 22, z: -9, rect: { x0: 15.5, x1: 28.5, z0: -13.5, z1: -4.6 } }, { x: 30.5, z: -9, r: 3 }];
 
 const M = {}; // shared materials
 function mat(color, opts) { const k = color + JSON.stringify(opts || {}); return M[k] || (M[k] = new THREE.MeshLambertMaterial(Object.assign({ color: color }, opts || {}))); }

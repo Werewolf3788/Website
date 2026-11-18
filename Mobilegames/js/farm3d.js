@@ -790,7 +790,7 @@ function drawMini() {
 
 // ------------------------------------------------------------ main loop
 let mmT = 0, last = performance.now(), lastSent = 0, lastBeat = 0, lastTrk = 0, camX = 0, camZ = 0, slow = 0;
-function collide(p, rad) { W.COLLIDERS.forEach(function (c) { const dx = p.x - c.x, dz = p.z - c.z, d = Math.hypot(dx, dz), m = c.r + rad; if (d < m && d > 0) { p.x = c.x + dx / d * m; p.z = c.z + dz / d * m; } }); p.x = Math.max(-90, Math.min(90, p.x)); p.z = Math.max(-90, Math.min(250, p.z)); }
+function collide(p, rad) { W.COLLIDERS.forEach(function (c) { if (c.rect) { const R = c.rect, cx = Math.max(R.x0, Math.min(R.x1, p.x)), cz = Math.max(R.z0, Math.min(R.z1, p.z)), rx = p.x - cx, rz = p.z - cz, rd = Math.hypot(rx, rz); if (rd < rad) { if (rd > 0) { p.x = cx + rx / rd * rad; p.z = cz + rz / rd * rad; } else { p.z = R.z1 + rad; } } return; } const dx = p.x - c.x, dz = p.z - c.z, d = Math.hypot(dx, dz), m = c.r + rad; if (d < m && d > 0) { p.x = c.x + dx / d * m; p.z = c.z + dz / d * m; } }); p.x = Math.max(-90, Math.min(90, p.x)); p.z = Math.max(-90, Math.min(250, p.z)); }
 // ------------------------------------------------------------ controller (PS5 / PS4 / Xbox / any standard pad)
 // left stick = steer (left/right), right stick = forward / back (L2 / R2 also work), X (Cross) = Use, R-stick sideways = look around,
 // L1 / R1 = previous / next tool, Options = barn menu. In the barn menu: D-pad or stick to move, X to press, Circle or Options to close.
