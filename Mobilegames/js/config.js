@@ -247,6 +247,7 @@ export const ACHIEVEMENTS = [
   { id: 'fe100', icon: '🧪', name: 'Fertile Ground', desc: 'Fertilize 1,000 crops', t: c => c.s.fert >= 1000 },
   { id: 'fe50k', icon: '🧪', name: 'Fertilizer Baron', desc: 'Fertilize 50,000 crops', t: c => c.s.fert >= 50000 },
   { id: 'fe100k', icon: '🧪', name: 'Fertilizer Tycoon', desc: 'Fertilize 100,000 crops', t: c => c.s.fert >= 100000 },
+  { id: 'egg200', icon: '🥚', name: 'Egg Collector', desc: 'Collect 200 eggs', t: c => (c.s.egg || 0) >= 200 },
   { id: 'an100', icon: '🐔', name: 'Animal Friend', desc: 'Collect 500 animal goods (eggs, wool, milk)', t: c => (c.s.egg || 0) + (c.s.wool || 0) + (c.s.milk || 0) >= 500 },
   { id: 'ck20', icon: '🍳', name: 'Home Cook', desc: 'Cook 100 dishes', t: c => c.s.cook >= 100 },
   { id: 'or10', icon: '📋', name: 'Reliable Neighbor', desc: 'Deliver 25 orders', t: c => c.s.orders >= 25 },
