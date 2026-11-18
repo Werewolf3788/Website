@@ -60,7 +60,29 @@ button{font:inherit;color:inherit}
 .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,153,0,.2)}
 .search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);font-size:20px;width:34px;height:34px;cursor:pointer;display:none}
 .sort{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:0 14px;min-height:44px;font-size:14px}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+.chipbar{position:relative;display:flex;align-items:center;gap:6px;padding:0 0 10px}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;scroll-behavior:smooth;cursor:grab;user-select:none}
+.chips.drag{cursor:grabbing;scroll-behavior:auto}
+.chips.drag .chip{pointer-events:none}
+.chip-arrow{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center}
+.chip-arrow:hover{border-color:var(--accent);color:var(--accent)}
+.chip-arrow[hidden]{display:none}
+@media (pointer:coarse){.chip-arrow{display:none}}
+
+/* ---------- events + countdowns ---------- */
+.events{display:none;margin-top:14px}
+.events.show{display:block}
+.events h2{font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px}
+.ev-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ev{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;transition:border-color .15s,transform .15s}
+.ev:hover{transform:translateY(-2px);border-color:var(--accent)}
+.ev.live{border-left-color:var(--hot);box-shadow:0 0 0 1px var(--hot),0 0 18px rgba(255,59,48,.3)}
+.ev .ev-name{font-weight:800;font-size:16px}
+.ev .ev-dates{color:var(--muted);font-size:12.5px}
+.ev .ev-cd{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--accent);margin-top:2px}
+.ev.live .ev-cd{color:var(--hot)}
+.ev .ev-n{font-size:12px;color:var(--muted)}
+.cdline{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:800;font-size:14px;margin-left:8px}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:38px;display:inline-flex;align-items:center;gap:6px}
 .chip .n{opacity:.7;font-weight:500}
@@ -155,6 +177,7 @@ footer a{color:var(--muted)}
   <p>Hand-picked Amazon finds, gaming gear, home deals and movies. Updated live from my list.</p>
   <div class="disclosure">As an Amazon Associate I earn from qualifying purchases. Prices and availability are shown on Amazon.</div>
   <div class="spotlight" id="spotlight"></div>
+  <div class="events" id="events"><h2>Upcoming events</h2><div class="ev-row" id="evRow"></div></div>
 </div>
 
 <div class="toolbar">
@@ -170,7 +193,11 @@ footer a{color:var(--muted)}
         <option value="cat">Category</option>
       </select>
     </div>
-    <div class="chips" id="chips"></div>
+    <div class="chipbar">
+      <button class="chip-arrow" id="chipL" aria-label="Scroll categories left" hidden>‹</button>
+      <div class="chips" id="chips"></div>
+      <button class="chip-arrow" id="chipR" aria-label="Scroll categories right">›</button>
+    </div>
   </div>
 </div>
 
@@ -198,12 +225,15 @@ footer a{color:var(--muted)}
    ========================================================================= */
 const CFG = {
   dealsUrl: 'https://smlc-fuel-monitor-default-rtdb.firebaseio.com/deals.json',
+  // Movie Guide > "Amazon" tab: the list of titles you own on Amazon (Url column = the link)
+  amazonMoviesCsv: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?gid=1523070097&single=true&output=csv',
+  // Movie Guide main list (same CSV as Movies.html): used to add posters, year, genre, description
   moviesCsv: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?gid=1831790548&single=true&output=csv',
   movieTag: 'moviesanywhere02-20',
   refreshMs: 10 * 60 * 1000,
   pageSize: 48
 };
-// Movie CSV columns (same as Movies.html)
+// Main movie-list CSV columns (same as Movies.html)
 const MCOL = { id:0, posterArt:1, name:2, amazon:3, edition:10, collection:11, dateAdded:12, poster:13, runtime:15, genre:16, type:17, rating:18, description:19 };
 
 // Sale windows for event_tag / holiday_month values (YYYY-MM-DD, inclusive)
@@ -235,17 +265,58 @@ function track(name, params) { try { if (typeof gtag === 'function') gtag('event
 function cleanDesc(d) { return String(d || '').replace(/^\s*about this item\s*/i, '').trim(); }
 
 /* ---------------- deals ---------------- */
-function saleInfo(item) {
-  let start = item.start_date || '', end = item.end_date || '', label = item.event_tag || '';
+// Which event an item belongs to (event_tag first, then holiday_month), with its dates
+function eventOf(item) {
+  let start = item.start_date || '', end = item.end_date || '', label = '', key = '';
   for (const raw of [item.event_tag, item.holiday_month]) {
-    const ev = EVENT_SCHEDULE[normKey(raw)];
-    if (ev) { if (!start) start = ev.start; if (!end) end = ev.end; label = label || ev.label; break; }
+    const k = normKey(raw), ev = EVENT_SCHEDULE[k];
+    if (ev) { key = ev.label.toLowerCase().replace(/\s+/g, '-'); label = ev.label; if (!start) start = ev.start; if (!end) end = ev.end; break; }
   }
-  if (!start && !end) return null;
+  if (!label && item.event_tag) { label = String(item.event_tag).trim(); key = normKey(label); }
+  if (!label && (start || end)) { label = 'Limited-time deal'; key = 'limited-time'; }
+  return label ? { key, label, start, end } : null;
+}
+function saleInfo(item) {
+  const ev = eventOf(item);
+  if (!ev || (!ev.start && !ev.end)) return null;
   const t = todayStr();
-  if (start && t < start) return null;
-  if (end && t > end) return null;
-  return { label: label || 'Deal', end };
+  if (ev.start && t < ev.start) return null;
+  if (ev.end && t > ev.end) return null;
+  return { label: ev.label, end: ev.end };
+}
+// Countdown helpers (event days run midnight-to-midnight in the visitor's time zone)
+const dayStart = d => { const [y, m, dd] = d.split('-').map(Number); return new Date(y, m - 1, dd).getTime(); };
+const dayEnd = d => dayStart(d) + 86400000 - 1;
+function fmtLeft(ms) {
+  if (ms < 0) ms = 0;
+  const s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+  const p = n => String(n).padStart(2, '0');
+  return d > 0 ? `${d}d ${p(h)}h ${p(m)}m ${p(sec)}s` : `${p(h)}h ${p(m)}m ${p(sec)}s`;
+}
+const fmtDay = d => { try { return new Date(dayStart(d)).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch (e) { return d; } };
+function eventStatus(ev, now = Date.now()) {
+  const st = ev.start ? dayStart(ev.start) : -Infinity, en = ev.end ? dayEnd(ev.end) : Infinity;
+  if (now < st) return { state: 'soon', text: 'Starts in ' + fmtLeft(st - now) };
+  if (now <= en) return { state: 'live', text: en === Infinity ? 'Live now' : 'Live now · ends in ' + fmtLeft(en - now) };
+  return { state: 'over', text: 'Ended' };
+}
+function eventList() {
+  // Every scheduled event that hasn't ended, plus custom event_tags used in the sheet
+  const map = new Map();
+  for (const ev of Object.values(EVENT_SCHEDULE)) {
+    const key = ev.label.toLowerCase().replace(/\s+/g, '-');
+    if (!map.has(key)) map.set(key, { key, label: ev.label, start: ev.start, end: ev.end, n: 0 });
+  }
+  S.deals.forEach(d => {
+    const e = d.event; if (!e) return;
+    if (!map.has(e.key)) map.set(e.key, { key: e.key, label: e.label, start: e.start, end: e.end, n: 0 });
+    const m = map.get(e.key); m.n++;
+    if (e.start && (!m.start || e.start < m.start)) m.start = e.start;
+    if (e.end && (!m.end || e.end > m.end)) m.end = e.end;
+  });
+  return [...map.values()]
+    .filter(e => (e.start || e.end) && eventStatus(e).state !== 'over')
+    .sort((a, b) => (a.start || '').localeCompare(b.start || ''));
 }
 function parseDeals(tree) {
   const out = [];
@@ -257,14 +328,14 @@ function parseDeals(tree) {
       const url = safeUrl(it.site_url);
       if (!url) continue;
       const category = String(it.category || catKey.replace(/-/g, ' ')).trim() || 'General';
-      const sale = saleInfo(it);
+      const sale = saleInfo(it), event = eventOf(it);
       const tags = Array.isArray(it.tags) ? it.tags : String(it.tags || '').split(',').map(s => s.trim()).filter(Boolean);
       out.push({
         kind: 'deal', id: it.id || id, title: String(it.title || '').trim() || 'Amazon pick',
         desc: cleanDesc(it.description), img: safeUrl(it.image_url), url,
         category, sub: String(it.sub_category || '').trim(), tags,
         placement: String(it.placement || 'deals_page').trim().toLowerCase(),
-        sale, ts: Date.parse(it.updated_at || '') || 0
+        sale, event, ts: Date.parse(it.updated_at || '') || 0
       });
     }
   }
@@ -294,30 +365,81 @@ function parseDate(ds) {
 }
 function withTag(u) {
   u = String(u || '').trim(); if (!u) return '';
-  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
-  if (/amazon\./i.test(u) && !/[?&]tag=/.test(u)) u += (u.includes('?') ? '&' : '?') + 'tag=' + CFG.movieTag;
+  if (/^\/\//.test(u)) u = 'https:' + u;
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u.replace(/^\/+/, '');
+  // Full amazon.com links get your movie tag; link.amazon / amzn.to short links already carry theirs
+  if (/(^|\.)amazon\.[a-z.]+\//i.test(u.replace(/^https?:\/\//i, '')) && !/[?&]tag=/.test(u)) u += (u.includes('?') ? '&' : '?') + 'tag=' + CFG.movieTag;
   return u;
 }
-function parseMovies(csv) {
-  const rows = parseCsv(csv), seen = new Set(), out = [];
+// Same ID cleaner as Movies.html, so both sheets' IDs match
+function cleanId(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim(); let m;
+  if ((m = s.match(/thetvdb\.com\/series\/[^\/]+\/episodes\/(\d+)/i))) return 'tvdb-ep-' + m[1];
+  if ((m = s.match(/thetvdb\.com\/series\/([^\/]+)\/seasons\/(?:official\/)?(\d+)/i))) return 'tvdb-slug-' + m[1] + '-s' + m[2];
+  if ((m = s.match(/thetvdb\.com\/series\/([^\/]+)/i))) return 'tvdb-' + m[1];
+  if ((m = s.match(/\{([^}]+)\}/))) { let x = m[1].trim(); if (/^imdb-/i.test(x)) x = x.slice(5); return x.toLowerCase(); }
+  if ((m = s.match(/tmdb[-_]?\d+/i))) return m[0].toLowerCase();
+  if ((m = s.match(/(imdb-)?(tt\d+)/i))) return m[2].toLowerCase();
+  if ((m = s.match(/tvdb[-_]?season[-_]?\d+/i))) return m[0].toLowerCase();
+  if ((m = s.match(/tvdb[-_]?(ep-|season-)?\d+/i))) return m[0].toLowerCase();
+  if ((m = s.match(/Series ID\s*(\d+)/i))) return 'tvdb-' + m[1];
+  return s.toLowerCase();
+}
+const isLink = v => /^(https?:)?\/\//i.test(v) || /(amazon|amzn|link\.amazon)[.\/]/i.test(v);
+const splitYear = t => { const m = String(t).match(/^(.*\S)\s*\((\d{4})\)\s*$/); return m ? [m[1], m[2]] : [String(t), '']; };
+
+// Main movie list → lookup by ID (for posters, year, genre, description)
+function buildMovieInfo(csv) {
+  const map = new Map();
+  if (!csv) return map;
+  const rows = parseCsv(csv);
   for (let r = 1; r < rows.length; r++) {
     const cell = i => String(rows[r][i] ?? '').trim();
-    let title = cell(MCOL.name);
-    const amz = cell(MCOL.amazon);
-    if (!title || /^loading/i.test(title) || title[0] === '#') continue;
-    if (!/amazon\.|amzn\./i.test(amz)) continue;            // only titles you have on Amazon
-    let year = ''; const ym = title.match(/^(.*\S)\s*\((\d{4})\)\s*$/); if (ym) { title = ym[1]; year = ym[2]; }
+    const id = cleanId(cell(MCOL.id)); if (!id) continue;
+    const [title, year] = splitYear(cell(MCOL.name));
     const edition = /^standard$/i.test(cell(MCOL.edition)) ? '' : cell(MCOL.edition);
-    const key = (cell(MCOL.id) || title).toLowerCase() + '|' + edition.toLowerCase();
+    const info = {
+      title, year, edition,
+      img: [cell(MCOL.poster), cell(MCOL.posterArt)].map(safeUrl).find(Boolean) || '',
+      desc: cell(MCOL.description), genres: cell(MCOL.genre).split(/[,/|]/).map(g => g.trim()).filter(Boolean),
+      isTV: /tv/i.test(cell(MCOL.type)) || /^tvdb/i.test(id),
+      rating: /^n\/a$/i.test(cell(MCOL.rating)) ? '' : cell(MCOL.rating),
+      runtime: cell(MCOL.runtime), collection: cell(MCOL.collection), ts: parseDate(cell(MCOL.dateAdded))
+    };
+    if (!map.has(id)) map.set(id, info);                 // first row = default
+    if (edition) map.set(id + '|' + edition.toLowerCase(), info);
+  }
+  return map;
+}
+
+// Movie Guide "Amazon" tab: IMDB | Url | Poster | Name | Edition | IMDb | MA | (count)
+function parseAmazonMovies(csv, info) {
+  const rows = parseCsv(csv); if (rows.length < 2) return [];
+  const head = rows[0].map(h => String(h).toLowerCase().replace(/[|()]/g, ' ').trim());
+  const col = (re, dflt) => { const i = head.findIndex(h => re.test(h)); return i >= 0 ? i : dflt; };
+  const C = { id: 0, url: col(/^url\b/, 1), poster: col(/^poster/, 2), name: col(/^name/, 3), edition: col(/^edition/, 4), ma: col(/^ma\b/, 6) };
+  const out = [], seen = new Set();
+  for (let r = 1; r < rows.length; r++) {
+    const cell = i => String(rows[r][i] ?? '').trim();
+    const link = cell(C.url);
+    if (!link || !isLink(link)) continue;                  // only rows with an Amazon link
+    const id = cleanId(cell(C.id));
+    const edition = /^standard$/i.test(cell(C.edition)) ? '' : cell(C.edition);
+    const key = (id || cell(C.name).toLowerCase()) + '|' + edition.toLowerCase();
     if (seen.has(key)) continue; seen.add(key);
-    const genres = cell(MCOL.genre).split(/[,/|]/).map(g => g.trim()).filter(Boolean);
-    const isTV = /tv/i.test(cell(MCOL.type));
+    const m = (id && (info.get(id + '|' + edition.toLowerCase()) || info.get(id))) || {};
+    let [title, year] = splitYear(cell(C.name) || m.title || 'Untitled');
+    if (!year) year = m.year || '';
+    const isTV = !!m.isTV;
+    const ma = /^(true|yes|1|✅)/i.test(cell(C.ma));
     out.push({
-      kind: 'movie', id: key, title, year, edition, img: [cell(MCOL.poster), cell(MCOL.posterArt)].map(safeUrl).find(Boolean) || '',
-      url: withTag(amz), desc: cell(MCOL.description), category: MOVIES_CAT, sub: isTV ? 'TV Show' : 'Movie',
-      tags: genres.slice(0, 3), rating: /^n\/a$/i.test(cell(MCOL.rating)) ? '' : cell(MCOL.rating),
-      runtime: cell(MCOL.runtime), collection: cell(MCOL.collection), placement: 'deals_page', sale: null,
-      ts: parseDate(cell(MCOL.dateAdded))
+      kind: 'movie', id: key, title, year, edition,
+      img: safeUrl(cell(C.poster)) || m.img || '',
+      url: withTag(link), desc: m.desc || '', category: MOVIES_CAT, sub: isTV ? 'TV Show' : 'Movie',
+      tags: [...(ma ? ['Movies Anywhere'] : []), ...((m.genres || []).slice(0, 3))],
+      rating: m.rating || '', runtime: m.runtime || '', collection: m.collection || '',
+      placement: 'deals_page', sale: null, ts: m.ts || 0
     });
   }
   return out;
@@ -339,19 +461,25 @@ async function loadDeals() {
   S.loaded.deals = true; render();
 }
 async function readMovieCache() {
-  // Shares the Movies page's device cache when it's there
+  // Shares the Movies page's device cache for the main list when it's there
   try { if ('caches' in window) { const c = await caches.open('ww-cinema-data-v1'); const r = await c.match('catalog.csv'); if (r) return await r.text(); } } catch (e) {}
   return lsGet('ww_cinema_csv_v1');
 }
+async function fetchText(url) {
+  const res = await fetch(url + '&_cb=' + Date.now(), { cache: 'no-store' });
+  if (!res.ok) throw new Error(res.status);
+  return res.text();
+}
 async function loadMovies() {
-  const cached = await readMovieCache();
-  if (cached) { try { S.movies = parseMovies(cached); S.loaded.movies = true; render(); } catch (e) {} }
-  try {
-    const res = await fetch(CFG.moviesCsv + '&_cb=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error(res.status);
-    const text = await res.text();
-    if (text && text !== cached) S.movies = parseMovies(text);
-  } catch (e) { console.warn('Movies load failed', e); }
+  let infoCsv = await readMovieCache();
+  let amzCsv = lsGet('ww_amazon_movies_csv_v1');
+  const build = () => { if (amzCsv) { S.movies = parseAmazonMovies(amzCsv, buildMovieInfo(infoCsv)); S.loaded.movies = true; render(); } };
+  build();
+  const [a, i] = await Promise.allSettled([fetchText(CFG.amazonMoviesCsv), fetchText(CFG.moviesCsv)]);
+  if (a.status === 'fulfilled' && a.value) { amzCsv = a.value; if (amzCsv.length < 1500000) lsSet('ww_amazon_movies_csv_v1', amzCsv); }
+  else console.warn('Amazon movie list failed', a.reason);
+  if (i.status === 'fulfilled' && i.value) infoCsv = i.value;
+  build();
   S.loaded.movies = true; render();
 }
 
@@ -396,7 +524,7 @@ function section(title, items, color, opts = {}) {
   const start = CURRENT.length; CURRENT.push(...items);
   const cards = items.map((it, k) => cardHtml(it, start + k)).join('');
   return `<section class="section" style="--c:${color}">
-    <div class="section-head"><h2><span class="dot"></span>${esc(title)}</h2>${opts.moreCat ? `<button class="more" data-cat="${esc(opts.moreCat)}">See all ${opts.total} →</button>` : ''}</div>
+    <div class="section-head"><h2><span class="dot"></span>${esc(title)}${opts.cd ? `<span class="cdline" data-cd="${esc(opts.cd)}"></span>` : ''}</h2>${opts.moreCat ? `<button class="more" data-cat="${esc(opts.moreCat)}">See all ${opts.total} →</button>` : ''}</div>
     <div class="${opts.row ? 'row' : 'grid'}">${cards}</div>
     ${opts.loadMore ? `<div class="loadmore"><button id="more" type="button">Show more (${opts.loadMore} left)</button></div>` : ''}
   </section>`;
@@ -427,9 +555,39 @@ function renderSpotlight() {
   el.querySelector('[data-spot]').onclick = () => track('affiliate_outbound_click', { item_id: pick.id, item_title: pick.title, click_placement: 'spotlight', link_url: pick.url });
 }
 
+function renderEvents() {
+  const evs = eventList(), box = $('#events');
+  if (!evs.length) { box.classList.remove('show'); return; }
+  $('#evRow').innerHTML = evs.map(e => {
+    const st = eventStatus(e);
+    const dates = e.start && e.end && e.start !== e.end ? `${fmtDay(e.start)} – ${fmtDay(e.end)}` : fmtDay(e.start || e.end);
+    return `<button class="ev ${st.state === 'live' ? 'live' : ''}" data-cat="event:${esc(e.key)}" type="button">
+      <span class="ev-name">${st.state === 'live' ? '⚡ ' : '⏳ '}${esc(e.label)}</span>
+      <span class="ev-dates">${esc(dates)}</span>
+      <span class="ev-cd" data-cd="${esc(e.key)}">${esc(st.text)}</span>
+      <span class="ev-n">${e.n ? `${e.n} item${e.n > 1 ? 's' : ''} tagged` : 'No items tagged yet'}</span>
+    </button>`;
+  }).join('');
+  box.classList.add('show');
+}
+// Live countdown tick (only updates the numbers)
+setInterval(() => {
+  if (document.hidden) return;
+  const evs = eventList(); let flipped = false;
+  document.querySelectorAll('[data-cd]').forEach(el => {
+    const e = evs.find(x => x.key === el.dataset.cd);
+    if (!e) { flipped = true; return; }
+    const st = eventStatus(e); el.textContent = st.text;
+    const card = el.closest('.ev'); if (card && card.classList.contains('live') !== (st.state === 'live')) flipped = true;
+  });
+  if (flipped) { S.deals.forEach(d => { d.sale = d.event && eventStatus(d.event).state === 'live' && (d.event.start || d.event.end) ? { label: d.event.label, end: d.event.end } : null; }); render(); }
+}, 1000);
+
 let spotlightDone = false;
 function render() {
   renderChips();
+  renderEvents();
+  updateChipArrows();
   if (!spotlightDone && S.deals.length) { renderSpotlight(); spotlightDone = true; }
   CURRENT = [];
   const root = $('#root');
@@ -441,18 +599,22 @@ function render() {
   // Search, or a single category/filter → one grid with "show more"
   if (q || S.cat !== 'all') {
     let list = all;
-    if (S.cat === 'live') list = S.deals.filter(d => d.sale);
+    const evKey = S.cat.startsWith('event:') ? S.cat.slice(6) : '';
+    if (evKey) list = S.deals.filter(d => d.event && d.event.key === evKey);
+    else if (S.cat === 'live') list = S.deals.filter(d => d.sale);
     else if (S.cat === 'deals') list = S.deals;
     else if (S.cat !== 'all') list = all.filter(i => i.category === S.cat);
     list = sortItems(list.filter(i => matches(i, q)));
-    if (!list.length) { root.innerHTML = `<div class="empty">Nothing found${q ? ` for “${esc(S.q)}”` : ''}.</div>`; return; }
+    const ev = evKey ? eventList().find(e => e.key === evKey) : null;
+    if (!list.length) { root.innerHTML = `<div class="empty">${ev ? `No items tagged for ${esc(ev.label)} yet. Put <b>${esc(evKey)}</b> in the event_tag column to add some.` : `Nothing found${q ? ` for “${esc(S.q)}”` : ''}.`}</div>`; return; }
     const title = q ? `Results for “${S.q}” (${list.length})`
+      : ev ? `${ev.label} (${list.length})`
       : S.cat === 'live' ? `⚡ Live deals (${list.length})`
       : S.cat === 'deals' ? `All deals (${list.length})`
       : `${S.cat} (${list.length})`;
     const shown = list.slice(0, S.shown);
-    root.innerHTML = section(title, shown, S.cat === 'live' ? 'var(--hot)' : catColor(S.cat === 'all' || S.cat === 'deals' ? '' : S.cat),
-      { loadMore: list.length > shown.length ? list.length - shown.length : 0 });
+    root.innerHTML = section(title, shown, (S.cat === 'live' || ev) ? 'var(--hot)' : catColor(S.cat === 'all' || S.cat === 'deals' ? '' : S.cat),
+      { loadMore: list.length > shown.length ? list.length - shown.length : 0, cd: ev ? ev.key : '' });
     return;
   }
 
@@ -511,11 +673,12 @@ function fromHash() {
   else if (seg[0] === 'movies') S.cat = MOVIES_CAT;
   else if (seg[0] === 'deals') S.cat = seg[1] === 'active-sales' ? 'live' : 'deals';
   else if (seg[0] === 'live') S.cat = 'live';
+  else if (seg[0] === 'event' && seg[1]) S.cat = 'event:' + seg[1];
   else S.cat = 'all';
   S.shown = CFG.pageSize;
 }
 function setCat(cat) {
-  const h = cat === 'all' ? '#/home' : cat === MOVIES_CAT ? '#/movies' : cat === 'deals' ? '#/deals' : cat === 'live' ? '#/live' : '#/category/' + encodeURIComponent(cat);
+  const h = cat === 'all' ? '#/home' : cat === MOVIES_CAT ? '#/movies' : cat === 'deals' ? '#/deals' : cat === 'live' ? '#/live' : cat.startsWith('event:') ? '#/event/' + encodeURIComponent(cat.slice(6)) : '#/category/' + encodeURIComponent(cat);
   if (location.hash !== h) location.hash = h; else { fromHash(); render(); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -541,6 +704,36 @@ $('#q').addEventListener('input', e => {
 $('#qx').addEventListener('click', () => { $('#q').value = ''; S.q = ''; $('#qx').style.display = 'none'; render(); });
 $('#sort').addEventListener('change', e => { S.sort = e.target.value; render(); });
 window.addEventListener('hashchange', () => { fromHash(); render(); });
+
+const chipsEl = $('#chips');
+function updateChipArrows() {
+  const max = chipsEl.scrollWidth - chipsEl.clientWidth;
+  $('#chipL').hidden = chipsEl.scrollLeft <= 4;
+  $('#chipR').hidden = chipsEl.scrollLeft >= max - 4;
+}
+$('#chipL').addEventListener('click', () => chipsEl.scrollBy({ left: -chipsEl.clientWidth * 0.7 }));
+$('#chipR').addEventListener('click', () => chipsEl.scrollBy({ left: chipsEl.clientWidth * 0.7 }));
+chipsEl.addEventListener('scroll', updateChipArrows, { passive: true });
+window.addEventListener('resize', updateChipArrows);
+// Mouse wheel scrolls the chip row sideways
+chipsEl.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && chipsEl.scrollWidth > chipsEl.clientWidth) {
+    e.preventDefault(); chipsEl.scrollLeft += e.deltaY;
+  }
+}, { passive: false });
+// Click-and-drag to slide (mouse); a drag doesn't count as a click
+let drag = null;
+chipsEl.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; drag = { x: e.clientX, left: chipsEl.scrollLeft, moved: false }; });
+window.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x;
+  if (Math.abs(dx) > 5) { drag.moved = true; chipsEl.classList.add('drag'); }
+  if (drag.moved) chipsEl.scrollLeft = drag.left - dx;
+});
+window.addEventListener('pointerup', () => {
+  if (drag && drag.moved) { const stop = ev => { ev.stopPropagation(); ev.preventDefault(); }; chipsEl.addEventListener('click', stop, { capture: true, once: true }); setTimeout(() => chipsEl.removeEventListener('click', stop, true), 0); }
+  drag = null; chipsEl.classList.remove('drag');
+});
 
 fromHash();
 loadDeals();
