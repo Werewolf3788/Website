@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 34,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Your allies now live next door: their settlements stand just past the edge of your map with a road to each, and allies who are playing show up walking around their town. Tap a neighbour's town to visit",
+    "👹 Lair bosses come back 25% tougher (and hit harder, with better loot) every time you beat them. Their level shows over their head",
+    "📣 Call allies: when a lair boss is too much, tap 🤝 Allies → Call allies and it becomes a team fight your allies can join"
+   ]
+  },
+  {
    "id": 33,
    "date": "Nov 18",
    "game": "survive",

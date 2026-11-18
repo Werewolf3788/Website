@@ -272,8 +272,9 @@ function makeDeer(x, z) {
 function makeZombie(x, z, r, boss, zone) {
   const g = human({ skin: boss ? 0xf97316 : 0x84cc16, shirt: boss ? 0x7f1d1d : [0x6d28d9, 0x475569, 0x9f1239][Math.floor(Math.random() * 3)], pants: 0x1e293b, hair: boss ? null : 0x3f3f46, zombie: true, s: boss ? 2.3 : 1 });
   g.position.set(x, 0, z); scene.add(g); const bar = hpBar(boss ? 1.4 : 1); bar.position.y = 2.35; g.add(bar);
-  const hp = boss ? 700 * (r === 2 ? 1 : .6) : 30 + 25 * (r - 1);
-  const zb = { mesh: g, bar: bar, x: x, z: z, hx: x, hz: z, hp: hp, max: hp, dmg: boss ? 20 : 3 + 3 * r, cd: 0, boss: !!boss, zone: zone, dead: false, speed: boss ? 2.2 : 2.6, reach: boss ? 2.2 : 1.2, wt: 0 };
+  const wins = boss ? ((st.bossWins || {})[zone] | 0) : 0, hp = boss ? Math.round(700 * (r === 2 ? 1 : .6) * Math.pow(1.25, wins)) : 30 + 25 * (r - 1);   // lair bosses come back 25% tougher each time
+  if (boss) { const nm = textSprite(4.5); nm.position.y = 2.9; nm.userData.set('👹 Boss Lv' + (wins + 1), '#fdba74'); g.add(nm); }
+  const zb = { blv: wins + 1, mesh: g, bar: bar, x: x, z: z, hx: x, hz: z, hp: hp, max: hp, dmg: boss ? 20 + 4 * wins : 3 + 3 * r, cd: 0, boss: !!boss, zone: zone, dead: false, speed: boss ? 2.2 : 2.6, reach: boss ? 2.2 : 1.2, wt: 0 };
   zombies.push(zb); return zb;
 }
 // ------------------------------------------------------------ finds: extra things to harvest out in the areas you unlock (none in town).
@@ -506,7 +507,8 @@ cv.addEventListener('pointerdown', e => { tapAt.x = e.clientX; tapAt.y = e.clien
 cv.addEventListener('pointerup', e => {
   if (Math.hypot(e.clientX - tapAt.x, e.clientY - tapAt.y) > 8 || performance.now() - tapAt.t > 350) return;   // that was a drag (walking), not a tap
   const r = cv.getBoundingClientRect(), v = new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1), rc = new THREE.Raycaster(); rc.setFromCamera(v, camera);
-  const ids = Object.keys(bldMeshes), hit = rc.intersectObjects(ids.map(k => bldMeshes[k]), true)[0]; if (!hit) return;
+  const ids = Object.keys(bldMeshes), hit = rc.intersectObjects(ids.map(k => bldMeshes[k]), true)[0];
+  if (!hit) { const nc = neighbourAt(rc); if (nc) visit(nc); return; }
   let o = hit.object; while (o && ids.every(k => bldMeshes[k] !== o)) o = o.parent; const id = ids.find(k => bldMeshes[k] === o); if (id && !tour) buildingPanel(id, true);
 });
 cv.addEventListener('pointerup', joyEnd); cv.addEventListener('pointercancel', joyEnd);
@@ -530,8 +532,8 @@ function hitZombie(z, dmg, by) {
   z.hp -= dmg; z.mesh.userData.flash = .12;
   if (z.hp <= 0 && !z.dead && z.def) { z.dead = true; scene.remove(z.mesh); sfx(260, .12, .07); raidCheck(); return; }
   if (z.hp <= 0 && !z.dead) {
-    z.dead = true; scene.remove(z.mesh); st.stats.kills++; const loot = z.boss ? { gems: 5, metal: 120, food: 80 } : { food: 2 + Math.floor(Math.random() * 3), wood: 2 }; if (!(tour && String(by || '').indexOf('guard') === 0)) give(loot);   // an ally's hunters' kills are theirs fly(z.boss ? '💎' : '🍖', z, player);
-    if (z.boss) { st.stats.bosses++; st.boss[z.zone] = NOW() + BOSS_RESPAWN; toast('👹 Boss defeated! +' + costTxt(loot) + ' · it returns in 1 hour', 4000); sfx(330, .3, .09); sfx(660, .5, .08, .2); }
+    z.dead = true; scene.remove(z.mesh); st.stats.kills++; const bw = z.boss ? (z.blv || 1) - 1 : 0, loot = z.boss ? { gems: 5, metal: Math.round(120 * (1 + .3 * bw)), food: Math.round(80 * (1 + .3 * bw)) } : { food: 2 + Math.floor(Math.random() * 3), wood: 2 }; if (!(tour && String(by || '').indexOf('guard') === 0)) give(loot);   // an ally's hunters' kills are theirs fly(z.boss ? '💎' : '🍖', z, player);
+    if (z.boss) { st.stats.bosses++; st.boss[z.zone] = NOW() + BOSS_RESPAWN; if (!tour) { st.bossWins = st.bossWins || {}; st.bossWins[z.zone] = (st.bossWins[z.zone] | 0) + 1; } toast('👹 Boss defeated! +' + costTxt(loot) + ' · it returns in 1 hour' + (tour ? '' : ', 25% stronger'), 4000); sfx(330, .3, .09); sfx(660, .5, .08, .2); }
     if (!zombies.some(o => !o.dead && o.zone === z.zone) && zoneType.apply(null, z.zone.split(',').map(Number)) === 'infected') { st.camps[z.zone] = NOW(); st.stats.camps++; const r = { metal: 25, wood: 30 }; if (Math.random() < .15) r.gems = 1; give(r); toast('🏕️ Camp cleared! +' + costTxt(r) + ' · the infected come back in 10 minutes', 4000); burst(z.x, z.z); }
     persist();
   }
@@ -567,7 +569,7 @@ const QUESTS = [
 ];
 function checkQuest() {
   if (tour && tour.arena) { const A = tour.arena, t = '🥊 Duel vs ' + WW.esc(duel ? duel.name : 'your ally') + ' · you ' + Math.round(st.hp) + '❤️ · them ' + Math.round(A.oppHp) + '❤️<small>' + (A.over ? 'Duel over' : fmt((A.end - NOW()) / 1000) + ' left · tap here to give up') + '</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return [0, 0, 0, 0, () => others[A.opp] || null]; }
-  if (tbHere()) { const t = '👹 Team boss · ' + Math.max(1, Math.ceil(tb.hp / tb.max * 100)) + '% health left · ' + fmt((tb.end - NOW()) / 1000) + '<small>Hit it together: everyone who lands a hit gets the loot</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return [0, 0, 0, 0, () => tbBoss]; }
+  if (tbHere()) { const t = '👹 ' + (tb.name || 'Team boss') + ' · ' + Math.max(1, Math.ceil(tb.hp / tb.max * 100)) + '% health left · ' + fmt((tb.end - NOW()) / 1000) + '<small>Hit it together: everyone who lands a hit gets the loot</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return [0, 0, 0, 0, () => tbBoss]; }
   if (tour) { const t = tour.raid ? (tour.raid.won ? '🏆 Raid won! ' : '⚔️ Raiding ' + WW.esc(tour.name) + ' · ' + zombies.filter(z => z.def && !z.dead).length + ' defenders left') + '<small>Tap here to go home' + (tour.raid.won ? ' with the loot' : ' (gives up the raid)') + '</small>' : '👀 Visiting ' + WW.esc(tour.name) + '’s settlement<small>Tap here (or 🤝 Allies) to go home</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; return null; }
   const q = QUESTS[st.q]; if (!q) { if (checkQuest.h === 'done') return null; checkQuest.h = 'done'; $('quest').innerHTML = '🏆 All of Sarge’s missions done!<small>Keep upgrading, farming bosses and helping allies.</small>'; return null; }
   const cur = Math.min(q[1](), q[2]);
@@ -641,6 +643,7 @@ function doAct(a, d) {
   if (a === 'visitf') return visit(d.code);
   if (a === 'raid') return raid(d.code);
   if (a === 'tboss') return tbStart();
+  if (a === 'callallies') return callAllies();
   if (a === 'tbjoin') return tbJoin(d.code);
   if (a === 'duel') return duelChallenge(d.code, d.name);
   if (a === 'duelyes') return duelAnswer(true);
@@ -667,7 +670,7 @@ function startTour(c, p, raiding) {
   // visiting an ally pays off: a daily visit bonus for each friend, and whatever you gather there comes home with you
   const H = tour.home, day = new Date().toDateString(); if (H.visitDay !== day) { H.visitDay = day; H.visited = {}; }
   if (!raiding && !H.visited[c]) { H.visited[c] = 1; const bonus = { wood: 25, food: 15, metal: 5 }; Object.keys(bonus).forEach(k => { H.res[k] = (H.res[k] || 0) + bonus[k]; }); setTimeout(() => toast('🎁 Visit bonus for your settlement: +' + costTxt(bonus), 3500), 1600); }
-  const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: JSON.parse(JSON.stringify(tour.home.heroes || {})), weapon: tour.home.weapon || 1, paid: w.paid || {} }));   // your own squad and weapon come with you
+  const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: JSON.parse(JSON.stringify(tour.home.heroes || {})), weapon: tour.home.weapon || 1, paid: w.paid || {}, bossWins: w.bw || {} }));   // your own squad and weapon come with you
   tour.S = Object.assign({ wood: 0, food: 0, metal: 0, gems: 0 }, JSON.parse(JSON.stringify(tour.home.res))); tour.D = tour.D || {};
   st.res = Object.assign({}, tour.S); st.hp = player.hpMax || 100; player.x = 3; player.z = 6;   // you bring your own resources to build with
   loadWorld(); setRoom(c); toast('👀 Welcome to ' + tour.name + '’s settlement!'); return true;
@@ -706,14 +709,14 @@ function goHome(quiet) {
 function publishPub() {
   if (tour || !code || !WW || WW.mode !== 'cloud') return;
   const ups = Object.keys(BD).filter(id => st.b[id].up).map(id => { const u = st.b[id].up; return { id: id, k: id + '_' + u.to, n: BD[id].n, i: BD[id].i, to: u.to, end: u.end, total: u.total, c: Object.keys(u.h || {}).length }; });
-  try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {} }, res: { wood: Math.floor(st.res.wood), food: Math.floor(st.res.food), metal: Math.floor(st.res.metal) }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
+  try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {}, bw: st.bossWins || {} }, res: { wood: Math.floor(st.res.wood), food: Math.floor(st.res.food), metal: Math.floor(st.res.metal) }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
 }
 function alliesPanel(note) {
   let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn ' + RES.wood + '15 (10 a day). While you play on your own map, each ally gets ' + Math.round(sharePct((shareAllies || []).length) * 100 || 5) + '% of what you gather (5% with one ally, down to 1% each with five or more).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
   if (!WW || WW.mode !== 'cloud' || !WW.user) h += '<div class="row muted">Sign in on the games hub to team up with allies.</div>';
   else {
     // your friends list (the same friends as everywhere else on the site): no codes to type
-    if (!visiting && !tour) h += '<div class="row"><div class="g"><b>⚔️ Battles</b><div class="muted">👹 <b>Team boss</b>: start one on your map and every ally can join to hit it together (10 min, everyone who hits it gets the loot). 🥊 <b>Duel</b>: a live 1-on-1 with an ally who is playing right now. ⚔️ <b>Raid</b>: attack an ally’s settlement, even when they’re away.</div></div><button class="b" style="background:#15803d;color:#fff" data-a="tboss"' + (tb && tb.room === code && tb.hp > 0 ? ' disabled' : '') + '>👹 Start team boss</button></div>';
+    if (!visiting && !tour) h += '<div class="row"><div class="g"><b>⚔️ Battles</b><div class="muted">👹 <b>Team boss</b>: start one on your map and every ally can join to hit it together (10 min, everyone who hits it gets the loot). 🥊 <b>Duel</b>: a live 1-on-1 with an ally who is playing right now. ⚔️ <b>Raid</b>: attack an ally’s settlement, even when they’re away.</div></div><button class="b" style="background:#15803d;color:#fff" data-a="tboss"' + (tb && tb.room === code && tb.hp > 0 ? ' disabled' : '') + '>👹 Start team boss</button></div>' + (lairBoss() ? '<div class="row"><div class="g"><b>📣 Call allies to your lair boss</b><div class="muted">The 👹 Boss Lv' + lairBoss().blv + ' on your map becomes a team fight your allies can join.</div></div><button class="b" style="background:#c2410c;color:#fff" data-a="callallies">📣 Call allies</button></div>' : '');
     if (!visiting) {
       if (!allyList) { h += '<div class="row muted">Loading your friends…</div>'; loadAllyList(); }
       else if (!allyList.length) h += '<div class="row muted">No friends yet. Add friends with their friend code on the games hub, and they show up here.</div>';
@@ -761,7 +764,7 @@ async function loadAllyList() {
       let tbv = null; if (pub) try { tbv = (await WW.roomRef('survive', c).child('tboss').once('value')).val(); } catch (e) {}
       return { code: c, name: fo.username || (pub && pub.name) || c, pub: pub, open: open, tb: tbv && tbv.hp > 0 && tbv.end > NOW() ? tbv : null };
     }));
-    allyList.sort((a, b) => (b.tb ? 1 : 0) - (a.tb ? 1 : 0) || b.open - a.open || (b.pub ? 1 : 0) - (a.pub ? 1 : 0)); shareAllies = allyList.filter(f => f.pub);
+    allyList.sort((a, b) => (b.tb ? 1 : 0) - (a.tb ? 1 : 0) || b.open - a.open || (b.pub ? 1 : 0) - (a.pub ? 1 : 0)); shareAllies = allyList.filter(f => f.pub); try { syncNeighbours(); } catch (e) { showErr(e); }
   } catch (e) { allyList = []; }
   allyLoading = false; if (sheet.style.display === 'flex' && !visiting && card.innerHTML.indexOf('🤝 Allies') >= 0) alliesPanel();
   setTimeout(() => { allyList = null; }, 60000);   // refresh the list after a minute
@@ -831,6 +834,11 @@ function tbListen(c) {
 function tbClear() { if (tbBoss) { tbBoss.dead = true; scene.remove(tbBoss.mesh); tbBoss = null; } tb = null; tbDmg = 0; }
 function tbSpawn() {
   if (!tbHere() || (tbBoss && !tbBoss.dead && zombies.indexOf(tbBoss) >= 0)) return;
+  if (tb.lair) {   // a called-in lair boss: take over the one standing in that lair (or bring it in)
+    let z = zombies.find(o => !o.dead && o.boss && o.zone === tb.lair);
+    if (!z) { z = makeZombie(tb.x || 0, tb.z || 0, 2, true, tb.lair); }
+    z.tb = true; z.max = tb.max; z.hp = Math.max(1, tb.hp); z.dmg = tb.dmg || z.dmg; tbBoss = z; return;
+  }
   const d = makeDefender(-6, 8, 'Horde King Lv' + (tb.lv || 1), tb.max, 14 + 3 * (tb.lv || 1), 0x3f6212, 0x7f1d1d, false);
   d.def = false; d.tb = true; d.hp = Math.max(1, tb.hp); d.speed = 2.4; d.reach = 2; d.zone = 'tboss'; d.mesh.scale.setScalar(1.9); tbBoss = d;
 }
@@ -852,6 +860,7 @@ function tbWin() {
   Object.keys(loot).forEach(k => { H.res[k] = (H.res[k] || 0) + loot[k]; }); if (tour) Object.keys(loot).forEach(k => { tour.S[k] = (tour.S[k] || 0) + loot[k]; st.res[k] = (st.res[k] || 0) + loot[k]; });   // shows now, and isn't split as "gathered"
   const who = Object.keys(tb.dmg || {}).length;
   sfx(784, .2, .08); sfx(1046, .35, .08, .15); toast('🏆 Team boss down' + (who > 1 ? ' (' + who + ' of you)' : '') + '! +' + costTxt(loot), 6000); persist(); hud();
+  if (tb.lair && tb.room === code && !tour) { st.boss[tb.lair] = NOW() + BOSS_RESPAWN; st.bossWins = st.bossWins || {}; st.bossWins[tb.lair] = (st.bossWins[tb.lair] | 0) + 1; st.stats.bosses++; }
   if (tb.room === code && tbRef) { const r = tbRef; setTimeout(() => { try { r.remove(); } catch (e) {} }, 60000); }   // the host tidies up after everyone has seen it
 }
 async function tbJoin(c) { await visit(c); if (tour && tour.code === c) { tbListen(c); closeSheet(); toast('👹 Find the Horde King and hit it together!', 4000); } }
@@ -939,6 +948,68 @@ function duelEnd() {
   if (duelRef) { try { duelRef.child('state').off(); duelRef.child('hits').off(); duelRef.child('hp').off(); } catch (e) {} }
   duel = null; duelRef = null; if (tour && tour.arena) goHome(true); st.hp = player.hpMax;
 }
+// ------------------------------------------------------------ neighbours: your allies' settlements stand just past your map's edge
+// (east, west, south, north, then the corners), built from what they publish, with a road to each. Allies who are playing
+// show up walking around their own town. Tap a neighbour's town to visit it.
+const NB_SPOTS = [[100, 0], [-100, 0], [0, 100], [0, -100], [100, 100], [-100, 100], [100, -100], [-100, -100]];
+const nbrs = {};   // code -> { g, sign, pick: [meshes], ref, cb, ppl: { uid: { mesh, x, z, tx, tz, t } }, x, z, name }
+function syncNeighbours() {
+  const want = tour ? [] : (shareAllies || []).filter(f => f.code !== code && f.pub && f.pub.w).slice(0, NB_SPOTS.length);
+  Object.keys(nbrs).forEach(c => { if (!want.some(f => f.code === c)) dropNeighbour(c); });
+  want.forEach((f, i) => {
+    const sig = JSON.stringify((f.pub.w || {}).b || {}) + i, N = nbrs[f.code];
+    if (N && N.sig === sig) { N.sign.userData.set('🤝 ' + f.name + ' · Power Plant Lv' + (f.pub.pp || 1) + ' · tap to visit', '#a5f3fc'); return; }
+    if (N) dropNeighbour(f.code);
+    const [ox, oz] = NB_SPOTS[i], g = new THREE.Group(); g.position.set(ox, 0, oz); const pick = [];
+    const pad = new THREE.Mesh(new THREE.CircleGeometry(15, 32), new THREE.MeshLambertMaterial({ color: 0x8fbf63 })); pad.rotation.x = -Math.PI / 2; pad.position.y = .03; g.add(pad); pick.push(pad);
+    const ringP = new THREE.Mesh(new THREE.RingGeometry(3.4, 5.2, 40), new THREE.MeshLambertMaterial({ color: 0xcbb68a })); ringP.rotation.x = -Math.PI / 2; ringP.position.y = .05; g.add(ringP);
+    const b = (f.pub.w || {}).b || {};
+    Object.keys(BD).forEach(id => { const l = ((b[id] || {}).lvl) | 0; if (l < 1) return; const m = bldMesh(id, l); m.position.set(BD[id].x, 0, BD[id].z); g.add(m); pick.push(m); });
+    const sign = textSprite(16); sign.material.fog = false; sign.position.set(0, 10, 0); g.add(sign); sign.userData.set('🤝 ' + f.name + ' · Power Plant Lv' + (f.pub.pp || 1) + ' · tap to visit', '#a5f3fc');
+    scene.add(g);
+    // a dirt road from your map's edge to their town
+    const len = Math.hypot(ox, oz) - HALF - 14, ang = Math.atan2(ox, oz), road = new THREE.Mesh(new THREE.PlaneGeometry(2.6, len), new THREE.MeshLambertMaterial({ color: 0xb59a6a }));
+    road.rotation.x = -Math.PI / 2; road.rotation.z = ang; const mid = HALF + len / 2, ux = ox / Math.hypot(ox, oz), uz = oz / Math.hypot(ox, oz);
+    road.position.set(ux * mid * (Math.abs(ox) && Math.abs(oz) ? 1.414 : 1), .04, uz * mid * (Math.abs(ox) && Math.abs(oz) ? 1.414 : 1)); scene.add(road);
+    const n = nbrs[f.code] = { g: g, road: road, sign: sign, pick: pick, x: ox, z: oz, name: f.name, sig: sig, ppl: {} };
+    if (WW && WW.mode === 'cloud' && uid) { n.ref = WW.roomRef('survive', f.code).child('players');   // who's walking around in their town right now
+      n.cb = s => { const v = s.val() || {}, t0 = SNOW(); Object.keys(v).forEach(u => { if (u === uid) return; const p = v[u]; let o = n.ppl[u];
+          if (!p || t0 - (p.t || 0) > 15000) { if (o) { scene.remove(o.mesh); delete n.ppl[u]; } return; }
+          if (!o) { const m = human({ skin: 0xf1c27d, shirt: 0x7c3aed, pants: 0x1e293b, hat: 0x22d3ee, tool: 'axe' }); const nm = textSprite(4); nm.position.y = 2.6; nm.userData.set('🤝 ' + (p.n || f.name), '#a5f3fc'); m.add(nm); m.scale.setScalar(1.3); scene.add(m); o = n.ppl[u] = { mesh: m, x: ox + p.x, z: oz + p.z }; }
+          o.tx = ox + p.x; o.tz = oz + p.z; o.t = p.t; });
+        Object.keys(n.ppl).forEach(u => { if (!v[u]) { scene.remove(n.ppl[u].mesh); delete n.ppl[u]; } }); };
+      n.ref.on('value', n.cb); }
+  });
+}
+function dropNeighbour(c) { const n = nbrs[c]; if (!n) return; scene.remove(n.g); scene.remove(n.road); if (n.ref) try { n.ref.off('value', n.cb); } catch (e) {} Object.keys(n.ppl).forEach(u => scene.remove(n.ppl[u].mesh)); delete nbrs[c]; }
+function updateNeighbours(dt) {
+  Object.keys(nbrs).forEach(c => { const n = nbrs[c]; n.g.visible = n.road.visible = !tour;
+    Object.keys(n.ppl).forEach(u => { const o = n.ppl[u]; if (SNOW() - (o.t || 0) > 15000) { scene.remove(o.mesh); delete n.ppl[u]; return; }
+      const dx = o.tx - o.x, dz = o.tz - o.z, d = Math.hypot(dx, dz), stp = Math.min(d, 7 * dt); if (d > .01) { o.x += dx / d * stp; o.z += dz / d * stp; } if (d > 12) { o.x = o.tx; o.z = o.tz; }
+      o.mesh.visible = !tour; o.mesh.position.set(o.x, 0, o.z); if (d > .05) o.mesh.rotation.y = Math.atan2(dx, dz); animHuman(o.mesh, d > .05 ? 5 : 0, dt); }); });
+}
+function neighbourAt(rc) { if (tour) return null; const ks = Object.keys(nbrs); for (const c of ks) { if (rc.intersectObjects(nbrs[c].pick, true).length) return c; } return null; }
+
+// ------------------------------------------------------------ lair bosses get tougher: each time you beat one it comes back 25% stronger
+// with more punch (and better loot). When it's too much, 📣 call your allies: it becomes a team boss fight they can join.
+function lairBoss() { let best = null, bd = 1e9; zombies.forEach(z => { if (z.dead || !z.boss || z.tb) return; const d = d2(player, z); if (d < bd) { bd = d; best = z; } }); return best; }
+async function callAllies() {
+  if (tour) return alliesPanel('Go home first.');
+  if (!code || !WW || WW.mode !== 'cloud' || !uid) return alliesPanel('Sign in to call your allies.');
+  if (tb && tb.room === code && tb.hp > 0 && tb.end > NOW()) return alliesPanel('A boss fight is already going on your map.');
+  const z = lairBoss(); if (!z) return alliesPanel('No lair boss is up on your map right now. Unlock a 👹 Boss lair (the corners) first, or start a team boss.');
+  try {
+    const ref = WW.roomRef('survive', code).child('tboss'), L = z.blv || 1;
+    await ref.set({ id: String(NOW()), hp: Math.ceil(z.hp), max: Math.ceil(z.max), lv: L, by: myName(), start: NOW(), end: NOW() + TB_TIME, lair: z.zone, x: z.hx, z: z.hz, dmg: z.dmg, name: 'Boss Lv' + L });
+    (shareAllies || []).filter(f => f.code !== code).forEach(f => { try { WW.roomRef('survive', f.code).child('gifts').push({ from: myName(), code: code, note: 'tboss', lair: L, at: NOW() }); } catch (e) {} });
+    z.tb = true; tbBoss = z; tbListen(code); closeSheet(); toast('📣 Called your allies to the Lv' + L + ' boss! Hold it off: 10 minutes to beat it together.', 5000);
+  } catch (e) { alliesPanel('Could not call your allies (' + (e && e.code || e) + ').'); }
+}
+let lairHint = 0;
+function lairTick() {
+  if (tour || NOW() - lairHint < 120000) return; const z = lairBoss();
+  if (z && (z.blv || 1) >= 2 && d2(player, z) < 12) { lairHint = NOW(); toast('👹 Boss Lv' + z.blv + ' is tough! Tap 🤝 Allies → 📣 Call allies to fight it together.', 6000); }
+}
 async function visit(c) {
   if (!c) return;
   try { const ref = WW.roomRef('survive', c), p = (await ref.child('pub').once('value')).val(); if (!p) return alliesPanel('No settlement found for that code.');
@@ -965,7 +1036,7 @@ function listenGifts() {
 function applyGifts() {
   if (tour || !giftQ.length) return; const pads = wantedPads();
   giftQ.splice(0).forEach(g => {
-    if (g.note === 'tboss') { if (NOW() - (g.at || 0) < TB_TIME) { toast('👹 ' + (g.from || 'An ally') + ' started a team boss fight! Open 🤝 Allies and tap Join boss.', 8000); sfx(440, .2, .07); allyList = null; } return; }
+    if (g.note === 'tboss') { if (NOW() - (g.at || 0) < TB_TIME) { toast(g.lair ? '📣 ' + (g.from || 'An ally') + ' needs help with a Lv' + g.lair + ' lair boss! Open 🤝 Allies and tap Join boss.' : '👹 ' + (g.from || 'An ally') + ' started a team boss fight! Open 🤝 Allies and tap Join boss.', 8000); sfx(440, .2, .07); allyList = null; } return; }
     if (g.raid) { const lost = {}; Object.keys(g.res || {}).forEach(k => { const n = Math.min(st.res[k] || 0, -(+g.res[k] || 0)); if (n > 0) { st.res[k] -= n; lost[k] = n; } });
       if (g.code) { st.raidedBy = st.raidedBy || {}; st.raidedBy[g.code] = NOW(); }
       if (welcome && !welcome.shown) welcome.news.push({ raid: 1, who: g.from || 'An ally', what: 'raided you', took: costTxt(lost), at: g.at || NOW() });
@@ -1168,7 +1239,7 @@ function boot() {
       }
       cloudChecked = true; cloudSave();
     } catch (e) { console.warn('cloud load failed; not overwriting the cloud this session', e); }
-    listenHelps(); listenGifts(); listenDuel(); tbListen(code); publishPub(); publishPlaying(); setRoom(code);
+    listenHelps(); listenGifts(); listenDuel(); tbListen(code); setTimeout(() => { if (!allyList) loadAllyList(); }, 3000); publishPub(); publishPlaying(); setRoom(code);
     setTimeout(showWelcome, 2500);   // after allies' news (raids, help) has come in
   });
   setTimeout(() => { if (!WW || !WW.user) showWelcome(); }, 4000);   // not signed in: show it straight away
@@ -1290,7 +1361,7 @@ function frameInner() {
     const pd = d2(d, player); if (pd < 4 && !player.dead) { d.vx = (d.x - player.x) / pd * 2.2; d.vz = (d.z - player.z) / pd * 2.2; }
     const nx = d.x + d.vx * dt, nz = d.z + d.vz * dt; if (Math.hypot(nx - d.hx, nz - d.hz) < 8 && !blockedAt(nx, nz)) { d.x = nx; d.z = nz; }
     d.mesh.position.set(d.x, 0, d.z); if (d.vx || d.vz) d.mesh.rotation.y = Math.atan2(d.vx, d.vz); if (d.bar.visible) faceCam(d.bar); });
-  updateWorkers(dt, now); updateGuards(dt, now); updateOthers(dt, now);
+  updateWorkers(dt, now); updateGuards(dt, now); updateOthers(dt, now); updateNeighbours(dt);
   trees.concat(rocks, finds).forEach(n => {
     if (n.down && now > n.at && d2(n, player) > 2) { n.down = false; n.hp = n.max; n.top.visible = true; n.mesh.visible = true; if (n.trunk) n.trunk.scale.y = 1; }
     if (n.shake > 0) { n.shake -= dt; n.mesh.rotation.z = Math.sin(n.shake * 60) * .06; } else n.mesh.rotation.z = 0;
@@ -1312,7 +1383,7 @@ function frameInner() {
   // --- once a second
   accSec += dt; if (accSec >= 1) { const ev = economy(accSec); accSec = 0; ev.forEach(e => toast(e)); if (ev.length) { syncPads(); publishPub(); persist(); }
     if (st.overflowAt && NOW() - st.overflowAt < 1500) syncPads();   // builds being fed by full piles
-    autoComplete(); syncBuildings(); syncWorkers(); syncGuards(); tbTick(); duelTick(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
+    autoComplete(); syncBuildings(); syncWorkers(); syncGuards(); tbTick(); duelTick(); lairTick(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
   accSave += dt; if (accSave > 4) { accSave = 0; persist(); }
   accCloud += dt; if (accCloud > 30) { accCloud = 0; cloudSave(); }
   accPub += dt; if (accPub > 90) { accPub = 0; publishPlaying(); publishPub(); }
@@ -1331,4 +1402,4 @@ addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 addEventListener('online', () => { persist(); setTimeout(cloudSave, 2000); });   // played offline: push it to your account once the signal is back
 boot(); requestAnimationFrame(frame);
-window.__ts = { get st() { return st; }, finds: finds, tbTest: v => { tb = Object.assign({ room: tour ? tour.code : code }, v); tbSpawn(); }, get tb() { return tb; }, get tbBoss() { return tbBoss; }, tbWin: () => tbWin(), duelTest: (o) => { duel = { id: 'T', opp: 'opp', name: 'Ray' }; duelRef = { child: () => ({ push() {}, set() {}, on() {}, off() {}, remove() {} }), remove() {} }; enterArena(0); }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, raidTest: (p) => { startTour('R', p, true); tour.raid = { loot: { wood: 10 }, won: false }; spawnDefenders(p.w); }, get zombies2() { return zombies; }, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
+window.__ts = { get st() { return st; }, nbTest: list => { shareAllies = list; syncNeighbours(); }, nbrs: nbrs, lairBoss: () => lairBoss(), finds: finds, tbTest: v => { tb = Object.assign({ room: tour ? tour.code : code }, v); tbSpawn(); }, get tb() { return tb; }, get tbBoss() { return tbBoss; }, tbWin: () => tbWin(), duelTest: (o) => { duel = { id: 'T', opp: 'opp', name: 'Ray' }; duelRef = { child: () => ({ push() {}, set() {}, on() {}, off() {}, remove() {} }), remove() {} }; enterArena(0); }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, raidTest: (p) => { startTour('R', p, true); tour.raid = { loot: { wood: 10 }, won: false }; spawnDefenders(p.w); }, get zombies2() { return zombies; }, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
