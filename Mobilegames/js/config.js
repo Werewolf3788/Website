@@ -105,7 +105,7 @@ export const UPGRADES = {
   sprinkler: { name: 'Sprinkler seeder',  desc: 'Seeds planted by the tractor are watered right away', level: 13, cost: 1500 },
   fertseeder: { name: 'Fertilizer seeder', desc: 'Seeds planted by the tractor are fertilized right away (uses 1 fertilizer per seed while you have some)', level: 15, cost: 2500 },
   nitro:     { name: 'Nitro engine',      desc: 'Tractor drives another 25% faster (needs Turbo engine)', level: 16, cost: 2500, needs: 'fast' },
-  harvester: { name: 'Combine harvester', desc: 'A real combine you can drive (the tractor then stops harvesting): it harvests 5 tiles wide into its grain tank (1,440 crops: six whole fields, so you can go from field to field). Park it next to your trailer to unload, then send the truck to the grain elevator for a better price than the barn. Comes with a trailer and a truck.', level: 8, cost: 2000 },
+  harvester: { name: 'Combine harvester', desc: 'A real combine you can drive (the tractor then stops harvesting): it harvests 5 tiles wide into its grain tank (240 crops, one field: when it is full it unloads into the trailer parked by the field by itself). Park it next to your trailer to unload, then send the truck to the grain elevator for a better price than the barn. Comes with a trailer and a truck.', level: 8, cost: 2000 },
   combine:   { name: 'Combine header',    desc: 'Harvesting with the tractor sometimes gives a bonus crop (1 in 4)', level: 20, cost: 4000 },
   xwide:     { name: 'Extra-wide implements', desc: 'Tractor works 7 tiles at once (needs Wide implements)', level: 20, cost: 3500, needs: 'wide' },
   mega:      { name: 'Mega implements',   desc: 'Tractor works 12 tiles at once (needs Extra-wide implements)', level: 26, cost: 7500, needs: 'xwide' }
@@ -114,7 +114,7 @@ export const UPGRADES = {
 // ---- the harvest chain (combine harvester -> trailer -> truck -> grain elevator)
 // combine header levels: level 0 is the header the combine comes with; each level widens the cut (tiles per pass) and costs more
 export const HEADER_LEVELS = [{ swath: 5 }, { swath: 7, cost: 3000, level: 12 }, { swath: 9, cost: 7000, level: 20 }, { swath: 12, cost: 15000, level: 30 }, { swath: 15, cost: 30000, level: 40 }];
-export const HARVEST = { tank: FIELD_TILES * 6, haulAt: FIELD_TILES, trailer: 1500, swath: 5, top: 6.5, elevatorBonus: 1.15, carrySpeed: 8, emptySpeed: 11 };
+export const HARVEST = { tank: FIELD_TILES, haulAt: FIELD_TILES, trailer: 1500, swath: 5, top: 6.5, elevatorBonus: 1.15, carrySpeed: 8, emptySpeed: 11 };
 
 // everything that unlocks at level l (for the level-up message)
 // the next level (after l) that unlocks something, or 0

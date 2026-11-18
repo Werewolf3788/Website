@@ -686,7 +686,7 @@ function combineAuto() {
     const x = V.x + fx * 4.6 + rx * s * W.TILE, z = V.z + fz * 4.6 + rz * s * W.TILE, i = tileAt(x, z);
     if (i < 0 || (cool[i] || 0) > now) continue; cool[i] = now + 900;
     if (!isMine(W.fieldOf(i))) continue; const cur = tiles[i]; if (!cur || cur.k !== 'c' || progress(cur) < 1) continue;
-    if (grainTotal(Cb.grain) >= HARVEST.tank) { if (!outWarn()) say('🌾 Grain tank full! Park next to your trailer to unload.'); return; }
+    if (grainTotal(Cb.grain) >= HARVEST.tank) { if (!outWarn()) say(save.haul ? '🌾 Tank full! It unloads as soon as the truck is back with the trailer.' : '🌾 Tank full: unloading into the trailer…'); return; }
     roomRef.child('tiles/' + i).transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
       if (!ok || !save.combine) return; trailerToField(W.fieldOf(i)); const g = save.combine.grain; g[cur.c] = (g[cur.c] | 0) + 1;
       if (save.up.combine && Math.random() < .25 && grainTotal(g) < HARVEST.tank) g[cur.c]++;
@@ -696,10 +696,13 @@ function combineAuto() {
   }
 }
 // --- unloading: park the combine within reach of the trailer and the tank empties into it
-let unloadAcc = 0, unloadNote = 0;
+let unloadAcc = 0, unloadNote = 0, autoUnload = false;
 function combineUnload(dt) {
   const Cb = save.combine, T = save.trailer; if (!Cb || !T || save.haul) return; const n = grainTotal(Cb.grain); if (!n) { unloadAcc = 0; return; }
-  if (dist2(combineLocal, T) > 9 || Math.abs(combineLocal.speed) > 2.5) return;
+  // a full tank (one field, 240) pipes itself into the trailer wherever the combine is, like an auger to a chaser trailer;
+  // a part-full tank unloads when you park beside the trailer
+  if (n >= HARVEST.tank) autoUnload = true;
+  if (!autoUnload && (dist2(combineLocal, T) > 9 || Math.abs(combineLocal.speed) > 2.5)) return;
   const space = HARVEST.trailer - grainTotal(T.grain); if (space < 1) { unloadAcc = 0; startHaul(); return; }   // trailer full: the truck takes it to the elevator by itself, then unloading carries on
   unloadAcc += dt * 200; let move = Math.min(Math.floor(unloadAcc), n, space); if (move < 1) return; unloadAcc -= move;   // ~200 crops a second: a full tank empties in a few seconds
   Object.keys(Cb.grain).forEach(function (k) { if (move < 1) return; const m = Math.min(move, Cb.grain[k] | 0); if (m < 1) return; T.grain[k] = (T.grain[k] | 0) + m; Cb.grain[k] -= m; if (Cb.grain[k] <= 0) delete Cb.grain[k]; move -= m; });
@@ -707,7 +710,8 @@ function combineUnload(dt) {
   // the combine empties completely into the trailer first; then (if there's at least a field's worth, 240) the truck drives it to the elevator.
   // A trailer that fills up before the tank is empty goes too, and unloading carries on when it's back.
   const nt = grainTotal(T.grain);
-  if ((!grainTotal(Cb.grain) && nt >= HARVEST.haulAt) || nt >= HARVEST.trailer) { unloadAcc = 0; startHaul(); }
+  if (!grainTotal(Cb.grain)) autoUnload = false;
+  if ((!grainTotal(Cb.grain) && nt >= HARVEST.haulAt) || nt >= HARVEST.trailer) { unloadAcc = 0; autoUnload = false; startHaul(); }
   else if (!grainTotal(Cb.grain)) { unloadAcc = 0; say('🌾 Tank emptied into the trailer (' + nt + '). The truck goes once there are ' + HARVEST.haulAt + ', or send it from the trailer.'); }
 }
 // --- the truck: depot -> trailer -> elevator (paid) -> trailer back -> depot. Saved as save.haul so it carries on after a reload.
@@ -823,6 +827,7 @@ window.addEventListener('keydown', function (e) {
   if (k === 'b') { openShop('sell'); return; }
   if (k === 'm') { openShop('missions'); return; }
   if (k === 'e' || k === ' ') { e.preventDefault(); if (!e.repeat) useAction(); return; }
+  if (k === 'tab') { e.preventDefault(); if (!e.repeat) switchVehicle(); return; }
   if (k === 'escape') $('shop').style.display = 'none';
   keys[k] = true; if (k.indexOf('arrow') === 0) e.preventDefault();
 });
@@ -895,20 +900,41 @@ function useAction() {
   else if (c.kind === 'dumpC') dumpCombineAtElevator();
   else if (c.kind === 'tile') actTile(c.i, false);
   else if (c.kind === 'haul') startHaul();
-  else if (c.kind === 'driveC') {
+  else if (c.kind === 'driveC') enterCombine();
+  else if (c.kind === 'drive') enterTractor();
+  else if (c.kind === 'exit') exitVehicle();
+}
+function enterCombine() {
+  {
     const Cb = save.combine; player.driving = true; player.veh = 'combine'; combineLocal.x = Cb.x; combineLocal.z = Cb.z; combineLocal.ry = Cb.ry; combineLocal.speed = 0; player.x = Cb.x; player.z = Cb.z; unloadAcc = 0; Sound.startEngine('combine');
-    say('Combine: drive over ripe crops to cut them into the tank, then park beside the trailer to unload.');
+    say('Combine: drive over ripe crops. When the tank is full (one field) it unloads into the trailer by itself.');
   }
-  else if (c.kind === 'drive') {
+}
+function enterTractor() {
+  {
     player.driving = true; player.veh = 'tractor'; tractorLocal.x = tractorState.x; tractorLocal.z = tractorState.z; tractorLocal.ry = tractorState.ry; tractorLocal.speed = 0; player.x = tractorLocal.x; player.z = tractorLocal.z; Sound.startEngine('tractor');
     say('Tractor: your tool works on ' + swath() + ' tiles at once. W/S drive, A/D steer.'); applyImplement();
-  } else if (c.kind === 'exit' && player.veh === 'combine') {
+  }
+}
+function exitVehicle() {
+  if (player.veh === 'combine') {
     Sound.stopEngine(); player.driving = false; combineLocal.speed = 0; player.x = combineLocal.x + Math.cos(combineLocal.ry) * 4.6; player.z = combineLocal.z - Math.sin(combineLocal.ry) * 4.6;
     { const pk = W.parkCombine(Math.max(0, firstMyField())); save.combine.x = pk.x; save.combine.z = pk.z; save.combine.ry = pk.ry; } queueSave();   // it drives itself back to its parking spot
-  } else if (c.kind === 'exit') {
+  } else {
     Sound.stopEngine(); player.driving = false; tractorLocal.speed = 0; player.x = tractorLocal.x + Math.cos(tractorLocal.ry) * 2.8; player.z = tractorLocal.z - Math.sin(tractorLocal.ry) * 2.8;
     { const pk = W.parkFor(Math.max(0, firstMyField())); tractorState = { x: pk.x, z: pk.z, ry: pk.ry }; } roomRef.child('farmers/' + me.uid + '/tractor').set(tractorState);   // it drives itself back to its parking spot
   }
+}
+
+// switch seats (Tab, the 🔄 button, or Triangle / Y on a controller), like Farming Simulator: jump straight into your
+// next vehicle without walking across the farm. Tractor -> combine -> tractor ...
+function switchVehicle() {
+  if (!me || $('shop').style.display === 'flex') return;
+  const list = ['tractor'].concat(save.up.harvester && save.combine ? ['combine'] : []);
+  const cur = player.driving ? player.veh : null, next = cur ? list[(list.indexOf(cur) + 1) % list.length] : list[0];
+  if (cur === next) { say(list.length < 2 ? 'You only have the tractor. Buy the combine harvester at the barn to switch between them.' : ''); return; }
+  if (cur) exitVehicle();
+  if (next === 'combine') enterCombine(); else enterTractor();
 }
 
 // ------------------------------------------------------------ level badge: a round "LV n" badge that follows each farmer's head on screen (it replaces the profile picture)
@@ -1047,6 +1073,7 @@ function padFrame(dt) {
   let px = ps.lx || (PAD.state().moveX()), py = ps.ry || ps.ly || ps.moveY(); py += ps.l2 - ps.r2;
   joy.x = clamp(px); joy.y = clamp(py);
   if (Math.abs(ps.rx) > .25) { yaw -= ps.rx * 2.4 * dt; lastDragAt = now; }
+  if (PAD.pressed('triangle')) switchVehicle();
   if (PAD.pressed('cross')) { useAction(); padNext = now + 380; } else if (PAD.held('cross') && now > padNext) { useAction(); padNext = now + 200; }
   const ids = TOOLS.map(function (t) { return t.id; }), ti = ids.indexOf(tool);
   if (PAD.pressed('r1')) setTool(ids[(ti + 1) % ids.length]);
@@ -1281,3 +1308,5 @@ window.__farm = { fleet: function () { return { combine: combine, trailer: trail
   b.onclick = function () { FOLLOW = !FOLLOW; try { localStorage.setItem('farm_cam', FOLLOW ? 'follow' : 'fixed'); } catch (e) {} paint(); }; })();
 // 🔊 sound on/off (remembered on this device)
 (function () { const b = $('sndBtn'); if (!b) return; const paint = () => { b.textContent = Sound.muted ? '🔇' : '🔊'; }; paint(); b.onclick = () => { Sound.toggle(); paint(); }; })();
+
+(function () { const b = $('swBtn'); if (b) b.onclick = function () { switchVehicle(); }; })();
