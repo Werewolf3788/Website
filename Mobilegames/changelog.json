@@ -1,0 +1,48 @@
+{
+  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
+  "entries": [
+    {
+      "id": 3,
+      "date": "Nov 18",
+      "game": "farm",
+      "items": [
+        "Minimap: growing crops go from dark to light green as they grow, gold when ready",
+        "Minimap: each of your fields shows a countdown until it's ready to harvest (💧 if some still need water)"
+      ]
+    },
+    {
+      "id": 2,
+      "date": "Nov 18",
+      "game": "all",
+      "items": [
+        "After every update, this card shows what changed"
+      ]
+    },
+    {
+      "id": 1,
+      "date": "Nov 18",
+      "game": "farm",
+      "items": [
+        "Fields split into strips by the seeds you select again (1 = whole field, 2 = halves, 3 = thirds)",
+        "Switch vehicles with Tab, the 🔄 Switch button or Triangle on a controller",
+        "Combine tank holds one field (240) and unloads into the trailer by itself when full",
+        "The truck and trailer park beside the field you're harvesting",
+        "Daily missions grow with your farm, and a New missions button appears once they're all done",
+        "Shared multiplayer XP stops at level 20; after that everyone levels on their own",
+        "The farmhouse opens: kitchen, missions, achievements and your farm record",
+        "Grain elevator moved away from the shop; drive the combine there to unload it directly",
+        "Extra-wide implements: 7 tiles at once (level 20)",
+        "Level-up card lists everything you unlocked and what's next",
+        "Tractor and combine drive back to their parking spots when you get out",
+        "Fields show their number in the owner's colour",
+        "Achievements show progress bars",
+        "Fertilizer is sold at the barn again and shared on multiplayer farms",
+        "Fertilized soil turns olive-green so you can see what's covered",
+        "Pigs, compost tower and the fertilizer seeder upgrade",
+        "Kitchen: Make all button",
+        "Tractor and combine engine sounds (🔊 button to mute)",
+        "Rain no longer freezes the game"
+      ]
+    }
+  ]
+}

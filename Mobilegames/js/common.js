@@ -333,10 +333,37 @@
 // friend-message pop-ups while playing (who it's from + a short preview, with quick reply)
 (function () { try { var s = document.createElement('script'); s.src = '../Claude-Test/ww-msg-toast.js'; s.defer = true; document.head.appendChild(s); } catch (e) {} })();
 
+// ---- what's new: after an update, show each player (once) what changed in this game. Entries live in Mobilegames/changelog.json.
+(function () {
+  try {
+    var KEY = 'mg_changelog_seen', page = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
+    fetch('changelog.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || !j.entries || !j.entries.length) return;
+      var top = j.entries.reduce(function (m, e) { return Math.max(m, (+e.id || 0)); }, 0), seen = +(localStorage.getItem(KEY) || 0);
+      localStorage.setItem(KEY, String(top));
+      if (!seen) { var ids = j.entries.map(function (e) { return (+e.id || 0); }).sort(function (a, b) { return b - a; }); seen = ids[2] || 0; }   // first time on this device: show the two newest notes
+      var fresh = j.entries.filter(function (e) { return ((+e.id || 0)) > seen && (e.game === 'all' || e.game === page || (page === 'index' && e.game)); });
+      if (!fresh.length) return;
+      var esc = function (t) { return String(t).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); };
+      var items = []; fresh.forEach(function (e) { (e.items || []).forEach(function (it) { items.push(it); }); });
+      var box = document.createElement('div');
+      box.style.cssText = 'position:fixed;inset:0;z-index:2147483050;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:14px;font:14px/1.45 system-ui,sans-serif';
+      box.innerHTML = '<div style="background:#1e293b;color:#e2e8f0;border:2px solid #22c55e;border-radius:16px;padding:16px 18px;width:min(94vw,440px);max-height:80vh;overflow:auto;box-shadow:0 14px 40px #000a">' +
+        '<div style="font-weight:800;font-size:18px;margin-bottom:6px">🆕 What\u2019s new' + (fresh[0].date ? ' <small style="font-weight:500;opacity:.7">· ' + esc(fresh[0].date) + '</small>' : '') + '</div>' +
+        '<ul style="margin:0;padding-left:20px">' + items.slice(0, 30).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
+        '<button style="margin-top:12px;width:100%;background:#16a34a;color:#fff;border:0;border-radius:10px;padding:11px;font:700 15px system-ui,sans-serif;cursor:pointer">Got it</button></div>';
+      var close = function () { box.remove(); };
+      box.querySelector('button').onclick = close; box.addEventListener('pointerdown', function (e) { if (e.target === box) close(); });
+      window.addEventListener('keydown', function k(e) { if (!box.isConnected) return window.removeEventListener('keydown', k, true); if (e.key === 'Escape' || e.key === 'Enter') { close(); } e.stopPropagation(); }, true);
+      (document.body ? Promise.resolve() : new Promise(function (r) { addEventListener('DOMContentLoaded', r); })).then(function () { document.body.appendChild(box); });
+    }).catch(function () {});
+  } catch (e) {}
+})();
+
 // ---- auto-update: when new game files are deployed, show a "tap to refresh" bar (no more Ctrl+F5). Checks every minute and when you come back to the tab.
 (function () {
   try {
-    var files = ['js/common.js', 'js/gamenav.js', 'js/farm3d.js', 'js/world.js', 'js/config.js', location.pathname.split('/').pop() || 'index.html'], base = {}, shown = false;
+    var files = ['changelog.json', 'js/common.js', 'js/gamenav.js', 'js/farm3d.js', 'js/world.js', 'js/config.js', location.pathname.split('/').pop() || 'index.html'], base = {}, shown = false;
     function sig(f) { return fetch(f, { method: 'HEAD', cache: 'no-store' }).then(function (r) { return r.ok ? (r.headers.get('etag') || r.headers.get('last-modified') || r.headers.get('content-length') || '') : ''; }).catch(function () { return ''; }); }
     function check(first) {
       if (shown) return;

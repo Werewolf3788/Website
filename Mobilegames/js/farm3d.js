@@ -1017,10 +1017,22 @@ function drawMini() {
   W.FIELDS.slice(0, vis).forEach(function (F, f) { g.fillStyle = isMine(f) ? '#4a3a26' : ownedFields[f] ? '#4a4034' : '#3f4a3f'; g.fillRect(X(F.x0), Z(F.z0), W.COLS * W.TILE * k, W.ROWS * W.TILE * k); if (isMine(f)) { g.strokeStyle = '#4ade80'; g.lineWidth = 1.5; g.strokeRect(X(F.x0), Z(F.z0), W.COLS * W.TILE * k, W.ROWS * W.TILE * k); } });
   // my tiles: plowed = dark soil, planted (not watered yet) = brown, growing = green, ready to harvest = gold
   const nowT = nowMs(), ts = Math.max(1.2, W.TILE * k - .4);
+  // growing crops get lighter green as they grow (just sprouted -> nearly ready), then gold when ready
+  const GROW = ['#14532d', '#166534', '#15803d', '#22c55e', '#86efac'], left = {}, dryF = {};   // left[f] = time until the slowest crop in field f is ready; dryF[f] = some crops still need water
   Object.keys(tiles).forEach(function (key) {
-    const i = +key, t = tiles[i]; if (!t || !isMine(W.fieldOf(i)) || W.fieldOf(i) >= vis) return; const p = tilePos(i);
-    g.fillStyle = t.k === 't' ? (t.u ? '#7a5a36' : '#5a4026') : !t.w ? '#b0742f' : progress(t, nowT) >= 1 ? '#facc15' : '#3fb950';
-    g.fillRect(X(p.x) - ts / 2, Z(p.z) - ts / 2, ts, ts);
+    const i = +key, t = tiles[i], f = W.fieldOf(i); if (!t || !isMine(f) || f >= vis) return; const p = tilePos(i);
+    let col;
+    if (t.k === 't') col = t.u ? '#7a5a36' : '#5a4026';
+    else if (!t.w) { col = '#b0742f'; dryF[f] = 1; if (left[f] === undefined) left[f] = 0; }
+    else { const pr = progress(t, nowT); col = pr >= 1 ? '#facc15' : GROW[Math.min(4, Math.floor(pr * 5))]; left[f] = Math.max(left[f] || 0, pr >= 1 ? 0 : growOf(t) * (1 - pr)); }
+    g.fillStyle = col; g.fillRect(X(p.x) - ts / 2, Z(p.z) - ts / 2, ts, ts);
+  });
+  // countdown on each of my fields: when the whole field is ready to harvest
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = 'bold ' + (miniBig ? 13 : 9) + 'px system-ui,sans-serif';
+  Object.keys(left).forEach(function (f) {
+    const F = W.FIELDS[f], cx = X(F.x0 + W.COLS * W.TILE / 2), cz = Z(F.z0 + W.ROWS * W.TILE / 2), r = left[f], dry = !!dryF[f];
+    const txt = (dry ? '💧' : '') + (r > 0 ? C.fmtTime(r) : dry ? ' water' : '✅ Ready');
+    g.lineWidth = 3; g.strokeStyle = '#000c'; g.strokeText(txt, cx, cz); g.fillStyle = !dry && r <= 0 ? '#facc15' : '#fff'; g.fillText(txt, cx, cz);
   });
   [[W.CHICKEN_PEN, '#c9a45c'], [W.COW_PASTURE, '#5f9a45']].forEach(function (pn) { const p = pn[0]; g.fillStyle = pn[1]; g.globalAlpha = .75; g.fillRect(X(p.x0), Z(p.z0), (p.x1 - p.x0) * k, (p.z1 - p.z0) * k); g.globalAlpha = 1; });
   g.fillStyle = '#c0392b'; g.fillRect(X(W.SHOP_POS.x) - 4, Z(W.SHOP_POS.z) - 4, 8, 8);
