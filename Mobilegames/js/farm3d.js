@@ -135,12 +135,14 @@ function groupMyFields() {
 }
 function fieldsSpread() { return myFields().some(function (m) { return distToMine(m, m) > 1; }); }
 let shownFields = 0;
+// the owner's primary colour (users/{key}/primary_color, shared through the farm room) as '#rrggbb', or null
+function ownerColor(uid) { const c = (uid && (colors[uid] || (me && uid === me.uid && myColor))) || ''; return /^#[0-9a-f]{6}$/i.test(c) ? c : null; }
 function updateFieldVisuals() {
   const nl = nextLand(), vis = visibleFields();
   if (vis > shownFields && shownFields) say('🏞️ New land for sale: Field ' + vis + '!'); shownFields = vis;
   world.fields.forEach(function (F, f) {
     F.setVisible(f < vis); if (f >= vis) return;
-    const o = ownedFields[f]; if (o) F.setOwner(o.n || 'Farmer', isMine(f)); else F.setOwner(null, false, nl ? 'FOR SALE · $' + nl.cost.toLocaleString() + ' for you · level ' + nl.level : 'FOR SALE');
+    const o = ownedFields[f]; if (o) F.setOwner(o.n || 'Farmer', isMine(f), null, ownerColor(o.uid || o.by)); else F.setOwner(null, false, nl ? 'FOR SALE · $' + nl.cost.toLocaleString() + ' for you · level ' + nl.level : 'FOR SALE');
   });
 }
 function claimField(f) {
@@ -1180,7 +1182,7 @@ async function begin(user, myCode) {
   const ff0 = firstMyField(); if (ff0 >= 0) { const p0 = W.tilePos(ff0 * C.FIELD_TILES + 10); player.x = p0.x; player.z = W.FIELDS[ff0].z0 - 2; }
   normalizeSave(); hud(); buildSeedBar(); applyImplement(); ensureFleet();
   let legacyAv = {}, legacyCol = {}, farmers = {};
-  const mergeFarmers = function () { avatars = Object.assign({}, legacyAv); colors = Object.assign({}, legacyCol); Object.keys(farmers).forEach(function (u) { const f = farmers[u] || {}; if (f.avatar) avatars[u] = f.avatar; if (f.color) colors[u] = f.color; }); syncRemotes(); };
+  const mergeFarmers = function () { avatars = Object.assign({}, legacyAv); colors = Object.assign({}, legacyCol); Object.keys(farmers).forEach(function (u) { const f = farmers[u] || {}; if (f.avatar) avatars[u] = f.avatar; if (f.color) colors[u] = f.color; }); syncRemotes(); updateFieldVisuals(); };
   roomRef.child('avatars').on('value', function (snap) { legacyAv = snap.val() || {}; mergeFarmers(); });
   roomRef.child('colors').on('value', function (snap) { legacyCol = snap.val() || {}; mergeFarmers(); });
   roomRef.child('farmers').on('value', function (snap) { farmers = snap.val() || {}; mergeFarmers(); });

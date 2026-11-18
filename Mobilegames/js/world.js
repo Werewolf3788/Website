@@ -90,14 +90,17 @@ export function buildWorld(scene) {
   W.fields = FIELDS.map(function (F, idx) {
     const cx = F.x0 + COLS * TILE / 2, cz = F.z0 + ROWS * TILE / 2, fw = COLS * TILE + 1.4, fd = ROWS * TILE + 1.4, g = new THREE.Group(); scene.add(g);
     const base = new THREE.Mesh(new THREE.PlaneGeometry(fw, fd), mat(0x6f8f3a)); base.rotation.x = -Math.PI / 2; base.position.set(cx, .02, cz); base.receiveShadow = true; g.add(base);
-    [[0, -fd / 2, fw, .5], [0, fd / 2, fw, .5], [-fw / 2, 0, .5, fd], [fw / 2, 0, .5, fd]].forEach(function (b) { box(g, b[2], .45, b[3], 0x8b5a2b, cx + b[0], .22, cz + b[1], false); });
+    const border = [[0, -fd / 2, fw, .5], [0, fd / 2, fw, .5], [-fw / 2, 0, .5, fd], [fw / 2, 0, .5, fd]].map(function (b) { return box(g, b[2], .45, b[3], 0x8b5a2b, cx + b[0], .22, cz + b[1], false); });
     let tag = null, sign = null;
     return {
       setVisible: function (v) { g.visible = !!v; },
-      // name: owner's name (null = nobody owns it yet); mine: it is the local player's; saleText: what the FOR SALE sign says
-      setOwner: function (name, mine, saleText) {
+      // name: owner's name (null = nobody owns it yet); mine: it is the local player's; saleText: what the FOR SALE sign says;
+      // color: the owner's primary colour ('#rrggbb'): the field number and the border around the field are painted in it
+      setOwner: function (name, mine, saleText, color) {
         base.material = mat(name ? 0x6f8f3a : 0x9aa86a);
-        if (tag) g.remove(tag); tag = makeLabel(name ? name + '\u2019s field' : 'Field ' + (idx + 1), mine ? '#86efac' : (name ? '#bae6fd' : '#ffffff'), 384); tag.position.set(F.x0 + 3, 2.6, F.z0 - 1.4); tag.scale.set(7.2, 1.2, 1); g.add(tag);
+        const col = name ? (color || (mine ? '#86efac' : '#bae6fd')) : null, key = (name || '') + '|' + col;
+        border.forEach(function (b) { b.material = mat(col ? parseInt(col.slice(1), 16) : 0x8b5a2b); });
+        if (!tag || tag.userData.key !== key) { if (tag) g.remove(tag); tag = makeLabel('Field ' + (idx + 1), col || '#ffffff', 384); tag.userData.key = key; tag.position.set(F.x0 + 3, 2.6, F.z0 - 1.4); tag.scale.set(7.2, 1.2, 1); g.add(tag); }
         if (sign) { g.remove(sign); sign = null; }
         if (!name) { sign = makeLabel(saleText || 'FOR SALE', '#ffe08a', 512); sign.position.set(cx, 3.8, F.z0 - 2.2); sign.scale.set(14, 1.75, 1); g.add(sign); }
       }
