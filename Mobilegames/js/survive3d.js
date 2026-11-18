@@ -70,7 +70,7 @@ const DIRS = [[0, -1, 4, -10.8], [1, 0, 10.8, -4], [0, 1, 4, 10.8], [-1, 0, -10.
 
 // ------------------------------------------------------------ save
 let st = null;
-function fresh() { return { v: 3, res: { wood: 0, food: 10, metal: 0, gems: 10 }, hp: 100, b: { pp: { lvl: 1 } }, piles: {}, paid: {}, zones: { '2,2': 1 }, camps: {}, boss: {}, heroes: { sarge: { lvl: 1 } }, weapon: 1, q: 0, stats: { wood: 0, metal: 0, food: 0, kills: 0, camps: 0, bosses: 0, zones: 0, collected: 0 }, last: NOW(), saved: 0 }; }
+function fresh() { return { v: 3, res: { wood: 0, food: 10, metal: 0, gems: 5 }, hp: 100, b: { pp: { lvl: 1 } }, piles: {}, paid: {}, zones: { '2,2': 1 }, camps: {}, boss: {}, heroes: { sarge: { lvl: 1 } }, weapon: 1, q: 0, stats: { wood: 0, metal: 0, food: 0, kills: 0, camps: 0, bosses: 0, zones: 0, collected: 0 }, last: NOW(), saved: 0 }; }
 function fix(s) {
   const f = fresh(); Object.keys(f).forEach(k => { if (s[k] === undefined) s[k] = f[k]; });
   Object.keys(f.res).forEach(k => { s.res[k] = +s.res[k] || 0; }); Object.keys(f.stats).forEach(k => { s.stats[k] = +s.stats[k] || 0; });
@@ -407,6 +407,8 @@ function deliver(dt) {
   });
 }
 // a build that's been paid in full (by allies, or by your crews feeding the builds) starts by itself: no need to stand on it
+// skipping a timer costs 1 💎 per 10 minutes left (at least 2), so gems stay worth something
+const finishCost = u => u ? Math.max(2, Math.ceil((u.end - NOW()) / 600000)) : 2;
 function autoComplete() { if (tour) return; const k = Object.keys(pads).find(key => pads[key] && !Object.keys(padLeft(key, pads[key])).length); if (k) complete(k, pads[k]); }
 function complete(key, p) {
   delete st.paid[key];
@@ -481,9 +483,9 @@ function hitZombie(z, dmg, by) {
   z.hp -= dmg; z.mesh.userData.flash = .12;
   if (z.hp <= 0 && !z.dead && z.def) { z.dead = true; scene.remove(z.mesh); sfx(260, .12, .07); raidCheck(); return; }
   if (z.hp <= 0 && !z.dead) {
-    z.dead = true; scene.remove(z.mesh); st.stats.kills++; const loot = z.boss ? { gems: 25, metal: 120, food: 80 } : { food: 2 + Math.floor(Math.random() * 3), wood: 2 }; if (!(tour && String(by || '').indexOf('guard') === 0)) give(loot);   // an ally's hunters' kills are theirs fly(z.boss ? '💎' : '🍖', z, player);
+    z.dead = true; scene.remove(z.mesh); st.stats.kills++; const loot = z.boss ? { gems: 5, metal: 120, food: 80 } : { food: 2 + Math.floor(Math.random() * 3), wood: 2 }; if (!(tour && String(by || '').indexOf('guard') === 0)) give(loot);   // an ally's hunters' kills are theirs fly(z.boss ? '💎' : '🍖', z, player);
     if (z.boss) { st.stats.bosses++; st.boss[z.zone] = NOW() + BOSS_RESPAWN; toast('👹 Boss defeated! +' + costTxt(loot) + ' · it returns in 1 hour', 4000); sfx(330, .3, .09); sfx(660, .5, .08, .2); }
-    if (!zombies.some(o => !o.dead && o.zone === z.zone) && zoneType.apply(null, z.zone.split(',').map(Number)) === 'infected') { st.camps[z.zone] = NOW(); st.stats.camps++; const r = { metal: 25, wood: 30, gems: 3 }; give(r); toast('🏕️ Camp cleared! +' + costTxt(r) + ' · the infected come back in 10 minutes', 4000); burst(z.x, z.z); }
+    if (!zombies.some(o => !o.dead && o.zone === z.zone) && zoneType.apply(null, z.zone.split(',').map(Number)) === 'infected') { st.camps[z.zone] = NOW(); st.stats.camps++; const r = { metal: 25, wood: 30 }; if (Math.random() < .15) r.gems = 1; give(r); toast('🏕️ Camp cleared! +' + costTxt(r) + ' · the infected come back in 10 minutes', 4000); burst(z.x, z.z); }
     persist();
   }
 }
@@ -502,19 +504,19 @@ const QUESTS = [
   ['Unlock a new area (clear the fog)', () => st.stats.zones, 1, { wood: 40 }, () => nearestPadKey('z:')],
   ['Upgrade the Power Plant to level 2', () => lvl('pp'), 2, { metal: 15 }, () => padFor('pp')],
   ['Mine 10 metal from rocks', () => st.stats.metal, 10, { food: 30 }, () => nearestNode(rocks) || nearestPadKey('z:')],
-  ['Defeat 5 infected', () => st.stats.kills, 5, { gems: 5 }, () => nearestNode(zombies) || nearestPadKey('z:')],
+  ['Defeat 5 infected', () => st.stats.kills, 5, { gems: 2 }, () => nearestNode(zombies) || nearestPadKey('z:')],
   ['Build the Smelter', () => lvl('smelter'), 1, { wood: 50 }, () => padFor('smelter')],
   ['Build the Hero Hall', () => lvl('hall'), 1, { metal: 30 }, () => padFor('hall')],
-  ['Recruit Rusty at the Hero Hall', () => st.heroes.rusty ? 1 : 0, 1, { gems: 10 }, () => bPos('hall')],
-  ['Clear an infected camp', () => st.stats.camps, 1, { gems: 10, metal: 40 }, () => nearestNode(zombies) || nearestPadKey('z:')],
-  ['Unlock 4 areas', () => st.stats.zones, 4, { gems: 10 }, () => nearestPadKey('z:')],
+  ['Recruit Rusty at the Hero Hall', () => st.heroes.rusty ? 1 : 0, 1, { gems: 3 }, () => bPos('hall')],
+  ['Clear an infected camp', () => st.stats.camps, 1, { gems: 3, metal: 40 }, () => nearestNode(zombies) || nearestPadKey('z:')],
+  ['Unlock 4 areas', () => st.stats.zones, 4, { gems: 3 }, () => nearestPadKey('z:')],
   ['Upgrade the Power Plant to level 3', () => lvl('pp'), 3, { metal: 50 }, () => padFor('pp')],
-  ['Build the Workshop', () => lvl('workshop'), 1, { gems: 5 }, () => padFor('workshop')],
+  ['Build the Workshop', () => lvl('workshop'), 1, { gems: 2 }, () => padFor('workshop')],
   ['Upgrade your weapon to level 2', () => st.weapon, 2, { food: 60 }, () => bPos('workshop')],
-  ['Recruit Leila the medic', () => st.heroes.leila ? 1 : 0, 1, { gems: 15 }, () => bPos('hall')],
-  ['Defeat a boss (orange zombie)', () => st.stats.bosses, 1, { gems: 30 }, () => nearestNode(zombies.filter(z => z.boss)) || nearestPadKey('z:')],
-  ['Upgrade the Power Plant to level 5', () => lvl('pp'), 5, { gems: 30 }, () => padFor('pp')],
-  ['Unlock every area on the map', () => st.stats.zones, 24, { gems: 100 }, () => nearestPadKey('z:')]
+  ['Recruit Leila the medic', () => st.heroes.leila ? 1 : 0, 1, { gems: 5 }, () => bPos('hall')],
+  ['Defeat a boss (orange zombie)', () => st.stats.bosses, 1, { gems: 8 }, () => nearestNode(zombies.filter(z => z.boss)) || nearestPadKey('z:')],
+  ['Upgrade the Power Plant to level 5', () => lvl('pp'), 5, { gems: 10 }, () => padFor('pp')],
+  ['Unlock every area on the map', () => st.stats.zones, 24, { gems: 25 }, () => nearestPadKey('z:')]
 ];
 function checkQuest() {
   if (tour && tour.arena) { const A = tour.arena, t = '🥊 Duel vs ' + WW.esc(duel ? duel.name : 'your ally') + ' · you ' + Math.round(st.hp) + '❤️ · them ' + Math.round(A.oppHp) + '❤️<small>' + (A.over ? 'Duel over' : fmt((A.end - NOW()) / 1000) + ' left · tap here to give up') + '</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return [0, 0, 0, 0, () => others[A.opp] || null]; }
@@ -576,7 +578,7 @@ function buildingPanel(id, info) {
   if (id === 'pp') h += '<div class="muted">Every other building can only be upgraded up to the Power Plant’s level.</div>';
   if (D.out) h += '<div class="muted">Makes ' + RES[D.out] + ' ' + (D.rate * b.lvl * efficiency() * 60).toFixed(1) + '/min into its pile (holds ' + 40 * b.lvl + '). Walk up to it to collect. Workers: ' + survivors() + ' survivors for ' + producers().length * 2 + ' jobs' + (st.res.food <= 0 ? ' · <b style="color:#fca5a5">no food — half speed</b>' : '') + '.</div>';
   if (id.indexOf('house') === 0) h += '<div class="muted">Each house level shelters 2 more survivors to work your buildings.</div>';
-  if (b.up) h += '<div class="row"><div class="g">Upgrading to level ' + b.up.to + '<div class="pb"><i style="width:' + Math.min(100, 100 - (b.up.end - NOW()) / b.up.total * 100) + '%"></i></div><div class="muted">' + fmt((b.up.end - NOW()) / 1000) + ' left · ' + Object.keys(b.up.h || {}).length + '/' + MAX_HELPS + ' ally helps</div></div><button class="b alt" data-a="finish" data-id="' + id + '" ' + (st.res.gems >= 5 ? '' : 'disabled') + '>⚡ Finish 💎5</button></div>';
+  if (b.up) h += '<div class="row"><div class="g">Upgrading to level ' + b.up.to + '<div class="pb"><i style="width:' + Math.min(100, 100 - (b.up.end - NOW()) / b.up.total * 100) + '%"></i></div><div class="muted">' + fmt((b.up.end - NOW()) / 1000) + ' left · ' + Object.keys(b.up.h || {}).length + '/' + MAX_HELPS + ' ally helps</div></div><button class="b alt" data-a="finish" data-id="' + id + '" ' + (st.res.gems >= finishCost(b.up) ? '' : 'disabled') + '>⚡ Finish 💎' + finishCost(b.up) + '</button></div>';
   else if (b.lvl >= cap(id)) h += '<div class="row muted">Max for now — upgrade the 🔌 Power Plant first.</div>';
   else h += '<div class="row muted">Stand on the yellow pad in front of it to deliver resources for the next level.</div>';
   show(h);
@@ -587,7 +589,7 @@ function doAct(a, d) {
   if (a === 'recruit') { const c = HEROES[d.id].cost; if (!canPay(c)) return; pay(c); st.heroes[d.id] = { lvl: 1 }; syncHeroes(); toast(HEROES[d.id].n + ' joined your squad!'); heroPanel(); }
   if (a === 'herolvl') { const o = st.heroes[d.id], c = heroUpCost(o.lvl); if (!canPay(c)) return; pay(c); o.lvl++; syncHeroes(); heroes[d.id].hp = heroes[d.id].max; heroPanel(); }
   if (a === 'weapon') { const c = weaponCost(st.weapon); if (!canPay(c)) return; pay(c); st.weapon++; toast('⚔️ Weapon level ' + st.weapon); workshopPanel(); }
-  if (a === 'finish') { if (st.res.gems < 5) return; st.res.gems -= 5; st.b[d.id].up.end = NOW(); economy(0); syncBuildings(); syncPads(); closeSheet(); }
+  if (a === 'finish') { const fc = finishCost(st.b[d.id].up); if (!st.b[d.id].up || st.res.gems < fc) return; st.res.gems -= fc; st.b[d.id].up.end = NOW(); economy(0); syncBuildings(); syncPads(); closeSheet(); }
   if (a === 'visit') return visit(($('vcode').value || '').trim().toUpperCase());
   if (a === 'visitf') return visit(d.code);
   if (a === 'raid') return raid(d.code);
@@ -799,7 +801,7 @@ function tbWin() {
   const H = tour ? tour.home : st, key = tb.room + '_' + tb.id; H.tbClaim = H.tbClaim || {};
   const hit = (tb.dmg || {})[uid] || tb.mine; if (!hit || H.tbClaim[key]) { if (!hit) toast('👹 ' + (tb.by || 'Your ally') + '’s team beat the boss!', 3500); return; }
   Object.keys(H.tbClaim).forEach(k => { if (NOW() - (+k.split('_').pop() || 0) > 86400000) delete H.tbClaim[k]; }); H.tbClaim[key] = 1;
-  const L = tb.lv || 1, loot = { gems: 15 + 3 * L, metal: 60 + 25 * L, food: 60 + 20 * L, wood: 80 + 25 * L };
+  const L = tb.lv || 1, loot = { gems: 3 + L, metal: 60 + 25 * L, food: 60 + 20 * L, wood: 80 + 25 * L };
   Object.keys(loot).forEach(k => { H.res[k] = (H.res[k] || 0) + loot[k]; }); if (tour) Object.keys(loot).forEach(k => { tour.S[k] = (tour.S[k] || 0) + loot[k]; st.res[k] = (st.res[k] || 0) + loot[k]; });   // shows now, and isn't split as "gathered"
   const who = Object.keys(tb.dmg || {}).length;
   sfx(784, .2, .08); sfx(1046, .35, .08, .15); toast('🏆 Team boss down' + (who > 1 ? ' (' + who + ' of you)' : '') + '! +' + costTxt(loot), 6000); persist(); hud();
@@ -810,7 +812,7 @@ async function tbJoin(c) { await visit(c); if (tour && tour.code === c) { tbList
 // ------------------------------------------------------------ arena: a live 1-on-1 duel with an ally who's playing right now.
 // The challenge goes to game_rooms/survive/{their code}/duel; if they accept, you both walk into an empty arena
 // (game_rooms/survive/ARENA_{id}: who's there, hits, hp, result). First to 0 HP loses 5% of their wood, food and metal
-// (up to 150 each) to the winner, and the winner also gets 5 gems. 3 minutes, then it's a draw.
+// (up to 150 each) to the winner, and the winner also gets 2 gems. 3 minutes, then it's a draw.
 const DUEL_TAKE = .05, DUEL_TIME = 3 * 60000;
 let duel = null, duelRef = null, duelAsk = null;
 async function duelChallenge(c, name) {
@@ -826,7 +828,7 @@ function listenDuel() {
   if (!code || !WW || WW.mode !== 'cloud') return;
   WW.roomRef('survive', code).child('duel').on('value', s => { const v = s.val(); if (!v || NOW() - (v.at || 0) > 60000 || duel || (duelAsk && duelAsk.id === v.id)) return;
     duelAsk = v; sfx(660, .15, .07); sfx(880, .2, .07, .12);
-    show('<h3>🥊 ' + WW.esc(v.from || 'An ally') + ' challenges you to a duel!</h3><div class="muted">A live 1-on-1 in the arena. First to 0 ❤️ loses 5% of their ' + RES.wood + RES.food + RES.metal + ' (up to 150 each) to the winner, and the winner gets 5 ' + RES.gems + '. Your heroes sit this one out.</div><div class="row"><button class="b" data-a="duelyes">⚔️ Accept</button><button class="b alt" data-a="duelno">Not now</button></div>'); });
+    show('<h3>🥊 ' + WW.esc(v.from || 'An ally') + ' challenges you to a duel!</h3><div class="muted">A live 1-on-1 in the arena. First to 0 ❤️ loses 5% of their ' + RES.wood + RES.food + RES.metal + ' (up to 150 each) to the winner, and the winner gets 2 ' + RES.gems + '. Your heroes sit this one out.</div><div class="row"><button class="b" data-a="duelyes">⚔️ Accept</button><button class="b alt" data-a="duelno">Not now</button></div>'); });
 }
 function duelAnswer(yes) {
   const v = duelAsk; closeSheet(); if (!v) return; duelAsk = null; try { WW.roomRef('survive', code).child('duel').remove(); } catch (e) {}
@@ -843,7 +845,7 @@ function duelWatch(id) {
     if (v.no && duel.waiting) { toast('🥊 ' + duel.name + ' said not now.', 4000); duelEnd(); return; }
     if (duel.waiting && v.b) { duel.waiting = false; duel.opp = v.b; duel.name = v.bn || duel.name; enterArena(0); }
     if (v.result && tour && tour.arena && !tour.arena.over && v.result.loser !== uid) {
-      tour.arena.over = true; const loot = Object.assign({}, v.result.loot || {}); loot.gems = (loot.gems || 0) + 5;
+      tour.arena.over = true; const loot = Object.assign({}, v.result.loot || {}); loot.gems = (loot.gems || 0) + 2;
       if (!v.result.left) { const H = tour.home; Object.keys(loot).forEach(k => { H.res[k] = (H.res[k] || 0) + loot[k]; }); }
       sfx(784, .2, .08); sfx(1046, .35, .08, .15);
       toast(v.result.left ? '🏳️ ' + duel.name + ' left the arena. Duel over.' : '🏆 You beat ' + duel.name + '! +' + costTxt(loot), 6000); setTimeout(duelEnd, 3500);

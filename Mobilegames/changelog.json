@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 32,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "💎 Gems are rarer now: bosses give 5 (was 25), camps only sometimes drop 1 (was 3 every time), mission gem rewards are about a third of what they were, team boss and duel gems are lower too",
+    "⚡ Finishing an upgrade early now costs 1 💎 per 10 minutes left (at least 2) instead of always 5"
+   ]
+  },
+  {
    "id": 31,
    "date": "Nov 18",
    "game": "survive",
