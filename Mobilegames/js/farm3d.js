@@ -701,10 +701,14 @@ function combineUnload(dt) {
   const Cb = save.combine, T = save.trailer; if (!Cb || !T || save.haul) return; const n = grainTotal(Cb.grain); if (!n) { unloadAcc = 0; return; }
   if (dist2(combineLocal, T) > 9 || Math.abs(combineLocal.speed) > 2.5) return;
   const space = HARVEST.trailer - grainTotal(T.grain); if (space < 1) { unloadAcc = 0; startHaul(); return; }   // trailer full: the truck takes it to the elevator by itself, then unloading carries on
-  unloadAcc += dt * 70; let move = Math.min(Math.floor(unloadAcc), n, space, Math.max(1, HARVEST.haulAt - grainTotal(T.grain))); if (move < 1) return; unloadAcc -= move;
+  unloadAcc += dt * 200; let move = Math.min(Math.floor(unloadAcc), n, space); if (move < 1) return; unloadAcc -= move;   // ~200 crops a second: a full tank empties in a few seconds
   Object.keys(Cb.grain).forEach(function (k) { if (move < 1) return; const m = Math.min(move, Cb.grain[k] | 0); if (m < 1) return; T.grain[k] = (T.grain[k] | 0) + m; Cb.grain[k] -= m; if (Cb.grain[k] <= 0) delete Cb.grain[k]; move -= m; });
-  if (!grainTotal(Cb.grain)) unloadAcc = 0;
-  queueSave(); if (grainTotal(T.grain) >= HARVEST.haulAt) { unloadAcc = 0; startHaul(); }   // a field's worth (240) in the trailer -> the truck takes it to the elevator by itself (smaller loads wait; send them from the trailer)   // tank empty or trailer full -> the truck takes the loaded trailer to the elevator by itself   // tank empty -> the truck takes the loaded trailer to the elevator by itself
+  queueSave();
+  // the combine empties completely into the trailer first; then (if there's at least a field's worth, 240) the truck drives it to the elevator.
+  // A trailer that fills up before the tank is empty goes too, and unloading carries on when it's back.
+  const nt = grainTotal(T.grain);
+  if ((!grainTotal(Cb.grain) && nt >= HARVEST.haulAt) || nt >= HARVEST.trailer) { unloadAcc = 0; startHaul(); }
+  else if (!grainTotal(Cb.grain)) { unloadAcc = 0; say('🌾 Tank emptied into the trailer (' + nt + '). The truck goes once there are ' + HARVEST.haulAt + ', or send it from the trailer.'); }
 }
 // --- the truck: depot -> trailer -> elevator (paid) -> trailer back -> depot. Saved as save.haul so it carries on after a reload.
 const pathLen = p => { let L = 0; for (let i = 1; i < p.length; i++) L += Math.hypot(p[i].x - p[i - 1].x, p[i].z - p[i - 1].z); return L; };
