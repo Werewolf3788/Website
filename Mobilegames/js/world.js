@@ -4,7 +4,7 @@ import * as THREE from './three.min.js';
 export const TILE = 2, COLS = 20, ROWS = 12, FIELD_TILES = COLS * ROWS;     // one field: 20x12 tiles of 2 units (big enough to need a tractor)
 // six fields. Field 0 is the original one (saved farms keep working); the top row is open, the bottom row is land for sale.
 // 24 plots in a grid of 3 columns; Field 0 is the original one (saved farms keep working). Plots appear on the map one at a time as land gets bought.
-export const FIELDS = Array.from({ length: 24 }, (_, i) => ({ x0: [-20, -66, 26][i % 3], z0: 2 + 30 * Math.floor(i / 3) }));
+export const FIELDS = Array.from({ length: 24 }, (_, i) => ({ x0: [26, -20, -66][i % 3], z0: 2 + 30 * Math.floor(i / 3) }));
 export const NT = FIELDS.length * FIELD_TILES;
 export const fieldOf = i => Math.floor(i / FIELD_TILES);
 export function tilePos(i) { const f = FIELDS[Math.floor(i / FIELD_TILES)], li = i % FIELD_TILES; return { x: f.x0 + (li % COLS) * TILE + TILE / 2, z: f.z0 + Math.floor(li / COLS) * TILE + TILE / 2 }; }

@@ -138,6 +138,7 @@
   WW.secureUrl = secure; WW.avatar = '';
   WW.loadAvatar = async function (user) {
     try { var v = (await db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val(); WW.avatar = typeof v === 'string' ? secure(v) : ''; } catch (e) {}
+    try { var nk = (await db.ref('users/' + WW.emailKey(user.email) + '/username').once('value')).val(); WW.nick = typeof nk === 'string' ? nk.trim().slice(0, 16) : ''; } catch (e) {}   // the site nickname (Settings > username)
     return WW.avatar;
   };
   WW.avatarHtml = function (url, name, px) {
@@ -191,7 +192,7 @@
   // ---- shared leaderboard (game_leaders/{game}/{uid}; everyone signed in can read, each player writes only their own row)
   // The row is rebuilt from the player's own win / loss history, so it fixes itself and old games count too.
   function leadersOn() { return WW.mode === 'cloud' && WW.user; }
-  function myTag() { var av = WW.avatar || ''; if (!/^https:\/\//.test(av) || av.length > 500) av = ''; return { n: String(WW.user.displayName || 'Player').split(' ')[0].slice(0, 16), av: av, t: Date.now() }; }
+  function myTag() { var av = WW.avatar || ''; if (!/^https:\/\//.test(av) || av.length > 500) av = ''; return { n: String(WW.nick || WW.user.displayName || 'Player').split(' ')[0].slice(0, 16), av: av, t: Date.now() }; }
   WW.syncLeaders = async function () {
     if (!leadersOn()) return;
     try {

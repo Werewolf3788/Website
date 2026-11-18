@@ -226,7 +226,14 @@ function harvestedToast(crop) { burst++; clearTimeout(burstT); burstT = setTimeo
 // ------------------------------------------------------------ planting mix: seeds you own are spread evenly across the field
 //   1 kind of seed -> the whole field, 2 kinds -> 50/50, 3 kinds -> thirds ... (split by column bands)
 function plantables() { return C.CROP_IDS.filter(function (id) { return level() >= C.CROPS[id].level && (save.seeds[id] || 0) > 0 && !save.skip[id]; }); }
-function cropForTile(i) { const list = plantables(); if (!list.length) return null; const li = i % C.FIELD_TILES, col = li % W.COLS, row = Math.floor(li / W.COLS), k = col * W.ROWS + row; return list[Math.min(list.length - 1, Math.floor(k * list.length / C.FIELD_TILES))]; }   // every field is split evenly (column-major)
+function cropForTile(i) {
+  // one crop per field, so the whole lot ripens together: keep planting whatever is already growing in this field; an empty field takes the next selected seed
+  const list = plantables(), f = W.fieldOf(i), base = f * C.FIELD_TILES;
+  for (let li = 0; li < C.FIELD_TILES; li++) { const t = tiles[base + li]; if (t && t.k === 'c' && C.CROPS[t.c]) return (save.seeds[t.c] || 0) > 0 ? t.c : null; }
+  if (!list.length) return null;
+  const mine = []; for (let g = 0; g < W.FIELDS.length; g++) if (isMine(g)) mine.push(g);
+  return list[Math.max(0, mine.indexOf(f)) % list.length];
+}
 function mixText() { const l = plantables(); return l.length ? 'Planting mix: ' + l.map(function (id) { return C.CROPS[id].icon + Math.round(100 / l.length) + '%'; }).join(' ') : 'No seeds selected, buy a pack at the barn'; }
 
 // ------------------------------------------------------------ tile actions (on foot, or automatically from the tractor)
@@ -884,7 +891,7 @@ async function begin(user, myCode) {
     if (isMP) { gate('Sign in to join a multiplayer farm.', { signIn: true }); return; }
     WW.useLocal(); roomRef = WW.roomRef('farm', 'solo'); me = { uid: 'local' }; await loadSeason(); { const lm = (await roomRef.child('meta').once('value')).val() || {}; if ((lm.season | 0) !== season) await roomRef.set({ meta: { season: season } }); } $('roomLabel').textContent = 'Guest · this device';
   }
-  $('gate').style.display = 'none'; myName = ((user && user.displayName) || 'Farmer').split(' ')[0].slice(0, 12);
+  $('gate').style.display = 'none'; myName = String((WW.nick) || (user && user.displayName) || 'Farmer').trim().split(' ')[0].slice(0, 14);
   try {
     let s = await WW.loadSave(saveKey);   // solo and every multiplayer farm each have their own progress, starting fresh
     if (s && (s.season | 0) !== season) s = null;   // saved in an older season: start again at level 1
@@ -901,7 +908,7 @@ async function begin(user, myCode) {
   giveLevel(farmer, level, myName); if (myAvatar) W.setAvatar(farmer, myAvatar);
   if (myColor) paintTractor(parseInt(myColor.slice(1), 16));
   // fields first (so we know which one is ours), then everything else
-  ownedFields = (await roomRef.child('fields').once('value')).val() || {}; await autoClaim(); checkAchievements(true);
+  ownedFields = (await roomRef.child('fields').once('value')).val() || {}; await autoClaim(); Object.keys(ownedFields).forEach(function (k) { var o = ownedFields[k]; if (o && me && o.uid === me.uid && o.n !== myName) { o.n = myName; roomRef.child('fields/' + k + '/n').set(myName); } }); checkAchievements(true);
   try {
     // tidy layout: avatar, colour and tractor live in farmers/{uid} (older farms kept them in avatars/, colors/ and tractors/; those get moved over here)
     let t = (await roomRef.child('farmers/' + me.uid + '/tractor').once('value')).val();
