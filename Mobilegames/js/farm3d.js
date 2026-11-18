@@ -367,14 +367,12 @@ function harvestedToast(crop) { burst++; clearTimeout(burstT); burstT = setTimeo
 //   1 kind of seed -> the whole field, 2 kinds -> 50/50, 3 kinds -> thirds ... (split by column bands)
 function plantables() { return C.CROP_IDS.filter(function (id) { return level() >= C.CROPS[id].level && (save.seeds[id] || 0) > 0 && !save.skip[id]; }); }
 function cropForTile(i) {
-  // one crop per field, so the whole lot ripens together: keep planting whatever is already growing in this field; an empty field takes the next selected seed
-  const list = plantables(), f = W.fieldOf(i), base = f * C.FIELD_TILES;
-  for (let li = 0; li < C.FIELD_TILES; li++) { const t = tiles[base + li]; if (t && t.k === 'c' && C.CROPS[t.c]) return (save.seeds[t.c] || 0) > 0 ? t.c : null; }
-  if (!list.length) return null;
-  const mine = []; for (let g = 0; g < W.FIELDS.length; g++) if (isMine(g)) mine.push(g);
-  return list[Math.max(0, mine.indexOf(f)) % list.length];
+  // the field is split into equal strips, one per selected seed: 1 seed = the whole field, 2 = halves, 3 = thirds ...
+  const list = plantables(); if (!list.length) return null;
+  const col = (i % C.FIELD_TILES) % W.COLS;
+  return list[Math.min(list.length - 1, Math.floor(col * list.length / W.COLS))];
 }
-function mixText() { const l = plantables(); return l.length ? 'Planting mix: ' + l.map(function (id) { return C.CROPS[id].icon + Math.round(100 / l.length) + '%'; }).join(' ') : 'No seeds selected, buy a pack at the barn'; }
+function mixText() { const l = plantables(); return l.length ? 'Field split: ' + l.map(function (id) { return C.CROPS[id].icon + Math.round(100 / l.length) + '%'; }).join(' ') : 'No seeds selected, buy a pack at the barn'; }
 
 // ------------------------------------------------------------ tile actions (on foot, or automatically from the tractor)
 let clearConfirm = { i: -1, until: 0 };
