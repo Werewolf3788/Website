@@ -21,11 +21,12 @@ export const TRACTOR_HOME = { x: -9, z: -3, ry: .6 };
 const NEAR_BARN = f => f === 0;
 export function parkFor(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + (NEAR_BARN(f) ? 16 : 6), z: F.z0 - 3.5, ry: .6 }; }
 export const inBarnZone = p => !!p && p.x > 14 && p.x < 40 && p.z > -14 && p.z < 2;
-export const ELEVATOR_POS = { x: 31, z: -3.2 };          // where the truck tips its load at the grain elevator (the silo)
+export const ELEVATOR_POS = { x: 52.5, z: -4.6 };   // moved out east, away from the shop          // where the truck tips its load at the grain elevator (the silo)
 export const TRUCK_HOME = { x: 37.5, z: -10, ry: -Math.PI / 2 };   // parked behind the silo, well clear of the shop door and the yard
 export function parkCombine(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + (NEAR_BARN(f) ? 24 : 13.5), z: F.z0 - 3.5, ry: .6 }; }
 export function parkTrailer(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + (NEAR_BARN(f) ? 32 : 20.5), z: F.z0 - 3.5, ry: Math.PI / 2 }; }
-export const COLLIDERS = [{ x: -26.6, z: -27.6, r: 1.7 }, { x: -24, z: -8, r: 6.2 }, { x: 22, z: -9, rect: { x0: 15.5, x1: 28.5, z0: -13.5, z1: -4.6 } }, { x: 30.5, z: -9, r: 3 }];
+export const COLLIDERS = [{ x: -26.6, z: -27.6, r: 1.7 }, { x: -24, z: -8, r: 6.2 }, { x: 22, z: -9, rect: { x0: 15.5, x1: 28.5, z0: -13.5, z1: -4.6 } }, { x: 52, z: -12, r: 3 }];
+export const HOUSE_DOOR = { x: -24, z: -3.6 };   // walk up to the farmhouse door to go inside
 
 const M = {}; // shared materials
 function mat(color, opts) { const k = color + JSON.stringify(opts || {}); return M[k] || (M[k] = new THREE.MeshLambertMaterial(Object.assign({ color: color }, opts || {}))); }
@@ -115,6 +116,7 @@ export function buildWorld(scene) {
   for (const x of [-2.8, 2.8]) { box(house, 1.5, 1.5, .2, 0x9fd4ff, x, 2.8, 3.55); box(house, 1.8, .2, .35, 0xffffff, x, 2, 3.6); }
   const roof = new THREE.Mesh(new THREE.ConeGeometry(7.6, 3.4, 4), mat(0xa63d2f)); roof.rotation.y = Math.PI / 4; roof.position.y = 6.7; roof.scale.set(1, 1, .78); roof.castShadow = true; house.add(roof);
   box(house, 1.2, 3, 1.2, 0x8a8a8a, 2.5, 7, -1.5);
+  { const hs = makeLabel('🏠 FARMHOUSE', '#ffe08a'); hs.position.set(0, 9.4, 0); hs.scale.set(5, 1.25, 1); house.add(hs); }
   // barn
   const barn = new THREE.Group(); barn.position.set(22, 0, -9); scene.add(barn);
   box(barn, 12, 6.5, 9, 0xb3382c, 0, 3.25, 0);
@@ -123,10 +125,10 @@ export function buildWorld(scene) {
   const rr = box(barn, 7.6, .5, 10, 0x5b3b2a, 3.1, 8.0, 0); rr.rotation.z = -.62;
   const sign = makeLabel('SHOP', '#ffe08a'); sign.position.set(0, 6.2, 5.2); sign.scale.set(5, 1.25, 1); barn.add(sign);
   // silo
-  const silo = new THREE.Group(); silo.position.set(30.5, 0, -9); scene.add(silo);
+  const silo = new THREE.Group(); silo.position.set(52, 0, -12); scene.add(silo);
   cyl(silo, 2.2, 2.2, 10, 0xcfd3d8, 0, 5, 0, 20); const dome = new THREE.Mesh(new THREE.SphereGeometry(2.2, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x8e949b)); dome.position.y = 10; dome.castShadow = true; silo.add(dome);
-  { const es = makeLabel('GRAIN ELEVATOR', '#ffe08a', 384); es.position.set(30.5, 12.6, -9); es.scale.set(7.2, 1.2, 1); scene.add(es);
-    const hop = new THREE.Group(); hop.position.set(ELEVATOR_POS.x, 0, -6.2); scene.add(hop);
+  { const es = makeLabel('GRAIN ELEVATOR', '#ffe08a', 384); es.position.set(52, 12.6, -12); es.scale.set(7.2, 1.2, 1); scene.add(es);
+    const hop = new THREE.Group(); hop.position.set(ELEVATOR_POS.x, 0, -8.6); scene.add(hop);
     box(hop, 3.2, .35, 3.6, 0x777f88, 0, .18, 0); box(hop, 2.4, 1.1, 2.6, 0x9aa3ad, 0, .9, 0); const fn = new THREE.Mesh(new THREE.ConeGeometry(1.5, 1.4, 4), mat(0x8e949b)); fn.rotation.y = Math.PI / 4; fn.position.set(0, 2.1, 0); fn.rotation.x = Math.PI; fn.castShadow = true; hop.add(fn); }
   // pens
   fence(scene, CHICKEN_PEN.x0 - 1, CHICKEN_PEN.z0 - 1, CHICKEN_PEN.x1 + 1, CHICKEN_PEN.z1 + 1, 'w');
@@ -140,7 +142,7 @@ export function buildWorld(scene) {
     const fill = box(ct, .58, 4.0, .06, 0x6b4a2b, 0, 0.6, 1.3); fill.geometry.translate(0, 2.0, 0); fill.position.y = 0.6; fill.scale.y = .01; W.compostFill = fill;
     const lb = makeLabel('🧪 COMPOST', '#bbf7d0'); lb.position.set(0, 6.9, 0); lb.scale.set(3.6, .9, 1); ct.add(lb); }
   // trees (seeded, away from play areas)
-  const r = rng(42), keep = (x, z) => !(x > -74 && x < 74 && z > -10 && z < 124) && !(x > 25 && x < 45 && z > -41 && z < -25) && !(x < -26 && x > -48 && z > -48 && z < -27) && !(Math.abs(x + 24) < 8 && Math.abs(z + 8) < 8) && !(Math.abs(x - 24) < 12 && Math.abs(z + 9) < 10);
+  const r = rng(42), keep = (x, z) => !(x > -74 && x < 74 && z > -10 && z < 124) && !(x > 25 && x < 45 && z > -41 && z < -25) && !(x < -26 && x > -48 && z > -48 && z < -27) && !(Math.abs(x + 24) < 8 && Math.abs(z + 8) < 8) && !(Math.abs(x - 24) < 12 && Math.abs(z + 9) < 10) && !(Math.abs(x - 52) < 9 && Math.abs(z + 11) < 9);
   let n = 0; while (n < 150) { const x = (r() - .5) * 170, z = (r() - .5) * 170; if (keep(x, z)) { tree(scene, x, z, r); n++; } }
   // clouds
   W.clouds = new THREE.Group(); const cm = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .9 });

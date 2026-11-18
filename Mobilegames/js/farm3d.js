@@ -20,7 +20,7 @@ const combineLocal = { x: 0, z: 0, ry: 0, speed: 0 };
 let combine = null, trailer = null, truck = null, roomEpoch = 0;     // harvest-chain models: they exist once the Combine harvester is owned
 const level = () => C.levelFromXp(save.xp);
 const headLvl = () => Math.min(C.HEADER_LEVELS.length - 1, Math.max(0, save.up.header | 0)), headSwath = () => C.HEADER_LEVELS[headLvl()].swath;
-const swath = () => save.up.mega ? 12 : save.up.wide ? 5 : 3;
+const swath = () => save.up.mega ? 12 : save.up.xwide ? 7 : save.up.wide ? 5 : 3;
 const nowMs = () => WW.now();
 
 function say(t) { $('toast').textContent = t || ''; clearTimeout(toastTimer); if (t) toastTimer = setTimeout(function () { $('toast').textContent = ''; }, 3800); }
@@ -493,10 +493,11 @@ function cook(r, n) {
 function row(html, buttons) { const r = document.createElement('div'); r.className = 'item'; r.innerHTML = '<div>' + html + '</div>'; const b = document.createElement('div'); b.className = 'btns'; (buttons || []).forEach(function (x) { const el = document.createElement('button'); el.className = 'b'; el.textContent = x.t; el.disabled = !!x.off; el.onclick = function () { x.f(); renderShop(); }; b.appendChild(el); }); r.appendChild(b); return r; }
 function renderShop() {
   const tabs = document.createElement('div');
-  TABS.forEach(function (t) { const b = document.createElement('button'); b.textContent = t[1]; b.className = t[0] === shopTab ? 'sel' : ''; b.onclick = function () { shopTab = t[0]; renderShop(); }; tabs.appendChild(b); });
+  { const h = document.querySelector('#shop h2'); if (h) h.textContent = inHouse ? '🏠 Farmhouse' : '🏪 Barn'; }
+  TABS.filter(function (t) { return !inHouse || HOUSE_TABS.indexOf(t[0]) >= 0; }).forEach(function (t) { const b = document.createElement('button'); b.textContent = t[1]; b.className = t[0] === shopTab ? 'sel' : ''; b.onclick = function () { shopTab = t[0]; renderShop(); }; tabs.appendChild(b); });
   const box = document.createElement('div'), l = level(), d = today(); box.innerHTML = '<div class="item" style="border:0;padding-top:0"><div><b style="color:#fde68a">$' + save.coins + '</b> · Level <b>' + l + '</b></div></div>';
-  if (!nearShop() && shopTab !== 'seeds' && shopTab !== 'missions' && shopTab !== 'settings') addHtml(box, '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>');
-  const can = nearShop();
+  if (!(inHouse && nearHouse()) && !nearShop() && shopTab !== 'seeds' && shopTab !== 'missions' && shopTab !== 'settings' && shopTab !== 'ach') addHtml(box, '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>');
+  const can = nearShop() || (inHouse && nearHouse() && HOUSE_TABS.indexOf(shopTab) >= 0);
   if (shopTab === 'seeds') {
     addHtml(box, '<div class="item" style="border:0"><small>One pack plants many tiles. A one-field pack covers a whole field. Every kind of seed you own is spread evenly across each field: one kind = all of it, two = half and half, three = thirds.</small></div>');
     C.CROP_IDS.forEach(function (id) {
@@ -622,7 +623,12 @@ function renderShop() {
   commitShop(tabs, 'shopTabs'); commitShop(box, 'shopItems');
 }
 function sell(id, n, quiet) { n = Math.min(n, save.bag[id] || 0); if (n < 1) return; const p = C.priceOf(id, today()) * n; addItem(id, -n); stat('sell', n); setCoins(p); if (!quiet) say('Sold ' + n + ' ' + C.GOODS[id].name.toLowerCase() + ' for $' + p + ''); }
-function openShop(tab) { if (tab) shopTab = tab; renderShop(); $('shop').style.display = 'flex'; }
+let inHouse = false;
+const HOUSE_TABS = ['kitchen', 'missions', 'ach', 'settings'];
+const nearHouse = () => Math.hypot(player.x - W.HOUSE_DOOR.x, player.z - W.HOUSE_DOOR.z) < 4.5;
+function openShop(tab) { inHouse = false; if (tab) shopTab = tab; renderShop(); $('shop').style.display = 'flex'; }
+// the farmhouse: cook in your own kitchen, check missions, achievements and your farm record
+function openHouse() { inHouse = true; if (HOUSE_TABS.indexOf(shopTab) < 0) shopTab = 'kitchen'; renderShop(); $('shop').style.display = 'flex'; }
 $('shopClose').onclick = function () { $('shop').style.display = 'none'; };
 $('bagBtn').onclick = function () { openShop('sell'); }; $('missionsBtn').onclick = function () { openShop('missions'); };
 
@@ -727,6 +733,14 @@ function buildPlan(h) {
   drive([H, Hy, E], HARVEST.carrySpeed, true); const payAt = t; wait(3, true, E);
   drive([E, Hy, H], HARVEST.emptySpeed, true);
   return { segs: segs, total: t, payAt: payAt };
+}
+// what a load of grain fetches at the elevator today (elevator bonus included)
+function elevatorValue(g) { const day = today(); let v = 0; Object.keys(g || {}).forEach(function (k) { v += (g[k] | 0) * C.priceOf(k, day); }); return Math.round(v * HARVEST.elevatorBonus); }
+// drive the combine to the elevator and tip whatever is left in the tank straight in (no need to wait for a full trailer)
+function dumpCombineAtElevator() {
+  const Cb = save.combine; if (!Cb) return; const n = grainTotal(Cb.grain); if (n < 1) return;
+  const v = elevatorValue(Cb.grain); Cb.grain = {}; setCoins(v); stat('sell', n); queueSave(); Sound.coin(true);
+  say('🌾 Unloaded ' + n + ' crops at the grain elevator: +$' + v.toLocaleString() + ' (elevator bonus included).');
 }
 function startHaul() {
   const T = save.trailer; if (!T || save.haul) return; const n = grainTotal(T.grain); if (n < 1) { say('The trailer is empty.'); return; }
@@ -840,6 +854,8 @@ function tileInfo(i) {
   return c.icon + ' ' + c.name + ' — ' + (t.u || t.f ? ' ' + (t.u ? '🌿' : '') + (t.f ? '🧪' : '') + ' ' : '') + (!t.w ? 'waiting for water or rain' : p >= 1 ? 'ready to harvest!' : Math.round(p * 100) + '% · ' + C.fmtTime(growOf(t) * (1 - p)) + ' left');
 }
 function context() {
+  if (player.driving && player.veh === 'combine' && save.combine && grainTotal(save.combine.grain) > 0 && Math.hypot(combineLocal.x - W.ELEVATOR_POS.x, combineLocal.z - W.ELEVATOR_POS.z) < 8) { const n = grainTotal(save.combine.grain); return { kind: 'dumpC', text: 'Unload ' + n + ' at the elevator (E)', info: 'about $' + elevatorValue(save.combine.grain) + ' with the elevator bonus' }; }
+  if (!player.driving && Math.hypot(player.x - W.HOUSE_DOOR.x, player.z - W.HOUSE_DOOR.z) < 3.5) return { kind: 'house', text: 'Go inside the farmhouse (E)', info: 'Kitchen · missions · achievements · your farm record' };
   if (player.driving && player.veh === 'combine') { const n = grainTotal(save.combine && save.combine.grain), nt = grainTotal(save.trailer && save.trailer.grain); return { kind: 'exit', text: 'Exit combine (E)', info: '🌾 Tank ' + n + '/' + HARVEST.tank + ' · trailer ' + nt + '/' + HARVEST.trailer + (n ? ' · park next to the trailer to unload' : ' · drive over ripe crops to harvest') }; }
   if (player.driving) return { kind: 'exit', text: 'Exit tractor (E)', info: toolLabel() + ' · ' + swath() + ' tiles wide' + (tool === 'seed' ? ' · ' + mixText() : '') };
   const id = nearestReadyAnimal(); if (id) return { kind: 'collect', id: id, text: 'Collect ' + C.ANIMALS[animals[id].t].prod + ' (E)' };
@@ -862,6 +878,8 @@ function useAction() {
   if (c.kind === 'collect') collect(c.id);
   else if (c.kind === 'compost') collectCompost();
   else if (c.kind === 'shop') openShop('seeds');
+  else if (c.kind === 'house') openHouse();
+  else if (c.kind === 'dumpC') dumpCombineAtElevator();
   else if (c.kind === 'tile') actTile(c.i, false);
   else if (c.kind === 'haul') startHaul();
   else if (c.kind === 'driveC') {
@@ -1092,7 +1110,7 @@ function frame(ts) {
   camX += (player.x - camX) * Math.min(1, dt * 8); camZ += (player.z - camZ) * Math.min(1, dt * 8);
   camera.position.set(camX + Math.sin(yaw) * Math.cos(pitch) * d, ty + Math.sin(pitch) * d, camZ + Math.cos(yaw) * Math.cos(pitch) * d); camera.lookAt(camX, ty, camZ);
   const c = me && context(); $('prompt').innerHTML = c ? '<span>' + c.text + (c.info ? '<small>' + c.info + '</small>' : '') + '</span>' : '';
-  $('useBtn').textContent = c ? ({ tile: 'Use', exit: 'Exit', drive: 'Drive', driveC: 'Drive', shop: 'Barn', haul: 'Send', info: 'Use', collect: 'Collect', compost: 'Collect' }[c.kind] || 'Use') : 'Use';
+  $('useBtn').textContent = c ? ({ tile: 'Use', exit: 'Exit', drive: 'Drive', driveC: 'Drive', shop: 'Barn', haul: 'Send', info: 'Use', collect: 'Collect', compost: 'Collect', house: 'Enter', dumpC: 'Unload' }[c.kind] || 'Use') : 'Use';
   if (c && c.kind === 'tile') { const p = tilePos(c.i); pointer.position.set(p.x, .26, p.z); pointer.visible = true; } else pointer.visible = false;
   updateDomBadges(); updateRain(dt, isRaining()); updateSky(); updateAnimals(dt); updateRemotes(dt);
   mmT += dt; if (mmT > .12) { mmT = 0; drawMini(); }

@@ -107,7 +107,8 @@ export const UPGRADES = {
   nitro:     { name: 'Nitro engine',      desc: 'Tractor drives another 25% faster (needs Turbo engine)', level: 16, cost: 2500, needs: 'fast' },
   harvester: { name: 'Combine harvester', desc: 'A real combine you can drive (the tractor then stops harvesting): it harvests 5 tiles wide into its grain tank (1,440 crops: six whole fields, so you can go from field to field). Park it next to your trailer to unload, then send the truck to the grain elevator for a better price than the barn. Comes with a trailer and a truck.', level: 8, cost: 2000 },
   combine:   { name: 'Combine header',    desc: 'Harvesting with the tractor sometimes gives a bonus crop (1 in 4)', level: 20, cost: 4000 },
-  mega:      { name: 'Mega implements',   desc: 'Tractor works 12 tiles at once (needs Wide implements)', level: 26, cost: 7500, needs: 'wide' }
+  xwide:     { name: 'Extra-wide implements', desc: 'Tractor works 7 tiles at once (needs Wide implements)', level: 20, cost: 3500, needs: 'wide' },
+  mega:      { name: 'Mega implements',   desc: 'Tractor works 12 tiles at once (needs Extra-wide implements)', level: 26, cost: 7500, needs: 'xwide' }
 };
 
 // ---- the harvest chain (combine harvester -> trailer -> truck -> grain elevator)
