@@ -221,9 +221,14 @@ function useFert(n) {
   }, 900);
   return true;
 }
+// buying fertilizer: shows right away, and goes into the shared pool
+function addFert(n) {
+  save.fert += n; hud(); if (!roomRef) return;
+  roomRef.child('fertStore/pool').transaction(function (p) { return (p || 0) + n; }, function () {}, false);
+}
 function collectCompost() {
   const now = nowMs(), rate = compostRate(); let got = 0;
-  if (compostNow() < 1) { say(rate ? 'The compost tower is still filling (' + rate + ' an hour). Come back later.' : 'The compost tower is empty. Cows, pigs and sheep fill it up; buy some at the barn (Animals tab).'); return; }
+  if (compostNow() < 1) { say(rate ? 'The compost tower is still filling (' + rate + ' an hour). Come back later.' : 'The compost tower is empty. Cows, pigs and sheep fill it up slowly; you can also buy fertilizer at the barn (Store tab).'); return; }
   roomRef.child('fertStore').transaction(function (c) {
     c = c || { pool: 0, tower: 0, t: now };
     got = Math.floor(Math.min(C.COMPOST.cap, (c.tower || 0) + (c.t ? rate * Math.max(0, now - c.t) / 3600000 : 0)));
@@ -372,7 +377,7 @@ function actTile(i, quiet) {
     else if (!quiet) say(!cur ? 'Plow the soil first, then cultivate it.' : cur.k === 't' ? 'Already cultivated.' : 'Cultivate the soil before planting.');
   } else if (tool === 'fert') {
     if (cur && cur.k === 'c' && !cur.f && progress(cur) < 1) {
-      if (save.fert < 1) { if (!quiet || !outWarn()) say('Out of fertilizer. Collect it at the compost tower by the animal pasture.'); return; }
+      if (save.fert < 1) { if (!quiet || !outWarn()) say('Out of fertilizer. Buy some at the barn (Store tab).'); return; }
       useFert(1); ref.child('f').set(1); stat('fert'); addXp(1); hud(); queueSave();
     } else if (!quiet) say(!cur || cur.k !== 'c' ? 'Fertilize a growing crop.' : cur.f ? 'Already fertilized.' : 'Ready to harvest already.');
   } else if (tool === 'water') {
@@ -511,7 +516,9 @@ function renderShop() {
     });
   } else if (shopTab === 'store') {
     addHtml(box, '<div class="item" style="border:0"><small>Field work goes: plow → cultivate → plant → water → fertilize → harvest. Cultivated soil grows crops 10% faster and fertilizer makes a growing crop 25% faster (both are used up when you harvest). You have <b>' + save.fert + '</b> fertilizer.</small></div>');
-    addHtml(box, '<div class="item" style="border:0"><small>🧪 Fertilizer isn\u2019t sold here any more. The <b>compost tower</b> next to the animal pasture fills up from the farm\u2019s cows, pigs and sheep (' + compostRate() + ' an hour right now, holds ' + C.COMPOST.cap + '). Walk up to it to collect.' + (isMP ? ' Everyone on this farm shares one fertilizer supply.' : '') + '</small></div>');
+    C.FERT.packs.forEach(function (n) { const cost = C.fertPrice(n); box.appendChild(row(C.FERT.icon + ' <b>Fertilizer ×' + n.toLocaleString() + '</b> <small>$' + (cost / n).toFixed(1) + ' each' + (isMP ? ' · goes into the farm\u2019s shared supply' : '') + '</small>',
+      [{ t: 'Buy $' + cost.toLocaleString(), off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); addFert(n); stat('buy'); say('Bought ' + n + ' fertilizer' + (isMP ? ' for everyone on the farm' : '') + '.'); } }])); });
+    addHtml(box, '<div class="item" style="border:0"><small>🧪 The compost tower by the animal pasture also makes free fertilizer from the farm\u2019s cows, pigs and sheep (' + compostRate() + ' an hour right now).' + (isMP ? ' Everyone on this farm shares one fertilizer supply: ' + save.fert + ' right now.' : '') + '</small></div>');
     let dry = 0; Object.keys(tiles).forEach(function (k) { const t = tiles[k]; if (t && t.k === 'c' && !t.w && isMine(W.fieldOf(+k))) dry++; });
     box.appendChild(row('🌧️ <b>Rain dance</b> <small>Waters every dry crop in your fields right now · ' + dry + ' waiting</small>', [{ t: 'Call rain $60', off: !can || save.coins < 60 || !dry, f: function () {
       if (save.coins < 60) return; const now = nowMs(); let n = 0; Object.keys(tiles).forEach(function (k) { const t = tiles[k]; if (t && t.k === 'c' && !t.w && isMine(W.fieldOf(+k))) { roomRef.child('tiles/' + k + '/w').set(now); n++; } });

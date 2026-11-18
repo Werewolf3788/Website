@@ -91,8 +91,9 @@ RECIPES.forEach(function (r) { GOODS[r.id].level = r.level; });
 // Cultivated soil grows its crop 10% faster; fertilizer makes a growing crop grow 25% faster. Both are lost when the crop is harvested.
 export const TOOL_LEVEL = { hoe: 1, cultivate: 2, water: 1, harvest: 1, seed: 1, fert: 4 };
 export const GROW_CULTIVATED = .9, GROW_FERTILIZED = .75;
-export const FERT = { name: 'Fertilizer', icon: '🧪' };
-// Fertilizer can't be bought: the compost tower by the pasture fills up from the farm's cows, pigs and sheep, and you collect it there.
+export const FERT = { name: 'Fertilizer', icon: '🧪', cost: 6, packs: [10, 50, 200, 1000] };
+export function fertPrice(n) { return Math.round(FERT.cost * n * (n >= 1000 ? .65 : n >= 200 ? .75 : n >= 50 ? .85 : 1)); }
+// Fertilizer is bought at the barn (Store tab); the compost tower by the pasture also fills up a little for free from the cows, pigs and sheep.
 // On a farm the fertilizer is one shared supply for everybody on it.
 export const COMPOST = { cap: 600, perHour: { cow: 12, pig: 10, sheep: 6 } };
 
