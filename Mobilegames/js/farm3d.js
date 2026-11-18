@@ -737,11 +737,12 @@ document.body.appendChild(mini);
 let miniBig = false;
 const MM = { x0: -74, x1: 74, z0: -50, z1: 60 };
 function sizeMini() {
-  const ratio = (MM.z1 - MM.z0) / (MM.x1 - MM.x0), base = miniBig ? Math.min(window.innerWidth - 16, 330) : 150, maxH = window.innerHeight * (miniBig ? .72 : .4), w = Math.round(Math.min(base, maxH / ratio));
+  mini.classList.toggle('big', miniBig);
+  const ratio = (MM.z1 - MM.z0) / (MM.x1 - MM.x0), base = miniBig ? Math.min(window.innerWidth - 16, 330) : (matchMedia('(orientation:landscape)').matches ? 110 : 150), maxH = window.innerHeight * (miniBig ? .72 : .4), w = Math.round(Math.min(base, maxH / ratio));
   mini.width = w; mini.height = Math.round(w * ratio); mini.style.width = mini.width + 'px'; mini.style.height = mini.height + 'px';
 }
 mini.addEventListener('click', function () { miniBig = !miniBig; sizeMini(); });
-sizeMini();
+sizeMini(); addEventListener('resize', sizeMini);
 function drawMini() {
   const vis = visibleFields(); let zmax = 60; for (let f = 0; f < vis; f++) zmax = Math.max(zmax, W.FIELDS[f].z0 + W.ROWS * W.TILE + 4);
   if (zmax !== MM.z1) { MM.z1 = zmax; sizeMini(); }
