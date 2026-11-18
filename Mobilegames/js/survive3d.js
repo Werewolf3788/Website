@@ -122,9 +122,28 @@ const crewSize = L => L >= 1 ? Math.min(8, L + 1) : 0, AWAY_CREW = 2;
 const AWAY_RATE = .01, AWAY_MAX = 7 * 86400;
 let awayNow = false;   // true while catching up on time away (that output goes to the buildings, not your pocket)
 function inTown() { const [i, j] = zoneAt(player.x, player.z); return i === 2 && j === 2; }
+// ------------------------------------------------------------ welcome back: one card with everything that happened while you were gone
+let welcome = null;
+const when = t => { const d = new Date(t), today = new Date().toDateString() === d.toDateString(); return (today ? 'today ' : d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ' ') + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
+function showWelcome() {
+  const W0 = welcome; if (!W0 || W0.shown || tour) return; W0.shown = true;
+  const last = W0.news.reduce((m, n) => n.at > m.at ? n : m, { at: W0.lastAt, who: 'You', what: 'played' });
+  let h = '<h3>👋 Welcome back!</h3><div class="muted">You were away for <b>' + fmt(W0.sec) + '</b> · last played ' + when(W0.lastAt) + '</div>';
+  h += '<div class="row"><div class="g"><b>🕓 Last update</b><div class="muted">' + WW_esc(last.who) + ' ' + WW_esc(last.what) + ' · ' + when(last.at) + '</div></div></div>';
+  const raids = W0.news.filter(n => n.raid), allies = W0.news.filter(n => !n.raid);
+  if (raids.length) h += '<div class="row"><div class="g"><b>⚔️ Raids</b><div class="muted">' + raids.map(n => WW_esc(n.who) + ' raided you' + (n.took ? ' and took ' + n.took : '') + ' · ' + when(n.at)).join('<br>') + '<br>Get revenge from 🤝 Allies.</div></div></div>';
+  if (allies.length || W0.helps) h += '<div class="row"><div class="g"><b>🤝 Allies</b><div class="muted">' + allies.map(n => WW_esc(n.who) + ' ' + WW_esc(n.what) + (n.got ? ': +' + n.got : '') + ' · ' + when(n.at)).concat(W0.helps ? ['Allies sped up your upgrades ' + W0.helps + ' time' + (W0.helps > 1 ? 's' : '')] : []).join('<br>') + '</div></div></div>';
+  const bp = [];
+  (W0.ups || []).forEach(e => bp.push(e));
+  if (Object.keys(W0.built).length) bp.push('Your crews put ' + costTxt(W0.built) + ' into your builds');
+  if (Object.keys(W0.piled).length) bp.push(costTxt(W0.piled) + ' waiting in the piles');
+  h += '<div class="row"><div class="g"><b>🏗️ Building progress</b><div class="muted">' + (bp.length ? bp.join('<br>') : 'Nothing new: only your crews work while you\u2019re away (at ' + Math.round(AWAY_RATE * 100) + '% speed).') + '</div></div></div>';
+  show(h);
+}
+const WW_esc = t => escH(t);
 function awayCatchUp(sec, quiet) {
   sec = Math.min(AWAY_MAX, sec); const eff = sec * AWAY_RATE; if (eff < 1) return;
-  awayNow = true; try { economy(eff); } finally { awayNow = false; }
+  let ev = []; awayNow = true; try { ev = economy(eff); } finally { awayNow = false; }
   const pads = wantedPads(), built = {}, toAllies = {}; let piled = {};
   Object.keys(ROLES).forEach(id => {
     const n = lvl(id) >= 1 ? AWAY_CREW : 0; if (!n) return; const R = ROLES[id], r = R.res;
@@ -136,7 +155,8 @@ function awayCatchUp(sec, quiet) {
   st.allyPending = st.allyPending || {}; Object.keys(toAllies).forEach(r => { st.allyPending[r] = (st.allyPending[r] || 0) + toAllies[r]; });
   const fl = o => { const x = {}; Object.keys(o).forEach(k => { if (o[k] >= 1) x[k] = Math.floor(o[k]); }); return x; };
   const b = fl(built), p = fl(piled);
-  if (!quiet || Object.keys(b).length) setTimeout(() => toast('👋 While you were away (' + fmt(sec) + ', at ' + Math.round(AWAY_RATE * 100) + '% speed): ' + (Object.keys(b).length ? 'your crews put ' + costTxt(b) + ' into builds' : 'your town kept ticking') + (Object.keys(p).length ? ' · ' + costTxt(p) + ' in the piles' : ''), 5000), 600);
+  if (!quiet) { welcome = { sec: sec, lastAt: NOW() - sec * 1000, built: b, piled: p, ups: ev, news: [], helps: 0, shown: false }; return; }   // shown as the welcome-back card
+  if (Object.keys(b).length) setTimeout(() => toast('👋 While you were away (' + fmt(sec) + ', at ' + Math.round(AWAY_RATE * 100) + '% speed): ' + (Object.keys(b).length ? 'your crews put ' + costTxt(b) + ' into builds' : 'your town kept ticking') + (Object.keys(p).length ? ' · ' + costTxt(p) + ' in the piles' : ''), 5000), 600);
 }
 function economy(dt) {
   const ev = [], now = NOW(), e = efficiency();
@@ -741,10 +761,12 @@ function applyGifts() {
   giftQ.splice(0).forEach(g => {
     if (g.raid) { const lost = {}; Object.keys(g.res || {}).forEach(k => { const n = Math.min(st.res[k] || 0, -(+g.res[k] || 0)); if (n > 0) { st.res[k] -= n; lost[k] = n; } });
       if (g.code) { st.raidedBy = st.raidedBy || {}; st.raidedBy[g.code] = NOW(); }
+      if (welcome && !welcome.shown) welcome.news.push({ raid: 1, who: g.from || 'An ally', what: 'raided you', took: costTxt(lost), at: g.at || NOW() });
       toast('⚔️ ' + (g.from || 'An ally') + ' raided your settlement' + (Object.keys(lost).length ? ' and took ' + costTxt(lost) : '') + '! Get revenge in 🤝 Allies.', 6000); return; }
     const got = {}; Object.keys(g.res || {}).forEach(k => { const n = +g.res[k] || 0; if (n > 0) { st.res[k] = (st.res[k] || 0) + n; got[k] = (got[k] || 0) + n; } });
     Object.keys(g.paid || {}).forEach(key => Object.keys(g.paid[key] || {}).forEach(k => { const n = +g.paid[key][k] || 0; if (n <= 0) return;
       if (pads[key]) (st.paid[key] = st.paid[key] || {})[k] = (st.paid[key][k] || 0) + n; else st.res[k] = (st.res[k] || 0) + n; got[k] = (got[k] || 0) + n; }));
+    if (Object.keys(got).length && welcome && !welcome.shown) welcome.news.push({ who: g.from || 'An ally', what: g.share ? 'shared some of their progress' : 'worked on your settlement', got: costTxt(got), at: g.at || NOW() });
     if (Object.keys(got).length) toast('🤝 ' + (g.from || 'An ally') + (g.share ? ' shared some of their progress' : ' worked on your settlement') + ': +' + costTxt(got), 4500);
   });
   syncPads(); persist(); publishPub();
@@ -753,6 +775,7 @@ function applyHelps() {
   { if (tour || !lastHelps) return; const v = lastHelps; let n = 0;
     Object.keys(BD).forEach(id => { const u = st.b[id].up; if (!u) return; const who = v[id + '_' + u.to]; if (!who) return; u.h = u.h || {};
       Object.keys(who).forEach(w => { if (!u.h[w] && Object.keys(u.h).length < MAX_HELPS) { u.h[w] = 1; u.end = Math.max(NOW() + 1000, u.end - u.total * HELP_CUT); n++; } }); });
+    if (n && welcome && !welcome.shown) welcome.helps += n;
     if (n) { toast('🤝 Allies helped your buildings ' + n + ' time' + (n > 1 ? 's' : '') + '!'); persist(); publishPub(); } }
 }
 
@@ -917,7 +940,9 @@ function boot() {
     uid = user && user.uid; code = fc; if (!user) return;
     try { const c = await WW.loadSave(CLOUD_KEY); if (c && c.v === 3 && (c.saved || 0) > (st.saved || 0)) { st = fix(c); const o = (NOW() - (st.last || NOW())) / 1000; if (o > 10) awayCatchUp(o); loadWorld(); } } catch (e) {}
     listenHelps(); listenGifts(); publishPub(); publishPlaying(); setRoom(code);
+    setTimeout(showWelcome, 2500);   // after allies' news (raids, help) has come in
   });
+  setTimeout(() => { if (!WW || !WW.user) showWelcome(); }, 4000);   // not signed in: show it straight away
 }
 
 // ------------------------------------------------------------ main loop

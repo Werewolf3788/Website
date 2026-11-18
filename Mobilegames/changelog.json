@@ -2,6 +2,14 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 22,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Welcome-back card: how long you were away and when you last played, who last updated your settlement, raids on you, what allies did for you, upgrades that finished and what your crews built"
+      ]
+    },
+    {
       "id": 21,
       "date": "Nov 18",
       "game": "survive",
