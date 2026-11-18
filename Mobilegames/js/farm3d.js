@@ -1027,6 +1027,11 @@ function drawMini() {
     else { const pr = progress(t, nowT); col = pr >= 1 ? '#facc15' : GROW[Math.min(4, Math.floor(pr * 5))]; left[f] = Math.max(left[f] || 0, pr >= 1 ? 0 : growOf(t) * (1 - pr)); }
     g.fillStyle = col; g.fillRect(X(p.x) - ts / 2, Z(p.z) - ts / 2, ts, ts);
   });
+  // the same status as a sign over each of my fields in the 3D world (and nothing over fields with no crops)
+  world.fields.forEach(function (F, f) {
+    if (left[f] === undefined) { F.setStatus(null); return; } const r = left[f], dry = !!dryF[f];
+    F.setStatus(r > 0 ? (dry ? '💧 ' : '⏱ ') + C.fmtTime(r) : dry ? '💧 needs water' : '✅ READY TO HARVEST', r > 0 ? '#ffffff' : dry ? '#93c5fd' : '#facc15');
+  });
   // countdown on each of my fields: when the whole field is ready to harvest
   g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = 'bold ' + (miniBig ? 13 : 9) + 'px system-ui,sans-serif';
   Object.keys(left).forEach(function (f) {

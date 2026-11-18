@@ -92,9 +92,16 @@ export function buildWorld(scene) {
     const cx = F.x0 + COLS * TILE / 2, cz = F.z0 + ROWS * TILE / 2, fw = COLS * TILE + 1.4, fd = ROWS * TILE + 1.4, g = new THREE.Group(); scene.add(g);
     const base = new THREE.Mesh(new THREE.PlaneGeometry(fw, fd), mat(0x6f8f3a)); base.rotation.x = -Math.PI / 2; base.position.set(cx, .02, cz); base.receiveShadow = true; g.add(base);
     const border = [[0, -fd / 2, fw, .5], [0, fd / 2, fw, .5], [-fw / 2, 0, .5, fd], [fw / 2, 0, .5, fd]].map(function (b) { return box(g, b[2], .45, b[3], 0x8b5a2b, cx + b[0], .22, cz + b[1], false); });
-    let tag = null, sign = null;
+    let tag = null, sign = null, status = null;
     return {
       setVisible: function (v) { g.visible = !!v; },
+      // a status sign over the field (countdown / READY / needs water); text null hides it. Only redrawn when the text changes.
+      setStatus: function (text, color) {
+        const drop = function () { if (!status) return; g.remove(status); if (status.material.map) status.material.map.dispose(); status.material.dispose(); status = null; };
+        if (!text) { drop(); return; }
+        if (status && status.userData.key === text + color) return; drop();
+        status = makeLabel(text, color || '#ffffff', 384); status.userData.key = text + color; status.position.set(cx, 4.2, F.z0 - 1.6); status.scale.set(8.4, 1.4, 1); g.add(status);
+      },
       // name: owner's name (null = nobody owns it yet); mine: it is the local player's; saleText: what the FOR SALE sign says;
       // color: the owner's primary colour ('#rrggbb'): the field number and the border around the field are painted in it
       setOwner: function (name, mine, saleText, color) {
