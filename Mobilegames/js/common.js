@@ -330,6 +330,9 @@
 // site-wide achievement pop-ups (shared with the rest of the site)
 (function () { try { var s = document.createElement('script'); s.src = '../Claude-Test/ww-ach-toast.js'; s.defer = true; document.head.appendChild(s); } catch (e) {} })();
 
+// friend-message pop-ups while playing (who it's from + a short preview, with quick reply)
+(function () { try { var s = document.createElement('script'); s.src = '../Claude-Test/ww-msg-toast.js'; s.defer = true; document.head.appendChild(s); } catch (e) {} })();
+
 // ---- auto-update: when new game files are deployed, show a "tap to refresh" bar (no more Ctrl+F5). Checks every minute and when you come back to the tab.
 (function () {
   try {

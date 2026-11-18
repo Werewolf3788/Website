@@ -2,6 +2,7 @@
 // Signed in = everything lives in Firebase (never on the device). Guest = this device only.
 import * as W from './world.js';
 import * as C from './config.js';
+import { Sound } from './farmsound.js';
 const THREE = W.THREE, WW = window.WW, $ = id => document.getElementById(id);
 const NT = W.NT;
 const qs = new URLSearchParams(location.search);
@@ -49,7 +50,7 @@ const farmer = W.makeFarmer(myHue); scene.add(farmer);
 const pointer = new THREE.Mesh(new THREE.BoxGeometry(W.TILE - .2, .08, W.TILE - .2), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .35, depthTest: false })); pointer.renderOrder = 5; pointer.visible = false; scene.add(pointer);
 
 // rain: a field of falling streaks that follows the camera
-const DROPS = 2200, rainPos = new Float32Array(DROPS * 6), rainSeed = new Float32Array(DROPS * 3);
+const DROPS = (matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window) ? 900 : 2200, rainPos = new Float32Array(DROPS * 6), rainSeed = new Float32Array(DROPS * 3);
 for (let i = 0; i < DROPS; i++) { rainSeed[i * 3] = (Math.random() - .5) * 60; rainSeed[i * 3 + 1] = Math.random() * 34; rainSeed[i * 3 + 2] = (Math.random() - .5) * 60; }
 const rainGeo = new THREE.BufferGeometry(); rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
 const rain = new THREE.LineSegments(rainGeo, new THREE.LineBasicMaterial({ color: 0xb6cbe8, transparent: true, opacity: 0 })); rain.frustumCulled = false; rain.visible = false; scene.add(rain);
@@ -116,13 +117,16 @@ async function autoClaim() {
   say('Every field on this farm is taken. Ask the host about land.');
 }
 // real grow time of one planted tile: cultivated soil -10%, fertilizer -25%
-function growOf(t) { return C.CROPS[t.c].grow * (t.u ? C.GROW_CULTIVATED : 1) * (t.f ? C.GROW_FERTILIZED : 1); }
+function growOf(t) { const cr = t && C.CROPS[t.c]; if (!cr) return Infinity; return cr.grow * (t.u ? C.GROW_CULTIVATED : 1) * (t.f ? C.GROW_FERTILIZED : 1); }
 function progress(t, now) { return (!t || t.k !== 'c' || !t.w) ? 0 : Math.min(1, ((now || nowMs()) - t.w) / growOf(t)); }
+// a tile is either plowed soil {k:'t'} or a crop {k:'c', c:<known crop>}. Anything else (e.g. a leftover {w:...} that rain wrote
+// onto a tile that had just been dug up or reset) is junk: it used to crash the game loop and freeze planting for everyone.
+function okTile(t) { return !!t && (t.k === 't' || (t.k === 'c' && !!C.CROPS[t.c])); }
 let drawn = {};
 function refreshField() {
   const now = nowMs(); let growing = 0, ready = 0, dry = 0, next = Infinity; const seen = {};
   Object.keys(tiles).forEach(function (k) {
-    const i = +k, t = tiles[i], p = tilePos(i); if (!t || !p) return; seen[i] = 1;
+    const i = +k, t = tiles[i], p = tilePos(i); if (!okTile(t) || !p) return; seen[i] = 1;
     if (t.k === 't') { field.set(i, p.x, p.z, true, false, null, 0, false, !!t.u); return; }
     const pr = progress(t, now), wet = !!t.w;
     field.set(i, p.x, p.z, true, wet, t.c, wet ? .18 + .82 * pr : .12, pr >= 1, !!t.u);
@@ -134,12 +138,18 @@ function refreshField() {
   $('cropInfo').textContent = bits.length ? bits.join(' ') + (next < Infinity ? ' · next ' + C.fmtTime(next) : '') : 'Fields empty';
 }
 // rain waters every dry crop (also retroactively, if it rained while nobody was online)
+// Each farmer's game only waters their own fields (an offline friend's crops get watered when they come back), so a shower
+// no longer fires hundreds of database writes from every phone on the farm at once.
+const rainPending = {};
 function rainTick() {
-  if (!roomRef) return; const now = nowMs();
+  if (!roomRef || !me) return; const now = nowMs();
   Object.keys(tiles).forEach(function (k) {
-    const t = tiles[k]; if (!t || t.k !== 'c' || t.w) return;
-    let rt = FORCE_WX === 'rain' ? now : C.firstRainBetween(t.p || now, now); if (rt === null || rt > now) return;
-    roomRef.child('tiles/' + k + '/w').transaction(function (cur) { return cur ? undefined : rt; });
+    const t = tiles[k]; if (!okTile(t) || t.k !== 'c' || t.w || !isMine(W.fieldOf(+k))) return;
+    if (rainPending[k] && now - rainPending[k] < 15000) return;
+    const rt = FORCE_WX === 'rain' ? now : C.firstRainBetween(t.p || now, now); if (rt === null || rt > now) return;
+    rainPending[k] = now;
+    // change the whole tile, and only if it is still an unwatered crop: never writes onto a tile that was dug up meanwhile
+    roomRef.child('tiles/' + k).transaction(function (cur) { if (!cur || cur.k !== 'c' || cur.w) return; cur.w = rt; return cur; }, function () { delete rainPending[k]; }, false);
   });
 }
 
@@ -161,14 +171,14 @@ function freshSave(epoch) { return { ach: {}, coins: 100, xp: 0, seeds: { wheat:
 function resetSaveObject(epoch) { Object.keys(save).forEach(function (k) { delete save[k]; }); Object.assign(save, freshSave(epoch)); save.season = season; }
 function queueSave() { clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 1200); }
 document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); }); window.addEventListener('pagehide', flushSave);
-function setCoins(d) { save.coins = Math.max(0, save.coins + d); hud(); queueSave(); }
+function setCoins(d) { if (d) Sound.coin(d > 0); save.coins = Math.max(0, save.coins + d); hud(); queueSave(); }
 function addItem(id, n) { save.bag[id] = (save.bag[id] || 0) + n; if (save.bag[id] <= 0) delete save.bag[id]; queueSave(); }
 function addXp(n) {
   const old = level(); save.xp += n * C.XP_SCALE; const now = level();
   if (now > old) {
     let bonus = 0, unlocked = [];
     for (let l = old + 1; l <= now; l++) { bonus += C.levelUpCoins(l); unlocked = unlocked.concat(C.unlocksAt(l)); }
-    save.coins += bonus; say('🎉 Level ' + now + '! +$' + bonus + (unlocked.length ? ' · Unlocked: ' + unlocked.join(', ') : '')); buildSeedBar();
+    save.coins += bonus; Sound.levelUp(); say('🎉 Level ' + now + '! +$' + bonus + (unlocked.length ? ' · Unlocked: ' + unlocked.join(', ') : '')); buildSeedBar();
   }
   hud(); queueSave();
 }
@@ -264,14 +274,14 @@ function actTile(i, quiet) {
     if (quiet && save.up.harvester) return;   // with a combine harvester the tractor no longer harvests (walk up and pick by hand, or drive the combine)
     if (!cur || cur.k !== 'c') { if (!quiet) say('Nothing to harvest.'); return; }
     ref.transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
-      if (ok) { addItem(cur.c, 1); if (quiet && save.up.combine && Math.random() < .25) { addItem(cur.c, 1); } save.harvested++; stat('harvest'); addXp(C.XP_HARVEST + (cur.f ? C.XP_FERT_BONUS : 0)); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
+      if (ok) { Sound.harvest(); addItem(cur.c, 1); if (quiet && save.up.combine && Math.random() < .25) { addItem(cur.c, 1); } save.harvested++; stat('harvest'); addXp(C.XP_HARVEST + (cur.f ? C.XP_FERT_BONUS : 0)); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
       else if (!quiet) say('Not ready yet (' + C.fmtTime(growOf(cur) * (1 - progress(cur))) + ' left' + (cur.w ? '' : ', needs water') + ').');
     });
   } else if (tool === 'seed') {
     if (!cur || cur.k !== 't') { if (!quiet) say(cur ? 'Something is already growing there.' : 'Plow the soil first.'); return; }
     const pick = cropForTile(i);
     if (!pick) { if (!quiet || !outWarn()) say('No seeds to plant. Buy a pack at the barn (or switch a seed back on).'); return; }
-    save.seeds[pick]--; stat('plant'); hud(); queueSave(); buildSeedBar(); { const nt = { k: 'c', c: pick, p: now, w: (quiet && save.up.sprinkler) ? now : 0 }; if (cur.u) nt.u = 1; ref.set(nt); }
+    save.seeds[pick]--; Sound.plant(); stat('plant'); hud(); queueSave(); buildSeedBar(); { const nt = { k: 'c', c: pick, p: now, w: (quiet && save.up.sprinkler) ? now : 0 }; if (cur.u) nt.u = 1; ref.set(nt); }
   }
 }
 let lastOut = 0; function outWarn() { const n = performance.now(); if (n - lastOut < 4000) return true; lastOut = n; return false; }
@@ -315,7 +325,7 @@ function nearestReadyAnimal() {
 function collect(id) {
   const a = animals[id]; if (!mineAnimal(a)) return; const def = C.ANIMALS[a.t];
   roomRef.child('animals/' + id + '/r').transaction(function (r) { return nowMs() >= (r || 0) ? nowMs() + def.every : undefined; }, function (e, ok) {
-    if (ok) { addItem(def.prod, 1); stat(def.stat || def.prod); addXp(C.XP_PRODUCT[def.prod]); say(C.GOODS[def.prod].icon + ' Collected ' + def.prod + ' — in your bag' + (isMP ? ' (everyone on the farm shares the money and XP)' : '') + '.');
+    if (ok) { Sound.collect(def.prod); addItem(def.prod, 1); stat(def.stat || def.prod); addXp(C.XP_PRODUCT[def.prod]); say(C.GOODS[def.prod].icon + ' Collected ' + def.prod + ' — in your bag' + (isMP ? ' (everyone on the farm shares the money and XP)' : '') + '.');
       if (isMP) pushLedger({ k: 'an', i: def.prod, xp: C.XP_PRODUCT[def.prod], c: C.priceOf(def.prod, today()) }); } else say('Not ready yet.');
   });
 }
@@ -687,17 +697,17 @@ function useAction() {
   else if (c.kind === 'tile') actTile(c.i, false);
   else if (c.kind === 'haul') startHaul();
   else if (c.kind === 'driveC') {
-    const Cb = save.combine; player.driving = true; player.veh = 'combine'; combineLocal.x = Cb.x; combineLocal.z = Cb.z; combineLocal.ry = Cb.ry; combineLocal.speed = 0; player.x = Cb.x; player.z = Cb.z; unloadAcc = 0;
+    const Cb = save.combine; player.driving = true; player.veh = 'combine'; combineLocal.x = Cb.x; combineLocal.z = Cb.z; combineLocal.ry = Cb.ry; combineLocal.speed = 0; player.x = Cb.x; player.z = Cb.z; unloadAcc = 0; Sound.startEngine('combine');
     say('Combine: drive over ripe crops to cut them into the tank, then park beside the trailer to unload.');
   }
   else if (c.kind === 'drive') {
-    player.driving = true; player.veh = 'tractor'; tractorLocal.x = tractorState.x; tractorLocal.z = tractorState.z; tractorLocal.ry = tractorState.ry; tractorLocal.speed = 0; player.x = tractorLocal.x; player.z = tractorLocal.z;
+    player.driving = true; player.veh = 'tractor'; tractorLocal.x = tractorState.x; tractorLocal.z = tractorState.z; tractorLocal.ry = tractorState.ry; tractorLocal.speed = 0; player.x = tractorLocal.x; player.z = tractorLocal.z; Sound.startEngine('tractor');
     say('Tractor: your tool works on ' + swath() + ' tiles at once. W/S drive, A/D steer.'); applyImplement();
   } else if (c.kind === 'exit' && player.veh === 'combine') {
-    player.driving = false; combineLocal.speed = 0; player.x = combineLocal.x + Math.cos(combineLocal.ry) * 4.6; player.z = combineLocal.z - Math.sin(combineLocal.ry) * 4.6;
+    Sound.stopEngine(); player.driving = false; combineLocal.speed = 0; player.x = combineLocal.x + Math.cos(combineLocal.ry) * 4.6; player.z = combineLocal.z - Math.sin(combineLocal.ry) * 4.6;
     save.combine.x = +combineLocal.x.toFixed(2); save.combine.z = +combineLocal.z.toFixed(2); save.combine.ry = +combineLocal.ry.toFixed(3); queueSave();
   } else if (c.kind === 'exit') {
-    player.driving = false; tractorLocal.speed = 0; player.x = tractorLocal.x + Math.cos(tractorLocal.ry) * 2.8; player.z = tractorLocal.z - Math.sin(tractorLocal.ry) * 2.8;
+    Sound.stopEngine(); player.driving = false; tractorLocal.speed = 0; player.x = tractorLocal.x + Math.cos(tractorLocal.ry) * 2.8; player.z = tractorLocal.z - Math.sin(tractorLocal.ry) * 2.8;
     tractorState = { x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }; roomRef.child('farmers/' + me.uid + '/tractor').set(tractorState);
   }
 }
@@ -850,6 +860,10 @@ if (PAD) {
 }
 
 function loop(ts) {
+  try { frame(ts); } catch (e) { console.error('[farm] frame error', e); }
+  requestAnimationFrame(loop);
+}
+function frame(ts) {
   const dt = Math.min(.05, (ts - last) / 1000); last = ts;
   padFrame(dt);
   let ix = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0) + joy.x, iz = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y;
@@ -871,6 +885,7 @@ function loop(ts) {
     V.x += Math.sin(V.ry) * V.speed * dt; V.z += Math.cos(V.ry) * V.speed * dt;
     const p = { x: V.x, z: V.z }; collide(p, comb ? 3 : 2); V.x = p.x; V.z = p.z; player.x = V.x; player.z = V.z; player.ry = V.ry; player.speed = Math.abs(V.speed);
     if (comb) { combineAuto(); combineUnload(dt); } else tractorAuto();
+    Sound.engine(Math.abs(V.speed) / top, comb || (tool !== 'water' && Math.abs(V.speed) > .5));
   } else if (FOLLOW && !player.driving) {
     // follow camera: left/right turn the farmer (and the view swings with them), up/down walk forward/back, so you always see their back
     if (Math.abs(ix) > .08 && performance.now() - lastDragAt > 300) yaw -= ix * 2.2 * dt;
@@ -906,7 +921,7 @@ function loop(ts) {
   const now = performance.now();
   if (roomRef && me && now - lastSent > 100 && (player.speed > .1 || now - lastBeat > 8000)) { lastSent = lastBeat = now; roomRef.child('players/' + me.uid).set({ n: myName, x: +player.x.toFixed(2), z: +player.z.toFixed(2), r: +player.ry.toFixed(2), v: player.driving ? 1 : 0, h: +myHue.toFixed(2), lv: level(), tx: +(player.driving ? tractorLocal.x : tractorState.x).toFixed(1), tz: +(player.driving ? tractorLocal.z : tractorState.z).toFixed(1), tr: +(player.driving ? tractorLocal.ry : tractorState.ry).toFixed(2), t: firebase.database.ServerValue.TIMESTAMP }); }
   if (player.driving && player.veh === 'tractor' && now - lastTrk > 1500) { lastTrk = now; roomRef.child('farmers/' + me.uid + '/tractor').set({ x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }); }
-  renderer.render(scene, camera); requestAnimationFrame(loop);
+  renderer.render(scene, camera);
 }
 
 
@@ -1018,7 +1033,7 @@ async function begin(user, myCode) {
   roomRef.child('colors').on('value', function (snap) { legacyCol = snap.val() || {}; mergeFarmers(); });
   roomRef.child('farmers').on('value', function (snap) { farmers = snap.val() || {}; mergeFarmers(); });
   roomRef.child('meta/epoch').on('value', function (snap) { const e = snap.val() | 0; if (e > (save.epoch | 0)) followReset(e); });
-  roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); refreshField(); });
+  roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { if (okTile(v[k])) tiles[+k] = v[k]; else if (me && isMine(W.fieldOf(+k))) roomRef.child('tiles/' + k).remove(); }); refreshField(); });
   roomRef.child('fields').on('value', function (snap) { ownedFields = snap.val() || {}; updateFieldVisuals(); });
   roomRef.child('animals').on('value', function (snap) { animals = snap.val() || {}; syncAnimals(); });
   roomRef.child('players').on('value', function (snap) { players = snap.val() || {}; syncRemotes(); });
@@ -1054,3 +1069,5 @@ window.__farm = { fleet: function () { return { combine: combine, trailer: trail
 
 (function () { var b = document.getElementById('camBtn'); if (!b) return; function paint() { b.textContent = FOLLOW ? '🎥 Follow' : '🎥 Fixed'; } paint();
   b.onclick = function () { FOLLOW = !FOLLOW; try { localStorage.setItem('farm_cam', FOLLOW ? 'follow' : 'fixed'); } catch (e) {} paint(); }; })();
+// 🔊 sound on/off (remembered on this device)
+(function () { const b = $('sndBtn'); if (!b) return; const paint = () => { b.textContent = Sound.muted ? '🔇' : '🔊'; }; paint(); b.onclick = () => { Sound.toggle(); paint(); }; })();
