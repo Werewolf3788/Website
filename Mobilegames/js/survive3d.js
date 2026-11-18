@@ -5,7 +5,21 @@ import * as THREE from './three.min.js';
 const $ = id => document.getElementById(id);
 const WW = window.WW || null;
 const Z = 24, G = 5, HALF = Z * G / 2, NOW = () => Date.now();
-const RES = { wood: '🌲', food: '🍖', metal: '🔩', gems: '💎' };
+// wood has no emoji every computer can draw (🪵 shows as an empty box on older Windows), so it is a drawn log:
+// LOGT is a placeholder character in text; RH() turns it into the log picture in menus, and the canvas labels draw it directly.
+const LOGT = '\uE000';
+function drawLog(g, x, y, s) {   // a log lying on its side, s px wide, centred on x,y
+  const h = s * .5, l = x - s / 2, t = y - h / 2;
+  g.fillStyle = '#8b5a2b'; g.beginPath(); g.moveTo(l + h / 2, t); g.lineTo(l + s - h / 2, t); g.lineTo(l + s - h / 2, t + h); g.lineTo(l + h / 2, t + h); g.closePath(); g.fill();
+  g.strokeStyle = '#5b3a1a'; g.lineWidth = Math.max(1, s / 22); for (let k = 1; k <= 2; k++) { g.beginPath(); g.moveTo(l + h / 2 + 2, t + h * k / 3); g.lineTo(l + s - h / 2 - 2, t + h * k / 3); g.stroke(); }
+  g.fillStyle = '#6b4423'; g.beginPath(); g.ellipse(l + h / 2, y, h * .32, h / 2, 0, 0, 7); g.fill();
+  g.fillStyle = '#e7c48a'; g.beginPath(); g.ellipse(l + s - h / 2, y, h * .36, h / 2, 0, 0, 7); g.fill();
+  g.strokeStyle = '#b8894f'; g.beginPath(); g.ellipse(l + s - h / 2, y, h * .2, h * .28, 0, 0, 7); g.stroke();
+}
+const LOG_URL = (() => { try { const c = document.createElement('canvas'); c.width = 64; c.height = 64; drawLog(c.getContext('2d'), 32, 32, 60); return c.toDataURL(); } catch (e) { return ''; } })();
+const escH = t => String(t).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[ch]);
+const RH = h => String(h).split(LOGT).join('<img src="' + LOG_URL + '" alt="wood" style="height:1.15em;vertical-align:-.25em">');
+const RES = { wood: LOGT, food: '🍖', metal: '🔩', gems: '💎' };
 const SAVE_KEY = 'ts3_save', CLOUD_KEY = 'survive3', MAX_HELPS = 5, HELP_CUT = .15, CAMP_RESPAWN = 10 * 60000, BOSS_RESPAWN = 60 * 60000;
 
 // ------------------------------------------------------------ buildings (all in the home area around the Power Plant)
@@ -77,7 +91,7 @@ function unlockCost(i, j) { const n = st.stats.zones, m = ring(i, j) === 2 ? 1.6
 
 function economy(dt) {
   const ev = [], now = NOW(), e = efficiency();
-  producers().forEach(id => { const capP = 40 * lvl(id); st.piles[id] = Math.min(capP, (st.piles[id] || 0) + BD[id].rate * lvl(id) * e * dt); });
+  if (!tour) producers().forEach(id => { const capP = 40 * lvl(id); st.piles[id] = Math.min(capP, (st.piles[id] || 0) + BD[id].rate * lvl(id) * e * dt); });
   st.res.food = Math.max(0, st.res.food - survivors() * .004 * dt);
   Object.keys(BD).forEach(id => { const b = st.b[id]; if (b.up && now >= b.up.end) { b.lvl = b.up.to; b.up = null; ev.push('✅ ' + BD[id].n + ' is now level ' + b.lvl); dirtyBld[id] = 1; } });
   return ev;
@@ -106,14 +120,17 @@ function textSprite(w) {
   sp.userData.set = function (t, col, bg) {
     if (sp.userData.t === t) return; sp.userData.t = t; const g = c.getContext('2d'); g.clearRect(0, 0, 512, 96); sp.visible = !!t; if (!t) return;
     g.font = 'bold 50px system-ui,"Apple Color Emoji","Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    const tw = Math.min(504, g.measureText(t).width + 44); g.fillStyle = bg || 'rgba(15,23,42,.8)'; rr(g, 256 - tw / 2, 6, tw, 84, 26); g.fill();
-    g.fillStyle = col || '#fff'; g.fillText(t, 256, 50, 470); tex.needsUpdate = true;
+    const parts = String(t).split(LOGT), LW = 60; let w0 = 0; parts.forEach((pt, i) => { w0 += g.measureText(pt).width + (i ? LW : 0); });
+    const tw = Math.min(504, w0 + 44); g.fillStyle = bg || 'rgba(15,23,42,.8)'; rr(g, 256 - tw / 2, 6, tw, 84, 26); g.fill();
+    const k = Math.min(1, 470 / w0); g.save(); g.translate(256, 50); g.scale(k, 1); g.textAlign = 'left'; let x = -w0 / 2;
+    parts.forEach((pt, i) => { if (i) { drawLog(g, x + LW / 2, 0, LW - 6); x += LW; } g.fillStyle = col || '#fff'; g.fillText(pt, x, 0); x += g.measureText(pt).width; });
+    g.restore(); tex.needsUpdate = true;
   };
   return sp;
 }
 const iconTex = {};
 function iconSprite(icon, s) {
-  if (!iconTex[icon]) { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.font = '52px "Apple Color Emoji","Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(icon, 32, 36); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; iconTex[icon] = new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }); }
+  if (!iconTex[icon]) { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); if (icon === LOGT) drawLog(g, 32, 34, 58); else { g.font = '52px "Apple Color Emoji","Segoe UI Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(icon, 32, 36); } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; iconTex[icon] = new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }); }
   const sp = new THREE.Sprite(iconTex[icon]); sp.scale.setScalar(s || .9); sp.renderOrder = 13; return sp;
 }
 function hpBar(w, color) {
@@ -343,7 +360,7 @@ function fly(icon, a, b) { const s = iconSprite(icon, .8); s.position.set(a.x, 1
 function burst(x, z) { for (let k = 0; k < 8; k++) { const s = iconSprite('✨', .9); s.position.set(x, 1, z); scene.add(s); flyers.push({ s: s, ax: x, az: z, bx: x + Math.cos(k) * 3, bz: z + Math.sin(k) * 3, t: 0, up: 3 }); } }
 let ac = null, muted = localStorage.getItem('ts3_mute') === '1';
 function sfx(f, d, v, delay) { if (muted) return; try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime + (delay || 0); o.frequency.value = f; o.type = 'triangle'; g.gain.setValueAtTime(v || .05, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + d); o.connect(g); g.connect(ac.destination); o.start(t0); o.stop(t0 + d + .02); } catch (e) {} }
-function toast(t, ms) { $('toast').textContent = t; clearTimeout(toast.t); toast.t = setTimeout(() => { $('toast').textContent = ''; }, ms || 2800); }
+function toast(t, ms) { $('toast').innerHTML = RH(escH(t)); clearTimeout(toast.t); toast.t = setTimeout(() => { $('toast').innerHTML = ''; }, ms || 2800); }
 function fmt(s) { s = Math.max(0, Math.ceil(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return h ? h + 'h ' + m + 'm' : m ? m + ':' + String(x).padStart(2, '0') : x + 's'; }
 
 // ------------------------------------------------------------ input: drag anywhere for a joystick, WASD/arrows, or a controller
@@ -422,7 +439,7 @@ function checkQuest() {
   const cur = Math.min(q[1](), q[2]);
   if (cur >= q[2]) { give(q[3]); toast('📜 Mission complete: ' + q[0] + ' · +' + costTxt(q[3]), 3500); sfx(784, .15, .07); sfx(1046, .3, .07, .12); st.q++; persist(); return checkQuest(); }
   const html = '📜 ' + q[0] + ' <span style="color:#fbbf24">[' + Math.floor(cur) + '/' + q[2] + ']</span><small>Sarge · mission ' + (st.q + 1) + ' of ' + QUESTS.length + ' · reward ' + costTxt(q[3]) + '</small>';
-  if (checkQuest.h !== html) { checkQuest.h = html; $('quest').innerHTML = html; }
+  if (checkQuest.h !== html) { checkQuest.h = html; $('quest').innerHTML = RH(html); }
   return q;
 }
 const arrow = new THREE.Group(); { const c = new THREE.Mesh(new THREE.ConeGeometry(.45, .9, 12), new THREE.MeshBasicMaterial({ color: 0xfbbf24 })); c.rotation.x = Math.PI; arrow.add(c); } scene.add(arrow);
@@ -430,7 +447,7 @@ const guide = new THREE.Mesh(new THREE.ConeGeometry(.28, .8, 3), new THREE.MeshB
 
 // ------------------------------------------------------------ panels
 const sheet = $('sheet'), card = $('card');
-function show(h) { card.innerHTML = h + '<div style="margin-top:10px"><button class="b alt" data-a="close">Close</button></div>'; sheet.style.display = 'flex'; }
+function show(h) { card.innerHTML = RH(h) + '<div style="margin-top:10px"><button class="b alt" data-a="close">Close</button></div>'; sheet.style.display = 'flex'; }
 function closeSheet() { sheet.style.display = 'none'; }
 sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
 card.addEventListener('click', e => { const a = e.target.closest('[data-a]'); if (!a || a.disabled) return; doAct(a.dataset.a, a.dataset); });
@@ -505,12 +522,17 @@ let uid = null, code = null, visiting = null, tour = null;
 function startTour(c, p) {
   if (!p || !p.w) return false;
   if (!tour) tour = { home: st, at: NOW(), hx: player.x, hz: player.z }; tour.code = c; tour.name = p.name || 'Survivor';
+  // visiting an ally pays off: a daily visit bonus for each friend, and whatever you gather there comes home with you
+  const H = tour.home, day = new Date().toDateString(); if (H.visitDay !== day) { H.visitDay = day; H.visited = {}; }
+  if (!H.visited[c]) { H.visited[c] = 1; const bonus = { wood: 25, food: 15, metal: 5 }; Object.keys(bonus).forEach(k => { H.res[k] = (H.res[k] || 0) + bonus[k]; }); setTimeout(() => toast('🎁 Visit bonus for your settlement: +' + costTxt(bonus), 3500), 1600); }
   const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: w.heroes || fresh().heroes, paid: w.paid || {} }));
   st.res = { wood: 0, food: 0, metal: 0, gems: 0 }; st.hp = player.hpMax || 100; player.x = 3; player.z = 6;
   loadWorld(); toast('👀 Welcome to ' + tour.name + '’s settlement!'); return true;
 }
 function goHome() {
-  if (!tour) return; const t = tour; tour = null; visiting = null; st = t.home; checkQuest.h = null;
+  if (!tour) return; const t = tour, got = {}; Object.keys(st.res || {}).forEach(k => { if (st.res[k] > 0) got[k] = Math.floor(st.res[k]); });
+  tour = null; visiting = null; st = t.home; checkQuest.h = null; Object.keys(got).forEach(k => { st.res[k] = (st.res[k] || 0) + got[k]; });
+  if (Object.keys(got).length) setTimeout(() => toast('🎒 Brought home ' + costTxt(got) + ' from your visit', 3500), 900);
   const off = Math.min(4 * 3600, (NOW() - t.at) / 1000); if (off > 1) economy(off);
   player.x = t.hx; player.z = t.hz; loadWorld(); applyHelps(); persist(); toast('🏠 Back home'); closeSheet();
 }
@@ -520,7 +542,7 @@ function publishPub() {
   try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {} }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
 }
 function alliesPanel(note) {
-  let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn 🌲15 (10 a day).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
+  let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn ' + RES.wood + '15 (10 a day).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
   if (!WW || WW.mode !== 'cloud' || !WW.user) h += '<div class="row muted">Sign in on the games hub to team up with allies.</div>';
   else {
     // your friends list (the same friends as everywhere else on the site): no codes to type
@@ -529,7 +551,7 @@ function alliesPanel(note) {
       else if (!allyList.length) h += '<div class="row muted">No friends yet. Add friends with their friend code on the games hub, and they show up here.</div>';
       else h += allyList.map(f => '<div class="row"><div class="g"><b>' + WW.esc(f.name) + '</b><div class="muted">' + (f.pub ? 'Power Plant Lv' + (f.pub.pp || 1) + ' · ' + (f.pub.zones || 0) + ' areas · ' + (f.open ? '<b style="color:#fde68a">' + f.open + ' upgrade' + (f.open > 1 ? 's' : '') + ' to help</b>' : 'nothing to help right now') : 'hasn\u2019t started Tile Survival yet') + '</div></div><button class="b" data-a="visitf" data-code="' + f.code + '"' + (f.pub ? '' : ' disabled') + '>Visit</button></div>').join('');
       h += '<details class="muted" style="margin-top:6px"><summary>Visit someone not on your friends list</summary><div class="row"><input id="vcode" maxlength="8" placeholder="FRIEND\'S CODE"><button class="b" data-a="visit">Visit</button></div></details>';
-    } else h += '<div class="row"><button class="b alt" data-a="back">🏠 Go home</button></div>';
+    } else h += '<div class="row"><button class="b alt" data-a="back">' + (tour ? '🏠 Go home' : '← All friends') + '</button></div>';
     if (visiting) { const p = visiting.pub, ups = (p.ups || []).filter(u => u.end > NOW());
       h += '<div class="muted"><b>' + WW.esc(p.name || 'Survivor') + '</b> · Power Plant Lv' + (p.pp || 1) + ' · ' + (p.zones || 0) + ' areas unlocked</div>';
       h += ups.length ? ups.map(u => { const done = visiting.mine[u.k]; return '<div class="row"><div class="g"><b>' + u.i + ' ' + u.n + ' → Lv' + u.to + '</b><div class="muted">' + fmt((u.end - NOW()) / 1000) + ' left · ' + (u.c || 0) + '/' + MAX_HELPS + ' helps</div></div><button class="b" data-a="help" data-k="' + u.k + '" ' + (done || (u.c || 0) >= MAX_HELPS ? 'disabled' : '') + '>' + (done ? 'Helped ✔' : '🤝 Help') + '</button></div>'; }).join('') : '<div class="row muted">They have nothing upgrading right now.</div>'; }
@@ -562,7 +584,7 @@ async function visit(c) {
 async function helpFriend(k) {
   if (!visiting) return; const day = new Date().toDateString(); if (st.helpDay !== day) { st.helpDay = day; st.helpsToday = 0; }
   try { await WW.roomRef('survive', visiting.code).child('helps/' + k + '/' + uid).set(NOW()); visiting.mine[k] = true; const u = (visiting.pub.ups || []).find(x => x.k === k); if (u) u.c = (u.c || 0) + 1;
-    if (st.helpsToday < 10) { st.helpsToday++; st.res.wood += 15; toast('🤝 Helped! +15 🌲'); } else toast('🤝 Helped!'); persist(); alliesPanel(); } catch (e) { alliesPanel('Help failed: ' + (e && e.code || e)); }
+    if (st.helpsToday < 10) { st.helpsToday++; st.res.wood += 15; toast('🤝 Helped! +15 ' + RES.wood); } else toast('🤝 Helped!'); persist(); alliesPanel(); } catch (e) { alliesPanel('Help failed: ' + (e && e.code || e)); }
 }
 function listenHelps() {
   if (!code || !WW || WW.mode !== 'cloud') return;
@@ -582,7 +604,7 @@ function persist() { const h = tour ? tour.home : st; h.last = NOW(); h.saved = 
 function cloudSave() { if (WW && WW.user && WW.writeSave) try { WW.writeSave(CLOUD_KEY, JSON.parse(JSON.stringify(tour ? tour.home : st))); } catch (e) {} }
 function publishPlaying() { if (tour) return; if (WW && WW.publishPlaying) try { WW.publishPlaying({ game: 'survive', title: 'Tile Survival', status: 'Power Plant Lv' + lvl('pp') + ' · ' + st.stats.zones + ' areas · mission ' + (st.q + 1), open: 0 }); } catch (e) {} }
 function hud() {
-  Object.keys(RES).forEach(k => { const el = $('r_' + k), prod = producers().filter(id => BD[id].out === k); el.innerHTML = RES[k] + ' ' + Math.floor(st.res[k]); });
+  Object.keys(RES).forEach(k => { const el = $('r_' + k), prod = producers().filter(id => BD[id].out === k); el.innerHTML = RH(RES[k]) + ' ' + Math.floor(st.res[k]); });
   $('ppl').textContent = lvl('pp'); $('surv').textContent = survivors(); $('hp').style.width = Math.max(0, st.hp / player.hpMax * 100) + '%';
 }
 // ------------------------------------------------------------ lumberjacks: the Lumberyard sends out workers (1 per level, up to 4)
@@ -613,7 +635,7 @@ function updateWorkers(dt, now) {
       w.mesh.rotation.y = Math.atan2(t.x - w.x, t.z - w.z); w.t -= dt; if (Math.floor(w.t * 2.5) !== Math.floor((w.t + dt) * 2.5)) { w.mesh.userData.swing = 1; t.shake = .25; }
       if (w.t <= 0) { t.down = true; t.at = now + 45000; t.top.visible = false; if (t.trunk) t.trunk.scale.y = .3; w.tree = null; w.state = 'carry'; w.load = 3; }
     } else if (w.state === 'carry') {
-      if (walk(L.x + (L.r + 1) * .7, L.z + (L.r + 1) * .7)) { const cap = 40 * lvl('lumber'); st.piles.lumber = Math.min(cap, (st.piles.lumber || 0) + w.load); fly('🌲', w, { x: L.x, z: L.z }); w.load = 0; w.state = 'seek'; }
+      if (walk(L.x + (L.r + 1) * .7, L.z + (L.r + 1) * .7)) { const cap = 40 * lvl('lumber'); st.piles.lumber = Math.min(cap, (st.piles.lumber || 0) + w.load); fly(RES.wood, w, { x: L.x, z: L.z }); w.load = 0; w.state = 'seek'; }
     }
     w.mesh.position.set(w.x, 0, w.z); animHuman(w.mesh, sp, dt);
     if (w.mesh.userData.logs !== (w.state === 'carry')) { w.mesh.userData.logs = w.state === 'carry'; if (w.mesh.userData.logs) { const lg = cyl(w.mesh, .12, .12, .8, 0xa0703f, 0, 1.3, -.3, 6); lg.rotation.z = Math.PI / 2; w.mesh.userData.logMesh = lg; } else if (w.mesh.userData.logMesh) { w.mesh.remove(w.mesh.userData.logMesh); w.mesh.userData.logMesh = null; } }

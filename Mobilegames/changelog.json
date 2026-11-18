@@ -2,6 +2,15 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 8,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Wood now shows as a real log picture everywhere (no more empty boxes)",
+        "Visiting an ally pays: a daily visit bonus for each friend, and anything you gather there comes home with you"
+      ]
+    },
+    {
       "id": 7,
       "date": "Nov 18",
       "game": "survive",
