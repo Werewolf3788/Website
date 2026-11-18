@@ -93,7 +93,47 @@ function myFieldCount() { let n = 0; for (let f = 0; f < W.FIELDS.length; f++) i
 function firstMyField() { for (let f = 0; f < W.FIELDS.length; f++) if (isMine(f)) return f; return -1; }
 function nextLand() { return C.LAND[myFieldCount()] || null; }
 // how many of the 12 plots are on show: at least 6, and always enough that 2 of them are still for sale
-function visibleFields() { let v = C.START_FIELDS; const free = n => { let c = 0; for (let f = 0; f < n; f++) if (!ownedFields[f]) c++; return c; }; while (v < W.FIELDS.length && free(v) < C.MIN_FIELDS_FOR_SALE) v++; return v; }
+function visibleFields() {
+  let v = C.START_FIELDS; const free = n => { let c = 0; for (let f = 0; f < n; f++) if (!ownedFields[f]) c++; return c; }; while (v < W.FIELDS.length && free(v) < C.MIN_FIELDS_FOR_SALE) v++;
+  Object.keys(ownedFields).forEach(function (k) { if (ownedFields[k]) v = Math.max(v, +k + 1); });   // any owned field is always on the map
+  buyableFields().forEach(function (f) { v = Math.max(v, f + 1); });                                // and so is the plot next to your land
+  return Math.min(v, W.FIELDS.length);
+}
+// ---- keep each farmer's land together. Fields sit in a grid: 3 across (column = f % 3), rows going back (row = f / 3).
+const fCol = f => f % 3, fRow = f => Math.floor(f / 3);
+function myFields() { const out = []; for (let f = 0; f < W.FIELDS.length; f++) if (isMine(f)) out.push(f); return out; }
+function distToMine(f, skip) { let d = Infinity; myFields().forEach(function (m) { if (m !== skip) d = Math.min(d, Math.abs(fCol(f) - fCol(m)) + Math.abs(fRow(f) - fRow(m))); }); return d; }
+// the field(s) you may buy next: the free ones closest to the land you already have (touching it whenever possible)
+function buyableFields() {
+  if (!me) return []; const mine = myFields(); let best = Infinity, out = [];
+  for (let f = 0; f < W.FIELDS.length; f++) {
+    if (ownedFields[f]) continue; const d = mine.length ? distToMine(f) : fRow(f);
+    if (d < best) { best = d; out = [f]; } else if (d === best) out.push(f);
+  }
+  return out.slice(0, 3);
+}
+// move your fields (with whatever is planted on them) next to each other: the outlying field jumps to the free plot that touches your other land
+function groupMyFields() {
+  if (!roomRef || !me) return 0; let moves = 0;
+  for (let guard = 0; guard < 24; guard++) {
+    const mine = myFields(); if (mine.length < 2) break;
+    let worst = -1, wd = 1;   // the field furthest from the rest of your land
+    mine.forEach(function (m) { const d = distToMine(m, m); if (d > wd) { wd = d; worst = m; } });
+    if (worst < 0) break;
+    let target = -1, td = wd;
+    for (let f = 0; f < W.FIELDS.length; f++) { if (ownedFields[f]) continue; const d = distToMine(f, worst); if (d < td || (d === td && target >= 0 && f < target)) { td = d; target = f; } }
+    if (target < 0 || td >= wd) break;
+    const up = {}; up['fields/' + target] = Object.assign({}, ownedFields[worst], { t: nowMs() }); up['fields/' + worst] = null;
+    for (let li = 0; li < C.FIELD_TILES; li++) { const a = worst * C.FIELD_TILES + li, b = target * C.FIELD_TILES + li; up['tiles/' + b] = tiles[a] || null; up['tiles/' + a] = null; }
+    roomRef.update(up);
+    ownedFields[target] = up['fields/' + target]; delete ownedFields[worst];   // update right away so the next step sees it
+    for (let li = 0; li < C.FIELD_TILES; li++) { const a = worst * C.FIELD_TILES + li, b = target * C.FIELD_TILES + li; if (tiles[a]) tiles[b] = tiles[a]; else delete tiles[b]; delete tiles[a]; }
+    moves++;
+  }
+  if (moves) { const ff = firstMyField(), pk = W.parkFor(ff); tractorState = { x: pk.x, z: pk.z, ry: pk.ry }; pushFarmer({ tractor: tractorState }); updateFieldVisuals(); refreshField(); }
+  return moves;
+}
+function fieldsSpread() { return myFields().some(function (m) { return distToMine(m, m) > 1; }); }
 let shownFields = 0;
 function updateFieldVisuals() {
   const nl = nextLand(), vis = visibleFields();
@@ -517,8 +557,11 @@ function renderShop() {
   } else if (shopTab === 'land') {
     const mine = myFieldCount(), nl = nextLand();
     addHtml(box, '<div class="item" style="border:0"><small>Every player works their own fields; other people can look but not touch. You own ' + mine + ' fields (' + visibleFields() + ' plots on the map; a new plot appears whenever fewer than 2 are for sale)' + (nl ? '. Your next field costs $' + nl.cost.toLocaleString() + ' (level ' + nl.level + ').' : '.') + ' Animals are yours, but the money and XP from collecting their products are shared with everyone on a multiplayer farm.</small></div>');
+    if (fieldsSpread()) box.appendChild(row('🧲 <b>Put my fields together</b> <small>Your fields are spread out. This moves the outlying ones (crops and all) onto free plots right next to your other land.</small>', [{ t: 'Group them', off: !can, f: function () { const n = groupMyFields(); say(n ? '🧲 Moved ' + n + ' field' + (n > 1 ? 's' : '') + ' next to your other land.' : 'No free plots next to your land right now.'); } }]));
+    const buyable = buyableFields();
     W.FIELDS.slice(0, visibleFields()).forEach(function (F, f) {
       const o = ownedFields[f];
+      if (!o && buyable.indexOf(f) < 0) { box.appendChild(row('🏞️ <b>Field ' + (f + 1) + '</b> <small>for sale · not next to your land' + (myFieldCount() ? '' : '') + '</small>', [{ t: '📍 Buy next to yours', off: true, f: function () {} }])); return; }
       if (o) { box.appendChild(row((isMine(f) ? '🌾' : '👤') + ' <b>Field ' + (f + 1) + '</b> <small>' + (isMine(f) ? 'yours' : 'owned by ' + WW.esc(o.n || 'a friend')) + ' · 240 tiles</small>', [])); return; }
       const lock = !nl || l < nl.level, cost = nl ? nl.cost : 0;
       box.appendChild(row('🏞️ <b>Field ' + (f + 1) + '</b> · <b style="color:#fde68a">' + (nl ? '$' + nl.cost.toLocaleString() : 'n/a') + '</b> <small>' + (nl && l < nl.level ? 'Unlocks at level ' + nl.level + ' · ' : '') + 'for sale · 240 tiles</small>',
