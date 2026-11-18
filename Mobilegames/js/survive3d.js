@@ -1119,5 +1119,6 @@ function frameInner() {
 }
 addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child(uid).remove(); } catch (e) {} persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
+addEventListener('online', () => { persist(); setTimeout(cloudSave, 2000); });   // played offline: push it to your account once the signal is back
 boot(); requestAnimationFrame(frame);
 window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, raidTest: (p) => { startTour('R', p, true); tour.raid = { loot: { wood: 10 }, won: false }; spawnDefenders(p.w); }, get zombies2() { return zombies; }, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };

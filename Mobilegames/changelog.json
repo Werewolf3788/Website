@@ -2,6 +2,14 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 27,
+      "date": "Nov 18",
+      "game": "all",
+      "items": [
+        "Play with no signal: games you've opened before still start offline, an orange bar shows you're offline, and your progress syncs to your account when you're back online"
+      ]
+    },
+    {
       "id": 26,
       "date": "Nov 18",
       "game": "frogger",

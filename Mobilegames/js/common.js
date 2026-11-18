@@ -345,6 +345,22 @@
 // friend-message pop-ups while playing (who it's from + a short preview, with quick reply)
 (function () { try { var s = document.createElement('script'); s.src = '../Claude-Test/ww-msg-toast.js'; s.defer = true; document.head.appendChild(s); } catch (e) {} })();
 
+// ---- play offline: the site's service worker keeps a copy of the game files (and Firebase's library), so a game you've
+// opened before still starts with no signal. Progress saved meanwhile syncs to your account when you're back online.
+(function () { try { if ('serviceWorker' in navigator) { var root = location.pathname.split('/Mobilegames/')[0] + '/'; navigator.serviceWorker.register(root + 'sw.js', { scope: root }).catch(function () {}); } } catch (e) {} })();
+(function () {
+  var bar = null;
+  function show(on) {
+    if (!document.body) return;
+    if (!bar) { bar = document.createElement('div'); bar.style.cssText = 'position:fixed;left:50%;top:calc(6px + env(safe-area-inset-top));transform:translateX(-50%);z-index:2147483000;background:#7c2d12;color:#fff;font:600 12px system-ui,sans-serif;padding:5px 12px;border-radius:999px;box-shadow:0 4px 14px #0007;pointer-events:none'; document.body.appendChild(bar); }
+    bar.textContent = on ? '📴 Offline: keep playing, your progress syncs when you\u2019re back online' : '✅ Back online: syncing your progress';
+    bar.style.display = 'block'; clearTimeout(show.t); if (!on) show.t = setTimeout(function () { bar.style.display = 'none'; }, 4000);
+  }
+  addEventListener('offline', function () { show(true); });
+  addEventListener('online', function () { show(false); });
+  addEventListener('load', function () { if (navigator.onLine === false) show(true); });
+})();
+
 // ---- what's new: after an update, show each player (once) what changed in this game. Entries live in Mobilegames/changelog.json.
 (function () {
   try {

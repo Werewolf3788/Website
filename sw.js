@@ -4,7 +4,7 @@
 //   - Web Push notifications sent by .github/workflows/send-push.yml
 // Bump CACHE_NAME when the app shell files change.
 // ============================================================================
-const CACHE_NAME = 'ww-shell-v4';
+const CACHE_NAME = 'ww-shell-v5';
 const SHELL = [
     './',
     'index.html',
@@ -39,6 +39,15 @@ self.addEventListener('fetch', (event) => {
     const req = event.request;
     if (req.method !== 'GET') return;
     const url = new URL(req.url);
+    // Firebase's JavaScript files (versioned, never change): keep a copy so the games still start with no signal.
+    // Only the library files; the database / sign-in traffic itself is never touched.
+    if (url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/')) {
+        event.respondWith(caches.open(CACHE_NAME).then(async (cache) => {
+            const hit = await cache.match(req); if (hit) return hit;
+            const res = await fetch(req); if (res && (res.ok || res.type === 'opaque')) cache.put(req, res.clone()); return res;
+        }));
+        return;
+    }
     if (url.origin !== self.location.origin) return;
     if (url.pathname.includes('/__/')) return; // Firebase sign-in helper pages
 
