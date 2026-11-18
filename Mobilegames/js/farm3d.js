@@ -326,8 +326,9 @@ function levelMilestone(l) {
   try { WW.db.ref('achFeed').push({ n: myName, a: id, t: 'Level ' + l, i: l >= 50 ? '👑' : '🎖️', d: 'Reached level ' + l + ' in Neighborly Acre', g: 'Neighborly Acre', av: myAvatar || '', ts: firebase.database.ServerValue.TIMESTAMP }); } catch (e) {}
 }
 let achReady = false;
+function achCtx() { return { s: new Proxy(save.stats || {}, { get: function (o, k) { return o[k] || 0; } }), level: level(), fields: myFieldCount(), coins: save.coins, up: save.up || {} }; }
 function checkAchievements(boot) {
-  if (!me || !save.stats || (!achReady && !boot)) return; const ctx = { s: new Proxy(save.stats, { get: function (o, k) { return o[k] || 0; } }), level: level(), fields: myFieldCount(), coins: save.coins, up: save.up || {} }, fresh = [];
+  if (!me || !save.stats || (!achReady && !boot)) return; const ctx = achCtx(), fresh = [];
   save.ach = save.ach || {};
   C.ACHIEVEMENTS.forEach(function (a) { if (!save.ach[a.id] && a.t(ctx)) { save.ach[a.id] = Date.now(); fresh.push(a); } });
   if (boot) { achReady = true; if (fresh.length) { queueSave(); say('🏆 ' + fresh.length + ' achievement' + (fresh.length > 1 ? 's' : '') + ' unlocked from your past progress. See the Achievements tab.'); } return; }   // backlog from before achievements existed: no site-wide spam
@@ -538,7 +539,12 @@ function renderShop() {
   } else if (shopTab === 'ach') {
     const n = C.ACHIEVEMENTS.filter(function (a) { return save.ach[a.id]; }).length;
     addHtml(box, '<div class="item" style="border:0"><small>' + n + ' of ' + C.ACHIEVEMENTS.length + ' earned. Each one you earn pops up for everyone on the site.</small></div>');
-    C.ACHIEVEMENTS.forEach(function (a) { const got = !!save.ach[a.id]; box.appendChild(row((got ? '✅ ' : '🔒 ') + a.icon + ' <b>' + a.name + '</b> <small>' + a.desc + '</small>', [])); });
+    const cx = achCtx();
+    C.ACHIEVEMENTS.forEach(function (a) {
+      const got = !!save.ach[a.id], have = Math.min(a.goal, Math.floor(a.v(cx) || 0)), pct = got ? 100 : Math.floor(have / a.goal * 100);
+      const bar = '<span style="display:block;margin-top:4px;height:7px;border-radius:4px;background:#0006;overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:' + (got ? '#22c55e' : '#facc15') + '"></i></span>';
+      box.appendChild(row((got ? '✅ ' : '🔒 ') + a.icon + ' <b>' + a.name + '</b> <small>' + a.desc + ' · ' + (got ? 'done!' : have.toLocaleString() + ' / ' + a.goal.toLocaleString() + ' (' + pct + '%)') + '</small>' + bar, []));
+    });
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
     if (me && me.email && me.email.toLowerCase() === C.OWNER_EMAIL) box.appendChild(row('🔄 <b>Reset farm for everyone</b> <small>Season ' + season + '. Everyone starts again at level 1.</small>', [{ t: 'Reset', off: false, f: resetEveryone }]));
