@@ -2,6 +2,14 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 13,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Nothing gets left behind: the Power Plant only levels up once every building it has unlocked has caught up to its level (tap the Power Plant to see which ones)"
+      ]
+    },
+    {
       "id": 12,
       "date": "Nov 18",
       "game": "survive",

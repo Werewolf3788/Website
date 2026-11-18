@@ -295,17 +295,20 @@ function syncBuildings() {
     const lb = bldLabels[id]; if (!lb) return; const b = st.b[id];
     if (b.up) lb.userData.set('⏳ ' + D.i + ' Lv' + b.up.to + ' · ' + fmt((b.up.end - NOW()) / 1000), '#fde68a');
     else if (D.out && (st.piles[id] || 0) >= 1) lb.userData.set(D.i + ' Lv' + l + ' · ' + RES[D.out] + ' ' + Math.floor(st.piles[id]) + (st.piles[id] >= 40 * l * PILE_STOP - .5 ? ' · extra goes to builds' : ''), '#bbf7d0');
+    else if (id === 'pp' && behindPP().length) lb.userData.set(D.i + ' ' + D.n + ' Lv' + l + ' · ' + behindPP().length + ' to catch up', '#fde68a');
     else lb.userData.set(D.i + ' ' + D.n + ' Lv' + l);
   });
 }
 
 // ------------------------------------------------------------ pads: stand on them and your resources flow in
 const pads = {};
+// nothing gets left behind: the Power Plant only goes up once every building it has unlocked has caught up to its level
+function behindPP() { const P = lvl('pp'); return Object.keys(BD).filter(id => id !== 'pp' && BD[id].need <= P && ((st.b[id].lvl | 0) < P || st.b[id].up)); }
 function wantedPads() {
   const w = {};
   Object.keys(BD).forEach(id => { const b = st.b[id], D = BD[id]; if (b.up) return; const l = b.lvl;
     if (l === 0 && lvl('pp') >= D.need) w['b:' + id + ':1'] = { kind: 'build', id: id, to: 1, x: D.x, z: D.z + (l ? 3.4 : 0) };
-    else if (l > 0 && l < cap(id)) w['b:' + id + ':' + (l + 1)] = { kind: 'build', id: id, to: l + 1, x: D.x, z: D.z + (id === 'pp' ? 3.9 : 3.4) }; });
+    else if (l > 0 && l < cap(id) && !(id === 'pp' && behindPP().length)) w['b:' + id + ':' + (l + 1)] = { kind: 'build', id: id, to: l + 1, x: D.x, z: D.z + (id === 'pp' ? 3.9 : 3.4) }; });
   for (let i = 0; i < G; i++) for (let j = 0; j < G; j++) {
     if (!st.zones[i + ',' + j]) continue;
     DIRS.forEach(d => { const ni = i + d[0], nj = j + d[1], nk = ni + ',' + nj; if (ni < 0 || nj < 0 || ni >= G || nj >= G || st.zones[nk] || w['z:' + nk]) return; w['z:' + nk] = { kind: 'zone', i: ni, j: nj, x: zc(i) + d[2], z: zc(j) + d[3] }; });
@@ -489,7 +492,7 @@ function workshopPanel() {
 // what a building does at a given level (used for "now" and "next level" in its info card)
 function bInfo(id, L) {
   const D = BD[id];
-  if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : ''); }
+  if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : '') + ' It only levels up once every building has caught up to it.'; }
   if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + Math.floor(40 * L * PILE_STOP) + ' (anything past that goes straight to your other buildings\u2019 builds).' + (ROLES[id] ? ' ' + Math.min(4, L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + (Math.min(4, L) > 1 ? 's' : '') + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
   if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
   if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '.';
@@ -498,7 +501,8 @@ function bInfo(id, L) {
 }
 function infoBlock(id) {
   const b = st.b[id] || { lvl: 0 }, L = b.lvl | 0, nx = L + 1;
-  let h = '<div class="row"><div class="g"><b>' + (L ? 'Now (level ' + L + ')' : 'When built') + '</b><div class="muted">' + bInfo(id, Math.max(1, L)) + '</div></div></div>';
+  const behind = id === 'pp' ? behindPP() : [];
+  let h = (behind.length ? '<div class="row"><div class="g"><b style="color:#fde68a">Catch these up to level ' + L + ' first</b><div class="muted">' + behind.map(k => BD[k].i + ' ' + BD[k].n + ' (' + (st.b[k].up ? 'upgrading' : st.b[k].lvl ? 'Lv' + st.b[k].lvl : 'not built') + ')').join(' · ') + '</div></div></div>' : '') + '<div class="row"><div class="g"><b>' + (L ? 'Now (level ' + L + ')' : 'When built') + '</b><div class="muted">' + bInfo(id, Math.max(1, L)) + '</div></div></div>';
   if (L) h += '<div class="row"><div class="g"><b>Next level (' + nx + ')</b><div class="muted">' + bInfo(id, nx) + '<br>Costs ' + costTxt(costFor(id, nx)) + (upTime(nx) ? ' · builds in ' + fmt(upTime(nx)) : '') + (nx > cap(id) ? ' · needs 🔌 Power Plant level ' + nx : '') + '</div></div></div>';
   return h;
 }
