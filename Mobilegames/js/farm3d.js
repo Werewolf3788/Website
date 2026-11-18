@@ -262,7 +262,7 @@ function actTile(i, quiet) {
   } else if (tool === 'harvest') {
     if (!cur || cur.k !== 'c') { if (!quiet) say('Nothing to harvest.'); return; }
     ref.transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
-      if (ok) { addItem(cur.c, 1); if (quiet && save.up.combine && Math.random() < .25) { addItem(cur.c, 1); } save.harvested++; stat('harvest'); addXp(C.XP_HARVEST); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
+      if (ok) { addItem(cur.c, 1); if (quiet && save.up.combine && Math.random() < .25) { addItem(cur.c, 1); } save.harvested++; stat('harvest'); addXp(C.XP_HARVEST + (cur.f ? C.XP_FERT_BONUS : 0)); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
       else if (!quiet) say('Not ready yet (' + C.fmtTime(growOf(cur) * (1 - progress(cur))) + ' left' + (cur.w ? '' : ', needs water') + ').');
     });
   } else if (tool === 'seed') {
@@ -394,7 +394,7 @@ function renderShop() {
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
     if (me && me.email && me.email.toLowerCase() === C.OWNER_EMAIL) box.appendChild(row('🔄 <b>Reset farm for everyone</b> <small>Season ' + season + '. Everyone starts again at level 1.</small>', [{ t: 'Reset', off: false, f: resetEveryone }]));
-    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' (+' + C.xpShow(C.XP_FERT_BONUS) + ' more if fertilized) · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
     daily.forEach(function (m, k) {
       const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
       box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward $' + m.coins + '</small>',
@@ -487,7 +487,7 @@ function combineAuto() {
     roomRef.child('tiles/' + i).transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
       if (!ok || !save.combine) return; const g = save.combine.grain; g[cur.c] = (g[cur.c] | 0) + 1;
       if (save.up.combine && Math.random() < .25 && grainTotal(g) < HARVEST.tank) g[cur.c]++;
-      save.harvested++; stat('harvest'); addXp(C.XP_HARVEST); queueSave();
+      save.harvested++; stat('harvest'); addXp(C.XP_HARVEST + (cur.f ? C.XP_FERT_BONUS : 0)); queueSave();
       grainBurst++; clearTimeout(grainBurstT); grainBurstT = setTimeout(function () { say('🌾 Cut ' + grainBurst + ' · tank ' + grainTotal(save.combine && save.combine.grain) + '/' + HARVEST.tank); grainBurst = 0; }, 500);
     });
   }
