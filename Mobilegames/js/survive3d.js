@@ -476,7 +476,7 @@ function workshopPanel() {
 function bInfo(id, L) {
   const D = BD[id];
   if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : ''); }
-  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '.' + (id === 'lumber' ? ' ' + Math.min(4, L) + ' lumberjack' + (Math.min(4, L) > 1 ? 's' : '') + ' chop trees and bring the logs here.' : '');
+  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '.' + (ROLES[id] ? ' ' + Math.min(4, L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + (Math.min(4, L) > 1 ? 's' : '') + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
   if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
   if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '.';
   if (id === 'workshop') return 'Your weapon can be upgraded up to level ' + (L + 1) + ' (' + weaponDmg(L + 1) + ' damage).';
@@ -564,7 +564,7 @@ function publishPub() {
   try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {} }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
 }
 function alliesPanel(note) {
-  let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn ' + RES.wood + '15 (10 a day).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
+  let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn ' + RES.wood + '15 (10 a day). While you play on your own map, each ally gets ' + Math.round(sharePct((shareAllies || []).length) * 100 || 5) + '% of what you gather (5% with one ally, down to 1% each with five or more).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
   if (!WW || WW.mode !== 'cloud' || !WW.user) h += '<div class="row muted">Sign in on the games hub to team up with allies.</div>';
   else {
     // your friends list (the same friends as everywhere else on the site): no codes to type
@@ -581,7 +581,28 @@ function alliesPanel(note) {
   show(h);
 }
 // friends from users/{key}/friends, each with their settlement summary (their survive room is keyed by their friend code)
-let allyList = null, allyLoading = false;
+let allyList = null, allyLoading = false, shareAllies = null;
+// playing on your own map shares a little of what you gather with your allies (Tile Survival players on your friends list):
+// each ally gets 5% with one ally, 4% with two ... down to 1% each with five or more, so you still keep most of it for your own upgrades
+function sharePct(n) { return n ? Math.max(1, 6 - n) / 100 : 0; }
+function shareTick() {
+  if (tour || !code || !WW || WW.mode !== 'cloud' || !WW.user) return;
+  if (!shareAllies) { loadAllyList(); return; }
+  const A = shareAllies.filter(f => f.code !== code); st.shareMark = st.shareMark || {}; st.shareCarry = st.shareCarry || {};
+  const pct = sharePct(A.length), out = {};
+  ['wood', 'metal', 'food'].forEach(k => {
+    const now = st.stats[k] || 0, last = st.shareMark[k] === undefined ? now : st.shareMark[k]; st.shareMark[k] = now; if (!A.length) return;
+    st.shareCarry[k] = (st.shareCarry[k] || 0) + Math.max(0, now - last) * pct;   // per ally
+    const each = Math.floor(st.shareCarry[k]); if (each < 1) return;
+    const can = Math.min(each, Math.floor((st.res[k] || 0) / A.length)); if (can < 1) return; st.shareCarry[k] -= can; st.res[k] -= can * A.length; out[k] = can;
+  });
+  if (!Object.keys(out).length) return;
+  const from = WW.nick || String((WW.user && WW.user.displayName) || 'An ally').split(' ')[0];
+  A.forEach(f => { try { WW.roomRef('survive', f.code).child('gifts').push({ from: from, res: out, share: 1, at: NOW() }); } catch (e) {} });
+  persist(); hud();
+}
+setInterval(() => { try { shareTick(); } catch (e) {} }, 60000);
+setInterval(() => { if (!tour && WW && WW.mode === 'cloud' && WW.user) { allyList = null; loadAllyList(); } }, 5 * 60000);
 async function loadAllyList() {
   if (allyLoading) return; allyLoading = true;
   try {
@@ -592,7 +613,7 @@ async function loadAllyList() {
       const open = pub ? (pub.ups || []).filter(u => u.end > NOW() && (u.c || 0) < MAX_HELPS).length : 0;
       return { code: c, name: fo.username || (pub && pub.name) || c, pub: pub, open: open };
     }));
-    allyList.sort((a, b) => b.open - a.open || (b.pub ? 1 : 0) - (a.pub ? 1 : 0));
+    allyList.sort((a, b) => b.open - a.open || (b.pub ? 1 : 0) - (a.pub ? 1 : 0)); shareAllies = allyList.filter(f => f.pub);
   } catch (e) { allyList = []; }
   allyLoading = false; if (sheet.style.display === 'flex' && !visiting && card.innerHTML.indexOf('🤝 Allies') >= 0) alliesPanel();
   setTimeout(() => { allyList = null; }, 60000);   // refresh the list after a minute
@@ -624,7 +645,7 @@ function applyGifts() {
     const got = {}; Object.keys(g.res || {}).forEach(k => { const n = +g.res[k] || 0; if (n > 0) { st.res[k] = (st.res[k] || 0) + n; got[k] = (got[k] || 0) + n; } });
     Object.keys(g.paid || {}).forEach(key => Object.keys(g.paid[key] || {}).forEach(k => { const n = +g.paid[key][k] || 0; if (n <= 0) return;
       if (pads[key]) (st.paid[key] = st.paid[key] || {})[k] = (st.paid[key][k] || 0) + n; else st.res[k] = (st.res[k] || 0) + n; got[k] = (got[k] || 0) + n; }));
-    if (Object.keys(got).length) toast('🤝 ' + (g.from || 'An ally') + ' worked on your settlement: +' + costTxt(got), 4500);
+    if (Object.keys(got).length) toast('🤝 ' + (g.from || 'An ally') + (g.share ? ' shared some of their progress' : ' worked on your settlement') + ': +' + costTxt(got), 4500);
   });
   syncPads(); persist(); publishPub();
 }
@@ -644,38 +665,53 @@ function hud() {
   Object.keys(RES).forEach(k => { const el = $('r_' + k), prod = producers().filter(id => BD[id].out === k); el.innerHTML = RH(RES[k]) + ' ' + Math.floor(st.res[k]); });
   $('ppl').textContent = lvl('pp'); $('surv').textContent = survivors(); $('hp').style.width = Math.max(0, st.hp / player.hpMax * 100) + '%';
 }
-// ------------------------------------------------------------ lumberjacks: the Lumberyard sends out workers (1 per level, up to 4)
-// who walk to the nearest standing tree, chop it, and carry the logs back to the yard's pile (collect it there as usual)
+// ------------------------------------------------------------ workers: each producing building sends out its own crew (1 per level, up to 4)
+// Lumberyard -> lumberjacks chop trees · Smelter -> miners break rocks · Farm -> hunters catch deer. They carry the haul
+// back to the building's pile, which you collect as usual.
+const ROLES = {
+  lumber:  { name: '🌳 Lumberjack', shirt: 0xb45309, hat: 0xfacc15, tool: 'axe', list: () => trees, work: 2.4, load: 3, res: 'wood' },
+  smelter: { name: '⛏️ Miner',      shirt: 0x475569, hat: 0xf97316, tool: 'axe', list: () => rocks, work: 3.2, load: 2, res: 'metal' },
+  farm:    { name: '🏹 Hunter',     shirt: 0x166534, hat: 0x78350f, tool: 'gun', list: () => deer,  work: 1.6, load: 5, res: 'food' }
+};
 const workers = [];
 function syncWorkers() {
-  const want = lvl('lumber') >= 1 ? Math.min(4, lvl('lumber')) : 0, L = BD.lumber;
-  while (workers.length > want) scene.remove(workers.pop().mesh);
-  while (workers.length < want) {
-    const m = human({ skin: [0xf1c27d, 0xc68642, 0x8d5524, 0xe0ac69][workers.length % 4], shirt: 0xb45309, pants: 0x1f2937, hat: 0xfacc15, tool: 'axe', s: .9 });
-    const nm = textSprite(3); nm.position.y = 2.6; nm.userData.set('🌳 Lumberjack'); m.add(nm);
-    const w = { mesh: m, x: L.x + (workers.length - 1.5), z: L.z + 2.5, state: 'seek', tree: null, t: 0 }; m.position.set(w.x, 0, w.z); scene.add(m); workers.push(w);
-  }
+  Object.keys(ROLES).forEach(id => {
+    const R = ROLES[id], B = BD[id], mine = workers.filter(w => w.role === id), want = lvl(id) >= 1 ? Math.min(4, lvl(id)) : 0;
+    for (let k = mine.length; k > want; k--) { const w = mine[k - 1]; scene.remove(w.mesh); workers.splice(workers.indexOf(w), 1); }
+    for (let k = mine.length; k < want; k++) {
+      const m = human({ skin: [0xf1c27d, 0xc68642, 0x8d5524, 0xe0ac69][k % 4], shirt: R.shirt, pants: 0x1f2937, hat: R.hat, tool: R.tool, s: .9 });
+      const nm = textSprite(3); nm.position.y = 2.6; nm.userData.set(R.name); m.add(nm);
+      const w = { role: id, mesh: m, x: B.x + (k - 1.5), z: B.z + B.r + 1, state: 'seek', tgt: null, t: 0 }; m.position.set(w.x, 0, w.z); scene.add(m); workers.push(w);
+    }
+  });
+}
+function knockDown(o, now) {   // same as when you do it yourself
+  o.down = true;
+  if (o.kind === 'tree') { o.at = now + 45000; o.top.visible = false; if (o.trunk) o.trunk.scale.y = .3; }
+  else if (o.kind === 'rock') { o.at = now + 90000; o.mesh.visible = false; }
+  else { o.at = now + 90000; o.mesh.visible = false; if (o.bar) o.bar.visible = false; }
 }
 function updateWorkers(dt, now) {
-  const L = BD.lumber;
   workers.forEach(w => {
-    let sp = 0;
-    const walk = (tx, tz) => { const d = Math.hypot(tx - w.x, tz - w.z); if (d < .9) return true; sp = 3.2; const nx = w.x + (tx - w.x) / d * sp * dt, nz = w.z + (tz - w.z) / d * sp * dt; moveTo(w, nx, nz, .35); w.mesh.rotation.y = Math.atan2(tx - w.x, tz - w.z); return false; };
+    const R = ROLES[w.role], B = BD[w.role]; let sp = 0;
+    const walk = (tx, tz, near) => { const d = Math.hypot(tx - w.x, tz - w.z); if (d < (near || .9)) return true; sp = w.role === 'farm' ? 3.8 : 3.2; const nx = w.x + (tx - w.x) / d * sp * dt, nz = w.z + (tz - w.z) / d * sp * dt; moveTo(w, nx, nz, .35); w.mesh.rotation.y = Math.atan2(tx - w.x, tz - w.z); return false; };
     if (w.state === 'seek') {
-      let best = null, bd = 1e9; trees.forEach(t => { if (t.down || workers.some(o => o !== w && o.tree === t)) return; const d = Math.hypot(t.x - L.x, t.z - L.z); if (d < bd) { bd = d; best = t; } });
-      if (best) { w.tree = best; w.state = 'walk'; } else w.t += dt;   // no trees standing: wait for them to grow back
+      let best = null, bd = 1e9; R.list().forEach(o => { if (o.down || workers.some(q => q !== w && q.tgt === o)) return; const d = Math.hypot(o.x - B.x, o.z - B.z); if (d < bd) { bd = d; best = o; } });
+      if (best) { w.tgt = best; w.state = 'walk'; }   // nothing left standing: wait for things to grow back / come back
     } else if (w.state === 'walk') {
-      if (!w.tree || w.tree.down) { w.state = 'seek'; w.tree = null; }
-      else if (walk(w.tree.x, w.tree.z)) { w.state = 'chop'; w.t = 2.4; }
-    } else if (w.state === 'chop') {
-      const t = w.tree; if (!t || t.down) { w.state = 'seek'; w.tree = null; return; }
-      w.mesh.rotation.y = Math.atan2(t.x - w.x, t.z - w.z); w.t -= dt; if (Math.floor(w.t * 2.5) !== Math.floor((w.t + dt) * 2.5)) { w.mesh.userData.swing = 1; t.shake = .25; }
-      if (w.t <= 0) { t.down = true; t.at = now + 45000; t.top.visible = false; if (t.trunk) t.trunk.scale.y = .3; w.tree = null; w.state = 'carry'; w.load = 3; }
+      if (!w.tgt || w.tgt.down) { w.state = 'seek'; w.tgt = null; }
+      else if (walk(w.tgt.x, w.tgt.z, w.role === 'farm' ? 1.6 : (w.tgt.r || .5) + .5)) { w.state = 'work'; w.t = R.work; }
+    } else if (w.state === 'work') {
+      const o = w.tgt; if (!o || o.down) { w.state = 'seek'; w.tgt = null; return; }
+      if (w.role === 'farm' && Math.hypot(o.x - w.x, o.z - w.z) > 2.2) { w.state = 'walk'; return; }   // the deer ran: chase it
+      w.mesh.rotation.y = Math.atan2(o.x - w.x, o.z - w.z); w.t -= dt; if (Math.floor(w.t * 2.5) !== Math.floor((w.t + dt) * 2.5)) { w.mesh.userData.swing = 1; o.shake = .25; }
+      if (w.t <= 0) { knockDown(o, now); w.tgt = null; w.state = 'carry'; w.load = R.load; }
     } else if (w.state === 'carry') {
-      if (walk(L.x + (L.r + 1) * .7, L.z + (L.r + 1) * .7)) { const cap = 40 * lvl('lumber'); st.piles.lumber = Math.min(cap, (st.piles.lumber || 0) + w.load); fly(RES.wood, w, { x: L.x, z: L.z }); w.load = 0; w.state = 'seek'; }
+      if (walk(B.x + (B.r + 1) * .7, B.z + (B.r + 1) * .7)) { const cap = 40 * lvl(w.role); st.piles[w.role] = Math.min(cap, (st.piles[w.role] || 0) + w.load); fly(RES[R.res], w, { x: B.x, z: B.z }); w.load = 0; w.state = 'seek'; }
     }
     w.mesh.position.set(w.x, 0, w.z); animHuman(w.mesh, sp, dt);
-    if (w.mesh.userData.logs !== (w.state === 'carry')) { w.mesh.userData.logs = w.state === 'carry'; if (w.mesh.userData.logs) { const lg = cyl(w.mesh, .12, .12, .8, 0xa0703f, 0, 1.3, -.3, 6); lg.rotation.z = Math.PI / 2; w.mesh.userData.logMesh = lg; } else if (w.mesh.userData.logMesh) { w.mesh.remove(w.mesh.userData.logMesh); w.mesh.userData.logMesh = null; } }
+    const carrying = w.state === 'carry';
+    if (w.mesh.userData.logs !== carrying) { w.mesh.userData.logs = carrying; if (carrying) { const col = R.res === 'wood' ? 0xa0703f : R.res === 'metal' ? 0x9ca3af : 0xb45309, lg = R.res === 'wood' ? cyl(w.mesh, .12, .12, .8, col, 0, 1.3, -.3, 6) : box(w.mesh, .45, .35, .35, col, 0, 1.3, -.3); if (R.res === 'wood') lg.rotation.z = Math.PI / 2; w.mesh.userData.logMesh = lg; } else if (w.mesh.userData.logMesh) { w.mesh.remove(w.mesh.userData.logMesh); w.mesh.userData.logMesh = null; } }
   });
 }
 function loadWorld() {
@@ -812,4 +848,4 @@ function frame() {
 addEventListener('beforeunload', () => { persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 boot(); requestAnimationFrame(frame);
-window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
+window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };

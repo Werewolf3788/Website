@@ -2,6 +2,15 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 10,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "New crews: the Smelter sends miners to break rocks and the Farm sends hunters after deer (1 per level, up to 4), like the Lumberyard's lumberjacks. They fill the building's pile for you to pick up",
+        "Playing on your own map shares a little of what you gather with your allies: 5% each with one ally, down to 1% each with five or more"
+      ]
+    },
+    {
       "id": 9,
       "date": "Nov 18",
       "game": "survive",
