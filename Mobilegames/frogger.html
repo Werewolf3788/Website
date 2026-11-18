@@ -18,9 +18,9 @@
   #stage{position:relative;flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:0}
   canvas{display:block;touch-action:none;border-radius:10px;box-shadow:0 6px 24px #000a}
   #toast{position:absolute;top:10px;left:0;right:0;text-align:center;color:#fde68a;font-weight:700;text-shadow:0 1px 4px #000;pointer-events:none;min-height:1.3em}
-  #pad{display:none;position:relative;width:168px;height:132px;margin:4px 0 calc(6px + env(safe-area-inset-bottom));flex:none}
+  #pad{display:none;position:relative;width:220px;height:204px;margin:4px 0 calc(6px + env(safe-area-inset-bottom));flex:none}
   body.touch #pad{display:block}
-  #pad button{position:absolute;width:56px;height:56px;border-radius:14px;border:0;background:#334155;color:#e2e8f0;font-size:1.5rem;touch-action:manipulation}
+  #pad button{position:absolute;width:64px;height:64px;border-radius:16px;border:0;background:#334155;color:#e2e8f0;font-size:1.5rem;touch-action:manipulation}
   #pad button:active{background:#22c55e;color:#04210f}
   #ov{position:fixed;inset:0;z-index:20;background:#000b;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px}
   #ov button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:12px 18px;font:inherit;cursor:pointer}
@@ -33,7 +33,7 @@
   <div id="top"><span>🐸 <b id="roomLabel">Frogger</b> · 👥 <b id="count">1</b></span><span id="lives"></span><span>⭐ <b id="score">0</b>/<span id="goal">10</span> · best <b id="best">0</b></span><span><button id="muteBtn" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span></div>
   <div id="board"></div>
   <div id="stage"><canvas id="c"></canvas><div id="toast"></div></div>
-  <div id="pad"><button data-d="u" style="left:56px;top:0">▲</button><button data-d="l" style="left:0;top:66px">◀</button><button data-d="d" style="left:56px;top:66px">▼</button><button data-d="r" style="left:112px;top:66px">▶</button></div>
+  <div id="pad"><button data-d="u" style="left:78px;top:0">▲</button><button data-d="l" style="left:0;top:70px">◀</button><button data-d="r" style="left:156px;top:70px">▶</button><button data-d="d" style="left:78px;top:140px">▼</button></div>
 </div>
 <div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button><button id="ovBtn2" class="alt" style="display:none"></button></div>
 
