@@ -324,6 +324,15 @@ const touch = { l: 0, r: 0, gas: 0, brk: 0 };
   const offF = e => { e.preventDefault(); touch[k] = 0; b.classList.remove('on'); };
   b.addEventListener('pointerdown', on); b.addEventListener('pointerup', offF); b.addEventListener('pointercancel', offF); b.addEventListener('lostpointercapture', offF);
 });
+const stick = { x: 0, y: 0 };   // landscape analogs: left stick x = steer, right stick y = gas (up) / brake (down)
+[['sL', 'x'], ['sR', 'y']].forEach(([id, ax]) => {
+  const el = $(id), kn = el && el.firstElementChild; if (!el) return; let pid = null;
+  const mv = e => { const r = el.getBoundingClientRect(), h = r.width / 2; let dx = (e.clientX - (r.left + h)) / h, dy = (e.clientY - (r.top + h)) / h; const m = Math.hypot(dx, dy); if (m > 1) { dx /= m; dy /= m; } if (ax === 'x') { stick.x = dx; kn.style.transform = 'translate(' + dx * h * .7 + 'px,0)'; } else { stick.y = dy; kn.style.transform = 'translate(0,' + dy * h * .7 + 'px)'; } };
+  const up = e => { if (e.pointerId !== pid) return; pid = null; stick[ax] = 0; kn.style.transform = ''; };
+  el.addEventListener('pointerdown', e => { e.preventDefault(); pid = e.pointerId; try { el.setPointerCapture(pid); } catch (x) {} mv(e); });
+  el.addEventListener('pointermove', e => { if (e.pointerId === pid) mv(e); });
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+});
 if (matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window) document.body.classList.add('touch');
 function controls() {
   let gas = 0, brake = 0, steer = 0;
@@ -332,6 +341,7 @@ function controls() {
   if (keys.ArrowLeft || keys.KeyA) steer += 1;
   if (keys.ArrowRight || keys.KeyD) steer -= 1;
   if (touch.gas) gas = 1; if (touch.brk) brake = 1; steer += touch.l - touch.r;
+  if (Math.abs(stick.x) > .12) steer -= stick.x; if (stick.y < -.12) gas = Math.max(gas, -stick.y); if (stick.y > .12) brake = Math.max(brake, stick.y);
   const p = PAD && PAD.state();
   if (p) {
     gas = Math.max(gas, p.r2, p.held('cross') ? 1 : 0);

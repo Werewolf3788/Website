@@ -306,7 +306,7 @@
 (function () {
   try {
     var st = document.createElement('style');
-    st.textContent = 'html,body,button,a,label,summary{touch-action:manipulation}@media (pointer:coarse){input,select,textarea{font-size:16px!important}}';
+    st.textContent = '@media (orientation:landscape) and (max-height:560px){#main{grid-template-columns:minmax(0,calc(100vh - 64px)) minmax(0,1fr)!important;max-width:none!important;align-items:start} #boardWrap,#left{max-width:calc(100vh - 64px)!important}} html,body,button,a,label,summary{touch-action:manipulation}@media (pointer:coarse){input,select,textarea{font-size:16px!important}}';
     document.head.appendChild(st);
     document.addEventListener('gesturestart', function (e) { e.preventDefault(); });          // iOS pinch
     var vv = window.visualViewport, btn = null;

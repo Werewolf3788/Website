@@ -605,11 +605,25 @@ canvas.addEventListener('pointerdown', function (e) { drag = { id: e.pointerId, 
 canvas.addEventListener('pointermove', function (e) { if (!drag || drag.id !== e.pointerId) return; lastDragAt = performance.now(); yaw -= (e.clientX - drag.x) * .006; pitch = Math.max(.12, Math.min(1.2, pitch + (e.clientY - drag.y) * .004)); drag.x = e.clientX; drag.y = e.clientY; });
 canvas.addEventListener('pointerup', function () { drag = null; }); canvas.addEventListener('pointercancel', function () { drag = null; });
 canvas.addEventListener('wheel', function (e) { dist = Math.max(5, Math.min(24, dist + e.deltaY * .01)); }, { passive: true });
-const joyEl = $('joy'), knob = $('knob'); let joyId = null;
-function joyMove(e) { const r = joyEl.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; let dx = (e.clientX - cx) / 50, dy = (e.clientY - cy) / 50; const m = Math.hypot(dx, dy); if (m > 1) { dx /= m; dy /= m; } joy.x = dx; joy.y = dy; knob.style.transform = 'translate(' + dx * 40 + 'px,' + dy * 40 + 'px)'; }
-joyEl.addEventListener('pointerdown', function (e) { joyId = e.pointerId; joyEl.setPointerCapture(e.pointerId); joyMove(e); });
-joyEl.addEventListener('pointermove', function (e) { if (e.pointerId === joyId) joyMove(e); });
-['pointerup', 'pointercancel'].forEach(function (n) { joyEl.addEventListener(n, function (e) { if (e.pointerId === joyId) { joyId = null; joy.x = joy.y = 0; knob.style.transform = ''; } }); });
+const joyEl = $('joy'), knob = $('knob'), joyElR = $('joyR'), knobR = $('knobR'); let joyId = null, joyIdR = null;
+const landscape = function () { return matchMedia('(orientation:landscape)').matches; };
+// portrait: one stick does everything. landscape: the left stick only steers (x), the right stick only drives forward/back (y).
+function stickMove(e, el, kn, which) {
+  const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, half = r.width / 2 || 50; let dx = (e.clientX - cx) / half, dy = (e.clientY - cy) / half; const m = Math.hypot(dx, dy); if (m > 1) { dx /= m; dy /= m; }
+  const two = landscape() && joyElR && getComputedStyle(joyElR).display !== 'none', k = half * .8;
+  if (which === 'L') { joy.x = dx; if (!two) joy.y = dy; kn.style.transform = 'translate(' + dx * k + 'px,' + (two ? 0 : dy * k) + 'px)'; }
+  else { joy.y = dy; kn.style.transform = 'translate(0px,' + dy * k + 'px)'; }
+}
+function stickUp(which) { if (which === 'L') { joyId = null; joy.x = 0; if (!(joyElR && getComputedStyle(joyElR).display !== 'none')) joy.y = 0; knob.style.transform = ''; } else { joyIdR = null; joy.y = 0; knobR.style.transform = ''; } }
+joyEl.addEventListener('pointerdown', function (e) { joyId = e.pointerId; joyEl.setPointerCapture(e.pointerId); stickMove(e, joyEl, knob, 'L'); });
+joyEl.addEventListener('pointermove', function (e) { if (e.pointerId === joyId) stickMove(e, joyEl, knob, 'L'); });
+['pointerup', 'pointercancel'].forEach(function (n) { joyEl.addEventListener(n, function (e) { if (e.pointerId === joyId) stickUp('L'); }); });
+if (joyElR) {
+  joyElR.addEventListener('pointerdown', function (e) { joyIdR = e.pointerId; joyElR.setPointerCapture(e.pointerId); stickMove(e, joyElR, knobR, 'R'); });
+  joyElR.addEventListener('pointermove', function (e) { if (e.pointerId === joyIdR) stickMove(e, joyElR, knobR, 'R'); });
+  ['pointerup', 'pointercancel'].forEach(function (n) { joyElR.addEventListener(n, function (e) { if (e.pointerId === joyIdR) stickUp('R'); }); });
+}
+addEventListener('orientationchange', function () { joy.x = joy.y = 0; joyId = joyIdR = null; knob.style.transform = ''; if (knobR) knobR.style.transform = ''; });
 $('useBtn').addEventListener('pointerdown', function (e) { e.preventDefault(); useAction(); });
 
 // ------------------------------------------------------------ interaction

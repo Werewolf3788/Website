@@ -27,6 +27,16 @@
   #knob{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:#ffffff88}
   #useBtn{right:18px;bottom:calc(var(--bh,120px) + 14px);width:92px;height:92px;border-radius:50%;border:0;background:#22c55ecc;color:#04210f;font-weight:800;font-size:1rem;display:none;touch-action:none}
   body.touch #joy,body.touch #useBtn{display:block}
+  #joyR{left:auto;right:18px;display:none} #joyR #knobR{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:#ffffff88}
+  /* landscape: two sticks. Left = steer (left/right), right = forward/back. Portrait keeps the single stick. */
+  @media (orientation:landscape){
+    body.touch #joyR{display:block}
+    body.touch #useBtn{right:160px;width:76px;height:76px}
+    #joy,#joyR{width:104px;height:104px;bottom:calc(var(--bh,120px) + 4px)} #knob,#knobR{left:32px;top:32px}
+    #top{font-size:.8rem} #top .r{padding-top:1px;padding-bottom:1px}
+    #bars{padding:3px 8px 4px} .row button{padding:5px 8px}
+    #shop .box{max-height:94vh;width:min(92vw,620px)}
+  }
   #shop{inset:0;display:none;align-items:center;justify-content:center;background:#000a;z-index:20}
   #shop .box{background:#1e293b;border-radius:16px;padding:14px;width:min(96vw,460px);max-height:88vh;display:flex;flex-direction:column}
   #shop h2{margin:0 0 8px;font-size:1.1rem} #shopTabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
@@ -52,6 +62,7 @@
 <div id="toast" class="hud"></div>
 <div id="prompt" class="hud"></div>
 <div id="joy" class="hud"><div id="knob"></div></div>
+<div id="joyR" class="hud"><div id="knobR"></div></div>
 <button id="useBtn" class="hud">Use</button>
 <div id="bars" class="hud"><div class="row" id="seedBar"></div><div class="row" id="bar"></div></div>
 <div id="shop" class="hud"><div class="box"><h2>🏪 Barn</h2><div id="shopTabs"></div><div id="shopItems"></div><button class="close" id="shopClose">Close</button></div></div>

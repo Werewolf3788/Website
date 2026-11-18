@@ -29,6 +29,11 @@
   body.pad #touch{display:none}
   .tb{position:fixed;z-index:6;border:0;border-radius:18px;background:#ffffff26;color:#fff;font-weight:900;font-size:1.6rem;touch-action:none;bottom:calc(18px + env(safe-area-inset-bottom))}
   .tb.on{background:#ffffff66}
+  .stk{position:fixed;z-index:6;width:112px;height:112px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff44;touch-action:none;display:none;bottom:calc(18px + env(safe-area-inset-bottom))}
+  .stk i{position:absolute;left:34px;top:34px;width:40px;height:40px;border-radius:50%;background:#ffffff99;pointer-events:none}
+  #sL{left:22px} #sR{right:22px}
+  /* landscape: two sticks. Left steers, right = gas (up) / brake and reverse (down). Portrait keeps the buttons. */
+  @media (orientation:landscape){ body.touch .stk{display:block} body.touch .tb{display:none} body.touch #padHint{bottom:calc(8px + env(safe-area-inset-bottom))} #ovBox{max-height:92vh} }
   #tL{left:14px;width:80px;height:80px} #tR{left:104px;width:80px;height:80px}
   #tGas{right:14px;width:92px;height:118px;background:#22c55e66} #tBrk{right:116px;width:80px;height:80px;background:#ef444466}
   #padHint{left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom));text-align:center;font-size:.75rem;color:#cbd5e1;pointer-events:none;text-shadow:0 1px 3px #000}
@@ -57,6 +62,7 @@
 <div id="padHint" class="hud"></div>
 <div id="touch">
   <button class="tb" id="tL" aria-label="Steer left">◀</button><button class="tb" id="tR" aria-label="Steer right">▶</button>
+  <div class="stk" id="sL"><i></i></div><div class="stk" id="sR"><i></i></div>
   <button class="tb" id="tBrk" aria-label="Brake">⏪</button><button class="tb" id="tGas" aria-label="Gas">GAS</button>
 </div>
 <div id="ov"><div id="ovBox"><h2>🏎️ Werewolf Racing</h2><div class="muted">Loading…</div></div></div>
