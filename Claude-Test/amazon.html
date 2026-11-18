@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Werewolf Deals Hub – Amazon Picks, Deals & Movies</title>
+<meta name="description" content="Hand-picked Amazon deals, gaming gear, home finds and movies from the Werewolf entertainment hub. Updated live.">
+<meta name="theme-color" content="#0b0e13">
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-CTYHDF4MSD', { cookie_flags: 'SameSite=None;Secure' });
+</script>
+
+<link rel="preconnect" href="https://docs.google.com">
+<link rel="preconnect" href="https://smlc-fuel-monitor-default-rtdb.firebaseio.com">
+
+<style>
+:root{
+  --bg:#0b0e13; --panel:#141922; --panel2:#1b212c; --line:#2a3240; --text:#eef2f7; --muted:#97a1b2;
+  --accent:#ff9900; --accent-ink:#111; --prime:#00a8e1; --hot:#ff3b30; --ok:#2ecc71;
+  --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.45);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+a{color:inherit}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit}
+
+/* Page width: ~80vw on desktop, full width on phones */
+.wrap{width:min(1600px,80vw);margin:0 auto}
+@media (max-width:1100px){.wrap{width:calc(100% - 32px)}}
+
+/* ---------- top / hero ---------- */
+.hero{padding:22px 0 8px}
+.hero h1{font-size:clamp(24px,3vw,36px);font-weight:800;letter-spacing:.3px}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:4px;max-width:70ch}
+.disclosure{margin-top:10px;font-size:12.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:inline-block}
+
+.spotlight{display:none;margin:14px 0 0;background:linear-gradient(90deg,#ff9900,#ff5e00);color:#111;border-radius:12px;padding:10px 14px;align-items:center;gap:12px;font-weight:700}
+.spotlight.show{display:flex}
+.spotlight .s-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spotlight a{background:#111;color:#fff;text-decoration:none;padding:9px 14px;border-radius:8px;font-size:13px;white-space:nowrap}
+
+/* ---------- toolbar ---------- */
+.toolbar{position:sticky;top:var(--ww-bar-h,0px);z-index:20;background:rgba(11,14,19,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin-top:14px}
+.toolbar-inner{display:flex;gap:10px;align-items:center;padding:10px 0;flex-wrap:wrap}
+.search{flex:1 1 280px;position:relative}
+.search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:11px 40px 11px 16px;font-size:15px;outline:none;min-height:44px}
+.search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,153,0,.2)}
+.search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);font-size:20px;width:34px;height:34px;cursor:pointer;display:none}
+.sort{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:0 14px;min-height:44px;font-size:14px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:38px;display:inline-flex;align-items:center;gap:6px}
+.chip .n{opacity:.7;font-weight:500}
+.chip:hover{color:var(--text)}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.movies.on{background:var(--prime);border-color:var(--prime);color:#fff}
+.chip.hot.on{background:var(--hot);border-color:var(--hot);color:#fff}
+
+/* ---------- sections ---------- */
+main{flex:1;padding:18px 0 40px}
+.section{margin-bottom:34px}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+.section-head h2{font-size:20px;font-weight:800;display:flex;align-items:center;gap:8px}
+.section-head h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--c,var(--accent))}
+.section-head .more{background:none;border:0;color:var(--c,var(--accent));font-weight:700;cursor:pointer;font-size:14px;padding:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,240px);gap:16px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.row > *{scroll-snap-align:start}
+
+/* ---------- card ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c,var(--line));border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--c,#58a6ff)}
+.card.live{border-color:var(--hot);box-shadow:0 0 0 1px var(--hot),0 0 22px rgba(255,59,48,.35)}
+.media{aspect-ratio:1/1;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.media img{width:100%;height:100%;object-fit:contain;padding:12px}
+.card.movie .media{aspect-ratio:2/3;background:#000}
+.card.movie .media img{object-fit:cover;padding:0}
+.media .ph{color:#999;font-size:13px}
+.badge{position:absolute;top:8px;left:8px;background:var(--hot);color:#fff;font-size:11px;font-weight:800;text-transform:uppercase;padding:4px 8px;border-radius:6px;letter-spacing:.3px}
+.badge.prime{background:var(--prime)}
+.badge.feat{background:var(--accent);color:#111}
+.body{padding:12px 13px 13px;display:flex;flex-direction:column;gap:6px;flex:1}
+.meta{display:flex;gap:6px;flex-wrap:wrap;font-size:11.5px}
+.pill{border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted);background:var(--bg)}
+.pill.cat{color:var(--c);border-color:var(--c);cursor:pointer}
+.title{font-size:14.5px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;min-height:2.6em}
+.title:hover{color:var(--c,var(--accent))}
+.desc{font-size:12.5px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.actions{display:flex;gap:6px;margin-top:auto;padding-top:6px}
+.btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;border-radius:9px;font-weight:800;font-size:13.5px;text-decoration:none;border:0;cursor:pointer;background:linear-gradient(180deg,#ffa31a,#e68a00);color:#111}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{flex:0 0 auto;padding:0 12px;background:var(--panel2);color:var(--text);border:1px solid var(--line);font-weight:700}
+.btn.prime{background:linear-gradient(180deg,#14b5ec,#0085b3);color:#fff}
+
+.loadmore{display:flex;justify-content:center;margin-top:18px}
+.loadmore button{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:12px 22px;font-weight:700;cursor:pointer;min-height:44px}
+.empty{color:var(--muted);text-align:center;padding:60px 0}
+.skeleton{background:linear-gradient(90deg,var(--panel) 0%,var(--panel2) 50%,var(--panel) 100%);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:var(--radius);height:360px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ---------- details modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px}
+.modal.open{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:860px;width:100%;max-height:90vh;overflow:auto;position:relative;box-shadow:var(--shadow)}
+.sheet-in{display:grid;grid-template-columns:300px 1fr;gap:22px;padding:22px}
+.sheet-img{background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;min-height:300px}
+.sheet-img img{max-height:420px;object-fit:contain;padding:10px}
+.sheet.movie .sheet-img{background:#000}
+.sheet.movie .sheet-img img{padding:0}
+.sheet h3{font-size:21px;line-height:1.25;margin-bottom:8px;padding-right:36px}
+.sheet .full{white-space:pre-line;color:#cfd6e0;font-size:14px;margin:10px 0 16px}
+.sheet .btn{display:inline-flex;min-width:220px;padding:0 22px}
+.x{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);cursor:pointer;font-size:22px;line-height:1}
+
+footer{border-top:1px solid var(--line);padding:18px 0 calc(18px + var(--safe-b));color:var(--muted);font-size:12.5px;text-align:center}
+footer a{color:var(--muted)}
+
+@media (max-width:767px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .row{grid-auto-columns:46%}
+  .sheet-in{grid-template-columns:1fr;padding:16px}
+  .sheet-img{min-height:220px}
+  .title{font-size:13.5px}
+  .desc{display:none}
+  .btn.ghost{display:none}
+  main{padding-bottom:calc(90px + var(--safe-b))}
+}
+</style>
+<link rel="stylesheet" href="../assets/ww-shell.css">
+<script src="../assets/menu-sheet.js"></script>
+<style id="ww-reserve">html:not(.ww-bar-ready) body::before{content:"";display:block;height:60px}</style>
+<script defer src="../assets/ww-shell.js"></script>
+</head>
+<body>
+
+<div class="wrap hero">
+  <h1>Werewolf <span>Deals Hub</span></h1>
+  <p>Hand-picked Amazon finds, gaming gear, home deals and movies. Updated live from my list.</p>
+  <div class="disclosure">As an Amazon Associate I earn from qualifying purchases. Prices and availability are shown on Amazon.</div>
+  <div class="spotlight" id="spotlight"></div>
+</div>
+
+<div class="toolbar">
+  <div class="wrap">
+    <div class="toolbar-inner">
+      <div class="search">
+        <input id="q" type="search" placeholder="Search deals, movies, categories…" autocomplete="off" aria-label="Search">
+        <button id="qx" aria-label="Clear search">×</button>
+      </div>
+      <select id="sort" class="sort" aria-label="Sort">
+        <option value="new">Newest</option>
+        <option value="az">A – Z</option>
+        <option value="cat">Category</option>
+      </select>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+
+<main class="wrap" id="root">
+  <div class="grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+</main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+</div>
+
+<footer>
+  <div class="wrap">
+    As an Amazon Associate I earn from qualifying purchases. Product details come from Amazon; check Amazon for the current price.
+    · <a href="../security/privacy.html">Privacy Policy</a>
+  </div>
+</footer>
+
+<script>
+/* =========================================================================
+   Werewolf Deals Hub
+   Deals:  smlc-fuel-monitor RTDB /deals  (fed by the "Amazon" Google Sheet)
+   Movies: published movie-list CSV (same sheet as Movies.html), titles that
+           have an Amazon link only
+   ========================================================================= */
+const CFG = {
+  dealsUrl: 'https://smlc-fuel-monitor-default-rtdb.firebaseio.com/deals.json',
+  moviesCsv: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?gid=1831790548&single=true&output=csv',
+  movieTag: 'moviesanywhere02-20',
+  refreshMs: 10 * 60 * 1000,
+  pageSize: 48
+};
+// Movie CSV columns (same as Movies.html)
+const MCOL = { id:0, posterArt:1, name:2, amazon:3, edition:10, collection:11, dateAdded:12, poster:13, runtime:15, genre:16, type:17, rating:18, description:19 };
+
+// Sale windows for event_tag / holiday_month values (YYYY-MM-DD, inclusive)
+const EVENT_SCHEDULE = {
+  'prime-days':   { start: '2026-10-06', end: '2026-10-07', label: 'Prime Big Deal Days' },
+  'oct. prime deal':  { start: '2026-10-06', end: '2026-10-07', label: 'Prime Big Deal Days' },
+  'oct. prime deals': { start: '2026-10-06', end: '2026-10-07', label: 'Prime Big Deal Days' },
+  'black-friday': { start: '2026-11-27', end: '2026-11-29', label: 'Black Friday' },
+  'cyber-monday': { start: '2026-11-30', end: '2026-11-30', label: 'Cyber Monday' }
+};
+const MOVIES_CAT = 'Movies & TV';
+
+/* ---------------- helpers ---------------- */
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const truthy = v => v === true || v === 1 || /^(true|yes|1)$/i.test(String(v ?? '').trim());
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const normKey = s => String(s || '').trim().toLowerCase().replace(/\s+/g, '-');
+const safeUrl = u => /^https?:\/\//i.test(String(u || '').trim()) ? String(u).trim() : '';
+
+function catColor(name) {
+  if (name === MOVIES_CAT) return 'var(--prime)';
+  let h = 0; for (const ch of String(name || '')) h = ch.charCodeAt(0) + ((h << 5) - h);
+  return `hsl(${Math.abs(h % 360)},80%,62%)`;
+}
+function track(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
+function cleanDesc(d) { return String(d || '').replace(/^\s*about this item\s*/i, '').trim(); }
+
+/* ---------------- deals ---------------- */
+function saleInfo(item) {
+  let start = item.start_date || '', end = item.end_date || '', label = item.event_tag || '';
+  for (const raw of [item.event_tag, item.holiday_month]) {
+    const ev = EVENT_SCHEDULE[normKey(raw)];
+    if (ev) { if (!start) start = ev.start; if (!end) end = ev.end; label = label || ev.label; break; }
+  }
+  if (!start && !end) return null;
+  const t = todayStr();
+  if (start && t < start) return null;
+  if (end && t > end) return null;
+  return { label: label || 'Deal', end };
+}
+function parseDeals(tree) {
+  const out = [];
+  if (!tree || typeof tree !== 'object') return out;
+  for (const [catKey, group] of Object.entries(tree)) {
+    if (!group || typeof group !== 'object') continue;
+    for (const [id, it] of Object.entries(group)) {
+      if (!it || !truthy(it.is_active)) continue;
+      const url = safeUrl(it.site_url);
+      if (!url) continue;
+      const category = String(it.category || catKey.replace(/-/g, ' ')).trim() || 'General';
+      const sale = saleInfo(it);
+      const tags = Array.isArray(it.tags) ? it.tags : String(it.tags || '').split(',').map(s => s.trim()).filter(Boolean);
+      out.push({
+        kind: 'deal', id: it.id || id, title: String(it.title || '').trim() || 'Amazon pick',
+        desc: cleanDesc(it.description), img: safeUrl(it.image_url), url,
+        category, sub: String(it.sub_category || '').trim(), tags,
+        placement: String(it.placement || 'deals_page').trim().toLowerCase(),
+        sale, ts: Date.parse(it.updated_at || '') || 0
+      });
+    }
+  }
+  return out;
+}
+
+/* ---------------- movies (CSV) ---------------- */
+function parseCsv(text) {
+  const rows = []; let row = [], field = '', q = false, i = text.charCodeAt(0) === 0xFEFF ? 1 : 0;
+  for (const n = text.length; i < n; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; } else field += c; continue; }
+    if (c === '"') q = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+    else if (c !== '\r') field += c;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+function parseDate(ds) {
+  const s = String(ds || '').trim(); if (!s) return 0;
+  const n = Number(s); if (!isNaN(n) && n > 20000 && n < 80000) return Math.floor((n - 25569) * 86400000);
+  const p = s.split(' ')[0].split(/[\/\-.]/);
+  if (p.length === 3) { let [m, d, y] = p.map(Number); if (p[0].length === 4) [y, m, d] = p.map(Number); else if (y < 100) y += 2000; const t = new Date(y, m - 1, d).getTime(); if (t) return t; }
+  const t2 = Date.parse(s); return isNaN(t2) ? 0 : t2;
+}
+function withTag(u) {
+  u = String(u || '').trim(); if (!u) return '';
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  if (/amazon\./i.test(u) && !/[?&]tag=/.test(u)) u += (u.includes('?') ? '&' : '?') + 'tag=' + CFG.movieTag;
+  return u;
+}
+function parseMovies(csv) {
+  const rows = parseCsv(csv), seen = new Set(), out = [];
+  for (let r = 1; r < rows.length; r++) {
+    const cell = i => String(rows[r][i] ?? '').trim();
+    let title = cell(MCOL.name);
+    const amz = cell(MCOL.amazon);
+    if (!title || /^loading/i.test(title) || title[0] === '#') continue;
+    if (!/amazon\.|amzn\./i.test(amz)) continue;            // only titles you have on Amazon
+    let year = ''; const ym = title.match(/^(.*\S)\s*\((\d{4})\)\s*$/); if (ym) { title = ym[1]; year = ym[2]; }
+    const edition = /^standard$/i.test(cell(MCOL.edition)) ? '' : cell(MCOL.edition);
+    const key = (cell(MCOL.id) || title).toLowerCase() + '|' + edition.toLowerCase();
+    if (seen.has(key)) continue; seen.add(key);
+    const genres = cell(MCOL.genre).split(/[,/|]/).map(g => g.trim()).filter(Boolean);
+    const isTV = /tv/i.test(cell(MCOL.type));
+    out.push({
+      kind: 'movie', id: key, title, year, edition, img: [cell(MCOL.poster), cell(MCOL.posterArt)].map(safeUrl).find(Boolean) || '',
+      url: withTag(amz), desc: cell(MCOL.description), category: MOVIES_CAT, sub: isTV ? 'TV Show' : 'Movie',
+      tags: genres.slice(0, 3), rating: /^n\/a$/i.test(cell(MCOL.rating)) ? '' : cell(MCOL.rating),
+      runtime: cell(MCOL.runtime), collection: cell(MCOL.collection), placement: 'deals_page', sale: null,
+      ts: parseDate(cell(MCOL.dateAdded))
+    });
+  }
+  return out;
+}
+
+/* ---------------- state ---------------- */
+const S = { deals: [], movies: [], q: '', cat: 'all', sort: 'new', shown: CFG.pageSize, loaded: { deals: false, movies: false } };
+
+/* ---------------- loading (cache first, then live) ---------------- */
+async function loadDeals() {
+  const cached = lsGet('ww_deals_cache_v1');
+  if (cached) { try { S.deals = parseDeals(JSON.parse(cached)); S.loaded.deals = true; render(); } catch (e) {} }
+  try {
+    const res = await fetch(CFG.dealsUrl, { cache: 'no-store' });
+    if (!res.ok) throw new Error(res.status);
+    const text = await res.text();
+    if (text !== cached) { lsSet('ww_deals_cache_v1', text); S.deals = parseDeals(JSON.parse(text)); }
+  } catch (e) { console.warn('Deals load failed', e); }
+  S.loaded.deals = true; render();
+}
+async function readMovieCache() {
+  // Shares the Movies page's device cache when it's there
+  try { if ('caches' in window) { const c = await caches.open('ww-cinema-data-v1'); const r = await c.match('catalog.csv'); if (r) return await r.text(); } } catch (e) {}
+  return lsGet('ww_cinema_csv_v1');
+}
+async function loadMovies() {
+  const cached = await readMovieCache();
+  if (cached) { try { S.movies = parseMovies(cached); S.loaded.movies = true; render(); } catch (e) {} }
+  try {
+    const res = await fetch(CFG.moviesCsv + '&_cb=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error(res.status);
+    const text = await res.text();
+    if (text && text !== cached) S.movies = parseMovies(text);
+  } catch (e) { console.warn('Movies load failed', e); }
+  S.loaded.movies = true; render();
+}
+
+/* ---------------- rendering ---------------- */
+function matches(it, q) {
+  if (!q) return true;
+  return [it.title, it.desc, it.category, it.sub, it.year, it.edition, it.collection, (it.tags || []).join(' ')]
+    .join(' ').toLowerCase().includes(q);
+}
+function sortItems(list) {
+  const a = [...list];
+  if (S.sort === 'az') a.sort((x, y) => x.title.localeCompare(y.title));
+  else if (S.sort === 'cat') a.sort((x, y) => x.category.localeCompare(y.category) || x.title.localeCompare(y.title));
+  else a.sort((x, y) => (y.ts - x.ts) || x.title.localeCompare(y.title));
+  return a;
+}
+function cardHtml(it, idx) {
+  const c = catColor(it.category), isMovie = it.kind === 'movie';
+  let badge = '';
+  if (it.sale) badge = `<span class="badge">⚡ ${esc(it.sale.label)}</span>`;
+  else if (isMovie) badge = `<span class="badge prime">${esc(it.sub)}</span>`;
+  else if (['feature', 'featured', 'sidebar'].includes(it.placement)) badge = `<span class="badge feat">★ Pick</span>`;
+  const meta = isMovie
+    ? [it.year, it.edition, it.rating].filter(Boolean).map(m => `<span class="pill">${esc(m)}</span>`).join('')
+    : `<span class="pill cat" data-cat="${esc(it.category)}">${esc(it.category)}</span>${it.sub ? `<span class="pill">${esc(it.sub)}</span>` : ''}`;
+  return `<article class="card ${isMovie ? 'movie' : ''} ${it.sale ? 'live' : ''}" style="--c:${c}" data-i="${idx}">
+    <div class="media" data-open>${badge}${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.title)}" loading="lazy" referrerpolicy="no-referrer">` : '<span class="ph">No image</span>'}</div>
+    <div class="body">
+      <div class="meta">${meta}</div>
+      <h3 class="title" data-open>${esc(it.title)}</h3>
+      ${it.desc ? `<p class="desc">${esc(it.desc.split('\n')[0])}</p>` : ''}
+      <div class="actions">
+        <button class="btn ghost" data-open type="button">Details</button>
+        <a class="btn ${isMovie ? 'prime' : ''}" href="${esc(it.url)}" target="_blank" rel="nofollow sponsored noopener" data-go>${isMovie ? 'Get on Amazon' : (it.sale ? 'See the deal' : 'View on Amazon')}</a>
+      </div>
+    </div>
+  </article>`;
+}
+
+let CURRENT = []; // items currently on screen, indexed by data-i
+function section(title, items, color, opts = {}) {
+  const start = CURRENT.length; CURRENT.push(...items);
+  const cards = items.map((it, k) => cardHtml(it, start + k)).join('');
+  return `<section class="section" style="--c:${color}">
+    <div class="section-head"><h2><span class="dot"></span>${esc(title)}</h2>${opts.moreCat ? `<button class="more" data-cat="${esc(opts.moreCat)}">See all ${opts.total} →</button>` : ''}</div>
+    <div class="${opts.row ? 'row' : 'grid'}">${cards}</div>
+    ${opts.loadMore ? `<div class="loadmore"><button id="more" type="button">Show more (${opts.loadMore} left)</button></div>` : ''}
+  </section>`;
+}
+
+function renderChips() {
+  const counts = new Map();
+  S.deals.forEach(d => counts.set(d.category, (counts.get(d.category) || 0) + 1));
+  const live = S.deals.filter(d => d.sale).length;
+  const cats = [...counts.keys()].sort((a, b) => a.localeCompare(b));
+  const chip = (key, label, n, cls = '') => `<button class="chip ${cls} ${S.cat === key ? 'on' : ''}" data-cat="${esc(key)}">${label}${n != null ? ` <span class="n">${n}</span>` : ''}</button>`;
+  $('#chips').innerHTML =
+    chip('all', 'All') +
+    (live ? chip('live', '⚡ Live deals', live, 'hot') : '') +
+    chip('deals', '🛒 All deals', S.deals.length) +
+    (S.movies.length ? chip(MOVIES_CAT, '🎬 Movies & TV', S.movies.length, 'movies') : '') +
+    cats.map(c => chip(c, esc(c), counts.get(c))).join('');
+}
+
+function renderSpotlight() {
+  const pool = S.deals.filter(d => ['header_banner', 'banner', 'header'].includes(d.placement));
+  const live = S.deals.filter(d => d.sale);
+  const pick = (pool.length ? pool : live)[Math.floor(Math.random() * (pool.length || live.length))];
+  const el = $('#spotlight');
+  if (!pick) { el.classList.remove('show'); return; }
+  el.innerHTML = `<span>🔥</span><span class="s-text">${pick.sale ? esc(pick.sale.label) + ': ' : 'Spotlight: '}${esc(pick.title)}</span><a href="${esc(pick.url)}" target="_blank" rel="nofollow sponsored noopener" data-spot>Check it out</a>`;
+  el.classList.add('show');
+  el.querySelector('[data-spot]').onclick = () => track('affiliate_outbound_click', { item_id: pick.id, item_title: pick.title, click_placement: 'spotlight', link_url: pick.url });
+}
+
+let spotlightDone = false;
+function render() {
+  renderChips();
+  if (!spotlightDone && S.deals.length) { renderSpotlight(); spotlightDone = true; }
+  CURRENT = [];
+  const root = $('#root');
+  const q = S.q.trim().toLowerCase();
+  const all = [...S.deals, ...S.movies];
+
+  if (!S.loaded.deals && !S.loaded.movies) return;
+
+  // Search, or a single category/filter → one grid with "show more"
+  if (q || S.cat !== 'all') {
+    let list = all;
+    if (S.cat === 'live') list = S.deals.filter(d => d.sale);
+    else if (S.cat === 'deals') list = S.deals;
+    else if (S.cat !== 'all') list = all.filter(i => i.category === S.cat);
+    list = sortItems(list.filter(i => matches(i, q)));
+    if (!list.length) { root.innerHTML = `<div class="empty">Nothing found${q ? ` for “${esc(S.q)}”` : ''}.</div>`; return; }
+    const title = q ? `Results for “${S.q}” (${list.length})`
+      : S.cat === 'live' ? `⚡ Live deals (${list.length})`
+      : S.cat === 'deals' ? `All deals (${list.length})`
+      : `${S.cat} (${list.length})`;
+    const shown = list.slice(0, S.shown);
+    root.innerHTML = section(title, shown, S.cat === 'live' ? 'var(--hot)' : catColor(S.cat === 'all' || S.cat === 'deals' ? '' : S.cat),
+      { loadMore: list.length > shown.length ? list.length - shown.length : 0 });
+    return;
+  }
+
+  // Home: live deals → featured → each category as a row → newest movies
+  let html = '';
+  const live = S.deals.filter(d => d.sale);
+  if (live.length) html += section('⚡ Live deals', sortItems(live), 'var(--hot)', { row: live.length > 4 });
+  const feat = S.deals.filter(d => !d.sale && ['feature', 'featured', 'sidebar'].includes(d.placement));
+  if (feat.length) html += section('★ Featured picks', sortItems(feat), 'var(--accent)', { row: feat.length > 4 });
+
+  // All deals in one grid (newest first), so the page fills the width even with only a few items.
+  // Categories are one tap away in the chips above.
+  const rest = sortItems(S.deals.filter(d => !d.sale && !['feature', 'featured', 'sidebar'].includes(d.placement)));
+  if (rest.length) {
+    const shown = rest.slice(0, S.shown);
+    html += section(`🛒 Latest deals (${rest.length})`, shown, 'var(--accent)',
+      { loadMore: rest.length > shown.length ? rest.length - shown.length : 0 });
+  }
+
+  if (S.movies.length) {
+    const newest = [...S.movies].sort((a, b) => b.ts - a.ts).slice(0, 16);
+    html += section('🎬 Movies & TV on Amazon', newest, 'var(--prime)', { row: true, moreCat: MOVIES_CAT, total: S.movies.length });
+  }
+  if (!html) html = `<div class="empty">${S.loaded.deals ? 'No active deals right now. Check back soon!' : 'Loading…'}</div>`;
+  root.innerHTML = html;
+}
+
+/* ---------------- details modal ---------------- */
+function openDetails(it) {
+  const isMovie = it.kind === 'movie', c = catColor(it.category);
+  const facts = isMovie
+    ? [it.year, it.edition, it.rating, it.runtime, it.collection && ('Collection: ' + it.collection)].filter(Boolean)
+    : [it.category, it.sub, it.sale && ('⚡ ' + it.sale.label + (it.sale.end ? ' · ends ' + it.sale.end : ''))].filter(Boolean);
+  $('#sheet').className = 'sheet' + (isMovie ? ' movie' : '');
+  $('#sheet').innerHTML = `<button class="x" id="x" aria-label="Close">×</button>
+    <div class="sheet-in" style="--c:${c}">
+      <div class="sheet-img">${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.title)}" referrerpolicy="no-referrer">` : ''}</div>
+      <div>
+        <h3>${esc(it.title)}</h3>
+        <div class="meta">${facts.map(f => `<span class="pill">${esc(f)}</span>`).join('')}${(it.tags || []).map(t => `<span class="pill">${esc(t)}</span>`).join('')}</div>
+        <p class="full">${esc(it.desc || 'See Amazon for full details.')}</p>
+        <a class="btn ${isMovie ? 'prime' : ''}" href="${esc(it.url)}" target="_blank" rel="nofollow sponsored noopener" id="mgo">${isMovie ? 'Get it on Amazon' : 'View on Amazon'}</a>
+      </div>
+    </div>`;
+  $('#modal').classList.add('open');
+  $('#x').onclick = closeDetails;
+  $('#mgo').onclick = () => track('affiliate_outbound_click', { item_id: it.id, item_title: it.title, item_category: it.category, click_placement: 'details', link_url: it.url });
+  track('view_item', { item_id: it.id, item_name: it.title, item_category: it.category });
+}
+function closeDetails() { $('#modal').classList.remove('open'); }
+
+/* ---------------- routing (keeps old #/category/... links working) ---------------- */
+function fromHash() {
+  const seg = location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
+  if (seg[0] === 'category' && seg[1]) S.cat = seg[1];
+  else if (seg[0] === 'movies') S.cat = MOVIES_CAT;
+  else if (seg[0] === 'deals') S.cat = seg[1] === 'active-sales' ? 'live' : 'deals';
+  else if (seg[0] === 'live') S.cat = 'live';
+  else S.cat = 'all';
+  S.shown = CFG.pageSize;
+}
+function setCat(cat) {
+  const h = cat === 'all' ? '#/home' : cat === MOVIES_CAT ? '#/movies' : cat === 'deals' ? '#/deals' : cat === 'live' ? '#/live' : '#/category/' + encodeURIComponent(cat);
+  if (location.hash !== h) location.hash = h; else { fromHash(); render(); }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener('click', e => {
+  const chip = e.target.closest('[data-cat]');
+  if (chip) { e.preventDefault(); setCat(chip.dataset.cat); return; }
+  if (e.target.id === 'more') { S.shown += CFG.pageSize; render(); return; }
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const it = CURRENT[+card.dataset.i]; if (!it) return;
+  if (e.target.closest('[data-go]')) { track('affiliate_outbound_click', { item_id: it.id, item_title: it.title, item_category: it.category, click_placement: 'card', link_url: it.url }); return; }
+  if (e.target.closest('[data-open]')) openDetails(it);
+});
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeDetails(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetails(); });
+let qTimer;
+$('#q').addEventListener('input', e => {
+  S.q = e.target.value; $('#qx').style.display = S.q ? 'block' : 'none';
+  clearTimeout(qTimer); qTimer = setTimeout(() => { S.shown = CFG.pageSize; render(); }, 150);
+});
+$('#qx').addEventListener('click', () => { $('#q').value = ''; S.q = ''; $('#qx').style.display = 'none'; render(); });
+$('#sort').addEventListener('change', e => { S.sort = e.target.value; render(); });
+window.addEventListener('hashchange', () => { fromHash(); render(); });
+
+fromHash();
+loadDeals();
+loadMovies();
+setInterval(() => { if (!document.hidden) { loadDeals(); } }, CFG.refreshMs);
+</script>
+</body>
+</html>
