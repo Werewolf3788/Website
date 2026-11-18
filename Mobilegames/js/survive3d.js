@@ -477,7 +477,7 @@ function hitZombie(z, dmg, by) {
   z.hp -= dmg; z.mesh.userData.flash = .12;
   if (z.hp <= 0 && !z.dead && z.def) { z.dead = true; scene.remove(z.mesh); sfx(260, .12, .07); raidCheck(); return; }
   if (z.hp <= 0 && !z.dead) {
-    z.dead = true; scene.remove(z.mesh); st.stats.kills++; const loot = z.boss ? { gems: 25, metal: 120, food: 80 } : { food: 2 + Math.floor(Math.random() * 3), wood: 2 }; give(loot); fly(z.boss ? '💎' : '🍖', z, player);
+    z.dead = true; scene.remove(z.mesh); st.stats.kills++; const loot = z.boss ? { gems: 25, metal: 120, food: 80 } : { food: 2 + Math.floor(Math.random() * 3), wood: 2 }; if (!(tour && String(by || '').indexOf('guard') === 0)) give(loot);   // an ally's hunters' kills are theirs fly(z.boss ? '💎' : '🍖', z, player);
     if (z.boss) { st.stats.bosses++; st.boss[z.zone] = NOW() + BOSS_RESPAWN; toast('👹 Boss defeated! +' + costTxt(loot) + ' · it returns in 1 hour', 4000); sfx(330, .3, .09); sfx(660, .5, .08, .2); }
     if (!zombies.some(o => !o.dead && o.zone === z.zone) && zoneType.apply(null, z.zone.split(',').map(Number)) === 'infected') { st.camps[z.zone] = NOW(); st.stats.camps++; const r = { metal: 25, wood: 30, gems: 3 }; give(r); toast('🏕️ Camp cleared! +' + costTxt(r) + ' · the infected come back in 10 minutes', 4000); burst(z.x, z.z); }
     persist();
@@ -810,7 +810,8 @@ const ROLES = {
 };
 const workers = [];
 function syncWorkers() {
-  if (tour) { workers.splice(0).forEach(w => scene.remove(w.mesh)); return; }   // crews stay home
+  if (tour && tour.raid) { workers.splice(0).forEach(w => scene.remove(w.mesh)); return; }   // raiding: only their defenders are out
+  // visiting an ally: you see THEIR crews (built from their building levels) at work; their haul is credited by their own game
   Object.keys(ROLES).forEach(id => {
     const R = ROLES[id], B = BD[id], mine = workers.filter(w => w.role === id), want = crewSize(lvl(id));
     for (let k = mine.length; k > want; k--) { const w = mine[k - 1]; scene.remove(w.mesh); workers.splice(workers.indexOf(w), 1); }
@@ -843,7 +844,7 @@ function updateWorkers(dt, now) {
       w.mesh.rotation.y = Math.atan2(o.x - w.x, o.z - w.z); w.t -= dt; if (Math.floor(w.t * 2.5) !== Math.floor((w.t + dt) * 2.5)) { w.mesh.userData.swing = 1; o.shake = .25; }
       if (w.t <= 0) { knockDown(o, now); w.tgt = null; w.state = 'carry'; w.load = R.load; }
     } else if (w.state === 'carry') {
-      if (walk(B.x + (B.r + 1) * .7, B.z + (B.r + 1) * .7)) { addToPile(w.role, w.load); fly(RES[R.res], w, { x: B.x, z: B.z }); w.load = 0; w.state = 'seek'; }
+      if (walk(B.x + (B.r + 1) * .7, B.z + (B.r + 1) * .7)) { if (!tour) addToPile(w.role, w.load); fly(RES[R.res], w, { x: B.x, z: B.z }); w.load = 0; w.state = 'seek'; }
     }
     w.mesh.position.set(w.x, 0, w.z); animHuman(w.mesh, sp, dt);
     const carrying = w.state === 'carry';
@@ -882,7 +883,7 @@ function updateOthers(dt, now) {
 // hunts down the infected anywhere you've unlocked, then heads back to the hall to heal. Loot from their kills is yours.
 const guards = [];
 function syncGuards() {
-  if (tour) { guards.splice(0).forEach(g => scene.remove(g.mesh)); return; }
+  if (tour && tour.raid) { guards.splice(0).forEach(g => scene.remove(g.mesh)); return; }
   const want = lvl('hall') >= 1 ? Math.min(4, lvl('hall')) : 0, B = BD.hall;
   while (guards.length > want) scene.remove(guards.pop().mesh);
   while (guards.length < want) {
@@ -908,7 +909,7 @@ function guardHelp(g, dt, now, walk) {
   else if (J.st === 'work') { if (o.down) { g.job = null; return; } if (o.kind === 'deer' && Math.hypot(o.x - g.x, o.z - g.z) > 2.2) { J.st = 'walk'; return; }
     g.mesh.rotation.y = Math.atan2(o.x - g.x, o.z - g.z); J.t -= dt; if (Math.floor(J.t * 2.5) !== Math.floor((J.t + dt) * 2.5)) { g.mesh.userData.swing = 1; o.shake = .25; }
     if (J.t <= 0) { knockDown(o, now); J.st = 'carry'; } }
-  else if (J.st === 'carry') { if (walk(Bd.x + (Bd.r + 1) * .7, Bd.z + (Bd.r + 1) * .7, .9)) { addToPile(bid, R.load); fly(RES[R.res], g, { x: Bd.x, z: Bd.z }); g.job = null; } }
+  else if (J.st === 'carry') { if (walk(Bd.x + (Bd.r + 1) * .7, Bd.z + (Bd.r + 1) * .7, .9)) { if (!tour) addToPile(bid, R.load); fly(RES[R.res], g, { x: Bd.x, z: Bd.z }); g.job = null; } }
 }
 function updateGuards(dt, now) {
   const B = BD.hall, dmg = 6 + 3 * Math.max(1, lvl('hall'));
