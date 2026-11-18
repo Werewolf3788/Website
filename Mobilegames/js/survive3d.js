@@ -114,9 +114,9 @@ function addToPile(id, n) {
   const extra = have + n - Math.max(have, capP); st.piles[id] = Math.max(have, capP);
   feedPads(pads, bld.length ? bld : pp, r, extra); st.overflowAt = NOW();   // a full pile's extra goes to the builds too
 }
-// While you're off your map (game closed, or visiting an ally) the town keeps going at 1% speed, so a little gets done
-// but it never stops. Your crews (lumberjacks, miners, deer hunters) put their haul into the town's builds first, a
-// small share goes to your allies, and what's left lands in the piles. Upgrade timers keep running in real time.
+// While you're off your map (game closed, or visiting an ally) only your crews keep the map going, at 1% speed: their haul
+// goes into the town's builds first and the rest lands in the piles. Nothing goes to allies while you're offline (sharing
+// only happens while you play). Upgrade timers keep running in real time.
 // crews: one more worker than the building's level while you play (level 4 = 5), up to 8; 2 per building keep going while you're away
 const crewSize = L => L >= 1 ? Math.min(8, L + 1) : 0, AWAY_CREW = 2;
 const AWAY_RATE = .01, AWAY_MAX = 7 * 86400;
@@ -129,7 +129,6 @@ function awayCatchUp(sec, quiet) {
   Object.keys(ROLES).forEach(id => {
     const n = lvl(id) >= 1 ? AWAY_CREW : 0; if (!n) return; const R = ROLES[id], r = R.res;
     let amt = n * R.load * eff / 25;   // one trip about every 25 seconds per worker
-    const ally = amt * .05; toAllies[r] = (toAllies[r] || 0) + ally; amt -= ally;
     const keys = Object.keys(pads).filter(k => pads[k].kind !== 'zone' && (padLeft(k, pads[k])[r] || 0) > 0);
     const left = feedPads(pads, keys, r, amt); built[r] = (built[r] || 0) + (amt - left);
     const capP = 40 * lvl(id), have = st.piles[id] || 0, add = Math.min(left, Math.max(0, capP - have)); st.piles[id] = have + add; piled[r] = (piled[r] || 0) + add;
@@ -141,8 +140,8 @@ function awayCatchUp(sec, quiet) {
 }
 function economy(dt) {
   const ev = [], now = NOW(), e = efficiency();
-  if (!tour) producers().forEach(id => addToPile(id, BD[id].rate * lvl(id) * e * dt));
-  st.res.food = Math.max(0, st.res.food - survivors() * .004 * dt);
+  if (!tour && !awayNow) producers().forEach(id => addToPile(id, BD[id].rate * lvl(id) * e * dt));   // while you're away only the crews work
+  if (!awayNow) st.res.food = Math.max(0, st.res.food - survivors() * .004 * dt);
   Object.keys(BD).forEach(id => { const b = st.b[id]; if (b.up && now >= b.up.end) { b.lvl = b.up.to; b.up = null; ev.push('✅ ' + BD[id].n + ' is now level ' + b.lvl); dirtyBld[id] = 1; } });
   return ev;
 }
