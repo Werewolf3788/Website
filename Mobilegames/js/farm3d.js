@@ -716,16 +716,18 @@ function peersText() {
   return list.join(' &nbsp;·&nbsp; ');
 }
 function renderPeers() { const el = $('peers'); if (!el) return; el.style.display = isMP ? '' : 'none'; if (isMP) { const h = peersText(); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = '👥 ' + h; } } }
+const mpStart = performance.now();
 function syncRemotes() {
   const now = nowMs();
   Object.keys(players).forEach(function (u) {
     if (me && u === me.uid) return; const p = players[u]; if (now - (p.t || 0) > 45000) return; let r = remote[u];
-    if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 4.5; m.add(lab); scene.add(m); r = remote[u] = { mesh: m, tractor: null, tcol: null }; m.position.set(p.x, 0, p.z); }
+    if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 4.5; m.add(lab); scene.add(m); r = remote[u] = { mesh: m, tractor: null, tcol: null, name: p.n || 'Friend' }; m.position.set(p.x, 0, p.z); if (performance.now() - mpStart > 4000) say('👋 ' + r.name + ' joined the farm', 4000); }
+    if (r && p.n) r.name = p.n;
     r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; r.px = p.tx; r.pz = p.tz; r.pr = p.tr || 0; giveLevel(r.mesh, function () { const q = players[u]; return (q && q.lv) || 1; }, p.n); if (avatarFor(u)) W.setAvatar(r.mesh, avatarFor(u));
     const col = colors[u] || '';
     if (!r.tractor || r.tcol !== col) { if (r.tractor) scene.remove(r.tractor); r.tcol = col; r.tractor = W.makeTractor(col ? parseInt(col.slice(1), 16) : undefined); scene.add(r.tractor); const t = r.tractor; t.position.set(r.driving ? p.x : (p.tx === undefined ? p.x : p.tx), 0, r.driving ? p.z : (p.tz === undefined ? p.z : p.tz)); }
   });
-  Object.keys(remote).forEach(function (u) { const p = players[u]; if (!p || now - (p.t || 0) > 45000) { dropBadge(remote[u].mesh); scene.remove(remote[u].mesh); if (remote[u].tractor) scene.remove(remote[u].tractor); delete remote[u]; } });
+  Object.keys(remote).forEach(function (u) { const p = players[u]; if (!p || now - (p.t || 0) > 45000) { say('🚪 ' + (remote[u].name || 'A friend') + ' left the farm', 4000); dropBadge(remote[u].mesh); scene.remove(remote[u].mesh); if (remote[u].tractor) scene.remove(remote[u].tractor); delete remote[u]; } });
   $('count').textContent = Math.max(1, Object.keys(remote).length + 1); renderPeers();
 }
 function updateRemotes(dt) {
