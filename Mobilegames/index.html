@@ -90,6 +90,11 @@
   <div class="muted">Mahjong-style tile matching: remove pairs of identical <b>free</b> tiles (nothing on top, and the left or right side open) to clear the board. Six layouts that get harder, endless levels, undo, hints and a shuffle. Every deal is solvable. Free, no ads, no paywall.</div>
   <div class="row"><button id="playMj">Play</button></div>
 </div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🏚️ Tile Survival</h2>
+  <div class="muted">Lead survivors through the wasteland under Sarge. Clear fog tiles, build a Power Plant (it caps every other building), Lumberyards, Smelters and Houses, put survivors to work, recruit hero squads and beat infected camps and bosses. <b>Allies</b>: friends can visit your settlement and help speed up your building timers. Free, saves to your account.</div>
+  <div class="row"><button id="playSurv">Play</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -126,6 +131,7 @@
     location.href = 'farm.html?mp=' + encodeURIComponent(c);
   };
   $('playMj').onclick = function () { location.href = 'mahjong.html'; };
+  $('playSurv').onclick = function () { location.href = 'survive.html'; };
   $('playFrog').onclick = function () { location.href = 'frogger.html'; };
   $('playShip').onclick = function () { location.href = 'battleship.html'; };
   $('hostShip').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'battleship.html?room=' + encodeURIComponent(c); };

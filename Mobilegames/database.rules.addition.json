@@ -12,6 +12,12 @@
         ".read": "auth != null",
         ".write": "auth != null"
       }
+    },
+    "survive": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
     }
   }
 }

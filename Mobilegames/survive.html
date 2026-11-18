@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Tile Survival</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;height:100%}
+  #top{padding:6px 10px;background:#0f172a;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;font-size:.82rem}
+  #top button{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;padding:0 2px}
+  #res{display:flex;gap:10px;flex-wrap:wrap}#res span{white-space:nowrap}
+  #mapWrap{flex:1;min-height:0;overflow:auto;background:#10231a;display:flex;align-items:flex-start;justify-content:center;padding:8px}
+  #map{display:grid;gap:3px;width:min(100%,640px)}
+  .t{aspect-ratio:1;border:0;border-radius:8px;font-size:clamp(14px,4.4vw,26px);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;color:#fff;padding:0;line-height:1}
+  .t.fog{background:#1e293b;color:#475569}.t.fog.edge{background:#334155;color:#cbd5e1;outline:2px dashed #64748b}
+  .t.grass{background:#3f7d3a}.t.forest{background:#2d5a2a}.t.ore{background:#6b7280}.t.enemy{background:#7f1d1d}.t.boss{background:#c2410c;animation:pulse 1.4s infinite}.t.ruin{background:#78613a}
+  .t .lv{position:absolute;right:2px;bottom:1px;font-size:.55em;background:#000a;border-radius:6px;padding:0 3px}
+  .t .bar{position:absolute;left:3px;right:3px;bottom:2px;height:4px;background:#0008;border-radius:2px}.t .bar i{display:block;height:100%;background:#fbbf24;border-radius:2px}
+  @keyframes pulse{50%{filter:brightness(1.35)}}
+  #tabs{display:flex;background:#0f172a;padding:6px 6px calc(6px + env(safe-area-inset-bottom));gap:6px}
+  #tabs button{flex:1;background:#334155;color:#e2e8f0;border:0;border-radius:10px;padding:10px 4px;font:inherit;font-weight:700;cursor:pointer}
+  #sheet{position:fixed;inset:0;z-index:20;background:#000b;display:none;align-items:flex-end;justify-content:center}
+  #card{background:#1e293b;border-radius:18px 18px 0 0;width:min(100%,560px);max-height:82vh;overflow-y:auto;padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
+  #card h3{margin:0 0 6px}.muted{color:#94a3b8;font-size:.82rem}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0;padding:8px;background:#0f172a;border-radius:12px}.row .g{flex:1;min-width:140px}
+  button.b{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:9px 13px;font:inherit;cursor:pointer}button.b:disabled{opacity:.35}button.b.alt{background:#475569;color:#e2e8f0}
+  .pb{height:8px;background:#0008;border-radius:4px;overflow:hidden}.pb i{display:block;height:100%;background:#38bdf8}
+  #toast{position:fixed;top:48px;left:0;right:0;text-align:center;color:#fde68a;font-weight:700;text-shadow:0 1px 4px #000;pointer-events:none;z-index:30}
+  pre{white-space:pre-wrap;font:inherit;font-size:.82rem;background:#0f172a;border-radius:10px;padding:8px;max-height:30vh;overflow:auto}
+  input{background:#0f172a;color:#e2e8f0;border:1px solid #475569;border-radius:10px;padding:9px;font:inherit;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top"><div id="res"></div><span>⚡ <b id="pw"></b> · 😊 <b id="mo"></b> · 👥 <b id="pop"></b> <button id="gamesBtn">☰ Games</button></span></div>
+  <div id="mapWrap"><div id="map"></div></div>
+  <div id="tabs"><button data-t="base">🏗️ Base</button><button data-t="squad">🛡️ Heroes</button><button data-t="quests">📜 Quests</button><button data-t="friends">🤝 Allies</button></div>
+</div>
+<div id="sheet"><div id="card"></div></div><div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>document.write('<script src="js/common.js"><\/script>');</script>
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script src="js/survive-core.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); }, S = SurvCore, st = null, sel = null, tab = null, uid = null, code = null;
+  function toast(t) { $('toast').textContent = t; clearTimeout(toast.t); toast.t = setTimeout(function () { $('toast').textContent = ''; }, 2600); }
+  function fmt(s) { s = Math.max(0, Math.ceil(s)); var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return (h ? h + 'h ' : '') + (m ? m + 'm ' : '') + (s % 60) + 's'; }
+  function costTxt(c) { return Object.keys(c).map(function (k) { return S.RES[k].i + c[k]; }).join(' '); }
+  function can(c) { return S.canPay(st, c); }
+  // ---------- save / load
+  var saveT = null;
+  function persist() { st.saved = Date.now(); try { localStorage.setItem('ts_save', JSON.stringify(st)); } catch (e) {} clearTimeout(saveT); saveT = setTimeout(cloudSave, 4000); }
+  function cloudSave() { if (window.WW && WW.user) try { WW.writeSave('survive', JSON.parse(JSON.stringify(st))); } catch (e) {} publishPub(); }
+  function publishPub() {
+    if (!code || !window.WW || WW.mode !== 'cloud') return;
+    var ups = st.bld.filter(function (b) { return b.up; }).map(function (b) { var u = b.up; return { id: b.id, k: b.id + '_' + u.to, type: b.type, to: u.to, end: u.end, total: u.total, n: Object.keys(u.h || {}).length }; });
+    try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || (WW.user && String(WW.user.displayName || 'Survivor').split(' ')[0]) || 'Survivor', lvl: S.ppLevel(st), ups: ups, at: Date.now() }); } catch (e) {}
+  }
+  // ---------- render
+  function render() {
+    var r = S.rates(st);
+    $('res').innerHTML = ['wood', 'food', 'metal', 'gems'].map(function (k) { return '<span>' + S.RES[k].i + ' <b>' + Math.floor(st.res[k]) + '</b>' + (r[k] ? ' <small style="color:#86efac">+' + r[k].toFixed(1) + '/s</small>' : '') + '</span>'; }).join('');
+    $('pw').textContent = Math.round(r.power.supply) + '/' + Math.round(r.power.demand); $('mo').textContent = Math.round(st.morale) + '%'; $('pop').textContent = st.pop + '/' + S.capacity(st);
+    var html = '', N = S.N, now = Date.now();
+    for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+      var k = x + ',' + y, rev = st.rev[k], ty = S.tileType(st, x, y), b = S.bldAt(st, x, y), cls, ic = '', extra = '';
+      if (!rev) { cls = 'fog' + (S.isEdge(st, x, y) ? ' edge' : ''); ic = S.isEdge(st, x, y) ? '❔' : ''; }
+      else {
+        cls = ty; ic = b ? S.BT[b.type].i : ({ grass: '', forest: '🌲', ore: '⛰️', enemy: '🧟', boss: '👹', ruin: '🏚️' })[ty];
+        if (b) { extra = '<span class="lv">' + b.lvl + '</span>'; if (b.up) extra += '<span class="bar"><i style="width:' + Math.min(100, 100 - (b.up.end - now) / b.up.total * 100) + '%"></i></span>'; }
+      }
+      html += '<button class="t ' + cls + '" data-x="' + x + '" data-y="' + y + '">' + ic + extra + '</button>';
+    }
+    var m = $('map'); m.style.gridTemplateColumns = 'repeat(' + N + ',1fr)'; m.innerHTML = html;
+  }
+  [].forEach.call(document.querySelectorAll('#tabs button'), function (b) { b.onclick = function () { openTab(b.dataset.t); }; });
+  $('map').onclick = function (e) { var t = e.target.closest('.t'); if (t) openTile(+t.dataset.x, +t.dataset.y); };
+  $('sheet').onclick = function (e) { if (e.target === $('sheet')) closeSheet(); };
+  function closeSheet() { $('sheet').style.display = 'none'; sel = null; tab = null; }
+  function show(h) { $('card').innerHTML = h + '<div style="margin-top:10px"><button class="b alt" data-a="close">Close</button></div>'; $('sheet').style.display = 'flex'; }
+  $('card').onclick = function (e) { var a = e.target.closest('[data-a]'); if (!a || a.disabled) return; act(a.dataset.a, a.dataset); };
+  // ---------- sheets
+  function openTile(x, y) {
+    var k = x + ',' + y, rev = st.rev[k]; sel = { x: x, y: y };
+    if (!rev) { if (!S.isEdge(st, x, y)) { toast('Clear a tile next to your territory first.'); return; }
+      var c = S.exploreCost(st, x, y); show('<h3>❔ Fog-covered tile</h3><div class="muted">Send scouts to clear it and see what is there. Costs ' + costTxt(c) + '.</div><div class="row"><button class="b" data-a="explore" ' + (can(c) ? '' : 'disabled') + '>Clear tile · ' + costTxt(c) + '</button></div>'); return; }
+    var ty = S.tileType(st, x, y), b = S.bldAt(st, x, y);
+    if (b) return openBuilding(b);
+    if (ty === 'enemy' || ty === 'boss') { var en = S.enemiesFor(st, x, y), cd = S.bossCooldown(st, x, y);
+      show('<h3>' + (ty === 'boss' ? '👹 Boss tile' : '🧟 Infected camp') + '</h3><div class="muted">' + en.map(function (e) { return e.n + ' (❤️' + e.hp + ' ⚔️' + e.atk + ')'; }).join(', ') + '</div><div class="muted">Win to claim: ' + costTxt(S.rewardFor(st, x, y)) + (ty === 'boss' ? ' · can be fought again every hour' : '') + '</div>' + squadLine() + '<div class="row"><button class="b" data-a="fight" ' + (cd > 0 ? 'disabled' : '') + '>' + (cd > 0 ? 'Recovering ' + fmt(cd / 1000) : '⚔️ Attack') + '</button></div>'); return; }
+    if (ty === 'ruin') { show('<h3>🏚️ Ruins</h3><div class="muted">Search for supplies.</div><div class="row"><button class="b" data-a="loot">🔍 Search</button></div>'); return; }
+    var opts = S.buildOptions(st, ty); show('<h3>' + ({ grass: '🌱 Open ground', forest: '🌲 Forest', ore: '⛰️ Ore deposit' })[ty] + '</h3><div class="muted">Build here (builders free: ' + S.freeBuilders(st) + ')</div>' + (opts.length ? opts.map(function (t) { var c = S.cost(t, 1), why = S.whyNot(st, t); return '<div class="row"><div class="g"><b>' + S.BT[t].i + ' ' + S.BT[t].n + '</b><div class="muted">' + S.BT[t].d + '</div></div><button class="b" data-a="build" data-t="' + t + '" ' + (why || !can(c) ? 'disabled' : '') + '>' + (why || costTxt(c)) + '</button></div>'; }).join('') : '<div class="muted">Nothing can be built here.</div>'));
+  }
+  function squadLine() { var sq = S.squad(st); return '<div class="muted">Your squad: ' + (sq.length ? sq.map(function (h) { return S.HEROES[h.id].i + h.id[0].toUpperCase() + h.id.slice(1) + ' L' + h.lvl; }).join(', ') : 'nobody — set a squad in Heroes') + '</div>'; }
+  function openBuilding(b) {
+    var T = S.BT[b.type], up = b.up, nxt = b.lvl + 1, cap = S.levelCap(st, b), c = S.cost(b.type, nxt), h = '<h3>' + T.i + ' ' + T.n + ' · level ' + b.lvl + '</h3><div class="muted">' + T.d + '</div>';
+    if (up) h += '<div class="row"><div class="g">Upgrading to level ' + up.to + '<div class="pb"><i style="width:' + Math.min(100, 100 - (up.end - Date.now()) / up.total * 100) + '%"></i></div><div class="muted">' + fmt((up.end - Date.now()) / 1000) + ' left · helped by ' + Object.keys(up.h || {}).length + '/' + S.MAX_HELPS + ' allies</div></div><button class="b alt" data-a="speed" data-id="' + b.id + '" ' + (st.res.gems < 5 ? 'disabled' : '') + '>⚡ Finish · 💎5</button></div>';
+    else if (nxt > cap) h += '<div class="row muted">Max level for now' + (b.type !== 'powerplant' ? ' — upgrade the 🔌 Power Plant (it limits every other building).' : '.') + '</div>';
+    else h += '<div class="row"><div class="g"><b>Upgrade to level ' + nxt + '</b><div class="muted">' + fmt(S.buildTime(b.type, nxt)) + '</div></div><button class="b" data-a="upgrade" data-id="' + b.id + '" ' + (can(c) || false ? '' : 'disabled') + (S.freeBuilders(st) < 1 ? ' disabled' : '') + '>' + costTxt(c) + '</button></div>';
+    if (T.jobs) { var w = b.w | 0, slots = S.slots(b); h += '<div class="row"><div class="g"><b>' + T.job + '</b> ' + w + '/' + slots + '<div class="muted">Idle survivors: ' + S.idle(st) + '</div></div><button class="b alt" data-a="jobm" data-id="' + b.id + '">−</button><button class="b" data-a="jobp" data-id="' + b.id + '" ' + (S.idle(st) < 1 || w >= slots ? 'disabled' : '') + '>+</button></div>'; }
+    show(h);
+  }
+  function openTab(t) {
+    tab = t;
+    if (t === 'base') { var r = S.rates(st); show('<h3>🏗️ Base</h3><div class="muted">Power: ' + Math.round(r.power.supply) + ' supply / ' + Math.round(r.power.demand) + ' demand' + (r.power.supply < r.power.demand ? ' — <b style="color:#fca5a5">brownout: production slowed, upgrade the Power Plant</b>' : '') + '</div><div class="muted">Morale ' + Math.round(st.morale) + '% ' + (st.morale < 30 ? '— survivors are on strike!' : st.res.food <= 0 ? '— out of food!' : '') + '</div><div class="muted">Survivors ' + st.pop + '/' + S.capacity(st) + ' (idle ' + S.idle(st) + ') · builders ' + S.freeBuilders(st) + ' free of ' + S.builders(st) + '</div>' + st.bld.map(function (b) { return '<div class="row"><div class="g"><b>' + S.BT[b.type].i + ' ' + S.BT[b.type].n + ' L' + b.lvl + '</b>' + (b.up ? ' <small>⏳ ' + fmt((b.up.end - Date.now()) / 1000) + '</small>' : '') + '</div><button class="b alt" data-a="goto" data-id="' + b.id + '">Open</button></div>'; }).join('')); }
+    if (t === 'squad') { var out = '<h3>🛡️ Heroes</h3><div class="muted">Up to 3 in the squad. Front-line heroes (the first two slots) absorb hits; keep damage dealers and healers in the back.</div>';
+      Object.keys(S.HEROES).forEach(function (id) { var H = S.HEROES[id], h = st.heroes[id], inSq = st.squad.indexOf(id) >= 0;
+        if (!h) { out += '<div class="row"><div class="g"><b>' + H.i + ' ' + H.n + '</b> <span class="muted">' + H.role + '</span><div class="muted">' + H.d + '</div></div><button class="b" data-a="recruit" data-id="' + id + '" ' + (can(H.cost) ? '' : 'disabled') + '>' + costTxt(H.cost) + '</button></div>'; return; }
+        var s = S.heroStats(st, id), uc = S.heroUpCost(h.lvl); out += '<div class="row"><div class="g"><b>' + H.i + ' ' + H.n + ' L' + h.lvl + '</b> <span class="muted">' + H.role + ' · ❤️' + s.hp + ' ⚔️' + s.atk + (H.heal ? ' 💚' + s.heal : '') + '</span></div><button class="b alt" data-a="squadtog" data-id="' + id + '">' + (inSq ? 'In squad #' + (st.squad.indexOf(id) + 1) : 'Add') + '</button><button class="b" data-a="herolvl" data-id="' + id + '" ' + (can(uc) ? '' : 'disabled') + '>⬆ ' + costTxt(uc) + '</button></div>'; });
+      show(out); }
+    if (t === 'quests') { var q = S.quests(st); show('<h3>📜 Quests</h3><div class="muted">Sarge: "Get the power plant humming and we will rebuild this place."</div>' + q.map(function (x) { return '<div class="row"><div class="g"><b>' + x.t + '</b><div class="muted">' + x.p + '/' + x.g + ' · reward ' + costTxt(x.r) + '</div></div><button class="b" data-a="claim" data-id="' + x.id + '" ' + (x.done && !x.claimed ? '' : 'disabled') + '>' + (x.claimed ? '✔' : 'Claim') + '</button></div>'; }).join('')); }
+    if (t === 'friends') openFriends();
+  }
+  var visiting = null;
+  function openFriends(note) {
+    var c = code || '—', h = '<h3>🤝 Allies</h3><div class="muted">Your ally code: <b>' + c + '</b>. Friends who visit your settlement can <b>help</b> your building timers (' + S.MAX_HELPS + ' helps per upgrade, each cuts ~15%). Visit theirs to help back and earn wood.</div>' + (note ? '<div class="muted">' + note + '</div>' : '');
+    if (!window.WW || WW.mode !== 'cloud' || !WW.user) h += '<div class="row muted">Sign in on the games hub to use allies.</div>';
+    else { h += '<div class="row"><input id="vcode" maxlength="8" placeholder="FRIEND\'S CODE" value="' + (visiting ? visiting.code : '') + '"><button class="b" data-a="visit">Visit</button></div>'; if (visiting) { h += '<div class="muted">' + WW.esc(visiting.pub.name || 'Survivor') + '\'s settlement · Power Plant L' + (visiting.pub.lvl || 1) + '</div>'; var ups = (visiting.pub.ups || []).filter(function (u) { return u.end > Date.now(); }); h += ups.length ? ups.map(function (u) { var done = visiting.mine[u.k]; return '<div class="row"><div class="g"><b>' + S.BT[u.type].i + ' ' + S.BT[u.type].n + ' → L' + u.to + '</b><div class="muted">' + fmt((u.end - Date.now()) / 1000) + ' left · ' + (u.n || 0) + '/' + S.MAX_HELPS + ' helps</div></div><button class="b" data-a="help" data-k="' + u.k + '" ' + (done || (u.n || 0) >= S.MAX_HELPS ? 'disabled' : '') + '>' + (done ? 'Helped ✔' : '🤝 Help') + '</button></div>'; }).join('') : '<div class="row muted">Nothing is being built right now.</div>'; } }
+    show(h);
+  }
+  // ---------- actions
+  function act(a, d) {
+    var did = true;
+    if (a === 'close') { closeSheet(); return; }
+    if (a === 'explore') { var m = S.explore(st, sel.x, sel.y); toast(m); closeSheet(); }
+    else if (a === 'build') { var m2 = S.build(st, sel.x, sel.y, d.t); toast(m2); closeSheet(); }
+    else if (a === 'upgrade') { toast(S.upgrade(st, d.id)); openBuilding(S.bld(st, d.id)); }
+    else if (a === 'speed') { toast(S.speedUp(st, d.id)); openBuilding(S.bld(st, d.id)); }
+    else if (a === 'jobp' || a === 'jobm') { S.setJob(st, d.id, a === 'jobp' ? 1 : -1); openBuilding(S.bld(st, d.id)); }
+    else if (a === 'goto') openBuilding(S.bld(st, d.id));
+    else if (a === 'fight') { var r = S.fight(st, sel.x, sel.y); show('<h3>' + (r.win ? '🏆 Victory!' : '💀 Defeat') + '</h3><pre>' + r.log.join('\n') + '</pre>' + (r.win ? '<div class="muted">Claimed ' + costTxt(r.reward) + '</div>' : '<div class="muted">Level up your heroes or bring a healer, then try again.</div>')); }
+    else if (a === 'loot') { toast(S.loot(st, sel.x, sel.y)); closeSheet(); }
+    else if (a === 'recruit') { toast(S.recruit(st, d.id)); openTab('squad'); }
+    else if (a === 'herolvl') { toast(S.heroLevel(st, d.id)); openTab('squad'); }
+    else if (a === 'squadtog') { S.squadToggle(st, d.id); openTab('squad'); }
+    else if (a === 'claim') { toast(S.claim(st, d.id)); openTab('quests'); }
+    else if (a === 'visit') { visit(($('vcode').value || '').trim().toUpperCase()); did = false; }
+    else if (a === 'help') { helpFriend(d.k); did = false; }
+    if (did) { persist(); render(); }
+  }
+  async function visit(c) {
+    if (!c) return;
+    try { var snap = (await WW.roomRef('survive', c).child('pub').once('value')).val(); if (!snap) { openFriends('No settlement found for that code.'); return; }
+      var mine = {}; for (var i = 0; i < (snap.ups || []).length; i++) { var u = snap.ups[i]; mine[u.k] = !!(await WW.roomRef('survive', c).child('helps/' + u.k + '/' + uid).once('value')).val(); }
+      visiting = { code: c, pub: snap, mine: mine }; openFriends(); } catch (e) { openFriends('Could not reach that settlement (' + (e && e.code || e) + ').'); }
+  }
+  async function helpFriend(k) {
+    if (!visiting) return; var today = new Date().toDateString(); if (st.helpDay !== today) { st.helpDay = today; st.helpsToday = 0; }
+    try { await WW.roomRef('survive', visiting.code).child('helps/' + k + '/' + uid).set(Date.now()); visiting.mine[k] = true; var u = (visiting.pub.ups || []).filter(function (x) { return x.k === k; })[0]; if (u) u.n = (u.n || 0) + 1;
+      if (st.helpsToday < 10) { st.helpsToday++; st.res.wood += 15; toast('🤝 Helped! +15 wood'); } else toast('🤝 Helped!'); persist(); render(); openFriends(); } catch (e) { openFriends('Help failed: ' + (e && e.code || e)); }
+  }
+  function listenHelps() {
+    if (!code || !window.WW || WW.mode !== 'cloud') return;
+    WW.roomRef('survive', code).child('helps').on('value', function (s) { var v = s.val() || {}, n = 0; st.bld.forEach(function (b) { if (!b.up) return; var key = b.id + '_' + b.up.to, who = v[key]; if (!who) return; b.up.h = b.up.h || {}; Object.keys(who).forEach(function (u) { if (!b.up.h[u] && Object.keys(b.up.h).length < S.MAX_HELPS) { b.up.h[u] = 1; var cut = b.up.total * S.HELP_CUT; b.up.end = Math.max(Date.now() + 1000, b.up.end - cut); n++; } }); });
+      if (n) { toast('🤝 ' + n + ' ally help' + (n > 1 ? 's' : '') + ' on your buildings!'); persist(); render(); } });
+  }
+  // ---------- loop
+  var last = Date.now();
+  setInterval(function () { var now = Date.now(), ev = S.tick(st, (now - last) / 1000, now); last = now; if (ev.length) { ev.forEach(toast); persist(); } render(); if ($('sheet').style.display === 'flex' && sel && S.bldAt(st, sel.x, sel.y) && !tab) openBuilding(S.bldAt(st, sel.x, sel.y)); }, 1000);
+  function publish() { if (window.WW && WW.publishPlaying) try { WW.publishPlaying({ game: 'survive', title: 'Tile Survival', status: 'Settlement · Power Plant L' + S.ppLevel(st) + ' · ' + st.pop + ' survivors', open: 0 }); } catch (e) {} }
+  async function boot() {
+    var local = null; try { local = JSON.parse(localStorage.getItem('ts_save') || 'null'); } catch (e) {}
+    st = local && local.v === S.VERSION ? local : S.fresh(Math.floor(Math.random() * 1e9)); S.heal(st);
+    var off = Math.min(4 * 3600, (Date.now() - (st.last || Date.now())) / 1000); if (off > 5) { var ev = S.tick(st, off, Date.now()); toast('Welcome back! Your survivors worked for ' + fmt(off) + '.'); }
+    last = Date.now(); render(); persist();
+    if (window.WW && WW.onReady) WW.onReady(async function (user, fc) {
+      uid = user && user.uid; code = fc; if (!user) return;
+      try { var cloud = await WW.loadSave('survive'); if (cloud && cloud.v === S.VERSION && (cloud.saved || 0) > (st.saved || 0)) { st = cloud; S.heal(st); var off2 = Math.min(4 * 3600, (Date.now() - (st.last || Date.now())) / 1000); if (off2 > 5) S.tick(st, off2, Date.now()); last = Date.now(); render(); } } catch (e) {}
+      listenHelps(); publishPub(); publish();
+    });
+  }
+  window.addEventListener('beforeunload', function () { persist(); if (window.WW && WW.clearPlaying) WW.clearPlaying(); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) persist(); });
+  boot();
+})();
+</script>
+</body>
+</html>
