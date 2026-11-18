@@ -390,7 +390,7 @@ let padAcc = 0, needNote = 0;
 function deliver(dt) {
   padAcc += dt; if (padAcc < .05) return; const mult = Math.min(10, Math.max(1, Math.round(padAcc / .05))); padAcc = 0;
   Object.keys(pads).forEach(key => {
-    const p = pads[key]; if (Math.abs(player.x - p.x) > 1.4 || Math.abs(player.z - p.z) > 1.4) return;
+    const p = pads[key]; if (!p || !player) return; if (Math.abs(player.x - p.x) > 1.4 || Math.abs(player.z - p.z) > 1.4) return;
     const left = padLeft(key, p), ks = Object.keys(left); if (!ks.length) return tour ? null : complete(key, p);
     const k = ks.find(r => st.res[r] >= 1);
     if (!k) { if (NOW() - needNote > 3000) { needNote = NOW(); toast('Need more ' + ks.map(r => RES[r]).join(' ') + ' — gather it around the map'); } return; }
@@ -1091,7 +1091,7 @@ function frameInner() {
   for (let k = tracers.length - 1; k >= 0; k--) { tracers[k].t -= dt; if (tracers[k].t <= 0) { scene.remove(tracers[k].l); tracers[k].l.geometry.dispose(); tracers.splice(k, 1); } }
   const pp = bldMeshes.pp; if (pp && pp.userData.fire) { const s = 1 + Math.sin(now / 150) * .08; pp.userData.fire.scale.set(s, .55 * s, s); }
   if (bldMeshes.lumber && bldMeshes.lumber.userData.saw) bldMeshes.lumber.userData.saw.rotation.x += dt * 8;
-  Object.keys(pads).forEach(k => { pads[k].plane.material.opacity = .25 + Math.sin(now / 300) * .1; });
+  Object.keys(pads).forEach(k => { if (pads[k] && pads[k].plane) pads[k].plane.material.opacity = .25 + Math.sin(now / 300) * .1; });
   // --- quest arrow
   const q = checkQuest(), tg = q && q[4]();
   arrow.visible = guideG.visible = !!tg;
