@@ -402,7 +402,7 @@ $('shareBtn').onclick = () => {
 // ------------------------------------------------------------------ minimap
 const mapC = $('map'), mg = mapC.getContext('2d');
 let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity; P.forEach(p => { minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z); });
-const msc = 260 / Math.max(maxX - minX, maxZ - minZ), mx = x => 20 + (x - minX) * msc, mz = z => 280 - (z - minZ) * msc;
+const msc = 260 / Math.max(maxX - minX, maxZ - minZ), mx = x => 20 + (x - minX) * msc, mz = z => 20 + (z - minZ) * msc;   // seen from above: x to the right, z down the screen (flipping z mirrored the map)
 function drawMap() {
   mg.clearRect(0, 0, 300, 300); mg.lineWidth = 14; mg.strokeStyle = '#94a3b8'; mg.lineJoin = 'round'; mg.beginPath();
   P.forEach((p, i) => { if (i % 6) return; i ? mg.lineTo(mx(p.x), mz(p.z)) : mg.moveTo(mx(p.x), mz(p.z)); }); mg.closePath(); mg.stroke();
