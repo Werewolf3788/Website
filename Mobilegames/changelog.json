@@ -2,6 +2,15 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 14,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Your town builds itself little by little: 3% of what the Lumberyard, Farm and Smelter make goes to every building that still needs it, and once they're all caught up, 5% goes to the Power Plant. The rest is yours to open up the map",
+        "Production piles fill all the way again; a full pile's extra goes to the builds"
+      ]
+    },
+    {
       "id": 13,
       "date": "Nov 18",
       "game": "survive",

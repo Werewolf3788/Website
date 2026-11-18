@@ -89,19 +89,28 @@ const give = c => Object.keys(c).forEach(k => { st.res[k] = (st.res[k] || 0) + c
 const costTxt = c => Object.keys(c).filter(k => c[k] > 0).map(k => RES[k] + Math.ceil(c[k])).join(' ');
 function unlockCost(i, j) { const n = st.stats.zones, m = ring(i, j) === 2 ? 1.6 : 1, o = { wood: Math.round((30 + 22 * n) * m), food: Math.round((10 + 8 * n) * m) }; if (n >= 2) o.metal = Math.round(8 * n * m); return o; }
 
-// a producer's pile stops at 99% full; everything it makes past that is shared out evenly to the other buildings'
-// build/upgrade pads that still need that resource (so nothing is wasted while you're away). With nothing to feed, it waits.
-const PILE_STOP = .99;
-function addToPile(id, n) {
-  if (!(n > 0)) return; const capP = 40 * lvl(id) * PILE_STOP, have = st.piles[id] || 0;
-  if (have + n <= capP) { st.piles[id] = have + n; return; }
-  let extra = have + n - Math.max(have, capP); st.piles[id] = Math.max(have, capP);
-  const r = BD[id].out, pads = wantedPads(), keys = Object.keys(pads).filter(k => pads[k].kind !== 'zone' && pads[k].id !== id && (padLeft(k, pads[k])[r] || 0) > 0);
-  for (let pass = 0; pass < 3 && extra > 1e-6 && keys.length; pass++) {
+// Producers build the town a little at a time: 3% of everything the Lumberyard, Farm (hunters) and Smelter make is shared
+// evenly across every building pad that still needs that resource. Once every building has caught up, 5% goes to the
+// Power Plant's next level instead. The rest goes to the pile for you (to open up the map). A full pile's extra also feeds the builds.
+const PILE_STOP = 1, SHARE_BUILD = .03, SHARE_PP = .05;
+function feedPads(pads, keys, r, amount) {   // spread `amount` evenly over the pads in `keys`; returns what didn't fit
+  let extra = amount;
+  for (let pass = 0; pass < 3 && extra > 1e-6; pass++) {
     const open = keys.filter(k => (padLeft(k, pads[k])[r] || 0) > 0); if (!open.length) break; const share = extra / open.length;
     open.forEach(k => { const give = Math.min(share, padLeft(k, pads[k])[r]); (st.paid[k] = st.paid[k] || {})[r] = (st.paid[k][r] || 0) + give; extra -= give; });
   }
-  st.overflowAt = NOW();
+  return extra;
+}
+function addToPile(id, n) {
+  if (!(n > 0)) return; const r = BD[id].out, pads = wantedPads();
+  const bld = Object.keys(pads).filter(k => pads[k].kind !== 'zone' && pads[k].id !== 'pp' && (padLeft(k, pads[k])[r] || 0) > 0);
+  const pp = Object.keys(pads).filter(k => pads[k].id === 'pp' && (padLeft(k, pads[k])[r] || 0) > 0);
+  if (bld.length) { const cut = n * SHARE_BUILD; n -= cut - feedPads(pads, bld, r, cut); st.overflowAt = NOW(); }
+  else if (pp.length) { const cut = n * SHARE_PP; n -= cut - feedPads(pads, pp, r, cut); st.overflowAt = NOW(); }
+  const capP = 40 * lvl(id) * PILE_STOP, have = st.piles[id] || 0;
+  if (have + n <= capP) { st.piles[id] = have + n; return; }
+  const extra = have + n - Math.max(have, capP); st.piles[id] = Math.max(have, capP);
+  feedPads(pads, bld.length ? bld : pp, r, extra); st.overflowAt = NOW();   // a full pile's extra goes to the builds too
 }
 function economy(dt) {
   const ev = [], now = NOW(), e = efficiency();
@@ -294,7 +303,7 @@ function syncBuildings() {
     }
     const lb = bldLabels[id]; if (!lb) return; const b = st.b[id];
     if (b.up) lb.userData.set('⏳ ' + D.i + ' Lv' + b.up.to + ' · ' + fmt((b.up.end - NOW()) / 1000), '#fde68a');
-    else if (D.out && (st.piles[id] || 0) >= 1) lb.userData.set(D.i + ' Lv' + l + ' · ' + RES[D.out] + ' ' + Math.floor(st.piles[id]) + (st.piles[id] >= 40 * l * PILE_STOP - .5 ? ' · extra goes to builds' : ''), '#bbf7d0');
+    else if (D.out && (st.piles[id] || 0) >= 1) lb.userData.set(D.i + ' Lv' + l + ' · ' + RES[D.out] + ' ' + Math.floor(st.piles[id]) + (st.piles[id] >= 40 * l - .5 ? ' FULL · extra goes to builds' : ''), '#bbf7d0');
     else if (id === 'pp' && behindPP().length) lb.userData.set(D.i + ' ' + D.n + ' Lv' + l + ' · ' + behindPP().length + ' to catch up', '#fde68a');
     else lb.userData.set(D.i + ' ' + D.n + ' Lv' + l);
   });
@@ -493,7 +502,7 @@ function workshopPanel() {
 function bInfo(id, L) {
   const D = BD[id];
   if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : '') + ' It only levels up once every building has caught up to it.'; }
-  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + Math.floor(40 * L * PILE_STOP) + ' (anything past that goes straight to your other buildings\u2019 builds).' + (ROLES[id] ? ' ' + Math.min(4, L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + (Math.min(4, L) > 1 ? 's' : '') + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
+  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '. 3% of what it makes helps build your other buildings (5% to the Power Plant once they\u2019re all caught up), and a full pile\u2019s extra goes there too.' + (ROLES[id] ? ' ' + Math.min(4, L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + (Math.min(4, L) > 1 ? 's' : '') + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
   if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
   if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '.';
   if (id === 'workshop') return 'Your weapon can be upgraded up to level ' + (L + 1) + ' (' + weaponDmg(L + 1) + ' damage).';
