@@ -694,6 +694,17 @@ function trailerToField(f) {
   const T = save.trailer; if (!T || save.haul || f < 0 || T.f === f) return;
   const p = W.parkTrailer(f); T.x = p.x; T.z = p.z; T.ry = p.ry; T.f = f; queueSave();
 }
+// a vehicle nobody is driving heads back to its parking spot on its own (instead of being left out in the field).
+// Returns true while it is still on the way. The first time it is drawn it is simply put there.
+function driveBack(mesh, to, dt, speed) {
+  const ry = to.ry || 0; if (!mesh.userData.placed) { mesh.userData.placed = 1; mesh.position.set(to.x, 0, to.z); mesh.rotation.y = ry; return false; }
+  const dx = to.x - mesh.position.x, dz = to.z - mesh.position.z, d = Math.hypot(dx, dz);
+  if (d < .05) { let da = ry - mesh.rotation.y; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; mesh.rotation.y += da * Math.min(1, dt * 4); return false; }
+  if (d > 80) { mesh.position.set(to.x, 0, to.z); mesh.rotation.y = ry; return false; }   // far away (e.g. loading or a reset): just put it there
+  const step = Math.min(d, speed * dt); mesh.position.x += dx / d * step; mesh.position.z += dz / d * step;
+  const want = d > 1.2 ? Math.atan2(dx, dz) : ry; let da = want - mesh.rotation.y; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; mesh.rotation.y += da * Math.min(1, dt * 5);
+  return true;
+}
 function buildPlan(h) {
   const E = W.ELEVATOR_POS, ry0 = h.ry || 0, H = { x: h.x + Math.sin(ry0) * HAUL_D, z: h.z + Math.cos(ry0) * HAUL_D, ry: ry0 }, Hy = { x: H.x, z: E.z }, segs = []; let t = 0, lastRy = H.ry;
   const clean = a => a.filter(function (q, i) { return i === 0 || Math.hypot(q.x - a[i - 1].x, q.z - a[i - 1].z) > .05; });
@@ -714,7 +725,7 @@ function updateFleet(dt) {
   if (!combine || !trailer || !truck) return; const Cb = save.combine, T = save.trailer, h = save.haul; if (!Cb || !T) return;
   const drivingC = player.driving && player.veh === 'combine';
   if (drivingC) { combine.position.set(combineLocal.x, 0, combineLocal.z); combine.rotation.y = combineLocal.ry; combine.userData.wheels.forEach(function (w) { w.rotation.x += combineLocal.speed * dt / 1.0; }); combine.userData.reel.rotation.x += dt * 4 * (.3 + Math.min(1, Math.abs(combineLocal.speed))); }
-  else { combine.position.set(Cb.x, 0, Cb.z); combine.rotation.y = Cb.ry; }
+  else if (driveBack(combine, Cb, dt, 8)) { combine.userData.wheels.forEach(function (w) { w.rotation.x += dt * 6; }); }
   combine.userData.setFill(grainTotal(Cb.grain) / HARVEST.tank, cropColor(grainTop(Cb.grain)));
   let tgt = { x: T.x, z: T.z, ry: T.ry }, frac = grainTotal(T.grain) / HARVEST.trailer, topCrop = grainTop(T.grain), tp = { x: W.TRUCK_HOME.x, z: W.TRUCK_HOME.z, ry: W.TRUCK_HOME.ry }, moving = false;
   if (h) {
@@ -849,10 +860,10 @@ function useAction() {
     say('Tractor: your tool works on ' + swath() + ' tiles at once. W/S drive, A/D steer.'); applyImplement();
   } else if (c.kind === 'exit' && player.veh === 'combine') {
     Sound.stopEngine(); player.driving = false; combineLocal.speed = 0; player.x = combineLocal.x + Math.cos(combineLocal.ry) * 4.6; player.z = combineLocal.z - Math.sin(combineLocal.ry) * 4.6;
-    save.combine.x = +combineLocal.x.toFixed(2); save.combine.z = +combineLocal.z.toFixed(2); save.combine.ry = +combineLocal.ry.toFixed(3); queueSave();
+    { const pk = W.parkCombine(Math.max(0, firstMyField())); save.combine.x = pk.x; save.combine.z = pk.z; save.combine.ry = pk.ry; } queueSave();   // it drives itself back to its parking spot
   } else if (c.kind === 'exit') {
     Sound.stopEngine(); player.driving = false; tractorLocal.speed = 0; player.x = tractorLocal.x + Math.cos(tractorLocal.ry) * 2.8; player.z = tractorLocal.z - Math.sin(tractorLocal.ry) * 2.8;
-    tractorState = { x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }; roomRef.child('farmers/' + me.uid + '/tractor').set(tractorState);
+    { const pk = W.parkFor(Math.max(0, firstMyField())); tractorState = { x: pk.x, z: pk.z, ry: pk.ry }; } roomRef.child('farmers/' + me.uid + '/tractor').set(tractorState);   // it drives itself back to its parking spot
   }
 }
 
@@ -1057,7 +1068,7 @@ function frame(ts) {
   mini.style.display = player.driving ? 'none' : '';      // the minimap is only for when you are out of the vehicle
   farmer.visible = !player.driving; farmer.position.set(player.x, 0, player.z); farmer.rotation.y = player.ry; W.animateFarmer(farmer, player.speed, dt);
   if (player.driving && !comb) { tractor.position.set(tractorLocal.x, 0, tractorLocal.z); tractor.rotation.y = tractorLocal.ry; }
-  else { tractor.position.set(tractorState.x, 0, tractorState.z); tractor.rotation.y = tractorState.ry || 0; }
+  else if (driveBack(tractor, tractorState, dt, 10)) tractor.userData.wheels.forEach(function (w) { w.rotation.x += dt * 8; });
   const spin = (player.driving && !comb ? tractorLocal.speed : 0) * dt / .9; tractor.userData.wheels.forEach(function (w) { w.rotation.x += spin; });
   updateFleet(dt);
   world.clouds.position.x += dt * .6; if (world.clouds.position.x > 140) world.clouds.position.x = -140;
