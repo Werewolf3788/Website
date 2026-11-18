@@ -2,6 +2,14 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 24,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Fixed: opening Tile Survival on a new device could start a fresh game and replace your saved progress. Your account now keeps whichever save has the most progress, and a new device never overwrites it"
+      ]
+    },
+    {
       "id": 23,
       "date": "Nov 18",
       "game": "all",

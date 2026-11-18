@@ -782,7 +782,18 @@ function applyHelps() {
 // ------------------------------------------------------------ save / load
 let cloudT = 0;
 function persist() { const h = tour ? tour.home : st; h.last = NOW(); h.saved = NOW(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(h)); } catch (e) {} }   // while visiting a friend, your own settlement is what gets saved
-function cloudSave() { if (WW && WW.user && WW.writeSave) try { WW.writeSave(CLOUD_KEY, JSON.parse(JSON.stringify(tour ? tour.home : st))); } catch (e) {} }
+// how far a save has got (buildings, areas, heroes, missions): used to pick the right save between devices, so a brand-new
+// device can never win over real progress just because it saved a few seconds later
+function progressOf(x) {
+  if (!x || !x.b) return 0; let p = 0;
+  Object.keys(x.b).forEach(k => { p += ((x.b[k] || {}).lvl | 0) * 1000; });
+  p += Object.keys(x.zones || {}).length * 800 + (x.q | 0) * 300;
+  Object.keys(x.heroes || {}).forEach(k => { p += ((x.heroes[k] || {}).lvl | 0) * 200; });
+  p += Math.min(5000, ((x.stats || {}).collected | 0) / 10);
+  return p;
+}
+let cloudChecked = false;   // never write to the cloud before we've looked at what's already there
+function cloudSave() { if (!cloudChecked) return; if (WW && WW.user && WW.writeSave) try { WW.writeSave(CLOUD_KEY, JSON.parse(JSON.stringify(tour ? tour.home : st))); } catch (e) {} }
 function publishProgress() { if (tour || !WW || !WW.publishProgress) return; const bl = Object.keys(BD).reduce((a, id) => a + (st.b[id].lvl | 0), 0); WW.publishProgress('survive', { title: 'Tile Survival', pp: lvl('pp'), zones: st.stats.zones, buildings: bl, heroes: Object.keys(st.heroes).map(id => HEROES[id] ? HEROES[id].n + ' L' + st.heroes[id].lvl : '').filter(Boolean).join(', '), kills: st.stats.kills | 0, mission: st.q + 1, raids: Object.keys(st.raids || {}).length }); }
 function publishPlaying() { if (tour) return; publishProgress(); if (WW && WW.publishPlaying) try { WW.publishPlaying({ game: 'survive', title: 'Tile Survival', status: 'Power Plant Lv' + lvl('pp') + ' · ' + st.stats.zones + ' areas · mission ' + (st.q + 1), open: 0 }); } catch (e) {} }
 function hud() {
@@ -938,8 +949,17 @@ function boot() {
   loadWorld(); persist();
   if (!localStorage.getItem('ts3_intro')) { localStorage.setItem('ts3_intro', '1'); show('<h3>🎖️ Sarge: “Glad you made it, survivor.”</h3><div class="muted" style="font-size:.95rem;line-height:1.5">The power plant is all we have left. <b>Drag anywhere</b> to walk (or WASD / a controller). Walk up to trees, rocks and animals and you’ll chop, mine and hunt on your own. Carry resources to the <b>yellow pads</b> to build, and the <b>blue pads</b> to push back the fog. Follow the mission at the bottom-left — the yellow arrow shows the way.</div>'); }
   if (WW && WW.onReady) WW.onReady(async (user, fc) => {
-    uid = user && user.uid; code = fc; if (!user) return;
-    try { const c = await WW.loadSave(CLOUD_KEY); if (c && c.v === 3 && (c.saved || 0) > (st.saved || 0)) { st = fix(c); const o = (NOW() - (st.last || NOW())) / 1000; if (o > 10) awayCatchUp(o); loadWorld(); } } catch (e) {}
+    uid = user && user.uid; code = fc; if (!user) { cloudChecked = false; return; }
+    try {
+      const c = await WW.loadSave(CLOUD_KEY), pc = progressOf(c), pl = progressOf(st);
+      if (c && c.v === 3 && (pc > pl || (pc === pl && (c.saved || 0) > (st.saved || 0)))) {   // the cloud has more progress (or the same, but newer): use it
+        st = fix(c); const o = (NOW() - (st.last || NOW())) / 1000; if (o > 10) awayCatchUp(o); loadWorld(); persist();
+      } else if (c && c.v === 3 && pl > pc) {   // this device has more progress than the cloud: keep it, and keep a copy of the cloud one just in case
+        try { WW.writeSave(CLOUD_KEY + '_prev', c); } catch (e) {}
+        setTimeout(() => toast('☁️ This device had more progress than your cloud save, so it was kept and saved to your account.', 5000), 1500);
+      }
+      cloudChecked = true; cloudSave();
+    } catch (e) { console.warn('cloud load failed; not overwriting the cloud this session', e); }
     listenHelps(); listenGifts(); publishPub(); publishPlaying(); setRoom(code);
     setTimeout(showWelcome, 2500);   // after allies' news (raids, help) has come in
   });
