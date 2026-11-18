@@ -329,6 +329,22 @@ function commitShop(n, id) { const cur = $(id); if (cur.innerHTML !== n.innerHTM
 const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['store', '🧪 Store'], ['orders', '📋 Orders'], ['missions', '📜 Missions'], ['ach', '🏆 Achievements'], ['land', '🏞️ Land'], ['upgrades', '🚜 Tractor'], ['settings', '⚙️ Settings']];
 const nearShop = () => Math.hypot(player.x - W.SHOP_POS.x, player.z - W.SHOP_POS.z) < 6;
 const today = () => C.dayNumber(nowMs());
+// kitchen: for recipes that use animal goods, show how far along you are (in the bag, ready to collect, and when the next ones arrive)
+function animalProgress(r) {
+  const now = nowMs(), out = []; let any = false;
+  Object.keys(r.needs).forEach(function (k) {
+    const need = r.needs[k], have = save.bag[k] || 0, mine = Object.keys(animals).map(function (id) { return animals[id]; }).filter(function (a) { return mineAnimal(a) && C.ANIMALS[a.t] && C.ANIMALS[a.t].prod === k; });
+    const gi = C.GOODS[k].icon, def = mine.length ? C.ANIMALS[mine[0].t] : null;
+    if (!def) { if (Object.keys(C.ANIMALS).some(function (t) { return C.ANIMALS[t].prod === k; })) { any = true; out.push(gi + ' ' + have + '/' + need + ' · no ' + C.GOODS[k].name.toLowerCase() + ' producers yet — buy one in the Animals tab'); } return; }
+    any = true; const pct = Math.min(100, Math.round(have / need * 100));
+    if (have >= need) { out.push(gi + ' ' + have + '/' + need + ' ✔ enough ' + C.GOODS[k].name.toLowerCase()); return; }
+    const miss = need - have, ready = mine.filter(function (a) { return now >= (a.r || 0); }).length, times = [];
+    mine.forEach(function (a) { const ev = C.ANIMALS[a.t].every; let t = Math.max(now, a.r || 0); for (let i = 0; i < miss; i++) { times.push(t); t += ev; } });
+    times.sort(function (a, b) { return a - b; }); const eta = (times[miss - 1] - now) / 1000;
+    out.push(gi + ' <b>' + have + '/' + need + '</b> <span style="display:inline-block;width:60px;height:6px;background:#0006;border-radius:3px;vertical-align:middle"><i style="display:block;width:' + pct + '%;height:100%;background:#fbbf24;border-radius:3px"></i></span> ' + (ready ? ready + ' ready to collect · ' : '') + (eta <= 1 ? 'collect them to finish' : 'enough in ~' + C.fmtTime(eta * 1000) + ' from ' + mine.length + ' ' + def.icon));
+  });
+  return any ? '<small style="color:#cbd5e1">' + out.join('<br>') + '</small>' : '';
+}
 function counts() { const c = {}; Object.keys(C.ANIMALS).forEach(function (k) { c[k] = 0; }); Object.keys(animals).forEach(function (id) { if (mineAnimal(animals[id]) && c[animals[id].t] !== undefined) c[animals[id].t]++; }); return c; }
 function row(html, buttons) { const r = document.createElement('div'); r.className = 'item'; r.innerHTML = '<div>' + html + '</div>'; const b = document.createElement('div'); b.className = 'btns'; (buttons || []).forEach(function (x) { const el = document.createElement('button'); el.className = 'b'; el.textContent = x.t; el.disabled = !!x.off; el.onclick = function () { x.f(); renderShop(); }; b.appendChild(el); }); r.appendChild(b); return r; }
 function renderShop() {
@@ -356,8 +372,10 @@ function renderShop() {
     C.RECIPES.forEach(function (r) {
       const g = C.GOODS[r.id], lock = l < r.level, have = Object.keys(r.needs).every(function (k) { return (save.bag[k] || 0) >= r.needs[k]; });
       const need = Object.keys(r.needs).map(function (k) { return r.needs[k] + '× ' + C.GOODS[k].icon + ' (' + (save.bag[k] || 0) + ')'; }).join(' + ');
-      box.appendChild(row(g.icon + ' <b>' + g.name + '</b> <small>' + (lock ? 'Unlocks at level ' + r.level : need + ' · worth ~$' + C.priceOf(r.id, d) + '') + '</small>',
-        [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k]); }); addItem(r.id, 1); stat('cook'); say('Made ' + g.name.toLowerCase() + '!'); } }]));
+      const rw = row(g.icon + ' <b>' + g.name + '</b> <small>' + (lock ? 'Unlocks at level ' + r.level : need + ' · worth ~$' + C.priceOf(r.id, d) + '') + '</small>',
+        [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k]); }); addItem(r.id, 1); stat('cook'); say('Made ' + g.name.toLowerCase() + '!'); } }]);
+      box.appendChild(rw);
+      if (!lock) { const pr = animalProgress(r); if (pr) { const el = document.createElement('div'); el.className = 'item'; el.style.cssText = 'border:0;padding-top:0'; el.innerHTML = pr; box.appendChild(el); } }
     });
   } else if (shopTab === 'animals') {
     const c = counts();
