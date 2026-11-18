@@ -950,7 +950,22 @@ const clock = new THREE.Clock(); let accSec = 0, accSave = 0, accCloud = 0, accP
 function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
 const FWD = { x: -Math.SQRT1_2, z: -Math.SQRT1_2 }, RIGHT = { x: Math.SQRT1_2, z: -Math.SQRT1_2 };
+// one bad frame must never freeze the game: errors are caught, shown on screen (for a screenshot), and the game keeps going
+const errSeen = {};
+function showErr(e) {
+  const m = String((e && e.message) || e), st0 = String((e && e.stack) || '').split('\n').slice(0, 3).join(' | ').replace(/https?:\/\/[^ )]*\//g, '');
+  if (errSeen[m]) return; errSeen[m] = 1; console.error('[survive]', e);
+  let b = $('survErr'); if (!b) { b = document.createElement('div'); b.id = 'survErr'; b.style.cssText = 'position:fixed;left:8px;bottom:70px;z-index:99999;max-width:min(94vw,560px);background:#7f1d1d;color:#fff;font:12px/1.35 system-ui,sans-serif;padding:8px 10px;border-radius:10px;white-space:pre-wrap;word-break:break-word;cursor:pointer'; b.onclick = () => b.remove(); document.body.appendChild(b); }
+  b.textContent = '⚠️ Game error (send a screenshot to fix · tap to hide):\n' + m + (st0 ? '\n' + st0 : '');
+}
+addEventListener('error', ev => { if (ev && ev.error) showErr(ev.error); });
+addEventListener('unhandledrejection', ev => showErr(ev.reason || ev));
 function frame() {
+  try { frameInner(); } catch (e) { showErr(e); }
+  try { renderer.render(scene, camera); } catch (e) { showErr(e); }
+  requestAnimationFrame(frame);
+}
+function frameInner() {
   const dt = Math.min(.05, clock.getDelta()), now = NOW();
   // --- input
   let ix = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0) + joy.x, iy = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y;
@@ -1056,7 +1071,6 @@ function frame() {
   if (!youPin) { youPin = iconSprite('📍', 4); youPin.position.y = 6; pMesh.add(youPin); } youPin.visible = big;
   sun.position.set(player.x + 20, 40, player.z + 10); sun.target.position.set(player.x, 0, player.z);
   dayNight();
-  renderer.render(scene, camera); requestAnimationFrame(frame);
 }
 addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child(uid).remove(); } catch (e) {} persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
