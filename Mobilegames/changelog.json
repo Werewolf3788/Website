@@ -2,6 +2,17 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 7,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Visit really takes you to your friend's settlement: walk around it, help their timers, then 🏠 Go home",
+        "Lumberjacks: the Lumberyard sends out workers (1 per level, up to 4) who chop trees and bring the logs to its pile",
+        "Tap any building to see what it does now and what its next level adds (and what it costs)",
+        "Fixed the little boxes where some icons didn't show on Windows"
+      ]
+    },
+    {
       "id": 6,
       "date": "Nov 18",
       "game": "survive",

@@ -11,7 +11,7 @@ const SAVE_KEY = 'ts3_save', CLOUD_KEY = 'survive3', MAX_HELPS = 5, HELP_CUT = .
 // ------------------------------------------------------------ buildings (all in the home area around the Power Plant)
 const BD = {
   pp:       { n: 'Power Plant', i: '🔌', x: 0,  z: 0,  r: 2.7, need: 1, cost: { wood: 40, food: 20 } },
-  lumber:   { n: 'Lumberyard',  i: '⚔️', x: -8, z: -8, r: 2.2, need: 1, cost: { wood: 15 }, out: 'wood', rate: .12 },
+  lumber:   { n: 'Lumberyard',  i: '🌳', x: -8, z: -8, r: 2.2, need: 1, cost: { wood: 15 }, out: 'wood', rate: .12 },
   farm:     { n: 'Farm',        i: '🌽', x: 8,  z: -8, r: 2.2, need: 1, cost: { wood: 35 }, out: 'food', rate: .1 },
   house1:   { n: 'House',       i: '🏠', x: -8, z: 0,  r: 2.0, need: 1, cost: { wood: 30, food: 10 } },
   smelter:  { n: 'Smelter',     i: '🏭', x: 8,  z: 0,  r: 2.2, need: 2, cost: { wood: 60, food: 20 }, out: 'metal', rate: .05 },
@@ -354,6 +354,14 @@ addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
 cv.addEventListener('pointerdown', e => { joy.id = e.pointerId; joy.ox = e.clientX; joy.oy = e.clientY; joy.x = joy.y = 0; const jb = $('jb'), jk = $('jk'); jb.style.display = jk.style.display = 'block'; jb.style.left = jk.style.left = e.clientX + 'px'; jb.style.top = jk.style.top = e.clientY + 'px'; try { cv.setPointerCapture(e.pointerId); } catch (x) {} });
 cv.addEventListener('pointermove', e => { if (e.pointerId !== joy.id) return; let dx = e.clientX - joy.ox, dy = e.clientY - joy.oy; const d = Math.hypot(dx, dy), R = 50; if (d > R) { dx *= R / d; dy *= R / d; } joy.x = dx / R; joy.y = dy / R; $('jk').style.left = (joy.ox + dx) + 'px'; $('jk').style.top = (joy.oy + dy) + 'px'; });
 const joyEnd = e => { if (e.pointerId !== joy.id) return; joy.id = null; joy.x = joy.y = 0; $('jb').style.display = $('jk').style.display = 'none'; };
+const tapAt = { x: 0, y: 0, t: 0 };
+cv.addEventListener('pointerdown', e => { tapAt.x = e.clientX; tapAt.y = e.clientY; tapAt.t = performance.now(); });
+cv.addEventListener('pointerup', e => {
+  if (Math.hypot(e.clientX - tapAt.x, e.clientY - tapAt.y) > 8 || performance.now() - tapAt.t > 350) return;   // that was a drag (walking), not a tap
+  const r = cv.getBoundingClientRect(), v = new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1), rc = new THREE.Raycaster(); rc.setFromCamera(v, camera);
+  const ids = Object.keys(bldMeshes), hit = rc.intersectObjects(ids.map(k => bldMeshes[k]), true)[0]; if (!hit) return;
+  let o = hit.object; while (o && ids.every(k => bldMeshes[k] !== o)) o = o.parent; const id = ids.find(k => bldMeshes[k] === o); if (id && !tour) buildingPanel(id, true);
+});
 cv.addEventListener('pointerup', joyEnd); cv.addEventListener('pointercancel', joyEnd);
 const PAD = window.WWPad;
 if (PAD) PAD.on('connect', n => toast('🎮 ' + n + ' connected: left stick move · X action · Options missions', 5000));
@@ -441,9 +449,27 @@ function workshopPanel() {
   const w = st.weapon, c = weaponCost(w), max = lvl('workshop') + 1;
   show('<h3>🔨 Workshop</h3><div class="muted">Better weapons hit harder and chop faster. Weapon level is limited to Workshop level + 1.</div><div class="row"><div class="g"><b>⚔️ Weapon Lv' + w + '</b> <span class="muted">⚔️ ' + weaponDmg(w) + ' damage</span></div><button class="b" data-a="weapon" ' + (w < max && canPay(c) ? '' : 'disabled') + '>' + (w >= max ? 'Upgrade the Workshop' : '⬆ ' + costTxt(c) + ' → ⚔️' + weaponDmg(w + 1)) + '</button></div>');
 }
-function buildingPanel(id) {
+// what a building does at a given level (used for "now" and "next level" in its info card)
+function bInfo(id, L) {
+  const D = BD[id];
+  if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : ''); }
+  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '.' + (id === 'lumber' ? ' ' + Math.min(4, L) + ' lumberjack' + (Math.min(4, L) > 1 ? 's' : '') + ' chop trees and bring the logs here.' : '');
+  if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
+  if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '.';
+  if (id === 'workshop') return 'Your weapon can be upgraded up to level ' + (L + 1) + ' (' + weaponDmg(L + 1) + ' damage).';
+  return '';
+}
+function infoBlock(id) {
+  const b = st.b[id] || { lvl: 0 }, L = b.lvl | 0, nx = L + 1;
+  let h = '<div class="row"><div class="g"><b>' + (L ? 'Now (level ' + L + ')' : 'When built') + '</b><div class="muted">' + bInfo(id, Math.max(1, L)) + '</div></div></div>';
+  if (L) h += '<div class="row"><div class="g"><b>Next level (' + nx + ')</b><div class="muted">' + bInfo(id, nx) + '<br>Costs ' + costTxt(costFor(id, nx)) + (upTime(nx) ? ' · builds in ' + fmt(upTime(nx)) : '') + (nx > cap(id) ? ' · needs 🔌 Power Plant level ' + nx : '') + '</div></div></div>';
+  return h;
+}
+function buildingPanel(id, info) {
+  const D0 = BD[id], b0 = st.b[id] || { lvl: 0 };
+  if (info || !b0.lvl) return show('<h3>' + D0.i + ' ' + D0.n + (b0.lvl ? ' · level ' + b0.lvl : ' · not built yet') + '</h3>' + infoBlock(id) + (b0.lvl ? '<div class="row"><button class="b" data-a="bopen" data-id="' + id + '">Open</button></div>' : '<div class="row muted">' + (D0.need > lvl('pp') ? 'Unlocks with 🔌 Power Plant level ' + D0.need + '.' : 'Stand on its yellow pad to build it.') + '</div>'));
   if (id === 'hall') return heroPanel(); if (id === 'workshop') return workshopPanel();
-  const D = BD[id], b = st.b[id]; let h = '<h3>' + D.i + ' ' + D.n + ' · level ' + b.lvl + '</h3>';
+  const D = BD[id], b = st.b[id]; let h = '<h3>' + D.i + ' ' + D.n + ' · level ' + b.lvl + '</h3>' + infoBlock(id);
   if (id === 'pp') h += '<div class="muted">Every other building can only be upgraded up to the Power Plant’s level.</div>';
   if (D.out) h += '<div class="muted">Makes ' + RES[D.out] + ' ' + (D.rate * b.lvl * efficiency() * 60).toFixed(1) + '/min into its pile (holds ' + 40 * b.lvl + '). Walk up to it to collect. Workers: ' + survivors() + ' survivors for ' + producers().length * 2 + ' jobs' + (st.res.food <= 0 ? ' · <b style="color:#fca5a5">no food — half speed</b>' : '') + '.</div>';
   if (id.indexOf('house') === 0) h += '<div class="muted">Each house level shelters 2 more survivors to work your buildings.</div>';
@@ -463,6 +489,7 @@ function doAct(a, d) {
   if (a === 'visitf') return visit(d.code);
   if (a === 'back') { if (tour) return goHome(); visiting = null; return alliesPanel(); }
   if (a === 'help') return helpFriend(d.k);
+  if (a === 'bopen') return buildingPanel(d.id);
   persist(); hud();
 }
 $('bHeroes').onclick = heroPanel; $('bQuests').onclick = questsPanel; $('quest').onclick = () => tour ? goHome() : questsPanel(); $('bAllies').onclick = () => alliesPanel();
@@ -558,7 +585,42 @@ function hud() {
   Object.keys(RES).forEach(k => { const el = $('r_' + k), prod = producers().filter(id => BD[id].out === k); el.innerHTML = RES[k] + ' ' + Math.floor(st.res[k]); });
   $('ppl').textContent = lvl('pp'); $('surv').textContent = survivors(); $('hp').style.width = Math.max(0, st.hp / player.hpMax * 100) + '%';
 }
+// ------------------------------------------------------------ lumberjacks: the Lumberyard sends out workers (1 per level, up to 4)
+// who walk to the nearest standing tree, chop it, and carry the logs back to the yard's pile (collect it there as usual)
+const workers = [];
+function syncWorkers() {
+  const want = lvl('lumber') >= 1 ? Math.min(4, lvl('lumber')) : 0, L = BD.lumber;
+  while (workers.length > want) scene.remove(workers.pop().mesh);
+  while (workers.length < want) {
+    const m = human({ skin: [0xf1c27d, 0xc68642, 0x8d5524, 0xe0ac69][workers.length % 4], shirt: 0xb45309, pants: 0x1f2937, hat: 0xfacc15, tool: 'axe', s: .9 });
+    const nm = textSprite(3); nm.position.y = 2.6; nm.userData.set('🌳 Lumberjack'); m.add(nm);
+    const w = { mesh: m, x: L.x + (workers.length - 1.5), z: L.z + 2.5, state: 'seek', tree: null, t: 0 }; m.position.set(w.x, 0, w.z); scene.add(m); workers.push(w);
+  }
+}
+function updateWorkers(dt, now) {
+  const L = BD.lumber;
+  workers.forEach(w => {
+    let sp = 0;
+    const walk = (tx, tz) => { const d = Math.hypot(tx - w.x, tz - w.z); if (d < .9) return true; sp = 3.2; const nx = w.x + (tx - w.x) / d * sp * dt, nz = w.z + (tz - w.z) / d * sp * dt; moveTo(w, nx, nz, .35); w.mesh.rotation.y = Math.atan2(tx - w.x, tz - w.z); return false; };
+    if (w.state === 'seek') {
+      let best = null, bd = 1e9; trees.forEach(t => { if (t.down || workers.some(o => o !== w && o.tree === t)) return; const d = Math.hypot(t.x - L.x, t.z - L.z); if (d < bd) { bd = d; best = t; } });
+      if (best) { w.tree = best; w.state = 'walk'; } else w.t += dt;   // no trees standing: wait for them to grow back
+    } else if (w.state === 'walk') {
+      if (!w.tree || w.tree.down) { w.state = 'seek'; w.tree = null; }
+      else if (walk(w.tree.x, w.tree.z)) { w.state = 'chop'; w.t = 2.4; }
+    } else if (w.state === 'chop') {
+      const t = w.tree; if (!t || t.down) { w.state = 'seek'; w.tree = null; return; }
+      w.mesh.rotation.y = Math.atan2(t.x - w.x, t.z - w.z); w.t -= dt; if (Math.floor(w.t * 2.5) !== Math.floor((w.t + dt) * 2.5)) { w.mesh.userData.swing = 1; t.shake = .25; }
+      if (w.t <= 0) { t.down = true; t.at = now + 45000; t.top.visible = false; if (t.trunk) t.trunk.scale.y = .3; w.tree = null; w.state = 'carry'; w.load = 3; }
+    } else if (w.state === 'carry') {
+      if (walk(L.x + (L.r + 1) * .7, L.z + (L.r + 1) * .7)) { const cap = 40 * lvl('lumber'); st.piles.lumber = Math.min(cap, (st.piles.lumber || 0) + w.load); fly('🌲', w, { x: L.x, z: L.z }); w.load = 0; w.state = 'seek'; }
+    }
+    w.mesh.position.set(w.x, 0, w.z); animHuman(w.mesh, sp, dt);
+    if (w.mesh.userData.logs !== (w.state === 'carry')) { w.mesh.userData.logs = w.state === 'carry'; if (w.mesh.userData.logs) { const lg = cyl(w.mesh, .12, .12, .8, 0xa0703f, 0, 1.3, -.3, 6); lg.rotation.z = Math.PI / 2; w.mesh.userData.logMesh = lg; } else if (w.mesh.userData.logMesh) { w.mesh.remove(w.mesh.userData.logMesh); w.mesh.userData.logMesh = null; } }
+  });
+}
 function loadWorld() {
+  workers.forEach(w => scene.remove(w.mesh)); workers.length = 0;
   // clear old entities, then rebuild everything from the save
   [trees, rocks, deer, zombies].forEach(a => { a.forEach(o => scene.remove(o.mesh)); a.length = 0; });
   Object.keys(zoneObjs).forEach(k => { zoneObjs[k].forEach(o => scene.remove(o)); delete zoneObjs[k]; });
@@ -567,7 +629,7 @@ function loadWorld() {
   Object.keys(pads).forEach(k => { scene.remove(pads[k].mesh); delete pads[k]; });
   Object.keys(heroes).forEach(k => { scene.remove(heroes[k].mesh); delete heroes[k]; });
   for (let i = 0; i < G; i++) for (let j = 0; j < G; j++) { const k = i + ',' + j; if (st.zones[k]) spawnZoneContents(i, j); else makeFog(i, j); }
-  syncBuildings(); syncPads(); syncHeroes(); hud(); checkQuest();
+  syncBuildings(); syncPads(); syncHeroes(); syncWorkers(); hud(); checkQuest();
 }
 function boot() {
   let s = null; try { s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) {}
@@ -657,6 +719,7 @@ function frame() {
     const pd = d2(d, player); if (pd < 4 && !player.dead) { d.vx = (d.x - player.x) / pd * 2.2; d.vz = (d.z - player.z) / pd * 2.2; }
     const nx = d.x + d.vx * dt, nz = d.z + d.vz * dt; if (Math.hypot(nx - d.hx, nz - d.hz) < 8 && !blockedAt(nx, nz)) { d.x = nx; d.z = nz; }
     d.mesh.position.set(d.x, 0, d.z); if (d.vx || d.vz) d.mesh.rotation.y = Math.atan2(d.vx, d.vz); if (d.bar.visible) faceCam(d.bar); });
+  updateWorkers(dt, now);
   trees.concat(rocks).forEach(n => {
     if (n.down && now > n.at && d2(n, player) > 2) { n.down = false; n.hp = n.max; n.top.visible = true; n.mesh.visible = true; if (n.trunk) n.trunk.scale.y = 1; }
     if (n.shake > 0) { n.shake -= dt; n.mesh.rotation.z = Math.sin(n.shake * 60) * .06; } else n.mesh.rotation.z = 0;
@@ -677,7 +740,7 @@ function frame() {
   const ab = $('act'); if (actTarget) { const t = BD[actTarget].i + ' ' + BD[actTarget].n; if (ab.textContent !== t) ab.textContent = t; ab.style.display = 'block'; } else ab.style.display = 'none';
   // --- once a second
   accSec += dt; if (accSec >= 1) { const ev = economy(accSec); accSec = 0; ev.forEach(e => toast(e)); if (ev.length) { syncPads(); publishPub(); persist(); }
-    syncBuildings(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
+    syncBuildings(); syncWorkers(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
   accSave += dt; if (accSave > 4) { accSave = 0; persist(); }
   accCloud += dt; if (accCloud > 30) { accCloud = 0; cloudSave(); }
   accPub += dt; if (accPub > 90) { accPub = 0; publishPlaying(); publishPub(); }
@@ -690,4 +753,4 @@ function frame() {
 addEventListener('beforeunload', () => { persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 boot(); requestAnimationFrame(frame);
-window.__ts = { get st() { return st; }, startTour: startTour, goHome: goHome, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
+window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
