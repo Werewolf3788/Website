@@ -424,7 +424,7 @@ function pushOut(o, rad) {
   trees.forEach(near); rocks.forEach(near);
 }
 function moveTo(o, x, z, rad) { const ox = o.x, oz = o.z; o.x = x; o.z = z; pushOut(o, rad); if (blockedAt(o.x, o.z)) { o.x = ox; o.z = oz; if (!blockedAt(x, oz)) o.x = x; else if (!blockedAt(ox, z)) o.z = z; } }
-const allies = () => [player.dead ? null : Object.assign(player, { isPlayer: true })].concat(Object.keys(heroes).map(id => heroes[id]).filter(h => !h.down)).filter(Boolean);
+const allies = () => [player.dead ? null : Object.assign(player, { isPlayer: true })].concat(Object.keys(heroes).map(id => heroes[id]).filter(h => !h.down), guards.filter(g => !g.down)).filter(Boolean);
 function nearestZombie(o, r) { let best = null, bd = r; zombies.forEach(z => { if (z.dead) return; const d = d2(o, z) - (z.boss ? 1 : 0); if (d < bd) { bd = d; best = z; } }); return best; }
 
 function hitZombie(z, dmg, by) {
@@ -504,7 +504,7 @@ function bInfo(id, L) {
   if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : '') + ' It only levels up once every building has caught up to it.'; }
   if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '. 3% of what it makes helps build your other buildings (5% to the Power Plant once they\u2019re all caught up), and a full pile\u2019s extra goes there too.' + (ROLES[id] ? ' ' + Math.min(4, L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + (Math.min(4, L) > 1 ? 's' : '') + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
   if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
-  if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '.';
+  if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '. ' + Math.min(4, L) + ' infected hunter' + (Math.min(4, L) > 1 ? 's' : '') + ' (❤️' + (60 + 25 * L) + ', ' + (6 + 3 * L) + ' damage) hunt down the infected for you.';
   if (id === 'workshop') return 'Your weapon can be upgraded up to level ' + (L + 1) + ' (' + weaponDmg(L + 1) + ' damage).';
   return '';
 }
@@ -769,7 +769,40 @@ function updateOthers(dt, now) {
     const dx = o.tx - o.x, dz = o.tz - o.z, d = Math.hypot(dx, dz), step = Math.min(d, 7 * dt); if (d > .01) { o.x += dx / d * step; o.z += dz / d * step; } if (d > 12) { o.x = o.tx; o.z = o.tz; }
     o.mesh.position.set(o.x, 0, o.z); if (d > .05) o.mesh.rotation.y = Math.atan2(dx, dz); animHuman(o.mesh, d > .05 ? 5 : 0, dt); });
 }
+// ------------------------------------------------------------ infected hunters: the Hero Hall sends out a squad (1 per level, up to 4) that
+// hunts down the infected anywhere you've unlocked, then heads back to the hall to heal. Loot from their kills is yours.
+const guards = [];
+function syncGuards() {
+  const want = lvl('hall') >= 1 ? Math.min(4, lvl('hall')) : 0, B = BD.hall;
+  while (guards.length > want) scene.remove(guards.pop().mesh);
+  while (guards.length < want) {
+    const k = guards.length, m = human({ skin: [0xe0ac69, 0x8d5524, 0xf1c27d, 0xc68642][k % 4], shirt: 0x7f1d1d, pants: 0x111827, hat: 0x1f2937, tool: 'gun', s: .95 });
+    const bar = hpBar(1, 0xef4444); bar.position.y = 2.3; m.add(bar); const nm = textSprite(3); nm.position.y = 2.75; nm.userData.set('🎯 Infected hunter'); m.add(nm);
+    const g = { id: 'guard' + k, name: 'Infected hunter', mesh: m, bar: bar, x: B.x + k - 1.5, z: B.z + B.r + 1.2, hp: 1, max: 1, cd: 0, down: 0, state: 'seek', tgt: null };
+    m.position.set(g.x, 0, g.z); scene.add(m); guards.push(g);
+  }
+  const L = Math.max(1, lvl('hall')); guards.forEach(g => { const mx = 60 + 25 * L; if (g.max !== mx) { g.hp = Math.min(mx, g.hp === 1 ? mx : g.hp); g.max = mx; } });
+}
+function updateGuards(dt, now) {
+  const B = BD.hall, dmg = 6 + 3 * Math.max(1, lvl('hall'));
+  guards.forEach(g => {
+    let sp = 0;
+    if (g.down) { if (now > g.down) { g.down = 0; g.hp = g.max; g.x = B.x; g.z = B.z + B.r + 1.2; g.mesh.visible = true; } return; }
+    const walk = (tx, tz, near) => { const d = Math.hypot(tx - g.x, tz - g.z); if (d < near) return true; sp = 4; moveTo(g, g.x + (tx - g.x) / d * sp * dt, g.z + (tz - g.z) / d * sp * dt, .4); g.mesh.rotation.y = Math.atan2(tx - g.x, tz - g.z); return false; };
+    g.cd -= dt;
+    if (g.hp < g.max * .35) g.state = 'heal';
+    if (g.state === 'heal') { if (walk(B.x, B.z + B.r + 1.2, 1)) { g.hp = Math.min(g.max, g.hp + 15 * dt); if (g.hp >= g.max) g.state = 'seek'; } }
+    else {
+      if (!g.tgt || g.tgt.dead) { let best = null, bd = 1e9; zombies.forEach(z => { if (z.dead || z.boss) return; const d = Math.hypot(z.x - g.x, z.z - g.z); if (d < bd) { bd = d; best = z; } }); g.tgt = best; }
+      const z = g.tgt;
+      if (z) { if (walk(z.x, z.z, 4.5) && g.cd <= 0) { g.mesh.rotation.y = Math.atan2(z.x - g.x, z.z - g.z); hitZombie(z, dmg, g.id); tracer(g, z, 0xfca5a5); g.cd = .9; g.mesh.userData.swing = 1; } }
+      else walk(B.x + (guards.indexOf(g) - 1.5) * 1.2, B.z + B.r + 1.2, .8);   // nothing to hunt: wait by the hall
+    }
+    g.mesh.position.set(g.x, 0, g.z); animHuman(g.mesh, sp, dt); setBar(g.bar, g.hp / g.max); faceCam(g.bar);
+  });
+}
 function loadWorld() {
+  guards.forEach(g => scene.remove(g.mesh)); guards.length = 0;
   workers.forEach(w => scene.remove(w.mesh)); workers.length = 0;
   // clear old entities, then rebuild everything from the save
   [trees, rocks, deer, zombies].forEach(a => { a.forEach(o => scene.remove(o.mesh)); a.length = 0; });
@@ -779,7 +812,7 @@ function loadWorld() {
   Object.keys(pads).forEach(k => { scene.remove(pads[k].mesh); delete pads[k]; });
   Object.keys(heroes).forEach(k => { scene.remove(heroes[k].mesh); delete heroes[k]; });
   for (let i = 0; i < G; i++) for (let j = 0; j < G; j++) { const k = i + ',' + j; if (st.zones[k]) spawnZoneContents(i, j); else makeFog(i, j); }
-  syncBuildings(); syncPads(); syncHeroes(); syncWorkers(); hud(); checkQuest();
+  syncBuildings(); syncPads(); syncHeroes(); syncWorkers(); syncGuards(); hud(); checkQuest();
 }
 function boot() {
   let s = null; try { s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) {}
@@ -858,7 +891,7 @@ function frame() {
     if (d2(z, { x: z.hx, z: z.hz }) > 15) tgt = null;
     let tx = z.hx + Math.sin(now / 2000 + z.hx) * 2, tz = z.hz + Math.cos(now / 2300 + z.hz) * 2, sp = .8;
     if (tgt) { tx = tgt.x; tz = tgt.z; sp = z.speed; if (d2(z, tgt) < z.reach + .4) { sp = 0; if (z.cd <= 0) { z.cd = 1.2; z.mesh.userData.swing = 1; sfx(120, .1, .05);
-      if (tgt.isPlayer) { st.hp -= z.dmg; if (st.hp <= 0) { st.hp = 0; player.dead = now + 3000; pMesh.visible = false; toast('💀 You were overrun!'); } } else { tgt.hp -= z.dmg; if (tgt.hp <= 0) { tgt.down = now + 20000; tgt.mesh.visible = false; toast(HEROES[tgt.id].n + ' is down — back in 20s'); } } } } }
+      if (tgt.isPlayer) { st.hp -= z.dmg; if (st.hp <= 0) { st.hp = 0; player.dead = now + 3000; pMesh.visible = false; toast('💀 You were overrun!'); } } else { tgt.hp -= z.dmg; if (tgt.hp <= 0) { tgt.down = now + 20000; tgt.mesh.visible = false; toast((HEROES[tgt.id] ? HEROES[tgt.id].n : tgt.name) + ' is down — back in 20s'); } } } } }
     else if (!tgt && z.hp < z.max) z.hp = Math.min(z.max, z.hp + 10 * dt);
     const dd = Math.hypot(tx - z.x, tz - z.z); if (dd > .2 && sp > 0) { z.x += (tx - z.x) / dd * sp * dt; z.z += (tz - z.z) / dd * sp * dt; z.mesh.rotation.y = Math.atan2(tx - z.x, tz - z.z); }
     z.mesh.position.set(z.x, 0, z.z); animHuman(z.mesh, sp, dt); setBar(z.bar, z.hp / z.max); faceCam(z.bar);
@@ -869,7 +902,7 @@ function frame() {
     const pd = d2(d, player); if (pd < 4 && !player.dead) { d.vx = (d.x - player.x) / pd * 2.2; d.vz = (d.z - player.z) / pd * 2.2; }
     const nx = d.x + d.vx * dt, nz = d.z + d.vz * dt; if (Math.hypot(nx - d.hx, nz - d.hz) < 8 && !blockedAt(nx, nz)) { d.x = nx; d.z = nz; }
     d.mesh.position.set(d.x, 0, d.z); if (d.vx || d.vz) d.mesh.rotation.y = Math.atan2(d.vx, d.vz); if (d.bar.visible) faceCam(d.bar); });
-  updateWorkers(dt, now); updateOthers(dt, now);
+  updateWorkers(dt, now); updateGuards(dt, now); updateOthers(dt, now);
   trees.concat(rocks).forEach(n => {
     if (n.down && now > n.at && d2(n, player) > 2) { n.down = false; n.hp = n.max; n.top.visible = true; n.mesh.visible = true; if (n.trunk) n.trunk.scale.y = 1; }
     if (n.shake > 0) { n.shake -= dt; n.mesh.rotation.z = Math.sin(n.shake * 60) * .06; } else n.mesh.rotation.z = 0;
@@ -891,7 +924,7 @@ function frame() {
   // --- once a second
   accSec += dt; if (accSec >= 1) { const ev = economy(accSec); accSec = 0; ev.forEach(e => toast(e)); if (ev.length) { syncPads(); publishPub(); persist(); }
     if (st.overflowAt && NOW() - st.overflowAt < 1500) syncPads();   // builds being fed by full piles
-    syncBuildings(); syncWorkers(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
+    syncBuildings(); syncWorkers(); syncGuards(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
   accSave += dt; if (accSave > 4) { accSave = 0; persist(); }
   accCloud += dt; if (accCloud > 30) { accCloud = 0; cloudSave(); }
   accPub += dt; if (accPub > 90) { accPub = 0; publishPlaying(); publishPub(); }
@@ -904,4 +937,4 @@ function frame() {
 addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child(uid).remove(); } catch (e) {} persist(); cloudSave(); if (WW && WW.clearPlaying) WW.clearPlaying(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 boot(); requestAnimationFrame(frame);
-window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
+window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };

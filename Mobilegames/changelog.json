@@ -2,6 +2,14 @@
   "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
   "entries": [
     {
+      "id": 15,
+      "date": "Nov 18",
+      "game": "survive",
+      "items": [
+        "Infected hunters: the Hero Hall sends out a squad (1 per level, up to 4) that hunts down the infected on your map and heads back to the hall to heal. You get the loot"
+      ]
+    },
+    {
       "id": 14,
       "date": "Nov 18",
       "game": "survive",
