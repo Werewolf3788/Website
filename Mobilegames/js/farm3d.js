@@ -18,7 +18,7 @@ const tractorLocal = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_H
 const combineLocal = { x: 0, z: 0, ry: 0, speed: 0 };
 let combine = null, trailer = null, truck = null, roomEpoch = 0;     // harvest-chain models: they exist once the Combine harvester is owned
 const level = () => C.levelFromXp(save.xp);
-const swath = () => save.up.mega ? 7 : save.up.wide ? 5 : 3;
+const swath = () => save.up.mega ? 12 : save.up.wide ? 5 : 3;
 const nowMs = () => WW.now();
 
 function say(t) { $('toast').textContent = t || ''; clearTimeout(toastTimer); if (t) toastTimer = setTimeout(function () { $('toast').textContent = ''; }, 3800); }
