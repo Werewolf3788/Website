@@ -472,6 +472,8 @@ const cropColor = id => CROP_COLOR[id] || 0xe6c84a;
 // the combine, trailer and truck come with the "Combine harvester" upgrade; they are parked by your first field
 function ensureFleet() {
   if (!save.up.harvester || !scene) return; const f = Math.max(0, firstMyField());
+  if (save.combine && W.inBarnZone(save.combine)) { const p = W.parkCombine(f); save.combine.x = p.x; save.combine.z = p.z; save.combine.ry = p.ry; queueSave(); }   // older saves left these jammed beside the barn
+  if (save.trailer && W.inBarnZone(save.trailer) && !save.haul) { const p = W.parkTrailer(f); save.trailer.x = p.x; save.trailer.z = p.z; save.trailer.ry = p.ry; queueSave(); }
   if (!save.combine) { const p = W.parkCombine(f); save.combine = { x: p.x, z: p.z, ry: p.ry, grain: {} }; }
   if (!save.trailer) { const p = W.parkTrailer(f); save.trailer = { x: p.x, z: p.z, ry: p.ry, grain: {} }; }
   if (!combine) { combine = W.makeCombine(myColor ? parseInt(myColor.slice(1), 16) : undefined, HARVEST.swath * W.TILE - .4); scene.add(combine); }
@@ -638,7 +640,8 @@ function context() {
   if (player.driving && player.veh === 'combine') { const n = grainTotal(save.combine && save.combine.grain), nt = grainTotal(save.trailer && save.trailer.grain); return { kind: 'exit', text: 'Exit combine (E)', info: '🌾 Tank ' + n + '/' + HARVEST.tank + ' · trailer ' + nt + '/' + HARVEST.trailer + (n ? ' · park next to the trailer to unload' : ' · drive over ripe crops to harvest') }; }
   if (player.driving) return { kind: 'exit', text: 'Exit tractor (E)', info: toolLabel() + ' · ' + swath() + ' tiles wide' + (tool === 'seed' ? ' · ' + mixText() : '') };
   const id = nearestReadyAnimal(); if (id) return { kind: 'collect', id: id, text: 'Collect ' + C.ANIMALS[animals[id].t].prod + ' (E)' };
-  if (nearShop()) return { kind: 'shop', text: 'Open the barn (E)', info: 'Buy seeds · sell goods · orders · upgrades' };
+  const atTractor = Math.hypot(player.x - tractorState.x, player.z - tractorState.z) < 4, atCombine = !!(combine && save.combine && dist2(player, save.combine) < 6);
+  if (nearShop() && !atTractor && !atCombine) return { kind: 'shop', text: 'Open the barn (E)', info: 'Buy seeds · sell goods · orders · upgrades' };
   if (Math.hypot(player.x - tractorState.x, player.z - tractorState.z) < 4) return { kind: 'drive', text: 'Drive your tractor (E)' };
   if (combine && save.combine && dist2(player, save.combine) < 6) return { kind: 'driveC', text: 'Drive your combine harvester (E)', info: '🌾 Tank ' + grainTotal(save.combine.grain) + '/' + HARVEST.tank };
   if (trailer && save.trailer && dist2(player, save.trailer) < 5.5) {
@@ -974,6 +977,7 @@ async function begin(user, myCode) {
     let t = (await roomRef.child('farmers/' + me.uid + '/tractor').once('value')).val();
     if (!t) { t = (await roomRef.child('tractors/' + me.uid).once('value')).val(); }
     if (t && t.x !== undefined) tractorState = { x: t.x, z: t.z, ry: t.ry || 0 }; else { const ff = firstMyField(), pk = W.parkFor(ff < 0 ? 0 : ff); tractorState = { x: pk.x, z: pk.z, ry: pk.ry }; }
+    if (W.inBarnZone(tractorState)) { const ff2 = firstMyField(), pk2 = W.parkFor(ff2 < 0 ? 0 : ff2); tractorState = { x: pk2.x, z: pk2.z, ry: pk2.ry }; }
     pushFarmer({ avatar: myAvatar || null, color: myColor || null, tractor: tractorState });
     ['avatars', 'colors', 'tractors'].forEach(function (n) { roomRef.child(n + '/' + me.uid).remove().catch(function () {}); });
   } catch (e) { console.warn(e); }
