@@ -252,7 +252,7 @@ async function persistNow() { clearTimeout(saveTimer); if (me) await WW.writeSav
 // (the full private save - seeds, bag, orders, stats ... - stays in games_saves/{uid}/{farm|farm_mp_CODE})
 function pushFarmer(extra) {
   if (!roomRef || !me) return; let nAn = 0; Object.keys(animals).forEach(function (id) { if (mineAnimal(animals[id])) nAn++; });
-  const rec = Object.assign({ name: myName, level: level(), xp: Math.floor(save.xp), coins: save.coins, fields: myFieldCount(), animals: nAn, harvested: save.harvested | 0, combine: save.up.harvester ? 1 : 0, updated: firebase.database.ServerValue.TIMESTAMP }, extra || {});
+  const rec = Object.assign({ name: myName, level: level(), xp: Math.floor(save.xp), coins: save.coins, fields: myFieldCount(), animals: nAn, harvested: save.harvested | 0, combine: save.up.harvester ? 1 : 0, stats: save.stats || {}, upN: Object.keys(save.up || {}).length, ach: Object.keys(save.ach || {}).filter(function (k) { return k.indexOf('lvl') !== 0; }), updated: firebase.database.ServerValue.TIMESTAMP }, extra || {});   // stats/ach let friends see your achievement progress
   try { roomRef.child('farmers/' + me.uid).update(rec); } catch (e) { console.warn(e); }
 }
 function freshSave(epoch) { return { ach: {}, coins: 100, xp: 0, seeds: { wheat: C.FIELD_TILES }, bag: {}, fert: 0, up: {}, skip: {}, orders: { done: {} }, harvested: 0, stats: {}, daily: { day: -1, base: {}, done: [] }, ms: {}, combine: null, trailer: null, haul: null, epoch: epoch | 0 }; }
@@ -347,7 +347,7 @@ function levelMilestone(l) {
   save.ach = save.ach || {}; const id = 'lvl' + l; if (save.ach[id]) return; save.ach[id] = Date.now(); queueSave();
   try { WW.db.ref('achFeed').push({ n: myName, a: id, t: 'Level ' + l, i: l >= 50 ? '👑' : '🎖️', d: 'Reached level ' + l + ' in Neighborly Acre', g: 'Neighborly Acre', av: myAvatar || '', ts: firebase.database.ServerValue.TIMESTAMP }); } catch (e) {}
 }
-let achReady = false;
+let achReady = false, allFarmers = {};
 function achCtx() { return { s: new Proxy(save.stats || {}, { get: function (o, k) { return o[k] || 0; } }), level: level(), fields: myFieldCount(), coins: save.coins, up: save.up || {} }; }
 function checkAchievements(boot) {
   if (!me || !save.stats || (!achReady && !boot)) return; const ctx = achCtx(), fresh = [];
@@ -566,7 +566,13 @@ function renderShop() {
     C.ACHIEVEMENTS.forEach(function (a) {
       const got = !!save.ach[a.id], have = Math.min(a.goal, Math.floor(a.v(cx) || 0)), pct = got ? 100 : Math.floor(have / a.goal * 100);
       const bar = '<span style="display:block;margin-top:4px;height:7px;border-radius:4px;background:#0006;overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:' + (got ? '#22c55e' : '#facc15') + '"></i></span>';
-      box.appendChild(row((got ? '✅ ' : '🔒 ') + a.icon + ' <b>' + a.name + '</b> <small>' + a.desc + ' · ' + (got ? 'done!' : have.toLocaleString() + ' / ' + a.goal.toLocaleString() + ' (' + pct + '%)') + '</small>' + bar, []));
+      // everyone else on this farm: their progress on the same achievement
+      const others = Object.keys(allFarmers).filter(function (u) { return u !== me.uid && allFarmers[u] && allFarmers[u].name; }).map(function (u) {
+        const F = allFarmers[u], st = F.stats || {}, oc = { s: new Proxy(st, { get: function (o, k) { return o[k] || 0; } }), level: F.level | 0, fields: F.fields | 0, coins: F.coins | 0, up: new Array(F.upN | 0).fill(1).reduce(function (o, v, i) { o['u' + i] = 1; return o; }, {}) };
+        const og = (F.ach || []).indexOf(a.id) >= 0 || a.t(oc), oh = Math.min(a.goal, Math.floor(a.v(oc) || 0)), op = og ? 100 : Math.floor(oh / a.goal * 100), col = colors[u] || '#93c5fd';
+        return '<span style="display:block;margin-top:3px;font-size:11px"><b style="color:' + col + '">' + WW.esc(F.name) + '</b> ' + (og ? '✅ done' : oh.toLocaleString() + ' / ' + a.goal.toLocaleString() + ' (' + op + '%)') + '<span style="display:block;height:4px;border-radius:3px;background:#0006;overflow:hidden"><i style="display:block;height:100%;width:' + op + '%;background:' + col + '"></i></span></span>';
+      }).join('');
+      box.appendChild(row((got ? '✅ ' : '🔒 ') + a.icon + ' <b>' + a.name + '</b> <small>' + a.desc + ' · ' + (got ? 'done!' : have.toLocaleString() + ' / ' + a.goal.toLocaleString() + ' (' + pct + '%)') + '</small>' + bar + others, []));
     });
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
@@ -1282,7 +1288,7 @@ async function begin(user, myCode) {
   const mergeFarmers = function () { avatars = Object.assign({}, legacyAv); colors = Object.assign({}, legacyCol); Object.keys(farmers).forEach(function (u) { const f = farmers[u] || {}; if (f.avatar) avatars[u] = f.avatar; if (f.color) colors[u] = f.color; }); syncRemotes(); updateFieldVisuals(); };
   roomRef.child('avatars').on('value', function (snap) { legacyAv = snap.val() || {}; mergeFarmers(); });
   roomRef.child('colors').on('value', function (snap) { legacyCol = snap.val() || {}; mergeFarmers(); });
-  roomRef.child('farmers').on('value', function (snap) { farmers = snap.val() || {}; mergeFarmers(); });
+  roomRef.child('farmers').on('value', function (snap) { farmers = snap.val() || {}; allFarmers = farmers; mergeFarmers(); });
   roomRef.child('meta/epoch').on('value', function (snap) { const e = snap.val() | 0; if (e > (save.epoch | 0)) followReset(e); });
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { if (okTile(v[k])) tiles[+k] = v[k]; else if (me && isMine(W.fieldOf(+k))) roomRef.child('tiles/' + k).remove(); }); refreshField(); });
   roomRef.child('fields').on('value', function (snap) { ownedFields = snap.val() || {}; updateFieldVisuals(); });
