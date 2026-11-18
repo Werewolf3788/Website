@@ -9,7 +9,7 @@
     { n: 'Frogger', i: '🐸', d: 'Hop across traffic, up to 8 players', u: 'Mobilegames/frogger.html', k: 'frogger' },
     { n: 'Werewolf Racing', i: '🏎️', d: '3D car racing, up to 8 friends + bots', u: 'Mobilegames/race.html', k: 'race' },
     { n: 'Tile Match', i: '🀄', d: 'Mahjong-style tile matching: clear the board, no paywall', u: 'Mobilegames/mahjong.html', k: 'mahjong' },
-    { n: 'Tile Survival', i: '🏚️', d: 'Rebuild the world: explore tiles, base, heroes, ally help', u: 'Mobilegames/survive.html', k: 'survive' },
+    { n: 'Tile Survival', i: '🏚️', d: '3D survival base: gather, build, clear fog, fight with heroes', u: 'Mobilegames/survive.html', k: 'survive' },
     { n: 'Battleship', i: '🚢', d: 'Sink the fleet: vs the computer or a friend', u: 'Mobilegames/battleship.html', k: 'battleship' }
   ];
   var HUBS = [{ n: 'All games hub', u: 'Mobilegames/' }, { n: 'Main site', u: '' }];
