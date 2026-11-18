@@ -829,6 +829,15 @@ function boot() {
 }
 
 // ------------------------------------------------------------ main loop
+let userZoom = 1, overview = false, camZ = 1, youPin = null;
+cv.addEventListener('wheel', e => { e.preventDefault(); overview = false; userZoom = Math.max(.6, Math.min(3.2, userZoom * (e.deltaY > 0 ? 1.12 : .89))); }, { passive: false });
+{ // two-finger pinch zoom (one finger still walks)
+  const pts = {}; let pinch0 = 0, zoom0 = 1;
+  cv.addEventListener('pointerdown', e => { pts[e.pointerId] = { x: e.clientX, y: e.clientY }; const k = Object.keys(pts); if (k.length === 2) { pinch0 = Math.hypot(pts[k[0]].x - pts[k[1]].x, pts[k[0]].y - pts[k[1]].y); zoom0 = userZoom; joy.id = null; joy.x = joy.y = 0; $('jb').style.display = $('jk').style.display = 'none'; } });
+  cv.addEventListener('pointermove', e => { if (!pts[e.pointerId]) return; pts[e.pointerId] = { x: e.clientX, y: e.clientY }; const k = Object.keys(pts); if (k.length === 2 && pinch0) { const d = Math.hypot(pts[k[0]].x - pts[k[1]].x, pts[k[0]].y - pts[k[1]].y); overview = false; userZoom = Math.max(.6, Math.min(3.2, zoom0 * pinch0 / Math.max(20, d))); } });
+  const up = e => { delete pts[e.pointerId]; if (Object.keys(pts).length < 2) pinch0 = 0; }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+}
+$('bMap').onclick = () => { overview = !overview; $('bMap').classList.toggle('on', overview); toast(overview ? '🗺️ Whole map · tap 🗺️ again (or zoom) to go back' : ''); };
 const clock = new THREE.Clock(); let accSec = 0, accSave = 0, accCloud = 0, accPub = 0, regenT = 0;
 function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
@@ -929,8 +938,13 @@ function frame() {
   accCloud += dt; if (accCloud > 30) { accCloud = 0; cloudSave(); }
   accPub += dt; if (accPub > 90) { accPub = 0; publishPlaying(); publishPub(); }
   // --- camera follows from an isometric angle
-  const zoom = innerWidth > innerHeight ? 1.1 : 1.6;
-  camera.position.set(player.x + 13 * zoom, 19 * zoom, player.z + 13 * zoom); camera.lookAt(player.x, 0, player.z);
+  // zoom: mouse wheel, pinch, or the 🗺️ Map button (shows the whole map: everything you've discovered and anyone else here)
+  camZ += ((overview ? 4.6 : userZoom) - camZ) * Math.min(1, dt * 6);
+  const zoom = (innerWidth > innerHeight ? 1.1 : 1.6) * camZ, cx = overview ? 0 : player.x, cz = overview ? 0 : player.z;
+  camera.position.set(cx + 13 * zoom, 19 * zoom, cz + 13 * zoom); camera.lookAt(cx, 0, cz);
+  scene.fog.near = 60 * Math.max(1, camZ); scene.fog.far = 120 * Math.max(1, camZ) + 40 * Math.max(0, camZ - 1);
+  const big = camZ > 2.2; Object.keys(others).forEach(u => { const o = others[u]; if (!o.pin) { o.pin = iconSprite('🤝', 4); o.pin.position.y = 6; o.mesh.add(o.pin); } o.pin.visible = big; });
+  if (!youPin) { youPin = iconSprite('📍', 4); youPin.position.y = 6; pMesh.add(youPin); } youPin.visible = big;
   sun.position.set(player.x + 20, 40, player.z + 10); sun.target.position.set(player.x, 0, player.z);
   renderer.render(scene, camera); requestAnimationFrame(frame);
 }

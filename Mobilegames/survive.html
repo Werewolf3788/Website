@@ -16,7 +16,7 @@
   #hpw{width:110px;height:12px;background:#0008;border-radius:6px;overflow:hidden;border:1px solid #ffffff33}#hp{height:100%;width:100%;background:linear-gradient(90deg,#ef4444,#f87171)}
   #side{position:fixed;right:8px;top:calc(56px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:8px;z-index:6}
   #side button{width:54px;height:54px;border-radius:16px;border:2px solid #ffffff33;background:#1e293bdd;color:#fff;font-size:1.4rem;cursor:pointer;line-height:1}
-  #side button small{display:block;font-size:.55rem;font-weight:700;margin-top:2px}
+  #side button.on{border-color:#22c55e;background:#14532ddd} #side button small{display:block;font-size:.55rem;font-weight:700;margin-top:2px}
   #quest{position:fixed;left:8px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:min(70vw,340px);background:#0f172ae6;border:2px solid #fbbf24;border-radius:14px;padding:8px 12px;font-weight:700;z-index:6;cursor:pointer;font-size:.92rem}
   #quest small{display:block;color:#fde68a;font-weight:600;font-size:.72rem}
   #act{position:fixed;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:6;display:none;background:#22c55e;color:#04210f;border:0;border-radius:16px;padding:14px 18px;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px #0008}
@@ -37,7 +37,7 @@
 <body>
 <canvas id="c"></canvas>
 <div id="hud"><span class="chip" id="r_wood">0</span><span class="chip" id="r_food">🍖 0</span><span class="chip" id="r_metal">🔩 0</span><span class="chip" id="r_gems">💎 0</span><span class="chip">🔌 Lv <span id="ppl">1</span> · 👥 <span id="surv">3</span></span><span class="chip" style="display:flex;align-items:center;gap:6px">❤️ <span id="hpw"><span id="hp" style="display:block"></span></span></span></div>
-<div id="side"><button id="bHeroes">🛡️<small>Heroes</small></button><button id="bAllies">🤝<small>Allies</small></button><button id="bQuests">📜<small>Quests</small></button><button id="bMute">🔊<small>Sound</small></button><button id="gamesBtn">☰<small>Games</small></button></div>
+<div id="side"><button id="bHeroes">🛡️<small>Heroes</small></button><button id="bAllies">🤝<small>Allies</small></button><button id="bMap">🗺️<small>Map</small></button><button id="bQuests">📜<small>Quests</small></button><button id="bMute">🔊<small>Sound</small></button><button id="gamesBtn">☰<small>Games</small></button></div>
 <div id="quest"></div>
 <button id="act"></button>
 <div id="toast"></div>
