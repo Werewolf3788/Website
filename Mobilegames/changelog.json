@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 30,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "New battle: 👹 Team boss. Start one from 🤝 Allies, your allies get a call to join, and everyone hits the same Horde King together (10 minutes, everyone who lands a hit gets the loot)",
+    "New battle: 🥊 Duel. Challenge an ally who's playing right now to a live 1-on-1 in the arena. The loser drops 5% of their wood, food and metal (up to 150 each) to the winner, plus 5 gems for the win",
+    "⚔️ Raids are still there: the Allies screen now has a Battles section with all three"
+   ]
+  },
+  {
    "id": 29,
    "date": "Nov 18",
    "game": "survive",

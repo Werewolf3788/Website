@@ -373,7 +373,7 @@ function wantedPads() {
 function padCost(p) { return p.kind === 'zone' ? unlockCost(p.i, p.j) : costFor(p.id, p.to); }
 function padLeft(key, p) { const c = padCost(p), paid = st.paid[key] || {}, o = {}; Object.keys(c).forEach(k => { const r = c[k] - (paid[k] || 0); if (r > 0) o[k] = r; }); return o; }
 function syncPads() {
-  const w = tour && tour.raid ? {} : wantedPads();   // while visiting, these are your ally's pads: what you put on them is split 50/50 (see deliver / goHome)
+  const w = tour && (tour.raid || String(tour.code).indexOf('ARENA_') === 0) ? {} : wantedPads();   // while visiting, these are your ally's pads: what you put on them is split 50/50 (see deliver / goHome)
   Object.keys(pads).forEach(k => { if (!w[k]) { scene.remove(pads[k].mesh); delete pads[k]; } });
   Object.keys(w).forEach(k => {
     if (!pads[k]) {
@@ -474,6 +474,7 @@ const allies = () => [player.dead ? null : Object.assign(player, { isPlayer: tru
 function nearestZombie(o, r) { let best = null, bd = r; zombies.forEach(z => { if (z.dead) return; const d = d2(o, z) - (z.boss ? 1 : 0); if (d < bd) { bd = d; best = z; } }); return best; }
 
 function hitZombie(z, dmg, by) {
+  if (z.tb) return tbHit(z, dmg);   // team boss: damage is shared (see tbTick)
   z.hp -= dmg; z.mesh.userData.flash = .12;
   if (z.hp <= 0 && !z.dead && z.def) { z.dead = true; scene.remove(z.mesh); sfx(260, .12, .07); raidCheck(); return; }
   if (z.hp <= 0 && !z.dead) {
@@ -513,6 +514,8 @@ const QUESTS = [
   ['Unlock every area on the map', () => st.stats.zones, 24, { gems: 100 }, () => nearestPadKey('z:')]
 ];
 function checkQuest() {
+  if (tour && tour.arena) { const A = tour.arena, t = '🥊 Duel vs ' + WW.esc(duel ? duel.name : 'your ally') + ' · you ' + Math.round(st.hp) + '❤️ · them ' + Math.round(A.oppHp) + '❤️<small>' + (A.over ? 'Duel over' : fmt((A.end - NOW()) / 1000) + ' left · tap here to give up') + '</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return [0, 0, 0, 0, () => others[A.opp] || null]; }
+  if (tbHere()) { const t = '👹 Team boss · ' + Math.max(1, Math.ceil(tb.hp / tb.max * 100)) + '% health left · ' + fmt((tb.end - NOW()) / 1000) + '<small>Hit it together: everyone who lands a hit gets the loot</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return [0, 0, 0, 0, () => tbBoss]; }
   if (tour) { const t = tour.raid ? (tour.raid.won ? '🏆 Raid won! ' : '⚔️ Raiding ' + WW.esc(tour.name) + ' · ' + zombies.filter(z => z.def && !z.dead).length + ' defenders left') + '<small>Tap here to go home' + (tour.raid.won ? ' with the loot' : ' (gives up the raid)') + '</small>' : '👀 Visiting ' + WW.esc(tour.name) + '’s settlement<small>Tap here (or 🤝 Allies) to go home</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; return null; }
   const q = QUESTS[st.q]; if (!q) { if (checkQuest.h === 'done') return null; checkQuest.h = 'done'; $('quest').innerHTML = '🏆 All of Sarge’s missions done!<small>Keep upgrading, farming bosses and helping allies.</small>'; return null; }
   const cur = Math.min(q[1](), q[2]);
@@ -585,6 +588,11 @@ function doAct(a, d) {
   if (a === 'visit') return visit(($('vcode').value || '').trim().toUpperCase());
   if (a === 'visitf') return visit(d.code);
   if (a === 'raid') return raid(d.code);
+  if (a === 'tboss') return tbStart();
+  if (a === 'tbjoin') return tbJoin(d.code);
+  if (a === 'duel') return duelChallenge(d.code, d.name);
+  if (a === 'duelyes') return duelAnswer(true);
+  if (a === 'duelno') return duelAnswer(false);
   if (a === 'back') { if (tour) return goHome(); visiting = null; return alliesPanel(); }
   if (a === 'help') return helpFriend(d.k);
   if (a === 'bopen') return buildingPanel(d.id);
@@ -614,6 +622,8 @@ function startTour(c, p, raiding) {
 }
 function goHome(quiet) {
   if (!tour) return; const t = tour, keysR = ['wood', 'food', 'metal', 'gems'];
+  if (t.arena && !t.arena.over) { duelLose(true); toast('🏳️ You left the duel.'); }
+  if (t.arena) { duel = null; duelRef = null; }
   // what you spent on their pads, and what you gathered there (end - start + spent)
   const spent = {}; Object.keys(t.D).forEach(key => Object.keys(t.D[key]).forEach(k => { spent[k] = (spent[k] || 0) + t.D[key][k]; }));
   const gath = {}; keysR.forEach(k => { const g = Math.floor((st.res[k] || 0) - (t.S[k] || 0) + (spent[k] || 0)); if (g > 0) gath[k] = g; });
@@ -627,19 +637,19 @@ function goHome(quiet) {
     }
   }
   const mine = {}, theirs = { res: {}, paid: {} }, homePads = wantedPads(), toPads = {};
-  keysR.forEach(k => { st.res[k] = Math.max(0, (st.res[k] || 0) - (spent[k] || 0)); const g = gath[k] || 0, a = Math.floor(g / 2); if (a) { mine[k] = a; st.res[k] += a; } if (g - a) theirs.res[k] = g - a; });
+  keysR.forEach(k => { st.res[k] = Math.max(0, (st.res[k] || 0) - (spent[k] || 0)); const g = gath[k] || 0, a = t.arena ? g : Math.floor(g / 2); if (a) { mine[k] = a; st.res[k] += a; } if (g - a) theirs.res[k] = g - a; });
   Object.keys(t.D).forEach(key => Object.keys(t.D[key]).forEach(k => { const n = t.D[key][k], half = n / 2;
     (theirs.paid[key] = theirs.paid[key] || {})[k] = half;
     if (homePads[key]) { (st.paid[key] = st.paid[key] || {})[k] = (st.paid[key][k] || 0) + half; toPads[k] = (toPads[k] || 0) + half; }   // the same build at home gets the other half
     else { st.res[k] = (st.res[k] || 0) + half; mine[k] = (mine[k] || 0) + half; } }));                                                    // nothing to match at home: you keep that half
-  if ((Object.keys(theirs.res).length || Object.keys(theirs.paid).length) && WW && WW.roomRef) try { WW.roomRef('survive', t.code).child('gifts').push({ from: WW.nick || String((WW.user && WW.user.displayName) || 'An ally').split(' ')[0], res: theirs.res, paid: theirs.paid, at: NOW() }); } catch (e) {}
+  if (!t.arena && (Object.keys(theirs.res).length || Object.keys(theirs.paid).length) && WW && WW.roomRef) try { WW.roomRef('survive', t.code).child('gifts').push({ from: WW.nick || String((WW.user && WW.user.displayName) || 'An ally').split(' ')[0], res: theirs.res, paid: theirs.paid, at: NOW() }); } catch (e) {}
   const msg = [];
   if (Object.keys(mine).length) msg.push('🎒 Your half: ' + costTxt(mine));
   if (Object.keys(toPads).length) msg.push('🏗️ Your builds: ' + costTxt(toPads));
-  if (Object.keys(theirs.res).length || Object.keys(theirs.paid).length) msg.push('🤝 ' + t.name + ' gets the other half');
+  if (!t.arena && (Object.keys(theirs.res).length || Object.keys(theirs.paid).length)) msg.push('🤝 ' + t.name + ' gets the other half');
   if (msg.length) setTimeout(() => toast(msg.join(' · '), 4500), 900);
   const off = (NOW() - t.at) / 1000; if (off > 1) awayCatchUp(off, true);
-  player.x = t.hx; player.z = t.hz; loadWorld(); setRoom(code); applyHelps(); applyGifts(); persist(); if (!quiet) { toast('🏠 Back home'); closeSheet(); }
+  player.x = t.hx; player.z = t.hz; loadWorld(); setRoom(code); tbListen(code); applyHelps(); applyGifts(); persist(); if (!quiet) { toast('🏠 Back home'); closeSheet(); }
 }
 function publishPub() {
   if (tour || !code || !WW || WW.mode !== 'cloud') return;
@@ -651,10 +661,11 @@ function alliesPanel(note) {
   if (!WW || WW.mode !== 'cloud' || !WW.user) h += '<div class="row muted">Sign in on the games hub to team up with allies.</div>';
   else {
     // your friends list (the same friends as everywhere else on the site): no codes to type
+    if (!visiting && !tour) h += '<div class="row"><div class="g"><b>⚔️ Battles</b><div class="muted">👹 <b>Team boss</b>: start one on your map and every ally can join to hit it together (10 min, everyone who hits it gets the loot). 🥊 <b>Duel</b>: a live 1-on-1 with an ally who is playing right now. ⚔️ <b>Raid</b>: attack an ally’s settlement, even when they’re away.</div></div><button class="b" style="background:#15803d;color:#fff" data-a="tboss"' + (tb && tb.room === code && tb.hp > 0 ? ' disabled' : '') + '>👹 Start team boss</button></div>';
     if (!visiting) {
       if (!allyList) { h += '<div class="row muted">Loading your friends…</div>'; loadAllyList(); }
       else if (!allyList.length) h += '<div class="row muted">No friends yet. Add friends with their friend code on the games hub, and they show up here.</div>';
-      else h += allyList.map(f => '<div class="row"><div class="g"><b>' + WW.esc(f.name) + '</b><div class="muted">' + (f.pub ? 'Power Plant Lv' + (f.pub.pp || 1) + ' · ' + (f.pub.zones || 0) + ' areas · ' + (f.open ? '<b style="color:#fde68a">' + f.open + ' upgrade' + (f.open > 1 ? 's' : '') + ' to help</b>' : 'nothing to help right now') : 'hasn\u2019t started Tile Survival yet') + '</div></div><button class="b" data-a="visitf" data-code="' + f.code + '"' + (f.pub ? '' : ' disabled') + '>Visit</button>' + raidBtn(f) + '</div>').join('');
+      else h += allyList.map(f => '<div class="row"><div class="g"><b>' + WW.esc(f.name) + '</b><div class="muted">' + (f.pub ? 'Power Plant Lv' + (f.pub.pp || 1) + ' · ' + (f.pub.zones || 0) + ' areas · ' + (f.open ? '<b style="color:#fde68a">' + f.open + ' upgrade' + (f.open > 1 ? 's' : '') + ' to help</b>' : 'nothing to help right now') : 'hasn\u2019t started Tile Survival yet') + '</div></div><button class="b" data-a="visitf" data-code="' + f.code + '"' + (f.pub ? '' : ' disabled') + '>Visit</button>' + raidBtn(f) + (f.pub ? '<button class="b" style="background:#7c3aed;color:#fff;margin-left:6px" data-a="duel" data-code="' + f.code + '" data-name="' + WW.esc(f.name) + '">🥊 Duel</button>' : '') + (f.tb ? '<button class="b" style="background:#15803d;color:#fff;margin-left:6px" data-a="tbjoin" data-code="' + f.code + '">👹 Join boss</button>' : '') + '</div>').join('');
       h += '<details class="muted" style="margin-top:6px"><summary>Visit someone not on your friends list</summary><div class="row"><input id="vcode" maxlength="8" placeholder="FRIEND\'S CODE"><button class="b" data-a="visit">Visit</button></div></details>';
     } else h += '<div class="row"><button class="b alt" data-a="back">' + (tour ? '🏠 Go home' : '← All friends') + '</button></div>';
     if (visiting) { const p = visiting.pub, ups = (p.ups || []).filter(u => u.end > NOW());
@@ -695,9 +706,10 @@ async function loadAllyList() {
       const fo = fr[fk] || {}, c = String(fo.friend_code || fk).toUpperCase(); let pub = null;
       try { pub = (await WW.roomRef('survive', c).child('pub').once('value')).val(); } catch (e) {}
       const open = pub ? (pub.ups || []).filter(u => u.end > NOW() && (u.c || 0) < MAX_HELPS).length : 0;
-      return { code: c, name: fo.username || (pub && pub.name) || c, pub: pub, open: open };
+      let tbv = null; if (pub) try { tbv = (await WW.roomRef('survive', c).child('tboss').once('value')).val(); } catch (e) {}
+      return { code: c, name: fo.username || (pub && pub.name) || c, pub: pub, open: open, tb: tbv && tbv.hp > 0 && tbv.end > NOW() ? tbv : null };
     }));
-    allyList.sort((a, b) => b.open - a.open || (b.pub ? 1 : 0) - (a.pub ? 1 : 0)); shareAllies = allyList.filter(f => f.pub);
+    allyList.sort((a, b) => (b.tb ? 1 : 0) - (a.tb ? 1 : 0) || b.open - a.open || (b.pub ? 1 : 0) - (a.pub ? 1 : 0)); shareAllies = allyList.filter(f => f.pub);
   } catch (e) { allyList = []; }
   allyLoading = false; if (sheet.style.display === 'flex' && !visiting && card.innerHTML.indexOf('🤝 Allies') >= 0) alliesPanel();
   setTimeout(() => { allyList = null; }, 60000);   // refresh the list after a minute
@@ -735,6 +747,146 @@ function raidCheck() {
   if (!tour || !tour.raid || tour.raid.won || tour.raid.lost) return;
   if (!zombies.some(z => z.def && !z.dead)) { tour.raid.won = true; sfx(784, .2, .08); sfx(1046, .35, .08, .15); toast('🏆 Victory! ' + (Object.keys(tour.raid.loot).length ? costTxt(tour.raid.loot) + ' is yours.' : '') + ' Tap the bar at the top to go home.', 6000); }
 }
+// ------------------------------------------------------------ team boss: start one on your own map and your allies get a call
+// for help (they join from 🤝 Allies). Everyone hits the same boss: its health lives in game_rooms/survive/{map code}/tboss,
+// and everyone who landed a hit gets the loot when it falls. 10 minutes to beat it.
+const TB_TIME = 10 * 60000, myName = () => (WW && WW.nick) || String((WW && WW.user && WW.user.displayName) || 'Survivor').split(' ')[0];
+let tb = null, tbRef = null, tbRoom = null, tbDmg = 0, tbBoss = null;
+const tbHere = () => tb && tb.hp > 0 && !tb.won && tb.end > NOW() && tb.room === (tour ? tour.code : code);
+async function tbStart() {
+  if (tour) return alliesPanel('Go home first: you start a team boss on your own map.');
+  if (!code || !WW || WW.mode !== 'cloud' || !uid) return alliesPanel('Sign in to start a team boss fight.');
+  try {
+    const ref = WW.roomRef('survive', code).child('tboss'), cur = (await ref.once('value')).val();
+    if (cur && cur.end > NOW() && cur.hp > 0) { tbListen(code); closeSheet(); return toast('👹 Your team boss is already up!'); }
+    const L = lvl('pp'), max = 2500 + 1500 * L;
+    await ref.set({ id: String(NOW()), hp: max, max: max, lv: L, by: myName(), start: NOW(), end: NOW() + TB_TIME });
+    (shareAllies || []).filter(f => f.code !== code).forEach(f => { try { WW.roomRef('survive', f.code).child('gifts').push({ from: myName(), code: code, note: 'tboss', at: NOW() }); } catch (e) {} });
+    tbListen(code); closeSheet(); toast('👹 Team boss incoming! Your allies got a call for help. Beat it within 10 minutes.', 5000);
+  } catch (e) { alliesPanel('Could not start the boss fight (' + (e && e.code || e) + ').'); }
+}
+function tbListen(c) {
+  if (!WW || WW.mode !== 'cloud' || !c) return;
+  if (tbRoom === c && tbRef) return;
+  if (tbRef) try { tbRef.off(); } catch (e) {}
+  tbClear(); tbRoom = c; tbRef = WW.roomRef('survive', c).child('tboss');
+  tbRef.on('value', s => { const v = s.val();
+    if (!v || (v.hp > 0 && v.end < NOW())) { if (!(tb && tb.won)) tbClear(); return; }
+    const won = tb && tb.won && tb.id === v.id; tb = Object.assign({ room: c, mine: tb && tb.id === v.id ? tb.mine : 0 }, v, { won: won });
+    if (tbBoss) tbBoss.hp = Math.max(1, Math.min(tbBoss.hp, v.hp));
+    if (v.hp <= 0) tbWin(); });
+}
+function tbClear() { if (tbBoss) { tbBoss.dead = true; scene.remove(tbBoss.mesh); tbBoss = null; } tb = null; tbDmg = 0; }
+function tbSpawn() {
+  if (!tbHere() || (tbBoss && !tbBoss.dead && zombies.indexOf(tbBoss) >= 0)) return;
+  const d = makeDefender(-6, 8, 'Horde King Lv' + (tb.lv || 1), tb.max, 14 + 3 * (tb.lv || 1), 0x3f6212, 0x7f1d1d, false);
+  d.def = false; d.tb = true; d.hp = Math.max(1, tb.hp); d.speed = 2.4; d.reach = 2; d.zone = 'tboss'; d.mesh.scale.setScalar(1.9); tbBoss = d;
+}
+function tbHit(z, dmg) { tbDmg += dmg; if (tb) tb.mine = (tb.mine || 0) + dmg; z.hp = Math.max(1, z.hp - dmg); }
+function tbTick() {
+  if (!tb) return;
+  if (tb.hp > 0 && tb.end < NOW() && !tb.won) { const here = tb.room === (tour ? tour.code : code); tbClear(); if (here) toast('👹 Time’s up: the boss got away. Try again with more allies!', 4000); return; }
+  if (tbHere()) tbSpawn(); else if (tbBoss) { tbBoss.dead = true; scene.remove(tbBoss.mesh); tbBoss = null; }
+  if (tbDmg > 0 && tbRef) { const d = Math.round(tbDmg); tbDmg = 0; const me = uid;
+    tbRef.transaction(v => { if (!v || v.hp <= 0) return v; v.hp = Math.max(0, v.hp - d); v.dmg = v.dmg || {}; v.dmg[me] = (v.dmg[me] || 0) + d; return v; }).catch(() => {}); }
+}
+function tbWin() {
+  if (!tb || tb.won) return; tb.won = true;
+  if (tbBoss) { burst(tbBoss.x, tbBoss.z); tbBoss.dead = true; scene.remove(tbBoss.mesh); tbBoss = null; }
+  const H = tour ? tour.home : st, key = tb.room + '_' + tb.id; H.tbClaim = H.tbClaim || {};
+  const hit = (tb.dmg || {})[uid] || tb.mine; if (!hit || H.tbClaim[key]) { if (!hit) toast('👹 ' + (tb.by || 'Your ally') + '’s team beat the boss!', 3500); return; }
+  Object.keys(H.tbClaim).forEach(k => { if (NOW() - (+k.split('_').pop() || 0) > 86400000) delete H.tbClaim[k]; }); H.tbClaim[key] = 1;
+  const L = tb.lv || 1, loot = { gems: 15 + 3 * L, metal: 60 + 25 * L, food: 60 + 20 * L, wood: 80 + 25 * L };
+  Object.keys(loot).forEach(k => { H.res[k] = (H.res[k] || 0) + loot[k]; }); if (tour) Object.keys(loot).forEach(k => { tour.S[k] = (tour.S[k] || 0) + loot[k]; st.res[k] = (st.res[k] || 0) + loot[k]; });   // shows now, and isn't split as "gathered"
+  const who = Object.keys(tb.dmg || {}).length;
+  sfx(784, .2, .08); sfx(1046, .35, .08, .15); toast('🏆 Team boss down' + (who > 1 ? ' (' + who + ' of you)' : '') + '! +' + costTxt(loot), 6000); persist(); hud();
+  if (tb.room === code && tbRef) { const r = tbRef; setTimeout(() => { try { r.remove(); } catch (e) {} }, 60000); }   // the host tidies up after everyone has seen it
+}
+async function tbJoin(c) { await visit(c); if (tour && tour.code === c) { tbListen(c); closeSheet(); toast('👹 Find the Horde King and hit it together!', 4000); } }
+
+// ------------------------------------------------------------ arena: a live 1-on-1 duel with an ally who's playing right now.
+// The challenge goes to game_rooms/survive/{their code}/duel; if they accept, you both walk into an empty arena
+// (game_rooms/survive/ARENA_{id}: who's there, hits, hp, result). First to 0 HP loses 5% of their wood, food and metal
+// (up to 150 each) to the winner, and the winner also gets 5 gems. 3 minutes, then it's a draw.
+const DUEL_TAKE = .05, DUEL_TIME = 3 * 60000;
+let duel = null, duelRef = null, duelAsk = null;
+async function duelChallenge(c, name) {
+  if (tour) return alliesPanel('Go home first.');
+  if (!uid || !WW || WW.mode !== 'cloud') return alliesPanel('Sign in to duel.');
+  if (duel) return alliesPanel('You already have a duel going.');
+  const id = 'D' + NOW().toString(36) + Math.random().toString(36).slice(2, 5);
+  try { await WW.roomRef('survive', c).child('duel').set({ id: id, from: myName(), fromCode: code, fromUid: uid, at: NOW() }); } catch (e) { return alliesPanel('Could not send the challenge (' + (e && e.code || e) + ').'); }
+  duel = { id: id, waiting: true, to: c, at: NOW(), name: name || 'your ally' }; duelWatch(id);
+  closeSheet(); toast('🥊 Challenge sent to ' + duel.name + '. Waiting for them to accept…', 6000);
+}
+function listenDuel() {
+  if (!code || !WW || WW.mode !== 'cloud') return;
+  WW.roomRef('survive', code).child('duel').on('value', s => { const v = s.val(); if (!v || NOW() - (v.at || 0) > 60000 || duel || (duelAsk && duelAsk.id === v.id)) return;
+    duelAsk = v; sfx(660, .15, .07); sfx(880, .2, .07, .12);
+    show('<h3>🥊 ' + WW.esc(v.from || 'An ally') + ' challenges you to a duel!</h3><div class="muted">A live 1-on-1 in the arena. First to 0 ❤️ loses 5% of their ' + RES.wood + RES.food + RES.metal + ' (up to 150 each) to the winner, and the winner gets 5 ' + RES.gems + '. Your heroes sit this one out.</div><div class="row"><button class="b" data-a="duelyes">⚔️ Accept</button><button class="b alt" data-a="duelno">Not now</button></div>'); });
+}
+function duelAnswer(yes) {
+  const v = duelAsk; closeSheet(); if (!v) return; duelAsk = null; try { WW.roomRef('survive', code).child('duel').remove(); } catch (e) {}
+  if (NOW() - (v.at || 0) > 70000) return toast('That challenge timed out.');
+  const ref = WW.roomRef('survive', 'ARENA_' + v.id).child('state');
+  if (!yes) { try { ref.set({ no: 1 }); } catch (e) {} return; }
+  if (tour) goHome(true);
+  duel = { id: v.id, opp: v.fromUid, name: v.from || 'your ally' }; duelWatch(v.id);
+  ref.set({ a: v.fromUid, b: uid, an: v.from || '', bn: myName(), start: NOW() }).then(() => enterArena(1)).catch(e => { toast('Could not join the arena (' + (e && e.code || e) + ')'); duel = null; });
+}
+function duelWatch(id) {
+  duelRef = WW.roomRef('survive', 'ARENA_' + id);
+  duelRef.child('state').on('value', s => { const v = s.val(); if (!v || !duel || duel.id !== id) return;
+    if (v.no && duel.waiting) { toast('🥊 ' + duel.name + ' said not now.', 4000); duelEnd(); return; }
+    if (duel.waiting && v.b) { duel.waiting = false; duel.opp = v.b; duel.name = v.bn || duel.name; enterArena(0); }
+    if (v.result && tour && tour.arena && !tour.arena.over && v.result.loser !== uid) {
+      tour.arena.over = true; const loot = Object.assign({}, v.result.loot || {}); loot.gems = (loot.gems || 0) + 5;
+      if (!v.result.left) { const H = tour.home; Object.keys(loot).forEach(k => { H.res[k] = (H.res[k] || 0) + loot[k]; }); }
+      sfx(784, .2, .08); sfx(1046, .35, .08, .15);
+      toast(v.result.left ? '🏳️ ' + duel.name + ' left the arena. Duel over.' : '🏆 You beat ' + duel.name + '! +' + costTxt(loot), 6000); setTimeout(duelEnd, 3500);
+    } });
+  duelRef.child('hp').on('value', s => { const v = s.val() || {}; if (tour && tour.arena && duel && duel.opp) tour.arena.oppHp = v[duel.opp] === undefined ? 100 : v[duel.opp]; });
+  duelRef.child('hits').on('child_added', s => { const h = s.val(); if (!h || h.to !== uid || !tour || !tour.arena || tour.arena.over) return;
+    st.hp = Math.max(0, st.hp - (+h.dmg || 0)); sfx(120, .1, .05); pMesh.userData.flash = .12;
+    try { duelRef.child('hp/' + uid).set(Math.round(st.hp)); } catch (e) {}
+    if (st.hp <= 0) duelLose(); });
+}
+function enterArena(second) {
+  if (!duel) return; const id = duel.id;
+  startTour('ARENA_' + id, { name: 'the arena', w: { b: { pp: { lvl: 0 } }, zones: { '2,2': 1 }, paid: {} } }, true);
+  tour.arena = { id: id, opp: duel.opp, end: NOW() + DUEL_TIME, oppHp: 100, seen: NOW() }; tour.name = 'the arena';
+  st.heroes = {}; Object.keys(heroes).forEach(k => { scene.remove(heroes[k].mesh); delete heroes[k]; });   // a fair fight: heroes sit out
+  [trees, rocks, deer].forEach(a => a.forEach(o => { o.down = true; o.at = Infinity; if (o.top) o.top.visible = false; o.mesh.visible = false; }));   // an empty, flat arena
+  player.x = second ? 6 : -6; player.z = 0; st.hp = player.hpMax; syncPads();
+  try { duelRef.child('hp/' + uid).set(st.hp); } catch (e) {}
+  toast('🥊 Duel vs ' + duel.name + '! Walk up to them to fight. First to 0 ❤️ loses.', 5000);
+}
+function duelSwing() {
+  if (!tour || !tour.arena || tour.arena.over || !duelRef) return false; const o = others[tour.arena.opp];
+  if (!o || d2(player, o) > 2.3) return false;
+  player.ry = Math.atan2(o.x - player.x, o.z - player.z); pMesh.userData.swing = 1; player.cd = .6; sfx(180, .08, .06); tracer(player, o, 0xfca5a5);
+  try { duelRef.child('hits').push({ to: tour.arena.opp, dmg: Math.min(60, weaponDmg(st.weapon)), at: NOW() }); } catch (e) {}
+  return true;
+}
+function duelLose(left) {
+  if (!tour || !tour.arena || tour.arena.over) return; tour.arena.over = true;
+  const H = tour.home, loss = {};
+  if (!left) ['wood', 'food', 'metal'].forEach(k => { const n = Math.min(150, Math.floor((H.res[k] || 0) * DUEL_TAKE)); if (n > 0) { H.res[k] -= n; loss[k] = n; } });
+  try { duelRef.child('state/result').set({ loser: uid, loot: loss, left: left ? 1 : 0, at: NOW() }); } catch (e) {}
+  if (!left) { toast('💀 ' + duel.name + ' won the duel' + (Object.keys(loss).length ? '. You dropped ' + costTxt(loss) : '') + '.', 5000); setTimeout(duelEnd, 3500); }
+  const r = duelRef; setTimeout(() => { try { r.remove(); } catch (e) {} }, 15000);
+}
+function duelTick() {
+  if (!duel) return;
+  if (duel.waiting) { if (NOW() - duel.at > 65000) { toast('🥊 ' + duel.name + ' didn’t answer. Try when they’re playing.', 4500); try { WW.roomRef('survive', duel.to).child('duel').remove(); } catch (e) {} duelEnd(); } return; }
+  const A = tour && tour.arena; if (!A || A.over) return;
+  if (others[A.opp]) A.seen = NOW(); else if (NOW() - A.seen > 25000) { A.over = true; toast('🏳️ ' + duel.name + ' left the arena. Duel over.', 4000); setTimeout(duelEnd, 2000); return; }
+  if (NOW() > A.end) { A.over = true; toast('⏱️ Time! The duel is a draw.', 4000); setTimeout(duelEnd, 2500); }
+}
+function duelEnd() {
+  if (duelRef) { try { duelRef.child('state').off(); duelRef.child('hits').off(); duelRef.child('hp').off(); } catch (e) {} }
+  duel = null; duelRef = null; if (tour && tour.arena) goHome(true); st.hp = player.hpMax;
+}
 async function visit(c) {
   if (!c) return;
   try { const ref = WW.roomRef('survive', c), p = (await ref.child('pub').once('value')).val(); if (!p) return alliesPanel('No settlement found for that code.');
@@ -759,6 +911,7 @@ function listenGifts() {
 function applyGifts() {
   if (tour || !giftQ.length) return; const pads = wantedPads();
   giftQ.splice(0).forEach(g => {
+    if (g.note === 'tboss') { if (NOW() - (g.at || 0) < TB_TIME) { toast('👹 ' + (g.from || 'An ally') + ' started a team boss fight! Open 🤝 Allies and tap Join boss.', 8000); sfx(440, .2, .07); allyList = null; } return; }
     if (g.raid) { const lost = {}; Object.keys(g.res || {}).forEach(k => { const n = Math.min(st.res[k] || 0, -(+g.res[k] || 0)); if (n > 0) { st.res[k] -= n; lost[k] = n; } });
       if (g.code) { st.raidedBy = st.raidedBy || {}; st.raidedBy[g.code] = NOW(); }
       if (welcome && !welcome.shown) welcome.news.push({ raid: 1, who: g.from || 'An ally', what: 'raided you', took: costTxt(lost), at: g.at || NOW() });
@@ -961,7 +1114,7 @@ function boot() {
       }
       cloudChecked = true; cloudSave();
     } catch (e) { console.warn('cloud load failed; not overwriting the cloud this session', e); }
-    listenHelps(); listenGifts(); publishPub(); publishPlaying(); setRoom(code);
+    listenHelps(); listenGifts(); listenDuel(); tbListen(code); publishPub(); publishPlaying(); setRoom(code);
     setTimeout(showWelcome, 2500);   // after allies' news (raids, help) has come in
   });
   setTimeout(() => { if (!WW || !WW.user) showWelcome(); }, 4000);   // not signed in: show it straight away
@@ -1027,6 +1180,7 @@ function frameInner() {
     const foe = nearestZombie(player, 2.3);
     if (player.cd <= 0) {
       if (foe) { player.ry = Math.atan2(foe.x - player.x, foe.z - player.z); hitZombie(foe, weaponDmg(st.weapon), 'p'); pMesh.userData.swing = 1; player.cd = .5; sfx(180, .08, .06); }
+      else if (duelSwing()) {}
       else {
         const dr = nearestNode(deer); const node = nearestNode(trees.concat(rocks));
         if (dr && d2(player, dr) < 2) { dr.hp -= weaponDmg(st.weapon); dr.bar.visible = true; setBar(dr.bar, dr.hp / dr.max); pMesh.userData.swing = 1; player.cd = .5; sfx(220, .06, .05);
@@ -1038,7 +1192,7 @@ function frameInner() {
         }
       }
     }
-    const hits = zombies.some(z => !z.dead && d2(z, player) < 9); regenT = hits ? 0 : regenT + dt; if (regenT > 2) st.hp = Math.min(player.hpMax, st.hp + 6 * dt);
+    const hits = zombies.some(z => !z.dead && d2(z, player) < 9); regenT = hits || (tour && tour.arena) ? 0 : regenT + dt; if (regenT > 2) st.hp = Math.min(player.hpMax, st.hp + 6 * dt);
   }
   pMesh.position.set(player.x, 0, player.z); let da = player.ry - pMesh.rotation.y; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; pMesh.rotation.y += da * Math.min(1, dt * 12); animHuman(pMesh, player.speed, dt);
   // carried stack on the back (shows what you hold)
@@ -1071,7 +1225,7 @@ function frameInner() {
     let tx = z.hx + Math.sin(now / 2000 + z.hx) * 2, tz = z.hz + Math.cos(now / 2300 + z.hz) * 2, sp = .8;
     if (tgt) { tx = tgt.x; tz = tgt.z; sp = z.speed; if (d2(z, tgt) < z.reach + .4) { sp = 0; if (z.cd <= 0) { z.cd = 1.2; z.mesh.userData.swing = 1; sfx(120, .1, .05);
       if (tgt.isPlayer) { st.hp -= z.dmg; if (st.hp <= 0) { st.hp = 0; player.dead = now + 3000; pMesh.visible = false; toast('💀 You were overrun!'); } } else { tgt.hp -= z.dmg; if (tgt.hp <= 0) { tgt.down = now + 20000; tgt.mesh.visible = false; toast((HEROES[tgt.id] ? HEROES[tgt.id].n : tgt.name) + ' is down — back in 20s'); } } } } }
-    else if (!tgt && z.hp < z.max) z.hp = Math.min(z.max, z.hp + 10 * dt);
+    else if (!tgt && !z.tb && z.hp < z.max) z.hp = Math.min(z.max, z.hp + 10 * dt);
     const dd = Math.hypot(tx - z.x, tz - z.z); if (dd > .2 && sp > 0) { z.x += (tx - z.x) / dd * sp * dt; z.z += (tz - z.z) / dd * sp * dt; z.mesh.rotation.y = Math.atan2(tx - z.x, tz - z.z); }
     z.mesh.position.set(z.x, 0, z.z); animHuman(z.mesh, sp, dt); setBar(z.bar, z.hp / z.max); faceCam(z.bar);
   });
@@ -1103,7 +1257,7 @@ function frameInner() {
   // --- once a second
   accSec += dt; if (accSec >= 1) { const ev = economy(accSec); accSec = 0; ev.forEach(e => toast(e)); if (ev.length) { syncPads(); publishPub(); persist(); }
     if (st.overflowAt && NOW() - st.overflowAt < 1500) syncPads();   // builds being fed by full piles
-    syncBuildings(); syncWorkers(); syncGuards(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
+    syncBuildings(); syncWorkers(); syncGuards(); tbTick(); duelTick(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
   accSave += dt; if (accSave > 4) { accSave = 0; persist(); }
   accCloud += dt; if (accCloud > 30) { accCloud = 0; cloudSave(); }
   accPub += dt; if (accPub > 90) { accPub = 0; publishPlaying(); publishPub(); }
@@ -1122,4 +1276,4 @@ addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 addEventListener('online', () => { persist(); setTimeout(cloudSave, 2000); });   // played offline: push it to your account once the signal is back
 boot(); requestAnimationFrame(frame);
-window.__ts = { get st() { return st; }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, raidTest: (p) => { startTour('R', p, true); tour.raid = { loot: { wood: 10 }, won: false }; spawnDefenders(p.w); }, get zombies2() { return zombies; }, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
+window.__ts = { get st() { return st; }, tbTest: v => { tb = Object.assign({ room: tour ? tour.code : code }, v); tbSpawn(); }, get tb() { return tb; }, get tbBoss() { return tbBoss; }, tbWin: () => tbWin(), duelTest: (o) => { duel = { id: 'T', opp: 'opp', name: 'Ray' }; duelRef = { child: () => ({ push() {}, set() {}, on() {}, off() {}, remove() {} }), remove() {} }; enterArena(0); }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, raidTest: (p) => { startTour('R', p, true); tour.raid = { loot: { wood: 10 }, won: false }; spawnDefenders(p.w); }, get zombies2() { return zombies; }, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
