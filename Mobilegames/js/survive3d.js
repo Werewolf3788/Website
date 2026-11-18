@@ -89,9 +89,23 @@ const give = c => Object.keys(c).forEach(k => { st.res[k] = (st.res[k] || 0) + c
 const costTxt = c => Object.keys(c).filter(k => c[k] > 0).map(k => RES[k] + Math.ceil(c[k])).join(' ');
 function unlockCost(i, j) { const n = st.stats.zones, m = ring(i, j) === 2 ? 1.6 : 1, o = { wood: Math.round((30 + 22 * n) * m), food: Math.round((10 + 8 * n) * m) }; if (n >= 2) o.metal = Math.round(8 * n * m); return o; }
 
+// a producer's pile stops at 99% full; everything it makes past that is shared out evenly to the other buildings'
+// build/upgrade pads that still need that resource (so nothing is wasted while you're away). With nothing to feed, it waits.
+const PILE_STOP = .99;
+function addToPile(id, n) {
+  if (!(n > 0)) return; const capP = 40 * lvl(id) * PILE_STOP, have = st.piles[id] || 0;
+  if (have + n <= capP) { st.piles[id] = have + n; return; }
+  let extra = have + n - Math.max(have, capP); st.piles[id] = Math.max(have, capP);
+  const r = BD[id].out, pads = wantedPads(), keys = Object.keys(pads).filter(k => pads[k].kind !== 'zone' && pads[k].id !== id && (padLeft(k, pads[k])[r] || 0) > 0);
+  for (let pass = 0; pass < 3 && extra > 1e-6 && keys.length; pass++) {
+    const open = keys.filter(k => (padLeft(k, pads[k])[r] || 0) > 0); if (!open.length) break; const share = extra / open.length;
+    open.forEach(k => { const give = Math.min(share, padLeft(k, pads[k])[r]); (st.paid[k] = st.paid[k] || {})[r] = (st.paid[k][r] || 0) + give; extra -= give; });
+  }
+  st.overflowAt = NOW();
+}
 function economy(dt) {
   const ev = [], now = NOW(), e = efficiency();
-  if (!tour) producers().forEach(id => { const capP = 40 * lvl(id); st.piles[id] = Math.min(capP, (st.piles[id] || 0) + BD[id].rate * lvl(id) * e * dt); });
+  if (!tour) producers().forEach(id => addToPile(id, BD[id].rate * lvl(id) * e * dt));
   st.res.food = Math.max(0, st.res.food - survivors() * .004 * dt);
   Object.keys(BD).forEach(id => { const b = st.b[id]; if (b.up && now >= b.up.end) { b.lvl = b.up.to; b.up = null; ev.push('✅ ' + BD[id].n + ' is now level ' + b.lvl); dirtyBld[id] = 1; } });
   return ev;
@@ -280,7 +294,7 @@ function syncBuildings() {
     }
     const lb = bldLabels[id]; if (!lb) return; const b = st.b[id];
     if (b.up) lb.userData.set('⏳ ' + D.i + ' Lv' + b.up.to + ' · ' + fmt((b.up.end - NOW()) / 1000), '#fde68a');
-    else if (D.out && (st.piles[id] || 0) >= 1) lb.userData.set(D.i + ' Lv' + l + ' · ' + RES[D.out] + ' ' + Math.floor(st.piles[id]) + (st.piles[id] >= 40 * l ? ' FULL' : ''), '#bbf7d0');
+    else if (D.out && (st.piles[id] || 0) >= 1) lb.userData.set(D.i + ' Lv' + l + ' · ' + RES[D.out] + ' ' + Math.floor(st.piles[id]) + (st.piles[id] >= 40 * l * PILE_STOP - .5 ? ' · extra goes to builds' : ''), '#bbf7d0');
     else lb.userData.set(D.i + ' ' + D.n + ' Lv' + l);
   });
 }
@@ -476,7 +490,7 @@ function workshopPanel() {
 function bInfo(id, L) {
   const D = BD[id];
   if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : ''); }
-  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '.' + (ROLES[id] ? ' ' + Math.min(4, L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + (Math.min(4, L) > 1 ? 's' : '') + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
+  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + Math.floor(40 * L * PILE_STOP) + ' (anything past that goes straight to your other buildings\u2019 builds).' + (ROLES[id] ? ' ' + Math.min(4, L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + (Math.min(4, L) > 1 ? 's' : '') + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
   if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
   if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '.';
   if (id === 'workshop') return 'Your weapon can be upgraded up to level ' + (L + 1) + ' (' + weaponDmg(L + 1) + ' damage).';
@@ -707,7 +721,7 @@ function updateWorkers(dt, now) {
       w.mesh.rotation.y = Math.atan2(o.x - w.x, o.z - w.z); w.t -= dt; if (Math.floor(w.t * 2.5) !== Math.floor((w.t + dt) * 2.5)) { w.mesh.userData.swing = 1; o.shake = .25; }
       if (w.t <= 0) { knockDown(o, now); w.tgt = null; w.state = 'carry'; w.load = R.load; }
     } else if (w.state === 'carry') {
-      if (walk(B.x + (B.r + 1) * .7, B.z + (B.r + 1) * .7)) { const cap = 40 * lvl(w.role); st.piles[w.role] = Math.min(cap, (st.piles[w.role] || 0) + w.load); fly(RES[R.res], w, { x: B.x, z: B.z }); w.load = 0; w.state = 'seek'; }
+      if (walk(B.x + (B.r + 1) * .7, B.z + (B.r + 1) * .7)) { addToPile(w.role, w.load); fly(RES[R.res], w, { x: B.x, z: B.z }); w.load = 0; w.state = 'seek'; }
     }
     w.mesh.position.set(w.x, 0, w.z); animHuman(w.mesh, sp, dt);
     const carrying = w.state === 'carry';
@@ -863,6 +877,7 @@ function frame() {
   const ab = $('act'); if (actTarget) { const t = BD[actTarget].i + ' ' + BD[actTarget].n; if (ab.textContent !== t) ab.textContent = t; ab.style.display = 'block'; } else ab.style.display = 'none';
   // --- once a second
   accSec += dt; if (accSec >= 1) { const ev = economy(accSec); accSec = 0; ev.forEach(e => toast(e)); if (ev.length) { syncPads(); publishPub(); persist(); }
+    if (st.overflowAt && NOW() - st.overflowAt < 1500) syncPads();   // builds being fed by full piles
     syncBuildings(); syncWorkers(); hud(); Object.keys(st.zones).forEach(k => { const [i, j] = k.split(',').map(Number); const t = zoneType(i, j); if (t === 'infected' || t === 'boss') spawnCamp(i, j); }); for (let k = zombies.length - 1; k >= 0; k--) if (zombies[k].dead) zombies.splice(k, 1); }
   accSave += dt; if (accSave > 4) { accSave = 0; persist(); }
   accCloud += dt; if (accCloud > 30) { accCloud = 0; cloudSave(); }
