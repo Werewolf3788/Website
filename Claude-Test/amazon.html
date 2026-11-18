@@ -125,6 +125,10 @@ main{flex:1;padding:18px 0 40px}
 .sheet .btn{display:inline-flex;min-width:220px;padding:0 22px}
 .x{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);cursor:pointer;font-size:22px;line-height:1}
 
+/* Background translator: hide Google's bar/tooltips, keep the page where it is */
+.goog-te-banner-frame,.skiptranslate>iframe,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip{display:none!important}
+body{top:0!important}
+font[style]{background:transparent!important;box-shadow:none!important}
 footer{border-top:1px solid var(--line);padding:18px 0 calc(18px + var(--safe-b));color:var(--muted);font-size:12.5px;text-align:center}
 footer a{color:var(--muted)}
 
@@ -542,6 +546,40 @@ fromHash();
 loadDeals();
 loadMovies();
 setInterval(() => { if (!document.hidden) { loadDeals(); } }, CFG.refreshMs);
+</script>
+<script>
+/* =========================================================================
+   Background translator: reads the device/browser language and, if it isn't
+   English, quietly translates the page with Google Translate. No button.
+   English devices don't load anything extra.
+   ========================================================================= */
+(function () {
+  var langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en']);
+  var raw = String(langs[0] || 'en').toLowerCase();
+  var code = raw.split('-')[0];
+  if (code === 'zh') code = /tw|hk|mo|hant/.test(raw) ? 'zh-TW' : 'zh-CN';
+  if (code === 'he') code = 'iw';
+  var host = location.hostname;
+  function setCookie(v) {
+    var exp = v ? '' : ';expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'googtrans=' + v + ';path=/' + exp;
+    if (host.indexOf('.') > 0) document.cookie = 'googtrans=' + v + ';path=/;domain=' + host + exp;
+  }
+  if (code === 'en') { if (/googtrans=/.test(document.cookie)) setCookie(''); return; }
+  setCookie('/en/' + code);
+  document.documentElement.setAttribute('data-auto-lang', code);
+  window.googleTranslateElementInit = function () {
+    try { new google.translate.TranslateElement({ pageLanguage: 'en', autoDisplay: false }, 'gt-hidden'); } catch (e) {}
+  };
+  function load() {
+    var box = document.createElement('div'); box.id = 'gt-hidden'; box.style.display = 'none';
+    document.body.appendChild(box);
+    var s = document.createElement('script');
+    s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    s.async = true; document.body.appendChild(s);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
+})();
 </script>
 </body>
 </html>
