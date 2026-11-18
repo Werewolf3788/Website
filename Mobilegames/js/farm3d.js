@@ -375,7 +375,13 @@ function renderShop() {
       setCoins(-60); say('🌧️ The rain dance watered ' + n + ' crops!'); } }]));
     addHtml(box, '<div class="item" style="border:0"><small>More to buy elsewhere in the barn: new animals (ducks, goats), more land, tractor upgrades, and new recipes in the Kitchen.</small></div>');
   } else if (shopTab === 'orders') {
-    const nowT = nowMs(), list = C.ordersFor(d, l);
+    const nowT = nowMs(); save.orders.slot = save.orders.slot && typeof save.orders.slot === 'object' ? save.orders.slot : {};
+    const gens = {}; Object.keys(save.orders.slot).forEach(function (k) {
+      const st = save.orders.slot[k]; if (parseInt(k, 10) < d - 1) { delete save.orders.slot[k]; return; }
+      if (st.doneAt && nowT - st.doneAt >= C.ORDER_REFRESH_MS) { st.g = (st.g | 0) + 1; st.doneAt = 0; queueSave(); }   // an hour passed: a fresh order takes the slot
+      gens[k] = st.g | 0;
+    });
+    const list = C.ordersFor(d, l, gens);
     Object.keys(save.orders.done).forEach(function (id) { if (parseInt(id, 10) < d - 4) delete save.orders.done[id]; });
     const left = function (ms) { const m = Math.max(0, Math.floor(ms / 60000)), dd = Math.floor(m / 1440), hh = Math.floor((m % 1440) / 60); return dd ? dd + 'd ' + hh + 'h' : hh + 'h ' + (m % 60) + 'm'; };
     const endsAt = function (ms) { return new Date(ms).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }); };
@@ -383,10 +389,10 @@ function renderShop() {
     list.forEach(function (o) {
       const g = C.GOODS[o.item], done = save.orders.done[o.id], have = (save.bag[o.item] || 0) >= o.qty, kind = o.days > 1 ? 'multi' : 'today';
       if (kind !== lastKind) { lastKind = kind; addHtml(box, '<div class="item" style="border:0;padding:10px 0 2px"><b>' + (kind === 'today' ? '🌙 Today only' : '⏳ Multi-day orders') + '</b> <small>' + (kind === 'today' ? 'these end at the end of the day (UTC midnight)' : 'bigger orders that stay open for several days') + '</small></div>'); }
-      box.appendChild(row((o.days > 1 ? '⏳' : '📋') + ' <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' · you have ' + (save.bag[o.item] || 0) + ' · ' + (o.days > 1 ? left(o.expires - nowT) + ' left (until ' + endsAt(o.expires) + ')' : left(o.expires - nowT) + ' left today') + '</small>',
-        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); stat('orders'); save.orders.done[o.id] = true; say('Order complete! +$' + o.reward + ''); } }]));
+      box.appendChild(row((o.days > 1 ? '⏳' : '📋') + ' <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' · you have ' + (save.bag[o.item] || 0) + ' · ' + (o.days > 1 ? left(o.expires - nowT) + ' left (until ' + endsAt(o.expires) + ')' : (done && (save.orders.slot[o.slot] || {}).doneAt ? 'new order in ' + left(Math.max(0, save.orders.slot[o.slot].doneAt + C.ORDER_REFRESH_MS - nowT)) : left(o.expires - nowT) + ' left today')) + '</small>',
+        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); stat('orders'); save.orders.done[o.id] = true; if (o.days <= 1) save.orders.slot[o.slot] = { g: o.gen | 0, doneAt: nowMs() }; say('Order complete! +$' + o.reward + (o.days <= 1 ? ' A new order arrives in 1 hour.' : '')); renderShop(); } }]));
     });
-    addHtml(box, '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight). Multi-day orders stay open until their time is up, so you can work on them over several days.</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight), and a "today only" order you finish is replaced by a new one an hour later. Multi-day orders stay open until their time is up, so you can work on them over several days.</small></div>');
   } else if (shopTab === 'ach') {
     const n = C.ACHIEVEMENTS.filter(function (a) { return save.ach[a.id]; }).length;
     addHtml(box, '<div class="item" style="border:0"><small>' + n + ' of ' + C.ACHIEVEMENTS.length + ' earned. Each one you earn pops up for everyone on the site.</small></div>');

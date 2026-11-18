@@ -162,19 +162,21 @@ export function dayNumber(t) { return Math.floor(t / DAY); }
 export function priceOf(item, day) { const ids = Object.keys(GOODS), i = ids.indexOf(item); return Math.max(1, Math.round(GOODS[item].sell * (.8 + .5 * hash(day * 131 + i * 17 + 5)))); }
 // Orders come in two kinds. "Today" orders run out at the end of the UTC day. "Multi-day" orders are posted on a day and stay open for
 // 2 or 3 days (bigger, with a bonus). Each order has a stable id (postedDay-slot), so a delivery is remembered for as long as it is open.
-function makeOrder(postDay, k, level, days) {
-  const pool = Object.keys(GOODS).filter(function (g) { return (GOODS[g].level || 1) <= level; }), salt = days > 1 ? 900 : 0;
+function makeOrder(postDay, k, level, days, gen) {
+  gen = gen | 0;   // 0 = the order posted at midnight; 1, 2, ... = replacements issued after you delivered it
+  const pool = Object.keys(GOODS).filter(function (g) { return (GOODS[g].level || 1) <= level; }), salt = (days > 1 ? 900 : 0) + gen * 977;
   const item = pool[Math.floor(hash(postDay * 31 + k * 7 + 11 + salt) * pool.length)];
   const base = Math.max(2, Math.round((4 + hash(postDay * 53 + k + salt) * 10) * (GOODS[item].sell > 40 ? .35 : 1) * (1 + Math.min(level, 30) * .1)));
   const qty = days > 1 ? Math.max(3, Math.round(base * (1 + .6 * (days - 1)))) : base;
   const reward = Math.round(qty * GOODS[item].sell * (days > 1 ? 1.6 + .15 * (days - 1) : 1.6));
-  return { id: postDay + '-' + (days > 1 ? 'm' : 'd') + k, item: item, qty: qty, reward: reward, xp: 10 + Math.min(level, 40) * 2, days: days, post: postDay, expires: (postDay + days) * DAY };
+  return { id: postDay + '-' + (days > 1 ? 'm' : 'd') + k + (gen ? 'r' + gen : ''), slot: postDay + '-' + k, gen: gen, item: item, qty: qty, reward: reward, xp: 10 + Math.min(level, 40) * 2, days: days, post: postDay, expires: (postDay + days) * DAY };
 }
 export function orderCounts(level) { return { today: Math.min(5, 3 + Math.floor(level / 10)), multi: Math.min(2, 1 + Math.floor(level / 25)) }; }
 // every order open on `day` (today's end-of-day orders first, then multi-day orders, soonest to expire first)
-export function ordersFor(day, level) {
+export const ORDER_REFRESH_MS = 60 * 60 * 1000;   // a delivered "today" order is replaced by a new one an hour later
+export function ordersFor(day, level, gens) {
   const n = orderCounts(level), out = [];
-  for (let k = 0; k < n.today; k++) out.push(makeOrder(day, k, level, 1));
+  for (let k = 0; k < n.today; k++) out.push(makeOrder(day, k, level, 1, gens && gens[day + '-' + k]));
   const multi = [];
   for (let post = day - 2; post <= day; post++) {
     for (let k = 0; k < n.multi; k++) {
