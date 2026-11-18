@@ -276,6 +276,51 @@ function makeZombie(x, z, r, boss, zone) {
   const zb = { mesh: g, bar: bar, x: x, z: z, hx: x, hz: z, hp: hp, max: hp, dmg: boss ? 20 : 3 + 3 * r, cd: 0, boss: !!boss, zone: zone, dead: false, speed: boss ? 2.2 : 2.6, reach: boss ? 2.2 : 1.2, wt: 0 };
   zombies.push(zb); return zb;
 }
+// ------------------------------------------------------------ finds: extra things to harvest out in the areas you unlock (none in town).
+// Each kind of area has its own, and the outer ring (further from home) has richer ones. Walk up to them like a tree.
+// Slow ones (crates, crystals) remember when you took them, so reloading doesn't bring them back early.
+const finds = [];
+const FIND = {
+  berry:    { n: 'Berry bush',     res: { food: 4 },             hp: 3,  re: 60,   r: .6 },
+  shroom:   { n: 'Mushrooms',      res: { food: 3 },             hp: 2,  re: 50,   r: .4 },
+  oak:      { n: 'Giant oak',      res: { wood: 12 },            hp: 9,  re: 180,  r: 1.1 },
+  iron:     { n: 'Iron vein',      res: { metal: 6 },            hp: 8,  re: 150,  r: .9 },
+  hive:     { n: 'Wild beehive',   res: { food: 9 },             hp: 4,  re: 240,  r: .6 },
+  wreck:    { n: 'Wrecked car',    res: { metal: 10, wood: 2 },  hp: 10, re: 300,  r: 1.3 },
+  crate:    { n: 'Supply crate',   res: { wood: 8, food: 8, metal: 6 }, hp: 4, re: 900, r: .7, keep: 1 },
+  crystal:  { n: 'Crystal',        res: { gems: 1, metal: 4 },   hp: 14, re: 7200, r: .7, keep: 1 }
+};
+function makeFind(kind, x, z, mul, id) {
+  const F = FIND[kind], g = new THREE.Group(); g.position.set(x, 0, z);
+  const ball = (r, c, px, py, pz) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), mat(c)); m.position.set(px, py, pz); m.castShadow = true; g.add(m); return m; };
+  if (kind === 'berry') { ball(.6, 0x2f7a35, 0, .5, 0); ball(.45, 0x3c9142, .35, .55, .2); [[.3, .8, .45], [-.35, .7, .4], [.1, .95, -.4], [-.4, .5, -.3], [.55, .45, -.1]].forEach(p => ball(.11, 0xdc2626, p[0], p[1], p[2])); }
+  else if (kind === 'shroom') { [[0, 0, 1], [.35, .2, .7], [-.3, .25, .6]].forEach(p => { cyl(g, .07 * p[2], .09 * p[2], .4 * p[2], 0xf5f5f4, p[0], .2 * p[2], p[1]); const c = ball(.25 * p[2], 0xdc2626, p[0], .42 * p[2], p[1]); c.scale.y = .6; }); }
+  else if (kind === 'oak') { cyl(g, .45, .6, 2.2, 0x6b4423, 0, 1.1, 0); ball(1.7, 0x2d6a2f, 0, 3.2, 0); ball(1.2, 0x3a8a3c, .9, 3.6, .4); ball(1.1, 0x347d36, -.9, 3.4, -.3); }
+  else if (kind === 'iron') { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.9, 0), mat(0x44403c)); m.position.y = .55; m.scale.set(1.3, .9, 1.1); m.castShadow = true; g.add(m); [[.4, .9, .3], [-.35, .7, .4], [.1, 1.05, -.35]].forEach(p => box(g, .28, .22, .22, 0xc2410c, p[0], p[1], p[2])); }
+  else if (kind === 'hive') { cyl(g, .3, .35, .6, 0x7a5230, 0, .3, 0); const h = cyl(g, .32, .38, .7, 0xeab308, 0, .95, 0); [.75, .95, 1.15].forEach(y => cyl(g, .4, .4, .05, 0xa16207, 0, y, 0)); h.scale.set(1, 1, 1); }
+  else if (kind === 'wreck') { box(g, 2.2, .7, 1.1, 0x9a3412, 0, .5, 0); box(g, 1.2, .5, 1, 0x7c2d12, -.2, 1.1, 0); [[-.7, .5], [.7, .5], [-.7, -.5], [.7, -.5]].forEach(p => cyl(g, .25, .25, .2, 0x1c1917, p[0], .25, p[1])); g.rotation.y = (x * 7 + z) % 6; }
+  else if (kind === 'crate') { box(g, 1, .8, .8, 0xa16207, 0, .4, 0); box(g, 1.04, .1, .84, 0x713f12, 0, .55, 0); box(g, 1.04, .1, .84, 0x713f12, 0, .2, 0); box(g, .7, .55, .6, 0x92400e, .15, 1.05, .05); }
+  else if (kind === 'crystal') { [[0, 0, 1.4], [.35, .2, .9], [-.3, -.2, 1], [.1, -.4, .7]].forEach(p => { const c = new THREE.Mesh(new THREE.OctahedronGeometry(.3, 0), new THREE.MeshLambertMaterial({ color: 0x67e8f9, emissive: 0x0e7490 })); c.scale.set(1, p[2] * 1.8, 1); c.position.set(p[0], .35 * p[2] * 1.8, p[1]); g.add(c); }); }
+  scene.add(g);
+  const res = {}; Object.keys(F.res).forEach(k => { res[k] = k === 'gems' ? F.res[k] : Math.round(F.res[k] * mul); });
+  const o = { kind: kind, find: 1, id: id, mesh: g, top: g, x: x, z: z, hp: F.hp, max: F.hp, down: false, at: 0, shake: 0, r: F.r, res: res, re: F.re * 1000 };
+  const t = (st.findAt || {})[id]; if (F.keep && t && t > NOW()) { o.down = true; o.at = t; g.visible = false; }
+  finds.push(o); return o;
+}
+function harvestFind(node, now) {
+  node.down = true; node.at = now + node.re; node.mesh.visible = false;
+  if (FIND[node.kind].keep) { st.findAt = st.findAt || {}; Object.keys(st.findAt).forEach(k => { if (st.findAt[k] < now) delete st.findAt[k]; }); st.findAt[node.id] = node.at; }
+  let d = 0; Object.keys(node.res).forEach(r => { const n = node.res[r]; st.res[r] = (st.res[r] || 0) + n; st.stats[r] = (st.stats[r] || 0) + n; for (let k = 0; k < Math.min(5, n); k++) setTimeout(() => fly(RES[r], node, player), d++ * 90); });
+  toast(FIND[node.kind].n + ': +' + costTxt(node.res)); if (node.kind === 'crystal') { sfx(1046, .2, .06); sfx(1318, .3, .06, .1); }
+}
+// what each kind of area has (outer ring: more, and the richer kinds)
+const FINDS_IN = {
+  forest:   [['berry', 3], ['shroom', 3], ['oak', 0, 2]],
+  quarry:   [['iron', 2, 3], ['crystal', 0, 1]],
+  wild:     [['berry', 3], ['hive', 1, 2], ['shroom', 2]],
+  infected: [['wreck', 2], ['crate', 1, 2]],
+  boss:     [['crate', 2], ['crystal', 1], ['wreck', 1]]
+};
 function spawnZoneContents(i, j) {
   const k = i + ',' + j, t = zoneType(i, j), cx = zc(i), cz = zc(j), R = rng(hash(i * 7 + 3, j * 11 + 5)), objs = zoneObjs[k] = zoneObjs[k] || [];
   const spot = () => [cx + (R() - .5) * 18, cz + (R() - .5) * 18];
@@ -284,6 +329,8 @@ function spawnZoneContents(i, j) {
   for (let a = 0; a < n[0]; a++) { const p = spot(); makeTree(p[0], p[1], .9 + R() * .5); }
   for (let a = 0; a < n[1]; a++) { const p = spot(); makeRock(p[0], p[1], .9 + R() * .5); }
   for (let a = 0; a < n[2]; a++) { const p = spot(); makeDeer(p[0], p[1]); }
+  const far = ring(i, j) >= 2; let fi = 0;
+  (FINDS_IN[t] || []).forEach(e => { const c = far ? (e[2] !== undefined ? e[2] : e[1]) : e[1]; for (let a = 0; a < c; a++) { const p = spot(); makeFind(e[0], p[0], p[1], far ? 1.5 : 1, k + ':' + fi++); } });
   if (t === 'infected' || t === 'boss') {
     // camp decor: tents and a burnt-out fire
     for (let a = 0; a < 3; a++) { const tg = new THREE.Group(); const p = spot(); tg.position.set(p[0], 0, p[1]); tg.rotation.y = R() * 6; const tc = cone(tg, 1.3, 1.6, t === 'boss' ? 0x7c2d12 : 0x57534e, 0, .8, 0, 4); tc.rotation.y = Math.PI / 4; scene.add(tg); objs.push(tg); }
@@ -472,7 +519,7 @@ function blockedAt(x, z) { const [i, j] = zoneAt(x, z); if (i < 0 || j < 0 || i 
 function pushOut(o, rad) {
   Object.keys(BD).forEach(id => { if (!bldMeshes[id]) return; const D = BD[id], dx = o.x - D.x, dz = o.z - D.z, d = Math.hypot(dx, dz), m = D.r + rad; if (d < m && d > 0) { o.x = D.x + dx / d * m; o.z = D.z + dz / d * m; } });
   const near = n => { if (n.down) return; const dx = o.x - n.x, dz = o.z - n.z, d = Math.hypot(dx, dz), m = n.r + rad; if (d < m && d > 0) { o.x = n.x + dx / d * m; o.z = n.z + dz / d * m; } };
-  trees.forEach(near); rocks.forEach(near);
+  trees.forEach(near); rocks.forEach(near); finds.forEach(near);
 }
 function moveTo(o, x, z, rad) { const ox = o.x, oz = o.z; o.x = x; o.z = z; pushOut(o, rad); if (blockedAt(o.x, o.z)) { o.x = ox; o.z = oz; if (!blockedAt(x, oz)) o.x = x; else if (!blockedAt(ox, z)) o.z = z; } }
 const allies = () => [player.dead ? null : Object.assign(player, { isPlayer: true })].concat(Object.keys(heroes).map(id => heroes[id]).filter(h => !h.down), guards.filter(g => !g.down)).filter(Boolean);
@@ -861,7 +908,7 @@ function enterArena(second) {
   startTour('ARENA_' + id, { name: 'the arena', w: { b: { pp: { lvl: 0 } }, zones: { '2,2': 1 }, paid: {} } }, true);
   tour.arena = { id: id, opp: duel.opp, end: NOW() + DUEL_TIME, oppHp: 100, seen: NOW() }; tour.name = 'the arena';
   st.heroes = {}; Object.keys(heroes).forEach(k => { scene.remove(heroes[k].mesh); delete heroes[k]; });   // a fair fight: heroes sit out
-  [trees, rocks, deer].forEach(a => a.forEach(o => { o.down = true; o.at = Infinity; if (o.top) o.top.visible = false; o.mesh.visible = false; }));   // an empty, flat arena
+  [trees, rocks, deer, finds].forEach(a => a.forEach(o => { o.down = true; o.at = Infinity; if (o.top) o.top.visible = false; o.mesh.visible = false; }));   // an empty, flat arena
   player.x = second ? 6 : -6; player.z = 0; st.hp = player.hpMax; syncPads();
   try { duelRef.child('hp/' + uid).set(st.hp); } catch (e) {}
   toast('🥊 Duel vs ' + duel.name + '! Walk up to them to fight. First to 0 ❤️ loses.', 5000);
@@ -1093,7 +1140,7 @@ function loadWorld() {
   guards.forEach(g => scene.remove(g.mesh)); guards.length = 0;
   workers.forEach(w => scene.remove(w.mesh)); workers.length = 0;
   // clear old entities, then rebuild everything from the save
-  [trees, rocks, deer, zombies].forEach(a => { a.forEach(o => scene.remove(o.mesh)); a.length = 0; });
+  [trees, rocks, deer, zombies, finds].forEach(a => { a.forEach(o => scene.remove(o.mesh)); a.length = 0; });
   Object.keys(zoneObjs).forEach(k => { zoneObjs[k].forEach(o => scene.remove(o)); delete zoneObjs[k]; });
   Object.keys(fogs).forEach(k => { scene.remove(fogs[k]); delete fogs[k]; });
   Object.keys(bldMeshes).forEach(k => { scene.remove(bldMeshes[k]); delete bldMeshes[k]; }); Object.keys(bldLabels).forEach(k => { scene.remove(bldLabels[k]); delete bldLabels[k]; });
@@ -1189,12 +1236,13 @@ function frameInner() {
       if (foe) { player.ry = Math.atan2(foe.x - player.x, foe.z - player.z); hitZombie(foe, weaponDmg(st.weapon), 'p'); pMesh.userData.swing = 1; player.cd = .5; sfx(180, .08, .06); }
       else if (duelSwing()) {}
       else {
-        const dr = nearestNode(deer); const node = nearestNode(trees.concat(rocks));
+        const dr = nearestNode(deer); const node = nearestNode(trees.concat(rocks, finds));
         if (dr && d2(player, dr) < 2) { dr.hp -= weaponDmg(st.weapon); dr.bar.visible = true; setBar(dr.bar, dr.hp / dr.max); pMesh.userData.swing = 1; player.cd = .5; sfx(220, .06, .05);
           if (dr.hp <= 0) { dr.down = true; dr.at = now + 90000; dr.mesh.visible = false; st.res.food += 5; st.stats.food += 5; fly('🍖', dr, player); } }
         else if (node && d2(player, node) < node.r + 1.3) {
           player.ry = Math.atan2(node.x - player.x, node.z - player.z); node.hp -= 1 + Math.floor((st.weapon - 1) / 2); node.shake = .25; pMesh.userData.swing = 1; player.cd = Math.max(.18, .38 - .03 * (st.weapon - 1)); sfx(node.kind === 'tree' ? 300 : 900, .05, .05);
-          if (node.hp <= 0) { node.down = true; node.at = now + (node.kind === 'tree' ? 45000 : 90000); node.top.visible = node.kind === 'tree' ? false : false; if (node.kind === 'tree') node.trunk.scale.y = .3; else node.mesh.visible = false;
+          if (node.hp <= 0 && node.find) harvestFind(node, now);
+          else if (node.hp <= 0) { node.down = true; node.at = now + (node.kind === 'tree' ? 45000 : 90000); node.top.visible = node.kind === 'tree' ? false : false; if (node.kind === 'tree') node.trunk.scale.y = .3; else node.mesh.visible = false;
             const r = node.kind === 'tree' ? 'wood' : 'metal', n = node.kind === 'tree' ? 3 : 2; st.res[r] += n; st.stats[r] += n; for (let k = 0; k < n; k++) setTimeout(() => fly(RES[r], node, player), k * 90); }
         }
       }
@@ -1243,7 +1291,7 @@ function frameInner() {
     const nx = d.x + d.vx * dt, nz = d.z + d.vz * dt; if (Math.hypot(nx - d.hx, nz - d.hz) < 8 && !blockedAt(nx, nz)) { d.x = nx; d.z = nz; }
     d.mesh.position.set(d.x, 0, d.z); if (d.vx || d.vz) d.mesh.rotation.y = Math.atan2(d.vx, d.vz); if (d.bar.visible) faceCam(d.bar); });
   updateWorkers(dt, now); updateGuards(dt, now); updateOthers(dt, now);
-  trees.concat(rocks).forEach(n => {
+  trees.concat(rocks, finds).forEach(n => {
     if (n.down && now > n.at && d2(n, player) > 2) { n.down = false; n.hp = n.max; n.top.visible = true; n.mesh.visible = true; if (n.trunk) n.trunk.scale.y = 1; }
     if (n.shake > 0) { n.shake -= dt; n.mesh.rotation.z = Math.sin(n.shake * 60) * .06; } else n.mesh.rotation.z = 0;
   });
@@ -1283,4 +1331,4 @@ addEventListener('beforeunload', () => { try { if (hereRef && uid) hereRef.child
 document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); cloudSave(); } });
 addEventListener('online', () => { persist(); setTimeout(cloudSave, 2000); });   // played offline: push it to your account once the signal is back
 boot(); requestAnimationFrame(frame);
-window.__ts = { get st() { return st; }, tbTest: v => { tb = Object.assign({ room: tour ? tour.code : code }, v); tbSpawn(); }, get tb() { return tb; }, get tbBoss() { return tbBoss; }, tbWin: () => tbWin(), duelTest: (o) => { duel = { id: 'T', opp: 'opp', name: 'Ray' }; duelRef = { child: () => ({ push() {}, set() {}, on() {}, off() {}, remove() {} }), remove() {} }; enterArena(0); }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, raidTest: (p) => { startTour('R', p, true); tour.raid = { loot: { wood: 10 }, won: false }; spawnDefenders(p.w); }, get zombies2() { return zombies; }, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
+window.__ts = { get st() { return st; }, finds: finds, tbTest: v => { tb = Object.assign({ room: tour ? tour.code : code }, v); tbSpawn(); }, get tb() { return tb; }, get tbBoss() { return tbBoss; }, tbWin: () => tbWin(), duelTest: (o) => { duel = { id: 'T', opp: 'opp', name: 'Ray' }; duelRef = { child: () => ({ push() {}, set() {}, on() {}, off() {}, remove() {} }), remove() {} }; enterArena(0); }, camera: camera, THREE: THREE, startTour: startTour, goHome: goHome, loadWorld: () => loadWorld(), workers: workers, rocks: rocks, deer: deer, guards: guards, raidTest: (p) => { startTour('R', p, true); tour.raid = { loot: { wood: 10 }, won: false }; spawnDefenders(p.w); }, get zombies2() { return zombies; }, get tour() { return tour; }, pads: pads, player: player, zombies: zombies, trees: trees };
