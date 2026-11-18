@@ -83,6 +83,7 @@ if(!nd.game_rooms.farm&&od.game_rooms&&od.game_rooms.farm)nd.game_rooms.farm=od.
 <script>document.write('<script src="js/common.js"><\/script>');</script>
 <script>document.write('<script src="js/gamenav.js"><\/script>');</script>
 <script>document.write('<script src="js/gamepad.js"><\/script>');</script>
+<script>/* show load errors on screen (before the game module takes over) */addEventListener('error',function(ev){if(window.__farm||!ev||!(ev.error||(ev.target&&ev.target.tagName==='SCRIPT')))return;var m=(ev.error&&ev.error.message)||ev.message||('Could not load '+((ev.target&&(ev.target.src||ev.target.href))||'a file'));var b=document.getElementById('farmErr');if(!b){b=document.createElement('div');b.id='farmErr';b.style.cssText='position:fixed;left:8px;bottom:8px;z-index:99999;max-width:94vw;background:#7f1d1d;color:#fff;font:12px system-ui,sans-serif;padding:8px 10px;border-radius:10px;white-space:pre-wrap';b.onclick=function(){b.remove()};document.body.appendChild(b);}b.textContent='⚠️ Farm error (send a screenshot · tap to hide):\n'+m;},true);</script>
 <script>document.write('<script type="module" src="js/farm3d.js"><\/script>');</script>
 </body>
 </html>

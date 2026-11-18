@@ -860,9 +860,20 @@ if (PAD) {
 }
 
 function loop(ts) {
-  try { frame(ts); } catch (e) { console.error('[farm] frame error', e); }
+  try { frame(ts); } catch (e) { farmError(e); }
+  try { renderer.render(scene, camera); } catch (e) { farmError(e); }
   requestAnimationFrame(loop);
 }
+// If something breaks, show it on screen (once per different message) so it can be screenshotted and fixed, instead of a silent freeze.
+const farmErrSeen = {};
+function farmError(e) {
+  const msg = String((e && (e.message || e.reason && e.reason.message)) || e || 'error'), st = String((e && (e.stack || e.reason && e.reason.stack)) || '').split('\n').slice(0, 3).join(' | ');
+  if (farmErrSeen[msg]) return; farmErrSeen[msg] = 1; console.error('[farm]', e);
+  let bar = $('farmErr'); if (!bar) { bar = document.createElement('div'); bar.id = 'farmErr'; bar.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;max-width:min(94vw,560px);background:#7f1d1d;color:#fff;font:12px/1.35 system-ui,sans-serif;padding:8px 10px;border-radius:10px;box-shadow:0 6px 20px #0008;cursor:pointer;white-space:pre-wrap;word-break:break-word'; bar.onclick = function () { bar.remove(); }; document.body.appendChild(bar); }
+  bar.textContent = '⚠️ Farm error (send a screenshot to fix · tap to hide):\n' + msg + (st ? '\n' + st.replace(/https?:\/\/[^ )]*\//g, '') : '');
+}
+window.addEventListener('error', function (ev) { if (ev && ev.error) farmError(ev.error); });
+window.addEventListener('unhandledrejection', function (ev) { farmError(ev.reason || ev); });
 function frame(ts) {
   const dt = Math.min(.05, (ts - last) / 1000); last = ts;
   padFrame(dt);
@@ -921,7 +932,6 @@ function frame(ts) {
   const now = performance.now();
   if (roomRef && me && now - lastSent > 100 && (player.speed > .1 || now - lastBeat > 8000)) { lastSent = lastBeat = now; roomRef.child('players/' + me.uid).set({ n: myName, x: +player.x.toFixed(2), z: +player.z.toFixed(2), r: +player.ry.toFixed(2), v: player.driving ? 1 : 0, h: +myHue.toFixed(2), lv: level(), tx: +(player.driving ? tractorLocal.x : tractorState.x).toFixed(1), tz: +(player.driving ? tractorLocal.z : tractorState.z).toFixed(1), tr: +(player.driving ? tractorLocal.ry : tractorState.ry).toFixed(2), t: firebase.database.ServerValue.TIMESTAMP }); }
   if (player.driving && player.veh === 'tractor' && now - lastTrk > 1500) { lastTrk = now; roomRef.child('farmers/' + me.uid + '/tractor').set({ x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }); }
-  renderer.render(scene, camera);
 }
 
 
