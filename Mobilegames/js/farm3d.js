@@ -18,6 +18,7 @@ const tractorLocal = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_H
 const combineLocal = { x: 0, z: 0, ry: 0, speed: 0 };
 let combine = null, trailer = null, truck = null, roomEpoch = 0;     // harvest-chain models: they exist once the Combine harvester is owned
 const level = () => C.levelFromXp(save.xp);
+const headLvl = () => Math.min(C.HEADER_LEVELS.length - 1, Math.max(0, save.up.header | 0)), headSwath = () => C.HEADER_LEVELS[headLvl()].swath;
 const swath = () => save.up.mega ? 12 : save.up.wide ? 5 : 3;
 const nowMs = () => WW.now();
 
@@ -260,6 +261,7 @@ function actTile(i, quiet) {
   } else if (tool === 'water') {
     if (cur && cur.k === 'c' && !cur.w) { ref.child('w').set(now); stat('water'); queueSave(); } else if (!quiet) say(cur && cur.k === 'c' ? 'Already watered.' : 'Nothing to water here.');
   } else if (tool === 'harvest') {
+    if (quiet && save.up.harvester) return;   // with a combine harvester the tractor no longer harvests (walk up and pick by hand, or drive the combine)
     if (!cur || cur.k !== 'c') { if (!quiet) say('Nothing to harvest.'); return; }
     ref.transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
       if (ok) { addItem(cur.c, 1); if (quiet && save.up.combine && Math.random() < .25) { addItem(cur.c, 1); } save.harvested++; stat('harvest'); addXp(C.XP_HARVEST + (cur.f ? C.XP_FERT_BONUS : 0)); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
@@ -431,6 +433,13 @@ function renderShop() {
       box.appendChild(row('🚜 <b>' + u.name + '</b> <small>' + u.desc + (l < u.level ? ' · unlocks at level ' + u.level : pre ? ' · buy ' + C.UPGRADES[u.needs].name + ' first' : '') + '</small>',
         [{ t: has ? '✅ Owned' : l < u.level ? '🔒 Lv ' + u.level : pre ? '🔒 Needs ' + C.UPGRADES[u.needs].name : '$' + u.cost, off: has || lock || !can || save.coins < u.cost, f: function () { setCoins(-u.cost); save.up[k] = 1; say(k === 'harvester' ? '🚜 Your combine harvester, trailer and truck are parked by your first field!' : u.name + ' installed!'); applyImplement(); if (k === 'harvester') ensureFleet(); queueSave(); } }]));
     });
+    if (save.up.harvester) {
+      const hl = headLvl(), nx = C.HEADER_LEVELS[hl + 1], max = !nx, lock = nx && l < nx.level;
+      box.appendChild(row('🌾 <b>Combine header</b> level ' + hl + '/' + (C.HEADER_LEVELS.length - 1) + ' <small>Cuts ' + headSwath() + ' tiles per pass' + (nx ? ' · next level cuts ' + nx.swath + (l < nx.level ? ' · unlocks at level ' + nx.level : '') : ' · fully upgraded') + '</small>',
+        [{ t: max ? '✅ Max' : lock ? '🔒 Lv ' + nx.level : 'Upgrade $' + nx.cost, off: max || lock || !can || save.coins < nx.cost, f: function () {
+          setCoins(-nx.cost); save.up.header = hl + 1; say('🌾 Combine header upgraded: it now cuts ' + headSwath() + ' tiles per pass!');
+          if (combine) { scene.remove(combine); combine = null; } ensureFleet(); queueSave(); renderShop(); } }]));
+    }
     addHtml(box, '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected. The Farm whistle also works on foot.' + (save.up.harvester ? ' Combine harvester: harvest with it, park it next to the trailer to unload, then walk up to the trailer and send the truck to the grain elevator (+' + Math.round((C.HARVEST.elevatorBonus - 1) * 100) + '% over the barn price).' : '') + '</small></div>');
   } else if (shopTab === 'settings') {
     const cn = counts(), nAn = Object.keys(cn).reduce(function (a, k) { return a + cn[k]; }, 0);
@@ -476,7 +485,7 @@ function ensureFleet() {
   if (save.trailer && W.inBarnZone(save.trailer) && !save.haul) { const p = W.parkTrailer(f); save.trailer.x = p.x; save.trailer.z = p.z; save.trailer.ry = p.ry; queueSave(); }
   if (!save.combine) { const p = W.parkCombine(f); save.combine = { x: p.x, z: p.z, ry: p.ry, grain: {} }; }
   if (!save.trailer) { const p = W.parkTrailer(f); save.trailer = { x: p.x, z: p.z, ry: p.ry, grain: {} }; }
-  if (!combine) { combine = W.makeCombine(myColor ? parseInt(myColor.slice(1), 16) : undefined, HARVEST.swath * W.TILE - .4); scene.add(combine); }
+  if (!combine) { combine = W.makeCombine(myColor ? parseInt(myColor.slice(1), 16) : undefined, headSwath() * W.TILE - .4); scene.add(combine); }
   if (!trailer) { trailer = W.makeTrailer(); scene.add(trailer); trailer.position.set(save.trailer.x, 0, save.trailer.z); trailer.rotation.y = save.trailer.ry; }
   if (!truck) { truck = W.makeTruck(0x2b5fa8); scene.add(truck); }
   queueSave();
@@ -486,7 +495,7 @@ const dist2 = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 let grainBurst = 0, grainBurstT = null;
 function combineAuto() {
   const V = combineLocal, Cb = save.combine; if (!Cb || Math.abs(V.speed) < .5) return;
-  const fx = Math.sin(V.ry), fz = Math.cos(V.ry), rx = fz, rz = -fx, now = performance.now(), half = (HARVEST.swath - 1) / 2;
+  const fx = Math.sin(V.ry), fz = Math.cos(V.ry), rx = fz, rz = -fx, now = performance.now(), half = (headSwath() - 1) / 2;
   for (let s = -half; s <= half; s++) {
     const x = V.x + fx * 4.6 + rx * s * W.TILE, z = V.z + fz * 4.6 + rz * s * W.TILE, i = tileAt(x, z);
     if (i < 0 || (cool[i] || 0) > now) continue; cool[i] = now + 900;
