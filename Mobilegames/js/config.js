@@ -230,16 +230,20 @@ const XP_PER = { harvest: 2, plant: 1, sell: .5, egg: 2, wool: 3, milk: 4, order
 export const DAILY_COUNT = 5;
 export function localDayKey(d) { return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
 export function statUnlocked(stat, level) { return level >= STATS[stat].level; }
-export function dailyMissions(dayKey, level) {
-  const pool = Object.keys(STATS).filter(function (s) { return statUnlocked(s, level); }), out = [], used = {};
-  for (let k = 0; out.length < DAILY_COUNT && k < 60; k++) {
-    const stat = pool[Math.floor(hash(dayKey * 17 + k * 5 + 3) * pool.length)]; if (used[stat]) continue; used[stat] = 1;
-    const goal = DAILY_GOAL[stat](level);
+// field work scales with how many fields you own (a 6-field farm harvests 6x as much), and every extra round of
+// missions you take on in a day is 50% bigger than the last. Plowing isn't a daily (harvesting already leaves the soil plowed).
+const FIELD_WORK = { harvest: 1, plant: 1, sell: 1, water: 1, cultivate: 1, fert: 1 };
+export function dailyMissions(dayKey, level, fields, round) {
+  fields = Math.max(1, fields | 0); round = round | 0;
+  const pool = Object.keys(STATS).filter(function (s) { return s !== 'plow' && statUnlocked(s, level); }), out = [], used = {};
+  for (let k = 0; out.length < DAILY_COUNT && k < 80; k++) {
+    const stat = pool[Math.floor(hash(dayKey * 17 + round * 101 + k * 5 + 3) * pool.length)]; if (used[stat]) continue; used[stat] = 1;
+    const goal = Math.max(1, Math.round(DAILY_GOAL[stat](level) * (FIELD_WORK[stat] ? fields : 1) * Math.pow(1.5, round)));
     out.push({ stat: stat, goal: goal, xp: Math.max(5, Math.round(goal * XP_PER[stat])), coins: Math.round(goal * COIN_PER[stat]), text: STATS[stat].verb + ' ' + goal + ' ' + STATS[stat].noun });
   }
   return out;
 }
-export const LADDER = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000];
+export const LADDER = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000];
 export function tierReward(goal) { return { xp: Math.max(5, Math.round(goal * .5)), coins: goal * 3 }; }
 
 export function fmtTime(ms) { const s = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(s / 60); return m + ':' + String(s % 60).padStart(2, '0'); }

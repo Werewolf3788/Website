@@ -265,21 +265,23 @@ function addItem(id, n) { save.bag[id] = (save.bag[id] || 0) + n; if (save.bag[i
 // everyone on the farm gets, so friends level up together. The first time each farmer comes in, the farm's XP is raised
 // to the higher of theirs and the farm's. Solo farms keep their own XP.
 let xpShared = false, xpPending = 0, xpFlushT = null;
+// shared XP only carries friends up to level 20; from there each farmer levels on their own
+const SHARED_XP_UNTIL = 20, sharedXpCap = () => C.xpForLevel(SHARED_XP_UNTIL);
 function addXp(n) {
   const g = n * C.XP_SCALE; if (!g) return;
-  if (xpShared) {
+  if (xpShared && save.xp < sharedXpCap()) {
     xpPending += g;
     if (!xpFlushT) xpFlushT = setTimeout(function () {
       xpFlushT = null; const k = xpPending; if (!k || !roomRef) return;
-      roomRef.child('xpStore/xp').transaction(function (x) { return (x || 0) + k; }, function (e, ok) { if (ok) xpPending = Math.max(0, xpPending - k); }, false);
+      roomRef.child('xpStore/xp').transaction(function (x) { return Math.min(sharedXpCap(), (x || 0) + k); }, function (e, ok) { if (ok) xpPending = Math.max(0, xpPending - k); }, false);
     }, 1000);
   }
   setXp(save.xp + g);
 }
 function startXpStore() {
   if (!isMP || !me) return; const mine = save.xp || 0, uid = me.uid;
-  roomRef.child('xpStore').transaction(function (c) { c = c || { xp: 0 }; c.m = c.m || {}; if (!c.m[uid]) { c.xp = Math.max(c.xp || 0, mine); c.m[uid] = 1; } return c; }, function () {}, false);
-  roomRef.child('xpStore').on('value', function (snap) { const v = snap.val(); if (!v) return; xpShared = true; const x = (v.xp || 0) + xpPending; if (x > save.xp + 1e-6) setXp(x); });
+  roomRef.child('xpStore').transaction(function (c) { c = c || { xp: 0 }; c.m = c.m || {}; if (!c.m[uid]) { c.xp = Math.min(sharedXpCap(), Math.max(c.xp || 0, mine)); c.m[uid] = 1; } return c; }, function () {}, false);
+  roomRef.child('xpStore').on('value', function (snap) { const v = snap.val(); if (!v) return; xpShared = true; const x = Math.min(sharedXpCap(), (v.xp || 0) + xpPending); if (x > save.xp + 1e-6) setXp(x); });
 }
 function setXp(x) {
   const old = level(); save.xp = x; const now = level();
@@ -571,12 +573,13 @@ function renderShop() {
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
     if (me && me.email && me.email.toLowerCase() === C.OWNER_EMAIL) box.appendChild(row('🔄 <b>Reset farm for everyone</b> <small>Season ' + season + '. Everyone starts again at level 1.</small>', [{ t: 'Reset', off: false, f: resetEveryone }]));
-    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' (+' + C.xpShow(C.XP_FERT_BONUS) + ' more if fertilized) · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions).' + (isMP ? ' On this multiplayer farm the XP is shared: whatever anyone earns, everyone gets, so you level up together.' : '') + ' Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' (+' + C.xpShow(C.XP_FERT_BONUS) + ' more if fertilized) · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions).' + (isMP ? ' On this multiplayer farm the XP is shared up to level ' + 20 + ': whatever anyone earns, everyone gets, so you level up together. From level 20 on, everyone levels on their own.' : '') + ' Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
     daily.forEach(function (m, k) {
       const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
       box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward $' + m.coins + '</small>',
         [{ t: done ? '✅ Claimed' : ready ? 'Claim' : p + '/' + m.goal, off: done || !ready, f: function () { save.daily.done[k] = true; reward({ xp: m.xp, coins: m.coins }, m.text); } }]));
     });
+    if (daily.length && daily.every(function (m, k) { return save.daily.done[k]; })) box.appendChild(row('🎉 <b>All of today\u2019s missions are done!</b> <small>Round ' + ((save.daily.round | 0) + 1) + ' finished. Take on a new set (50% bigger) or wait for tomorrow\u2019s at midnight.</small>', [{ t: 'New missions', f: newMissionRound }]));
     addHtml(box, '<div class="item" style="border:0;padding:10px 0 4px"><b>Milestones</b> <small>(these never expire)</small></div>');
     Object.keys(C.STATS).forEach(function (st) {
       if (!C.statUnlocked(st, lv)) return; const t = nextTier(st), S = C.STATS[st], have = save.stats[st] || 0; if (!t) { box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + S.noun + '</b> <small>All milestones done!</small>', [])); return; }
@@ -635,8 +638,14 @@ $('bagBtn').onclick = function () { openShop('sell'); }; $('missionsBtn').onclic
 // ------------------------------------------------------------ missions: daily goals + milestone ladders (FarmVille style)
 function ensureDaily() {
   const key = C.localDayKey(new Date());
-  if (save.daily.day !== key || !save.daily.list) { save.daily = { day: key, base: Object.assign({}, save.stats), done: [], list: C.dailyMissions(key, level()) }; queueSave(); }   // the list is fixed for the whole day
+  if (save.daily.day !== key || !save.daily.list) { save.daily = { day: key, round: 0, base: Object.assign({}, save.stats), done: [], list: C.dailyMissions(key, level(), myFieldCount(), 0) }; queueSave(); }   // the list is fixed for the whole day
   return save.daily.list;
+}
+// finished every mission today? Take on another round (50% bigger, counted from now)
+function newMissionRound() {
+  const r = (save.daily.round | 0) + 1;
+  save.daily = { day: save.daily.day, round: r, base: Object.assign({}, save.stats), done: [], list: C.dailyMissions(save.daily.day, level(), myFieldCount(), r) }; queueSave();
+  say('📜 New missions (round ' + (r + 1) + ')!');
 }
 function dailyProgress(m) { return Math.max(0, (save.stats[m.stat] || 0) - ((save.daily.base || {})[m.stat] || 0)); }
 function nextTier(stat) { const done = save.ms[stat] || 0, goal = C.LADDER[done]; return goal ? { goal: goal, idx: done, reward: C.tierReward(goal) } : null; }
