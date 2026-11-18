@@ -214,8 +214,28 @@ function queueSave() { clearTimeout(saveTimer); saveTimer = setTimeout(flushSave
 document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); }); window.addEventListener('pagehide', flushSave);
 function setCoins(d) { if (d) Sound.coin(d > 0); save.coins = Math.max(0, save.coins + d); hud(); queueSave(); }
 function addItem(id, n) { save.bag[id] = (save.bag[id] || 0) + n; if (save.bag[id] <= 0) delete save.bag[id]; queueSave(); }
+// Multiplayer farms share one XP total (game_rooms/farm/{room}/xpStore = { xp, m: { uid: 1 } }): whatever anyone earns,
+// everyone on the farm gets, so friends level up together. The first time each farmer comes in, the farm's XP is raised
+// to the higher of theirs and the farm's. Solo farms keep their own XP.
+let xpShared = false, xpPending = 0, xpFlushT = null;
 function addXp(n) {
-  const old = level(); save.xp += n * C.XP_SCALE; const now = level();
+  const g = n * C.XP_SCALE; if (!g) return;
+  if (xpShared) {
+    xpPending += g;
+    if (!xpFlushT) xpFlushT = setTimeout(function () {
+      xpFlushT = null; const k = xpPending; if (!k || !roomRef) return;
+      roomRef.child('xpStore/xp').transaction(function (x) { return (x || 0) + k; }, function (e, ok) { if (ok) xpPending = Math.max(0, xpPending - k); }, false);
+    }, 1000);
+  }
+  setXp(save.xp + g);
+}
+function startXpStore() {
+  if (!isMP || !me) return; const mine = save.xp || 0, uid = me.uid;
+  roomRef.child('xpStore').transaction(function (c) { c = c || { xp: 0 }; c.m = c.m || {}; if (!c.m[uid]) { c.xp = Math.max(c.xp || 0, mine); c.m[uid] = 1; } return c; }, function () {}, false);
+  roomRef.child('xpStore').on('value', function (snap) { const v = snap.val(); if (!v) return; xpShared = true; const x = (v.xp || 0) + xpPending; if (x > save.xp + 1e-6) setXp(x); });
+}
+function setXp(x) {
+  const old = level(); save.xp = x; const now = level();
   if (now > old) {
     let bonus = 0, unlocked = [];
     for (let l = old + 1; l <= now; l++) { bonus += C.levelUpCoins(l); unlocked = unlocked.concat(C.unlocksAt(l)); }
@@ -482,7 +502,7 @@ function renderShop() {
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
     if (me && me.email && me.email.toLowerCase() === C.OWNER_EMAIL) box.appendChild(row('🔄 <b>Reset farm for everyone</b> <small>Season ' + season + '. Everyone starts again at level 1.</small>', [{ t: 'Reset', off: false, f: resetEveryone }]));
-    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' (+' + C.xpShow(C.XP_FERT_BONUS) + ' more if fertilized) · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.xpShow(C.XP_HARVEST) + ' (+' + C.xpShow(C.XP_FERT_BONUS) + ' more if fertilized) · egg +' + C.xpShow(C.XP_PRODUCT.egg) + ' · wool +' + C.xpShow(C.XP_PRODUCT.wool) + ' · milk +' + C.xpShow(C.XP_PRODUCT.milk) + '. XP only comes from harvesting your own crops and collecting animals (every farmer has their own animals, store and missions).' + (isMP ? ' On this multiplayer farm the XP is shared: whatever anyone earns, everyone gets, so you level up together.' : '') + ' Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
     daily.forEach(function (m, k) {
       const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
       box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward $' + m.coins + '</small>',
@@ -998,7 +1018,7 @@ async function hostReset() {
   resetting = true; const e = nowMs();
   try {
     resetSaveObject(e); await persistNow();
-    await roomRef.update({ fertStore: null, tiles: null, fields: null, animals: null, ledger: null, tractors: null, avatars: null, colors: null, farmers: null, 'meta/epoch': e });
+    await roomRef.update({ xpStore: null, fertStore: null, tiles: null, fields: null, animals: null, ledger: null, tractors: null, avatars: null, colors: null, farmers: null, 'meta/epoch': e });
     location.reload();
   } catch (err) { resetting = false; say('Reset failed: ' + ((err && err.message) || err)); }
 }
@@ -1100,7 +1120,7 @@ async function begin(user, myCode) {
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { if (okTile(v[k])) tiles[+k] = v[k]; else if (me && isMine(W.fieldOf(+k))) roomRef.child('tiles/' + k).remove(); }); refreshField(); });
   roomRef.child('fields').on('value', function (snap) { ownedFields = snap.val() || {}; updateFieldVisuals(); });
   roomRef.child('animals').on('value', function (snap) { animals = snap.val() || {}; syncAnimals(); });
-  startFertStore();
+  startFertStore(); startXpStore();
   roomRef.child('players').on('value', function (snap) { players = snap.val() || {}; syncRemotes(); });
   if (isMP) roomRef.child('ledger').on('value', function (snap) { applyLedger(snap.val()); });
   updateFieldVisuals(); renderPeers();
