@@ -332,6 +332,8 @@ window.appState = {
                             location: cItem.location || '',
                             guide: cItem.guide || '',
                             image_url: cItem.image_url || '',
+                            // Bigger picture shown when the card is opened (e.g. a province map crop).
+                            location_image_url: cItem.location_image_url || '',
                             // Tech-upgrade-style fields (cost in Tech Points, category, upgrade levels,
                             // and a Defiance-style unlock condition); harmless passthrough for any
                             // game that doesn't use them.
@@ -3618,7 +3620,7 @@ function renderUniversalCompanion(data) {
                                 badge: costBadge, badgeClass: 'rank-silver',
                                 title: it.name || id,
                                 sub: [it.category, levelsText, it.unlock_requirement || ''].filter(Boolean).join(' · '),
-                                body: it.guide || '', img: it.image_url,
+                                body: it.guide || '', img: it.image_url, locImg: it.location_image_url,
                                 levelGoal: it.levels > 1 ? it.levels : 0,
                                 price: grp.wallet_label && it.cost != null ? it.cost : 0
                             });
@@ -3691,7 +3693,7 @@ function renderUniversalCompanion(data) {
                             id, type: 'collectible', group: cKey,
                             badge: it.region || humanize(cKey), badgeClass: 'rank-silver',
                             title: it.name || id, sub: it.location || '',
-                            body: it.guide || '', img: it.image_url,
+                            body: it.guide || '', img: it.image_url, locImg: it.location_image_url,
                             levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null,
                             rankCosts: !!(it.rank_costs && it.rank_costs.length)
                         })).join('')}
