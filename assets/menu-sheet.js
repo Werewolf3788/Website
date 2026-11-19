@@ -18,7 +18,7 @@
     if (window.wwMenuData) return;
 
     const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv';
-    const CACHE_KEY = 'ww_menu_sheet_v1';
+    const CACHE_KEY = 'ww_menu_sheet_v2';   // v2: own-site links follow the site you're on
 
     // ---- CSV parser (handles quotes, commas and line breaks inside cells)
     function parseCsv(text) {
@@ -40,6 +40,27 @@
     }
 
     // Same key cleaning as the old Apps Script (sanitizeKey)
+    /* Links to this site work on every copy of it (GitHub Pages /Website/... or Firebase):
+     *   - a path like "/security/setting" is put under the site you are on
+     *   - a full link to one of the site's own addresses is switched to the site you are on
+     * Links to other sites (ditto.fm, discord.gg, ...) are left alone. */
+    const OWN_SITE = /^(?:https?:)?\/\/(?:entertainment-71888\.web\.app|entertainment-71888\.firebaseapp\.com|werewolf3788\.github\.io\/Website)(?=[\/?#]|$)/i;
+    function siteRoot() {
+        if (/\.github\.io$/i.test(location.hostname)) { const seg = location.pathname.split('/')[1]; return seg ? '/' + seg : ''; }
+        return '';                                                     // Firebase / custom domain: site is at the root
+    }
+    function siteUrl(url) {
+        if (!url || location.protocol === 'file:') return url;
+        const m = url.match(OWN_SITE);
+        if (m) { const rest = url.slice(m[0].length); return siteRoot() + (rest.startsWith('/') ? rest : '/' + rest); }
+        if (url.startsWith('/') && !url.startsWith('//')) {
+            const root = siteRoot();
+            if (!root) return url.replace(/^\/Website(?=[\/?#]|$)/, '') || '/';            // Firebase has no /Website folder
+            return url === root || url.startsWith(root + '/') ? url : root + url;          // already has /Website: leave it
+        }
+        return url;
+    }
+
     const sanitizeKey = (s) => String(s || '').trim().replace(/[.$#\[\]\/]/g, '')
         .replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
 
@@ -59,6 +80,7 @@
             let url = String(r[cUrl] || '').trim();
             if (url.startsWith('#REF') || /ref!/i.test(url)) url = '';         // formula errors
             if (url && !/^(https?:)?\/\//i.test(url) && !url.startsWith('#') && !url.startsWith('.') && !url.startsWith('/')) url = 'https://' + url;
+            url = siteUrl(url);
             const item = { title: name, url, image: String(r[cImg] || '').trim(), tag: String(r[cTag] || '').trim(),
                            group: group || 'Standalone', rowNumber, updatedAt: now };
             const g = group.toLowerCase();
