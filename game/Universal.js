@@ -3771,6 +3771,8 @@ async function buildGamePillsBar() {
 const LIVE_FOLLOW_PREF = 'ww_live_follow';
 let initialGameLoadDone = false;
 let liveFollow = { tag: null, refs: [], timer: null, lastKey: null, first: true, state: {}, pending: false, scrolledKey: null };
+// Steam side of the same follow: /steam_users/{steamId64}/profile { state, currentGame, currentGameId } (written by scripts/steam-sync.js)
+let steamFollow = { id: null, ref: null, cb: null, state: null, timer: null };
 
 function liveFollowEnabled() {
     try { return localStorage.getItem(LIVE_FOLLOW_PREF) !== '0'; } catch (e) { return true; }
@@ -3780,7 +3782,7 @@ function refreshLiveFollowButton() {
     const btn = document.getElementById('liveFollowBtn');
     if (!btn) return;
     const on = liveFollowEnabled();
-    btn.classList.toggle('hidden', !liveFollow.tag);
+    btn.classList.toggle('hidden', !liveFollow.tag && !steamFollow.id);
     btn.classList.toggle('is-on', on);
     const label = btn.querySelector('span');
     if (label) label.textContent = on ? 'AUTO-SWITCH: ON' : 'AUTO-SWITCH: OFF';
@@ -3863,37 +3865,51 @@ function paintLivePills(liveKey) {
 
 function evaluateLiveGame(force) {
     const lf = liveFollow;
-    if (!lf.tag) return;
+    if (!lf.tag && !steamFollow.id) return;
     if (!initialGameLoadDone) { lf.pending = true; return; }   // never race the first game load
     const catalog = window.__gamesCatalog;
     if (!catalog) return;
 
-    const s = lf.state;
+    const s = lf.tag ? lf.state : {};
     const online = s.online === true || s.online === 'true';
-    const cur = String(s.currentGame || '').trim();
-    const playing = online && !!cur && !/^(dashboard|idle)$/i.test(cur);
+    const psnCur = String(s.currentGame || '').trim();
+    const psnPlaying = !!lf.tag && online && !!psnCur && !/^(dashboard|idle)$/i.test(psnCur);
     const huntId = s['activeHunt/commId'], huntTitle = s['activeHunt/title'];
+    const sp = steamFollow.state || {};
+    const steamCur = String(sp.currentGame || '').trim();
+    const steamPlaying = !!steamFollow.id && !!steamCur && sp.state !== 'offline';
 
-    // Playing right now: the live commId wins. Offline / on the dashboard: fall back to
-    // the game they are hunting (activeHunt) so the pill still lands on their game.
-    const key = matchLiveGameKey(catalog, {
-        gameKey: s.gameKey,
-        commIds: playing ? [s.commId, huntId] : [huntId, s.commId],
-        titleId: s.currentGameId,
-        titles: playing ? [cur, huntTitle] : [huntTitle, cur]
-    });
+    // Playing on PlayStation: the live commId wins (platform PS). Else playing on Steam: match the
+    // Steam title (platform Steam). Else: fall back to the PSN hunt so the pill still lands on their game
+    // (platform left as it is).
+    let key = null, plat = null, cur = '', who = lf.tag || 'You';
+    if (psnPlaying) {
+        key = matchLiveGameKey(catalog, { gameKey: s.gameKey, commIds: [s.commId, huntId], titleId: s.currentGameId, titles: [psnCur, huntTitle] });
+        plat = 'ps'; cur = psnCur;
+    }
+    if (!key && steamPlaying) {
+        const k = matchLiveGameKey(catalog, { titles: [steamCur] });
+        if (k || !psnPlaying) { key = k; plat = 'steam'; cur = steamCur; }
+    }
+    if (!key && !psnPlaying && !steamPlaying && lf.tag) {
+        key = matchLiveGameKey(catalog, { gameKey: s.gameKey, commIds: [huntId, s.commId], titleId: s.currentGameId, titles: [huntTitle, psnCur] });
+    }
+    const playing = psnPlaying || steamPlaying;
 
     paintLivePills(playing ? key : null);
 
-    const first = lf.first, changed = key !== lf.lastKey;
+    const ident = key ? key + '|' + (plat || '') : null;
+    const first = lf.first, changed = ident !== lf.lastKey;
     lf.first = false;
-    lf.lastKey = key;
+    lf.lastKey = ident;
     if (!key) {
-        if (playing && (first || changed)) appState.updateStatus(`[Live] ${lf.tag} is playing "${cur}", which isn't in the game library yet.`);
+        if (playing && (first || changed)) appState.updateStatus(`[Live] ${who} is playing "${cur}", which isn't in the game library yet.`);
         return;
     }
     if (!liveFollowEnabled() && !force) return;
-    if (String(key).toLowerCase() === CURRENT_GAME_KEY) return;
+    const sameGame = String(key).toLowerCase() === CURRENT_GAME_KEY;
+    const samePlat = !plat || plat === appState.platform;
+    if (sameGame && samePlat) return;
 
     const q = new URLSearchParams(window.location.search);
     const explicit = q.has('game') || q.has('id');
@@ -3902,8 +3918,43 @@ function evaluateLiveGame(force) {
     const shouldSwitch = force || (first ? (playing || !explicit) : changed);
     if (!shouldSwitch) return;
 
-    appState.updateStatus(playing ? `[Live] ${lf.tag} is playing ${cur}. Switching to it.` : `[Live] Switching to ${lf.tag}'s active game.`);
+    const platName = { ps: 'PlayStation', steam: 'Steam' }[plat] || '';
+    appState.updateStatus(playing ? `[Live] ${who} is playing ${cur}${platName ? ' on ' + platName : ''}. Switching to it.` : `[Live] Switching to ${who}'s active game.`);
+    if (sameGame) { appState.switchPlatform(plat, false); return; }   // same game, other platform: just reload that platform's save
+    if (plat && plat !== appState.platform) {                         // set the platform first so the game loads the right save once
+        appState.platform = plat;
+        const sel = document.getElementById('platformSelector'); if (sel) sel.value = plat;
+        const nameEl = document.getElementById('resistance-name');
+        if (nameEl) nameEl.innerText = `${appState.currentUser ? appState.activeUser.toUpperCase() : 'GUEST'} [${plat.toUpperCase()}]`;
+    }
     appState.switchGame(key);
+}
+
+function stopSteamFollow() {
+    if (steamFollow.ref && steamFollow.cb) { try { steamFollow.ref.off('value', steamFollow.cb); } catch (e) {} }
+    if (steamFollow.timer) clearTimeout(steamFollow.timer);
+    steamFollow = { id: null, ref: null, cb: null, state: null, timer: null };
+    refreshLiveFollowButton();
+}
+
+// raw = the Steam ID / vanity name / profile link saved in Settings (users/{key}/steam_id)
+async function startSteamFollow(raw) {
+    if (!rtdb) return;
+    let id = String(raw || '').trim().replace(/\/+$/, '').split('/').pop();
+    if (id && !/^7656119\d{10}$/.test(id)) {
+        try { const v = (await rtdb.ref('/steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); id = typeof v === 'string' ? v : ''; } catch (e) { id = ''; }
+    }
+    if (!id) { stopSteamFollow(); return; }
+    if (steamFollow.id === id) return;
+    stopSteamFollow();
+    const mine = steamFollow = { id, ref: rtdb.ref(`/steam_users/${id}/profile`), cb: null, state: null, timer: null };
+    mine.cb = snap => {
+        mine.state = snap.val() || {};
+        if (mine.timer) clearTimeout(mine.timer);
+        mine.timer = setTimeout(() => { if (steamFollow === mine) evaluateLiveGame(); }, 150);
+    };
+    mine.ref.on('value', mine.cb, err => console.warn('[Live game follow] steam', err && err.message));
+    refreshLiveFollowButton();
 }
 
 function stopLiveGameFollow() {
@@ -4073,6 +4124,7 @@ async function initUniversalEngine() {
                     const uData = snap.val() || {};
                     appState.myFriendCode = uData.friend_code || null;
                     appState.psnGamertag = uData.psn_username || null;
+                    appState.steamId = uData.steam_id || null;
 
                     // Show the username they chose in Settings, not their Google/email name.
                     if (uData.username && String(uData.username).trim()) {
@@ -4101,8 +4153,9 @@ async function initUniversalEngine() {
                     }
                 } catch (e) {}
 
-                // Follow whatever game this player's PSN card says they are on.
+                // Follow whatever game (and platform) this player is on: PSN card and/or Steam profile.
                 startLiveGameFollow(appState.psnGamertag).catch(e => console.warn('[Live game follow]', e));
+                startSteamFollow(appState.steamId).catch(e => console.warn('[Live game follow] steam', e));
 
                 if (appState.gameData) {
                     await appState.loadProgress();
@@ -4115,7 +4168,9 @@ async function initUniversalEngine() {
                 appState.currentUser = null;
                 try { localStorage.removeItem('ww_user_avatar'); window.dispatchEvent(new Event('ww-avatar')); } catch (e) {}
                 appState.psnGamertag = null;
+                appState.steamId = null;
                 stopLiveGameFollow();
+                stopSteamFollow();
 
                 const nameEl = document.getElementById('resistance-name');
                 if (nameEl) nameEl.innerText = `GUEST [${appState.platform.toUpperCase()}]`;
