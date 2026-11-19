@@ -84,6 +84,13 @@ button{font:inherit;color:inherit}
 .ev .ev-cd{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--accent);margin-top:2px}
 .ev.live .ev-cd{color:var(--hot)}
 .ev .ev-n{font-size:12px;color:var(--muted)}
+.ev-banner{margin-top:10px;display:flex;justify-content:center;align-items:center;background:#fff;border-radius:8px;overflow:hidden;cursor:auto}
+.ev-banner img,.ev-banner iframe{max-width:100%;height:auto;display:block;border:0}
+.ev-banner:empty{display:none}
+.ev-shop{margin-top:10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:9px;background:linear-gradient(180deg,#ffa31a,#e68a00);color:#111;font-weight:800;font-size:13px;text-decoration:none}
+.ev-links{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.ev-links .ev-shop{margin-top:6px;width:100%}
+.ev.live .ev-shop{background:linear-gradient(180deg,#ff5a4f,#d92d20);color:#fff}
 .cdline{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:800;font-size:14px;margin-left:8px}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:38px;display:inline-flex;align-items:center;gap:6px}
@@ -274,6 +281,22 @@ const EVENT_SCHEDULE = {
   'black-friday':     { start: '2026-11-19T03:01:00-05:00', end: '2026-12-01T02:59:59-05:00', label: 'Black Friday Week' },
   // Cyber Monday deal drop: Nov 30, 3:00 AM ET through end of day PT
   'cyber-monday':     { start: '2026-11-30T03:00:00-05:00', end: '2026-12-01T02:59:59-05:00', label: 'Cyber Monday' }
+};
+// Official Amazon Associates banner code for an event card (Associates Central > Product Linking > Banners).
+// Paste the whole code between the backticks. Leave empty for no banner.
+const EVENT_BANNERS = {
+  'black-friday-week': ``,
+  'cyber-monday': ``
+};
+// "Shop" buttons on an event card: Amazon event pages, tagged for this event
+const EVENT_LINKS = {
+  'black-friday-week': [
+    { url: 'https://www.amazon.com/blackfriday?tag=blackfriday71888-20', text: '🛒 Shop all Black Friday deals' },
+    { url: 'https://www.amazon.com/events/devicedeals/?tag=blackfriday71888-20', text: '📱 Echo, Kindle &amp; Fire TV deals' }
+  ],
+  'cyber-monday': [
+    { url: 'https://www.amazon.com/cybermonday?tag=blackfriday71888-20', text: '🛒 Shop all Cyber Monday deals' }
+  ]
 };
 const MOVIES_CAT = 'Movies & TV';
 
@@ -659,12 +682,15 @@ function renderEvents() {
   $('#evRow').innerHTML = evs.map(e => {
     const st = eventStatus(e);
     const dates = e.start && e.end ? `${fmtDay(e.start)} – ${fmtDay(e.end, true)}` : (e.start ? 'From ' + fmtDay(e.start) : 'Until ' + fmtDay(e.end, true));
-    return `<button class="ev ${st.state === 'live' ? 'live' : ''}" data-cat="event:${esc(e.key)}" type="button">
+    const banner = (EVENT_BANNERS[e.key] || '').trim();
+    return `<div class="ev ${st.state === 'live' ? 'live' : ''}" data-cat="event:${esc(e.key)}" role="button" tabindex="0">
       <span class="ev-name">${st.state === 'live' ? '⚡ ' : '⏳ '}${esc(e.label)}</span>
       <span class="ev-dates">${esc(dates)}</span>
       <span class="ev-cd" data-cd="${esc(e.key)}">${esc(st.text)}</span>
       <span class="ev-n">${e.n ? `${e.n} item${e.n > 1 ? 's' : ''} tagged` : 'No items tagged yet'}</span>
-    </button>`;
+      ${banner ? `<div class="ev-banner" data-banner>${banner}</div>` : ''}
+      ${(EVENT_LINKS[e.key] || []).length ? `<div class="ev-links">${EVENT_LINKS[e.key].map(l => `<a class="ev-shop" data-banner data-evlink="${esc(e.key)}" href="${esc(l.url)}" target="_blank" rel="nofollow sponsored noopener">${esc(l.text)}</a>`).join('')}</div>` : ''}
+    </div>`;
   }).join('');
   box.classList.add('show');
 }
@@ -825,6 +851,9 @@ function setCat(cat) {
 
 /* ---------------- events ---------------- */
 document.addEventListener('click', e => {
+  const evl = e.target.closest('[data-evlink]');
+  if (evl) track('affiliate_outbound_click', { item_id: evl.dataset.evlink, item_title: evl.textContent.trim(), click_placement: 'event_card', link_url: evl.href });
+  if (e.target.closest('[data-banner]')) return; // banner links open Amazon
   const chip = e.target.closest('[data-cat]');
   if (chip) { e.preventDefault(); setCat(chip.dataset.cat); return; }
   if (e.target.id === 'more') { S.shown += CFG.pageSize; render(); return; }
@@ -835,7 +864,10 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-open]')) openDetails(it);
 });
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeDetails(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetails(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetails();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('ev')) { e.preventDefault(); setCat(e.target.dataset.cat); }
+});
 let qTimer;
 $('#q').addEventListener('input', e => {
   S.q = e.target.value; $('#qx').style.display = S.q ? 'block' : 'none';
