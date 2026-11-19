@@ -8527,7 +8527,7 @@
     "bonus_medal_locations": {
       "quest_name": "Bonus Medal Locations",
       "region": "Bolivia-wide",
-      "description": "Where all 30 Bonus Medals are, with what they do. A medal only works once you've unlocked its matching skill. You can also mark them with the star on each skill card.",
+      "description": "Where all 30 Bonus Medals are, with what they do. A medal only works once you've unlocked its matching skill. Linked to the ★ star on each skill card: ticking one ticks the other.",
       "source": "Locations, numbers and descriptions from the SwissGameGuides interactive map; coordinates converted to MapGenie's Lat/Long (checked against MapGenie in Libertad).",
       "items": [
         {
@@ -8540,7 +8540,11 @@
           "category": "Bonus Medal",
           "guide": "10% damage reduction. Works once you've unlocked the Aircraft Shield skill. Just south of Nidia Flores' Hacienda (Home of Santa Blanca's head of trafficking). 📍 Lat -16.1048, Long -65.2439.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/barvechos.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/barvechos.jpg",
+          "bonus_for": {
+            "group": "physical_skills",
+            "id": "skill_aircraft_shield"
+          }
         },
         {
           "region": "Barvechos",
@@ -8552,7 +8556,11 @@
           "category": "Bonus Medal",
           "guide": "Increases max ammo by 25%. Works once you've unlocked the Ammo Capacity skill. Southeast of Outpost (Monitors road traffic). 📍 Lat -16.5242, Long -65.2306.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/barvechos.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/barvechos.jpg",
+          "bonus_for": {
+            "group": "weapon_skills",
+            "id": "skill_ammo_capacity"
+          }
         },
         {
           "region": "Caimanes",
@@ -8564,7 +8572,11 @@
           "category": "Bonus Medal",
           "guide": "15% efficiency increase. Works once you've unlocked the Binocular Recon skill. Just south of Outpost (Controls river traffic). 📍 Lat -17.9453, Long -60.4453.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/caimanes.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/caimanes.jpg",
+          "bonus_for": {
+            "group": "item_skills",
+            "id": "skill_binocular_recon"
+          }
         },
         {
           "region": "Espiritu Santo",
@@ -8576,7 +8588,11 @@
           "category": "Bonus Medal",
           "guide": "Reduces noise by 10%. Works once you've unlocked the Quiet Running skill. Just northeast of Alta Gracia (Formerly a gold mining town, now a pilgrimage town). 📍 Lat -13.9391, Long -60.0557.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/espiritu_santo.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/espiritu_santo.jpg",
+          "bonus_for": {
+            "group": "physical_skills",
+            "id": "skill_quiet_running"
+          }
         },
         {
           "region": "Flor de Oro",
@@ -8588,7 +8604,11 @@
           "category": "Bonus Medal",
           "guide": "Increases max zoom by 25%. Works once you've unlocked the Binocular Zoom skill. At F.O.B. Serpiente (Protects the Unidad penitentiary). 📍 Lat -20.6907, Long -60.6903.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/flor_de_oro.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/flor_de_oro.jpg",
+          "bonus_for": {
+            "group": "item_skills",
+            "id": "skill_binocular_zoom"
+          }
         },
         {
           "region": "Inca Camina",
@@ -8600,7 +8620,11 @@
           "category": "Bonus Medal",
           "guide": "20% time increase. Works once you've unlocked the Bleed Out Time skill. Just east of Checkpoint (Controls road traffic). 📍 Lat -19.9188, Long -65.0115.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/inca_camina.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/inca_camina.jpg",
+          "bonus_for": {
+            "group": "squad_skills",
+            "id": "skill_bleed_out_time"
+          }
         },
         {
           "region": "Itacua",
@@ -8612,7 +8636,11 @@
           "category": "Bonus Medal",
           "guide": "5% damage reduction. Works once you've unlocked the Bullet Resistance skill. At Campo de Futbol el Yayo (A soccer field given by the Cocaleros Union). 📍 Lat -17.6439, Long -62.6816.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/itacua.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/itacua.jpg",
+          "bonus_for": {
+            "group": "physical_skills",
+            "id": "skill_bullet_resistance"
+          }
         },
         {
           "region": "Itacua",
@@ -8624,7 +8652,11 @@
           "category": "Bonus Medal",
           "guide": "Efficiency increases by 8%. Works once you've unlocked the Born Leader skill. At Itacua Base (The cartel's provincial operation center). 📍 Lat -18.0649, Long -63.0116.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/itacua.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/itacua.jpg",
+          "bonus_for": {
+            "group": "squad_skills",
+            "id": "skill_born_leader"
+          }
         },
         {
           "region": "Koani",
@@ -8636,7 +8668,11 @@
           "category": "Bonus Medal",
           "guide": "10% damage reduction. Works once you've unlocked the Car Shield skill. Just northwest of Koani Railway Camp (Cocaine for Brazil starts in this freight yard). 📍 Lat -13.559, Long -65.4196.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/koani.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/koani.jpg",
+          "bonus_for": {
+            "group": "physical_skills",
+            "id": "skill_car_shield"
+          }
         },
         {
           "region": "Koani",
@@ -8648,7 +8684,11 @@
           "category": "Bonus Medal",
           "guide": "Adds 1 extra C4 pack. Works once you've unlocked the C4 skill. South of Koani Air Base (The main air hub for cocaine smuggling). 📍 Lat -13.4977, Long -66.8704.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/koani.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/koani.jpg",
+          "bonus_for": {
+            "group": "item_skills",
+            "id": "skill_c4"
+          }
         },
         {
           "region": "La Cruz",
@@ -8660,7 +8700,11 @@
           "category": "Bonus Medal",
           "guide": "Reduces the rate at which you are detected by enemies with 5%. Works once you've unlocked the Detection skill. At Outpost (Monitors road traffic). 📍 Lat -19.355, Long -60.3619.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/la_cruz.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/la_cruz.jpg",
+          "bonus_for": {
+            "group": "physical_skills",
+            "id": "skill_detection"
+          }
         },
         {
           "region": "Libertad",
@@ -8672,7 +8716,11 @@
           "category": "Bonus Medal",
           "guide": "Adds 1 extra Grenade. Works once you've unlocked the Diversion Lure skill. Just northeast of Lieutenant. 📍 Lat -19.8146, Long -60.0064.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/libertad.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/libertad.jpg",
+          "bonus_for": {
+            "group": "item_skills",
+            "id": "skill_diversion_lure"
+          }
         },
         {
           "region": "Libertad",
@@ -8684,7 +8732,11 @@
           "category": "Bonus Medal",
           "guide": "Increases resistance by 100%. Works once you've unlocked the Armor skill. At Outpost (A refueling station for Santa Blanca vehicles). 📍 Lat -21.1006, Long -59.6758.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/libertad.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/libertad.jpg",
+          "bonus_for": {
+            "group": "drone_skills",
+            "id": "skill_armor"
+          }
         },
         {
           "region": "Malca",
@@ -8696,7 +8748,11 @@
           "category": "Bonus Medal",
           "guide": "15% damage reduction. Works once you've unlocked the Explosion Resistance skill. South of Uma Marca Mine (A mine exploited by the company Cueva Roja). 📍 Lat -20.1986, Long -62.0939.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/malca.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/malca.jpg",
+          "bonus_for": {
+            "group": "physical_skills",
+            "id": "skill_explosion_resistance"
+          }
         },
         {
           "region": "Media Luna",
@@ -8708,7 +8764,11 @@
           "category": "Bonus Medal",
           "guide": "100% efficiency increase. Works once you've unlocked the Mark Area skill. At El Cañon (A rebel hideout). 📍 Lat -13.4587, Long -64.9199.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/media_luna.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/media_luna.jpg",
+          "bonus_for": {
+            "group": "drone_skills",
+            "id": "skill_mark_area"
+          }
         },
         {
           "region": "Media Luna",
@@ -8720,7 +8780,11 @@
           "category": "Bonus Medal",
           "guide": "Adds 2 extra Flares. Works once you've unlocked the Flare Gun skill. At Checkpoint (Controls road traffic). 📍 Lat -14.6067, Long -64.3626.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/media_luna.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/media_luna.jpg",
+          "bonus_for": {
+            "group": "item_skills",
+            "id": "skill_flare_gun"
+          }
         },
         {
           "region": "Mojocoyo",
@@ -8732,7 +8796,11 @@
           "category": "Bonus Medal",
           "guide": "Horizontal range increases by 25%. Works once you've unlocked the Range skill. Just southwest of Capachunco (A quinoa farmers' village occupied by the cartel). 📍 Lat -15.294, Long -66.3188.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/mojocoyo.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/mojocoyo.jpg",
+          "bonus_for": {
+            "group": "drone_skills",
+            "id": "skill_range"
+          }
         },
         {
           "region": "Mojocoyo",
@@ -8744,7 +8812,11 @@
           "category": "Bonus Medal",
           "guide": "Adds 2 extra Flashbangs. Works once you've unlocked the Flash Grenade skill. At Mojocoyo Base (The largest cocaine storage site in the world). 📍 Lat -15.1289, Long -65.8926.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/mojocoyo.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/mojocoyo.jpg",
+          "bonus_for": {
+            "group": "item_skills",
+            "id": "skill_flashbang_grenade"
+          }
         },
         {
           "region": "Monte Puncu",
@@ -8756,7 +8828,11 @@
           "category": "Bonus Medal",
           "guide": "Adds an extra 20% speed bonus. Works once you've unlocked the Speed skill. Just north of Outpost (A relay for cartel vehicles and convoys). 📍 Lat -13.997, Long -61.3316.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/monte_puncu.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/monte_puncu.jpg",
+          "bonus_for": {
+            "group": "drone_skills",
+            "id": "skill_speed"
+          }
         },
         {
           "region": "Monte Puncu",
@@ -8768,7 +8844,11 @@
           "category": "Bonus Medal",
           "guide": "Adds 2 extra Grenades. Works once you've unlocked the Frag Grenade skill. Just southwest of El Yayo Cooperative (A cocalero cooperative founded by El Yayo 30 years ago). 📍 Lat -13.6162, Long -61.8208.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/monte_puncu.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/monte_puncu.jpg",
+          "bonus_for": {
+            "group": "item_skills",
+            "id": "skill_frag_grenade"
+          }
         },
         {
           "region": "Montuyoc",
@@ -8780,7 +8860,11 @@
           "category": "Bonus Medal",
           "guide": "10% spray reduction. Works once you've unlocked the Hip Fire Spread skill. Just southwest of Choza Padre (A wool-producing town, now a cartel garrison). 📍 Lat -18.0606, Long -66.4308.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/montuyoc.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/montuyoc.jpg",
+          "bonus_for": {
+            "group": "weapon_skills",
+            "id": "skill_hip_fire_spread"
+          }
         },
         {
           "region": "Ocoro",
@@ -8792,7 +8876,11 @@
           "category": "Bonus Medal",
           "guide": "Adds 1 extra mine. Works once you've unlocked the Mine skill. Just northwest of Puerto Grande (A fishing town occupied by the cartel). 📍 Lat -15.9705, Long -62.5028.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/ocoro.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/ocoro.jpg",
+          "bonus_for": {
+            "group": "item_skills",
+            "id": "skill_mine"
+          }
         },
         {
           "region": "P.N. de Agua Verde",
@@ -8804,7 +8892,11 @@
           "category": "Bonus Medal",
           "guide": "Damage increases by 5%. Works once you've unlocked the Trained Rebels skill. At Secret Cocaine Hideout (A natural cavern used as a cocaine hideout). 📍 Lat -15.0476, Long -62.4956.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/p_n_de_agua_verde.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/p_n_de_agua_verde.jpg",
+          "bonus_for": {
+            "group": "squad_skills",
+            "id": "skill_trained_rebels"
+          }
         },
         {
           "region": "P.N. de Agua Verde",
@@ -8816,7 +8908,11 @@
           "category": "Bonus Medal",
           "guide": "Duration increases by 50%. Works once you've unlocked the No Pain skill. Just northwest of Buchon House (The house of a high-ranking member of the cartel). 📍 Lat -15.1368, Long -63.0259.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/p_n_de_agua_verde.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/p_n_de_agua_verde.jpg",
+          "bonus_for": {
+            "group": "physical_skills",
+            "id": "skill_no_pain"
+          }
         },
         {
           "region": "Pucara",
@@ -8828,7 +8924,11 @@
           "category": "Bonus Medal",
           "guide": "30% speed increase. Works once you've unlocked the Revive Speed skill. Just southeast of Todos Santos Town (The provincial capital and center of llama farming). 📍 Lat -18.9791, Long -64.1267.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/pucara.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/pucara.jpg",
+          "bonus_for": {
+            "group": "squad_skills",
+            "id": "skill_revive_speed"
+          }
         },
         {
           "region": "Remanzo",
@@ -8840,7 +8940,11 @@
           "category": "Bonus Medal",
           "guide": "Resistance increases by 5%. Works once you've unlocked the Squad Resilience skill. At Liquid Cocaine Lab (A hidden lab used to dilute cocaine). 📍 Lat -15.4062, Long -65.339.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/remanzo.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/remanzo.jpg",
+          "bonus_for": {
+            "group": "squad_skills",
+            "id": "skill_squad_resilience"
+          }
         },
         {
           "region": "San Mateo",
@@ -8852,7 +8956,11 @@
           "category": "Bonus Medal",
           "guide": "15% movement reduction. Works once you've unlocked the Stable Aim skill. Just south of Prison Rosario (Prison village housing cartel penitentiary administration). 📍 Lat -15.8771, Long -64.1769.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/san_mateo.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/san_mateo.jpg",
+          "bonus_for": {
+            "group": "weapon_skills",
+            "id": "skill_stable_aim"
+          }
         },
         {
           "region": "Tabacal",
@@ -8864,7 +8972,11 @@
           "category": "Bonus Medal",
           "guide": "Reduces aim time by 10%. Works once you've unlocked the Time to Aim skill. Just south of Outpost (Relay for the cartel's vehicles and convoys). 📍 Lat -13.4823, Long -62.3726.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/tabacal.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/tabacal.jpg",
+          "bonus_for": {
+            "group": "weapon_skills",
+            "id": "skill_time_to_aim"
+          }
         },
         {
           "region": "Villa Verde",
@@ -8876,7 +8988,11 @@
           "category": "Bonus Medal",
           "guide": "Increases the damage done to vehicles by 20%. Works once you've unlocked the VHC Destruction skill. Just south of Outpost (Protects the coca fields from rebel raids). 📍 Lat -13.782, Long -59.1814.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg",
+          "bonus_for": {
+            "group": "weapon_skills",
+            "id": "skill_vhc_destruction"
+          }
         },
         {
           "region": "Villa Verde",
@@ -8888,7 +9004,11 @@
           "category": "Bonus Medal",
           "guide": "Reduces the cooldown by 8 seconds. Works once you've unlocked the Cooldown skill. Southeast of Villa Verde (The traditional capital of Bolivian coca trading). 📍 Lat -14.6748, Long -59.6759.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg"
+          "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg",
+          "bonus_for": {
+            "group": "drone_skills",
+            "id": "skill_cooldown"
+          }
         }
       ],
       "trophy_completes": [

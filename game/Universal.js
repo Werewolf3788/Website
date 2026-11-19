@@ -342,6 +342,8 @@ window.appState = {
                             cost: cItem.cost != null ? cItem.cost : null,
                             category: cItem.category || '',
                             tags: cItem.tags || '',
+                            // A location card that is the same thing as a skill's ★ bonus medal: { group, id }.
+                            bonus_for: cItem.bonus_for || null,
                             levels: cItem.levels != null ? cItem.levels : null,
                             unlock_requirement: cItem.unlock_requirement || '',
                             level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null,
@@ -798,7 +800,7 @@ function applyTrophyCompletions(st) {
         const cats = Array.isArray(rule.categories) ? rule.categories.map(xnorm) : null;
         Object.values(g.items || {}).forEach(it => {
             if (cats && !cats.includes(xnorm(it.category))) return;
-            if (!it.collected) { it.collected = true; it.autoTrophy = true; changed = true; }
+            if (!it.collected) { it.collected = true; it.autoTrophy = true; changed = true; mirrorStarFromMedal(st, it); }
         });
         if (rule.bonus_stars) Object.values(st.collectibles).forEach(g2 => Object.values(g2.items || {}).forEach(it => {
             if (it.bonus && !it.bonusEarned) { it.bonusEarned = true; changed = true; }
@@ -905,6 +907,7 @@ window.appState.applyStateToUI = function() {
         });
     });
 
+    if (reconcileBonusLinks(this)) { clearTimeout(this._bonusSaveTimer); this._bonusSaveTimer = setTimeout(() => this.saveProgress(), 800); }
     applyTrophyCompletions(this);
 
     document.querySelectorAll('.game-item-card').forEach(card => {
@@ -1221,6 +1224,7 @@ window.appState.toggleTechLevel = function(id, group, n) {
 window.appState.toggleBonus = function(id, group) {
     const it = this.collectibles[group]?.items?.[id]; if (!it) return;
     it.bonusEarned = !it.bonusEarned;
+    mirrorBonusFromStar(this, group, id, it.bonusEarned);
     this.applyStateToUI();
     clearTimeout(this._bonusSaveTimer); this._bonusSaveTimer = setTimeout(() => this.saveProgress(), 600);
 };
@@ -1302,10 +1306,31 @@ window.appState.undoMarkAll = function() {
     this.applyStateToUI(); this.saveProgress();
     this.updateStatus('Undone.');
 };
+// Bonus medal location cards <-> the ★ on the matching skill card (bonus_for link).
+function mirrorStarFromMedal(st, it) {
+    const b = it && it.bonus_for; const sk = b && st.collectibles[b.group]?.items?.[b.id];
+    if (sk) sk.bonusEarned = !!it.collected;
+}
+function mirrorBonusFromStar(st, group, id, earned) {
+    Object.values(st.collectibles || {}).forEach(g => Object.values(g.items || {}).forEach(it => {
+        if (it.bonus_for && it.bonus_for.group === group && it.bonus_for.id === id) it.collected = !!earned;
+    }));
+}
+// On load: whichever side was ticked counts for both (older saves only had the stars).
+function reconcileBonusLinks(st) {
+    let changed = false;
+    Object.values(st.collectibles || {}).forEach(g => Object.values(g.items || {}).forEach(it => {
+        const b = it.bonus_for; const sk = b && st.collectibles[b.group]?.items?.[b.id]; if (!sk) return;
+        if (it.collected && !sk.bonusEarned) { sk.bonusEarned = true; changed = true; }
+        else if (sk.bonusEarned && !it.collected) { it.collected = true; changed = true; }
+    }));
+    return changed;
+}
 window.appState.toggleItem = function(itemId, type, group) {
     if (type === 'collectible') {
         if (group && this.collectibles[group]?.items?.[itemId]) {
             this.collectibles[group].items[itemId].collected = !this.collectibles[group].items[itemId].collected;
+            mirrorStarFromMedal(this, this.collectibles[group].items[itemId]);
         }
     } else if (type === 'trophy') {
         if (!this.trophies[itemId]) this.trophies[itemId] = { earned: false };
@@ -2584,6 +2609,7 @@ window.appState.markShown = function(value) {
         const it = g && this.collectibles[g]?.items?.[id]; if (!it) return;
         before[g + '|' + id] = !!it.collected;
         if (!!it.collected !== value) { it.collected = value; n++; }
+        mirrorStarFromMedal(this, it);
     });
     markShownUndo = before;
     document.querySelectorAll('.mark-shown-undo').forEach(b => { b.hidden = false; });
@@ -2592,7 +2618,7 @@ window.appState.markShown = function(value) {
 };
 window.appState.undoMarkShown = function() {
     if (!markShownUndo) return;
-    Object.entries(markShownUndo).forEach(([k, v]) => { const i = k.indexOf('|'); const it = this.collectibles[k.slice(0, i)]?.items?.[k.slice(i + 1)]; if (it) it.collected = v; });
+    Object.entries(markShownUndo).forEach(([k, v]) => { const i = k.indexOf('|'); const it = this.collectibles[k.slice(0, i)]?.items?.[k.slice(i + 1)]; if (it) { it.collected = v; mirrorStarFromMedal(this, it); } });
     markShownUndo = null;
     document.querySelectorAll('.mark-shown-undo').forEach(b => { b.hidden = true; });
     this.applyStateToUI(); this.saveProgress(); this.updateStatus('Undone.');
