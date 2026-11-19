@@ -1909,13 +1909,193 @@
           "guide": "The expansion adds exclusive weapons. Their names are not recorded yet."
         }
       ]
+    },
+    "kingslayer_files": {
+      "quest_name": "Kingslayer Files",
+      "region": "Bolivia-wide",
+      "description": "About 200 Kingslayer Files (documents, audio/video logs, photos and legends) across the 21 base-game provinces; some players count up to 203. Provinces range from 4 files (Monte Puncu) to 14 (Koani). Operation Oracle adds 12 more. Files don't show on your map until you get close or visit nearby locations / question marks (?). The Whole Story trophy only needs the collectible documents, not the mission-granted 'Word of Sueno' videos.",
+      "total_base_game": 200,
+      "total_base_game_max": 203,
+      "dlc_additions": {
+        "Operation Oracle": 12
+      },
+      "file_types": [
+        "Documents",
+        "Audio/video logs",
+        "Photos",
+        "Legends"
+      ],
+      "trophy": {
+        "name": "The Whole Story",
+        "requirement": "Collect all collectible documents; mission-granted 'Word of Sueno' videos are not needed.",
+        "tracking_help": "https://www.trueachievements.com"
+      },
+      "items": [
+        {
+          "id": "ksf_barvechos",
+          "name": "Barvechos",
+          "region": "Barvechos",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_caimanes",
+          "name": "Caimanes",
+          "region": "Caimanes",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_espiritu_santo",
+          "name": "Espiritu Santo",
+          "region": "Espiritu Santo",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_flor_de_oro",
+          "name": "Flor De Oro",
+          "region": "Flor De Oro",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_inca_camina",
+          "name": "Inca Camina",
+          "region": "Inca Camina",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_itacua",
+          "name": "Itacua",
+          "region": "Itacua",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_koani",
+          "name": "Koani",
+          "region": "Koani",
+          "location": "Province",
+          "guide": "This province has 14 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Koani has the most files of any province."
+        },
+        {
+          "id": "ksf_la_cruz",
+          "name": "La Cruz",
+          "region": "La Cruz",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_libertad",
+          "name": "Libertad",
+          "region": "Libertad",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_malca",
+          "name": "Malca",
+          "region": "Malca",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_media_luna",
+          "name": "Media Luna",
+          "region": "Media Luna",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_mojocoyo",
+          "name": "Mojocoyo",
+          "region": "Mojocoyo",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_monte_puncu",
+          "name": "Monte Puncu",
+          "region": "Monte Puncu",
+          "location": "Province",
+          "guide": "This province has 4 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Monte Puncu has the fewest files of any province."
+        },
+        {
+          "id": "ksf_montuyoc",
+          "name": "Montuyoc",
+          "region": "Montuyoc",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_ocoro",
+          "name": "Ocoro",
+          "region": "Ocoro",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_p_n_de_agua_verde",
+          "name": "P.N. De Agua Verde",
+          "region": "P.N. De Agua Verde",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_pucara",
+          "name": "Pucara",
+          "region": "Pucara",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_remanzo",
+          "name": "Remanzo",
+          "region": "Remanzo",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_san_mateo",
+          "name": "San Mateo",
+          "region": "San Mateo",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_tabacal",
+          "name": "Tabacal",
+          "region": "Tabacal",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_villa_verde",
+          "name": "Villa Verde",
+          "region": "Villa Verde",
+          "location": "Province",
+          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+        },
+        {
+          "id": "ksf_operation_oracle",
+          "name": "Operation Oracle (DLC)",
+          "region": "DLC",
+          "location": "Operation Oracle",
+          "guide": "Operation Oracle adds 12 extra Kingslayer Files. Tick once all 12 are found."
+        }
+      ]
     }
   },
   "tips": [
     "Skills have between 1 and 4 ranks (Rebel Support skills have 3). Click a rank box to jump straight to that rank; click the already-active top box again to drop back one rank.",
     "A skill with a Bonus Medal (shown as a star) has that medal as a separate, independent toggle from its tier boxes — the medal is a one-off map pickup, not another rank.",
     "Rebel Support's Vehicle Drop-Off is the one skill with explicitly documented per-rank differences: Rank 1 calls an SUV, Rank 2 an armored vehicle, Rank 3 a helicopter.",
-    "The last column of the Weapon, Drone, Physical and Squad trees unlocks at player level 14, 15, 17 and 16. Rank counts and costs now come from the IGN / Ghost Recon Wiki skill lists."
+    "The last column of the Weapon, Drone, Physical and Squad trees unlocks at player level 14, 15, 17 and 16. Rank counts and costs now come from the IGN / Ghost Recon Wiki skill lists.",
+    "Kingslayer Files: about 200 across the 21 base-game provinces (some count up to 203), from 4 in Monte Puncu to 14 in Koani. Operation Oracle adds 12 more.",
+    "Kingslayer Files don't show on your map until you get close to them or visit nearby locations and question marks (?), unlike Skill Points or weapon cases.",
+    "The Whole Story trophy only needs the collectible documents, not the mission-granted 'Word of Sueno' videos. If your count looks stuck, check TrueAchievements for tracking-bug fixes."
   ],
   "resources_cost_note": "Skill costs are from IGN / Ghost Recon Wiki lists and have not been checked in-game. If your game shows a different cost, tell Claude and it gets fixed.",
   "player_profile": {
