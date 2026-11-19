@@ -319,6 +319,8 @@ window.appState = {
                     if (group.wallet_label) this.collectibles[cKey].wallet_label = group.wallet_label;
                     if (Array.isArray(group.build_guides)) this.collectibles[cKey].build_guides = group.build_guides;
                     if (Array.isArray(group.priority_order)) this.collectibles[cKey].priority_order = group.priority_order;
+                    // Trophies/achievements that mean every item (or every item of some categories) is collected.
+                    if (Array.isArray(group.trophy_completes)) this.collectibles[cKey].trophy_completes = group.trophy_completes;
                 }
 
                 rawItems.forEach(cItem => {
@@ -767,6 +769,59 @@ function applyUserProfileStyling(uData) {
 }
 
 // Section 6: UI State Toggles & Renderers
+// ---------------------------------------------------------------------------
+// Trophy -> collectibles: a group can list trophies that mean "you have all of
+// these" (e.g. Wildlands "The Whole Story" = every Kingslayer document). Once the
+// trophy/achievement is earned - PSN sync, Steam sync, or ticked by hand on its
+// trophy card (works for Xbox) - every matching box is ticked. Only ever ticks,
+// never unticks. Matched by trophy name, so it works on every platform.
+// ---------------------------------------------------------------------------
+function earnedTrophyNameSet(st) {
+    const s = new Set();
+    Object.values(st.trophies || {}).forEach(t => { if (t && t.earned && t.name) s.add(xnorm(t.name)); });
+    (st.steamAchNames || []).forEach(n => s.add(xnorm(n)));
+    return s;
+}
+function applyTrophyCompletions(st) {
+    loadSteamAchievementNames(st);
+    const groups = Object.entries(st.collectibles || {}).filter(([, g]) => Array.isArray(g.trophy_completes));
+    if (!groups.length) return;
+    const earned = earnedTrophyNameSet(st);
+    if (!earned.size) return;
+    let changed = false;
+    groups.forEach(([, g]) => g.trophy_completes.forEach(rule => {
+        if (!rule || !earned.has(xnorm(rule.trophy))) return;
+        const cats = Array.isArray(rule.categories) ? rule.categories.map(xnorm) : null;
+        Object.values(g.items || {}).forEach(it => {
+            if (cats && !cats.includes(xnorm(it.category))) return;
+            if (!it.collected) { it.collected = true; it.autoTrophy = true; changed = true; }
+        });
+        if (rule.bonus_stars) Object.values(st.collectibles).forEach(g2 => Object.values(g2.items || {}).forEach(it => {
+            if (it.bonus && !it.bonusEarned) { it.bonusEarned = true; changed = true; }
+        }));
+    }));
+    if (changed) { clearTimeout(st._trophyAutoSave); st._trophyAutoSave = setTimeout(() => st.saveProgress(['collectibles']), 800); }
+}
+// Steam: unlocked achievements come from /steam_users/{id}/ach/{appid}/u (written by
+// scripts/steam-sync.js); their display names from /steam_games/{appid}/ach. Read once
+// per game per page load (two small reads).
+function loadSteamAchievementNames(st) {
+    const appid = st.gameData && st.gameData.platforms && st.gameData.platforms.steam && st.gameData.platforms.steam.appId;
+    if (!appid || !st.steamId || typeof rtdb === 'undefined') return;
+    const key = `${st.steamId}_${appid}`;
+    if (st._steamAchKey === key) return;
+    st._steamAchKey = key;
+    Promise.all([
+        rtdb.ref(`/steam_users/${st.steamId}/ach/${appid}/u`).once('value'),
+        rtdb.ref(`/steam_games/${appid}/ach`).once('value')
+    ]).then(([u, names]) => {
+        const got = toArr(u.val()).map(x => Array.isArray(x) ? x[0] : x).filter(Boolean);
+        const nm = names.val() || {};
+        st.steamAchNames = got.map(api => (nm[api] && nm[api].n) || api);
+        if (st.steamAchNames.length) st.applyStateToUI();
+    }).catch(e => console.warn('[Steam achievements]', e && e.message));
+}
+
 window.appState.applyStateToUI = function() {
     // Editable resource counters ("resources" in the game JSON): show the saved amounts.
     document.querySelectorAll('.res-input[data-res]').forEach(el => {
@@ -845,6 +900,8 @@ window.appState.applyStateToUI = function() {
             else if (this.medals[g.medal_id].auto) { this.medals[g.medal_id].earned = false; delete this.medals[g.medal_id].auto; }
         });
     });
+
+    applyTrophyCompletions(this);
 
     document.querySelectorAll('.game-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
