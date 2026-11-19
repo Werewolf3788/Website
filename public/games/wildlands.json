@@ -1913,7 +1913,7 @@
     "kingslayer_files": {
       "quest_name": "Kingslayer Files",
       "region": "Bolivia-wide",
-      "description": "About 200 Kingslayer Files (documents, audio/video logs, photos and legends) across the 21 base-game provinces; some players count up to 203. Provinces range from 4 files (Monte Puncu) to 14 (Koani). Operation Oracle adds 12 more. Files don't show on your map until you get close or visit nearby locations / question marks (?). The Whole Story trophy only needs the collectible documents, not the mission-granted 'Word of Sueno' videos.",
+      "description": "About 200 Kingslayer Files (documents, audio/video logs, photos and legends) across the 21 base-game provinces; some players count up to 203. Provinces range from 4 files (Monte Puncu) to 14 (Koani). Operation Oracle adds 12 more. Files don't show on your map until you get close or visit nearby locations / question marks (?). The Whole Story trophy only needs the collectible documents, not the mission-granted 'Word of Sueno' videos. Red map icons are documents, audio logs, photos and videos; green icons are Legends. Mission Files are given automatically when you first enter a province or beat its Buchón. Intel caches don't reveal Kingslayer Files.",
       "total_base_game": 200,
       "total_base_game_max": 203,
       "dlc_additions": {
@@ -2085,6 +2085,66 @@
           "location": "Operation Oracle",
           "guide": "Operation Oracle adds 12 extra Kingslayer Files. Tick once all 12 are found."
         }
+      ],
+      "file_kinds": [
+        {
+          "name": "Documents, Audio Logs, Photos & Videos",
+          "map_icon": "red",
+          "about": "Santa Blanca cartel operations, Unidad activity and Ricky Sandoval's investigation."
+        },
+        {
+          "name": "Legends",
+          "map_icon": "green",
+          "about": "Local Bolivian folklore, myths and history."
+        },
+        {
+          "name": "Mission Files",
+          "map_icon": null,
+          "about": "Given automatically when you enter a new province for the first time or beat a region's Buchón (boss)."
+        }
+      ]
+    },
+    "collectible_types": {
+      "quest_name": "Collectible Types",
+      "region": "Bolivia-wide",
+      "description": "The 5 main collectible types in the base game, roughly 400+ items across the 21 provinces. Tick a type once you've finished it.",
+      "total_approx": "400+",
+      "items": [
+        {
+          "id": "ct_kingslayer_files",
+          "name": "Kingslayer Files (~200)",
+          "region": "Bolivia-wide",
+          "location": "Red and green map icons",
+          "guide": "Lore, character backstories and Bolivian legends. Red icons are documents, audio logs, photos and videos; green icons are Legends; Mission Files come automatically when you first enter a province or beat its Buchón. They aren't revealed by intel caches. Get close or visit nearby ? locations to make them appear. Track each province in the Kingslayer Files section."
+        },
+        {
+          "id": "ct_weapons",
+          "name": "Weapons (80)",
+          "region": "Bolivia-wide",
+          "location": "Blue gun icons + boss kills",
+          "guide": "50 Weapon Cases (blue gun icons once you gather local intel) holding assault rifles, sniper rifles, SMGs, LMGs, shotguns and handguns, plus 30 pre-customized Boss Weapons unlocked automatically by defeating cartel bosses in the story. Exact names and locations are on MapGenie or the Steam Community collectibles guide."
+        },
+        {
+          "id": "ct_weapon_accessories",
+          "name": "Weapon Accessories (~100+)",
+          "region": "Bolivia-wide",
+          "location": "Blue accessory cases",
+          "guide": "Scopes, extended magazines, barrels, stocks, underbarrel grips/grenade launchers and rail laser sights, in blue accessory cases revealed by regional intel caches. Not needed for any trophy or achievement."
+        },
+        {
+          "id": "ct_bonus_medals",
+          "name": "Bonus Medals (26 base / 30 with DLC)",
+          "region": "Bolivia-wide",
+          "location": "Blue medal icons",
+          "guide": "Permanent passive upgrades (e.g. more explosives, faster revives, quieter running, bullet resistance, stronger rebel support). A medal only works once you've unlocked its matching base skill. Mark each one with the star on its skill in the skill tree sections."
+        },
+        {
+          "id": "ct_skill_point_medals",
+          "name": "Skill Point Medals (~140+)",
+          "region": "Bolivia-wide",
+          "location": "Blue skill point icons",
+          "guide": "Each pickup gives +1, +3 or +5 Skill Points. There are more in the world than you need to max every skill, so you can skip about 20 of them."
+        }
       ]
     }
   },
@@ -2095,7 +2155,10 @@
     "The last column of the Weapon, Drone, Physical and Squad trees unlocks at player level 14, 15, 17 and 16. Rank counts and costs now come from the IGN / Ghost Recon Wiki skill lists.",
     "Kingslayer Files: about 200 across the 21 base-game provinces (some count up to 203), from 4 in Monte Puncu to 14 in Koani. Operation Oracle adds 12 more.",
     "Kingslayer Files don't show on your map until you get close to them or visit nearby locations and question marks (?), unlike Skill Points or weapon cases.",
-    "The Whole Story trophy only needs the collectible documents, not the mission-granted 'Word of Sueno' videos. If your count looks stuck, check TrueAchievements for tracking-bug fixes."
+    "The Whole Story trophy only needs the collectible documents, not the mission-granted 'Word of Sueno' videos. If your count looks stuck, check TrueAchievements for tracking-bug fixes.",
+    "Reveal collectibles fast: in every new province, grab the white ! intel (files, laptops or lieutenant interrogations). That reveals all the blue collectibles (Weapons, Accessories, Bonus Medals and Skill Points) on the province map.",
+    "Fly or drive through every unvisited ? location in a province to make the nearby red and green Kingslayer Files pop up on your mini-map.",
+    "You can skip about 20 Skill Point pickups and still max out the whole skill tree. Weapon accessories aren't needed for any trophy."
   ],
   "resources_cost_note": "Skill costs are from IGN / Ghost Recon Wiki lists and have not been checked in-game. If your game shows a different cost, tell Claude and it gets fixed.",
   "player_profile": {
