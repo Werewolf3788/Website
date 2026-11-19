@@ -345,6 +345,9 @@ window.appState = {
                             unlock_requirement: cItem.unlock_requirement || '',
                             level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null,
                             tier_notes: Array.isArray(cItem.tier_notes) ? cItem.tier_notes : null,
+                            // Boxes split into tiers (Wildlands Rebel Support: 3 tiers x 3 levels), each
+                            // with its own description: [{ levels, text }].
+                            tier_groups: Array.isArray(cItem.tier_groups) ? cItem.tier_groups : null,
                             // Per-rank prices in several currencies (Wildlands skills: Skill Points
                             // + Gasoline/Medication/Comms/Food), paid from the resource counters.
                             rank_costs: Array.isArray(cItem.rank_costs) ? cItem.rank_costs : null,
@@ -922,6 +925,12 @@ window.appState.applyStateToUI = function() {
                         btn.classList.toggle('filled', n <= lvl);
                         btn.classList.toggle('is-current', n === lvl && lvl > 0);
                     });
+                }
+                // Tier groups: the line under the name shows the tier you're working toward.
+                if (Array.isArray(it.tier_groups) && it.tier_groups.length) {
+                    const cur = currentTierGroup(it.tier_groups, it.level || 0);
+                    const subEl = card.querySelector('.card-sub');
+                    if (cur && subEl) subEl.textContent = `Tier ${cur.i + 1}${cur.maxed ? ' (maxed)' : ''}: ${cur.g.text || ''}`;
                 }
                 // Bonus star: filled/earned state, independent of the tier boxes above.
                 const bonusBtn = card.querySelector('.bonus-star-btn');
@@ -1866,7 +1875,9 @@ function ensureUniversalStyles() {
         .card-chevron { font-size: 0.7rem; color: #94a3b8; display: inline-block; transition: transform 0.15s ease; }
         .game-item-card.more-open .card-chevron { transform: rotate(180deg); }
         .mission-region { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin-left: 8px; }
-        .tier-box-wrap { display: inline-flex; gap: 4px; flex: 0 0 auto; }
+        .tier-box-wrap { display: inline-flex; gap: 4px; flex: 0 0 auto; flex-wrap: wrap; }
+        .tier-gap { width: 8px; flex: 0 0 auto; }
+        .tier-row { margin-top: 10px; }
         .tier-box { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.22);
             background: #0f172a; color: #94a3b8; font-size: 0.8rem; font-weight: 800; cursor: pointer;
             display: flex; align-items: center; justify-content: center; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
@@ -2069,6 +2080,20 @@ function gridOf(cards) {
     return cards.length ? `<div class="trophy-grid">${cards.join('')}</div>` : '';
 }
 
+// Tier groups: a small gap goes before the first box of each tier after the first.
+function tierGapBefore(groups, n) {
+    if (!Array.isArray(groups)) return false;
+    let edge = 0;
+    for (const g of groups.slice(0, -1)) { edge += Number(g.levels) || 0; if (n === edge + 1) return true; }
+    return false;
+}
+// Which tier you are working toward at a given level: before box 3 is ticked it's
+// tier 1, from box 3 it's tier 2, from box 6 tier 3 (with 3 levels per tier).
+function currentTierGroup(groups, level) {
+    let edge = 0;
+    for (let i = 0; i < groups.length; i++) { edge += Number(groups[i].levels) || 0; if (level < edge || i === groups.length - 1) return { i, g: groups[i], maxed: level >= edge }; }
+    return null;
+}
 function buildItemCard(o) {
     const search = [o.title, o.sub, o.body, o.badge, o.ctx, o.type].filter(Boolean).join(' ').toLowerCase();
     const img = o.img ? toSecureUrl(o.img) : '';
@@ -2079,10 +2104,12 @@ function buildItemCard(o) {
     // with multiple levels, etc.) — click box N to set your current rank directly,
     // rather than stepping one at a time. Boxes start unfilled; applyStateToUI's
     // sync loop fills in boxes <= the saved level once progress loads.
+    // More than 4 boxes don't fit beside the title, so they get their own row.
+    const wideTiers = Number(o.levelGoal) > 4;
     const tierBoxesHtml = o.levelGoal
         ? `<div class="tier-box-wrap" data-tier-id="${escapeHtml(o.id)}" data-tier-group="${escapeHtml(o.group || '')}" title="Click a box to set your current rank">
             ${Array.from({ length: Number(o.levelGoal) || 0 }, (_, i) => i + 1).map(n =>
-                `<button type="button" class="tier-box" data-tier="${n}" aria-label="Set rank ${n}" onclick="appState.toggleTechLevel('${escapeHtml(o.id)}', '${escapeHtml(o.group || '')}', ${n})">${n}</button>`
+                `${tierGapBefore(o.tierGroups, n) ? '<span class="tier-gap"></span>' : ''}<button type="button" class="tier-box" data-tier="${n}" aria-label="Set rank ${n}" onclick="appState.toggleTechLevel('${escapeHtml(o.id)}', '${escapeHtml(o.group || '')}', ${n})">${n}</button>`
                 // Clicking the already-active top box deselects down one rank; clicking any
                 // other box jumps straight to that rank. See appState.toggleTechLevel below.
             ).join('')}
@@ -2101,20 +2128,23 @@ function buildItemCard(o) {
                 <div style="min-width:0;">
                     <span class="trophy-rank ${o.badgeClass || 'rank-bronze'}">${escapeHtml(o.badge || '')}</span>
                     <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(o.title || '')}${hasMore ? ' <span class="card-chevron">▾</span>' : ''}</h3>
-                    ${o.sub ? `<div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.sub)}</div>` : ''}
+                    ${o.sub ? `<div class="card-sub" style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.sub)}</div>` : ''}
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex:0 0 auto;">
             ${o.counter
                 ? `<div class="ribbon-count-wrap" title="Times earned"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepRibbon('${escapeHtml(o.id)}', -1)">−</button><span>×</span><input type="number" min="0" step="1" inputmode="numeric" class="ribbon-count" value="0" aria-label="Times earned: ${escapeHtml(o.title || '')}" onchange="appState.setRibbonCount('${escapeHtml(o.id)}', this.value)"><button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepRibbon('${escapeHtml(o.id)}', 1)">+</button></div>`
-                : o.levelGoal
+                : o.levelGoal && !wideTiers
                 ? tierBoxesHtml
+                : o.levelGoal
+                ? ''
                 : o.progressGoal
                 ? `<div class="ribbon-count-wrap medal-progress-wrap" title="Progress"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepMedal('${escapeHtml(o.id)}', -1)">−</button><input type="number" min="0" step="1" inputmode="numeric" class="medal-count" value="0" ${o.unit ? `placeholder="${escapeHtml(o.unit)}" title="Type your longest shot in meters"` : ''} aria-label="${o.unit ? 'Your longest shot (meters)' : 'Progress'}: ${escapeHtml(o.title || '')}" onchange="appState.setMedalProgress('${escapeHtml(o.id)}', this.value)">${o.unit ? `<span class="unit-lbl">${escapeHtml(o.unit)}</span>` : ''}<button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepMedal('${escapeHtml(o.id)}', 1)">+</button></div>`
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
             ${bonusHtml}
             </div>
         </div>
+        ${o.levelGoal && wideTiers ? `<div class="tier-row">${tierBoxesHtml}</div>` : ''}
         ${hasMore ? `<div class="card-more">
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
         ${o.locImg ? `<img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" title="Tap to enlarge" onerror="this.remove()">` : ''}
@@ -3678,7 +3708,7 @@ function renderUniversalCompanion(data) {
                                 title: it.name || id,
                                 sub: [it.category, levelsText, it.unlock_requirement || ''].filter(Boolean).join(' · '),
                                 body: it.guide || '', img: it.image_url, locImg: it.location_image_url,
-                                levelGoal: it.levels > 1 ? it.levels : 0,
+                                levelGoal: it.levels > 1 ? it.levels : 0, tierGroups: it.tier_groups || null,
                                 price: grp.wallet_label && it.cost != null ? it.cost : 0
                             });
                         }).join('')}
@@ -3752,7 +3782,8 @@ function renderUniversalCompanion(data) {
                             title: it.name || id, sub: it.location || '',
                             body: it.guide || '', img: it.image_url, locImg: it.location_image_url,
                             levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null,
-                            rankCosts: !!(it.rank_costs && it.rank_costs.length)
+                            rankCosts: !!(it.rank_costs && it.rank_costs.length),
+                            tierGroups: it.tier_groups || null
                         })).join('')}
                     </div>
                 </div>
