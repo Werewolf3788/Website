@@ -4389,7 +4389,21 @@
         ]
       },
       "map_image_url": "/public/games/wildlands/images/provinces/bolivia_map.jpg",
-      "source": "Locations, numbers and descriptions from the SwissGameGuides interactive map; coordinates converted to MapGenie's Lat/Long (checked against MapGenie in Libertad)."
+      "source": "Locations, numbers and descriptions from the SwissGameGuides interactive map; coordinates converted to MapGenie's Lat/Long (checked against MapGenie in Libertad).",
+      "trophy_completes": [
+        {
+          "trophy": "The Whole Story",
+          "categories": [
+            "Document"
+          ]
+        },
+        {
+          "trophy": "Legendary Hunter",
+          "categories": [
+            "Legend"
+          ]
+        }
+      ]
     },
     "collectible_types": {
       "quest_name": "Collectible Types",
@@ -5162,7 +5176,49 @@
           "location_image_url": "/public/games/wildlands/images/provinces/san_mateo.jpg"
         }
       ],
-      "source": "Locations, numbers and descriptions from the SwissGameGuides interactive map; coordinates converted to MapGenie's Lat/Long (checked against MapGenie in Libertad)."
+      "source": "Locations, numbers and descriptions from the SwissGameGuides interactive map; coordinates converted to MapGenie's Lat/Long (checked against MapGenie in Libertad).",
+      "trophy_completes": [
+        {
+          "trophy": "Assault Rifle Fanatic",
+          "categories": [
+            "Assault Rifle"
+          ]
+        },
+        {
+          "trophy": "Sniper Rifle Fanatic",
+          "categories": [
+            "Sniper Rifle",
+            "Sniper"
+          ]
+        },
+        {
+          "trophy": "Submachine-Gun Fanatic",
+          "categories": [
+            "Submachine Gun",
+            "SMG"
+          ]
+        },
+        {
+          "trophy": "Light Machine-Gun Fanatic",
+          "categories": [
+            "Light Machine Gun",
+            "LMG"
+          ]
+        },
+        {
+          "trophy": "Shotguns Fanatic",
+          "categories": [
+            "Shotgun"
+          ]
+        },
+        {
+          "trophy": "Handgun Fanatic",
+          "categories": [
+            "Handgun",
+            "Compact Machine Gun"
+          ]
+        }
+      ]
     },
     "skill_points": {
       "quest_name": "Skill Points",
@@ -8360,6 +8416,12 @@
           "guide": "Reduces the cooldown by 8 seconds. Works once you've unlocked the Cooldown skill. Southeast of Villa Verde (The traditional capital of Bolivian coca trading). 📍 Lat -14.6748, Long -59.6759.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
           "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg"
+        }
+      ],
+      "trophy_completes": [
+        {
+          "trophy": "Heavy Medals",
+          "bonus_stars": true
         }
       ]
     }
