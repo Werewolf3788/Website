@@ -341,6 +341,7 @@ window.appState = {
                             // game that doesn't use them.
                             cost: cItem.cost != null ? cItem.cost : null,
                             category: cItem.category || '',
+                            tags: cItem.tags || '',
                             levels: cItem.levels != null ? cItem.levels : null,
                             unlock_requirement: cItem.unlock_requirement || '',
                             level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null,
@@ -3808,6 +3809,8 @@ function renderUniversalCompanion(data) {
                         ${items.map(([id, it]) => buildItemCard({
                             id, type: 'collectible', group: cKey,
                             badge: it.region || humanize(cKey), badgeClass: 'rank-silver',
+                            // Section name + item type are searchable too ("koani kingslayer", "barvechos weapon case").
+                            ctx: [humanize(cKey), data.collectibles && data.collectibles[cKey] && data.collectibles[cKey].quest_name, it.category, it.tags].filter(Boolean).join(' '),
                             title: it.name || id, sub: it.location || '',
                             body: it.guide || '', img: it.image_url, locImg: it.location_image_url,
                             levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null,
