@@ -124,6 +124,9 @@ main{flex:1;padding:18px 0 40px}
 .badge{position:absolute;top:8px;left:8px;background:var(--hot);color:#fff;font-size:11px;font-weight:800;text-transform:uppercase;padding:4px 8px;border-radius:6px;letter-spacing:.3px}
 .badge.prime{background:var(--prime)}
 .badge.feat{background:var(--accent);color:#111}
+.badge.soon{background:#1f6feb;color:#fff}
+.badge .cd-sub{display:block;font-size:10.5px;font-weight:700;text-transform:none;letter-spacing:0;margin-top:2px;opacity:.95;font-variant-numeric:tabular-nums}
+.badge .cd-sub b{font-weight:800}
 .body{padding:12px 13px 13px;display:flex;flex-direction:column;gap:6px;flex:1}
 .meta{display:flex;gap:6px;flex-wrap:wrap;font-size:11.5px}
 .pill{border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted);background:var(--bg)}
@@ -325,6 +328,8 @@ const EVENT_LINKS = {
     { url: 'https://www.amazon.com/cybermonday?tag=blackfriday71888-20', text: '🛒 Shop all Cyber Monday deals' }
   ]
 };
+// Show an "Ends in …" countdown on live items during the last part of an event
+const ENDING_SOON_HOURS = 48;
 const MOVIES_CAT = 'Movies & TV';
 
 /* ---------------- helpers ---------------- */
@@ -353,7 +358,11 @@ function eventOf(item) {
     const k = normKey(raw), ev = EVENT_SCHEDULE[k];
     if (ev) { key = ev.label.toLowerCase().replace(/\s+/g, '-'); label = ev.label; start = ev.start; end = ev.end; break; }
   }
-  if (!label && item.event_tag) { label = String(item.event_tag).trim(); key = normKey(label); }
+  if (!label && item.event_tag) {
+    key = normKey(item.event_tag);
+    // "holiday-sale" -> "Holiday Sale"
+    label = String(item.event_tag).trim().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
   if (!label && (start || end)) { label = 'Limited-time deal'; key = 'limited-time'; }
   return label ? { key, label, start, end } : null;
 }
@@ -649,7 +658,19 @@ function sortItems(list) {
 function cardHtml(it, idx) {
   const c = catColor(it.category), isMovie = it.kind === 'movie';
   let badge = '';
-  if (it.sale) badge = `<span class="badge">⚡ ${esc(it.sale.label)}</span>`;
+  const ev = it.event && (it.event.start || it.event.end) ? it.event : null;
+  const now = Date.now();
+  const evStart = ev && ev.start ? dayStart(ev.start) : null;   // date only = 12:00:00 AM
+  const evEnd = ev && ev.end ? dayEnd(ev.end) : null;           // date only = 11:59:59 PM
+  if (ev && evStart && now < evStart && evStart - now <= EVENT_SHOW_DAYS * 86400000) {
+    // Coming up: countdown to the start
+    badge = `<span class="badge soon">⏳ ${esc(ev.label)}<span class="cd-sub">Starts in <b data-ccd="${evStart}">${fmtLeft(evStart - now)}</b></span></span>`;
+  } else if (it.sale) {
+    // Live: event name, plus a countdown when the end is close
+    const endSoon = evEnd && evEnd - now <= ENDING_SOON_HOURS * 3600000;
+    badge = `<span class="badge">⚡ ${esc(it.sale.label)}${endSoon ? `<span class="cd-sub">Ends in <b data-ccd="${evEnd}">${fmtLeft(evEnd - now)}</b></span>` : ''}</span>`;
+  }
+  if (badge) {}
   else if (isMovie) badge = `<span class="badge prime">${esc(it.sub)}</span>`;
   else if (['feature', 'featured', 'sidebar'].includes(it.placement)) badge = `<span class="badge feat">★ Pick</span>`;
   const meta = isMovie
@@ -731,6 +752,15 @@ function renderEvents() {
 setInterval(() => {
   if (document.hidden) return;
   const evs = eventList(); let flipped = false;
+  const nowT = Date.now();
+  document.querySelectorAll('[data-ccd]').forEach(el => {
+    const left = Number(el.dataset.ccd) - nowT;
+    if (left <= 0) flipped = true; else el.textContent = fmtLeft(left);
+  });
+  // A live item just entered its last ENDING_SOON_HOURS: redraw so its "Ends in" appears
+  if (!flipped && nowT % 60000 < 1000) S.deals.forEach(d => {
+    if (d.sale && d.event && d.event.end) { const l = dayEnd(d.event.end) - nowT; if (l <= ENDING_SOON_HOURS * 3600000 && l > ENDING_SOON_HOURS * 3600000 - 61000) flipped = true; }
+  });
   document.querySelectorAll('[data-cd]').forEach(el => {
     const e = evs.find(x => x.key === el.dataset.cd);
     if (!e) { flipped = true; return; }
