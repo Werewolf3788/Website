@@ -1291,19 +1291,24 @@ function clearFriendSnapshots() {
 window.addEventListener('beforeunload', clearFriendSnapshots);
 async function readFriendSave(keys, platforms, gameName) {
     if (!firestore) return null;
-    for (const key of keys) {
-        for (const plat of platforms) {
-            try {
-                const doc = await firestore.collection('user').doc(key).collection('platform').doc(plat).collection('game').doc(gameName).get();
-                if (doc.exists) return { data: doc.data(), key, platform: plat };
-            } catch (err) { console.warn('[Squad] could not read', key, plat, err && err.message); }
-        }
+    // A friend's progress can sit under their friend code OR their email key, and on more
+    // than one platform (older saves used whichever key was ready first). Read them all and
+    // use the one they updated most recently, instead of the first (possibly stale) one found.
+    const reads = [];
+    for (const key of keys) for (const plat of platforms) {
+        reads.push(firestore.collection('user').doc(key).collection('platform').doc(plat).collection('game').doc(gameName).get()
+            .then(doc => doc.exists ? { data: doc.data(), key, platform: plat } : null)
+            .catch(err => { console.warn('[Squad] could not read', key, plat, err && err.message); return null; }));
     }
-    return null;
+    const found = (await Promise.all(reads)).filter(Boolean);
+    const when = (r) => { const u = r.data && r.data.updatedAt; return u && typeof u.toMillis === 'function' ? u.toMillis() : (Number(u) || 0); };
+    found.sort((a, b) => when(b) - when(a));
+    return found[0] || null;
 }
 function friendDoneSet(save, psnEarned) {
-    const done = new Set(), ribbons = {}, medalProg = {};
+    const done = new Set(), ribbons = {}, medalProg = {}, rankProg = {};
     const d = save || {};
+    Object.values(d.collectibles || {}).forEach(g => Object.entries((g && g.items) || {}).forEach(([id, it]) => { const lv = Number(it && it.level) || 0; if (lv > 0 && !(it && it.collected)) rankProg[id] = lv; }));
     Object.entries(d.medals || {}).forEach(([id, m]) => { const v = Number(m && m.progress) || 0; if (v) medalProg[id] = v; });
     Object.values(d.collectibles || {}).forEach(g => Object.entries((g && g.items) || {}).forEach(([id, it]) => { if (it && it.collected) done.add(id); }));
     Object.entries(d.missions || {}).forEach(([id, m]) => { if (m && m.completed) done.add(id); });
@@ -1311,7 +1316,7 @@ function friendDoneSet(save, psnEarned) {
     Object.entries(d.medals || {}).forEach(([id, m]) => { if (m && m.earned) done.add(id); });
     Object.entries(d.ribbons || {}).forEach(([id, r]) => { const n = Number(r && r.count) || (r && r.earned ? 1 : 0); if (n) { ribbons[id] = n; done.add(id); } });
     (psnEarned || []).forEach(id => done.add(id));
-    return { done, ribbons, medalProg };
+    return { done, ribbons, medalProg, rankProg };
 }
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
@@ -1380,12 +1385,12 @@ window.appState.syncFriendsProgress = async function() {
                 if (sid && !/^7656119\d{10}$/.test(sid)) { const vn = (await rtdb.ref(`/steam_vanity/${sid.toLowerCase()}`).once('value')).val(); sid = typeof vn === 'string' ? vn : ''; }
                 if (sid) { const sp = (await rtdb.ref(`/steam_users/${sid}/profile`).once('value')).val(); if (sp && sp.currentGame) nowPlays.push({ kind: 'console', platform: 'Steam', title: sp.currentGame, status: '' }); }
             } catch (e) {}
-            const { done, ribbons, medalProg } = friendDoneSet(save && save.data, psnEarned);
+            const { done, ribbons, medalProg, rankProg } = friendDoneSet(save && save.data, psnEarned);
             const rank = psnRank || (save && save.data && save.data.campaignRank) || null;
             return {
                 code, userKey, name, avatar, nowPlays, plats,
                 platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length,
-                done, ribbons, medalProg, rank, save: save && save.data,
+                done, ribbons, medalProg, rankProg, rank, save: save && save.data,
                 // kept so a live Firestore update can recompute done/ribbons without re-running
                 // the whole friend fetch (RTDB lookups + PSN) again
                 saveDocKey: save && save.key, psnEarnedList: psnEarned
@@ -1408,7 +1413,7 @@ window.appState.syncFriendsProgress = async function() {
                             const data = snap.exists ? snap.data() : null;
                             const live = friendDoneSet(data, cur.psnEarnedList);
                             cur.save = data; cur.hasSave = !!data;
-                            cur.done = live.done; cur.ribbons = live.ribbons; cur.medalProg = live.medalProg;
+                            cur.done = live.done; cur.ribbons = live.ribbons; cur.medalProg = live.medalProg; cur.rankProg = live.rankProg;
                             appState.applyStateToUI();
                             renderSquadRoster();
                         }, (err) => console.warn('[Squad live]', entry.code, err && err.message));
@@ -1508,7 +1513,9 @@ function applyFriendMarks() {
             const goal = Number(card.getAttribute('data-goal')) || 0;
             html = list.filter(f => f.medalProg && f.medalProg[id]).sort((a, b) => b.medalProg[id] - a.medalProg[id])
                 .map(f => friendBadge(f, `${fmtNum(f.medalProg[id])} m`, goal && f.medalProg[id] < goal)).join('');
-        } else html = list.filter(f => f.done.has(id)).map(f => friendBadge(f, isRibbon ? `×${f.ribbons[id] || 0}` : '')).join('');
+        } else html = list.filter(f => f.done.has(id)).map(f => friendBadge(f, isRibbon ? `×${f.ribbons[id] || 0}` : '')).join('')
+            // Skills a friend has partly ranked up (e.g. Battery rank 2 of 4).
+            + list.filter(f => !f.done.has(id) && f.rankProg && f.rankProg[id]).map(f => friendBadge(f, `Rank ${f.rankProg[id]}`, true)).join('');
         let row = card.querySelector(':scope > .friend-marks');
         if (!html) { if (row) row.remove(); return; }
         if (!row) { row = document.createElement('div'); row.className = 'friend-marks'; card.appendChild(row); }
