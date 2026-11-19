@@ -771,6 +771,12 @@ window.appState.applyStateToUI = function() {
         if (document.activeElement === el) return;
         el.value = (this.wallet && this.wallet['res_' + el.dataset.res]) || 0;
     });
+    // Ghost profile text boxes (My Wildlands profile): refill from the saved wallet once it loads.
+    document.querySelectorAll('input[data-pf]').forEach(el => {
+        if (document.activeElement === el) return;
+        const v = this.wallet && this.wallet['pf_' + el.dataset.pf];
+        el.value = v == null ? '' : v;
+    });
     const wn = document.getElementById('wlNext'); if (wn && typeof nextUnlocksHtml === 'function') wn.innerHTML = nextUnlocksHtml();
     const lvl2 = document.getElementById('wildlandsLevelInput2'); if (lvl2 && document.activeElement !== lvl2) lvl2.value = (this.wallet && this.wallet.level) || 1;
     const lvlInput = document.getElementById('wildlandsLevelInput');
@@ -1428,7 +1434,7 @@ function friendBadge(f, extra, notDone) {
 function liveBlock(list) {
     const live = list.filter(f => f.nowPlays && f.nowPlays.length);
     if (!live.length) return '';
-    return '<div style="font-size:0.72rem;font-weight:900;color:#22c55e;margin:2px 0 6px;letter-spacing:.06em;">● PLAYING NOW</div>' + live.map(f => {
+    return '<div style="grid-column:1/-1;font-size:0.72rem;font-weight:900;color:#22c55e;margin:2px 0 6px;letter-spacing:.06em;">● PLAYING NOW</div>' + live.map(f => {
         const lines = f.nowPlays.map(p => p.kind === 'mobile'
             ? `<div style="display:flex;align-items:center;gap:8px;margin-top:4px;"><div style="flex:1;min-width:0;font-size:0.8rem;color:#e2e8f0;">🎲 <b>${escapeHtml(p.title)}</b><div style="font-size:0.7rem;color:#94a3b8;">${escapeHtml(p.status)}</div></div>${p.room ? `<a class="pack-btn" style="text-decoration:none;" target="_blank" rel="noopener" href="/Mobilegames/${escapeHtml(p.game)}.html?room=${encodeURIComponent(p.room)}">${p.open ? 'Join' : 'Watch'}</a>` : ''}</div>`
             : `<div style="margin-top:4px;font-size:0.8rem;color:#e2e8f0;">🎮 <b>${escapeHtml(p.title)}</b> <span style="color:#94a3b8;">on ${escapeHtml(p.platform)}${p.status ? ' · ' + escapeHtml(p.status) : ''}</span></div>`).join('');
@@ -1442,7 +1448,11 @@ function renderSquadRoster() {
     const total = cards.filter(c => c.getAttribute('data-type') !== 'ribbon').length;
     const data = appState.gameData || {};
     const hunting = !isMissionSchema(data) && Array.isArray(data.species);
-    el.innerHTML = liveBlock(list) + list.map(f => {
+    // Anyone shown under PLAYING NOW isn't repeated in the main squad list.
+    const isLive = f => f.nowPlays && f.nowPlays.length;
+    const rest = list.filter(f => !isLive(f));
+    const squadLabel = list.some(isLive) && rest.length ? '<div style="grid-column:1/-1;font-size:0.72rem;font-weight:900;color:#94a3b8;margin:8px 0 6px;letter-spacing:.06em;">SQUAD</div>' : '';
+    el.innerHTML = liveBlock(list) + squadLabel + rest.map(f => {
         const doneHere = cards.filter(c => c.getAttribute('data-type') !== 'ribbon' && f.done.has(c.getAttribute('data-id'))).length;
         const trophies = cards.filter(c => c.getAttribute('data-type') === 'trophy');
         const tDone = trophies.filter(c => f.done.has(c.getAttribute('data-id'))).length;
@@ -1460,7 +1470,7 @@ function renderSquadRoster() {
             <div class="squad-stats">${stats}</div><div style="font-size:0.68rem;color:#64748b;">${escapeHtml(note)}</div>
             <button type="button" class="pack-btn" style="margin-top:6px;" onclick="appState.showFriendAllGames('${escapeHtml(f.code)}', this)">📚 All games</button>
             <div class="squad-all" data-for="${escapeHtml(f.code)}"></div></div></div>`;
-    }).join('') || '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked.</div>';
+    }).join('') || (list.length ? '' : '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked.</div>');
 }
 function canonicalFor(key, g) {
     const k = String(key).toLowerCase();
@@ -3053,7 +3063,10 @@ window.appState.applyLevelUps = function() {
 };
 window.appState.setWalletText = function(field, value) {
     if (!/^pf_[a-z0-9_]+$/.test(field)) return;
-    this.wallet[field] = String(value || '').trim().slice(0, 40); this.saveProgress();
+    this.wallet[field] = String(value || '').trim().slice(0, 40);
+    // Saves while typing (debounced) so nothing is lost if the page reloads mid-entry.
+    clearTimeout(this._pfSaveTimer);
+    this._pfSaveTimer = setTimeout(() => this.saveProgress(), 700);
 };
 window.appState.setWalletHours = function(field, value) {
     if (!/^pfh_[a-z0-9_]+$/.test(field)) return;
@@ -3230,7 +3243,7 @@ function profilePanelHtml(data) {
             </div>
             ${groups.map(g => `<div style="font-weight:700;color:#e2e8f0;margin:10px 0 4px">${escapeHtml(g.name)}</div><div class="res-grid">${toArr(g.fields).filter(f => f && f.id).map(f => `
                 <label class="res-box"><span class="res-name">${escapeHtml(f.emoji || '')} ${escapeHtml(f.name)}${f.unit ? ' <span style="color:#94a3b8">(' + escapeHtml(f.unit.trim()) + ')</span>' : ''}</span>
-                    <input class="uni-search-input res-input" data-pf="${escapeHtml(f.id)}" type="text" maxlength="40" placeholder="${escapeHtml(f.hint || '')}" value="${escapeHtml(w['pf_' + f.id] || '')}" onchange="appState.setWalletText('pf_${escapeHtml(f.id)}', this.value)"></label>`).join('')}</div>`).join('')}
+                    <input class="uni-search-input res-input" data-pf="${escapeHtml(f.id)}" type="text" maxlength="40" placeholder="${escapeHtml(f.hint || '')}" value="${escapeHtml(w['pf_' + f.id] || '')}" oninput="appState.setWalletText('pf_${escapeHtml(f.id)}', this.value)"></label>`).join('')}</div>`).join('')}
         </div>
     </section>`;
 }

@@ -200,6 +200,7 @@
     '.tab{flex:1;border:1px solid rgba(255,255,255,.14);background:transparent;color:inherit;border-radius:999px;padding:6px 10px;font-weight:700;font-size:13px;cursor:pointer}',
     '.tab.on{background:#ff5f1f;border-color:#ff5f1f;color:#fff}.tab.dc.on{background:#5865f2;border-color:#5865f2}',
     '.m .who{display:block;font-size:11px;font-weight:700;opacity:.75;margin-bottom:2px}.m img{max-width:100%;max-height:220px;border-radius:8px;display:block;margin-top:4px}.m a{color:#93c5fd;word-break:break-all}.m.me a{color:#fff}',
+    '.m .cp{display:inline-block;margin:3px 0 3px 6px;vertical-align:middle;background:rgba(255,255,255,.14);color:inherit;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}.m .cp:hover{background:rgba(255,255,255,.25)}.m .cp.ok{background:#10b981;border-color:#10b981;color:#fff}',
     '.m .emb{border-left:3px solid #5865f2;padding-left:8px;margin-top:4px;font-size:13px;opacity:.9}',
     '.empty a{display:inline-block;margin-top:10px;background:#5865f2;color:#fff;border-radius:10px;padding:8px 14px;font-weight:700;text-decoration:none;font-size:13px}',
     '.chat{flex:1;display:flex;flex-direction:column;min-height:0}',
@@ -223,6 +224,51 @@
     if (cls) e.className = cls;
     if (text != null) e.textContent = text;
     return e;
+  }
+
+  /* Message text with clickable links + a one-tap "Copy" button for each link
+   * (for people whose Ctrl+C doesn't work). Built with DOM nodes, never innerHTML. */
+  var URL_RE = /\bhttps?:\/\/[^\s<>"']+/gi;
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return legacyCopy(text); });
+    }
+    return Promise.resolve(legacyCopy(text));
+  }
+  function legacyCopy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.top = '-1000px';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+      var ok = document.execCommand('copy'); ta.remove(); return !!ok;
+    } catch (e) { return false; }
+  }
+  function appendRichText(b, text) {
+    text = String(text || ''); var last = 0, m; URL_RE.lastIndex = 0;
+    while ((m = URL_RE.exec(text))) {
+      var url = m[0].replace(/[.,!?;:)\]]+$/, ''); // don't swallow trailing punctuation
+      if (m.index > last) b.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var a = el('a', null, url); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      var c = el('button', 'cp', '📋 Copy'); c.type = 'button'; c.title = 'Copy link';
+      (function (u, btn, link) {
+        btn.onclick = function (e) {
+          e.stopPropagation();
+          copyText(u).then(function (ok) {
+            if (ok) { btn.textContent = '✓ Copied'; btn.classList.add('ok'); }
+            else { // last resort: highlight the link so it can be right-click / long-press copied
+              var r = document.createRange(); r.selectNodeContents(link);
+              var sel = (UI && UI.root.getSelection) ? UI.root.getSelection() : window.getSelection();
+              try { sel.removeAllRanges(); sel.addRange(r); } catch (_) {}
+              btn.textContent = 'Right-click → Copy';
+            }
+            setTimeout(function () { btn.textContent = '📋 Copy'; btn.classList.remove('ok'); }, 2200);
+          });
+        };
+      })(url, c, a);
+      b.appendChild(a); b.appendChild(c);
+      last = m.index + url.length; URL_RE.lastIndex = last;
+    }
+    if (last < text.length) b.appendChild(document.createTextNode(text.slice(last)));
   }
 
   function startMessenger() {
@@ -468,7 +514,7 @@
       var mine = !!DC.me && (m.did === DC.me.did || (m.hook && m.name === DC.me.name));
       var b = el('div', 'm' + (mine ? ' me' : ''));
       b.appendChild(el('span', 'who', m.name + (m.ts ? ' · ' + new Date(m.ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '')));
-      if (m.text) b.appendChild(document.createTextNode(m.text));
+      if (m.text) appendRichText(b, m.text);
       (m.embeds || []).forEach(function (e) { var d = el('div', 'emb'); if (e.title) d.appendChild(el('b', null, e.title)); if (e.text) d.appendChild(el('div', null, e.text)); b.appendChild(d); });
       (m.files || []).forEach(function (f) {
         if (!/^https:\/\//.test(f.url)) return;
@@ -511,7 +557,8 @@
     msgsRef = WW.db.ref('messages/' + threadId(WW.me.key, otherKey)).limitToLast(100);
     msgsCb = function (snap) {
       var m = snap.val() || {};
-      var b = el('div', 'm' + (m.from === WW.me.key ? ' me' : ''), m.text || '');
+      var b = el('div', 'm' + (m.from === WW.me.key ? ' me' : ''));
+      appendRichText(b, m.text || '');
       UI.msgs.appendChild(b);
       UI.msgs.scrollTop = UI.msgs.scrollHeight;
       if (m.from !== WW.me.key) markRead(otherKey);
