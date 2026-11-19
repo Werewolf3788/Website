@@ -1936,147 +1936,168 @@
           "name": "Barvechos",
           "region": "Barvechos",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Smuggling branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Smuggling"
         },
         {
           "id": "ksf_caimanes",
           "name": "Caimanes",
           "region": "Caimanes",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Smuggling branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Smuggling"
         },
         {
           "id": "ksf_espiritu_santo",
           "name": "Espiritu Santo",
           "region": "Espiritu Santo",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Influence branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Influence"
         },
         {
           "id": "ksf_flor_de_oro",
           "name": "Flor De Oro",
           "region": "Flor De Oro",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Security"
         },
         {
           "id": "ksf_inca_camina",
           "name": "Inca Camina",
           "region": "Inca Camina",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "No Santa Blanca boss on the in-game cartel map. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": null
         },
         {
           "id": "ksf_itacua",
           "name": "Itacua",
           "region": "Itacua",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Security"
         },
         {
           "id": "ksf_koani",
           "name": "Koani",
           "region": "Koani",
           "location": "Province",
-          "guide": "This province has 14 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Koani has the most files of any province."
+          "guide": "Santa Blanca Smuggling branch province. This province has 14 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Koani has the most files of any province.",
+          "cartel_branch": "Smuggling"
         },
         {
           "id": "ksf_la_cruz",
           "name": "La Cruz",
           "region": "La Cruz",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "No Santa Blanca boss on the in-game cartel map. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": null
         },
         {
           "id": "ksf_libertad",
           "name": "Libertad",
           "region": "Libertad",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Production branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Production"
         },
         {
           "id": "ksf_malca",
           "name": "Malca",
           "region": "Malca",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Influence branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Influence"
         },
         {
           "id": "ksf_media_luna",
           "name": "Media Luna",
           "region": "Media Luna",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Security"
         },
         {
           "id": "ksf_mojocoyo",
           "name": "Mojocoyo",
           "region": "Mojocoyo",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Smuggling branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Smuggling"
         },
         {
           "id": "ksf_monte_puncu",
           "name": "Monte Puncu",
           "region": "Monte Puncu",
           "location": "Province",
-          "guide": "This province has 4 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Monte Puncu has the fewest files of any province."
+          "guide": "No Santa Blanca boss on the in-game cartel map. This province has 4 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Monte Puncu has the fewest files of any province.",
+          "cartel_branch": null
         },
         {
           "id": "ksf_montuyoc",
           "name": "Montuyoc",
           "region": "Montuyoc",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Security"
         },
         {
           "id": "ksf_ocoro",
           "name": "Ocoro",
           "region": "Ocoro",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Production branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Production"
         },
         {
           "id": "ksf_p_n_de_agua_verde",
           "name": "P.N. De Agua Verde",
           "region": "P.N. De Agua Verde",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Influence branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Influence"
         },
         {
           "id": "ksf_pucara",
           "name": "Pucara",
           "region": "Pucara",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Influence branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Influence"
         },
         {
           "id": "ksf_remanzo",
           "name": "Remanzo",
           "region": "Remanzo",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Smuggling branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Smuggling"
         },
         {
           "id": "ksf_san_mateo",
           "name": "San Mateo",
           "region": "San Mateo",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Security"
         },
         {
           "id": "ksf_tabacal",
           "name": "Tabacal",
           "region": "Tabacal",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Production branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Production"
         },
         {
           "id": "ksf_villa_verde",
           "name": "Villa Verde",
           "region": "Villa Verde",
           "location": "Province",
-          "guide": "Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9)."
+          "guide": "Santa Blanca Production branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
+          "cartel_branch": "Production"
         },
         {
           "id": "ksf_operation_oracle",
@@ -2102,7 +2123,35 @@
           "map_icon": null,
           "about": "Given automatically when you enter a new province for the first time or beat a region's Buchón (boss)."
         }
-      ]
+      ],
+      "cartel_branches": {
+        "Smuggling": [
+          "Koani",
+          "Remanzo",
+          "Mojocoyo",
+          "Barvechos",
+          "Caimanes"
+        ],
+        "Security": [
+          "Media Luna",
+          "San Mateo",
+          "Itacua",
+          "Montuyoc",
+          "Flor De Oro"
+        ],
+        "Production": [
+          "Tabacal",
+          "Villa Verde",
+          "Ocoro",
+          "Libertad"
+        ],
+        "Influence": [
+          "Espiritu Santo",
+          "P.N. De Agua Verde",
+          "Pucara",
+          "Malca"
+        ]
+      }
     },
     "collectible_types": {
       "quest_name": "Collectible Types",
