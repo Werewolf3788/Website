@@ -2548,10 +2548,12 @@ function runUniversalSearch(raw) {
     }
 
     const terms = q.split(/\s+/);
+    // "#4" means number 4 exactly, not #40-#49. "4" on its own after "#"-less words still matches anywhere.
+    const termTest = terms.map(t => /^#\d+$/.test(t) ? (h) => new RegExp(t + '(?!\\d)').test(h) : (h) => h.includes(t));
     let matches = 0;
     cards.forEach(c => {
         const hay = c.getAttribute('data-search') || '';
-        const hit = terms.every(t => hay.includes(t));
+        const hit = termTest.every(f => f(hay));
         c.classList.toggle('search-hidden', !hit);
         if (hit) matches++;
     });
@@ -3791,8 +3793,18 @@ function renderUniversalCompanion(data) {
         });
     }
 
-    container.innerHTML = pinnedHtml + html;
+    // Search bar (sticky at the top): find a card by name, number, province or place,
+    // e.g. "libertad #4", "skill point #3", "interview", "ak-47".
+    const searchBar = `<div class="uni-search-wrap">
+            <input type="search" id="universalSearchInput" class="uni-search-input" autocomplete="off"
+                   placeholder="Search: name, #number, province or place (e.g. libertad #4, skill point #3)">
+            <button type="button" class="uni-search-btn" id="uniExpandAll">Expand all</button>
+            <button type="button" class="uni-search-btn" id="uniCollapseAll">Collapse all</button>
+            <div class="uni-search-count" id="universalSearchCount"></div>
+        </div>`;
+    container.innerHTML = searchBar + pinnedHtml + html;
     appState.applyStateToUI();
+    setupUniversalSearch();
 }
 
 function toSecureUrl(url) {
