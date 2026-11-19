@@ -1498,20 +1498,13 @@
         /* -------------------------------------------------------------
            2. Dual-Source Avatar Resolver (/users with /utm_links Fallback)
            ------------------------------------------------------------- */
+        // The database rules only allow reading one user record at a time
+        // (/users/$key), never the whole /users list, so the old listener on
+        // /users always failed with permission_denied. Avatars come from the
+        // PSN data first and the /utm_links image as the fallback, so this
+        // step is skipped instead of downloading every profile.
         function listenToUsers() {
-            try {
-                const usersRef = ref(rtdbEntertainment, 'users');
-                onValue(usersRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        cachedUsersData = snapshot.val();
-                        syncAllAvatars();
-                    }
-                }, (error) => {
-                    console.error("Firebase RTDB Users Listen Error:", error);
-                });
-            } catch (err) {
-                console.error("listenToUsers Exception:", err);
-            }
+            cachedUsersData = null;
         }
 
         function resolvePlayerAvatar(profileConfig) {
