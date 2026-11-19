@@ -341,6 +341,7 @@ window.appState = {
                             // game that doesn't use them.
                             cost: cItem.cost != null ? cItem.cost : null,
                             category: cItem.category || '',
+                            tags: cItem.tags || '',
                             levels: cItem.levels != null ? cItem.levels : null,
                             unlock_requirement: cItem.unlock_requirement || '',
                             level_costs: Array.isArray(cItem.level_costs) ? cItem.level_costs : null,
@@ -2544,6 +2545,7 @@ function runUniversalSearch(raw) {
             }
         });
         if (countEl) countEl.innerText = '';
+        document.querySelectorAll('.mark-shown-bar').forEach(b => { b.hidden = true; });
         return;
     }
 
@@ -2568,7 +2570,33 @@ function runUniversalSearch(raw) {
     });
 
     if (countEl) countEl.innerText = matches ? `${matches} result${matches === 1 ? '' : 's'}` : 'No results';
+    document.querySelectorAll('.mark-shown-bar').forEach(b => { b.hidden = !matches; });
 }
+// Bulk marking: with a search active, tick (or clear) every checkbox card still showing,
+// e.g. search "koani skill point" then "Mark all shown". Cards with rank boxes are skipped.
+let markShownUndo = null;
+window.appState.markShown = function(value) {
+    const container = document.getElementById('section-container'); if (!container) return;
+    const before = {}; let n = 0;
+    container.querySelectorAll('.game-item-card[data-type="collectible"]:not(.search-hidden)').forEach(card => {
+        if (card.querySelector('.tier-box-wrap')) return;
+        const g = card.getAttribute('data-group'), id = card.getAttribute('data-id');
+        const it = g && this.collectibles[g]?.items?.[id]; if (!it) return;
+        before[g + '|' + id] = !!it.collected;
+        if (!!it.collected !== value) { it.collected = value; n++; }
+    });
+    markShownUndo = before;
+    document.querySelectorAll('.mark-shown-undo').forEach(b => { b.hidden = false; });
+    this.applyStateToUI(); this.saveProgress();
+    this.updateStatus(`${value ? 'Marked' : 'Cleared'} ${n} item${n === 1 ? '' : 's'}.`);
+};
+window.appState.undoMarkShown = function() {
+    if (!markShownUndo) return;
+    Object.entries(markShownUndo).forEach(([k, v]) => { const i = k.indexOf('|'); const it = this.collectibles[k.slice(0, i)]?.items?.[k.slice(i + 1)]; if (it) it.collected = v; });
+    markShownUndo = null;
+    document.querySelectorAll('.mark-shown-undo').forEach(b => { b.hidden = true; });
+    this.applyStateToUI(); this.saveProgress(); this.updateStatus('Undone.');
+};
 
 // ---------------------------------------------------------------------------
 // Hunter tools (hunting games): wallet (credits, level/XP, level rewards),
@@ -3781,6 +3809,8 @@ function renderUniversalCompanion(data) {
                         ${items.map(([id, it]) => buildItemCard({
                             id, type: 'collectible', group: cKey,
                             badge: it.region || humanize(cKey), badgeClass: 'rank-silver',
+                            // Section name + item type are searchable too ("koani kingslayer", "barvechos weapon case").
+                            ctx: [humanize(cKey), data.collectibles && data.collectibles[cKey] && data.collectibles[cKey].quest_name, it.category, it.tags].filter(Boolean).join(' '),
                             title: it.name || id, sub: it.location || '',
                             body: it.guide || '', img: it.image_url, locImg: it.location_image_url,
                             levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null,
@@ -3798,6 +3828,11 @@ function renderUniversalCompanion(data) {
     const searchBar = `<div class="uni-search-wrap">
             <input type="search" id="universalSearchInput" class="uni-search-input" autocomplete="off"
                    placeholder="Search: name, #number, province or place (e.g. libertad #4, skill point #3)">
+            <span class="mark-shown-bar" hidden>
+                <button type="button" class="uni-search-btn" onclick="appState.markShown(true)">✓ Mark all shown</button>
+                <button type="button" class="uni-search-btn" onclick="appState.markShown(false)">Clear shown</button>
+                <button type="button" class="uni-search-btn mark-shown-undo" onclick="appState.undoMarkShown()" hidden>↶ Undo</button>
+            </span>
             <button type="button" class="uni-search-btn" id="uniExpandAll">Expand all</button>
             <button type="button" class="uni-search-btn" id="uniCollapseAll">Collapse all</button>
             <div class="uni-search-count" id="universalSearchCount"></div>
