@@ -1937,7 +1937,8 @@
           "region": "Barvechos",
           "location": "Province",
           "guide": "Santa Blanca Smuggling branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Smuggling"
+          "cartel_branch": "Smuggling",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_caimanes",
@@ -1945,7 +1946,8 @@
           "region": "Caimanes",
           "location": "Province",
           "guide": "Santa Blanca Smuggling branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Smuggling"
+          "cartel_branch": "Smuggling",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_espiritu_santo",
@@ -1953,7 +1955,8 @@
           "region": "Espiritu Santo",
           "location": "Province",
           "guide": "Santa Blanca Influence branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Influence"
+          "cartel_branch": "Influence",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_flor_de_oro",
@@ -1961,7 +1964,8 @@
           "region": "Flor De Oro",
           "location": "Province",
           "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Security"
+          "cartel_branch": "Security",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_inca_camina",
@@ -1969,7 +1973,8 @@
           "region": "Inca Camina",
           "location": "Province",
           "guide": "No Santa Blanca boss on the in-game cartel map. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": null
+          "cartel_branch": null,
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_itacua",
@@ -1977,7 +1982,8 @@
           "region": "Itacua",
           "location": "Province",
           "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Security"
+          "cartel_branch": "Security",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_koani",
@@ -1985,7 +1991,8 @@
           "region": "Koani",
           "location": "Province",
           "guide": "Santa Blanca Smuggling branch province. This province has 14 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Koani has the most files of any province.",
-          "cartel_branch": "Smuggling"
+          "cartel_branch": "Smuggling",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_la_cruz",
@@ -1993,15 +2000,24 @@
           "region": "La Cruz",
           "location": "Province",
           "guide": "No Santa Blanca boss on the in-game cartel map. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": null
+          "cartel_branch": null,
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_libertad",
           "name": "Libertad",
           "region": "Libertad",
           "location": "Province",
-          "guide": "Santa Blanca Production branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Production"
+          "guide": "Santa Blanca Production branch province. This province has 12 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Province content (in-game Tacmap): 2 weapon cases, 5 accessory cases, 7 skill points, 2 bonus medals.",
+          "cartel_branch": "Production",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
+          "province_content": {
+            "kingslayer_files": 12,
+            "weapon_cases": 2,
+            "accessory_cases": 5,
+            "skill_points": 7,
+            "bonus_medals": 2
+          }
         },
         {
           "id": "ksf_malca",
@@ -2009,7 +2025,8 @@
           "region": "Malca",
           "location": "Province",
           "guide": "Santa Blanca Influence branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Influence"
+          "cartel_branch": "Influence",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_media_luna",
@@ -2017,7 +2034,8 @@
           "region": "Media Luna",
           "location": "Province",
           "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Security"
+          "cartel_branch": "Security",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_mojocoyo",
@@ -2025,7 +2043,8 @@
           "region": "Mojocoyo",
           "location": "Province",
           "guide": "Santa Blanca Smuggling branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Smuggling"
+          "cartel_branch": "Smuggling",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_monte_puncu",
@@ -2033,7 +2052,8 @@
           "region": "Monte Puncu",
           "location": "Province",
           "guide": "No Santa Blanca boss on the in-game cartel map. This province has 4 Kingslayer Files. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9). Monte Puncu has the fewest files of any province.",
-          "cartel_branch": null
+          "cartel_branch": null,
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_montuyoc",
@@ -2041,7 +2061,8 @@
           "region": "Montuyoc",
           "location": "Province",
           "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Security"
+          "cartel_branch": "Security",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_ocoro",
@@ -2049,7 +2070,8 @@
           "region": "Ocoro",
           "location": "Province",
           "guide": "Santa Blanca Production branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Production"
+          "cartel_branch": "Production",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_p_n_de_agua_verde",
@@ -2057,7 +2079,8 @@
           "region": "P.N. De Agua Verde",
           "location": "Province",
           "guide": "Santa Blanca Influence branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Influence"
+          "cartel_branch": "Influence",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_pucara",
@@ -2065,7 +2088,8 @@
           "region": "Pucara",
           "location": "Province",
           "guide": "Santa Blanca Influence branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Influence"
+          "cartel_branch": "Influence",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_remanzo",
@@ -2073,7 +2097,8 @@
           "region": "Remanzo",
           "location": "Province",
           "guide": "Santa Blanca Smuggling branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Smuggling"
+          "cartel_branch": "Smuggling",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_san_mateo",
@@ -2081,7 +2106,8 @@
           "region": "San Mateo",
           "location": "Province",
           "guide": "Santa Blanca Security branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Security"
+          "cartel_branch": "Security",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_tabacal",
@@ -2089,7 +2115,8 @@
           "region": "Tabacal",
           "location": "Province",
           "guide": "Santa Blanca Production branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Production"
+          "cartel_branch": "Production",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_villa_verde",
@@ -2097,14 +2124,16 @@
           "region": "Villa Verde",
           "location": "Province",
           "guide": "Santa Blanca Production branch province. Tick once every Kingslayer File in this province is found (open the map and filter by Kingslayer Files to see the province count, e.g. 8/9).",
-          "cartel_branch": "Production"
+          "cartel_branch": "Production",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ksf_operation_oracle",
           "name": "Operation Oracle (DLC)",
           "region": "DLC",
           "location": "Operation Oracle",
-          "guide": "Operation Oracle adds 12 extra Kingslayer Files. Tick once all 12 are found."
+          "guide": "Operation Oracle adds 12 extra Kingslayer Files. Tick once all 12 are found.",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         }
       ],
       "file_kinds": [
@@ -2164,35 +2193,40 @@
           "name": "Kingslayer Files (~200)",
           "region": "Bolivia-wide",
           "location": "Red and green map icons",
-          "guide": "Lore, character backstories and Bolivian legends. Red icons are documents, audio logs, photos and videos; green icons are Legends; Mission Files come automatically when you first enter a province or beat its Buchón. They aren't revealed by intel caches. Get close or visit nearby ? locations to make them appear. Track each province in the Kingslayer Files section."
+          "guide": "Lore, character backstories and Bolivian legends. Red icons are documents, audio logs, photos and videos; green icons are Legends; Mission Files come automatically when you first enter a province or beat its Buchón. They aren't revealed by intel caches. Get close or visit nearby ? locations to make them appear. Track each province in the Kingslayer Files section.",
+          "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png"
         },
         {
           "id": "ct_weapons",
           "name": "Weapons (80)",
           "region": "Bolivia-wide",
           "location": "Blue gun icons + boss kills",
-          "guide": "50 Weapon Cases (blue gun icons once you gather local intel) holding assault rifles, sniper rifles, SMGs, LMGs, shotguns and handguns, plus 30 pre-customized Boss Weapons unlocked automatically by defeating cartel bosses in the story. Exact names and locations are on MapGenie or the Steam Community collectibles guide."
+          "guide": "50 Weapon Cases (blue gun icons once you gather local intel) holding assault rifles, sniper rifles, SMGs, LMGs, shotguns and handguns, plus 30 pre-customized Boss Weapons unlocked automatically by defeating cartel bosses in the story. Exact names and locations are on MapGenie or the Steam Community collectibles guide.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "ct_weapon_accessories",
           "name": "Weapon Accessories (~100+)",
           "region": "Bolivia-wide",
           "location": "Blue accessory cases",
-          "guide": "Scopes, extended magazines, barrels, stocks, underbarrel grips/grenade launchers and rail laser sights, in blue accessory cases revealed by regional intel caches. Not needed for any trophy or achievement."
+          "guide": "Scopes, extended magazines, barrels, stocks, underbarrel grips/grenade launchers and rail laser sights, in blue accessory cases revealed by regional intel caches. Not needed for any trophy or achievement.",
+          "image_url": "/public/games/wildlands/images/icons/accessory_case.png"
         },
         {
           "id": "ct_bonus_medals",
           "name": "Bonus Medals (26 base / 30 with DLC)",
           "region": "Bolivia-wide",
           "location": "Blue medal icons",
-          "guide": "Permanent passive upgrades (e.g. more explosives, faster revives, quieter running, bullet resistance, stronger rebel support). A medal only works once you've unlocked its matching base skill. Mark each one with the star on its skill in the skill tree sections."
+          "guide": "Permanent passive upgrades (e.g. more explosives, faster revives, quieter running, bullet resistance, stronger rebel support). A medal only works once you've unlocked its matching base skill. Mark each one with the star on its skill in the skill tree sections. Each province holds one or two.",
+          "image_url": "/public/games/wildlands/images/icons/bonus_medal.png"
         },
         {
           "id": "ct_skill_point_medals",
           "name": "Skill Point Medals (~140+)",
           "region": "Bolivia-wide",
           "location": "Blue skill point icons",
-          "guide": "Each pickup gives +1, +3 or +5 Skill Points. There are more in the world than you need to max every skill, so you can skip about 20 of them."
+          "guide": "Each pickup gives +1, +3 or +5 Skill Points. There are more in the world than you need to max every skill, so you can skip about 20 of them.",
+          "image_url": "/public/games/wildlands/images/icons/skill_point.png"
         }
       ]
     },
@@ -2209,7 +2243,8 @@
           "region": "Agua Verde",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_pp19",
@@ -2217,7 +2252,8 @@
           "region": "Agua Verde",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_sasg_12",
@@ -2225,7 +2261,8 @@
           "region": "Agua Verde",
           "location": "Weapon Case",
           "category": "Shotgun",
-          "guide": "Shotgun from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Shotgun from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_llamativo",
@@ -2241,7 +2278,8 @@
           "region": "Barvechos",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Barvechos. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Barvechos. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_mp7",
@@ -2249,7 +2287,8 @@
           "region": "Barvechos",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Barvechos. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Barvechos. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_556xi",
@@ -2257,7 +2296,8 @@
           "region": "Caimanes",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Caimanes. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Caimanes. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_sr25",
@@ -2265,7 +2305,8 @@
           "region": "Caimanes",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in Caimanes. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in Caimanes. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_el_obsequio",
@@ -2281,7 +2322,8 @@
           "region": "Espiritu Santo",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Espiritu Santo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Espiritu Santo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_mk_48",
@@ -2289,7 +2331,8 @@
           "region": "Espiritu Santo",
           "location": "Weapon Case",
           "category": "LMG",
-          "guide": "LMG from a Weapon Case in Espiritu Santo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "LMG from a Weapon Case in Espiritu Santo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_la_novena",
@@ -2305,7 +2348,8 @@
           "region": "Flor de Oro",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Flor de Oro. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Flor de Oro. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_mk17",
@@ -2313,7 +2357,8 @@
           "region": "Flor de Oro",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Flor de Oro. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Flor de Oro. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_el_general",
@@ -2329,7 +2374,8 @@
           "region": "Inca Camina",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Inca Camina. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Inca Camina. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_9x19vsn",
@@ -2337,7 +2383,8 @@
           "region": "Inca Camina",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Inca Camina. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Inca Camina. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_mg121",
@@ -2345,7 +2392,8 @@
           "region": "Itacua",
           "location": "Weapon Case",
           "category": "LMG",
-          "guide": "LMG from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "LMG from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_m40a5",
@@ -2353,7 +2401,8 @@
           "region": "Itacua",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_super_shorty",
@@ -2361,7 +2410,8 @@
           "region": "Itacua",
           "location": "Weapon Case",
           "category": "Shotgun",
-          "guide": "Shotgun from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Shotgun from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_scorpion_evo_3",
@@ -2369,7 +2419,8 @@
           "region": "Koani",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_mk14",
@@ -2377,7 +2428,8 @@
           "region": "Koani",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_sr_1",
@@ -2385,7 +2437,8 @@
           "region": "Koani",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_the_warhawk",
@@ -2401,7 +2454,8 @@
           "region": "La Cruz",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_m1891",
@@ -2409,7 +2463,8 @@
           "region": "La Cruz",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_spas_12",
@@ -2417,7 +2472,8 @@
           "region": "La Cruz",
           "location": "Weapon Case",
           "category": "Shotgun",
-          "guide": "Shotgun from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Shotgun from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_ak_47",
@@ -2425,7 +2481,8 @@
           "region": "Libertad",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Libertad. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Libertad. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_d_50",
@@ -2433,7 +2490,8 @@
           "region": "Libertad",
           "location": "Weapon Case",
           "category": "Handgun",
-          "guide": "Handgun from a Weapon Case in Libertad. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Handgun from a Weapon Case in Libertad. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_mendeleyev",
@@ -2449,7 +2507,8 @@
           "region": "Malca",
           "location": "Weapon Case",
           "category": "LMG",
-          "guide": "LMG from a Weapon Case in Malca. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "LMG from a Weapon Case in Malca. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_p227",
@@ -2457,7 +2516,8 @@
           "region": "Malca",
           "location": "Weapon Case",
           "category": "Handgun",
-          "guide": "Handgun from a Weapon Case in Malca. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Handgun from a Weapon Case in Malca. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_el_cuentista",
@@ -2473,7 +2533,8 @@
           "region": "Media Luna",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_vector_45_acp",
@@ -2481,7 +2542,8 @@
           "region": "Media Luna",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_6p41",
@@ -2489,7 +2551,8 @@
           "region": "Media Luna",
           "location": "Weapon Case",
           "category": "LMG",
-          "guide": "LMG from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "LMG from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_unidad_rpk_74",
@@ -2505,7 +2568,8 @@
           "region": "Mojocoyo",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Mojocoyo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Mojocoyo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_srsa1",
@@ -2513,7 +2577,8 @@
           "region": "Mojocoyo",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in Mojocoyo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in Mojocoyo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_lady_killer",
@@ -2529,7 +2594,8 @@
           "region": "Monte Puncu",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Monte Puncu. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Monte Puncu. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_tar_21",
@@ -2537,7 +2603,8 @@
           "region": "Montuyoc",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_hti",
@@ -2545,7 +2612,8 @@
           "region": "Montuyoc",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_msr",
@@ -2553,7 +2621,8 @@
           "region": "Montuyoc",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_sr_635",
@@ -2561,7 +2630,8 @@
           "region": "Ocoro",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_5_7_usg",
@@ -2569,7 +2639,8 @@
           "region": "Ocoro",
           "location": "Weapon Case",
           "category": "Handgun",
-          "guide": "Handgun from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Handgun from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_m1911",
@@ -2577,7 +2648,8 @@
           "region": "Ocoro",
           "location": "Weapon Case",
           "category": "Handgun",
-          "guide": "Handgun from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Handgun from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_stoner_lmg_a1",
@@ -2585,7 +2657,8 @@
           "region": "Pucara",
           "location": "Weapon Case",
           "category": "LMG",
-          "guide": "LMG from a Weapon Case in Pucara. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "LMG from a Weapon Case in Pucara. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_smg_11",
@@ -2593,7 +2666,8 @@
           "region": "Pucara",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Pucara. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Pucara. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_9mm_c1",
@@ -2601,7 +2675,8 @@
           "region": "Remanzo",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_type_95",
@@ -2609,7 +2684,8 @@
           "region": "Remanzo",
           "location": "Weapon Case",
           "category": "LMG",
-          "guide": "LMG from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "LMG from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_skorpion",
@@ -2617,7 +2693,8 @@
           "region": "Remanzo",
           "location": "Weapon Case",
           "category": "Handgun",
-          "guide": "Handgun from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Handgun from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_the_bff",
@@ -2633,7 +2710,8 @@
           "region": "San Mateo",
           "location": "Weapon Case",
           "category": "SMG",
-          "guide": "SMG from a Weapon Case in San Mateo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "SMG from a Weapon Case in San Mateo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_g28",
@@ -2641,7 +2719,8 @@
           "region": "San Mateo",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in San Mateo. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in San Mateo. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_boss_residuos",
@@ -2657,7 +2736,8 @@
           "region": "Tabacal",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Tabacal. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Tabacal. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_p12",
@@ -2665,7 +2745,8 @@
           "region": "Tabacal",
           "location": "Weapon Case",
           "category": "Handgun",
-          "guide": "Handgun from a Weapon Case in Tabacal. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Handgun from a Weapon Case in Tabacal. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_805_bren_a2",
@@ -2673,7 +2754,8 @@
           "region": "Villa Verde",
           "location": "Weapon Case",
           "category": "AR",
-          "guide": "AR from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "AR from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_dragunov_svd",
@@ -2681,7 +2763,8 @@
           "region": "Villa Verde",
           "location": "Weapon Case",
           "category": "Sniper",
-          "guide": "Sniper from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Sniper from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         },
         {
           "id": "wpn_m9",
@@ -2689,7 +2772,8 @@
           "region": "Villa Verde",
           "location": "Weapon Case",
           "category": "Handgun",
-          "guide": "Handgun from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map."
+          "guide": "Handgun from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map.",
+          "image_url": "/public/games/wildlands/images/icons/weapon_case.png"
         }
       ]
     }
@@ -2704,7 +2788,10 @@
     "The Whole Story trophy only needs the collectible documents, not the mission-granted 'Word of Sueno' videos. If your count looks stuck, check TrueAchievements for tracking-bug fixes.",
     "Reveal collectibles fast: in every new province, grab the white ! intel (files, laptops or lieutenant interrogations). That reveals all the blue collectibles (Weapons, Accessories, Bonus Medals and Skill Points) on the province map.",
     "Fly or drive through every unvisited ? location in a province to make the nearby red and green Kingslayer Files pop up on your mini-map.",
-    "You can skip about 20 Skill Point pickups and still max out the whole skill tree. Weapon accessories aren't needed for any trophy."
+    "You can skip about 20 Skill Point pickups and still max out the whole skill tree. Weapon accessories aren't needed for any trophy.",
+    "Yellow-file intel unlocks a story mission. White ! intel lets you pick what to reveal on the Tacmap: Skill Points, Equipment Cases, Bonus Medals, Supply Raids or Rebel Ops.",
+    "On the Tacmap, press Interact over a province to see the Kingslayer Files you've found and play their videos and audio.",
+    "Supply Raids (Steal the Helicopter, Steal the Plane, Stop the Convoy) give far more resources than containers; convoys give the most."
   ],
   "resources_cost_note": "Skill costs are from IGN / Ghost Recon Wiki lists and have not been checked in-game. If your game shows a different cost, tell Claude and it gets fixed.",
   "player_profile": {
@@ -2856,5 +2943,67 @@
       "Do Rebel Support skills early: vehicle drop-off and reinforcements save a lot of driving and let you reset a mission quickly.",
       "Mark Unidad and Santa Blanca outposts from a distance, take out alarms and commanders first, then clear the rest."
     ]
-  }
+  },
+  "map_icons": [
+    {
+      "id": "kingslayer_file",
+      "name": "Kingslayer File",
+      "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
+      "meaning": "Story documents, recordings and photos (Legends are the history artifacts)."
+    },
+    {
+      "id": "skill_point",
+      "name": "Skill Point",
+      "image_url": "/public/games/wildlands/images/icons/skill_point.png",
+      "meaning": "Skill Point medal pickup."
+    },
+    {
+      "id": "weapon_case",
+      "name": "Weapon Case",
+      "image_url": "/public/games/wildlands/images/icons/weapon_case.png",
+      "meaning": "Unlocks a new weapon."
+    },
+    {
+      "id": "accessory_case",
+      "name": "Accessory Case",
+      "image_url": "/public/games/wildlands/images/icons/accessory_case.png",
+      "meaning": "Unlocks gun parts."
+    },
+    {
+      "id": "bonus_medal",
+      "name": "Bonus Medal",
+      "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
+      "meaning": "Permanent boost to a skill you've unlocked."
+    },
+    {
+      "id": "intel_major",
+      "name": "Major Intel",
+      "image_url": "/public/games/wildlands/images/icons/intel_major.png",
+      "meaning": "Yellow file: cartel intel that unlocks a new story mission."
+    },
+    {
+      "id": "intel_minor",
+      "name": "Intel",
+      "image_url": "/public/games/wildlands/images/icons/intel_minor.png",
+      "meaning": "White !: pick what to reveal on the Tacmap (Skill Points, Equipment Cases, Bonus Medals, Supply Raids, Rebel Ops)."
+    },
+    {
+      "id": "resources",
+      "name": "Resources",
+      "image_url": "/public/games/wildlands/images/icons/resources.png",
+      "meaning": "Comms Tools, Food Parcels, Gasoline or Medication container."
+    },
+    {
+      "id": "rally_point",
+      "name": "Rally Point",
+      "image_url": "/public/games/wildlands/images/icons/rally_point.png",
+      "meaning": "Fast travel point with vehicles; found by exploring."
+    },
+    {
+      "id": "car_alarm",
+      "name": "Car Alarm",
+      "image_url": "/public/games/wildlands/images/icons/car_alarm.png",
+      "meaning": "Shoot the parked car to set off the alarm as a distraction."
+    }
+  ]
 }
