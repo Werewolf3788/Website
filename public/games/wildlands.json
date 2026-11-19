@@ -2146,6 +2146,503 @@
           "guide": "Each pickup gives +1, +3 or +5 Skill Points. There are more in the world than you need to max every skill, so you can skip about 20 of them."
         }
       ]
+    },
+    "weapons_by_province": {
+      "quest_name": "Weapons by Province",
+      "region": "Bolivia-wide",
+      "description": "All 50 base-game Weapon Cases by province, plus the province-linked Boss Weapons for defeating cartel targets (30 Boss Weapons in total across the story). Tick each weapon once you have it.",
+      "weapon_case_total": 50,
+      "boss_weapon_total": 30,
+      "items": [
+        {
+          "id": "wpn_sr3m",
+          "name": "SR3M",
+          "region": "Agua Verde",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_pp19",
+          "name": "PP19",
+          "region": "Agua Verde",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_sasg_12",
+          "name": "SASG-12",
+          "region": "Agua Verde",
+          "location": "Weapon Case",
+          "category": "Shotgun",
+          "guide": "Shotgun from a Weapon Case in Agua Verde. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_llamativo",
+          "name": "Llamativo",
+          "region": "Agua Verde",
+          "location": "Boss Weapon",
+          "category": "LMG",
+          "guide": "Unique LMG, unlocked automatically for defeating Carzita in Agua Verde."
+        },
+        {
+          "id": "wpn_aug_a3",
+          "name": "AUG A3",
+          "region": "Barvechos",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Barvechos. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_mp7",
+          "name": "MP7",
+          "region": "Barvechos",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Barvechos. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_556xi",
+          "name": "556xi",
+          "region": "Caimanes",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Caimanes. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_sr25",
+          "name": "SR25",
+          "region": "Caimanes",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in Caimanes. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_el_obsequio",
+          "name": "El Obsequio",
+          "region": "Caimanes",
+          "location": "Boss Weapon",
+          "category": "Shotgun",
+          "guide": "Unique Shotgun, unlocked automatically for defeating El Cerebro in Caimanes."
+        },
+        {
+          "id": "wpn_l85a2",
+          "name": "L85A2",
+          "region": "Espiritu Santo",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Espiritu Santo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_mk_48",
+          "name": "MK-48",
+          "region": "Espiritu Santo",
+          "location": "Weapon Case",
+          "category": "LMG",
+          "guide": "LMG from a Weapon Case in Espiritu Santo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_la_novena",
+          "name": "La Novena",
+          "region": "Espiritu Santo",
+          "location": "Boss Weapon",
+          "category": "Handgun",
+          "guide": "Unique Handgun, unlocked automatically for defeating El Gato in Espiritu Santo."
+        },
+        {
+          "id": "wpn_m4a1",
+          "name": "M4A1",
+          "region": "Flor de Oro",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Flor de Oro. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_mk17",
+          "name": "MK17",
+          "region": "Flor de Oro",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Flor de Oro. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_el_general",
+          "name": "El General",
+          "region": "Flor de Oro",
+          "location": "Boss Weapon",
+          "category": "Handgun",
+          "guide": "Unique Handgun, unlocked automatically for defeating General Baro in Flor de Oro."
+        },
+        {
+          "id": "wpn_g2",
+          "name": "G2",
+          "region": "Inca Camina",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Inca Camina. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_9x19vsn",
+          "name": "9x19VSN",
+          "region": "Inca Camina",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Inca Camina. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_mg121",
+          "name": "MG121",
+          "region": "Itacua",
+          "location": "Weapon Case",
+          "category": "LMG",
+          "guide": "LMG from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_m40a5",
+          "name": "M40A5",
+          "region": "Itacua",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_super_shorty",
+          "name": "Super Shorty",
+          "region": "Itacua",
+          "location": "Weapon Case",
+          "category": "Shotgun",
+          "guide": "Shotgun from a Weapon Case in Itacua. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_scorpion_evo_3",
+          "name": "Scorpion EVO 3",
+          "region": "Koani",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_mk14",
+          "name": "MK14",
+          "region": "Koani",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_sr_1",
+          "name": "SR-1",
+          "region": "Koani",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in Koani. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_the_warhawk",
+          "name": "The Warhawk",
+          "region": "Koani",
+          "location": "Boss Weapon",
+          "category": "Sniper",
+          "guide": "Unique Sniper, unlocked automatically for defeating Boston Reed in Koani."
+        },
+        {
+          "id": "wpn_p90",
+          "name": "P90",
+          "region": "La Cruz",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_m1891",
+          "name": "M1891",
+          "region": "La Cruz",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_spas_12",
+          "name": "SPAS-12",
+          "region": "La Cruz",
+          "location": "Weapon Case",
+          "category": "Shotgun",
+          "guide": "Shotgun from a Weapon Case in La Cruz. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_ak_47",
+          "name": "AK-47",
+          "region": "Libertad",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Libertad. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_d_50",
+          "name": "D-50",
+          "region": "Libertad",
+          "location": "Weapon Case",
+          "category": "Handgun",
+          "guide": "Handgun from a Weapon Case in Libertad. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_mendeleyev",
+          "name": "Mendeleyev",
+          "region": "Libertad",
+          "location": "Boss Weapon",
+          "category": "SMG",
+          "guide": "Unique SMG, unlocked automatically for defeating Marcus Jensen in Libertad."
+        },
+        {
+          "id": "wpn_mk249",
+          "name": "Mk249",
+          "region": "Malca",
+          "location": "Weapon Case",
+          "category": "LMG",
+          "guide": "LMG from a Weapon Case in Malca. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_p227",
+          "name": "P227",
+          "region": "Malca",
+          "location": "Weapon Case",
+          "category": "Handgun",
+          "guide": "Handgun from a Weapon Case in Malca. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_el_cuentista",
+          "name": "El Cuentista",
+          "region": "Malca",
+          "location": "Boss Weapon",
+          "category": "Shotgun",
+          "guide": "Unique Shotgun, unlocked automatically for defeating El Chido in Malca."
+        },
+        {
+          "id": "wpn_acr",
+          "name": "ACR",
+          "region": "Media Luna",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_vector_45_acp",
+          "name": "Vector .45 ACP",
+          "region": "Media Luna",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_6p41",
+          "name": "6P41",
+          "region": "Media Luna",
+          "location": "Weapon Case",
+          "category": "LMG",
+          "guide": "LMG from a Weapon Case in Media Luna. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_unidad_rpk_74",
+          "name": "Unidad RPK-74",
+          "region": "Media Luna",
+          "location": "Boss Weapon",
+          "category": "LMG",
+          "guide": "Unique LMG, unlocked automatically for defeating El Comandante in Media Luna."
+        },
+        {
+          "id": "wpn_mpx",
+          "name": "MPX",
+          "region": "Mojocoyo",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Mojocoyo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_srsa1",
+          "name": "SRSA1",
+          "region": "Mojocoyo",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in Mojocoyo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_lady_killer",
+          "name": "Lady Killer",
+          "region": "Mojocoyo",
+          "location": "Boss Weapon",
+          "category": "Handgun",
+          "guide": "Unique Handgun, unlocked automatically for defeating Antonio in Mojocoyo."
+        },
+        {
+          "id": "wpn_r5_rgp",
+          "name": "R5 RGP",
+          "region": "Monte Puncu",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Monte Puncu. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_tar_21",
+          "name": "TAR-21",
+          "region": "Montuyoc",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_hti",
+          "name": "HTI",
+          "region": "Montuyoc",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_msr",
+          "name": "MSR",
+          "region": "Montuyoc",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in Montuyoc. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_sr_635",
+          "name": "SR-635",
+          "region": "Ocoro",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_5_7_usg",
+          "name": "5.7 USG",
+          "region": "Ocoro",
+          "location": "Weapon Case",
+          "category": "Handgun",
+          "guide": "Handgun from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_m1911",
+          "name": "M1911",
+          "region": "Ocoro",
+          "location": "Weapon Case",
+          "category": "Handgun",
+          "guide": "Handgun from a Weapon Case in Ocoro. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_stoner_lmg_a1",
+          "name": "Stoner LMG A1",
+          "region": "Pucara",
+          "location": "Weapon Case",
+          "category": "LMG",
+          "guide": "LMG from a Weapon Case in Pucara. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_smg_11",
+          "name": "SMG-11",
+          "region": "Pucara",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Pucara. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_9mm_c1",
+          "name": "9mm C1",
+          "region": "Remanzo",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_type_95",
+          "name": "Type 95",
+          "region": "Remanzo",
+          "location": "Weapon Case",
+          "category": "LMG",
+          "guide": "LMG from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_skorpion",
+          "name": "Skorpion",
+          "region": "Remanzo",
+          "location": "Weapon Case",
+          "category": "Handgun",
+          "guide": "Handgun from a Weapon Case in Remanzo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_the_bff",
+          "name": "The BFF",
+          "region": "Remanzo",
+          "location": "Boss Weapon",
+          "category": "Handgun",
+          "guide": "Unique Handgun, unlocked automatically for defeating El Emisario in Remanzo."
+        },
+        {
+          "id": "wpn_psg",
+          "name": "PSG",
+          "region": "San Mateo",
+          "location": "Weapon Case",
+          "category": "SMG",
+          "guide": "SMG from a Weapon Case in San Mateo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_g28",
+          "name": "G28",
+          "region": "San Mateo",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in San Mateo. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_boss_residuos",
+          "name": "Residuos",
+          "region": "San Mateo",
+          "location": "Boss Weapon",
+          "category": "SMG",
+          "guide": "Unique SMG, unlocked automatically for defeating Pozolero in San Mateo."
+        },
+        {
+          "id": "wpn_ak_12",
+          "name": "AK-12",
+          "region": "Tabacal",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Tabacal. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_p12",
+          "name": "P12",
+          "region": "Tabacal",
+          "location": "Weapon Case",
+          "category": "Handgun",
+          "guide": "Handgun from a Weapon Case in Tabacal. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_805_bren_a2",
+          "name": "805 Bren A2",
+          "region": "Villa Verde",
+          "location": "Weapon Case",
+          "category": "AR",
+          "guide": "AR from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_dragunov_svd",
+          "name": "Dragunov SVD",
+          "region": "Villa Verde",
+          "location": "Weapon Case",
+          "category": "Sniper",
+          "guide": "Sniper from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map."
+        },
+        {
+          "id": "wpn_m9",
+          "name": "M9",
+          "region": "Villa Verde",
+          "location": "Weapon Case",
+          "category": "Handgun",
+          "guide": "Handgun from a Weapon Case in Villa Verde. Gather the province's intel to reveal its blue gun icon on the map."
+        }
+      ]
     }
   },
   "tips": [
