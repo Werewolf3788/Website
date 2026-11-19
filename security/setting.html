@@ -56,6 +56,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 #wifiPane .pick label{display:flex;gap:8px;align-items:center;font-weight:500;margin:0}
 #wifiPane .pick input{width:auto}
 #wifiPane .qr{display:block;margin:10px auto 0;background:#fff;padding:8px;border-radius:8px;max-width:220px;width:100%;image-rendering:pixelated}
+#wifiPane .qr img{display:block;width:100%;image-rendering:pixelated}#wifiPane .qr .hint{color:#333;font-size:12px;line-height:1.35;margin:6px 2px 2px;text-align:center}
 #wifiPane .kv{display:flex;gap:8px;justify-content:space-between;font-size:.9rem;padding:2px 0}
 #wifiPane .kv span:first-child{color:var(--text-muted)}
 .hidden{display:none!important}
@@ -707,7 +708,10 @@ window.Wifi=(function(){
   function loadQr(){return window.qrcode?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='../assets/qrcode.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
   async function showQr(box,ssid,pw){
     const old=box.querySelector('.qr');if(old){old.remove();return}
-    try{await loadQr();const q=qrcode(0,'M');q.addData(qrText(ssid,pw));q.make();const i=document.createElement('img');i.className='qr';i.alt='Wi-Fi QR code for '+ssid;i.src=q.createDataURL(6,8);box.appendChild(i)}
+    try{await loadQr();if(qrcode.stringToBytesFuncs&&qrcode.stringToBytesFuncs['UTF-8'])qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];   // phones read Wi-Fi QR text as UTF-8
+      const q=qrcode(0,'M');q.addData(qrText(ssid,pw));q.make();const w=document.createElement('div');w.className='qr';
+      const i=document.createElement('img');i.alt='Wi-Fi QR code for '+ssid;i.src=q.createDataURL(6,8);w.appendChild(i);
+      const h=document.createElement('p');h.className='hint';h.textContent=pw?'Phone says "Unable to join"? The saved password must match the router exactly (capitals count), and the phone must be in range. On iPhone, forget the network first if it was saved before.':'Open network: no password is sent.';w.appendChild(h);box.appendChild(w)}
     catch(e){say('Could not make the QR code. Copy the password instead.',1)}
   }
   function wireMask(root){
@@ -737,7 +741,7 @@ window.Wifi=(function(){
     $('wifiMine').querySelectorAll('.net').forEach(card=>{
       const id=card.dataset.id,f=n=>card.querySelector('[data-f="'+n+'"]');
       f('share').onchange=()=>{card.querySelector('[data-pick]').style.display=f('share').value==='picked'?'':'none';card.querySelector('[data-closeinfo]').style.display=f('share').value==='close'?'':'none'};
-      card.querySelector('[data-act="qr"]').onclick=()=>{if(!f('ssid').value.trim())return say('Type the network name first.',1);showQr(card,f('ssid').value.trim(),f('password').value)};
+      card.querySelector('[data-act="qr"]').onclick=()=>{if(!f('ssid').value.trim())return say('Type the network name first.',1);const pw=f('password').value;if(pw!==pw.trim())say('Heads up: the password starts or ends with a space. If the router password doesn\u2019t, remove it and Save.',1);showQr(card,f('ssid').value.trim(),pw)};
       card.querySelector('[data-act="del"]').onclick=async()=>{
         if(mine[id]&&mine[id]._new){delete mine[id];return drawMine()}
         if(!confirm('Delete '+(f('label').value||f('ssid').value||'this network')+'? Anyone you shared it with loses it too.'))return;
