@@ -177,26 +177,91 @@ const avatarOf = () => S.U.avatar_url || '';
 window.addEventListener('hashchange', () => location.reload());
 async function boot() {
   try { await W.ready; } catch (e) { return fail('Could not start Firebase. Reload and try again.'); }
-  if (!W.me) return signInView();
   const q = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim() || new URLSearchParams(location.search).get('u');   // profile.html#FRIENDCODE (or ?u=)
+  if (!W.me) return q ? bootPublic(q) : signInView();
   S.ownerKey = q ? await resolveUser(q) : W.me.key;
   if (!S.ownerKey) return fail('That profile could not be found.');
   S.isOwner = S.ownerKey === W.me.key;
   await loadProfile();
   if (!Object.keys(S.U).length) return fail('That profile could not be found.');
-  if (!S.isOwner && S.rel < 1) {   // not on their list: still reachable when THEY are on MY list (public view only); otherwise friends-only
-    const oc = String(S.U.friend_code || location.hash.replace(/^#/, '')).toUpperCase();
-    S.viewerHasOwner = Object.keys(S.myFriends || {}).some(k => String(k).toUpperCase() === oc || String(((S.myFriends || {})[k] || {}).friend_code || '').toUpperCase() === oc);
-    if (!S.viewerHasOwner) return fail('This profile is only visible to its owner\u2019s friends.');
-  }
+  // not on their friends list: public view (only what the owner set to "Everyone")
   if (S.isOwner && !location.hash && W.me.friendCode) { try { history.replaceState(null, '', location.pathname + location.search + '#' + W.me.friendCode); } catch (e) {} }
   await loadPlatforms();
+  if (!S.isOwner && S.rel < 1 && !anyVisible()) return fail(privateMsg());
   document.title = displayName() + ' | Pack Hub';
   setTabIcon(avatarOf() || (S.isOwner && W.me.photoURL) || Object.values(S.plat).map(x => x && x.avatar).find(Boolean) || '');
   $('#state-msg').hidden = true; $('#profile-root').hidden = false;
   if (S.profile.defaultTab) S.tab = S.profile.defaultTab;
   render();
   watchPresence();
+  if (S.isOwner) (S.trackP || Promise.resolve()).finally(publishPublic);
+}
+
+/* ---------- public copy (public_profiles/{friendCode}) ----------
+ * Signed-out visitors can't read users/ or profiles/, so the owner's page keeps a small public copy
+ * with ONLY the parts set to "Everyone". No email, friends list or keys ever go in it.
+ * It refreshes whenever the owner opens or saves their profile; if nothing is public it is removed. */
+const isPub = (sec) => levelOf(sec) === 'public';
+function anyVisible() { return visiblePlats().length > 0 || (canSee('tracking') && S.tracking && S.tracking.length) || canSee('activity') || canSee('trophies'); }
+function privateMsg() {
+  return `<div class="h2" style="justify-content:center;margin-bottom:.5rem"><i class="fas fa-user-lock"></i> This profile isn\u2019t shared publicly</div>
+    <div class="mute">Only its owner\u2019s friends can see it.</div>`;
+}
+async function steamId64(raw) {
+  let id = String(raw || '').trim().replace(/\/+$/, '').split('/').pop();
+  if (!id || /^7656119\d{10}$/.test(id)) return id;
+  try { const v = (await W.db.ref('steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); return typeof v === 'string' ? v : ''; } catch (e) { return ''; }
+}
+async function publishPublic() {
+  try {
+    const code = String(S.U.friend_code || '').trim(); if (!code || !S.isOwner) return;
+    const ref = W.db.ref('public_profiles/' + code);
+    const any = ['psn', 'xbox', 'steam'].some(x => isPub(x) && platId(x)) || isPub('tracking') || isPub('activity') || isPub('trophies');
+    if (!any) { await ref.remove(); return; }
+    const p = S.profile, out = {
+      code, username:S.U.username || '', avatar:S.U.avatar_url || '', displayName:p.displayName || '', bio:p.bio || '',
+      accent:p.accent || S.U.primary_color || '', bgDim:p.bgDim != null ? p.bgDim : null, defaultTab:p.defaultTab || 'all', bg:S.media.bg || '',
+      privacy:{ trophies:isPub('trophies') ? 'public' : 'friends', activity:isPub('activity') ? 'public' : 'friends' },
+      tracking_scope:isPub('tracking') ? 'public' : 'friends'
+    };
+    if (isPub('psn') && platId('psn')) out.psn = platId('psn');
+    if (isPub('xbox') && platId('xbox')) out.xbox = platId('xbox');
+    if (isPub('steam') && platId('steam')) { const sid = await steamId64(platId('steam')); if (sid) out.steam = sid; }
+    if (isPub('tracking')) {
+      if (Array.isArray(S.tracking)) out.tracking = S.tracking.slice(0, 40).map(t => ({ title:t.title, platform:t.platform || '', status:t.status || '', progress:t.progress, note:t.note || '', updated:t.updated || 0, wl:t.wl || null }));
+      if (S.U.mobile_progress) out.mobile_progress = S.U.mobile_progress;
+    }
+    const cur = (await ref.once('value').catch(() => null));
+    const old = cur && cur.val(); if (old) delete old.updatedAt;
+    if (JSON.stringify(old) === JSON.stringify(JSON.parse(JSON.stringify(out)))) return;   // unchanged: no write
+    out.updatedAt = W.firebase.database.ServerValue.TIMESTAMP;
+    await ref.set(out);
+  } catch (e) { console.warn('[profile] public copy', e && (e.code || e.message)); }
+}
+
+/* signed-out visitor opening profile.html#CODE */
+async function bootPublic(q) {
+  let snap = null;
+  for (const c of [...new Set([q, q.toUpperCase()])]) {
+    try { snap = (await W.db.ref('public_profiles/' + c.replace(/[.$#\[\]\/]/g, '')).once('value')).val(); } catch (e) {}
+    if (snap) break;
+  }
+  if (!snap) { signInView(true); return; }
+  S.isOwner = false; S.rel = 0; S.myFriends = {}; S.ownerKey = null;
+  S.U = { friend_code:snap.code, username:snap.username || '', avatar_url:snap.avatar || '', tracking_scope:snap.tracking_scope || 'friends', mobile_progress:snap.mobile_progress || null };
+  if (snap.psn) { S.U.psn_username = snap.psn; S.U.psn_username_scope = 'public'; }
+  if (snap.xbox) { S.U.xbox_gamertag = snap.xbox; S.U.xbox_gamertag_scope = 'public'; }
+  if (snap.steam) { S.U.steam_id = snap.steam; S.U.steam_id_scope = 'public'; }
+  S.profile = { displayName:snap.displayName || '', bio:snap.bio || '', accent:snap.accent || '', bgDim:snap.bgDim, defaultTab:snap.defaultTab || 'all', privacy:snap.privacy || {} };
+  S.media = { bg:snap.bg || '' };
+  S.tracking = Array.isArray(snap.tracking) ? snap.tracking : null;
+  applyTheme();
+  await loadPlatforms();
+  document.title = displayName() + ' | Pack Hub';
+  setTabIcon(avatarOf() || Object.values(S.plat).map(x => x && x.avatar).find(Boolean) || '');
+  $('#state-msg').hidden = true; $('#profile-root').hidden = false;
+  if (S.profile.defaultTab) S.tab = S.profile.defaultTab;
+  render();
 }
 
 /* browser-tab icon = this profile's avatar (round); falls back to the plain image if the host blocks canvas use */
@@ -221,8 +286,8 @@ function setTabIcon(url) {
 }
 
 function fail(html) { $('#state-msg').innerHTML = html; }
-function signInView() {
-  $('#state-msg').innerHTML = `<div class="h2" style="justify-content:center;margin-bottom:.75rem"><i class="fas fa-user-lock"></i> Sign in to see your profile</div>
+function signInView(forOther) {
+  $('#state-msg').innerHTML = (forOther ? privateMsg() + '<div class="mute" style="margin:.4rem 0 .9rem">Friends can sign in to see it.</div>' : '') + `<div class="h2" style="justify-content:center;margin-bottom:.75rem;${forOther ? 'display:none' : ''}"><i class="fas fa-user-lock"></i> Sign in to see your profile</div>
     <button class="btn primary" id="signin-btn"><i class="fab fa-google"></i> Sign in with Google</button>
     ${W.config.discordAuthUrl ? '<button class="btn" id="signin-discord" style="margin-left:.5rem"><i class="fab fa-discord"></i> Sign in with Discord</button>' : ''}
     <div class="mute" style="margin-top:.8rem;font-size:.8rem">Other sign-in methods are in the menu at the top.</div>`;
@@ -260,7 +325,7 @@ async function loadProfile() {
     S.rel = f ? (f.close_friend === true ? 2 : 1) : 0;
   }
   applyTheme();
-  if (canSee('tracking')) loadTracking(); else S.tracking = null;
+  if (canSee('tracking')) S.trackP = loadTracking(); else S.tracking = null;
 }
 
 function applyTheme() {
@@ -522,6 +587,7 @@ function pctColor(p) {
 const pctBar = (p) => { const c = pctColor(p), d = p >= 100; return `<div class="bar" style="margin-top:.35rem"><i style="width:${Math.min(100, p)}%;background:${d ? 'linear-gradient(90deg,#67e8f9,#e0faff,#67e8f9)' : c};${d ? 'box-shadow:0 0 8px #67e8f9;' : ''}"></i></div>`; };
 
 function watchPresence() {
+  if (!W.me || !S.ownerKey) return;
   W.db.ref('presence/' + S.ownerKey).on('value', s => { S.presence = s.val(); renderHeroStatus(); });
   // mobile-games status (game_rooms/presence/{friendCode}, refreshed by the games every ~minute)
   const code = String(S.U.friend_code || '').toUpperCase();
@@ -551,7 +617,7 @@ function render() {
     $('#viewas').onchange = (e) => { S.viewAs = e.target.value === '' ? null : Number(e.target.value); applyTheme(); render(); };
     $('#edit-btn').onclick = openEdit;
   } else {
-    ta.insertAdjacentHTML('beforeend', `<a class="btn" href="profile.html"><i class="fas fa-user"></i> My profile</a>`);
+    ta.insertAdjacentHTML('beforeend', W.me ? `<a class="btn" href="profile.html"><i class="fas fa-user"></i> My profile</a>` : `<a class="btn" href="profile.html"><i class="fas fa-right-to-bracket"></i> Sign in</a>`);
   }
 
   const canMsg = !S.isOwner && (S.rel >= 1 || Object.keys(S.myFriends).some(k => String(k).toUpperCase() === code || String((S.myFriends[k] || {}).friend_code || '').toUpperCase() === code));
@@ -651,7 +717,7 @@ function renderTab(vp) {
       <div class="games">${gs.map((g, i) => gameCard(g, start + i)).join('')}</div></section>`;
   }).join('');
   html += sections;
-  if (tab === 'all') html += mobileHtml();
+  if (tab === 'all' && (viewRank() >= 1 || canSee('tracking'))) html += mobileHtml();
 
   // latest trophy unlocks (PSN)
   if (canSee('trophies') && plats.includes('psn') && S.plat.psn && S.plat.psn.recent.length) {
@@ -750,6 +816,7 @@ async function psnTrophyMap(tag, commId) {
 }
 /** Friends who have a PlayStation name and share it (their own privacy setting), with their trophies for this game */
 async function friendTrophyMaps(commId) {
+  if (!W.me) return [];
   const friends = S.isOwner ? (S.U.friends || {}) : (S.myFriends || {}), out = [];
   await Promise.all(Object.entries(friends).map(async ([fk, fo]) => {
     try {
@@ -877,7 +944,8 @@ function openEdit() {
     <div class="mute" style="font-size:.8rem;margin:.8rem 0">
       Your accounts use the privacy you already set in <a href="../security/setting.html" style="color:var(--accent)"><b>Settings</b></a>:
       PlayStation &ndash; ${scopeLabel(S.U.psn_username_scope || 'private')}, Xbox &ndash; ${scopeLabel(S.U.xbox_gamertag_scope || 'private')}, Steam &ndash; ${scopeLabel(S.U.steam_id_scope || 'private')}.
-      Usernames, avatar, friends and close friends are managed there too.</div>
+      Usernames, avatar, friends and close friends are managed there too.
+      Anything set to <b>Everyone</b> can be seen by people who aren't signed in, using your friend-code link.</div>
     <div class="fld"><label>Default tab when someone opens your profile</label>
       <select id="ed-tab"><option value="all">All platforms</option><option value="psn" ${p.defaultTab === 'psn' ? 'selected' : ''}>PlayStation</option><option value="xbox" ${p.defaultTab === 'xbox' ? 'selected' : ''}>Xbox</option><option value="steam" ${p.defaultTab === 'steam' ? 'selected' : ''}>Steam</option></select></div>
 
@@ -914,6 +982,7 @@ async function saveProfile() {
     applyTheme();
     if (canSee('tracking')) await loadTracking();
     render();
+    publishPublic();
   } catch (e) { console.error(e); toast('Save failed: ' + (e.code || e.message)); }
   btn.disabled = false;
 }

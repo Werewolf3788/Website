@@ -172,6 +172,15 @@
       }
     },
 
+    "public_profiles": {
+      "$code": {
+        ".read": true,
+        ".write": "auth != null && auth.token.email != null && root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val() === $code",
+        "bio":         { ".validate": "newData.isString() && newData.val().length <= 280" },
+        "displayName": { ".validate": "newData.isString() && newData.val().length <= 40" }
+      }
+    },
+
     "achFeed": {
       ".read": "auth != null",
       ".indexOn": ["ts"],
