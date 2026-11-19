@@ -703,7 +703,7 @@ window.Wifi=(function(){
   const newId=()=>'w'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   const qrText=(ssid,pw)=>{const q=v=>String(v).replace(/([\\;,:"])/g,'\\$1');return 'WIFI:T:'+(pw?'WPA':'nopass')+';S:'+q(ssid)+';'+(pw?'P:'+q(pw)+';':'')+';'};
   const denied=e=>/permission_denied/i.test((e&&(e.code||e.message))||'');
-  let mine={},sub='mine',opened=false;
+  let mine={},sub='mine',opened=false,mineRef=null,dirty=new Set(),remoteWaiting=null;
   const friends=()=>Object.entries(D.friends||{}).map(([code,f])=>({code,name:(f&&f.username)||code,close:!!(f&&f.close_friend)}));
   function loadQr(){return window.qrcode?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='../assets/qrcode.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
   async function showQr(box,ssid,pw){
@@ -740,12 +740,13 @@ window.Wifi=(function(){
     $('wifiAdd').onclick=()=>{mine[newId()]={_new:1};drawMine()};
     $('wifiMine').querySelectorAll('.net').forEach(card=>{
       const id=card.dataset.id,f=n=>card.querySelector('[data-f="'+n+'"]');
+      card.addEventListener('input',()=>dirty.add(id));card.addEventListener('change',e=>{if(!e.target.closest('[data-act]'))dirty.add(id)});
       f('share').onchange=()=>{card.querySelector('[data-pick]').style.display=f('share').value==='picked'?'':'none';card.querySelector('[data-closeinfo]').style.display=f('share').value==='close'?'':'none'};
       card.querySelector('[data-act="qr"]').onclick=()=>{if(!f('ssid').value.trim())return say('Type the network name first.',1);const pw=f('password').value;if(pw!==pw.trim())say('Heads up: the password starts or ends with a space. If the router password doesn\u2019t, remove it and Save.',1);showQr(card,f('ssid').value.trim(),pw)};
       card.querySelector('[data-act="del"]').onclick=async()=>{
-        if(mine[id]&&mine[id]._new){delete mine[id];return drawMine()}
+        if(mine[id]&&mine[id]._new){delete mine[id];dirty.delete(id);applyRemote();return drawMine()}
         if(!confirm('Delete '+(f('label').value||f('ssid').value||'this network')+'? Anyone you shared it with loses it too.'))return;
-        try{await db.ref('wifi_index/'+K+'/'+id).remove();await db.ref('wifi/'+K+'/'+id).remove();delete mine[id];drawMine();say('Network deleted.')}catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
+        try{dirty.delete(id);await db.ref('wifi_index/'+K+'/'+id).remove();await db.ref('wifi/'+K+'/'+id).remove();delete mine[id];drawMine();say('Network deleted.')}catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
       };
       card.querySelector('[data-act="save"]').onclick=async()=>{
         const ssid=f('ssid').value.trim();if(!ssid)return say('Type the network name (SSID).',1);
@@ -753,7 +754,7 @@ window.Wifi=(function(){
         if(share==='picked'&&!Object.keys(to).length)return say('Tick at least one friend, or choose "Only me".',1);
         const it={label:f('label').value.trim()||ssid,ssid,band:f('band').value,password:f('password').value,note:f('note').value.trim(),share,owner_name:D.username||'',updated_at:Date.now()};
         if(share==='picked')it.to=to;
-        try{await db.ref('wifi/'+K+'/'+id).set(it);await db.ref('wifi_index/'+K+'/'+id).set(share==='private'?null:true);mine[id]=it;
+        try{dirty.delete(id);await db.ref('wifi/'+K+'/'+id).set(it);await db.ref('wifi_index/'+K+'/'+id).set(share==='private'?null:it.updated_at);mine[id]=it;applyRemote();
           say(share==='private'?'Saved. Only you can see it.':share==='close'?'Saved and shared with your close friends.':'Saved and shared with the friends you picked.')}
         catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
       };
@@ -762,32 +763,66 @@ window.Wifi=(function(){
   async function ownerKey(code){
     try{const v=(await db.ref('friend_codes/'+code).get()).val();return typeof v==='string'?v:(v&&(v.email_key||v.key))||null}catch(e){return null}
   }
-  async function drawShared(){
-    const box=$('wifiShared');box.innerHTML='<p class="hint">Looking for networks your friends shared with you…</p>';
-    const out=[];
-    await Promise.all(friends().map(async fr=>{
-      const key=await ownerKey(fr.code);if(!key||key===K)return;
-      let ids={};try{ids=(await db.ref('wifi_index/'+key).get()).val()||{}}catch(e){return}
-      await Promise.all(Object.keys(ids).map(async id=>{try{const it=(await db.ref('wifi/'+key+'/'+id).get()).val();if(it&&it.ssid)out.push({from:fr.name,it})}catch(e){}}));   // not shared with you = permission denied, skipped
+  // ---- Shared with me: live. wifi_index/{friend} lists what they share; each network is watched on its own.
+  //      A network you're not allowed to see is refused by the rules and simply doesn't show. ----
+  const SH={};let shWatching=false,shTimer=null,shLast='';
+  function stopShared(){Object.values(SH).forEach(o=>{try{o.idx&&o.idx.off()}catch(e){}Object.values(o.refs).forEach(r=>{try{r.off()}catch(e){}})});Object.keys(SH).forEach(k=>delete SH[k]);shWatching=false;shLast=''}
+  function watchNet(key,id){
+    const o=SH[key];if(!o||o.refs[id])return;
+    const r=db.ref('wifi/'+key+'/'+id);o.refs[id]=r;
+    r.on('value',sn=>{const it=sn.val();if(it&&it.ssid)o.items[id]=it;else delete o.items[id];drawSharedSoon()},
+      ()=>{delete o.items[id];delete o.refs[id];drawSharedSoon()});   // not shared with you (any more)
+  }
+  async function startShared(){
+    if(shWatching)return drawSharedSoon();shWatching=true;
+    $('wifiShared').innerHTML='<p class="hint">Looking for networks your friends shared with you…</p>';
+    const list=friends();let pending=list.length;if(!pending)return drawSharedSoon(true);
+    await Promise.all(list.map(async fr=>{
+      const key=await ownerKey(fr.code);if(!key||key===K||SH[key]){if(--pending===0)drawSharedSoon(true);return}
+      const o=SH[key]={name:fr.name,items:{},refs:{},idx:db.ref('wifi_index/'+key),ready:false};
+      o.idx.on('value',sn=>{
+        const ids=sn.val()||{};
+        Object.keys(o.refs).forEach(id=>{if(!(id in ids)){try{o.refs[id].off()}catch(e){}delete o.refs[id];delete o.items[id]}});
+        Object.keys(ids).forEach(id=>{if(!o.refs[id])watchNet(key,id)});   // a re-save also re-checks one you lost access to
+        if(!o.ready){o.ready=true;if(--pending===0)drawSharedSoon(true)}else drawSharedSoon();
+      },()=>{if(!o.ready){o.ready=true;if(--pending===0)drawSharedSoon(true)}});
     }));
+  }
+  function drawSharedSoon(first){clearTimeout(shTimer);shTimer=setTimeout(()=>drawShared(first),first?0:120)}
+  function drawShared(first){
     if(sub!=='shared')return;
-    if(!out.length){box.innerHTML='<p class="hint">Nothing has been shared with you yet. A friend has to save a network and share it with their close friends or pick you.</p>';return}
+    const box=$('wifiShared'),out=[];
+    Object.values(SH).forEach(o=>Object.entries(o.items).forEach(([id,it])=>out.push({id,from:o.name,it})));
     out.sort((a,b)=>a.from.localeCompare(b.from)||String(a.it.label).localeCompare(String(b.it.label)));
-    box.innerHTML='<div class="nets">'+out.map((o,i)=>`<div class="box sec net" data-i="${i}"><strong>${esc(o.it.label||o.it.ssid)}</strong><div class="hint" style="margin:0">Shared by ${esc(o.from)}</div>
+    const sig=JSON.stringify(out);if(sig===shLast&&!first)return;shLast=sig;
+    const openQr=new Set([...box.querySelectorAll('.net')].filter(c=>c.querySelector('.qr')).map(c=>c.dataset.id));
+    if(!out.length){box.innerHTML='<p class="hint">Nothing has been shared with you yet. A friend has to save a network and share it with their close friends or pick you.</p>';return}
+    box.innerHTML='<div class="nets">'+out.map((o,i)=>`<div class="box sec net" data-i="${i}" data-id="${esc(o.id)}"><strong>${esc(o.it.label||o.it.ssid)}</strong><div class="hint" style="margin:0">Shared by ${esc(o.from)}</div>
       <div class="kv"><span>Network</span><span>${esc(o.it.ssid)}</span></div><div class="kv"><span>Band</span><span>${esc(o.it.band||'')}</span></div>${o.it.note?`<div class="kv"><span>Note</span><span>${esc(o.it.note)}</span></div>`:''}
       ${o.it.password?`<div class="row"><input type="password" readonly value="${esc(o.it.password)}"><button type="button" data-act="eye" title="Show / hide">👁</button><button type="button" data-act="copy">Copy</button></div>`:'<div class="hint">Open network, no password.</div>'}
       <div class="row"><button type="button" data-act="qr">QR code to join</button></div></div>`).join('')+'</div>';
     wireMask(box);
-    box.querySelectorAll('.net').forEach(card=>{const o=out[+card.dataset.i];card.querySelector('[data-act="qr"]').onclick=()=>showQr(card,o.it.ssid,o.it.password)});
+    box.querySelectorAll('.net').forEach(card=>{const o=out[+card.dataset.i];card.querySelector('[data-act="qr"]').onclick=()=>showQr(card,o.it.ssid,o.it.password);
+      if(openQr.has(card.dataset.id))showQr(card,o.it.ssid,o.it.password)});   // keep an open QR open (it now shows the new details)
   }
-  function setSub(v){sub=v;document.querySelectorAll('#wifiPane [data-wsub]').forEach(b=>b.classList.toggle('on',b.dataset.wsub===v));$('wifiMine').classList.toggle('hidden',v!=='mine');$('wifiShared').classList.toggle('hidden',v!=='shared');if(v==='shared')drawShared()}
+  function setSub(v){sub=v;document.querySelectorAll('#wifiPane [data-wsub]').forEach(b=>b.classList.toggle('on',b.dataset.wsub===v));$('wifiMine').classList.toggle('hidden',v!=='mine');$('wifiShared').classList.toggle('hidden',v!=='shared');if(v==='shared')startShared()}
   document.querySelectorAll('#wifiPane [data-wsub]').forEach(b=>b.onclick=()=>setSub(b.dataset.wsub));
+  // ---- My networks: live too (changes from your other devices). A card you're editing is left alone until you save. ----
+  function applyRemote(){
+    if(!remoteWaiting||dirty.size)return;
+    const keep={};Object.entries(mine).forEach(([id,it])=>{if(it&&it._new)keep[id]=it});
+    mine=Object.assign({},remoteWaiting,keep);remoteWaiting=null;if(sub==='mine')drawMine();
+  }
   async function open(){
     if(!K)return;
-    if(!opened){opened=true;try{mine=(await db.ref('wifi/'+K).get()).val()||{}}catch(e){mine={};if(denied(e))say('Wi-Fi sharing is not switched on in the database yet.',1)}}
-    if(sub==='mine')drawMine();else drawShared();
+    if(!opened){opened=true;
+      await new Promise(done=>{mineRef=db.ref('wifi/'+K);let first=true;
+        mineRef.on('value',sn=>{remoteWaiting=sn.val()||{};if(first){first=false;mine={};applyRemote();done()}else applyRemote()},
+          e=>{mine={};if(denied(e))say('Wi-Fi sharing is not switched on in the database yet.',1);done()})});
+    }
+    if(sub==='mine')drawMine();else startShared();
   }
-  return {open,_qrText:qrText,reset(){opened=false;mine={}}};
+  return {open,_qrText:qrText,reset(){opened=false;mine={};dirty.clear();remoteWaiting=null;try{mineRef&&mineRef.off()}catch(e){}mineRef=null;stopShared()}};
 })();
 
 // ---- Link / unlink sign-in methods ----
