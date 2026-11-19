@@ -90,7 +90,7 @@
     "weapon_skills": {
       "quest_name": "Weapon Skills",
       "region": "Bolivia-wide",
-      "description": "Weapon skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "description": "Weapon skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal. The Epic skill at the end unlocks once every other Weapon skill has at least 1 rank.",
       "items": [
         {
           "id": "skill_stable_aim",
@@ -341,7 +341,7 @@
           "name": "Ranged Elite",
           "region": "Weapon",
           "location": "Weapon Skill Tree · Epic Skill",
-          "guide": "The Weapon tree's Epic Skill, the final unlock at the end of the tree.",
+          "guide": "EPIC SKILL: Increases weapon accuracy at long range. Unlocks once every other skill in the Weapon tree has at least 1 rank.",
           "levels": 1,
           "epic": true,
           "rank_costs": [
@@ -360,14 +360,14 @@
     "drone_skills": {
       "quest_name": "Drone Skills",
       "region": "Bolivia-wide",
-      "description": "Drone skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "description": "Drone skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal. The Epic skill at the end unlocks once every other Drone skill has at least 1 rank.",
       "items": [
         {
           "id": "skill_battery_increase",
           "name": "Battery",
           "region": "Drone",
           "location": "Drone Skill Tree",
-          "guide": "Extends how long the drone can stay airborne before needing to recharge.",
+          "guide": "Extends how long the drone can stay airborne. The final rank gives unlimited battery.",
           "levels": 4,
           "image_url": "/public/games/wildlands/images/skills/battery_increase.png",
           "rank_costs": [
@@ -730,7 +730,7 @@
           "name": "Medic",
           "region": "Drone",
           "location": "Drone Skill Tree · Epic Skill",
-          "guide": "The Drone tree's Epic Skill, the final unlock at the end of the tree.",
+          "guide": "EPIC SKILL: A drone payload that detonates to revive nearby allies. Unlocks once every other skill in the Drone tree has at least 1 rank.",
           "levels": 1,
           "epic": true,
           "rank_costs": [
@@ -749,7 +749,7 @@
     "item_skills": {
       "quest_name": "Item Skills",
       "region": "Bolivia-wide",
-      "description": "Item skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "description": "Item skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal. The Epic skill at the end unlocks once every other Item skill has at least 1 rank.",
       "items": [
         {
           "id": "skill_parachute",
@@ -1059,7 +1059,7 @@
           "name": "Explosion Radius",
           "region": "Item",
           "location": "Item Skill Tree · Epic Skill",
-          "guide": "The Item tree's Epic Skill, the final unlock at the end of the tree.",
+          "guide": "EPIC SKILL: Increases the blast radius of your explosives. Unlocks once every other skill in the Item tree has at least 1 rank.",
           "levels": 1,
           "epic": true,
           "rank_costs": [
@@ -1078,7 +1078,7 @@
     "physical_skills": {
       "quest_name": "Physical Skills",
       "region": "Bolivia-wide",
-      "description": "Physical skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "description": "Physical skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal. The Epic skill at the end unlocks once every other Physical skill has at least 1 rank.",
       "items": [
         {
           "id": "skill_stamina",
@@ -1368,7 +1368,7 @@
           "name": "Faster Regen",
           "region": "Physical",
           "location": "Physical Skill Tree · Epic Skill",
-          "guide": "The Physical tree's Epic Skill, the final unlock at the end of the tree.",
+          "guide": "EPIC SKILL: Recover from injuries faster. Unlocks once every other skill in the Physical tree has at least 1 rank.",
           "levels": 1,
           "epic": true,
           "rank_costs": [
@@ -1387,7 +1387,7 @@
     "squad_skills": {
       "quest_name": "Squad Skills",
       "region": "Bolivia-wide",
-      "description": "Squad skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal.",
+      "description": "Squad skill tree. Each skill has between 1 and 4 ranks; click a rank box to mark your current rank. A skill with a matching Bonus Medal also gets an independent star toggle for that medal. The Epic skill at the end unlocks once every other Squad skill has at least 1 rank.",
       "items": [
         {
           "id": "skill_revive_speed",
@@ -1594,7 +1594,7 @@
           "name": "Last Chance",
           "region": "Squad",
           "location": "Squad Skill Tree · Epic Skill",
-          "guide": "The Squad tree's Epic Skill, the final unlock at the end of the tree.",
+          "guide": "EPIC SKILL: Increases how many times your AI teammates can revive you. Unlocks once every other skill in the Squad tree has at least 1 rank.",
           "levels": 1,
           "epic": true,
           "rank_costs": [
@@ -1613,14 +1613,14 @@
     "rebel_support_skills": {
       "quest_name": "Rebel Support Skills",
       "region": "Bolivia-wide",
-      "description": "Rebel Support skills. Each skill has 3 tiers (Power 1, 2 and 3), and each tier takes 3 levels to fill, so 9 boxes per skill. Click a box to mark how far you are. You level them up by doing that skill's Rebel Op side missions.",
+      "description": "Rebel Support skills. Each skill has 3 tiers (Power 1, 2 and 3), and each tier takes 3 levels, so 9 boxes per skill. Every Rebel Op side mission you finish adds one level to that skill. Find Rebel Ops through intel, interrogating lieutenants or talking to civilians.",
       "items": [
         {
           "id": "skill_vehicle_drop_off",
           "name": "Vehicle Drop-Off",
           "region": "Rebel Support",
           "location": "Rebel Support · 3 tiers × 3 levels",
-          "guide": "Calls in Rebel forces to drop off a vehicle nearby.",
+          "guide": "Calls in Rebel forces to drop off a vehicle nearby. Power 1: an SUV; Power 2: an armored vehicle; Power 3: a helicopter.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/vehicle_drop_off.png",
           "tier_notes": [
@@ -1640,19 +1640,19 @@
           "name": "Guns for Hire",
           "region": "Rebel Support",
           "location": "Rebel Support · 3 tiers × 3 levels",
-          "guide": "Summons temporary Rebel fighters to fight alongside you; higher ranks bring more.",
+          "guide": "Summons temporary Rebel fighters to fight alongside you; higher ranks bring more. Power 1: a small group of rebels; Power 2: a medium group of rebels; Power 3: a very large group of rebels.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/guns_for_hire.png",
           "tier_notes": [
             "Tier 1 (Power 1), level 1 of 3.",
             "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3.",
+            "Tier 1 (Power 1), level 3 of 3: Calls in a small group of rebels.",
             "Tier 2 (Power 2), level 1 of 3.",
             "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3.",
+            "Tier 2 (Power 2), level 3 of 3: Calls in a medium group of rebels.",
             "Tier 3 (Power 3), level 1 of 3.",
             "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3."
+            "Tier 3 (Power 3), level 3 of 3: Calls in a very large group of rebels."
           ]
         },
         {
@@ -1660,19 +1660,19 @@
           "name": "Mortar",
           "region": "Rebel Support",
           "location": "Rebel Support · 3 tiers × 3 levels",
-          "guide": "Calls in a Rebel mortar strike on a marked area.",
+          "guide": "Calls in a Rebel mortar strike on a marked area. Power 1: a single-target mortar strike; Power 2: multiple mortar strikes on the target; Power 3: multiple mortar strikes over a wide area.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/mortar.png",
           "tier_notes": [
             "Tier 1 (Power 1), level 1 of 3.",
             "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3.",
+            "Tier 1 (Power 1), level 3 of 3: Calls in a single-target mortar strike.",
             "Tier 2 (Power 2), level 1 of 3.",
             "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3.",
+            "Tier 2 (Power 2), level 3 of 3: Calls in multiple mortar strikes on the target.",
             "Tier 3 (Power 3), level 1 of 3.",
             "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3."
+            "Tier 3 (Power 3), level 3 of 3: Calls in multiple mortar strikes over a wide area."
           ]
         },
         {
@@ -1680,19 +1680,19 @@
           "name": "Diversion",
           "region": "Rebel Support",
           "location": "Rebel Support · 3 tiers × 3 levels",
-          "guide": "Has Rebels stage an attack from another direction to draw enemies away.",
+          "guide": "Has Rebels stage an attack from another direction to draw enemies away. Power 1: a small group of rebels; Power 2: a large group of rebels; Power 3: the largest group of rebels.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/diversion.png",
           "tier_notes": [
             "Tier 1 (Power 1), level 1 of 3.",
             "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3.",
+            "Tier 1 (Power 1), level 3 of 3: Sends a small group of rebels.",
             "Tier 2 (Power 2), level 1 of 3.",
             "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3.",
+            "Tier 2 (Power 2), level 3 of 3: Sends a large group of rebels.",
             "Tier 3 (Power 3), level 1 of 3.",
             "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3."
+            "Tier 3 (Power 3), level 3 of 3: Sends the largest group of rebels."
           ]
         },
         {
@@ -1700,19 +1700,19 @@
           "name": "Spotting",
           "region": "Rebel Support",
           "location": "Rebel Support · 3 tiers × 3 levels",
-          "guide": "Has Rebels mark nearby enemies; higher ranks widen the detection area.",
+          "guide": "Has Rebels mark nearby enemies; higher ranks widen the detection area. Power 1: marks enemies in a small area; Power 2: marks enemies in a large area; Power 3: marks enemies in the largest area. Only marks enemies, not intel or objectives.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/spotting.png",
           "tier_notes": [
             "Tier 1 (Power 1), level 1 of 3.",
             "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3.",
+            "Tier 1 (Power 1), level 3 of 3: Rebels marks enemies in a small area.",
             "Tier 2 (Power 2), level 1 of 3.",
             "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3.",
+            "Tier 2 (Power 2), level 3 of 3: Rebels marks enemies in a large area.",
             "Tier 3 (Power 3), level 1 of 3.",
             "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3."
+            "Tier 3 (Power 3), level 3 of 3: Rebels marks enemies in the largest area."
           ]
         }
       ]
@@ -8507,7 +8507,8 @@
     "You can skip about 20 Skill Point pickups and still max out the whole skill tree. Weapon accessories aren't needed for any trophy.",
     "Yellow-file intel unlocks a story mission. White ! intel lets you pick what to reveal on the Tacmap: Skill Points, Equipment Cases, Bonus Medals, Supply Raids or Rebel Ops.",
     "On the Tacmap, press Interact over a province to see the Kingslayer Files you've found and play their videos and audio.",
-    "Supply Raids (Steal the Helicopter, Steal the Plane, Stop the Convoy) give far more resources than containers; convoys give the most."
+    "Supply Raids (Steal the Helicopter, Steal the Plane, Stop the Convoy) give far more resources than containers; convoys give the most.",
+    "Skill trophies: Ultimate Skill (buy every upgrade in one tree), Top Drone (every drone upgrade), Only the Best (every upgrade), The Champion (max XP and level)."
   ],
   "resources_cost_note": "Skill costs are from IGN / Ghost Recon Wiki lists and have not been checked in-game. If your game shows a different cost, tell Claude and it gets fixed.",
   "player_profile": {
