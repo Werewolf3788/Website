@@ -422,8 +422,23 @@ function eventList() {
 function parseDeals(tree) {
   const out = [];
   if (!tree || typeof tree !== 'object') return out;
+  // The same item can be stored under more than one category (its category changed in the
+  // sheet). Keep only its newest copy; on a tie, prefer a real category over "Uncategorized".
+  const newest = new Map();
   for (const [catKey, group] of Object.entries(tree)) {
     if (!group || typeof group !== 'object') continue;
+    for (const [id, it] of Object.entries(group)) {
+      if (!it || typeof it !== 'object') continue;
+      const key = String(it.id || id).trim().toUpperCase();
+      const ts = Date.parse(it.updated_at || '') || 0;
+      const uncategorized = /^uncategori[sz]ed$/i.test(String(it.category || catKey).trim());
+      const prev = newest.get(key);
+      if (!prev || ts > prev.ts || (ts === prev.ts && prev.uncategorized && !uncategorized)) newest.set(key, { catKey, id, it, ts, uncategorized });
+    }
+  }
+  const dedup = {};
+  for (const { catKey, id, it } of newest.values()) { (dedup[catKey] = dedup[catKey] || {})[id] = it; }
+  for (const [catKey, group] of Object.entries(dedup)) {
     for (const [id, it] of Object.entries(group)) {
       if (!it || !truthy(it.is_active)) continue;
       const url = safeUrl(it.site_url);
