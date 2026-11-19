@@ -84,7 +84,8 @@ button{font:inherit;color:inherit}
 .ev .ev-cd{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--accent);margin-top:2px}
 .ev.live .ev-cd{color:var(--hot)}
 .ev .ev-n{font-size:12px;color:var(--muted)}
-.ev-banner{margin-top:10px;display:flex;justify-content:center;align-items:center;background:#fff;border-radius:8px;overflow:hidden;cursor:auto}
+.ev-banner{margin-top:10px;display:flex;justify-content:center;align-items:center;background:#fff;border-radius:8px;overflow:hidden;cursor:pointer}
+.ev-banner a{display:block;line-height:0}
 .ev-banner img,.ev-banner iframe{max-width:100%;height:auto;display:block;border:0}
 .ev-banner:empty{display:none}
 .ev-shop{margin-top:10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:9px;background:linear-gradient(180deg,#ffa31a,#e68a00);color:#111;font-weight:800;font-size:13px;text-decoration:none}
@@ -285,14 +286,14 @@ const EVENT_SCHEDULE = {
 // Official Amazon Associates banner code for an event card (Associates Central > Product Linking > Banners).
 // Paste the whole code between the backticks. Leave empty for no banner.
 const EVENT_BANNERS = {
-  'black-friday-week': ``,
+  'black-friday-week': `<a href="https://www.amazon.com/blackfriday?tag=blackfriday71888-20" target="_blank" rel="nofollow sponsored noopener" data-evlink="black-friday-week" aria-label="Shop Amazon Black Friday deals"><img src="https://m.media-amazon.com/images/G/01/1c51f478fb9e4d33ad52f6f827cf9a31/DBSW-545-XPL-BF26-US-IMC-6356-BF-Masonry-224x258._CB764324150_.gif" alt="Amazon Black Friday deals" width="224" height="258" loading="lazy" referrerpolicy="no-referrer"></a>`,
   'cyber-monday': ``
 };
 // "Shop" buttons on an event card: Amazon event pages, tagged for this event
 const EVENT_LINKS = {
   'black-friday-week': [
     { url: 'https://www.amazon.com/blackfriday?tag=blackfriday71888-20', text: '🛒 Shop all Black Friday deals' },
-    { url: 'https://www.amazon.com/events/devicedeals/?tag=blackfriday71888-20', text: '📱 Echo, Kindle &amp; Fire TV deals' }
+    { url: 'https://www.amazon.com/events/devicedeals/?tag=blackfriday71888-20', text: '📱 Echo, Kindle & Fire TV deals' }
   ],
   'cyber-monday': [
     { url: 'https://www.amazon.com/cybermonday?tag=blackfriday71888-20', text: '🛒 Shop all Cyber Monday deals' }
