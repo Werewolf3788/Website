@@ -273,21 +273,48 @@ const MCOL = { id:0, posterArt:1, name:2, amazon:3, edition:10, collection:11, d
 
 // Amazon's official sale windows. Put the name in event_tag (O) or holiday_month (K) and the
 // site uses these exact start/end times; you don't need start/end dates for these.
-// Times include the time zone, so the countdown is right for every visitor.
-const EVENT_SCHEDULE = {
-  'prime-days':       { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
-  'oct. prime deal':  { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
-  'oct. prime deals': { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
-  // Black Friday Week: Nov 19, 12:01 AM PT (3:01 AM ET) through Cyber Monday, Nov 30 (end of day PT)
-  'black-friday':     { start: '2026-11-19T03:01:00-05:00', end: '2026-12-01T02:59:59-05:00', label: 'Black Friday Week' },
-  // Cyber Monday deal drop: Nov 30, 3:00 AM ET through end of day PT
-  'cyber-monday':     { start: '2026-11-30T03:00:00-05:00', end: '2026-12-01T02:59:59-05:00', label: 'Cyber Monday' }
+// Black Friday Week and Cyber Monday are worked out for every year automatically:
+//   Black Friday Week = the Thursday one week before Thanksgiving, 12:01 AM PT (3:01 AM ET),
+//                       through Cyber Monday (end of day PT)
+//   Cyber Monday      = the Monday after Thanksgiving, 3:00 AM ET deal drop, through end of day PT
+// Event cards appear EVENT_SHOW_DAYS before an event starts and hide once it's over.
+const EVENT_SHOW_DAYS = 45;
+function thanksgiving(year) {           // 4th Thursday of November
+  const first = new Date(Date.UTC(year, 10, 1)).getUTCDay();   // 0 = Sunday
+  return 1 + ((4 - first + 7) % 7) + 21;                        // day of month
+}
+const isoET = (y, m, d, hh, mm, ss) => {                       // late November is always EST (-05:00)
+  const dt = new Date(Date.UTC(y, m - 1, d)); const p = n => String(n).padStart(2, '0');
+  return `${dt.getUTCFullYear()}-${p(dt.getUTCMonth() + 1)}-${p(dt.getUTCDate())}T${p(hh)}:${p(mm)}:${p(ss)}-05:00`;
 };
+function holidayEvents(year) {
+  const tg = thanksgiving(year);
+  return {
+    'black-friday': { start: isoET(year, 11, tg - 7, 3, 1, 0), end: isoET(year, 11, tg + 5, 2, 59, 59), label: 'Black Friday Week' },
+    'cyber-monday': { start: isoET(year, 11, tg + 4, 3, 0, 0),  end: isoET(year, 11, tg + 5, 2, 59, 59), label: 'Cyber Monday' }
+  };
+}
+function buildSchedule() {
+  // This year's dates until they're over, then next year's
+  const now = Date.now(), y = new Date().getFullYear();
+  const pick = key => { const a = holidayEvents(y)[key]; return Date.parse(a.end) >= now ? a : holidayEvents(y + 1)[key]; };
+  return {
+    // One-off events (fill in new dates when Amazon announces them)
+    'prime-days':       { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
+    'oct. prime deal':  { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
+    'oct. prime deals': { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
+    // Every year, automatically
+    'black-friday': pick('black-friday'),
+    'cyber-monday': pick('cyber-monday')
+  };
+}
+const EVENT_SCHEDULE = buildSchedule();
+
 // Official Amazon Associates banner code for an event card (Associates Central > Product Linking > Banners).
 // Paste the whole code between the backticks. Leave empty for no banner.
 const EVENT_BANNERS = {
   'black-friday-week': `<a href="https://www.amazon.com/blackfriday?tag=blackfriday71888-20" target="_blank" rel="nofollow sponsored noopener" data-evlink="black-friday-week" aria-label="Shop Amazon Black Friday deals"><img src="https://m.media-amazon.com/images/G/01/1c51f478fb9e4d33ad52f6f827cf9a31/DBSW-545-XPL-BF26-US-IMC-6356-BF-Masonry-224x258._CB764324150_.gif" alt="Amazon Black Friday deals" width="224" height="258" loading="lazy" referrerpolicy="no-referrer"></a>`,
-  'cyber-monday': ``
+  'cyber-monday': `<a href="https://www.amazon.com/cybermonday?tag=blackfriday71888-20" target="_blank" rel="nofollow sponsored noopener" data-evlink="cyber-monday" aria-label="Shop Amazon Cyber Monday deals"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr5uVKF3lD-cdS-XrnB6NhkCr96r80hllAzPQ86uHEdg&s=10" alt="Cyber Monday deals" loading="lazy" referrerpolicy="no-referrer"></a>`
 };
 // "Shop" buttons on an event card: Amazon event pages, tagged for this event
 const EVENT_LINKS = {
@@ -378,8 +405,10 @@ function eventList() {
     if (e.start && (!m.start || dayStart(e.start) < dayStart(m.start))) m.start = e.start;
     if (e.end && (!m.end || dayEnd(e.end) > dayEnd(m.end))) m.end = e.end;
   });
+  const soon = Date.now() + EVENT_SHOW_DAYS * 86400000;
   return [...map.values()]
     .filter(e => (e.start || e.end) && eventStatus(e).state !== 'over')
+    .filter(e => !e.official || !e.start || dayStart(e.start) <= soon)
     .sort((a, b) => (a.start ? dayStart(a.start) : 0) - (b.start ? dayStart(b.start) : 0));
 }
 function parseDeals(tree) {
@@ -689,7 +718,7 @@ function renderEvents() {
       <span class="ev-dates">${esc(dates)}</span>
       <span class="ev-cd" data-cd="${esc(e.key)}">${esc(st.text)}</span>
       <span class="ev-n">${e.n ? `${e.n} item${e.n > 1 ? 's' : ''} tagged` : 'No items tagged yet'}</span>
-      ${banner ? `<div class="ev-banner" data-banner>${banner}</div>` : ''}
+      ${banner ? `<div class="ev-banner" data-banner>${banner.replace('<img ', '<img onerror="this.closest(\'.ev-banner\').remove()" ')}</div>` : ''}
       ${(EVENT_LINKS[e.key] || []).length ? `<div class="ev-links">${EVENT_LINKS[e.key].map(l => `<a class="ev-shop" data-banner data-evlink="${esc(e.key)}" href="${esc(l.url)}" target="_blank" rel="nofollow sponsored noopener">${esc(l.text)}</a>`).join('')}</div>` : ''}
     </div>`;
   }).join('');
