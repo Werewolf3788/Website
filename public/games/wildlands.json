@@ -1619,100 +1619,115 @@
           "id": "skill_vehicle_drop_off",
           "name": "Vehicle Drop-Off",
           "region": "Rebel Support",
-          "location": "Rebel Support · 3 tiers × 3 levels",
+          "location": "Tier 1: Request an SUV.",
           "guide": "Calls in Rebel forces to drop off a vehicle nearby. Power 1: an SUV; Power 2: an armored vehicle; Power 3: a helicopter.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/vehicle_drop_off.png",
-          "tier_notes": [
-            "Tier 1 (Power 1), level 1 of 3.",
-            "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3: Request an SUV.",
-            "Tier 2 (Power 2), level 1 of 3.",
-            "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3: Request an armored vehicle.",
-            "Tier 3 (Power 3), level 1 of 3.",
-            "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3: Request a helicopter."
+          "tier_groups": [
+            {
+              "levels": 3,
+              "text": "Request an SUV."
+            },
+            {
+              "levels": 3,
+              "text": "Request an armored vehicle."
+            },
+            {
+              "levels": 3,
+              "text": "Request a helicopter."
+            }
           ]
         },
         {
           "id": "skill_guns_for_hire",
           "name": "Guns for Hire",
           "region": "Rebel Support",
-          "location": "Rebel Support · 3 tiers × 3 levels",
+          "location": "Tier 1: A small group of rebels fights alongside you.",
           "guide": "Summons temporary Rebel fighters to fight alongside you; higher ranks bring more. Power 1: a small group of rebels; Power 2: a medium group of rebels; Power 3: a very large group of rebels.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/guns_for_hire.png",
-          "tier_notes": [
-            "Tier 1 (Power 1), level 1 of 3.",
-            "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3: Calls in a small group of rebels.",
-            "Tier 2 (Power 2), level 1 of 3.",
-            "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3: Calls in a medium group of rebels.",
-            "Tier 3 (Power 3), level 1 of 3.",
-            "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3: Calls in a very large group of rebels."
+          "tier_groups": [
+            {
+              "levels": 3,
+              "text": "A small group of rebels fights alongside you."
+            },
+            {
+              "levels": 3,
+              "text": "A medium group of rebels fights alongside you."
+            },
+            {
+              "levels": 3,
+              "text": "A very large group of rebels fights alongside you."
+            }
           ]
         },
         {
           "id": "skill_mortar",
           "name": "Mortar",
           "region": "Rebel Support",
-          "location": "Rebel Support · 3 tiers × 3 levels",
+          "location": "Tier 1: A single-target mortar strike.",
           "guide": "Calls in a Rebel mortar strike on a marked area. Power 1: a single-target mortar strike; Power 2: multiple mortar strikes on the target; Power 3: multiple mortar strikes over a wide area.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/mortar.png",
-          "tier_notes": [
-            "Tier 1 (Power 1), level 1 of 3.",
-            "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3: Calls in a single-target mortar strike.",
-            "Tier 2 (Power 2), level 1 of 3.",
-            "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3: Calls in multiple mortar strikes on the target.",
-            "Tier 3 (Power 3), level 1 of 3.",
-            "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3: Calls in multiple mortar strikes over a wide area."
+          "tier_groups": [
+            {
+              "levels": 3,
+              "text": "A single-target mortar strike."
+            },
+            {
+              "levels": 3,
+              "text": "Multiple mortar strikes on the target."
+            },
+            {
+              "levels": 3,
+              "text": "Multiple mortar strikes over a wide area."
+            }
           ]
         },
         {
           "id": "skill_diversion",
           "name": "Diversion",
           "region": "Rebel Support",
-          "location": "Rebel Support · 3 tiers × 3 levels",
+          "location": "Tier 1: A small group of rebels draws enemies away.",
           "guide": "Has Rebels stage an attack from another direction to draw enemies away. Power 1: a small group of rebels; Power 2: a large group of rebels; Power 3: the largest group of rebels.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/diversion.png",
-          "tier_notes": [
-            "Tier 1 (Power 1), level 1 of 3.",
-            "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3: Sends a small group of rebels.",
-            "Tier 2 (Power 2), level 1 of 3.",
-            "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3: Sends a large group of rebels.",
-            "Tier 3 (Power 3), level 1 of 3.",
-            "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3: Sends the largest group of rebels."
+          "tier_groups": [
+            {
+              "levels": 3,
+              "text": "A small group of rebels draws enemies away."
+            },
+            {
+              "levels": 3,
+              "text": "A large group of rebels draws enemies away."
+            },
+            {
+              "levels": 3,
+              "text": "The largest group of rebels draws enemies away."
+            }
           ]
         },
         {
           "id": "skill_spotting",
           "name": "Spotting",
           "region": "Rebel Support",
-          "location": "Rebel Support · 3 tiers × 3 levels",
+          "location": "Tier 1: Rebels mark enemies in a small area.",
           "guide": "Has Rebels mark nearby enemies; higher ranks widen the detection area. Power 1: marks enemies in a small area; Power 2: marks enemies in a large area; Power 3: marks enemies in the largest area. Only marks enemies, not intel or objectives.",
           "levels": 9,
           "image_url": "/public/games/wildlands/images/skills/spotting.png",
-          "tier_notes": [
-            "Tier 1 (Power 1), level 1 of 3.",
-            "Tier 1 (Power 1), level 2 of 3.",
-            "Tier 1 (Power 1), level 3 of 3: Rebels marks enemies in a small area.",
-            "Tier 2 (Power 2), level 1 of 3.",
-            "Tier 2 (Power 2), level 2 of 3.",
-            "Tier 2 (Power 2), level 3 of 3: Rebels marks enemies in a large area.",
-            "Tier 3 (Power 3), level 1 of 3.",
-            "Tier 3 (Power 3), level 2 of 3.",
-            "Tier 3 (Power 3), level 3 of 3: Rebels marks enemies in the largest area."
+          "tier_groups": [
+            {
+              "levels": 3,
+              "text": "Rebels mark enemies in a small area."
+            },
+            {
+              "levels": 3,
+              "text": "Rebels mark enemies in a large area."
+            },
+            {
+              "levels": 3,
+              "text": "Rebels mark enemies in the largest area."
+            }
           ]
         }
       ]
