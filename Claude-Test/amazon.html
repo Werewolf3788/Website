@@ -686,12 +686,16 @@ function renderChips() {
   const live = S.deals.filter(d => d.sale).length;
   const cats = [...counts.keys()].sort((a, b) => a.localeCompare(b));
   const chip = (key, label, n, cls = '') => `<button class="chip ${cls} ${S.cat === key ? 'on' : ''}" data-cat="${esc(key)}">${label}${n != null ? ` <span class="n">${n}</span>` : ''}</button>`;
-  $('#chips').innerHTML =
+  const chipsBox = $('#chips'), keepLeft = chipsBox.scrollLeft;
+  chipsBox.style.scrollBehavior = 'auto';
+  chipsBox.innerHTML =
     chip('all', 'All') +
     (live ? chip('live', '⚡ Live deals', live, 'hot') : '') +
     chip('deals', '🛒 All deals', S.deals.length) +
     (S.movies.length ? chip(MOVIES_CAT, '🎬 Movies & TV', S.movies.length, 'movies') : '') +
     cats.map(c => chip(c, esc(c), counts.get(c))).join('');
+  chipsBox.scrollLeft = keepLeft;
+  chipsBox.style.scrollBehavior = '';
 }
 
 function renderSpotlight() {
@@ -875,7 +879,6 @@ function fromHash() {
 function setCat(cat) {
   const h = cat === 'all' ? '#/home' : cat === MOVIES_CAT ? '#/movies' : cat === 'deals' ? '#/deals' : cat === 'live' ? '#/live' : cat.startsWith('event:') ? '#/event/' + encodeURIComponent(cat.slice(6)) : '#/category/' + encodeURIComponent(cat);
   if (location.hash !== h) location.hash = h; else { fromHash(); render(); }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ---------------- events ---------------- */
