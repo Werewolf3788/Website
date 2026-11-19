@@ -794,7 +794,7 @@ window.appState.applyStateToUI = function() {
             return `<span class="rc-part ${have >= n ? 'rc-ok' : 'rc-short'}" title="You have ${fmtNum(have)}">${RES_LABELS[k].emoji} ${fmtNum(n)} ${RES_LABELS[k].short}</span>`;
         }).join('');
         const req = (lvl === 0 && it.unlock_level) ? ` <span class="rc-req">needs player level ${escapeHtml(String(it.unlock_level))}</span>` : '';
-        el.innerHTML = `<div class="rc-head">Next: Rank ${lvl + 1}${next.effect ? ` (${escapeHtml(next.effect)})` : ''}${req} <span class="rc-hint">— click the box above to buy it</span></div>
+        el.innerHTML = `<div class="rc-head">Next: Rank ${lvl + 1}${next.effect ? ` (${escapeHtml(next.effect)})` : ''}${req} <span class="rc-hint">— click the box above to mark it</span></div>
             <div class="rc-parts">${parts}</div>`;
     });
     // "Still needed to max everything" line in the resource panel.
@@ -1111,34 +1111,16 @@ window.appState.setTechLevel = function(id, group, value) {
     const rankCosts = Array.isArray(it.rank_costs) ? it.rank_costs : null;
 
     if (rankCosts) {
-        // Marking a rank box pays for every rank between where you are and the
-        // box you clicked, straight out of the resource counters above.
-        if (target > oldLevel) {
-            if (it.unlock_level && (Number(this.wallet && this.wallet.level) || 1) < Number(it.unlock_level)) {
-                this.updateStatus(`${it.name}: needs player level ${it.unlock_level}.`);
-                return;
-            }
-            const need = {};
-            for (let i = oldLevel; i < target; i++) rankCostParts(rankCosts[i] || {}).forEach(([k, n]) => { need[k] = (need[k] || 0) + n; });
-            const short = Object.entries(need).filter(([k, n]) => resHave(k) < n);
-            if (short.length) {
-                this.updateStatus(`${it.name}: not enough ` + short.map(([k, n]) => `${RES_LABELS[k].short} (need ${fmtNum(n - resHave(k))} more)`).join(', ') + '.');
-                return;
-            }
-            Object.entries(need).forEach(([k, n]) => { this.wallet['res_' + RES_LABELS[k].res] = resHave(k) - n; });
-        } else if (target < oldLevel) {
-            // Giving back a rank refunds what it cost, in case of a mis-click.
-            const refund = {};
-            for (let i = target; i < oldLevel; i++) rankCostParts(rankCosts[i] || {}).forEach(([k, n]) => { refund[k] = (refund[k] || 0) + n; });
-            Object.entries(refund).forEach(([k, n]) => { this.wallet['res_' + RES_LABELS[k].res] = resHave(k) + n; });
-        }
+        // Wildlands-style skills: clicking a rank box just marks what you have.
+        // No SP/resource or player-level checks and nothing is taken from the
+        // resource counters (the costs are still shown on each card for reference).
     } else if (costs && target > oldLevel) {
         let total = 0;
         for (let i = oldLevel; i < target; i++) total += Number(costs[i]) || 0;
         if (total > 0) {
             const have = (this.wallet && this.wallet.credits) || 0;
             if (have < total) {
-                this.updateStatus(`Not enough credits: need ${fmtNum(total - have)} more.`);
+                this.flashNotice(`Not enough credits: need ${fmtNum(total - have)} more.`);
                 return;
             }
             this.wallet.credits = have - total;
@@ -1277,6 +1259,19 @@ window.appState.toggleItem = function(itemId, type, group) {
 window.appState.updateStatus = function(msg) {
     const statLine = document.getElementById('stat-line');
     if (statLine) statLine.innerText = `[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${msg}`;
+};
+// Pop-up note at the bottom of the screen, so a refused click says why right where you are
+// (the status line is at the top of the page, out of sight when you're down in the skill cards).
+window.appState.flashNotice = function(msg) {
+    this.updateStatus(msg);
+    let n = document.getElementById('wwFlashNotice');
+    if (!n) {
+        n = document.createElement('div'); n.id = 'wwFlashNotice';
+        n.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;max-width:min(560px,92vw);background:#1e293b;color:#fff;border:1px solid #f59e0b;border-left:4px solid #f59e0b;border-radius:12px;padding:12px 16px;font-size:0.9rem;font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.6);';
+        document.body.appendChild(n);
+    }
+    n.textContent = msg; n.style.display = 'block';
+    clearTimeout(this._flashTimer); this._flashTimer = setTimeout(() => { n.style.display = 'none'; }, 5000);
 };
 
 // Section 7: Squad Co-Op Ledger with Clean Avatar Cards & Friend Data
