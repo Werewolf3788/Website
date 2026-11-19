@@ -156,6 +156,28 @@ font[style]{background:transparent!important;box-shadow:none!important}
 footer{border-top:1px solid var(--line);padding:18px 0 calc(18px + var(--safe-b));color:var(--muted);font-size:12.5px;text-align:center}
 footer a{color:var(--muted)}
 
+/* ---------- sidebar rail + carousel ---------- */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:26px;align-items:start}
+.layout.no-rail{grid-template-columns:minmax(0,1fr)}
+.rail{position:sticky;top:calc(var(--ww-bar-h,0px) + 130px);padding-top:18px}
+.rail[hidden]{display:none}
+.rail-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.rail-head h2{font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);font-weight:800}
+.rail-nav{display:flex;gap:6px}
+.rail-nav button{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:18px;line-height:1}
+.rail-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.carousel{overflow:hidden;border-radius:var(--radius);touch-action:pan-y}
+.carousel-track{display:flex;transition:transform .45s ease}
+.carousel-track > .card{flex:0 0 100%;transform:none!important}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.dots button{width:8px;height:8px;border-radius:50%;border:0;background:var(--line);cursor:pointer;padding:0}
+.dots button.on{background:var(--accent);width:20px;border-radius:999px}
+.rail .card .desc{-webkit-line-clamp:3}
+@media (max-width:1100px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;order:-1;padding-top:16px;max-width:520px;width:100%;margin:0 auto}
+}
+
 @media (max-width:767px){
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
   .row{grid-auto-columns:46%}
@@ -203,9 +225,12 @@ footer a{color:var(--muted)}
   </div>
 </div>
 
-<main class="wrap" id="root">
-  <div class="grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
-</main>
+<div class="wrap layout" id="layout">
+  <main id="root">
+    <div class="grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+  </main>
+  <aside class="rail" id="rail" hidden aria-label="Sidebar picks"></aside>
+</div>
 
 <div class="modal" id="modal" aria-hidden="true">
   <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
@@ -656,6 +681,47 @@ setInterval(() => {
   if (flipped) { S.deals.forEach(d => { d.sale = d.event && (d.event.start || d.event.end) && eventStatus(d.event).state === 'live' ? { label: d.event.label, end: d.event.end } : null; }); render(); }
 }, 1000);
 
+/* Sidebar rail: items with placement "sidebar"; several rotate in a carousel */
+let railIdx = 0, railTimer = 0, railPaused = false, railCount = 0;
+function renderRail() {
+  const rail = $('#rail'), layout = $('#layout');
+  const items = sortItems(S.deals.filter(d => d.placement === 'sidebar'));
+  railCount = items.length;
+  if (!items.length) { rail.hidden = true; layout.classList.add('no-rail'); clearInterval(railTimer); railTimer = 0; return; }
+  rail.hidden = false; layout.classList.remove('no-rail');
+  if (railIdx >= items.length) railIdx = 0;
+  const start = CURRENT.length; CURRENT.push(...items);
+  const multi = items.length > 1;
+  rail.innerHTML = `<div class="rail-head"><h2>🔥 Hot picks</h2>${multi ? '<div class="rail-nav"><button type="button" data-rail="-1" aria-label="Previous">‹</button><button type="button" data-rail="1" aria-label="Next">›</button></div>' : ''}</div>
+    <div class="carousel" id="carousel"><div class="carousel-track" id="railTrack">${items.map((it, k) => cardHtml(it, start + k)).join('')}</div></div>
+    ${multi ? `<div class="dots">${items.map((_, k) => `<button type="button" data-dot="${k}" aria-label="Show pick ${k + 1}"></button>`).join('')}</div>` : ''}`;
+  showRail(railIdx, true);
+  // Keep one steady 5-second timer (re-renders from live updates don't restart it)
+  if (multi && !railTimer) railTimer = setInterval(() => { if (!railPaused && !document.hidden) showRail(railIdx + 1); }, 5000);
+  if (!multi && railTimer) { clearInterval(railTimer); railTimer = 0; }
+}
+function showRail(i, instant) {
+  if (!railCount) return;
+  railIdx = (i + railCount) % railCount;
+  const track = $('#railTrack'); if (!track) return;
+  if (instant) { track.style.transition = 'none'; requestAnimationFrame(() => { track.style.transition = ''; }); }
+  track.style.transform = `translateX(-${railIdx * 100}%)`;
+  document.querySelectorAll('#rail [data-dot]').forEach((d, k) => d.classList.toggle('on', k === railIdx));
+}
+document.addEventListener('click', e => {
+  const nav = e.target.closest('[data-rail]'); if (nav) { showRail(railIdx + Number(nav.dataset.rail)); return; }
+  const dot = e.target.closest('[data-dot]'); if (dot) showRail(Number(dot.dataset.dot));
+});
+$('#rail').addEventListener('mouseenter', () => { railPaused = true; });
+$('#rail').addEventListener('mouseleave', () => { railPaused = false; });
+// Swipe on phones
+let railTouchX = null;
+$('#rail').addEventListener('touchstart', e => { railTouchX = e.touches[0].clientX; railPaused = true; }, { passive: true });
+$('#rail').addEventListener('touchend', e => {
+  if (railTouchX !== null) { const dx = e.changedTouches[0].clientX - railTouchX; if (Math.abs(dx) > 40) showRail(railIdx + (dx < 0 ? 1 : -1)); }
+  railTouchX = null; setTimeout(() => { railPaused = false; }, 4000);
+}, { passive: true });
+
 let spotlightDone = false;
 function render() {
   renderChips();
@@ -663,6 +729,7 @@ function render() {
   updateChipArrows();
   if (!spotlightDone && S.deals.length) { renderSpotlight(); spotlightDone = true; }
   CURRENT = [];
+  renderRail();
   const root = $('#root');
   const q = S.q.trim().toLowerCase();
   const all = [...S.deals, ...S.movies];
@@ -695,7 +762,7 @@ function render() {
   let html = '';
   const live = S.deals.filter(d => d.sale);
   if (live.length) html += section('⚡ Live deals', sortItems(live), 'var(--hot)', { row: live.length > 4 });
-  const feat = S.deals.filter(d => !d.sale && ['feature', 'featured', 'sidebar'].includes(d.placement));
+  const feat = S.deals.filter(d => !d.sale && ['feature', 'featured'].includes(d.placement));
   if (feat.length) html += section('★ Featured picks', sortItems(feat), 'var(--accent)', { row: feat.length > 4 });
 
   // All deals in one grid (newest first), so the page fills the width even with only a few items.
