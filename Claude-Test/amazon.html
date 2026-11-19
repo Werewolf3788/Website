@@ -76,13 +76,13 @@ button{font:inherit;color:inherit}
 .events.show{display:block}
 .events h2{font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px}
 .ev-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.ev{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;transition:border-color .15s,transform .15s}
+.ev{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--evc,var(--accent));border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;transition:border-color .15s,transform .15s}
 .ev:hover{transform:translateY(-2px);border-color:var(--accent)}
-.ev.live{border-left-color:var(--hot);box-shadow:0 0 0 1px var(--hot),0 0 18px rgba(255,59,48,.3)}
+.ev.live{border-left-color:var(--evc,var(--hot));box-shadow:0 0 0 1px var(--evc,var(--hot)),0 0 18px color-mix(in srgb,var(--evc,var(--hot)) 35%,transparent)}
+.ev .ev-name .ev-pill{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .ev .ev-name{font-weight:800;font-size:16px}
 .ev .ev-dates{color:var(--muted);font-size:12.5px}
-.ev .ev-cd{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--accent);margin-top:2px}
-.ev.live .ev-cd{color:var(--hot)}
+.ev .ev-cd{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--evc,var(--accent));margin-top:2px}
 .ev .ev-n{font-size:12px;color:var(--muted)}
 .ev-banner{margin-top:10px;display:flex;justify-content:center;align-items:center;background:#fff;border-radius:8px;overflow:hidden;cursor:pointer}
 .ev-banner a{display:block;line-height:0}
@@ -91,7 +91,7 @@ button{font:inherit;color:inherit}
 .ev-shop{margin-top:10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:9px;background:linear-gradient(180deg,#ffa31a,#e68a00);color:#111;font-weight:800;font-size:13px;text-decoration:none}
 .ev-links{display:flex;flex-direction:column;gap:6px;margin-top:4px}
 .ev-links .ev-shop{margin-top:6px;width:100%}
-.ev.live .ev-shop{background:linear-gradient(180deg,#ff5a4f,#d92d20);color:#fff}
+.ev.live .ev-shop{background:var(--evbg);color:var(--evfg);box-shadow:0 0 0 2px var(--evc)}
 .cdline{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:800;font-size:14px;margin-left:8px}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:38px;display:inline-flex;align-items:center;gap:6px}
@@ -115,7 +115,7 @@ main{flex:1;padding:18px 0 40px}
 /* ---------- card ---------- */
 .card{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c,var(--line));border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative}
 .card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--c,#58a6ff)}
-.card.live{border-color:var(--hot);box-shadow:0 0 0 1px var(--hot),0 0 22px rgba(255,59,48,.35)}
+.card.live{border-color:var(--live,var(--hot));box-shadow:0 0 0 1px var(--live,var(--hot)),0 0 22px color-mix(in srgb,var(--live,var(--hot)) 45%,transparent)}
 .media{aspect-ratio:1/1;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
 .media img{width:100%;height:100%;object-fit:contain;padding:12px}
 .card.movie .media{aspect-ratio:2/3;background:#000}
@@ -328,6 +328,20 @@ const EVENT_LINKS = {
     { url: 'https://www.amazon.com/cybermonday?tag=blackfriday71888-20', text: '🛒 Shop all Cyber Monday deals' }
   ]
 };
+// Colors for each event's badges, card glow and countdown card
+const EVENT_THEMES = {
+  'black-friday-week':   { bg: '#000000', fg: '#ffffff', ring: '#ff9900' },   // black + orange
+  'cyber-monday':        { bg: '#6d28d9', fg: '#ffffff', ring: '#22d3ee' },   // purple + cyan
+  'prime-big-deal-days': { bg: '#00a8e1', fg: '#ffffff', ring: '#ffd814' }    // Prime blue + yellow
+};
+function evTheme(key) {
+  if (EVENT_THEMES[key]) return EVENT_THEMES[key];
+  let h = 0; for (const ch of String(key || '')) h = ch.charCodeAt(0) + ((h << 5) - h);   // custom events: own color
+  const hue = Math.abs(h % 360);
+  return { bg: `hsl(${hue},70%,38%)`, fg: '#ffffff', ring: `hsl(${hue},85%,62%)` };
+}
+const evStyle = key => { const t = evTheme(key); return `background:${t.bg};color:${t.fg};box-shadow:0 0 0 2px ${t.ring}`; };
+
 // Show an "Ends in …" countdown on live items during the last part of an event
 const ENDING_SOON_HOURS = 48;
 const MOVIES_CAT = 'Movies & TV';
@@ -679,11 +693,11 @@ function cardHtml(it, idx) {
   const evEnd = ev && ev.end ? dayEnd(ev.end) : null;           // date only = 11:59:59 PM
   if (ev && evStart && now < evStart && evStart - now <= EVENT_SHOW_DAYS * 86400000) {
     // Coming up: countdown to the start
-    badge = `<span class="badge soon">⏳ ${esc(ev.label)}<span class="cd-sub">Starts in <b data-ccd="${evStart}">${fmtLeft(evStart - now)}</b></span></span>`;
+    badge = `<span class="badge soon" style="${evStyle(ev.key)}">⏳ ${esc(ev.label)}<span class="cd-sub">Starts in <b data-ccd="${evStart}">${fmtLeft(evStart - now)}</b></span></span>`;
   } else if (it.sale) {
     // Live: event name, plus a countdown when the end is close
     const endSoon = evEnd && evEnd - now <= ENDING_SOON_HOURS * 3600000;
-    badge = `<span class="badge">⚡ ${esc(it.sale.label)}${endSoon ? `<span class="cd-sub">Ends in <b data-ccd="${evEnd}">${fmtLeft(evEnd - now)}</b></span>` : ''}</span>`;
+    badge = `<span class="badge" style="${ev ? evStyle(ev.key) : ''}">⚡ ${esc(it.sale.label)}${endSoon ? `<span class="cd-sub">Ends in <b data-ccd="${evEnd}">${fmtLeft(evEnd - now)}</b></span>` : ''}</span>`;
   }
   if (badge) {}
   else if (isMovie) badge = `<span class="badge prime">${esc(it.sub)}</span>`;
@@ -691,7 +705,8 @@ function cardHtml(it, idx) {
   const meta = isMovie
     ? [it.year, it.edition, it.rating].filter(Boolean).map(m => `<span class="pill">${esc(m)}</span>`).join('')
     : `<span class="pill cat" data-cat="${esc(it.category)}">${esc(it.category)}</span>${it.sub ? `<span class="pill">${esc(it.sub)}</span>` : ''}`;
-  return `<article class="card ${isMovie ? 'movie' : ''} ${it.sale ? 'live' : ''}" style="--c:${c}" data-i="${idx}">
+  const liveRing = it.sale && it.event ? `;--live:${evTheme(it.event.key).ring}` : '';
+  return `<article class="card ${isMovie ? 'movie' : ''} ${it.sale ? 'live' : ''}" style="--c:${c}${liveRing}" data-i="${idx}">
     <div class="media" data-open>${badge}${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.title)}" loading="lazy" referrerpolicy="no-referrer">` : '<span class="ph">No image</span>'}</div>
     <div class="body">
       <div class="meta">${meta}</div>
@@ -752,8 +767,9 @@ function renderEvents() {
     const st = eventStatus(e);
     const dates = e.start && e.end ? `${fmtDay(e.start)} – ${fmtDay(e.end, true)}` : (e.start ? 'From ' + fmtDay(e.start) : 'Until ' + fmtDay(e.end, true));
     const banner = (EVENT_BANNERS[e.key] || '').trim();
-    return `<div class="ev ${st.state === 'live' ? 'live' : ''}" data-cat="event:${esc(e.key)}" role="button" tabindex="0">
-      <span class="ev-name">${st.state === 'live' ? '⚡ ' : '⏳ '}${esc(e.label)}</span>
+    const th = evTheme(e.key);
+    return `<div class="ev ${st.state === 'live' ? 'live' : ''}" style="--evc:${th.ring};--evbg:${th.bg};--evfg:${th.fg}" data-cat="event:${esc(e.key)}" role="button" tabindex="0">
+      <span class="ev-name"><span class="ev-pill" style="background:${th.bg};box-shadow:0 0 0 2px ${th.ring}"></span>${st.state === 'live' ? '⚡ ' : '⏳ '}${esc(e.label)}</span>
       <span class="ev-dates">${esc(dates)}</span>
       <span class="ev-cd" data-cd="${esc(e.key)}">${esc(st.text)}</span>
       <span class="ev-n">${e.n ? `${e.n} item${e.n > 1 ? 's' : ''} tagged` : 'No items tagged yet'}</span>
