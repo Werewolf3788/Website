@@ -5,6 +5,7 @@ import * as THREE from './three.min.js';
 const $ = id => document.getElementById(id);
 const WW = window.WW || null;
 const Z = 24, G = 5, HALF = Z * G / 2, NOW = () => Date.now();
+let ppPath = null;   // the dirt path ring around the Power Plant (follows it when it's moved)
 // wood has no emoji every computer can draw (🪵 shows as an empty box on older Windows), so it is a drawn log:
 // LOGT is a placeholder character in text; RH() turns it into the log picture in menus, and the canvas labels draw it directly.
 const LOGT = '\uE000';
@@ -28,12 +29,16 @@ const BD = {
   lumber:   { n: 'Lumberyard',  i: '🌳', x: -8, z: -8, r: 2.2, need: 1, cost: { wood: 15 }, out: 'wood', rate: .12 },
   farm:     { n: 'Farm',        i: '🌽', x: 8,  z: -8, r: 2.2, need: 1, cost: { wood: 35 }, out: 'food', rate: .1 },
   house1:   { n: 'House',       i: '🏠', x: -8, z: 0,  r: 2.0, need: 1, cost: { wood: 30, food: 10 } },
-  smelter:  { n: 'Smelter',     i: '🏭', x: 8,  z: 0,  r: 2.2, need: 2, cost: { wood: 60, food: 20 }, out: 'metal', rate: .05 },
-  hall:     { n: 'Hero Hall',   i: '🛡️', x: 0,  z: -8, r: 2.3, need: 2, cost: { wood: 80, metal: 15 } },
-  house2:   { n: 'House',       i: '🏠', x: -8, z: 8,  r: 2.0, need: 2, cost: { wood: 50, food: 20 } },
-  workshop: { n: 'Workshop',    i: '🔨', x: 8,  z: 8,  r: 2.2, need: 3, cost: { wood: 90, metal: 30 } },
-  house3:   { n: 'House',       i: '🏠', x: 0,  z: 8,  r: 2.0, need: 3, cost: { wood: 80, food: 30 } }
+  smelter:  { n: 'Smelter',     i: '🏭', x: 8,  z: 0,  r: 2.2, need: 2, cost: { wood: 60, food: 20, metal: 10 }, out: 'metal', rate: .05 },
+  hall:     { n: 'Hero Hall',   i: '🛡️', x: 0,  z: -8, r: 2.3, need: 2, cost: { wood: 80, metal: 30 } },
+  house2:   { n: 'House',       i: '🏠', x: -8, z: 8,  r: 2.0, need: 2, cost: { wood: 50, food: 20, metal: 15 } },
+  workshop: { n: 'Workshop',    i: '🔨', x: 8,  z: 8,  r: 2.2, need: 3, cost: { wood: 90, metal: 45 } },
+  house3:   { n: 'House',       i: '🏠', x: 0,  z: 8,  r: 2.0, need: 3, cost: { wood: 80, food: 30, metal: 30 } }
 };
+// where each building starts. Players can move them around their town (st.lay = { id: { x, z } }); applyLayout writes
+// the current town's layout into BD so everything that reads BD[id].x / .z (crews, pads, walls, labels) follows along
+const BD0 = {}; Object.keys(BD).forEach(id => { BD0[id] = { x: BD[id].x, z: BD[id].z }; });
+function applyLayout(lay) { Object.keys(BD).forEach(id => { const p = lay && lay[id]; BD[id].x = p && isFinite(p.x) ? +p.x : BD0[id].x; BD[id].z = p && isFinite(p.z) ? +p.z : BD0[id].z; }); }
 const HEROES = {
   sarge: { n: 'Sarge', i: '🎖️', role: 'Tank · front line', hp: 150, atk: 9, cd: 1, range: 1.6, shirt: 0x4d6b3a, hat: 0x3f5a2e, cost: {} },
   rusty: { n: 'Rusty', i: '🔧', role: 'Damage · shoots from range', hp: 80, atk: 14, cd: .9, range: 5.5, shirt: 0xd97706, hat: 0x7c2d12, cost: { metal: 40 } },
@@ -47,8 +52,9 @@ const weaponCost = w => ({ wood: Math.round(30 * Math.pow(1.5, w - 1)), metal: M
 function costFor(id, lvl) {
   const o = {}, base = BD[id].cost, f = id === 'pp' ? Math.pow(1.7, lvl - 2) : Math.pow(1.6, lvl - 1);
   Object.keys(base).forEach(k => { o[k] = Math.round(base[k] * f); });
-  if (id === 'pp' && lvl >= 3) o.metal = Math.round(15 * Math.pow(1.7, lvl - 3));
-  if (id !== 'pp' && lvl >= 3 && !o.metal) o.metal = Math.round(8 * Math.pow(1.5, lvl - 3));
+  // metal (from rocks) is a real building material: every upgrade from level 2 on takes about 40% as much metal as wood
+  if (id === 'pp' && lvl >= 3) o.metal = Math.round(30 * Math.pow(1.7, lvl - 3));
+  if (id !== 'pp' && lvl >= 2) o.metal = Math.max(o.metal || 0, Math.round((o.wood || 0) * .4));
   return o;
 }
 const upTime = lvl => lvl <= 1 ? 0 : Math.round(30 * Math.pow(1.6, lvl - 2));
@@ -70,7 +76,7 @@ const DIRS = [[0, -1, 4, -10.8], [1, 0, 10.8, -4], [0, 1, 4, 10.8], [-1, 0, -10.
 
 // ------------------------------------------------------------ save
 let st = null;
-function fresh() { return { v: 3, res: { wood: 0, food: 10, metal: 0, gems: 5 }, hp: 100, b: { pp: { lvl: 1 } }, piles: {}, paid: {}, zones: { '2,2': 1 }, camps: {}, boss: {}, heroes: { sarge: { lvl: 1 } }, weapon: 1, q: 0, stats: { wood: 0, metal: 0, food: 0, kills: 0, camps: 0, bosses: 0, zones: 0, collected: 0 }, last: NOW(), saved: 0 }; }
+function fresh() { return { v: 3, res: { wood: 0, food: 10, metal: 0, gems: 5 }, hp: 100, b: { pp: { lvl: 1 } }, piles: {}, paid: {}, zones: { '2,2': 1 }, camps: {}, boss: {}, heroes: { sarge: { lvl: 1 } }, lay: {}, weapon: 1, q: 0, stats: { wood: 0, metal: 0, food: 0, kills: 0, camps: 0, bosses: 0, zones: 0, collected: 0 }, last: NOW(), saved: 0 }; }
 function fix(s) {
   const f = fresh(); Object.keys(f).forEach(k => { if (s[k] === undefined) s[k] = f[k]; });
   Object.keys(f.res).forEach(k => { s.res[k] = +s.res[k] || 0; }); Object.keys(f.stats).forEach(k => { s.stats[k] = +s.stats[k] || 0; });
@@ -87,7 +93,7 @@ const canPay = c => Object.keys(c).every(k => st.res[k] >= c[k]);
 const pay = c => Object.keys(c).forEach(k => { st.res[k] -= c[k]; });
 const give = c => Object.keys(c).forEach(k => { st.res[k] = (st.res[k] || 0) + c[k]; });
 const costTxt = c => Object.keys(c).filter(k => c[k] > 0).map(k => RES[k] + Math.ceil(c[k])).join(' ');
-function unlockCost(i, j) { const n = st.stats.zones, m = ring(i, j) === 2 ? 1.6 : 1, o = { wood: Math.round((30 + 22 * n) * m), food: Math.round((10 + 8 * n) * m) }; if (n >= 2) o.metal = Math.round(8 * n * m); return o; }
+function unlockCost(i, j) { const n = st.stats.zones, m = ring(i, j) === 2 ? 1.6 : 1, o = { wood: Math.round((30 + 22 * n) * m), food: Math.round((10 + 8 * n) * m) }; if (n >= 1) o.metal = Math.round(10 * n * m); return o; }
 
 // Producers build the town a little at a time: 3% of everything the Lumberyard, Farm (hunters) and Smelter make is shared
 // evenly across every building pad that still needs that resource. Once every building has caught up, 5% goes to the
@@ -218,7 +224,7 @@ function faceCam(bar) { bar.parent.getWorldQuaternion(_q); bar.quaternion.copy(_
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), new THREE.MeshLambertMaterial({ map: t })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
   const lm = new THREE.MeshBasicMaterial({ color: 0x2f5e2a, transparent: true, opacity: .55 });
   for (let k = 0; k <= G; k++) { const p = -HALF + k * Z; const a = new THREE.Mesh(new THREE.PlaneGeometry(.18, Z * G), lm); a.rotation.x = -Math.PI / 2; a.position.set(p, .02, 0); scene.add(a); const b = new THREE.Mesh(new THREE.PlaneGeometry(Z * G, .18), lm); b.rotation.x = -Math.PI / 2; b.position.set(0, .02, p); scene.add(b); }
-  const path = new THREE.Mesh(new THREE.RingGeometry(3.4, 5.2, 40), new THREE.MeshLambertMaterial({ color: 0xcbb68a })); path.rotation.x = -Math.PI / 2; path.position.y = .03; path.receiveShadow = true; scene.add(path);
+  const path = new THREE.Mesh(new THREE.RingGeometry(3.4, 5.2, 40), new THREE.MeshLambertMaterial({ color: 0xcbb68a })); path.rotation.x = -Math.PI / 2; path.position.y = .03; path.receiveShadow = true; scene.add(path); ppPath = path;
   const r2 = rng(11);
   for (let n = 0; n < 160; n++) { const a = r2() * Math.PI * 2, d = HALF + 3 + r2() * 26; const tr = new THREE.Group(); tr.position.set(Math.cos(a) * d, 0, Math.sin(a) * d); cyl(tr, .2, .28, 1.2, 0x7a5230, 0, .6, 0); cone(tr, 1.3, 2.2, 0x2f6b34, 0, 2, 0); cone(tr, 1, 1.8, 0x3b7f3f, 0, 2.9, 0); tr.scale.setScalar(1 + r2() * .8); scene.add(tr); }
 }
@@ -325,7 +331,7 @@ const FINDS_IN = {
 function spawnZoneContents(i, j) {
   const k = i + ',' + j, t = zoneType(i, j), cx = zc(i), cz = zc(j), R = rng(hash(i * 7 + 3, j * 11 + 5)), objs = zoneObjs[k] = zoneObjs[k] || [];
   const spot = () => [cx + (R() - .5) * 18, cz + (R() - .5) * 18];
-  if (t === 'home') { [[-11, -11], [11, -11], [-11, 11], [11, 11], [-4.5, -11.3], [-11.3, 4.5], [11.3, 4.5], [-4.5, 11.3]].forEach(p => makeTree(p[0], p[1], 1)); return; }
+  if (t === 'home') { HOME_TREES.forEach(p => makeTree(p[0], p[1], 1)); return; }
   const n = { forest: [14, 2, 0], quarry: [4, 9, 0], wild: [6, 2, 4], infected: [4, 1, 0], boss: [3, 2, 0] }[t];
   for (let a = 0; a < n[0]; a++) { const p = spot(); makeTree(p[0], p[1], .9 + R() * .5); }
   for (let a = 0; a < n[1]; a++) { const p = spot(); makeRock(p[0], p[1], .9 + R() * .5); }
@@ -519,7 +525,7 @@ if (PAD) PAD.on('connect', n => toast('🎮 ' + n + ' connected: left stick move
 const d2 = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 function blockedAt(x, z) { const [i, j] = zoneAt(x, z); if (i < 0 || j < 0 || i >= G || j >= G) return true; return !st.zones[i + ',' + j]; }
 function pushOut(o, rad) {
-  Object.keys(BD).forEach(id => { if (!bldMeshes[id]) return; const D = BD[id], dx = o.x - D.x, dz = o.z - D.z, d = Math.hypot(dx, dz), m = D.r + rad; if (d < m && d > 0) { o.x = D.x + dx / d * m; o.z = D.z + dz / d * m; } });
+  Object.keys(BD).forEach(id => { if (!bldMeshes[id] || (moving && moving.id === id)) return; const D = BD[id], dx = o.x - D.x, dz = o.z - D.z, d = Math.hypot(dx, dz), m = D.r + rad; if (d < m && d > 0) { o.x = D.x + dx / d * m; o.z = D.z + dz / d * m; } });
   const near = n => { if (n.down) return; const dx = o.x - n.x, dz = o.z - n.z, d = Math.hypot(dx, dz), m = n.r + rad; if (d < m && d > 0) { o.x = n.x + dx / d * m; o.z = n.z + dz / d * m; } };
   trees.forEach(near); rocks.forEach(near); finds.forEach(near);
 }
@@ -568,6 +574,7 @@ const QUESTS = [
   ['Unlock every area on the map', () => st.stats.zones, 24, { gems: 25 }, () => nearestPadKey('z:')]
 ];
 function checkQuest() {
+  if (moving) { const t = '📐 Moving the ' + BD[moving.id].n + ' · ' + (moving.swap ? '🔄 swap places with the ' + BD[moving.swap].n : moving.ok ? '✅ fits here' : '❌ ' + moving.why) + '<small>Walk to a spot (or onto another building to swap) · tap this bar to cancel</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return null; }
   if (tour && tour.arena) { const A = tour.arena, t = '🥊 Duel vs ' + WW.esc(duel ? duel.name : 'your ally') + ' · you ' + Math.round(st.hp) + '❤️ · them ' + Math.round(A.oppHp) + '❤️<small>' + (A.over ? 'Duel over' : fmt((A.end - NOW()) / 1000) + ' left · tap here to give up') + '</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return [0, 0, 0, 0, () => others[A.opp] || null]; }
   if (tbHere()) { const t = '👹 ' + (tb.name || 'Team boss') + ' · ' + Math.max(1, Math.ceil(tb.hp / tb.max * 100)) + '% health left · ' + fmt((tb.end - NOW()) / 1000) + '<small>Hit it together: everyone who lands a hit gets the loot</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; checkQuest.h = null; return [0, 0, 0, 0, () => tbBoss]; }
   if (tour) { const t = tour.raid ? (tour.raid.won ? '🏆 Raid won! ' : '⚔️ Raiding ' + WW.esc(tour.name) + ' · ' + zombies.filter(z => z.def && !z.dead).length + ' defenders left') + '<small>Tap here to go home' + (tour.raid.won ? ' with the loot' : ' (gives up the raid)') + '</small>' : '👀 Visiting ' + WW.esc(tour.name) + '’s settlement<small>Tap here (or 🤝 Allies) to go home</small>'; if ($('quest').innerHTML !== t) $('quest').innerHTML = t; return null; }
@@ -587,7 +594,7 @@ function show(h) { card.innerHTML = RH(h) + '<div style="margin-top:10px"><butto
 function closeSheet() { sheet.style.display = 'none'; }
 sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
 card.addEventListener('click', e => { const a = e.target.closest('[data-a]'); if (!a || a.disabled) return; doAct(a.dataset.a, a.dataset); });
-function heroPanel() {
+function heroPanel(fromHall) {
   const hl = lvl('hall');
   let h = '<h3>🛡️ Heroes</h3><div class="muted">Your heroes follow you and fight anything that attacks. ' + (hl ? 'Hero Hall Lv' + hl + ': heroes can reach level ' + hl * 5 + '.' : 'Build the <b>Hero Hall</b> (Power Plant Lv2) to recruit and train heroes.') + '</div>';
   Object.keys(HEROES).forEach(id => {
@@ -596,11 +603,11 @@ function heroPanel() {
     const s = heroStat(id, o.lvl), c = heroUpCost(o.lvl), max = Math.max(1, hl * 5);
     h += '<div class="row"><div class="g"><b>' + H.i + ' ' + H.n + ' L' + o.lvl + '</b> <span class="muted">' + H.role + ' · ❤️' + s.hp + ' ⚔️' + s.atk + (H.heal ? ' 💚' + s.heal : '') + '</span></div><button class="b" data-a="herolvl" data-id="' + id + '" ' + (hl && o.lvl < max && canPay(c) ? '' : 'disabled') + '>' + (o.lvl >= max ? 'Max (Hall Lv)' : '⬆ ' + costTxt(c)) + '</button></div>';
   });
-  show(h);
+  show(h + (fromHall ? moveRow('hall') : ''));
 }
 function workshopPanel() {
   const w = st.weapon, c = weaponCost(w), max = lvl('workshop') + 1;
-  show('<h3>🔨 Workshop</h3><div class="muted">Better weapons hit harder and chop faster. Weapon level is limited to Workshop level + 1.</div><div class="row"><div class="g"><b>⚔️ Weapon Lv' + w + '</b> <span class="muted">⚔️ ' + weaponDmg(w) + ' damage</span></div><button class="b" data-a="weapon" ' + (w < max && canPay(c) ? '' : 'disabled') + '>' + (w >= max ? 'Upgrade the Workshop' : '⬆ ' + costTxt(c) + ' → ⚔️' + weaponDmg(w + 1)) + '</button></div>');
+  show('<h3>🔨 Workshop</h3><div class="muted">Better weapons hit harder and chop faster. Weapon level is limited to Workshop level + 1.</div><div class="row"><div class="g"><b>⚔️ Weapon Lv' + w + '</b> <span class="muted">⚔️ ' + weaponDmg(w) + ' damage</span></div><button class="b" data-a="weapon" ' + (w < max && canPay(c) ? '' : 'disabled') + '>' + (w >= max ? 'Upgrade the Workshop' : '⬆ ' + costTxt(c) + ' → ⚔️' + weaponDmg(w + 1)) + '</button></div>' + moveRow('workshop'));
 }
 // what a building does at a given level (used for "now" and "next level" in its info card)
 function bInfo(id, L) {
@@ -621,8 +628,8 @@ function infoBlock(id) {
 }
 function buildingPanel(id, info) {
   const D0 = BD[id], b0 = st.b[id] || { lvl: 0 };
-  if (info || !b0.lvl) return show('<h3>' + D0.i + ' ' + D0.n + (b0.lvl ? ' · level ' + b0.lvl : ' · not built yet') + '</h3>' + infoBlock(id) + (b0.lvl ? '<div class="row"><button class="b" data-a="bopen" data-id="' + id + '">Open</button></div>' : '<div class="row muted">' + (D0.need > lvl('pp') ? 'Unlocks with 🔌 Power Plant level ' + D0.need + '.' : 'Stand on its yellow pad to build it.') + '</div>'));
-  if (id === 'hall') return heroPanel(); if (id === 'workshop') return workshopPanel();
+  if (info || !b0.lvl) return show('<h3>' + D0.i + ' ' + D0.n + (b0.lvl ? ' · level ' + b0.lvl : ' · not built yet') + '</h3>' + infoBlock(id) + (b0.lvl ? '<div class="row"><button class="b" data-a="bopen" data-id="' + id + '">Open</button></div>' : '<div class="row muted">' + (D0.need > lvl('pp') ? 'Unlocks with 🔌 Power Plant level ' + D0.need + '.' : 'Stand on its yellow pad to build it.') + '</div>') + moveRow(id));
+  if (id === 'hall') return heroPanel(true); if (id === 'workshop') return workshopPanel();
   const D = BD[id], b = st.b[id]; let h = '<h3>' + D.i + ' ' + D.n + ' · level ' + b.lvl + '</h3>' + infoBlock(id);
   if (id === 'pp') h += '<div class="muted">Every other building can only be upgraded up to the Power Plant’s level.</div>';
   if (D.out) h += '<div class="muted">Makes ' + RES[D.out] + ' ' + (D.rate * b.lvl * efficiency() * 60).toFixed(1) + '/min into its pile (holds ' + 40 * b.lvl + '). Walk up to it to collect. Workers: ' + survivors() + ' survivors for ' + producers().length * 2 + ' jobs' + (st.res.food <= 0 ? ' · <b style="color:#fca5a5">no food — half speed</b>' : '') + '.</div>';
@@ -630,7 +637,81 @@ function buildingPanel(id, info) {
   if (b.up) h += '<div class="row"><div class="g">Upgrading to level ' + b.up.to + '<div class="pb"><i style="width:' + Math.min(100, 100 - (b.up.end - NOW()) / b.up.total * 100) + '%"></i></div><div class="muted">' + fmt((b.up.end - NOW()) / 1000) + ' left · ' + Object.keys(b.up.h || {}).length + '/' + MAX_HELPS + ' ally helps</div></div><button class="b alt" data-a="finish" data-id="' + id + '" ' + (st.res.gems >= finishCost(b.up) ? '' : 'disabled') + '>⚡ Finish 💎' + finishCost(b.up) + '</button></div>';
   else if (b.lvl >= cap(id)) h += '<div class="row muted">Max for now — upgrade the 🔌 Power Plant first.</div>';
   else h += '<div class="row muted">Stand on the yellow pad in front of it to deliver resources for the next level.</div>';
-  show(h);
+  show(h + moveRow(id));
+}
+// ------------------------------------------------------------ town layout: move any building to a new spot in your home area
+// Open a building → 📐 Move, walk to where you want it (it floats in front of you), tap 📍 Place here. Aim it at another
+// building and the two swap places. Saved in st.lay (and published, so allies see your layout).
+const HOME_TREES = [[-11, -11], [11, -11], [-11, 11], [11, 11], [-4.5, -11.3], [-11.3, 4.5], [11.3, 4.5], [-4.5, 11.3]];
+const padOff = id => id === 'pp' ? 3.9 : 3.4;   // each building's build/upgrade pad sits this far in front (+z) of it
+let moving = null;   // { id, ghost, x, z, ok, why }
+function moveRow(id) {
+  if (tour) return '';
+  const moved = st.lay && st.lay[id];
+  return '<div class="row"><div class="g"><b>📐 Layout</b><div class="muted">Move this building anywhere in your home area. Crews, pads and everything else follow it.</div></div><button class="b alt" data-a="bmove" data-id="' + id + '">📐 Move</button>' + (moved ? '<button class="b alt" style="margin-left:6px" data-a="bhome" data-id="' + id + '">↩️ Original spot</button>' : '') + '</div>';
+}
+function spotProblem(id, x, z, skip) {   // '' when the building fits at x, z (ignoring `skip`); otherwise why not
+  const D = BD[id], pz = z + padOff(id);
+  if (Math.abs(x) > 11.4 - D.r || z < -11.4 + D.r || pz > 11.5) return 'too close to the edge of town';
+  for (const o of Object.keys(BD)) {
+    if (o === id || o === skip) continue; const B = BD[o], oz = B.z + padOff(o);
+    if (Math.hypot(x - B.x, z - B.z) < D.r + B.r + .8) return 'too close to the ' + B.n;
+    if (Math.hypot(x - B.x, z - oz) < D.r + 1.4) return 'that’s the ' + B.n + '’s pad';
+    if (Math.hypot(x - B.x, pz - B.z) < B.r + 1.4) return 'its pad would land on the ' + B.n;
+    if (Math.hypot(x - B.x, pz - oz) < 2.7) return 'its pad would overlap the ' + B.n + '’s pad';
+  }
+  for (const d of DIRS) if (Math.hypot(x - d[2], z - d[3]) < D.r + 1.5 || Math.hypot(x - d[2], pz - d[3]) < 2.7) return 'that’s an area-unlock pad';
+  for (const t of HOME_TREES) if (Math.hypot(x - t[0], z - t[1]) < D.r + .9) return 'a tree is in the way';
+  return '';
+}
+function moveStart(id) {
+  if (tour || !BD[id]) return; if (moving) moveEnd(); closeSheet();
+  const g = bldMeshes[id] ? null : bldMesh(id, 1); if (g) { g.scale.multiplyScalar(.6); scene.add(g); }   // not built yet: move its build spot
+  moving = { id: id, ghost: g, x: BD[id].x, z: BD[id].z, ok: false, why: '' };
+  toast('📐 Walk to where you want the ' + BD[id].n + ' (it floats in front of you), then tap 📍 Place here', 6000);
+}
+function moveTick() {
+  const M = moving; if (!M) return; const id = M.id, D = BD[id], f = D.r + 1.8;
+  M.x = Math.round((player.x + Math.sin(player.ry || 0) * f) * 2) / 2; M.z = Math.round((player.z + Math.cos(player.ry || 0) * f) * 2) / 2;
+  M.why = spotProblem(id, M.x, M.z); M.ok = !M.why; M.swap = null;
+  if (!M.ok) {   // aimed at another building: the two trade places (the town is full, so this is how you rearrange it)
+    const o = Object.keys(BD).find(k => k !== id && Math.hypot(M.x - BD[k].x, M.z - BD[k].z) < 2.6);
+    if (o && !spotProblem(id, BD[o].x, BD[o].z, o) && !spotProblem(o, D.x, D.z, id)) { M.swap = o; M.x = BD[o].x; M.z = BD[o].z; M.ok = true; M.why = ''; }
+  }
+  const m = M.ghost || bldMeshes[id]; if (m) { m.position.set(M.x, M.ok ? 0 : .25 * Math.abs(Math.sin(NOW() / 120)), M.z); }
+  const lb = bldLabels[id]; if (lb) lb.position.set(M.x, id === 'pp' ? 6.6 : 4.6, M.z);
+  if (id === 'pp' && ppPath) ppPath.position.set(M.x, ppPath.position.y, M.z);
+}
+function setSpot(id, x, z) {
+  st.lay = st.lay || {};
+  if (x === BD0[id].x && z === BD0[id].z) delete st.lay[id]; else st.lay[id] = { x: x, z: z };
+}
+function movePlace() {
+  const M = moving; if (!M) return; moveTick();
+  if (!M.ok) { toast('❌ Can’t place it there: ' + M.why); sfx(140, .12, .05); return; }
+  const o = M.swap, ox = BD[M.id].x, oz = BD[M.id].z;
+  setSpot(M.id, M.x, M.z); if (o) setSpot(o, ox, oz); moveEnd(); if (o) { refreshSpot(o); burst(ox, oz); }
+  burst(BD[M.id].x, BD[M.id].z); sfx(660, .15, .07); sfx(880, .2, .07, .1);
+  toast(o ? '🔄 ' + BD[M.id].n + ' and ' + BD[o].n + ' swapped places!' : '📍 ' + BD[M.id].i + ' ' + BD[M.id].n + ' moved!'); persist(); publishPub();
+}
+function moveHome(id) {
+  if (tour) return; closeSheet(); if (moving) moveEnd();
+  const why = spotProblem(id, BD0[id].x, BD0[id].z);
+  if (why) return toast('↩️ Its original spot is taken (' + why + '). Move that one first, or use 📐 Move.', 5000);
+  setSpot(id, BD0[id].x, BD0[id].z); refreshSpot(id); toast('↩️ ' + BD[id].n + ' is back in its original spot'); persist(); publishPub();
+}
+function refreshSpot(id) {   // put the building, its label and its pad where BD says
+  applyLayout(st.lay);
+  if (bldMeshes[id]) bldMeshes[id].position.set(BD[id].x, 0, BD[id].z);
+  if (bldLabels[id]) bldLabels[id].position.set(BD[id].x, id === 'pp' ? 6.6 : 4.6, BD[id].z);
+  if (ppPath) ppPath.position.set(BD.pp.x, ppPath.position.y, BD.pp.z);
+  Object.keys(pads).forEach(k => { if (k.indexOf('b:' + id + ':') === 0) { scene.remove(pads[k].mesh); delete pads[k]; } });
+  syncPads(); checkQuest.h = null;
+}
+function moveEnd() {   // finish or cancel: everything goes back to where the saved layout says
+  const M = moving; if (!M) return; moving = null;
+  if (M.ghost) scene.remove(M.ghost);
+  refreshSpot(M.id);
 }
 function questsPanel() { show('<h3>📜 Sarge’s missions</h3>' + QUESTS.map((q, i) => '<div class="row"><div class="g">' + (i < st.q ? '✅ ' : i === st.q ? '👉 ' : '🔒 ') + q[0] + '</div><span class="muted">' + costTxt(q[3]) + '</span></div>').join('') + '<div class="muted">Tip: drag anywhere on the screen to walk. Your survivor chops, mines and fights on their own when close. Stand on a pad to pay for it.</div>'); }
 function doAct(a, d) {
@@ -651,13 +732,15 @@ function doAct(a, d) {
   if (a === 'back') { if (tour) return goHome(); visiting = null; return alliesPanel(); }
   if (a === 'help') return helpFriend(d.k);
   if (a === 'bopen') return buildingPanel(d.id);
+  if (a === 'bmove') return moveStart(d.id);
+  if (a === 'bhome') return moveHome(d.id);
   persist(); hud();
 }
-$('bHeroes').onclick = heroPanel; $('bQuests').onclick = questsPanel; $('quest').onclick = () => tour ? goHome() : questsPanel(); $('bAllies').onclick = () => alliesPanel();
+$('bHeroes').onclick = heroPanel; $('bQuests').onclick = questsPanel; $('quest').onclick = () => moving ? (moveEnd(), toast('📐 Move cancelled')) : tour ? goHome() : questsPanel(); $('bAllies').onclick = () => alliesPanel();
 $('bMute').onclick = () => { muted = !muted; localStorage.setItem('ts3_mute', muted ? '1' : '0'); $('bMute').firstChild.textContent = muted ? '🔇' : '🔊'; };
 $('bMute').firstChild.textContent = muted ? '🔇' : '🔊';
 let actTarget = null;
-function actPress() { if (tour) return alliesPanel(); if (actTarget) buildingPanel(actTarget); }
+function actPress() { if (moving) return movePlace(); if (tour) return alliesPanel(); if (actTarget) buildingPanel(actTarget); }
 $('act').onclick = actPress;
 
 // ------------------------------------------------------------ allies (other players help your upgrade timers)
@@ -670,7 +753,7 @@ function startTour(c, p, raiding) {
   // visiting an ally pays off: a daily visit bonus for each friend, and whatever you gather there comes home with you
   const H = tour.home, day = new Date().toDateString(); if (H.visitDay !== day) { H.visitDay = day; H.visited = {}; }
   if (!raiding && !H.visited[c]) { H.visited[c] = 1; const bonus = { wood: 25, food: 15, metal: 5 }; Object.keys(bonus).forEach(k => { H.res[k] = (H.res[k] || 0) + bonus[k]; }); setTimeout(() => toast('🎁 Visit bonus for your settlement: +' + costTxt(bonus), 3500), 1600); }
-  const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: JSON.parse(JSON.stringify(tour.home.heroes || {})), weapon: tour.home.weapon || 1, paid: w.paid || {}, bossWins: w.bw || {} }));   // your own squad and weapon come with you
+  const w = JSON.parse(JSON.stringify(p.w)); st = fix(Object.assign(fresh(), { b: w.b || fresh().b, zones: w.zones || fresh().zones, heroes: JSON.parse(JSON.stringify(tour.home.heroes || {})), weapon: tour.home.weapon || 1, paid: w.paid || {}, bossWins: w.bw || {}, lay: w.lay || {} }));   // your own squad and weapon come with you
   tour.S = Object.assign({ wood: 0, food: 0, metal: 0, gems: 0 }, JSON.parse(JSON.stringify(tour.home.res))); tour.D = tour.D || {};
   st.res = Object.assign({}, tour.S); st.hp = player.hpMax || 100; player.x = 3; player.z = 6;   // you bring your own resources to build with
   loadWorld(); setRoom(c); toast('👀 Welcome to ' + tour.name + '’s settlement!'); return true;
@@ -709,7 +792,7 @@ function goHome(quiet) {
 function publishPub() {
   if (tour || !code || !WW || WW.mode !== 'cloud') return;
   const ups = Object.keys(BD).filter(id => st.b[id].up).map(id => { const u = st.b[id].up; return { id: id, k: id + '_' + u.to, n: BD[id].n, i: BD[id].i, to: u.to, end: u.end, total: u.total, c: Object.keys(u.h || {}).length }; });
-  try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {}, bw: st.bossWins || {} }, res: { wood: Math.floor(st.res.wood), food: Math.floor(st.res.food), metal: Math.floor(st.res.metal) }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
+  try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {}, bw: st.bossWins || {}, lay: st.lay || {} }, res: { wood: Math.floor(st.res.wood), food: Math.floor(st.res.food), metal: Math.floor(st.res.metal) }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
 }
 function alliesPanel(note) {
   let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn ' + RES.wood + '15 (10 a day). While you play on your own map, each ally gets ' + Math.round(sharePct((shareAllies || []).length) * 100 || 5) + '% of what you gather (5% with one ally, down to 1% each with five or more).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
@@ -957,14 +1040,14 @@ function syncNeighbours() {
   const want = tour ? [] : (shareAllies || []).filter(f => f.code !== code && f.pub && f.pub.w).slice(0, NB_SPOTS.length);
   Object.keys(nbrs).forEach(c => { if (!want.some(f => f.code === c)) dropNeighbour(c); });
   want.forEach((f, i) => {
-    const sig = JSON.stringify((f.pub.w || {}).b || {}) + i, N = nbrs[f.code];
+    const sig = JSON.stringify((f.pub.w || {}).b || {}) + JSON.stringify((f.pub.w || {}).lay || {}) + i, N = nbrs[f.code];
     if (N && N.sig === sig) { N.sign.userData.set('🤝 ' + f.name + ' · Power Plant Lv' + (f.pub.pp || 1) + ' · tap to visit', '#a5f3fc'); return; }
     if (N) dropNeighbour(f.code);
     const [ox, oz] = NB_SPOTS[i], g = new THREE.Group(); g.position.set(ox, 0, oz); const pick = [];
     const pad = new THREE.Mesh(new THREE.CircleGeometry(15, 32), new THREE.MeshLambertMaterial({ color: 0x8fbf63 })); pad.rotation.x = -Math.PI / 2; pad.position.y = .03; g.add(pad); pick.push(pad);
     const ringP = new THREE.Mesh(new THREE.RingGeometry(3.4, 5.2, 40), new THREE.MeshLambertMaterial({ color: 0xcbb68a })); ringP.rotation.x = -Math.PI / 2; ringP.position.y = .05; g.add(ringP);
-    const b = (f.pub.w || {}).b || {};
-    Object.keys(BD).forEach(id => { const l = ((b[id] || {}).lvl) | 0; if (l < 1) return; const m = bldMesh(id, l); m.position.set(BD[id].x, 0, BD[id].z); g.add(m); pick.push(m); });
+    const b = (f.pub.w || {}).b || {}, lay = (f.pub.w || {}).lay || {};
+    Object.keys(BD).forEach(id => { const l = ((b[id] || {}).lvl) | 0; if (l < 1) return; const m = bldMesh(id, l), at = lay[id] && isFinite(lay[id].x) ? lay[id] : BD0[id]; m.position.set(+at.x, 0, +at.z); g.add(m); pick.push(m); });
     const sign = textSprite(16); sign.material.fog = false; sign.position.set(0, 10, 0); g.add(sign); sign.userData.set('🤝 ' + f.name + ' · Power Plant Lv' + (f.pub.pp || 1) + ' · tap to visit', '#a5f3fc');
     scene.add(g);
     // a dirt road from your map's edge to their town
@@ -1208,6 +1291,7 @@ function updateGuards(dt, now) {
   });
 }
 function loadWorld() {
+  if (moving) moveEnd(); applyLayout(st.lay); if (ppPath) ppPath.position.set(BD.pp.x, ppPath.position.y, BD.pp.z);
   guards.forEach(g => scene.remove(g.mesh)); guards.length = 0;
   workers.forEach(w => scene.remove(w.mesh)); workers.length = 0;
   // clear old entities, then rebuild everything from the save
@@ -1378,8 +1462,9 @@ function frameInner() {
   arrow.visible = guideG.visible = !!tg;
   if (tg) { arrow.position.set(tg.x, (tg.boss ? 6 : 4) + Math.sin(now / 250) * .3, tg.z); const dx = tg.x - player.x, dz = tg.z - player.z, dist = Math.hypot(dx, dz); guideG.visible = dist > 5; guideG.position.set(player.x, .3, player.z); guideG.rotation.y = Math.atan2(dx, dz); }
   // --- action button (open a building)
+  if (moving) { moveTick(); const ab0 = $('act'), t0 = moving.swap ? '🔄 Swap here' : moving.ok ? '📍 Place here' : '❌ Can’t place here'; if (ab0.textContent !== t0) ab0.textContent = t0; ab0.style.display = 'block'; } else {
   actTarget = null; let bd = 1e9; Object.keys(bldMeshes).forEach(id => { if (lvl(id) < 1) return; const D = BD[id], d = Math.hypot(player.x - D.x, player.z - D.z); if (d < D.r + 2 && d < bd) { bd = d; actTarget = id; } });
-  const ab = $('act'); if (actTarget) { const t = BD[actTarget].i + ' ' + BD[actTarget].n; if (ab.textContent !== t) ab.textContent = t; ab.style.display = 'block'; } else ab.style.display = 'none';
+  const ab = $('act'); if (actTarget) { const t = BD[actTarget].i + ' ' + BD[actTarget].n; if (ab.textContent !== t) ab.textContent = t; ab.style.display = 'block'; } else ab.style.display = 'none'; }
   // --- once a second
   accSec += dt; if (accSec >= 1) { const ev = economy(accSec); accSec = 0; ev.forEach(e => toast(e)); if (ev.length) { syncPads(); publishPub(); persist(); }
     if (st.overflowAt && NOW() - st.overflowAt < 1500) syncPads();   // builds being fed by full piles
