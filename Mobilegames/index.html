@@ -77,6 +77,11 @@
   <div class="row"><input id="joinCodeFrog" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinFrog" class="alt">Join</button></div>
 </div>
 <div class="card">
+  <h2 style="margin:0 0 4px">🎯 Werewolf Recon</h2>
+  <div class="muted">3D open-world squad shooter. Start in <b>Itacua</b>: scout enemy camps with your drone, mark guards, take them out with your squad's sync shot, and collect the Skill Points, weapon cases and accessory cases (laid out like your Wildlands tracker map). Skill trees, trucks, night and thermal vision. Keyboard &amp; mouse, PS5/Xbox controller or touch.</div>
+  <div class="row"><button id="playRecon">Deploy</button></div>
+</div>
+<div class="card">
   <h2 style="margin:0 0 4px">🏎️ Werewolf Racing</h2>
   <div class="muted">3D car racing. <b>Solo</b> races you against 5 bots. <b>Multiplayer</b> puts up to 8 friends on the grid live, and the host can fill empty spots with bots. 3, 5 or 8 laps, best-lap leaderboard. Works with a Bluetooth controller (PS5, Xbox): R2 gas, L2 brake, left stick steer.</div>
   <div class="row"><button id="playRace">Race solo</button><button id="hostRace" class="alt">Host multiplayer</button></div>
@@ -149,6 +154,7 @@
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'frogger.html?room=' + encodeURIComponent(c);
   };
+  $('playRecon').onclick = function () { location.href = 'recon.html'; };
   $('playRace').onclick = function () { location.href = 'race.html'; };
   $('hostRace').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'race.html?room=' + encodeURIComponent(c); };
   $('joinRace').onclick = function () {
