@@ -115,6 +115,9 @@ pre{background:#0f0d18;border:1px solid var(--line);border-radius:10px;padding:1
     <section class="card">
       <h2>Options</h2>
       <label class="opt"><input type="checkbox" id="optEnabled"> Stream Sync on</label>
+      <div class="row"><span class="hint">Game info comes from</span>
+        <select id="optSource"><option value="auto">PlayStation when I'm on it, otherwise my Twitch title (PC / OBS)</option><option value="twitch">always my Twitch title and category (PC / OBS)</option><option value="playstation">PlayStation only</option></select></div>
+      <p class="hint">PC / OBS: set your title and category on Twitch as usual; they're copied to YouTube and Kick. Outside chat still comes into Twitch either way.</p>
       <label class="opt"><input type="checkbox" id="optTitle"> Update my stream title from my PlayStation game status</label>
       <div class="row"><span class="hint">Title shows</span>
         <select id="optFmt"><option value="status">game status (e.g. Chapter 2: The Past)</option><option value="game_status">game name - game status</option><option value="game">game name only</option></select></div>
@@ -230,6 +233,7 @@ async function load() {
   $("optDiscord").checked = S.discord_live_alert !== false;
   $("optYt").value = S.youtube_mode || "same";
   $("optFmt").value = S.title_format || "status";
+  $("optSource").value = S.source || "auto";
   $("optMention").checked = S.mention_squad !== false;
   preview();
 }
@@ -315,6 +319,7 @@ $("optEnabled").onchange = (e) => save({ enabled: e.target.checked }, e.target.c
 $("optTitle").onchange = (e) => save({ update_title: e.target.checked });
 $("optDiscord").onchange = (e) => save({ discord_live_alert: e.target.checked });
 $("optYt").onchange = (e) => save({ youtube_mode: e.target.value });
+$("optSource").onchange = (e) => save({ source: e.target.value }, "Saved where your game info comes from.");
 $("optFmt").onchange = (e) => save({ title_format: e.target.value }, "Title format saved.");
 $("optMention").onchange = (e) => save({ mention_squad: e.target.checked });
 
