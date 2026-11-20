@@ -751,7 +751,7 @@ function doAct(a, d) {
   if (a === 'bhome') return moveHome(d.id);
   persist(); hud();
 }
-$('bHeroes').onclick = heroPanel; $('bQuests').onclick = questsPanel; $('quest').onclick = () => moving ? (moveEnd(), toast('📐 Move cancelled')) : tour ? goHome() : questsPanel(); $('bAllies').onclick = () => alliesPanel();
+$('bHeroes').onclick = heroPanel; $('bShop').onclick = () => shopPanel(); $('bQuests').onclick = questsPanel; $('quest').onclick = () => moving ? (moveEnd(), toast('📐 Move cancelled')) : tour ? goHome() : questsPanel(); $('bAllies').onclick = () => alliesPanel();
 $('bMute').onclick = () => { muted = !muted; localStorage.setItem('ts3_mute', muted ? '1' : '0'); $('bMute').firstChild.textContent = muted ? '🔇' : '🔊'; };
 $('bMute').firstChild.textContent = muted ? '🔇' : '🔊';
 let actTarget = null;
@@ -808,6 +808,64 @@ function publishPub() {
   if (tour || !code || !WW || WW.mode !== 'cloud') return;
   const ups = Object.keys(BD).filter(id => st.b[id].up).map(id => { const u = st.b[id].up; return { id: id, k: id + '_' + u.to, n: BD[id].n, i: BD[id].i, to: u.to, end: u.end, total: u.total, c: Object.keys(u.h || {}).length }; });
   try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {}, bw: st.bossWins || {}, lay: st.lay || {} }, res: { wood: Math.floor(st.res.wood), food: Math.floor(st.res.food), metal: Math.floor(st.res.metal) }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
+}
+// ------------------------------------------------------------ shop: real-money packs, paid through PayPal
+// The page never decides that a purchase went through. The ww-discord-auth server (Claude-Test/discord-auth/paypal.js)
+// captures the order with PayPal itself, checks it's COMPLETED for the right price and player, and only then writes the
+// grant to Firestore: user/{CODE}/platform/mobile/game/survive3_shop/orders/{orderId}. Each order is added to the save
+// once (st.orders remembers which). Orders that were paid but not confirmed (closed tab, lost signal) are retried on load.
+const PAY_URL = 'https://ww-discord-auth.onrender.com', SHOP_PACK = 'survive_2000', PEND_KEY = 'ts3_pay_pend';
+let shopCfg = null, ppLoaded = null;
+async function shopConfig() { if (shopCfg && shopCfg.packs) return shopCfg; try { shopCfg = await (await fetch(PAY_URL + '/pay/config')).json(); } catch (e) { shopCfg = null; } return shopCfg; }
+async function idTok() { try { return WW && WW.user ? await WW.user.getIdToken() : ''; } catch (e) { return ''; } }
+async function payPost(path, body) {
+  const r = await fetch(PAY_URL + path, { method: 'POST', body: new URLSearchParams(body) }); const j = await r.json().catch(() => ({}));
+  if (!r.ok || j.error) throw new Error(j.error || ('Shop error ' + r.status)); return j;
+}
+function loadPayPal(cid) {
+  if (ppLoaded) return ppLoaded;
+  ppLoaded = new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(cid) + '&currency=USD&intent=capture&components=buttons';
+    sc.onload = () => res(window.paypal); sc.onerror = () => { ppLoaded = null; rej(new Error('PayPal didn’t load. Check your connection and try again.')); }; document.head.appendChild(sc); });
+  return ppLoaded;
+}
+const pendList = () => { try { return JSON.parse(localStorage.getItem(PEND_KEY)) || []; } catch (e) { return []; } };
+const pendSet = l => { try { localStorage.setItem(PEND_KEY, JSON.stringify(l)); } catch (e) {} };
+function grantOrder(id, g) {   // add a paid order's resources to YOUR settlement, once
+  const H = tour ? tour.home : st; if (!g || !g.res) return false; H.orders = H.orders || {}; if (H.orders[id]) return false;
+  H.orders[id] = NOW(); Object.keys(g.res).forEach(k => { H.res[k] = (H.res[k] || 0) + (+g.res[k] || 0); });
+  if (tour) tour.S && Object.keys(g.res).forEach(k => { st.res[k] = (st.res[k] || 0) + (+g.res[k] || 0); tour.S[k] = (tour.S[k] || 0) + (+g.res[k] || 0); });   // visiting: it's yours, not part of the trip's split
+  sfx(784, .2, .08); sfx(1046, .35, .08, .15); toast('📦 Thank you! ' + (g.name || 'Pack') + ': +' + costTxt(g.res), 7000);
+  persist(); cloudSave(); hud(); return true;
+}
+async function confirmOrder(id) {
+  const j = await payPost('/pay/capture', { idToken: await idTok(), orderId: id });
+  pendSet(pendList().filter(x => x !== id));
+  if (j.grant) grantOrder(id, j.grant); else await claimShop();
+  return j;
+}
+async function claimShop() {   // pick up every paid order (also ones bought on another device)
+  if (!WW || WW.mode !== 'cloud' || !WW.user || !WW.friendCode || !WW.mobileDoc) return;
+  try { const d = await WW.mobileDoc('survive3_shop'); if (!d) return; const q = await d.collection('orders').get(); q.forEach(o => grantOrder(o.id, o.data())); } catch (e) { console.warn('shop claim', e && (e.code || e.message)); }
+}
+async function shopStartup() { for (const id of pendList()) { try { await confirmOrder(id); } catch (e) { console.warn('pending order', id, e.message); } } claimShop(); }
+async function shopPanel(note) {
+  if (tour) return toast('🛒 Go home to open the shop');
+  let h = '<h3>🛒 Shop</h3>' + (note ? '<div class="muted" style="color:#fde68a">' + WW.esc(note) + '</div>' : '');
+  if (!WW || WW.mode !== 'cloud' || !WW.user || !WW.friendCode) return show(h + '<div class="row muted">Sign in on the games hub to buy. Purchases go to your account, so they follow you to every device.</div>');
+  show(h + '<div class="row muted">Opening the shop…</div>');
+  const cfg = await shopConfig(), P = cfg && cfg.packs && cfg.packs[SHOP_PACK];
+  if (!P) return show(h + '<div class="row muted">The shop couldn’t be reached. Give it a minute (the shop server may be waking up) and try again.</div>');
+  h += '<div class="row"><div class="g"><b>📦 ' + WW.esc(P.name) + ' · $' + WW.esc(P.price) + '</b><div class="muted">' + costTxt(P.res) + ' added to your settlement as soon as PayPal confirms the payment. Works on all your devices.</div></div></div>';
+  if (!cfg.clientId) return show(h + '<div class="row muted">The shop isn’t open yet. Check back soon!</div>');
+  show(h + (cfg.mode === 'sandbox' ? '<div class="muted" style="color:#fde68a">Test mode: no real money is charged.</div>' : '') + '<div id="ppBtns" style="margin-top:8px;min-height:50px;background:#fff;border-radius:10px;padding:8px"></div><div class="muted" style="margin-top:6px">Payments are handled securely by PayPal (PayPal or card). Sales are final; if something goes wrong, message werewolf.</div>');
+  try {
+    const pp = await loadPayPal(cfg.clientId), box = $('ppBtns'); if (!box) return;
+    pp.Buttons({ style: { layout: 'vertical', shape: 'pill', label: 'pay' },
+      createOrder: async () => (await payPost('/pay/create', { idToken: await idTok(), pack: SHOP_PACK })).id,
+      onApprove: async d => { pendSet(pendList().concat(d.orderID)); closeSheet(); toast('⏳ Confirming your payment with PayPal…', 9000); try { await confirmOrder(d.orderID); } catch (e) { shopPanel(e.message + ' (it will be checked again next time you open the game)'); } },
+      onCancel: () => toast('Purchase cancelled'),
+      onError: e => shopPanel('PayPal: ' + ((e && e.message) || 'something went wrong')) }).render(box);
+  } catch (e) { shopPanel(e.message); }
 }
 function alliesPanel(note) {
   let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn ' + RES.wood + '15 (10 a day). While you play on your own map, each ally gets ' + Math.round(sharePct((shareAllies || []).length) * 100 || 5) + '% of what you gather (5% with one ally, down to 1% each with five or more).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
@@ -1338,7 +1396,7 @@ function boot() {
       }
       cloudChecked = true; cloudSave();
     } catch (e) { console.warn('cloud load failed; not overwriting the cloud this session', e); }
-    listenHelps(); listenGifts(); listenDuel(); tbListen(code); setTimeout(() => { if (!allyList) loadAllyList(); }, 3000); publishPub(); publishPlaying(); setRoom(code);
+    listenHelps(); listenGifts(); listenDuel(); shopStartup(); tbListen(code); setTimeout(() => { if (!allyList) loadAllyList(); }, 3000); publishPub(); publishPlaying(); setRoom(code);
     setTimeout(showWelcome, 2500);   // after allies' news (raids, help) has come in
   });
   setTimeout(() => { if (!WW || !WW.user) showWelcome(); }, 4000);   // not signed in: show it straight away

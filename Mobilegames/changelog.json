@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 39,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "🛒 New Shop button: the Survivor Supply Crate gives 2,000 wood, 2,000 food and 2,000 metal for $9.99, paid through PayPal (opens once the shop is switched on)",
+    "Purchases are tied to your account, so they show up on every device you play on"
+   ]
+  },
+  {
    "id": 38,
    "date": "Nov 20",
    "game": "survive",
