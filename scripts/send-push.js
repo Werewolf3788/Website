@@ -42,7 +42,7 @@ async function main() {
     });
 
     const AUTH = await authQuery();
-    const res = await fetch(`${RTDB}/push_subscriptions.json${AUTH}`);
+    const res = await fetch(`${RTDB}/accounts/push_subscriptions.json${AUTH}`);
     if (!res.ok) throw new Error(`Could not read /push_subscriptions (HTTP ${res.status})`);
     const subs = (await res.json()) || {};
     const ids = Object.keys(subs);
@@ -58,7 +58,7 @@ async function main() {
         } catch (err) {
             if (err.statusCode === 404 || err.statusCode === 410) {
                 // The person turned notifications off or uninstalled: clean up
-                await fetch(`${RTDB}/push_subscriptions/${id}.json${AUTH}`, { method: 'DELETE' });
+                await fetch(`${RTDB}/accounts/push_subscriptions/${id}.json${AUTH}`, { method: 'DELETE' });
                 removed++;
             } else {
                 failed++;

@@ -238,7 +238,7 @@
     }
     setInterval(tick, 1000);
 
-    onValue(ref(db, 'music_releases'), (snap) => {
+    onValue(ref(db, 'site/music_releases'), (snap) => {
       const data = snap.val() || {};
       releases = Object.keys(data).map(key => {
         const it = data[key];

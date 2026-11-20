@@ -93,7 +93,7 @@
     var db = WW.db, mine = function (k) { return db.ref('users/' + k + '/friend_code').once('value').then(function (s) { return String(s.val() || '').toUpperCase() === code; }).catch(function () { return false; }); };
     var key = null;
     try {
-      var raw = (await db.ref('friend_codes/' + code).once('value')).val();
+      var raw = (await db.ref('accounts/friend_codes/' + code).once('value')).val();
       // newer records store the user key as plain text; older ones store an object ({ email_key, email, username, avatar_url, ... })
       var toKey = function (x) { x = typeof x === 'string' ? x.trim() : ''; return x.indexOf('@') > -1 ? x.toLowerCase().replace(/\./g, '_').replace('@', '_at_') : x; };
       var cands = typeof raw === 'string' ? [raw] : raw && typeof raw === 'object' ? [raw.email_key, raw.emailKey, raw.user_key, raw.userKey, raw.key, raw.owner, raw.email, raw.uid].map(toKey) : [];
@@ -152,7 +152,7 @@
     var ServerValue = firebase.database.ServerValue;
     WW.db.ref('.info/connected').on('value', function (s) {
       if (!s.val()) return;
-      var r = WW.db.ref('presence/' + me.key);
+      var r = WW.db.ref('accounts/presence/' + me.key);
       r.onDisconnect().set({ online: false, ts: ServerValue.TIMESTAMP }).then(function () {
         r.set({ online: true, ts: ServerValue.TIMESTAMP });
       }).catch(function () {});
@@ -346,7 +346,7 @@
   }
 
   function watchThreads() {
-    threadsRef = WW.db.ref('userThreads/' + WW.me.key);
+    threadsRef = WW.db.ref('social/userThreads/' + WW.me.key);
     threadsCb = function (snap) {
       threads = snap.val() || {};
       refreshBadge();
@@ -432,7 +432,7 @@
     // presence dots
     L.querySelectorAll('.av').forEach(function (av) {
       var k = av.dataset.key;
-      WW.db.ref('presence/' + k + '/online').once('value').then(function (s) {
+      WW.db.ref('accounts/presence/' + k + '/online').once('value').then(function (s) {
         if (s.val() === true) av.appendChild(el('span', 'dot'));
       }).catch(function () {});
     });
@@ -543,7 +543,7 @@
 
   function markRead(other) {
     if (!threads[other] || !threads[other].unread) return;
-    WW.db.ref('userThreads/' + WW.me.key + '/' + other + '/unread').set(0).catch(function () {});
+    WW.db.ref('social/userThreads/' + WW.me.key + '/' + other + '/unread').set(0).catch(function () {});
   }
 
   function openChat(otherKey, name) {
@@ -554,7 +554,7 @@
     UI.panel.hidden = false; UI.list.hidden = true; UI.chat.hidden = false;
     UI.back.hidden = false; UI.view.hidden = false; UI.title.textContent = openName;
     UI.msgs.textContent = '';
-    msgsRef = WW.db.ref('messages/' + threadId(WW.me.key, otherKey)).limitToLast(100);
+    msgsRef = WW.db.ref('social/messages/' + threadId(WW.me.key, otherKey)).limitToLast(100);
     msgsCb = function (snap) {
       var m = snap.val() || {};
       var b = el('div', 'm' + (m.from === WW.me.key ? ' me' : ''));
@@ -573,10 +573,10 @@
     if (!text) return;
     var TS = firebase.database.ServerValue.TIMESTAMP, me = WW.me, preview = text.slice(0, 80);
     try {
-      await WW.db.ref('messages/' + threadId(me.key, otherKey)).push({ from: me.key, text: text, ts: TS });
+      await WW.db.ref('social/messages/' + threadId(me.key, otherKey)).push({ from: me.key, text: text, ts: TS });
       await Promise.all([
-        WW.db.ref('userThreads/' + me.key + '/' + otherKey).update({ name: otherName, last: preview, ts: TS, unread: 0, lastFrom: me.key }),
-        WW.db.ref('userThreads/' + otherKey + '/' + me.key).transaction(function (cur) {
+        WW.db.ref('social/userThreads/' + me.key + '/' + otherKey).update({ name: otherName, last: preview, ts: TS, unread: 0, lastFrom: me.key }),
+        WW.db.ref('social/userThreads/' + otherKey + '/' + me.key).transaction(function (cur) {
           cur = cur || {};
           return { name: me.name, last: preview, ts: Date.now(), unread: (cur.unread || 0) + 1, lastFrom: me.key };
         })
@@ -600,7 +600,6 @@
   /* ---------- go ---------- */
   function start() {
     try { var at = document.createElement('script'); at.src = new URL('ww-ach-toast.js', SCRIPT_SRC).href; at.defer = true; document.head.appendChild(at); } catch (e) {}
-    try { var pk = document.createElement('script'); pk.src = new URL('ww-prank.js', SCRIPT_SRC).href; pk.onload = function () { WW.ready.then(function () { if (window.WWPrank) window.WWPrank.start(WW); }); }; document.head.appendChild(pk); } catch (e) {}
     boot().catch(function (e) { console.warn('[WW]', e.message || e); readyReject(e); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

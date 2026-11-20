@@ -101,7 +101,7 @@ const fbKey = (x) => String(x).replace(/[.$#\[\]\/]/g, "_");   // Firebase-safe 
 
 /** Names, descriptions and icons for a game's achievements, shared by every player (/steam_games/{appid}). */
 async function rememberSchema(acct, appid, gameName, playerList) {
-    const cur = await dbGet(`steam_games/${appid}/schema_at`).catch(() => null);
+    const cur = await dbGet(`platforms/steam_games/${appid}/schema_at`).catch(() => null);
     if (cur && Date.now() - Number(cur) < SCHEMA_REUSE_MS) return;
     const map = {};
     for (const a of playerList) map[fbKey(a.apiname)] = { n: String(a.name || a.apiname), d: String(a.description || "") };
@@ -116,7 +116,7 @@ async function rememberSchema(acct, appid, gameName, playerList) {
             map[k] = base;
         }
     } catch (e) { /* names from the player's own list are still saved */ }
-    await dbSet(`steam_games/${appid}`, { name: String(gameName || `App ${appid}`), schema_at: Date.now(), ach: map });
+    await dbSet(`platforms/steam_games/${appid}`, { name: String(gameName || `App ${appid}`), schema_at: Date.now(), ach: map });
 }
 
 const ID64 = /^7656119\d{10}$/;
@@ -137,7 +137,7 @@ async function toSteamId64(raw, vanityCache, key) {
     if (vanityCache[k]) return vanityCache[k];
     const j = await steam(key, "ISteamUser/ResolveVanityURL/v1", { vanityurl: v });
     const id = j?.response?.success === 1 ? j.response.steamid : null;
-    if (id) { vanityCache[k] = id; await dbSet(`steam_vanity/${k}`, id); }
+    if (id) { vanityCache[k] = id; await dbSet(`platforms/steam_vanity/${k}`, id); }
     return id;
 }
 
@@ -169,7 +169,7 @@ async function main() {
     const users = (await dbGet("users")) || {};
     let secrets = {};
     try { secrets = (await dbGet("user_secrets")) || {}; } catch (e) { console.warn(`[DB] user_secrets: ${e.message}`); }
-    const vanityCache = (await dbGet("steam_vanity").catch(() => null)) || {};
+    const vanityCache = (await dbGet("platforms/steam_vanity").catch(() => null)) || {};
     // Owner's key: STEAM_API_KEY secret if set, else the owner's own saved key in /user_secrets (or /user_secrets/_site)
     if (!SITE_KEY) {
         for (const c of [(secrets[OWNER_KEY] || {}).steam_api_key, (secrets._site || {}).steam_api_key]) {
@@ -235,7 +235,7 @@ async function main() {
             const gamesPublic = !owned?._private && Array.isArray(owned?.response?.games);
 
             // Achievements for the games they actually play. Earlier results are kept when a lookup fails.
-            const prevAch = (await dbGet(`steam_users/${id}/ach`).catch(() => null)) || {};
+            const prevAch = (await dbGet(`platforms/steam_users/${id}/ach`).catch(() => null)) || {};
             const ach = { ...prevAch };
             let achFetched = 0;
             if (gamesPublic) {
@@ -277,7 +277,7 @@ async function main() {
                 if (a.got === a.total) achTotals.perfect++;
             }
 
-            await dbSet(`steam_users/${id}`, {
+            await dbSet(`platforms/steam_users/${id}`, {
                 profile: {
                     name: p.personaname || null,
                     avatar: p.avatarfull || p.avatarmedium || p.avatar || null,

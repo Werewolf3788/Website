@@ -237,7 +237,7 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
 
   // ---- game tracker panel (site saves)
   const canonical = (k, g) => ({ farcry5: 'FarCry5', farcry6: 'FarCry6', sniperelite5: 'SniperElite5', snresistance: 'SniperEliteResistance' }[k] || (g && g.gameId) || k);
-  async function loadCatalog() { if (!catalog) { try { catalog = (await siteDb.ref('games').once('value')).val() || {}; } catch (e) { catalog = {}; } } return catalog; }
+  async function loadCatalog() { if (!catalog) { try { catalog = (await siteDb.ref('platforms/games').once('value')).val() || {}; } catch (e) { catalog = {}; } } return catalog; }
   function matchGame(c) {
     if (!catalog || !c || !c.online) return null;
     const name = (c.currentGame || '').toLowerCase().replace(/[®™:]/g, '').trim();

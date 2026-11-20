@@ -574,7 +574,7 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
     async function saveSubscription(sub) {
         const json = sub.toJSON();
         const id = await subscriptionId(json.endpoint);
-        const res = await fetch(`${RTDB}/push_subscriptions/${id}.json`, {
+        const res = await fetch(`${RTDB}/accounts/push_subscriptions/${id}.json`, {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ endpoint: json.endpoint, keys: json.keys, page: location.pathname, ua: navigator.userAgent.slice(0, 160), created_at: new Date().toISOString() })
         });
@@ -582,7 +582,7 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
     }
     async function removeSubscription(sub) {
         const id = await subscriptionId(sub.endpoint);
-        await fetch(`${RTDB}/push_subscriptions/${id}.json`, { method: 'DELETE' }).catch(() => {});
+        await fetch(`${RTDB}/accounts/push_subscriptions/${id}.json`, { method: 'DELETE' }).catch(() => {});
     }
     async function currentSubscription() {
         if (!pushSupported()) return null;
