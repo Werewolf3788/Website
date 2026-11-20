@@ -108,8 +108,9 @@ async function runUser({ key, cfg, user }) {
     out.psn_status = me.status || null;
     if (!me.online || !me.title) { await store.saveState(key, out); return out; }
 
-    const mentions = B.squadInGame(me, squad, snap.friends);
-    out.squad = mentions;
+    const playingWith = B.squadInGame(me, squad, snap.friends);
+    out.squad = playingWith;
+    const mentions = cfg.mention_squad === false ? [] : playingWith;
     const overrides = cfg.category_overrides || {};
 
     /* Twitch */
@@ -119,7 +120,8 @@ async function runUser({ key, cfg, user }) {
     const ch = await twitch.channel(broadcasterId);
     if (cat && ch && String(ch.game_id) !== String(cat.id)) patch.game_id = cat.id;   // always correct the category (fixes "Games + Demos")
 
-    const title = B.buildTitle({ status: me.status, game: me.title, mentions, max: B.TWITCH_TITLE_MAX });
+    const fmt = { format: cfg.title_format || "status" };
+    const title = B.buildTitle({ status: me.status, game: me.title, mentions, max: B.TWITCH_TITLE_MAX, ...fmt });
     if (cfg.update_title !== false && title && title !== m.title && (!ch || ch.title !== title)) patch.title = title;
 
     const tags = B.cleanTags([...(cfg.base_tags || []), ...(((cfg.game_tags || {})[me.title]) || [])]);
@@ -137,7 +139,7 @@ async function runUser({ key, cfg, user }) {
     /* YouTube (title only) */
     const ytMode = cfg.youtube_mode || "same";
     if (ytMode !== "off") {
-        const ytTitle = B.buildTitle({ status: me.status, game: me.title, mentions, max: B.YOUTUBE_TITLE_MAX, base: ytMode === "base_plus_status" ? (cfg.youtube_base || "") : "" });
+        const ytTitle = B.buildTitle({ status: me.status, game: me.title, mentions, max: B.YOUTUBE_TITLE_MAX, base: ytMode === "base_plus_status" ? (cfg.youtube_base || "") : "", ...fmt });
         if (ytTitle && ytTitle !== m.yt) {
             try { out.youtube = await youtubeTitle(key, sec, ytTitle); if (/^ok/i.test(out.youtube)) m.yt = ytTitle; }
             catch (e) { out.youtube = "error: " + e.message; }
@@ -148,7 +150,7 @@ async function runUser({ key, cfg, user }) {
     if (sec.kick_refresh) {
         try {
             const kp = {};
-            const kTitle = B.buildTitle({ status: me.status, game: me.title, mentions, max: B.KICK_TITLE_MAX });
+            const kTitle = B.buildTitle({ status: me.status, game: me.title, mentions, max: B.KICK_TITLE_MAX, ...fmt });
             if (kTitle !== m.kickTitle) kp.stream_title = kTitle;
             const kc = await kickCategory(key, me.title, overrides);
             if (kc && kc.id !== m.kickCat) kp.category_id = Number(kc.id);

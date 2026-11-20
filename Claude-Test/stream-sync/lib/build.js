@@ -125,9 +125,13 @@ function clip(s, max) {
     return s.slice(0, Math.max(0, max - 1)).trimEnd() + "…";
 }
 
-/** "<status or game> w/ @a @b", never longer than max. */
-function buildTitle({ status, game, mentions = [], max = TWITCH_TITLE_MAX, base = "" }) {
-    let main = cleanName(status) || cleanName(game);
+/** Title from the PlayStation game + status, never longer than max.
+ *  format: "status" (default: game status, or the game if there's none) | "game_status" ("Game - status") | "game" */
+function buildTitle({ status, game, mentions = [], max = TWITCH_TITLE_MAX, base = "", format = "status" }) {
+    const st = cleanName(status), gm = cleanName(game);
+    let main = format === "game" ? gm
+        : format === "game_status" ? (gm && st && !st.toLowerCase().includes(gm.toLowerCase()) ? `${gm} - ${st}` : st || gm)
+        : st || gm;
     if (base) main = main ? `${base} | ${main}` : base;
     if (!main) return "";
     let tail = mentions.length ? " w/ " + mentions.map((m) => "@" + m).join(" ") : "";

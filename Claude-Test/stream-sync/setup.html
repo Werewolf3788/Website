@@ -115,7 +115,11 @@ pre{background:#0f0d18;border:1px solid var(--line);border-radius:10px;padding:1
     <section class="card">
       <h2>Options</h2>
       <label class="opt"><input type="checkbox" id="optEnabled"> Stream Sync on</label>
-      <label class="opt"><input type="checkbox" id="optTitle"> Update my stream title</label>
+      <label class="opt"><input type="checkbox" id="optTitle"> Update my stream title from my PlayStation game status</label>
+      <div class="row"><span class="hint">Title shows</span>
+        <select id="optFmt"><option value="status">game status (e.g. Chapter 2: The Past)</option><option value="game_status">game name - game status</option><option value="game">game name only</option></select></div>
+      <label class="opt"><input type="checkbox" id="optMention"> Add @friends playing the same game with me</label>
+      <p class="hint">Title right now: <b id="titlePreview">…</b></p>
       <label class="opt"><input type="checkbox" id="optDiscord"> Discord "now live" alert</label>
       <div class="row"><span class="hint">YouTube title</span>
         <select id="optYt"><option value="same">same as Twitch</option><option value="base_plus_status">my YouTube title + status</option><option value="off">leave alone</option></select></div>
@@ -225,6 +229,25 @@ async function load() {
   $("optTitle").checked = S.update_title !== false;
   $("optDiscord").checked = S.discord_live_alert !== false;
   $("optYt").value = S.youtube_mode || "same";
+  $("optFmt").value = S.title_format || "status";
+  $("optMention").checked = S.mention_squad !== false;
+  preview();
+}
+
+/* Live preview from the PlayStation database (public), same rules as the sync service */
+const PSN_DB = "https://playstation-stats-default-rtdb.firebaseio.com/psn/gamertags/";
+async function preview() {
+  const tag = $("psnId").value.trim();
+  if (!tag) { $("titlePreview").textContent = "(add your PSN name)"; return; }
+  try {
+    const [g, st] = await Promise.all(["currentGame", "gameStatus"].map((f) => fetch(PSN_DB + encodeURIComponent(tag) + "/" + f + ".json").then((r) => r.json())));
+    const clean = (x) => String(x || "").replace(/[™®©]/g, "").replace(/\s+/g, " ").trim();
+    const gm = /^dashboard$/i.test(clean(g)) ? "" : clean(g), sts = clean(st), f = $("optFmt").value;
+    const main = f === "game" ? gm : f === "game_status" ? (gm && sts && !sts.toLowerCase().includes(gm.toLowerCase()) ? gm + " - " + sts : sts || gm) : sts || gm;
+    const squad = Object.values(S.squad || {});
+    const tail = $("optMention").checked && squad.length ? "  (+ w/ @" + squad.join(" @") + " when they're in your game)" : "";
+    $("titlePreview").textContent = main ? main + tail : "(not in a game right now)";
+  } catch (e) { $("titlePreview").textContent = "(couldn't read PlayStation data)"; }
 }
 
 async function save(obj, msg) {
@@ -292,6 +315,8 @@ $("optEnabled").onchange = (e) => save({ enabled: e.target.checked }, e.target.c
 $("optTitle").onchange = (e) => save({ update_title: e.target.checked });
 $("optDiscord").onchange = (e) => save({ discord_live_alert: e.target.checked });
 $("optYt").onchange = (e) => save({ youtube_mode: e.target.value });
+$("optFmt").onchange = (e) => save({ title_format: e.target.value }, "Title format saved.");
+$("optMention").onchange = (e) => save({ mention_squad: e.target.checked });
 
 $("ownSave").onclick = async () => {
   const add = {};
