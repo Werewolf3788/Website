@@ -302,10 +302,49 @@
     return out;
   };
 
+  // ---- "My color": one colour each player picks for themselves in every game (frog, car, tractor ...).
+  // Saved on this device and, when signed in, at users/{key}/game_color so it follows you to other devices.
+  // Falls back to the site profile colour (users/{key}/primary_color). Games listen for the 'ww-color' event.
+  WW.GAME_COLORS = ['#22c55e', '#16a34a', '#a3e635', '#14b8a6', '#06b6d4', '#38bdf8', '#3b82f6', '#6366f1', '#a855f7', '#e879f9', '#ec4899', '#f43f5e', '#ef4444', '#f97316', '#f59e0b', '#facc15', '#f8fafc', '#94a3b8', '#78350f', '#1f2937'];
+  var COLOR_KEY = 'mg_my_color';
+  function hexOk(c) { return typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c.trim()); }
+  WW.myColor = function (fallback) { try { var c = localStorage.getItem(COLOR_KEY); if (hexOk(c)) return c; } catch (e) {} return fallback || null; };
+  WW.setMyColor = function (c) {
+    if (!hexOk(c)) return; c = c.trim().toLowerCase();
+    try { localStorage.setItem(COLOR_KEY, c); } catch (e) {}
+    if (WW.user && WW.user.email) db.ref('users/' + WW.emailKey(WW.user.email) + '/game_color').set(c).catch(function (e) { console.warn('game_color save failed', e && (e.code || e.message)); });
+    try { window.dispatchEvent(new CustomEvent('ww-color', { detail: c })); } catch (e) {}
+  };
+  async function loadCloudColor(user) {
+    try {
+      var r = db.ref('users/' + WW.emailKey(user.email)), gc = (await r.child('game_color').once('value')).val();
+      if (!hexOk(gc) && !WW.myColor()) gc = (await r.child('primary_color').once('value')).val();   // never picked one: start from the profile colour
+      else if (!hexOk(gc) && WW.myColor()) { r.child('game_color').set(WW.myColor()).catch(function () {}); return; }   // picked one before signing in: keep it
+      if (hexOk(gc) && gc.toLowerCase() !== (WW.myColor() || '').toLowerCase()) { localStorage.setItem(COLOR_KEY, gc.trim().toLowerCase()); window.dispatchEvent(new CustomEvent('ww-color', { detail: gc.trim().toLowerCase() })); }
+    } catch (e) {}
+  }
+  WW.openColorPicker = function () {
+    var cur = WW.myColor('#22c55e'), ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:12px;font-family:system-ui,sans-serif';
+    var sw = WW.GAME_COLORS.map(function (c) { return '<button data-c="' + c + '" title="' + c + '" style="width:40px;height:40px;border-radius:50%;cursor:pointer;background:' + c + ';border:3px solid ' + (c === cur ? '#fff' : 'transparent') + ';box-shadow:0 0 0 1px #0006 inset"></button>'; }).join('');
+    ov.innerHTML = '<div style="background:#1e293b;color:#e2e8f0;border-radius:16px;padding:16px;width:min(94vw,380px)">'
+      + '<div style="font-weight:800;font-size:1.1rem;margin-bottom:4px">🎨 My color</div>'
+      + '<div style="font-size:.8rem;color:#94a3b8;margin-bottom:12px">Your frog, car and tractor use this color in every game, and friends see it too.</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(5,40px);gap:10px;justify-content:center">' + sw + '</div>'
+      + '<label style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;font-size:.88rem">Any other color: <input type="color" value="' + cur + '" style="width:52px;height:36px;border:0;background:none;padding:0;cursor:pointer"></label>'
+      + '<button data-close style="margin-top:14px;width:100%;background:#475569;color:#fff;border:0;border-radius:10px;padding:11px;font:inherit;cursor:pointer">Done</button></div>';
+    document.body.appendChild(ov);
+    function pick(c) { WW.setMyColor(c); ov.querySelectorAll('[data-c]').forEach(function (b) { b.style.borderColor = b.getAttribute('data-c') === c.toLowerCase() ? '#fff' : 'transparent'; }); }
+    ov.addEventListener('click', function (e) { var b = e.target.closest('[data-c]'); if (b) pick(b.getAttribute('data-c')); else if (e.target === ov || e.target.hasAttribute('data-close')) ov.remove(); });
+    ov.querySelector('input').addEventListener('input', function (e) { pick(e.target.value); });
+    ov.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') ov.remove(); }, true);
+  };
+
   // cb(user|null, friendCode|null) on every auth change
   WW.onReady = function (cb) {
     auth.onAuthStateChanged(async function (user) {
       WW.user = user || null; WW.friendCode = null;
+      if (user && user.email) await loadCloudColor(user);
       if (user) { try { WW.friendCode = await WW.ensureFriendCode(user); } catch (e) { console.error(e); } }
       if (user && WW.friendCode) { try { var pk = (await db.ref('accounts/friend_codes/' + WW.friendCode).once('value')).val(); WW.playKey = (await ownerKeyOfCode(pk, WW.friendCode)) || null; } catch (e) { WW.playKey = null; } }   // friends read us at the key our friend code points to
       if (user) await WW.loadAvatar(user);

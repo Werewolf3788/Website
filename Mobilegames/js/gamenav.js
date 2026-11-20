@@ -18,6 +18,14 @@
   var box = document.createElement('div');
   box.style.cssText = 'background:#1e293b;color:#e2e8f0;border-radius:16px;padding:16px;width:min(94vw,420px);max-height:90vh;overflow-y:auto';
   box.innerHTML = '<div style="font-weight:800;font-size:1.1rem;margin-bottom:10px">☰ Games</div>';
+  if (window.WW && WW.openColorPicker) {   // pick your colour for every game
+    var cb = document.createElement('button'), dotEl = '<i style="display:inline-block;width:1em;height:1em;border-radius:50%;vertical-align:-2px;margin-right:6px;border:2px solid #fff;background:' + (WW.myColor('#22c55e')) + '"></i>';
+    cb.style.cssText = 'display:block;width:100%;text-align:left;color:#e2e8f0;padding:11px 12px;margin:0 0 6px;border-radius:12px;background:#0f172a;border:2px solid #475569;font:inherit;cursor:pointer';
+    cb.innerHTML = dotEl + '<b>🎨 My color</b> <small style="color:#94a3b8">· change your frog, car and tractor color</small>';
+    cb.onclick = function () { hide(); WW.openColorPicker(); };
+    window.addEventListener('ww-color', function (e) { var d = cb.querySelector('i'); if (d) d.style.background = e.detail; });
+    box.appendChild(cb);
+  }
   var cur = location.pathname;
   GAMES.forEach(function (g) {
     var here = cur.indexOf('/' + g.k) >= 0, a = document.createElement('a');
