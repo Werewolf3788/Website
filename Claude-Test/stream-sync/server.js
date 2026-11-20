@@ -6,14 +6,14 @@
  *   - fixes the Twitch category (no more "Games + Demos"), sets the title to the
  *     game status + @mentions of squad members in the same game, sets tags
  *   - sends the same title to YouTube (through the Apps Script hook) and Kick
- *   - relays YouTube + TikTok chat into Twitch chat as the bot account
+ *   - relays YouTube, TikTok and Kick chat into Twitch chat (as the bot or the streamer)
  *   - posts one Discord "live" alert per stream
  *
  * Render's free plan sleeps after ~15 min without visits. The Apps Script
  * StreamHook visits /wake every minute while the channel is live, so the
  * service only runs (and only uses free hours) during streams.
  *
- * Env: FIREBASE_SERVICE_ACCOUNT, STREAM_SYNC_APP_OWNER_KEY, PUBLIC_URL, STATE_SECRET
+ * Env: FIREBASE_SERVICE_ACCOUNT, STREAM_SYNC_APP_OWNER_KEY, PUBLIC_URL, STATE_SECRET, SETUP_PAGE_URL (optional)
  * Settings and secrets live in Firebase - see README.md.
  * ========================================================================== */
 "use strict";
@@ -23,6 +23,7 @@ const express = require("express");
 const store = require("./lib/store");
 const twitch = require("./lib/twitch");
 const kick = require("./lib/kick");
+const chat = require("./lib/chat");
 const { runUser } = require("./lib/sync");
 
 const PORT = process.env.PORT || 3000;
@@ -77,74 +78,99 @@ function verify(state) {
     return Date.now() - o.t < 15 * 60 * 1000 ? o : null;
 }
 
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-function page(title, body) {
-    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title>
-<style>body{font-family:system-ui,sans-serif;background:#0c0a14;color:#e2e8f0;margin:0;padding:24px}main{max-width:760px;margin:auto}
-a.b{display:inline-block;margin:6px 8px 6px 0;padding:12px 16px;border-radius:10px;background:#9146ff;color:#fff;text-decoration:none;font-weight:700}
-a.k{background:#53fc18;color:#000}code{background:#1e1b2e;padding:2px 6px;border-radius:6px}.card{background:#16131f;border:1px solid #2a2540;border-radius:14px;padding:18px;margin:14px 0}
-.ok{color:#34d399}.bad{color:#f87171}</style></head><body><main>${body}</main></body></html>`;
-}
-
 const app = express();
 app.get("/", (req, res) => res.type("text").send("ww-stream-sync running. Last pass: " + (last.at || "not yet")));
 app.get("/health", (req, res) => res.send("ok"));
 app.get("/wake", (req, res) => { res.type("text").send("awake"); if (!running) tick(); });
 app.get("/status", (req, res) => res.json(last));
 
-app.get("/setup", (req, res) => {
-    const cb = (p) => `<code>${esc(PUBLIC_URL + p)}</code>`;
-    res.send(page("Stream sync setup", `
-<h1>Stream sync setup</h1>
-<div class="card"><b>1. Connect your streaming account</b> (needed to change category, title and tags).<br>
-Sign in with your <b>main</b> Twitch account (e.g. werewolf3788).<br>
-<a class="b" href="/auth/twitch?role=broadcaster">Connect Twitch (streamer)</a></div>
-<div class="card"><b>2. Connect your chat bot</b> (posts the YouTube/TikTok chat into Twitch).<br>
-Twitch will ask you to sign in: use the <b>bot</b> account (e.g. Modem3788). Log out of your main account on twitch.tv first if it signs you in automatically.<br>
-<a class="b" href="/auth/twitch?role=bot">Connect Twitch (bot)</a></div>
-<div class="card"><b>3. Optional: connect Kick</b> (title + category on Kick).<br>
-<a class="b k" href="/auth/kick">Connect Kick</a></div>
-<div class="card"><b>Redirect URLs</b> to add in the developer consoles:<br>
-Twitch (dev.twitch.tv &rarr; your app): ${cb("/auth/twitch/callback")}<br>
-Kick (kick.com/settings/developer): ${cb("/auth/kick/callback")}</div>
-<p>Each account is saved to the site user whose <code>stream_sync</code> settings name that login, so this page is safe to share.</p>`));
+/* ---- Setup ----
+ * The setup page lives on the website (signed in with the site's Firebase login):
+ *   Claude-Test/stream-sync/setup.html  ->  SETUP_PAGE_URL
+ * It saves settings, TikTok/YouTube info and the owner's app keys to Firebase itself.
+ * Only the Twitch and Kick sign-ins come through here, because they need the app secret. */
+const SETUP_PAGE_URL = process.env.SETUP_PAGE_URL || "https://entertainment-71888.web.app/Claude-Test/stream-sync/setup";
+const BACK_ORIGINS = new Set(["https://entertainment-71888.web.app", "https://entertainment-71888.firebaseapp.com", new URL(SETUP_PAGE_URL).origin]);
+function safeBack(u) {
+    try { const x = new URL(String(u || "")); return BACK_ORIGINS.has(x.origin) ? x.origin + x.pathname : SETUP_PAGE_URL; }
+    catch (e) { return SETUP_PAGE_URL; }
+}
+function backTo(res, back, params) { res.redirect(back + "?" + new URLSearchParams(params)); }
+
+app.get("/setup", (req, res) => res.redirect(SETUP_PAGE_URL));
+
+/* First connection for a site user: turn the sync on with safe defaults (never overwrites). */
+async function ensureDefaults(key) {
+    const cur = (await store.get("users/" + key + "/stream_sync")) || {};
+    const add = {};
+    if (cur.enabled === undefined) add.enabled = true;
+    if (cur.update_title === undefined) add.update_title = true;
+    if (cur.youtube_mode === undefined) add.youtube_mode = "same";
+    if (!cur.chat || cur.chat.post_as === undefined) add["chat/post_as"] = "bot";
+    if (Object.keys(add).length) await store.saveSettings(key, add);
+}
+
+app.post("/connect/:provider", express.urlencoded({ extended: false, limit: "16kb" }), async (req, res) => {
+    const back = safeBack(req.body.back);
+    try {
+        const { key } = await store.userFromIdToken(req.body.id_token);
+        if (req.params.provider === "twitch") {
+            const role = req.body.role === "bot" ? "bot" : "broadcaster";
+            return res.redirect(await twitch.authorizeUrl(role, PUBLIC_URL + "/auth/twitch/callback", sign({ p: "twitch", role, key, back })));
+        }
+        if (req.params.provider === "kick") {
+            const c = await kick.creds();
+            if (!c) return backTo(res, back, { error: "Kick isn't set up yet: the site owner needs to add the Kick app keys." });
+            return res.redirect(kick.authorizeUrl(c, PUBLIC_URL + "/auth/kick/callback", sign({ p: "kick", key, back })));
+        }
+        backTo(res, back, { error: "Unknown sign-in" });
+    } catch (e) {
+        backTo(res, back, { error: /id token|auth\/|Firebase ID token/i.test(e.message) ? "Your site sign-in expired - refresh the page and try again." : e.message });
+    }
 });
 
-app.get("/auth/twitch", async (req, res) => {
-    const role = req.query.role === "bot" ? "bot" : "broadcaster";
-    try { res.redirect(await twitch.authorizeUrl(role, PUBLIC_URL + "/auth/twitch/callback", sign({ p: "twitch", role }))); }
-    catch (e) { res.status(500).send(page("Setup error", `<p class="bad">${esc(e.message)}</p>`)); }
-});
 app.get("/auth/twitch/callback", async (req, res) => {
     const st = verify(req.query.state);
-    if (!st || st.p !== "twitch") return res.status(400).send(page("Expired", `<p class="bad">That sign-in link expired. <a href="/setup">Start again</a>.</p>`));
-    if (req.query.error) return res.status(400).send(page("Cancelled", `<p class="bad">${esc(req.query.error_description || req.query.error)}</p>`));
+    if (!st || st.p !== "twitch" || !st.key) return res.redirect(SETUP_PAGE_URL + "?error=" + encodeURIComponent("That sign-in link expired. Try again."));
+    if (req.query.error) return backTo(res, st.back, { error: req.query.error_description || req.query.error });
     try {
         const { refresh, login } = await twitch.exchangeCode(req.query.code, PUBLIC_URL + "/auth/twitch/callback");
-        const field = st.role === "bot" ? "bot_login" : "twitch_login";
-        const key = await store.userByLogin(field, login);
-        if (!key) return res.status(404).send(page("Not linked", `<p class="bad">Twitch account <b>${esc(login)}</b> isn't set as <code>${field}</code> for any site user, so nothing was saved.</p><p>If you meant the other account, <a href="/setup">start again</a> and sign in with the right one.</p>`));
-        await store.saveSecret(key, `twitch_${st.role}_refresh`, refresh);
-        twitch.forgetUserToken(key, st.role);
-        res.send(page("Connected", `<p class="ok">Connected <b>${esc(login)}</b> as the ${st.role === "bot" ? "chat bot" : "streaming account"}.</p><p><a href="/setup">Back to setup</a></p>`));
-    } catch (e) { res.status(500).send(page("Setup error", `<p class="bad">${esc(e.message)}</p>`)); }
+        await store.saveSecret(st.key, `twitch_${st.role}_refresh`, refresh);
+        twitch.forgetUserToken(st.key, st.role);
+        await store.saveSettings(st.key, st.role === "bot" ? { bot_login: login } : { twitch_login: login });
+        if (st.role === "broadcaster") await ensureDefaults(st.key);
+        backTo(res, st.back, { connected: st.role === "bot" ? "twitch_bot" : "twitch", as: login || "" });
+    } catch (e) { backTo(res, st.back, { error: e.message }); }
 });
 
-app.get("/auth/kick", async (req, res) => {
-    const c = await kick.creds().catch(() => null);
-    if (!c) return res.status(500).send(page("Kick not set up", `<p class="bad">Add <code>kick_client_id</code> and <code>kick_client_secret</code> to the app owner's user_secrets first.</p>`));
-    res.redirect(kick.authorizeUrl(c, PUBLIC_URL + "/auth/kick/callback", sign({ p: "kick" })));
-});
 app.get("/auth/kick/callback", async (req, res) => {
     const st = verify(req.query.state);
-    if (!st || st.p !== "kick") return res.status(400).send(page("Expired", `<p class="bad">That sign-in link expired. <a href="/setup">Start again</a>.</p>`));
+    if (!st || st.p !== "kick" || !st.key) return res.redirect(SETUP_PAGE_URL + "?error=" + encodeURIComponent("That sign-in link expired. Try again."));
+    if (req.query.error) return backTo(res, st.back, { error: req.query.error_description || req.query.error });
     try {
-        const { refresh, login } = await kick.exchangeCode(req.query.code, PUBLIC_URL + "/auth/kick/callback", req.query.state);
-        const key = await store.userByLogin("kick_login", login);
-        if (!key) return res.status(404).send(page("Not linked", `<p class="bad">Kick account <b>${esc(login)}</b> isn't set as <code>kick_login</code> for any site user.</p>`));
-        await store.saveSecret(key, "kick_refresh", refresh);
-        res.send(page("Connected", `<p class="ok">Connected Kick account <b>${esc(login)}</b>.</p><p><a href="/setup">Back to setup</a></p>`));
-    } catch (e) { res.status(500).send(page("Setup error", `<p class="bad">${esc(e.message)}</p>`)); }
+        const { refresh, login, userId } = await kick.exchangeCode(req.query.code, PUBLIC_URL + "/auth/kick/callback", req.query.state);
+        await store.saveSecret(st.key, "kick_refresh", refresh);
+        await store.saveSettings(st.key, { kick_login: login || "", kick_user_id: userId || "" });
+        kickIds.clear();
+        const sub = await kick.ensureChatSubscription(st.key).catch((e) => "chat events not on yet (" + e.message + ")");
+        backTo(res, st.back, { connected: "kick", as: login || "", note: "Kick chat: " + sub });
+    } catch (e) { backTo(res, st.back, { error: e.message }); }
+});
+
+/* ---- Kick chat webhook -> Twitch chat ---- */
+const kickIds = new Map(); // kick user id -> site user key
+app.post("/webhooks/kick", express.raw({ type: "*/*", limit: "256kb" }), async (req, res) => {
+    if (!(await kick.verifyWebhook(req.headers, req.body))) return res.status(401).send("bad signature");
+    res.send("ok");
+    if (req.headers["kick-event-type"] !== kick.CHAT_EVENT) return;
+    try {
+        const e = JSON.parse(req.body.toString("utf8"));
+        const kid = String((e.broadcaster && e.broadcaster.user_id) || "");
+        if (!kickIds.has(kid)) kickIds.set(kid, await store.userByKickId(kid));
+        const key = kickIds.get(kid);
+        if (!key) return;
+        if (!chat.push(key, "Kick", e.sender && e.sender.username, e.content)) tick(); // not running yet (just woke up) - start a pass
+    } catch (err) { console.warn("[kick webhook] " + err.message); }
 });
 
 if (require.main === module) {

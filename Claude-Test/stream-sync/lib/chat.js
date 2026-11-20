@@ -1,13 +1,14 @@
-/* Chat relay: YouTube and TikTok live chat -> Twitch chat (as the bot account).
+/* Chat relay: YouTube, TikTok and Kick live chat -> Twitch chat.
  * Runs only while the Twitch stream is live. Settings: stream_sync.chat
- *   { youtube_channel_id: "UC...", tiktok_username: "name" } */
+ *   { youtube_channel_id: "UC...", tiktok_username: "name", post_as: "bot" | "streamer" }
+ * Kick messages arrive through the Kick webhook (see push()). */
 "use strict";
 
 const twitch = require("./twitch");
 
 const relays = new Map(); // key -> { yt, tt, queue, timer }
 
-function prefixFor(platform) { return platform === "YouTube" ? "[YT]" : platform === "TikTok" ? "[TT]" : `[${platform}]`; }
+function prefixFor(platform) { return platform === "YouTube" ? "[YT]" : platform === "TikTok" ? "[TT]" : platform === "Kick" ? "[KICK]" : `[${platform}]`; }
 
 function enqueue(r, line) {
     if (r.queue.length > 50) r.queue.shift();      // never pile up forever
@@ -16,14 +17,14 @@ function enqueue(r, line) {
 
 function start(key, ctx) {
     const chatCfg = ctx.cfg.chat || {};
-    if (!chatCfg.youtube_channel_id && !chatCfg.tiktok_username) return;
+    if (!chatCfg.youtube_channel_id && !chatCfg.tiktok_username && !ctx.cfg.kick_user_id) return;
     let r = relays.get(key);
     if (!r) {
         r = { yt: null, tt: null, queue: [], timer: null, ctx };
         r.timer = setInterval(async () => {
             const line = r.queue.shift();
             if (!line) return;
-            try { await twitch.sendChat(key, r.ctx.broadcasterId, r.ctx.cfg.bot_login, line); }
+            try { await twitch.sendChat(key, r.ctx.broadcasterId, r.ctx.cfg.bot_login, line, (r.ctx.cfg.chat || {}).post_as); }
             catch (e) { console.warn(`[chat ${key}] send failed: ${e.message}`); }
         }, 1500);
         relays.set(key, r);
@@ -34,6 +35,7 @@ function start(key, ctx) {
         if (!text || ignore.has(String(user || "").toLowerCase())) return;
         enqueue(r, `${prefixFor(platform)} ${user || "viewer"}: ${text}`);
     };
+    r.relay = relay;
 
     if (chatCfg.youtube_channel_id && !r.yt) {
         try {
@@ -62,6 +64,14 @@ function start(key, ctx) {
     }
 }
 
+/** A chat line from outside (the Kick webhook). Dropped unless the relay is running (= live on Twitch). */
+function push(key, platform, user, text) {
+    const r = relays.get(key);
+    if (!r || !r.relay) return false;
+    r.relay(platform, user, text);
+    return true;
+}
+
 function stop(key) {
     const r = relays.get(key);
     if (!r) return;
@@ -76,4 +86,4 @@ function status(key) {
     return r ? { youtube: !!r.yt, tiktok: !!r.tt, queued: r.queue.length } : { youtube: false, tiktok: false, queued: 0 };
 }
 
-module.exports = { start, stop, status };
+module.exports = { start, stop, status, push };

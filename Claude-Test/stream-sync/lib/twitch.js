@@ -108,9 +108,10 @@ async function updateChannel(key, broadcasterId, patch) {
     await helix("PATCH", "/channels?broadcaster_id=" + broadcasterId, tok, patch);
 }
 
-/** Sends as the bot account if connected, else as the broadcaster. */
-async function sendChat(key, broadcasterId, botLogin, message) {
-    let tok = botLogin ? await userToken(key, "bot") : null;
+/** Sends as the bot account if connected (and the user picked "bot"), else as the broadcaster.
+ *  postAs: "bot" (default) | "streamer" */
+async function sendChat(key, broadcasterId, botLogin, message, postAs) {
+    let tok = botLogin && postAs !== "streamer" ? await userToken(key, "bot") : null;
     let sender = tok ? await userId(botLogin) : null;
     if (!tok) { tok = await userToken(key, "broadcaster"); sender = broadcasterId; }
     if (!tok) return false;
