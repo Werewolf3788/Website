@@ -1408,6 +1408,8 @@ function friendDoneSet(save, psnEarned) {
     Object.entries(d.missions || {}).forEach(([id, m]) => { if (m && m.completed) done.add(id); });
     Object.entries(d.trophies || {}).forEach(([id, t]) => { if (t && t.earned) done.add(id); });
     Object.entries(d.medals || {}).forEach(([id, m]) => { if (m && m.earned) done.add(id); });
+    // Skill bonus medals (the ★ on skill cards): kept as "bonus:<skill id>".
+    Object.values(d.collectibles || {}).forEach(g => Object.entries((g && g.items) || {}).forEach(([id, it]) => { if (it && it.bonusEarned) done.add('bonus:' + id); }));
     Object.entries(d.ribbons || {}).forEach(([id, r]) => { const n = Number(r && r.count) || (r && r.earned ? 1 : 0); if (n) { ribbons[id] = n; done.add(id); } });
     (psnEarned || []).forEach(id => done.add(id));
     return { done, ribbons, medalProg, rankProg };
@@ -1538,6 +1540,7 @@ function liveBlock(list) {
 function renderSquadRoster() {
     const el = document.getElementById('friendsRosterContainer'); if (!el) return;
     const list = toArr(appState.friendsProgress);
+    addFriendTrophyCompletions(list);
     const cards = [...document.querySelectorAll('#section-container .game-item-card')].filter(c => !String(c.getAttribute('data-id')).startsWith('wpn_'));
     const total = cards.filter(c => c.getAttribute('data-type') !== 'ribbon').length;
     const data = appState.gameData || {};
@@ -1595,19 +1598,45 @@ window.appState.showFriendAllGames = async function(code, btn) {
     }));
     box.innerHTML = rows.join('') || '<div style="font-size:0.72rem;color:#94a3b8;">No games found.</div>';
 };
+// A friend's trophies can complete whole sets (e.g. "The Whole Story" = every document),
+// same as for you: add those items to what the friend has, so their chips show everywhere.
+function addFriendTrophyCompletions(list) {
+    const groups = Object.values(appState.collectibles || {}).filter(g => Array.isArray(g.trophy_completes));
+    if (!groups.length) return;
+    const nameOf = {}; Object.entries(appState.trophies || {}).forEach(([id, t]) => { if (t && t.name) nameOf[id] = xnorm(t.name); });
+    list.forEach(f => {
+        if (!f.done || f._trophyAutoSize === f.done.size) return;
+        const earned = new Set(); f.done.forEach(id => { if (nameOf[id]) earned.add(nameOf[id]); });
+        groups.forEach(g => g.trophy_completes.forEach(rule => {
+            if (!rule || !earned.has(xnorm(rule.trophy))) return;
+            const cats = Array.isArray(rule.categories) ? rule.categories.map(xnorm) : null;
+            Object.entries(g.items || {}).forEach(([id, it]) => {
+                if (cats && !cats.includes(xnorm(it.category))) return;
+                f.done.add(id);
+                if (rule.bonus_stars && it.bonus_for) f.done.add('bonus:' + it.bonus_for.id);
+            });
+        }));
+        f._trophyAutoSize = f.done.size;
+    });
+}
 function applyFriendMarks() {
     const list = toArr(appState.friendsProgress);
+    addFriendTrophyCompletions(list);
     document.querySelectorAll('#section-container .game-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
         const isRibbon = card.getAttribute('data-type') === 'ribbon';
         const shot = card.getAttribute('data-unit') === 'm';
+        // Bonus Medal location cards count a friend's matching skill ★ too.
+        const bonusFor = card.getAttribute('data-bonus-for') || '';
         let html;
         if (shot) {
             // Long shots: everyone's best distance, longest first, so the squad can compare.
             const goal = Number(card.getAttribute('data-goal')) || 0;
             html = list.filter(f => f.medalProg && f.medalProg[id]).sort((a, b) => b.medalProg[id] - a.medalProg[id])
                 .map(f => friendBadge(f, `${fmtNum(f.medalProg[id])} m`, goal && f.medalProg[id] < goal)).join('');
-        } else html = list.filter(f => f.done.has(id)).map(f => friendBadge(f, isRibbon ? `×${f.ribbons[id] || 0}` : '')).join('')
+        } else html = list.filter(f => f.done.has(id) || (bonusFor && f.done.has('bonus:' + bonusFor))).map(f => friendBadge(f, isRibbon ? `×${f.ribbons[id] || 0}` : '')).join('')
+            // Skill cards: friends who have this skill's bonus medal (★).
+            + list.filter(f => f.done.has('bonus:' + id)).map(f => friendBadge(f, '★ medal', true)).join('')
             // Skills a friend has partly ranked up (e.g. Battery rank 2 of 4).
             + list.filter(f => !f.done.has(id) && f.rankProg && f.rankProg[id]).map(f => friendBadge(f, `Rank ${f.rankProg[id]}`, true)).join('');
         let row = card.querySelector(':scope > .friend-marks');
@@ -2123,7 +2152,7 @@ function currentTierGroup(groups, level) {
 function buildItemCard(o) {
     const search = [o.title, o.sub, o.body, o.badge, o.ctx, o.type].filter(Boolean).join(' ').toLowerCase();
     const img = o.img ? toSecureUrl(o.img) : '';
-    const groupAttr = o.group ? ` data-group="${escapeHtml(o.group)}"` : '';
+    const groupAttr = (o.group ? ` data-group="${escapeHtml(o.group)}"` : '') + (o.bonusFor ? ` data-bonus-for="${escapeHtml(o.bonusFor)}"` : '');
     const groupArg = o.group ? `, '${escapeHtml(o.group)}'` : '';
     const hasMore = !!(o.body || o.locImg || o.link);
     // Tier boxes: a row of N clickable boxes (skills with 2-3 ranks, tech upgrades
@@ -3838,6 +3867,7 @@ function renderUniversalCompanion(data) {
                             // Section name + item type are searchable too ("koani kingslayer", "barvechos weapon case").
                             ctx: [humanize(cKey), data.collectibles && data.collectibles[cKey] && data.collectibles[cKey].quest_name, it.category, it.tags].filter(Boolean).join(' '),
                             title: it.name || id, sub: it.location || '',
+                            bonusFor: it.bonus_for && it.bonus_for.id,
                             body: it.guide || '', img: it.image_url, locImg: it.location_image_url,
                             levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null,
                             rankCosts: !!(it.rank_costs && it.rank_costs.length),
