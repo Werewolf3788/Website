@@ -551,6 +551,7 @@ let booted = false;
 WW.onReady(async (u, code) => {
   if (booted) return; booted = true;
   if (u) { try { const pc = (await WW.db.ref('users/' + WW.emailKey(u.email) + '/primary_color').once('value')).val(); if (typeof pc === 'string' && /^#[0-9a-f]{6}$/i.test(pc.trim())) myColor = pc.trim(); } catch (e) {} }
+  myColor = WW.myColor(myColor);   // the colour picked under 🎨 My color wins
   boot(u, code);
 });
 requestAnimationFrame(frame);

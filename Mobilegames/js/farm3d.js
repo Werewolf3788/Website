@@ -1270,6 +1270,7 @@ async function begin(user, myCode) {
     try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; }
     try { const pc = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/primary_color').once('value')).val(); if (hexOk(pc)) myColor = pc.trim(); } catch (e) {}
   }
+  myColor = WW.myColor(myColor || '') || myColor;   // the colour picked under 🎨 My color wins
   giveLevel(farmer, level, myName); if (myAvatar) W.setAvatar(farmer, myAvatar);
   if (myColor) paintTractor(parseInt(myColor.slice(1), 16));
   // fields first (so we know which one is ours), then everything else

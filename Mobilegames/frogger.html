@@ -33,7 +33,7 @@
 </head>
 <body>
 <div id="app">
-  <div id="top"><span>🐸 <b id="roomLabel">Frogger</b> · 👥 <b id="count">1</b></span><span id="lives"></span><span>⭐ <b id="score">0</b>/<span id="goal">10</span> · best <b id="best">0</b></span><span><button id="muteBtn" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span></div>
+  <div id="top"><span>🐸 <b id="roomLabel">Frogger</b> · 👥 <b id="count">1</b></span><span id="lives"></span><span>⭐ <b id="score">0</b>/<span id="goal">10</span> · best <b id="best">0</b></span><span><button id="muteBtn" title="Sound">🔊</button> · <button id="colorBtn" title="Change your frog's color">🎨</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span></div>
   <div id="board"></div>
   <div id="stage"><canvas id="c"></canvas><div id="toast"></div></div>
   <div id="pad"><button data-d="u" style="left:78px;top:0">▲</button><button data-d="l" style="left:0;top:70px">◀</button><button data-d="r" style="left:156px;top:70px">▶</button><button data-d="d" style="left:78px;top:140px">▼</button></div>
@@ -230,7 +230,9 @@
     g.restore();
     if (name) { g.save(); g.font = '700 ' + Math.max(9, Math.floor(cell * .26)) + 'px system-ui'; g.textAlign = 'center'; g.fillStyle = '#fff'; g.strokeStyle = 'rgba(0,0,0,.8)'; g.lineWidth = 3; g.strokeText(name, cx, cy - cell * .52); g.fillText(name, cx, cy - cell * .52); g.restore(); }
   }
-  function colorOf(uid) { var ids = Object.keys(players).concat(me ? [me.uid] : []).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(); var i = ids.indexOf(uid); return COLORS[(i < 0 ? 0 : i) % COLORS.length]; }
+  var myColor = WW.myColor(COLORS[0]);
+  function okHex(c) { return typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c); }
+  function colorOf(uid) { if (me && uid === me.uid) return myColor; var p = players[uid]; if (p && okHex(p.c)) return p.c; var ids = Object.keys(players).concat(me ? [me.uid] : []).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(); var i = ids.indexOf(uid); return COLORS[(i < 0 ? 0 : i) % COLORS.length]; }
 
   function draw(t) {
     var g = ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.drawImage(bg, 0, 0, bg.width / dpr, bg.height / dpr);
@@ -242,7 +244,7 @@
     var others = Object.keys(players).filter(function (u) { return me && u !== me.uid; });
     others.forEach(function (u) { var p = players[u]; if (!p || p.px === undefined) return; if (p.dx === undefined) { p.dx = p.px; p.dy = p.py; } p.dx += (p.px - p.dx) * .35; p.dy += (p.py - p.dy) * .35; if (p.alive !== false) drawFrog(g, p.dx, p.dy, colorOf(u), 0, 0, p.n, true, false); });
     lanes.forEach(function (l) { l.cars.forEach(function (c) { drawThing(g, l, c, t); }); });
-    if (frog.alive && !over) drawFrog(g, frog.px, frog.py, isMP && me ? colorOf(me.uid) : COLORS[0], frog.hop, frog.face, isMP ? myName : '', false, false);
+    if (frog.alive && !over) drawFrog(g, frog.px, frog.py, myColor, frog.hop, frog.face, isMP ? myName : '', false, false);
     if (flash > 0) { g.fillStyle = 'rgba(250,204,21,' + flash * .35 + ')'; g.fillRect(0, 0, cell * COLS, cell * ROWS); flash -= .05; }
   }
 
@@ -250,7 +252,7 @@
   function say(t) { var el = $('toast'); el.textContent = t || ''; clearTimeout(say.t); if (t) say.t = setTimeout(function () { el.textContent = ''; }, 2200); }
   function respawn() { frog.x = frog.px = frog.fx = Math.floor(COLS / 2); frog.y = frog.py = frog.fy = 0; frog.hop = 1; frog.alive = true; frog.face = 0; queue.length = 0; }
   function die(kind) {
-    if (!frog.alive) return; kind = kind || 'car'; lastKind = kind; frog.alive = false; frog.deadAt = performance.now(); splats.push({ x: frog.px, y: frog.py, c: isMP && me ? colorOf(me.uid) : COLORS[0], f: frog.face, at: performance.now(), k: kind }); deaths++; sfx(kind);
+    if (!frog.alive) return; kind = kind || 'car'; lastKind = kind; frog.alive = false; frog.deadAt = performance.now(); splats.push({ x: frog.px, y: frog.py, c: myColor, f: frog.face, at: performance.now(), k: kind }); deaths++; sfx(kind);
     if (!isMP) { lives--; hud(); if (lives <= 0) { setTimeout(function () { sfx('lose'); gameOver(); }, 700); return; } }
     sendNow();
   }
@@ -329,7 +331,7 @@
   function sendNow() { lastSent = 0; }
   function send(now) {
     if (!roomRef || !me) return;
-    if (now - lastSent > 110) { lastSent = now; roomRef.child('players/' + me.uid).update({ n: myName, px: +frog.px.toFixed(2), py: +frog.py.toFixed(2), s: score, d: deaths, alive: frog.alive, k: lastKind }).catch(function () {}); }
+    if (now - lastSent > 110) { lastSent = now; roomRef.child('players/' + me.uid).update({ n: myName, c: myColor, px: +frog.px.toFixed(2), py: +frog.py.toFixed(2), s: score, d: deaths, alive: frog.alive, k: lastKind }).catch(function () {}); }
     if (now - lastBeat > 4000) { lastBeat = now; roomRef.child('players/' + me.uid + '/t').set(firebase.database.ServerValue.TIMESTAMP).catch(function () {}); publish(); }
   }
   function publish() { var n = Math.max(1, activeCount()); WW.publishPlaying({ game: 'frogger', title: 'Frogger', room: roomCode, status: n + ' of ' + MAXP + ' hopping · first to ' + GOAL + ' crossings', open: Math.max(0, MAXP - n) }); }
@@ -380,6 +382,8 @@
     }).catch(function (e) { $('ovT').textContent = 'Could not open the game'; $('ovS').textContent = (e && (e.code || e.message)) || 'The game database rules may not be published.'; $('ovBtn').textContent = 'Back'; $('ovBtn').onclick = function () { location.href = 'index.html'; }; $('ov').style.display = 'flex'; });
     window.addEventListener('pagehide', function () { try { roomRef.child('players/' + user.uid).remove(); WW.clearPlaying(); } catch (e) {} });
   }
+  $('colorBtn').onclick = function () { WW.openColorPicker(); };
+  window.addEventListener('ww-color', function (e) { myColor = e.detail; drawBoard(); if (isMP && me && roomRef) sendNow(); });
   function paintMute() { $('muteBtn').textContent = muted ? '🔇' : '🔊'; }
   $('muteBtn').onclick = function () { muted = !muted; try { localStorage.setItem('frogger_mute', muted ? '1' : '0'); } catch (e) {} paintMute(); ac(); if (!muted) sfx('hop'); }; paintMute();
   $('shareBtn').onclick = function () {

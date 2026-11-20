@@ -15,6 +15,9 @@
         "primary_color": {
           ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
         },
+        "game_color": {
+          ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
+        },
         "secondary_color": {
           ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
         },
