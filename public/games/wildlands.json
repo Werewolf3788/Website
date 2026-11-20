@@ -9534,17 +9534,18 @@
           "long": -60.4453,
           "id": "bm_caimanes_01",
           "name": "Binocular Recon",
-          "location": "Just south of Outpost · 📍 -17.9453, -60.4453",
+          "location": "Top of the tall steel tower on the river bridge at the Outpost · 📍 -17.9453, -60.4453",
           "category": "Bonus Medal",
-          "guide": "15% efficiency increase. Works once you've unlocked the Binocular Recon skill. Just south of Outpost (Controls river traffic). 📍 Lat -17.9453, Long -60.4453.",
+          "guide": "15% efficiency increase. Works once you've unlocked the Binocular Recon skill. At the Outpost that controls river traffic, where the road crosses the river on a bridge. The bridge has a tall rusty steel lift tower at its south end. Climb the stairs inside the tower all the way to the top deck (sandbags and gabion walls up there, plus an ammo crate). The medal is on a stack of black cases and wooden crates against the sandbags. Expect cartel guards on the bridge and tower levels. In-game Tacmap readout: about Lat -17.936, Long -60.447. 📍 Map data: Lat -17.9453, Long -60.4453.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/caimanes.jpg",
+          "location_image_url": "/public/games/wildlands/images/spots/bm_caimanes_01.jpg",
           "bonus_for": {
             "group": "item_skills",
             "id": "skill_binocular_recon"
           },
           "map_x": 0.81018,
-          "map_y": 0.59424
+          "map_y": 0.59424,
+          "verified": "Found in-game"
         },
         {
           "region": "Espiritu Santo",
