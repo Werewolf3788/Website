@@ -27,6 +27,8 @@ const psnApi = require("psn-api");
 const { initializeApp, cert, getApps } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+const friendGames = require("../Claude-Test/sync/friend-games.js");   // also saves each player's games to Kevin's Firestore under their friend code
+const psnCodes = { byTag: {}, byId: {} };   // PSN online ID / account ID -> friend codes (from Kevin's /users)
 
 const {
     exchangeNpssoForCode,
@@ -773,6 +775,12 @@ async function readKevinCredentials() {
             (idStr && idStr === m.id) ||
             (tag && tag.toLowerCase() === m.tag.toLowerCase()) ||
             (m.emailMatch && emailKey.toLowerCase().includes(m.emailMatch)));
+        const fcode = friendGames.friendCodeOf(u);
+        if (fcode) {
+            const addCode = (map, k) => { if (!k) return; (map[k] = map[k] || new Set()).add(fcode); };
+            addCode(psnCodes.byTag, tag && tag.toLowerCase()); addCode(psnCodes.byId, idStr);
+            if (core) { addCode(psnCodes.byTag, core.tag.toLowerCase()); addCode(psnCodes.byId, core.id); }
+        }
         if (core) {
             if (idStr) coreIds[core.key] = idStr;
             if (tag) coreTags[core.key] = tag;
@@ -1453,6 +1461,38 @@ async function applyStatusOnlyUpdate(onlineId, existing, liveGameStatus) {
 const friendsByPlayer = {};
 let heavyRefreshHappened = false;
 
+/* Same data saved in Kevin's Firestore under each member's friend code: user/{code}/platform/ps (Ray's project is unchanged). */
+async function savePsnToFriendCodes(onlineId, accountId, card, allGames, trophyLists) {
+    const codes = new Set([...(psnCodes.byTag[String(onlineId || "").toLowerCase()] || []), ...(psnCodes.byId[String(accountId || "")] || [])]);
+    if (!codes.size) return;
+    const games = allGames.map((g) => {
+        const commId = g.npCommunicationId || null, map = commId && trophyLists[commId];
+        // every trophy of the game (locked ones too), so the profile needs nothing else to show the list
+        const list = map ? Object.values(map).filter(Boolean).map((t) => {
+            const cur = Number(t.currentValue ?? 0), tgt = Number(t.targetValue ?? 0);
+            return { id: String(t.trophyId), n: t.name || "", d: t.detail || "", i: t.icon || "", r: t.type || "", rare: t.earnedRate ?? null,
+                e: !!t.earned, t: t.earned ? (t.timestamp || null) : null, pr: !t.earned && tgt > 0 ? `${cur}/${tgt}` : null, h: !!t.hidden };
+        }) : undefined;
+        return {
+            title: g.name, art: g.art || null, progress: g.definedTotal ? g.progress || 0 : null,
+            earned: g.definedTotal ? g.earnedTotal || 0 : null, total: g.definedTotal || null,
+            hours: g.nativePlaytimeHours || null, lastPlayed: g.lastPlayed ? Date.parse(g.lastPlayed) || null : null,
+            playing: !!card.online && !!card.currentGame && normalizeTitleName(card.currentGame) === normalizeTitleName(g.name),
+            list, extra: { commId, titleId: g.titleId || g.npTitleId || null, platform: g.platform || null, trophies: g.definedTrophies || null }
+        };
+    });
+    const ts = card.trophySummary || {};
+    const profile = {
+        name: onlineId, avatar: card.avatar || null, online: !!card.online, currentGame: card.online ? (card.currentGame || null) : null,
+        stats: { level: card.level || 0, trophies: ts.total || 0, platinum: ts.platinum || 0, gold: ts.gold || 0, silver: ts.silver || 0, bronze: ts.bronze || 0, games: card.gamesPlayed || games.length },
+        recent: (card.mostRecentTrophies || []).slice(0, 10).map((t) => ({ n: t.name || "", i: t.icon || "", g: t.gameTitle || "", r: t.type || "", t: t.timestamp || null }))
+    };
+    for (const code of codes) {
+        const r = await friendGames.savePlatform(code, "ps", profile, games);
+        console.log(`[FRIEND CODE] ${onlineId} -> user/${code}/platform/ps (${r.written || 0} doc(s) written)`);
+    }
+}
+
 async function getFullUserData(ctx) {
     const { auth, gamerTag, isSelf, targetId, existing, force } = ctx;
     if (!auth) return { card: existing || null };
@@ -1773,6 +1813,7 @@ async function getFullUserData(ctx) {
             ingestIds.push(id);
         }
 
+        const trophyLists = {};   // commId -> trophies looked up this run (for the friend-code save)
         let activeProgress = {};
         let activeHunt = existing?.activeHunt || null;
         const newlyEarned = [];
@@ -1792,6 +1833,7 @@ async function getFullUserData(ctx) {
             if (sub.earnedList.length) newlyEarned.push(...sub.earnedList);
 
             const mapKeys = Object.keys(sub.progressMap);
+            if (mapKeys.length) trophyLists[cId] = sub.progressMap;
             if (mapKeys.length) {
                 const h = crypto.createHash("sha1").update(JSON.stringify(sub.progressMap)).digest("hex").slice(0, 16);
                 if (trophyHashes[cId] !== h) {
@@ -1951,6 +1993,7 @@ async function getFullUserData(ctx) {
             progressPulledAtMs: Date.now(),
             lastUpdated: nowEt()
         };
+        await savePsnToFriendCodes(onlineId, accountId, card, allGames, trophyLists).catch((e) => console.warn(`[FRIEND CODE] ${onlineId}: ${e.message}`));
         return { card };
     } catch (err) {
         console.error(`[PLAYER ERROR] ${gamerTag || targetId}: ${err.stack || err.message}`);

@@ -27,6 +27,7 @@
 "use strict";
 
 const KEVIN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
+const friendGames = require("../Claude-Test/sync/friend-games.js");   // also saves every player's games to Firestore under their friend code
 const API = "https://api.steampowered.com";
 let SITE_KEY = (process.env.STEAM_API_KEY || "").trim().toUpperCase();
 const KEY_RX = /^[0-9A-F]{32}$/;
@@ -162,6 +163,45 @@ async function withKey(acct, fn) {
         }
     }
     throw new Error("no working Steam API key (owner's key not available to this member, and own key missing or rejected).");
+}
+
+/** Same data, saved for every member who entered this Steam account: Firestore user/{friendCode}/platform/steam. */
+async function saveToFriendCodes(id, accounts, users, p, library, ach, achTotals, owned, recent) {
+    const codes = [...new Set(accounts.filter((a) => a.id === id).map((a) => friendGames.friendCodeOf(users[a.emailKey])).filter(Boolean))];
+    if (!codes.length) return;
+    const recentIds = new Set((recent?.response?.games || []).map((g) => String(g.appid)));
+    const rows = Object.entries(library).map(([appid, v]) => ({ appid, ...v }))
+        .sort((x, y) => (recentIds.has(y.appid) - recentIds.has(x.appid)) || ((y.l || 0) - (x.l || 0)) || ((y.t || 0) - (x.t || 0)));
+    const games = [];
+    for (const r of rows) {
+        const a = ach[r.appid] || {};
+        let list;   // left out when this game has no achievement data; then the saved list stays
+        if (a.total) {   // every achievement of the game (locked ones too), with names and icons
+            const names = (await dbGet(`platforms/steam_games/${r.appid}/ach`).catch(() => null)) || {};
+            const got = new Map((a.u || []).map(([api, t]) => [api, t]));
+            const icon = (f) => (f ? `https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/${r.appid}/${f}.jpg` : "");
+            const ids = [...new Set([...Object.keys(names), ...got.keys()])];
+            list = ids.map((api) => { const d = names[api] || {}, e = got.has(api);
+                return { id: api, n: d.n || api, d: d.d || "", i: icon(e ? d.i : (d.g || d.i)), e, t: e && got.get(api) ? got.get(api) * 1000 : null, h: !!d.h }; });
+        }
+        games.push({
+            title: r.n, hours: (r.t || 0) / 60, lastPlayed: r.l ? r.l * 1000 : null,
+            earned: a.total ? a.got : null, total: a.total || null, progress: a.total ? (a.got / a.total) * 100 : null,
+            art: `https://cdn.cloudflare.steamstatic.com/steam/apps/${r.appid}/library_600x900.jpg`,
+            playing: !!p.gameid && String(p.gameid) === String(r.appid), list, extra: { appid: r.appid }
+        });
+    }
+    if (p.gameid && !library[p.gameid]) games.unshift({ title: p.gameextrainfo || `App ${p.gameid}`, playing: true, extra: { appid: String(p.gameid) },
+        art: `https://cdn.cloudflare.steamstatic.com/steam/apps/${p.gameid}/library_600x900.jpg` });
+    const profile = {
+        name: p.personaname || null, avatar: p.avatarfull || p.avatarmedium || null, id,
+        online: !!p.personastate, state: STATES[p.personastate] || "offline", currentGame: p.gameextrainfo || null,
+        stats: { games: owned?.response?.game_count || rows.length, achievements: achTotals.got, perfect: achTotals.perfect }
+    };
+    for (const code of codes) {
+        const r = await friendGames.savePlatform(code, "steam", profile, games);
+        console.log(`[STEAM]   -> user/${code}/platform/steam (${r.written || 0} doc(s) written)`);
+    }
 }
 
 async function main() {
@@ -303,6 +343,7 @@ async function main() {
                 updated_at: Date.now()
             });
             ok++;
+            await saveToFriendCodes(id, accounts, users, p, library, ach, achTotals, owned, recent).catch((e) => console.warn(`[STEAM] friend-code save for ${id}: ${e.message}`));
             console.log(`[STEAM] ${p.personaname || id}: ${friendIds.length} friends, ${Object.keys(library).length} games, ${achTotals.got}/${achTotals.total} achievements in ${achTotals.games} games (${achFetched} fetched)${isPublic ? "" : " (profile not public)"}${acct.key && !acct.badKey ? " [own key]" : ""}.`);
             await sleep(300);
         } catch (e) {

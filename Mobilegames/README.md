@@ -20,7 +20,8 @@ Add the block from `database.rules.addition.json` into the Realtime Database rul
 
 ## Friends and history
 - While you sit at a table online, the game publishes a status to `users/{emailKey}/now_playing` (game, room code, a one-line status such as properties / houses / hotels, who is playing and how many seats are open). It is removed when you leave. The hub's "Friends playing now" list and the squad roster on the game tracker read it and show a Join button; PlayStation and Steam activity shows there too when the site already has it.
-- Finished games are saved per player at `mobilegames/saves/{uid}/history` (win or loss, opponents, winner) and shown in the "Win / loss history" dropdown in the hub and in each game.
+- Finished games are saved per player at Firestore `user/{friendCode}/platform/mobile/game/{game}` (field `history`) (win or loss, opponents, winner) and shown in the "Win / loss history" dropdown in the hub and in each game.
+- Saves, win/loss history and the progress line on your profile all live in Firestore under your friend code (`user/{friendCode}/platform/mobile/game/{game}`). Saves are kept on the device instantly and sent to Firestore at most every 30 seconds (and when you leave the page). Live rooms, "now playing" and the shared leaderboard stay in the Realtime Database.
 - Player avatars come from `users/{emailKey}/avatar_url`. Player shapes: circle, triangle, square, egg.
 - Online tables use the generic `mobilegames/rooms/$game/$code` rule that is already in the site's `database.rules.json`, so `database.rules.addition.json` is only needed if that generic rule is ever removed.
 
@@ -32,7 +33,7 @@ Every farm save and every farm room carries a **season** number. When the season
 ## Where the mobile games keep their data in Firebase (Realtime Database)
 | Node | What it is |
 |---|---|
-| `mobilegames/saves/{uid}/farm` | Your solo Neighborly Acre progress (level/xp, coins, seeds, missions). `farm_mp_{CODE}` = your progress in a friend's multiplayer farm. `wahoo`, `tycoon`, `history` = board game wins and win/loss history. |
+| Firestore `user/{friendCode}/platform/mobile/game/farm` (field `save`) | Your solo Neighborly Acre progress (level/xp, coins, seeds, missions). `farm_mp_{CODE}` = your progress in a friend's multiplayer farm. `wahoo`, `tycoon`, `history` = board game wins and win/loss history. |
 | `mobilegames/rooms/farm/{friendCode}` | Your solo farm world (fields, crops, animals, tractor). `MP-{CODE}` = a multiplayer farm. `_season` = the reset number. |
 | `mobilegames/rooms/wahoo`, `tycoon`, `frogger`, `battleship` | Live tables for the other games. |
 | `mobilegames/rooms/presence/{friendCode}` | "Playing now" status the hub shows to friends. |
@@ -41,7 +42,7 @@ Every farm save and every farm room carries a **season** number. When the season
 
 The database is grouped: `users` and `user_secrets` at the top, then `accounts/` (friend codes, profiles, presence, sign-in links, push), `social/` (messages, userThreads, achFeed), `site/` (music releases, Wi-Fi), `platforms/` (games, Steam, Xbox) and `mobilegames/` (rooms, leaders, saves).
 ## Neighborly Acre data layout (Firebase)
-- `mobilegames/saves/{uid}/farm` (solo) or `farm_mp_{code}` (multiplayer): your private full save (level/xp, coins, seeds, bag, upgrades, combine, trailer, haul, `epoch`).
+- Firestore `user/{friendCode}/platform/mobile/game/farm` (field `save`) (solo) or `farm_mp_{code}` (multiplayer): your private full save (level/xp, coins, seeds, bag, upgrades, combine, trailer, haul, `epoch`).
 - `mobilegames/rooms/farm/{room}/farmers/{uid}`: one readable record per farmer: `name, level, xp, coins, fields, animals, harvested, combine, avatar, color, tractor{x,z,ry}, updated`.
 - `mobilegames/rooms/farm/{room}`: `meta` (host, `epoch`), `tiles` (k: t=plowed, c=crop; c=crop id, p=planted, w=watered time, u=cultivated, f=fertilized), `fields` (owners), `animals`, `players` (live positions), `ledger` (shared animal money/XP).
 - Reset one farm: its host opens barn > Settings > Reset. This wipes the room and bumps `meta/epoch`; every farmer in that farm restarts at level 1 the next time they connect.

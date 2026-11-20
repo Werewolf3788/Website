@@ -1,5 +1,6 @@
 // Shared helpers for the Mobilegames board-game hub: Firebase init, Google login,
-// friend codes (same /friend_codes + /users/{emailKey}/friend_code as the Game Tracker), and RTDB saves.
+// friend codes (same accounts/friend_codes + /users/{emailKey}/friend_code as the Game Tracker), and saves under the
+// friend code in Firestore (user/{CODE}/platform/mobile/game/{game}). Live rooms and "now playing" stay in the Realtime Database.
 (function () {
   var cfg = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -124,14 +125,56 @@
     throw new Error('Could not create a friend code');
   };
 
-  function saveRef(game) {
-    return (WW.mode === 'cloud' && WW.user) ? db.ref('mobilegames/saves/' + WW.user.uid + '/' + game) : local.ref('games_saves/local/' + game);
-  }
-  WW.loadSave = async function (game) { return (await saveRef(game).once('value')).val(); };
-  WW.writeSave = function (game, data) {
-    data.updatedAt = (WW.mode === 'cloud') ? firebase.database.ServerValue.TIMESTAMP : Date.now();
-    return saveRef(game).set(data);
+  // ---- Player saves live in Firestore under the FRIEND CODE: user/{CODE}/platform/mobile/game/{saveKey}
+  //   { save: "<json>", saveAt }  (stored as text so any shape of save fits Firestore)
+  // Every save is kept on this device right away; Firestore gets at most one write per game every 30 seconds
+  // (plus one when the page is hidden or closed), which keeps a long farming session inside the free plan.
+  // A save still sitting in the old Realtime Database place is read once and moved over on the next save.
+  var fsP = null;
+  WW.fs = function () {
+    if (!fsP) fsP = new Promise(function (res) {
+      if (firebase.firestore) return res(firebase.firestore(app));
+      var sc = document.createElement('script'); sc.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js';
+      sc.onload = function () { try { res(firebase.firestore(app)); } catch (e) { console.warn('firestore', e); res(null); } };
+      sc.onerror = function () { console.warn('firestore script failed to load'); res(null); };
+      document.head.appendChild(sc);
+    });
+    return fsP;
   };
+  function cloudOn() { return WW.mode === 'cloud' && WW.user && WW.friendCode; }
+  function docId(k) { return String(k).replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 120) || 'game'; }
+  WW.mobileDoc = async function (id, code) {
+    var f = await WW.fs(); code = code || WW.friendCode; if (!f || !code) return null;
+    return f.collection('user').doc(String(code).toUpperCase()).collection('platform').doc('mobile').collection('game').doc(docId(id));
+  };
+  var deviceKey = function (game) { return 'ww_save_' + (WW.friendCode || 'guest') + '_' + game; };
+  function keepOnDevice(game, data) { try { localStorage.setItem(deviceKey(game), JSON.stringify(data)); } catch (e) {} }
+  function fromDevice(game) { try { return JSON.parse(localStorage.getItem(deviceKey(game))); } catch (e) { return null; } }
+  WW.loadSave = async function (game) {
+    if (!cloudOn()) return (await local.ref('games_saves/local/' + game).once('value')).val();
+    var cloud = null, dev = fromDevice(game);
+    try { var d = await (await WW.mobileDoc(game)).get(); if (d.exists && d.data().save) cloud = JSON.parse(d.data().save); } catch (e) { console.warn('load save', e); }
+    if (!cloud) { try { cloud = (await db.ref('mobilegames/saves/' + WW.user.uid + '/' + game).once('value')).val(); } catch (e) {} }   // older save, moved on next write
+    if (dev && (!cloud || (dev.updatedAt || 0) > (cloud.updatedAt || 0))) return dev;   // this device has something newer than the cloud
+    return cloud;
+  };
+  var pend = {}, lastPush = {};
+  async function pushSave(game) {
+    var data = pend[game]; if (!data) return; delete pend[game]; lastPush[game] = Date.now();
+    try { await (await WW.mobileDoc(game)).set({ save: JSON.stringify(data), saveAt: data.updatedAt || Date.now() }, { merge: true }); }
+    catch (e) { console.warn('cloud save failed (kept on this device):', e && (e.code || e.message)); }
+  }
+  WW.writeSave = function (game, data) {
+    if (!cloudOn()) { data.updatedAt = Date.now(); return local.ref('games_saves/local/' + game).set(data); }
+    data.updatedAt = WW.now(); keepOnDevice(game, data); pend[game] = data;
+    var wait = 30000 - (Date.now() - (lastPush[game] || 0));
+    if (wait <= 0) return pushSave(game);
+    clearTimeout(pend['_t' + game]); pend['_t' + game] = setTimeout(function () { pushSave(game); }, wait);
+    return Promise.resolve();
+  };
+  WW.flushSaves = function () { Object.keys(pend).forEach(function (g) { if (g.indexOf('_t') !== 0) { clearTimeout(pend['_t' + g]); pushSave(g); } }); };
+  document.addEventListener('visibilitychange', function () { if (document.hidden) WW.flushSaves(); });
+  addEventListener('pagehide', function () { WW.flushSaves(); });
 
   // ---- avatar (same users/{emailKey}/avatar_url the rest of the site uses)
   function secure(u) { u = String(u || ''); if (u.indexOf('//') === 0) return 'https:' + u; return u.replace(/^http:\/\//, 'https://'); }
@@ -177,26 +220,38 @@
       } catch (e) { if (i === 0) WW.presenceError = e; }
     });
   };
-  // ---- progress shown on the player's profile page: users/{key}/mobile_progress/{game} = { title, icon, line, stats..., t }
+  // ---- progress shown on the player's profile page: Firestore user/{CODE}/platform/mobile/game/{game}.progress = { title, icon, line, stats..., t }
   // Each game sends a small summary now and then (at most once a minute per game, and only when it changed).
+  // Saved with the game in Firestore: user/{CODE}/platform/mobile/game/{game}.progress
   var progLast = {};
   WW.publishProgress = function (game, info) {
-    var r = playRef(); if (!r || !/^[a-z0-9_-]{2,24}$/.test(game)) return;
+    if (!cloudOn() || !/^[a-z0-9_-]{2,24}$/.test(game)) return;
     var body = JSON.stringify(info), now = Date.now(), L = progLast[game];
     if (L && (L.body === body || now - L.t < 60000)) { if (L.body !== body) L.pending = info; return; }
     progLast[game] = { body: body, t: now };
-    try { r.parent.child('mobile_progress/' + game).set(Object.assign({}, info, { t: firebase.database.ServerValue.TIMESTAMP })).catch(function () {}); } catch (e) {}
+    WW.mobileDoc(game).then(function (d) { return d && d.set({ progress: Object.assign({}, info, { t: WW.now() }) }, { merge: true }); }).catch(function () {});
   };
   setInterval(function () { Object.keys(progLast).forEach(function (g) { var L = progLast[g]; if (L.pending) { var p = L.pending; L.pending = null; L.t = 0; WW.publishProgress(g, p); } }); }, 60000);
   WW.clearPlaying = function () { [presenceRef(), playRef()].forEach(function (r) { if (r) r.remove().catch(function () {}); }); };
 
   // ---- win / loss history (games_saves/{uid}/history, private to each player)
-  function histRef() { return (WW.mode === 'cloud' && WW.user) ? db.ref('mobilegames/saves/' + WW.user.uid + '/history') : local.ref('games_saves/local/history'); }
+  // Finished games: Firestore user/{CODE}/platform/mobile/game/{game}.history.{key} (last 200 per game)
+  function localHist() { return local.ref('games_saves/local/history'); }
   WW.recordResult = async function (key, rec) {
     try {
-      var r = histRef().child(String(key).replace(/[^A-Za-z0-9_-]/g, '_'));
-      var ex = (await r.once('value')).val(); if (ex !== null && ex !== undefined) return false;
-      rec.t = Date.now(); await r.set(rec); WW.syncLeaders(); return true;
+      key = String(key).replace(/[^A-Za-z0-9_-]/g, '_');
+      if (!cloudOn()) {
+        var r = localHist().child(key), ex = (await r.once('value')).val(); if (ex !== null && ex !== undefined) return false;
+        rec.t = Date.now(); await r.set(rec); return true;
+      }
+      var d = await WW.mobileDoc(rec.game || 'other'), cur = await d.get(), h = (cur.exists && cur.data().history) || {};
+      if (h[key]) return false;
+      rec.t = Date.now(); var up = {}; up[key] = rec;
+      var keys = Object.keys(h).sort(function (a, b) { return (h[a].t || 0) - (h[b].t || 0); });
+      var del = keys.slice(0, Math.max(0, keys.length + 1 - 200));
+      await d.set({ history: up }, { merge: true });
+      if (del.length) { var rm = {}; del.forEach(function (k) { rm['history.' + k] = firebase.firestore.FieldValue.delete(); }); d.update(rm).catch(function () {}); }
+      WW.syncLeaders(); return true;
     } catch (e) { console.warn('history', e); return false; }
   };
 
@@ -230,7 +285,16 @@
   };
   WW.loadLeaders = async function () { if (!leadersOn()) return null; try { return (await db.ref('mobilegames/leaders').once('value')).val() || {}; } catch (e) { console.warn('leaders', e); return null; } };
   WW.loadHistory = async function () {
-    try { var v = (await histRef().once('value')).val() || {}; return Object.keys(v).map(function (k) { return v[k]; }).filter(Boolean).sort(function (a, b) { return (b.t || 0) - (a.t || 0); }); } catch (e) { return []; }
+    var all = {};
+    try {
+      if (!cloudOn()) { all = (await localHist().once('value')).val() || {}; }
+      else {
+        var f = await WW.fs(), snap = await f.collection('user').doc(WW.friendCode).collection('platform').doc('mobile').collection('game').get();
+        snap.forEach(function (d) { var h = d.data().history || {}; Object.keys(h).forEach(function (k) { all[k] = h[k]; }); });
+        try { var old = (await db.ref('mobilegames/saves/' + WW.user.uid + '/history').once('value')).val() || {}; Object.keys(old).forEach(function (k) { if (!all[k]) all[k] = old[k]; }); } catch (e) {}   // older results
+      }
+    } catch (e) { console.warn('history', e); }
+    return Object.keys(all).map(function (k) { return all[k]; }).filter(Boolean).sort(function (a, b) { return (b.t || 0) - (a.t || 0); });
   };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   WW.esc = esc;
