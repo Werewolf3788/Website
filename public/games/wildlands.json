@@ -10021,17 +10021,18 @@
           "long": -59.6759,
           "id": "bm_villa_verde_02",
           "name": "Cooldown",
-          "location": "Southeast of Villa Verde · 📍 -14.6748, -59.6759",
+          "location": "In Villa Verde town, on a rooftop crate behind the 'NIDIA' building · 📍 -14.6748, -59.6759",
           "category": "Bonus Medal",
-          "guide": "Reduces the cooldown by 8 seconds. Works once you've unlocked the Cooldown skill. Southeast of Villa Verde (The traditional capital of Bolivian coca trading). 📍 Lat -14.6748, Long -59.6759.",
+          "guide": "Reduces the cooldown by 8 seconds. Works once you've unlocked the Cooldown skill. In Villa Verde town, near the helicopters parked on the main road. Find the two-story brick building with 'NIDIA' painted in white near the top. The medal is up on the flat rooftop terrace beside it (the one with a small brick hut, a bench, a chair and a crate), sitting on top of a strapped stack of wooden crates against the brick wall at the end. Climb up and walk along the roof to the crates. In-game Tacmap readout there: about Lat -14.688, Long -59.682. 📍 Map data: -14.6748, -59.6759.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg",
+          "location_image_url": "/public/games/wildlands/images/spots/bm_villa_verde_02.jpg",
           "bonus_for": {
             "group": "drone_skills",
             "id": "skill_cooldown"
           },
           "map_x": 0.89869,
-          "map_y": 0.21269
+          "map_y": 0.21269,
+          "verified": "Found in-game"
         }
       ],
       "trophy_completes": [
