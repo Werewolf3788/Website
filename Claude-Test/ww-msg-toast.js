@@ -118,10 +118,10 @@
 
   function send(otherKey, otherName, text) {
     var db = window.WW.db, TS = firebase.database.ServerValue.TIMESTAMP, preview = text.slice(0, 80);
-    return db.ref('messages/' + threadId(me.key, otherKey)).push({ from: me.key, text: text, ts: TS }).then(function () {
+    return db.ref('social/messages/' + threadId(me.key, otherKey)).push({ from: me.key, text: text, ts: TS }).then(function () {
       return Promise.all([
-        db.ref('userThreads/' + me.key + '/' + otherKey).update({ name: otherName, last: preview, ts: TS, unread: 0, lastFrom: me.key }),
-        db.ref('userThreads/' + otherKey + '/' + me.key).transaction(function (cur) {
+        db.ref('social/userThreads/' + me.key + '/' + otherKey).update({ name: otherName, last: preview, ts: TS, unread: 0, lastFrom: me.key }),
+        db.ref('social/userThreads/' + otherKey + '/' + me.key).transaction(function (cur) {
           cur = cur || {};
           return { name: me.name, last: preview, ts: Date.now(), unread: (cur.unread || 0) + 1, lastFrom: me.key };
         })
@@ -137,7 +137,7 @@
     var k = key(user.email), db = window.WW.db;
     me = { key: k, name: user.displayName || user.email.split('@')[0] };
     db.ref('users/' + k + '/username').once('value').then(function (s) { if (s.val() && me) me.name = s.val(); }).catch(function () {});
-    ref = db.ref('userThreads/' + k);
+    ref = db.ref('social/userThreads/' + k);
     cb = function (snap) {
       var all = snap.val() || {};
       Object.keys(all).forEach(function (o) {

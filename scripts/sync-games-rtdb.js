@@ -58,7 +58,7 @@ async function pushGamesToRTDB() {
       const fileData = fs.readFileSync(filePath, 'utf8');
       JSON.parse(fileData); // Syntax check
 
-      const targetUrl = `${RTDB_BASE}/games/${gameKey}.json?auth=${apiKey}`;
+      const targetUrl = `${RTDB_BASE}/platforms/games/${gameKey}.json?auth=${apiKey}`;
       console.log(`Uploading [${file}] to /games/${gameKey}...`);
 
       const response = await fetch(targetUrl, {
@@ -85,12 +85,12 @@ async function pushGamesToRTDB() {
   // files and never looked at what was already there). Without this, a rename shows up as
   // a duplicate game pill on the site instead of replacing the old entry.
   try {
-    const listRes = await fetch(`${RTDB_BASE}/games.json?shallow=true&auth=${apiKey}`);
+    const listRes = await fetch(`${RTDB_BASE}/platforms/games.json?shallow=true&auth=${apiKey}`);
     if (listRes.ok) {
       const existingKeys = await listRes.json();
       const orphans = Object.keys(existingKeys || {}).filter((k) => !validKeys.has(k));
       for (const key of orphans) {
-        const delUrl = `${RTDB_BASE}/games/${key}.json?auth=${apiKey}`;
+        const delUrl = `${RTDB_BASE}/platforms/games/${key}.json?auth=${apiKey}`;
         const delRes = await fetch(delUrl, { method: 'DELETE' });
         if (delRes.ok) console.log(`Removed orphaned /games/${key} (no matching file in public/games).`);
         else console.error(`Failed to remove orphaned /games/${key}: HTTP ${delRes.status}`);

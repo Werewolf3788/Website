@@ -22,7 +22,7 @@
   function start(db) {
     if (started) return; started = true;
     try { db.ref('.info/serverTimeOffset').on('value', function (s) { offset = s.val() || 0; }); } catch (e) {}
-    var attach = function () { db.ref('achFeed').limitToLast(1).on('child_added', function (snap) {
+    var attach = function () { db.ref('social/achFeed').limitToLast(1).on('child_added', function (snap) {
       var v = snap.val(); if (!v || typeof v.ts !== 'number') return;
       // limitToLast(1) first returns the newest old item: only show ones that are brand new
       if (v.ts < Date.now() + offset - 15000) return;

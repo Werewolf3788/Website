@@ -346,7 +346,7 @@ function levelCard(old, now, bonus, unlocked) {
 // every 10 levels (10, 20, 30 ...): a toast card for everyone on the site, like an achievement
 function levelMilestone(l) {
   save.ach = save.ach || {}; const id = 'lvl' + l; if (save.ach[id]) return; save.ach[id] = Date.now(); queueSave();
-  try { WW.db.ref('achFeed').push({ n: myName, a: id, t: 'Level ' + l, i: l >= 50 ? '👑' : '🎖️', d: 'Reached level ' + l + ' in Neighborly Acre', g: 'Neighborly Acre', av: myAvatar || '', ts: firebase.database.ServerValue.TIMESTAMP }); } catch (e) {}
+  try { WW.db.ref('social/achFeed').push({ n: myName, a: id, t: 'Level ' + l, i: l >= 50 ? '👑' : '🎖️', d: 'Reached level ' + l + ' in Neighborly Acre', g: 'Neighborly Acre', av: myAvatar || '', ts: firebase.database.ServerValue.TIMESTAMP }); } catch (e) {}
 }
 let achReady = false, allFarmers = {};
 function achCtx() { return { s: new Proxy(save.stats || {}, { get: function (o, k) { return o[k] || 0; } }), level: level(), fields: myFieldCount(), coins: save.coins, up: save.up || {} }; }
@@ -358,7 +358,7 @@ function checkAchievements(boot) {
   if (!fresh.length) return; queueSave();
   fresh.forEach(function (a) {
     say('🏆 Achievement: ' + a.name + '!');
-    try { WW.db.ref('achFeed').push({ n: myName, a: a.id, t: a.name, i: a.icon, d: a.desc, g: 'Neighborly Acre', av: myAvatar || '', ts: firebase.database.ServerValue.TIMESTAMP }); } catch (e) {}
+    try { WW.db.ref('social/achFeed').push({ n: myName, a: a.id, t: a.name, i: a.icon, d: a.desc, g: 'Neighborly Acre', av: myAvatar || '', ts: firebase.database.ServerValue.TIMESTAMP }); } catch (e) {}
   });
 }
 let burst = 0, burstT = null;
@@ -1214,7 +1214,7 @@ $('shareBtn').onclick = function () {
 let season = C.SEASON;
 async function loadSeason() {
   season = C.SEASON;
-  if (WW.mode === 'cloud') { try { const r = +(await WW.db.ref('game_rooms/farm/_season').once('value')).val(); if (r > season) season = r; } catch (e) {} }
+  if (WW.mode === 'cloud') { try { const r = +(await WW.db.ref('mobilegames/rooms/farm/_season').once('value')).val(); if (r > season) season = r; } catch (e) {} }
   return season;
 }
 // owner only: start a new season so every farmer (solo and multiplayer) begins again at level 1 next time they open the game
@@ -1222,7 +1222,7 @@ async function resetEveryone() {
   if (!me || !me.email || me.email.toLowerCase() !== C.OWNER_EMAIL) return;
   if (!confirm('Reset Neighborly Acre for EVERYONE? All levels, coins, fields and animals go back to the start. This cannot be undone.')) return;
   const next = (await loadSeason()) + 1;
-  try { await WW.db.ref('game_rooms/farm/_season').set(next); } catch (e) { say('Reset failed: ' + (e.code || e.message)); return; }
+  try { await WW.db.ref('mobilegames/rooms/farm/_season').set(next); } catch (e) { say('Reset failed: ' + (e.code || e.message)); return; }
   location.reload();
 }
 const hexOk = v => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v.trim());
@@ -1238,7 +1238,7 @@ async function begin(user, myCode) {
       roomRef = WW.roomRef('farm', roomId); WW.mode = 'cloud'; let meta = (await roomRef.child('meta').once('value')).val();
       if (!meta) { if (!isMP || hostCode === myCode) { meta = { host: (user.displayName || 'Farmer').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP }; await roomRef.child('meta').set(meta); } else {
         // the host may be playing solo right now: their status (by friend code) says so, and joining turns it into a multiplayer farm
-        const pr = (await WW.db.ref('game_rooms/presence/' + hostCode).once('value')).val();
+        const pr = (await WW.db.ref('mobilegames/rooms/presence/' + hostCode).once('value')).val();
         if (pr && pr.game === 'farm' && pr.t && nowMs() - pr.t < 150000) { meta = { host: pr.n || hostCode, created: firebase.database.ServerValue.TIMESTAMP }; await roomRef.child('meta').set(meta); }
         else { gate('Multiplayer farm ' + hostCode + ' not found. Your friend is not playing right now. Ask them to open Neighborly Acre first.', { back: true }); return; }
       } }

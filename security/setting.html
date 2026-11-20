@@ -394,7 +394,7 @@ async function resolveAvatar(){
     if(n){try{const v=(await db.ref('psn/gamertags/'+n+'/avatar').get()).val();url=typeof v==='string'?v:(v&&v.url)||''}catch(e){}}
     if(!url)say('No PlayStation image found yet for that username.',1)}
   else if(s==='steam'){const id=await steamId64();url='';
-    if(id){try{const v=(await db.ref('steam_users/'+id+'/profile/avatar').get()).val();url=typeof v==='string'?v:(v&&v.url)||''}catch(e){}}
+    if(id){try{const v=(await db.ref('platforms/steam_users/'+id+'/profile/avatar').get()).val();url=typeof v==='string'?v:(v&&v.url)||''}catch(e){}}
     if(!url)say('No Steam image found yet for that ID. It appears after the next Steam sync (every 2 hours).',1)}
   else if(s==='twitch'){const n=$('twitch_username').value.trim();
     if(n){try{const t=(await (await fetch('https://decapi.me/twitch/avatar/'+encodeURIComponent(n))).text()).trim();if(/^https?:/.test(t))url=t;else say('Twitch image not found for that name.',1)}catch(e){}}}
@@ -407,11 +407,11 @@ function cleanSteam(v){v=String(v||'').trim();
   const c=v.match(/steamcommunity\.com\/id\/([^\/?#\s]+)/i);if(c)return c[1];
   return v.replace(/\/+$/,'')}
 async function steamId64(){const v=cleanSteam($('steam_id').value);if(!v)return'';if(/^7656119\d{10}$/.test(v))return v;
-  try{return (await db.ref('steam_vanity/'+v.toLowerCase().replace(/[.$#\[\]\/]/g,'_')).get()).val()||''}catch(e){return''}}
+  try{return (await db.ref('platforms/steam_vanity/'+v.toLowerCase().replace(/[.$#\[\]\/]/g,'_')).get()).val()||''}catch(e){return''}}
 async function showSteam(){const st=$('steamState');st.textContent='';const raw=$('steam_id').value.trim();if(!raw)return;
   const id=await steamId64();
   if(!id){st.textContent='Saved. Your custom name is matched to a Steam ID on the next sync (every 2 hours).';st.style.color='var(--text-muted)';return}
-  let s=null;try{const b='steam_users/'+id+'/',g=async c=>(await db.ref(b+c).get()).val();   // small parts only: the library and achievements can be large
+  let s=null;try{const b='platforms/steam_users/'+id+'/',g=async c=>(await db.ref(b+c).get()).val();   // small parts only: the library and achievements can be large
     const [profile,fpub,fcount,games,achTotals,updated_at]=await Promise.all([g('profile'),g('friends/public'),g('friends/count'),g('games'),g('achTotals'),g('updated_at')]);
     s=updated_at?{profile,friends:{public:fpub,count:fcount},games,achTotals,updated_at}:null}catch(e){}
   if(!s){st.textContent='Steam ID '+id+'. Not synced yet. Check back after the next sync (every 2 hours).';st.style.color='var(--text-muted)';return}
@@ -451,7 +451,7 @@ async function ensureFriendCode(){
   if(D.friend_code){
     // Older accounts have the code on their profile but no /friend_codes lookup, so nobody could add them. Repair it, then check.
     try{
-      const ref=db.ref('friend_codes/'+D.friend_code);
+      const ref=db.ref('accounts/friend_codes/'+D.friend_code);
       let cur=(await ref.get()).val();
       if(!cur){await ref.set(K);cur=(await ref.get()).val()}
       if(cur===K)codeMsg('Your code is active: friends can add you with it.');
@@ -466,8 +466,8 @@ async function ensureFriendCode(){
     }catch(e){console.warn('[friend code repair]',e&&e.message);codeMsg('Could not activate your code: '+(/permission/i.test(e&&e.message||'')?'the database refused the write (rules need publishing).':(e&&e.message||'unknown error')),1)}
     return D.friend_code;
   }
-  for(let i=0;i<5;i++){const c=rand8();const r=await db.ref('friend_codes/'+c).get();
-    if(!r.exists()){await db.ref('friend_codes/'+c).set(K);D.friend_code=c;await db.ref('users/'+K+'/friend_code').set(c);codeMsg('Your code is active: friends can add you with it.');return c}}
+  for(let i=0;i<5;i++){const c=rand8();const r=await db.ref('accounts/friend_codes/'+c).get();
+    if(!r.exists()){await db.ref('accounts/friend_codes/'+c).set(K);D.friend_code=c;await db.ref('users/'+K+'/friend_code').set(c);codeMsg('Your code is active: friends can add you with it.');return c}}
   throw new Error('Could not create a friend code. Try again.');
 }
 async function load(){
@@ -528,7 +528,7 @@ async function addFriend(){
   const b=$('addFr');b.disabled=true;b.textContent='Adding…';
   try{
     await ensureFriendCode().catch(()=>{});   // make sure MY code is registered so they can add me back
-    const raw=(await db.ref('friend_codes/'+code).get()).val();
+    const raw=(await db.ref('accounts/friend_codes/'+code).get()).val();
     if(raw==null||raw===''||(typeof raw!=='string'&&typeof raw!=='object'))return addMsg('No player has the code '+code+'. Check it with your friend (watch for 0 vs O and 1 vs I). If it is right, ask them to open Settings once while signed in, which activates older codes.',1),false;
     const fk=await ownerKeyOfCode(raw,code,rv);   // null for older records that do not say whose they are
     if(fk===K)return addMsg("That's your own code.",1),false;
@@ -546,7 +546,7 @@ async function addFriend(){
       if(mine&&fk){
         const already=(await db.ref('users/'+fk+'/friends/'+mine).get()).exists();
         if(!already){
-          await db.ref('friend_requests/'+fk+'/'+mine).set({from_key:K,from_code:mine,username:($('username').value.trim()||D.username||mine),avatar_url:D.avatar_url||'',at:Date.now(),status:'pending'});
+          await db.ref('accounts/friend_requests/'+fk+'/'+mine).set({from_key:K,from_code:mine,username:($('username').value.trim()||D.username||mine),avatar_url:D.avatar_url||'',at:Date.now(),status:'pending'});
           sent=true;
         }
       }
@@ -563,7 +563,7 @@ let reqRef=null,reqCache={};
 function watchRequests(){
   if(!K)return;
   if(reqRef){try{reqRef.off()}catch(e){}}
-  reqRef=db.ref('friend_requests/'+K);
+  reqRef=db.ref('accounts/friend_requests/'+K);
   reqRef.on('value',snap=>{reqCache=snap.val()||{};renderRequests()},e=>console.warn('[friend requests]',e&&e.message));
 }
 function renderRequests(){
@@ -576,17 +576,17 @@ function renderRequests(){
 async function acceptRequest(code){
   const r=reqCache[code];if(!r)return;
   try{
-    const reg=(await db.ref('friend_codes/'+code).get()).val();
+    const reg=(await db.ref('accounts/friend_codes/'+code).get()).val();
     const regOwner=await ownerKeyOfCode(reg,code,rv);
     if(regOwner&&regOwner!==r.from_key)return say('That request does not match the code owner, so it was not accepted.',1);
     const f={friend_code:code,username:String(r.username||code).slice(0,32),avatar_url:String(r.avatar_url||''),added_at:Date.now()};
     await db.ref('users/'+K+'/friends/'+code).set(f);
-    await db.ref('friend_requests/'+K+'/'+code).remove();
+    await db.ref('accounts/friend_requests/'+K+'/'+code).remove();
     keepCloseTicks();D.friends=D.friends||{};D.friends[code]=f;renderCloseFriends();say('Added '+f.username+'.');
   }catch(e){say(e.message,1)}
 }
 async function declineRequest(code){
-  try{await db.ref('friend_requests/'+K+'/'+code).remove();say('Request removed.')}catch(e){say(e.message,1)}
+  try{await db.ref('accounts/friend_requests/'+K+'/'+code).remove();say('Request removed.')}catch(e){say(e.message,1)}
 }
 $('addFr').onclick=addFriend;
 $('add_code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addFriend()}});
@@ -608,7 +608,7 @@ async function refreshFriendNames(){
   const entries=Object.entries(D.friends||{});if(!entries.length)return;
   let changed=false;
   await Promise.all(entries.map(async([code,f])=>{
-    try{const fc=f&&f.friend_code||code;const fk=await ownerKeyOfCode((await db.ref('friend_codes/'+fc).get()).val(),fc,rv);if(!fk)return;
+    try{const fc=f&&f.friend_code||code;const fk=await ownerKeyOfCode((await db.ref('accounts/friend_codes/'+fc).get()).val(),fc,rv);if(!fk)return;
       const u=(await db.ref('users/'+fk+'/username').get()).val();
       if(u&&f&&f.username!==u){f.username=u;changed=true}}catch(e){}}));
   if(changed){keepCloseTicks();renderCloseFriends()}
@@ -746,7 +746,7 @@ window.Wifi=(function(){
       card.querySelector('[data-act="del"]').onclick=async()=>{
         if(mine[id]&&mine[id]._new){delete mine[id];dirty.delete(id);applyRemote();return drawMine()}
         if(!confirm('Delete '+(f('label').value||f('ssid').value||'this network')+'? Anyone you shared it with loses it too.'))return;
-        try{dirty.delete(id);await db.ref('wifi_index/'+K+'/'+id).remove();await db.ref('wifi/'+K+'/'+id).remove();delete mine[id];drawMine();say('Network deleted.')}catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
+        try{dirty.delete(id);await db.ref('site/wifi_index/'+K+'/'+id).remove();await db.ref('site/wifi/'+K+'/'+id).remove();delete mine[id];drawMine();say('Network deleted.')}catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
       };
       card.querySelector('[data-act="save"]').onclick=async()=>{
         const ssid=f('ssid').value.trim();if(!ssid)return say('Type the network name (SSID).',1);
@@ -754,14 +754,14 @@ window.Wifi=(function(){
         if(share==='picked'&&!Object.keys(to).length)return say('Tick at least one friend, or choose "Only me".',1);
         const it={label:f('label').value.trim()||ssid,ssid,band:f('band').value,password:f('password').value,note:f('note').value.trim(),share,owner_name:D.username||'',updated_at:Date.now()};
         if(share==='picked')it.to=to;
-        try{dirty.delete(id);await db.ref('wifi/'+K+'/'+id).set(it);await db.ref('wifi_index/'+K+'/'+id).set(share==='private'?null:it.updated_at);mine[id]=it;applyRemote();
+        try{dirty.delete(id);await db.ref('site/wifi/'+K+'/'+id).set(it);await db.ref('site/wifi_index/'+K+'/'+id).set(share==='private'?null:it.updated_at);mine[id]=it;applyRemote();
           say(share==='private'?'Saved. Only you can see it.':share==='close'?'Saved and shared with your close friends.':'Saved and shared with the friends you picked.')}
         catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
       };
     });
   }
   async function ownerKey(code){
-    try{const v=(await db.ref('friend_codes/'+code).get()).val();return typeof v==='string'?v:(v&&(v.email_key||v.key))||null}catch(e){return null}
+    try{const v=(await db.ref('accounts/friend_codes/'+code).get()).val();return typeof v==='string'?v:(v&&(v.email_key||v.key))||null}catch(e){return null}
   }
   // ---- Shared with me: live. wifi_index/{friend} lists what they share; each network is watched on its own.
   //      A network you're not allowed to see is refused by the rules and simply doesn't show. ----
@@ -769,7 +769,7 @@ window.Wifi=(function(){
   function stopShared(){Object.values(SH).forEach(o=>{try{o.idx&&o.idx.off()}catch(e){}Object.values(o.refs).forEach(r=>{try{r.off()}catch(e){}})});Object.keys(SH).forEach(k=>delete SH[k]);shWatching=false;shLast=''}
   function watchNet(key,id){
     const o=SH[key];if(!o||o.refs[id])return;
-    const r=db.ref('wifi/'+key+'/'+id);o.refs[id]=r;
+    const r=db.ref('site/wifi/'+key+'/'+id);o.refs[id]=r;
     r.on('value',sn=>{const it=sn.val();if(it&&it.ssid)o.items[id]=it;else delete o.items[id];drawSharedSoon()},
       ()=>{delete o.items[id];delete o.refs[id];drawSharedSoon()});   // not shared with you (any more)
   }
@@ -779,7 +779,7 @@ window.Wifi=(function(){
     const list=friends();let pending=list.length;if(!pending)return drawSharedSoon(true);
     await Promise.all(list.map(async fr=>{
       const key=await ownerKey(fr.code);if(!key||key===K||SH[key]){if(--pending===0)drawSharedSoon(true);return}
-      const o=SH[key]={name:fr.name,items:{},refs:{},idx:db.ref('wifi_index/'+key),ready:false};
+      const o=SH[key]={name:fr.name,items:{},refs:{},idx:db.ref('site/wifi_index/'+key),ready:false};
       o.idx.on('value',sn=>{
         const ids=sn.val()||{};
         Object.keys(o.refs).forEach(id=>{if(!(id in ids)){try{o.refs[id].off()}catch(e){}delete o.refs[id];delete o.items[id]}});
@@ -816,7 +816,7 @@ window.Wifi=(function(){
   async function open(){
     if(!K)return;
     if(!opened){opened=true;
-      await new Promise(done=>{mineRef=db.ref('wifi/'+K);let first=true;
+      await new Promise(done=>{mineRef=db.ref('site/wifi/'+K);let first=true;
         mineRef.on('value',sn=>{remoteWaiting=sn.val()||{};if(first){first=false;mine={};applyRemote();done()}else applyRemote()},
           e=>{mine={};if(denied(e))say('Wi-Fi sharing is not switched on in the database yet.',1);done()})});
     }
@@ -831,7 +831,7 @@ let DL=null; // linked Discord account {id, username, avatar} or null
 async function loadDiscordLink(){
   DL=null;
   let denied=false;
-  try{const sn=await db.ref('auth_links/'+U.uid+'/discord').get();if(sn.exists())DL=sn.val()}catch(e){denied=true}
+  try{const sn=await db.ref('accounts/auth_links/'+U.uid+'/discord').get();if(sn.exists())DL=sn.val()}catch(e){denied=true}
   // Rules not published yet (or read refused): ask the login server instead
   if(!DL&&denied){
     try{const t=await U.getIdToken();
@@ -884,7 +884,7 @@ async function migrate(a,b){
     if(src.exists()&&!(await db.ref(n+'/'+b).get()).exists()){await db.ref(n+'/'+b).set(src.val());await db.ref(n+'/'+a).remove()}
   }
   const fc=(await db.ref('users/'+b+'/friend_code').get()).val();
-  if(fc)await db.ref('friend_codes/'+fc).set(b);
+  if(fc)await db.ref('accounts/friend_codes/'+fc).set(b);
 }
 async function adoptUidData(){
   if(!U.email||K===U.uid)return;
@@ -904,7 +904,7 @@ $('del').onclick=async()=>{
   if(!confirm('Permanently delete your account and all cloud records?'))return;
   try{
     const code=D.friend_code;
-    if(code)await db.ref('friend_codes/'+code).remove();
+    if(code)await db.ref('accounts/friend_codes/'+code).remove();
     await db.ref('user_secrets/'+K).remove();
     await db.ref('users/'+K).remove();
     if(U.email){const doc=fs.collection('users').doc(U.email.toLowerCase());

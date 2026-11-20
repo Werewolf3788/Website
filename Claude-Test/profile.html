@@ -210,12 +210,12 @@ function privateMsg() {
 async function steamId64(raw) {
   let id = String(raw || '').trim().replace(/\/+$/, '').split('/').pop();
   if (!id || /^7656119\d{10}$/.test(id)) return id;
-  try { const v = (await W.db.ref('steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); return typeof v === 'string' ? v : ''; } catch (e) { return ''; }
+  try { const v = (await W.db.ref('platforms/steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); return typeof v === 'string' ? v : ''; } catch (e) { return ''; }
 }
 async function publishPublic() {
   try {
     const code = String(S.U.friend_code || '').trim(); if (!code || !S.isOwner) return;
-    const ref = W.db.ref('public_profiles/' + code);
+    const ref = W.db.ref('accounts/public_profiles/' + code);
     const any = ['psn', 'xbox', 'steam'].some(x => isPub(x) && platId(x)) || isPub('tracking') || isPub('activity') || isPub('trophies');
     if (!any) { await ref.remove(); return; }
     const p = S.profile, out = {
@@ -243,7 +243,7 @@ async function publishPublic() {
 async function bootPublic(q) {
   let snap = null;
   for (const c of [...new Set([q, q.toUpperCase()])]) {
-    try { snap = (await W.db.ref('public_profiles/' + c.replace(/[.$#\[\]\/]/g, '')).once('value')).val(); } catch (e) {}
+    try { snap = (await W.db.ref('accounts/public_profiles/' + c.replace(/[.$#\[\]\/]/g, '')).once('value')).val(); } catch (e) {}
     if (snap) break;
   }
   if (!snap) { signInView(true); return; }
@@ -311,8 +311,8 @@ async function loadProfile() {
   const key = S.ownerKey, db = W.db;
   const [uSnap, pSnap, mSnap, meSnap] = await Promise.all([
     db.ref('users/' + key).once('value').catch(() => null),
-    db.ref('profiles/' + key).once('value').catch(() => null),
-    db.ref('profileMedia/' + key).once('value').catch(() => null),
+    db.ref('accounts/profiles/' + key).once('value').catch(() => null),
+    db.ref('accounts/profileMedia/' + key).once('value').catch(() => null),
     S.isOwner ? null : db.ref('users/' + W.me.key + '/friends').once('value').catch(() => null)
   ]);
   S.U = (uSnap && uSnap.val()) || {};
@@ -423,12 +423,12 @@ async function loadXbox(tag) {
   let d = null;
   const tags = [...new Set([tag, tag.toLowerCase()])];
   // 1) Kevin's DB through the member's sign-in (Xbox sync mirrors cards here)
-  for (const t of tags) { if (d) break; try { d = (await W.db.ref('xbox/gamertags/' + t.replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); } catch (e) {} }
+  for (const t of tags) { if (d) break; try { d = (await W.db.ref('platforms/xbox/gamertags/' + t.replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); } catch (e) {} }
   // 2) the sync's original home in Ray's DB, then public REST on Kevin's DB
   // 1b) the same card is also copied under /psn/xbox_cards, a path the live database rules already allow the site to read
   for (const t of tags) { if (d) break; try { d = (await W.db.ref('psn/xbox_cards/' + t.replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); } catch (e) {} }
   outer: for (const base of d ? [] : [...new Set([RAY_DB, DB()])]) for (const t of tags) {
-    for (const path of ['psn/xbox_cards/' + t.replace(/[.$#\[\]\/]/g, '_'), 'xbox/gamertags/' + encodeURIComponent(t)]) {
+    for (const path of ['psn/xbox_cards/' + t.replace(/[.$#\[\]\/]/g, '_'), 'xbox/gamertags/' + encodeURIComponent(t), 'platforms/xbox/gamertags/' + encodeURIComponent(t)]) {
       try { const r = await fetch(`${base}/${path}.json?t=${Date.now()}`); if (r.ok) { d = await r.json(); if (d) break outer; } } catch (e) {}
     }
   }
@@ -451,11 +451,11 @@ async function loadXbox(tag) {
 async function loadSteam(raw) {
   let id = String(raw).trim().replace(/\/+$/, '').split('/').pop();
   if (!/^7656119\d{10}$/.test(id)) {
-    const vn = (await W.db.ref('steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value').catch(() => null));
+    const vn = (await W.db.ref('platforms/steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value').catch(() => null));
     id = vn && typeof vn.val() === 'string' ? vn.val() : '';
     if (!id) return null;
   }
-  const g = async (c) => (await W.db.ref(`steam_users/${id}/${c}`).once('value').catch(() => ({ val: () => null }))).val();
+  const g = async (c) => (await W.db.ref(`platforms/steam_users/${id}/${c}`).once('value').catch(() => ({ val: () => null }))).val();
   let [profile, games, ach, tot, lib] = await Promise.all([g('profile'), g('games'), g('ach'), g('achTotals'), g('library')]);
   if (!profile || !lib) { // Firestore copy (steam_players/{id} + library/page_N) covers everyone the sync has seen
     try {
@@ -588,10 +588,10 @@ const pctBar = (p) => { const c = pctColor(p), d = p >= 100; return `<div class=
 
 function watchPresence() {
   if (!W.me || !S.ownerKey) return;
-  W.db.ref('presence/' + S.ownerKey).on('value', s => { S.presence = s.val(); renderHeroStatus(); });
+  W.db.ref('accounts/presence/' + S.ownerKey).on('value', s => { S.presence = s.val(); renderHeroStatus(); });
   // mobile-games status (game_rooms/presence/{friendCode}, refreshed by the games every ~minute)
   const code = String(S.U.friend_code || '').toUpperCase();
-  if (code) { const poll = () => W.db.ref('game_rooms/presence/' + code).once('value').then(s => { const v = s.val(); S.mobile = v && v.t && Date.now() - v.t < 150000 ? v : null; renderHeroStatus(); }).catch(() => {}); poll(); setInterval(poll, 30000); }
+  if (code) { const poll = () => W.db.ref('mobilegames/rooms/presence/' + code).once('value').then(s => { const v = s.val(); S.mobile = v && v.t && Date.now() - v.t < 150000 ? v : null; renderHeroStatus(); }).catch(() => {}); poll(); setInterval(poll, 30000); }
 }
 
 /* ---------- render ---------- */
@@ -863,7 +863,7 @@ async function openGame(g) {
     else if (!mine && !Object.keys(live).length) note = 'Trophy list loaded. Your earned trophies for this game have not synced yet, so they show as locked.';
   } else if (g.platform === 'steam' && g.steamUnlocks) {
     try {
-      const sc = (await W.db.ref('steam_games/' + g.id + '/ach').once('value')).val() || {};
+      const sc = (await W.db.ref('platforms/steam_games/' + g.id + '/ach').once('value')).val() || {};
       const got = {}; g.steamUnlocks.forEach(x => { got[x[0]] = Number(x[1]) || 0; });
       const icon = (f) => f ? `https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/${g.id}/${f}.jpg` : '';
       const keys = Object.keys(sc); Object.keys(got).forEach(k => { if (!(k in sc)) keys.push(k); });
@@ -970,8 +970,8 @@ async function saveProfile() {
     const prof = { displayName:$('#ed-name').value.trim().slice(0, 40), bio:$('#ed-bio').value.trim().slice(0, 280),
                    accent:$('#ed-accent').value, bgDim:Number($('#ed-dim').value) / 100, defaultTab:$('#ed-tab').value,
                    privacy:{ trophies:sec.trophies, activity:sec.activity }, updatedAt:SV.TIMESTAMP };
-    await db.ref('profiles/' + me.key).update(prof);
-    await db.ref('profileMedia/' + me.key).set({ bg:S.edit.bg || null });
+    await db.ref('accounts/profiles/' + me.key).update(prof);
+    await db.ref('accounts/profileMedia/' + me.key).set({ bg:S.edit.bg || null });
     if (sec.tracking !== (S.U.tracking_scope || 'friends')) {          // same field Settings uses
       await db.ref('users/' + me.key + '/tracking_scope').set(sec.tracking); S.U.tracking_scope = sec.tracking;
     }

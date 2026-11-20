@@ -126,7 +126,7 @@ jobs:
                   failed_files.append((filename, f"Serialization Error: {dump_err}"))
                   continue
 
-              url = f"https://entertainment-71888-default-rtdb.firebaseio.com/games/{game_key}.json{AUTH}"
+              url = f"https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games/{game_key}.json{AUTH}"
               print(f"Pushing {filename} -> /games/{game_key} ...")
 
               req = urllib.request.Request(
@@ -163,12 +163,12 @@ jobs:
           # instead of replacing the old entry.
           try:
               shallow_q = (AUTH + "&shallow=true") if AUTH else "?shallow=true"
-              list_url = "https://entertainment-71888-default-rtdb.firebaseio.com/games.json" + shallow_q
+              list_url = "https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games.json" + shallow_q
               with urllib.request.urlopen(list_url) as resp:
                   existing_keys = json.loads(resp.read().decode('utf-8')) or {}
               orphans = [k for k in existing_keys.keys() if k not in valid_keys]
               for key in orphans:
-                  del_url = f"https://entertainment-71888-default-rtdb.firebaseio.com/games/{key}.json{AUTH}"
+                  del_url = f"https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games/{key}.json{AUTH}"
                   req_del = urllib.request.Request(del_url, method="DELETE")
                   try:
                       with urllib.request.urlopen(req_del) as del_resp:
@@ -185,7 +185,7 @@ jobs:
 
           if catalog_index:
               catalog_payload = json.dumps(catalog_index).encode('utf-8')
-              catalog_url = "https://entertainment-71888-default-rtdb.firebaseio.com/games_catalog.json" + AUTH
+              catalog_url = "https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games_catalog.json" + AUTH
               req_cat = urllib.request.Request(
                   catalog_url,
                   data=catalog_payload,

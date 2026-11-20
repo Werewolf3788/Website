@@ -123,7 +123,7 @@ function createApp(deps) {
     const uid = await uidFromIdToken(admin, req.body && req.body.idToken);
     if (!uid) return res.status(401).json({ error: 'Sign in again, then retry.' });
     try {
-      const d = (await db().ref('auth_links/' + uid + '/discord').once('value')).val();
+      const d = (await db().ref('accounts/auth_links/' + uid + '/discord').once('value')).val();
       res.json({ discord: d ? { id: d.id, username: d.username || '', avatar: d.avatar || '' } : null });
     } catch (e) { console.error('[status]', e && e.message); res.status(500).json({ error: 'Could not read link status.' }); }
   });
@@ -136,9 +136,9 @@ function createApp(deps) {
     try {
       const u = await admin.auth().getUser(uid);
       if (!u.providerData.length) return res.status(400).json({ error: 'Link Google or an email first, so you can still sign in.' });
-      const cur = (await db().ref('auth_links/' + uid + '/discord/id').once('value')).val();
-      const up = { ['auth_links/' + uid + '/discord']: null, ['auth_links/' + uid + '/discord_off']: true };
-      if (cur) up['discord_links/' + cur] = null;
+      const cur = (await db().ref('accounts/auth_links/' + uid + '/discord/id').once('value')).val();
+      const up = { ['accounts/auth_links/' + uid + '/discord']: null, ['accounts/auth_links/' + uid + '/discord_off']: true };
+      if (cur) up['accounts/discord_links/' + cur] = null;
       await db().ref().update(up);
       res.json({ ok: true });
     } catch (e) { console.error('[unlink]', e && e.message); res.status(500).json({ error: 'Could not unlink Discord.' }); }
@@ -168,18 +168,18 @@ function createApp(deps) {
 
       // ---- linking Discord to the account that is signed in ----
       if (st.mode === 'link') {
-        const owner = (await db().ref('discord_links/' + id).once('value')).val();
+        const owner = (await db().ref('accounts/discord_links/' + id).once('value')).val();
         if (owner && owner !== st.uid) return backWithLinkError(res, st.next, 'That Discord account is already linked to a different account.');
-        const old = (await db().ref('auth_links/' + st.uid + '/discord/id').once('value')).val();
-        const up = { ['discord_links/' + id]: st.uid, ['auth_links/' + st.uid + '/discord']: linkInfo(me), ['auth_links/' + st.uid + '/discord_off']: null };
-        if (old && old !== id) up['discord_links/' + old] = null;
+        const old = (await db().ref('accounts/auth_links/' + st.uid + '/discord/id').once('value')).val();
+        const up = { ['accounts/discord_links/' + id]: st.uid, ['accounts/auth_links/' + st.uid + '/discord']: linkInfo(me), ['accounts/auth_links/' + st.uid + '/discord_off']: null };
+        if (old && old !== id) up['accounts/discord_links/' + old] = null;
         await db().ref().update(up);
         return res.redirect(st.next + '#ww_discord_linked=1');
       }
 
       // ---- signing in: a linked Discord account first, then the verified e-mail ----
       let user = null;
-      const linkedUid = (await db().ref('discord_links/' + id).once('value')).val();
+      const linkedUid = (await db().ref('accounts/discord_links/' + id).once('value')).val();
       if (linkedUid) {
         try { user = await admin.auth().getUser(linkedUid); }
         catch (e) { if (e.code !== 'auth/user-not-found') throw e; }
@@ -193,11 +193,11 @@ function createApp(deps) {
           const avatar = me.avatar ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=256` : undefined;
           user = await admin.auth().createUser({ email, emailVerified: true, displayName: me.global_name || me.username, photoURL: avatar });
         }
-        const off = (await db().ref('auth_links/' + user.uid + '/discord_off').once('value')).val();
+        const off = (await db().ref('accounts/auth_links/' + user.uid + '/discord_off').once('value')).val();
         if (off === true) return backWithError(res, st.next, 'Discord sign-in is turned off for this account. Sign in another way, then link Discord again in Settings.');
-        await db().ref().update({ ['discord_links/' + id]: user.uid });
+        await db().ref().update({ ['accounts/discord_links/' + id]: user.uid });
       }
-      await db().ref('auth_links/' + user.uid + '/discord').set(linkInfo(me));
+      await db().ref('accounts/auth_links/' + user.uid + '/discord').set(linkInfo(me));
       const token = await admin.auth().createCustomToken(user.uid, { discord_id: id });
       res.redirect(st.next + '#ww_discord_token=' + encodeURIComponent(token));
     } catch (e) {

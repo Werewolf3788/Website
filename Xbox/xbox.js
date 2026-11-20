@@ -103,7 +103,7 @@ async function mirrorToKevin(tag, card) {
         const pub = JSON.parse(JSON.stringify(card));
         delete pub.sourceEmailKey; delete pub.keyOwnerEmailKey; delete pub.syncedViaFriendKey;
         const k = String(tag).replace(/[.$#\[\]\/]/g, "_");
-        await kevinWriteDb.ref(`xbox/gamertags/${k}`).set(pub);
+        await kevinWriteDb.ref(`platforms/xbox/gamertags/${k}`).set(pub);
         await kevinWriteDb.ref(`psn/xbox_cards/${k}`).set(pub);   // same card under /psn, which the live rules already let the site read
     } catch (e) { console.warn(`[KEVIN DB] Xbox mirror failed for ${tag}: ${e.message}`); }
 }
@@ -118,7 +118,7 @@ async function readKevinNodes() {
             const [u, s, f] = await Promise.all([
                 db.ref("users").once("value"),
                 db.ref("user_secrets").once("value"),
-                db.ref("friend_codes").once("value")
+                db.ref("accounts/friend_codes").once("value")
             ]);
             users = u.val() || {};
             secrets = s.val() || {};
@@ -135,7 +135,7 @@ async function readKevinNodes() {
             const [uRes, sRes, fRes] = await Promise.all([
                 fetch(`${KEVIN_RTDB_URL}/users.json${q}`).then((r) => r.json()),
                 fetch(`${KEVIN_RTDB_URL}/user_secrets.json${q}`).then((r) => r.json()),
-                fetch(`${KEVIN_RTDB_URL}/friend_codes.json${q}`).then((r) => r.json())
+                fetch(`${KEVIN_RTDB_URL}/accounts/friend_codes.json${q}`).then((r) => r.json())
             ]);
             if (uRes && uRes.error) console.warn(`[KEVIN DB] /users: ${uRes.error}`);
             if (sRes && sRes.error) console.warn(`[KEVIN DB] /user_secrets: ${sRes.error}`);
@@ -465,7 +465,7 @@ async function main() {
     }
 
     // Diagnostic: can the website (not signed in) read what was just written?
-    for (const [label, base] of [["Ray DB", "https://playstation-stats-default-rtdb.firebaseio.com/xbox"], ["Kevin DB", `${KEVIN_RTDB_URL}/xbox`]]) {
+    for (const [label, base] of [["Ray DB", "https://playstation-stats-default-rtdb.firebaseio.com/xbox"], ["Kevin DB", `${KEVIN_RTDB_URL}/platforms/xbox`]]) {
         for (const tag of Object.keys(usersByGamerTag).slice(0, 1)) {
             try {
                 const r2 = await fetch(`${base.replace(/\/xbox$/, "")}/psn/xbox_cards/${encodeURIComponent(tag)}.json?shallow=true`);

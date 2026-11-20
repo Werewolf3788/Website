@@ -818,8 +818,8 @@ function loadSteamAchievementNames(st) {
     if (st._steamAchKey === key) return;
     st._steamAchKey = key;
     Promise.all([
-        rtdb.ref(`/steam_users/${st.steamId}/ach/${appid}/u`).once('value'),
-        rtdb.ref(`/steam_games/${appid}/ach`).once('value')
+        rtdb.ref(`/platforms/steam_users/${st.steamId}/ach/${appid}/u`).once('value'),
+        rtdb.ref(`/platforms/steam_games/${appid}/ach`).once('value')
     ]).then(([u, names]) => {
         const got = toArr(u.val()).map(x => Array.isArray(x) ? x[0] : x).filter(Boolean);
         const nm = names.val() || {};
@@ -1438,7 +1438,7 @@ window.appState.syncFriendsProgress = async function() {
             fObj = fObj || {};
             const code = fObj.friend_code || fKey;
             let userKey = null, profile = {};
-            try { const raw = (await rtdb.ref(`/friend_codes/${code}`).once('value')).val(); const k = await ownerKeyOfCode(raw, code, async (pth) => (await rtdb.ref('/' + pth).once('value')).val()); if (k) userKey = k; } catch (e) {}
+            try { const raw = (await rtdb.ref(`/accounts/friend_codes/${code}`).once('value')).val(); const k = await ownerKeyOfCode(raw, code, async (pth) => (await rtdb.ref('/' + pth).once('value')).val()); if (k) userKey = k; } catch (e) {}
             if (userKey) { try { profile = (await rtdb.ref(`/users/${userKey}`).once('value')).val() || {}; } catch (e) {} }
             const name = profile.username || profile.display_name || fObj.username || code;   // their current username wins over the one saved when added
             // Respect the friend's "Game & trophy tracking" setting (default: friends can see it).
@@ -1479,8 +1479,8 @@ window.appState.syncFriendsProgress = async function() {
                     if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && String(ps.currentGame).toLowerCase() !== 'idle') nowPlays.push({ kind: 'console', platform: ps.displayPlatform || ps.platform || 'PlayStation', title: ps.currentGame, status: ps.gameStatus || '' });
                 }
                 let sid = String(profile.steam_id || '').trim();
-                if (sid && !/^7656119\d{10}$/.test(sid)) { const vn = (await rtdb.ref(`/steam_vanity/${sid.toLowerCase()}`).once('value')).val(); sid = typeof vn === 'string' ? vn : ''; }
-                if (sid) { const sp = (await rtdb.ref(`/steam_users/${sid}/profile`).once('value')).val(); if (sp && sp.currentGame) nowPlays.push({ kind: 'console', platform: 'Steam', title: sp.currentGame, status: '' }); }
+                if (sid && !/^7656119\d{10}$/.test(sid)) { const vn = (await rtdb.ref(`/platforms/steam_vanity/${sid.toLowerCase()}`).once('value')).val(); sid = typeof vn === 'string' ? vn : ''; }
+                if (sid) { const sp = (await rtdb.ref(`/platforms/steam_users/${sid}/profile`).once('value')).val(); if (sp && sp.currentGame) nowPlays.push({ kind: 'console', platform: 'Steam', title: sp.currentGame, status: '' }); }
             } catch (e) {}
             const { done, ribbons, medalProg, rankProg } = friendDoneSet(save && save.data, psnEarned);
             const rank = psnRank || (save && save.data && save.data.campaignRank) || null;
@@ -4093,7 +4093,7 @@ async function buildGamePillsBar() {
     if (!container || !rtdb) return;
 
     try {
-        const snap = await rtdb.ref('/games').once('value');
+        const snap = await rtdb.ref('/platforms/games').once('value');
         const gamesCatalog = snap.val();
         if (!gamesCatalog) return;
         window.__gamesCatalog = gamesCatalog;
@@ -4302,12 +4302,12 @@ async function startSteamFollow(raw) {
     if (!rtdb) return;
     let id = String(raw || '').trim().replace(/\/+$/, '').split('/').pop();
     if (id && !/^7656119\d{10}$/.test(id)) {
-        try { const v = (await rtdb.ref('/steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); id = typeof v === 'string' ? v : ''; } catch (e) { id = ''; }
+        try { const v = (await rtdb.ref('/platforms/steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); id = typeof v === 'string' ? v : ''; } catch (e) { id = ''; }
     }
     if (!id) { stopSteamFollow(); return; }
     if (steamFollow.id === id) return;
     stopSteamFollow();
-    const mine = steamFollow = { id, ref: rtdb.ref(`/steam_users/${id}/profile`), cb: null, state: null, timer: null };
+    const mine = steamFollow = { id, ref: rtdb.ref(`/platforms/steam_users/${id}/profile`), cb: null, state: null, timer: null };
     mine.cb = snap => {
         mine.state = snap.val() || {};
         if (mine.timer) clearTimeout(mine.timer);
@@ -4352,7 +4352,7 @@ let gameWatch = null;
 function watchGameData(gameKey, loadedSync) {
     if (!rtdb) return;
     if (gameWatch) { gameWatch.ref.off('value', gameWatch.cb); gameWatch = null; }
-    const ref = rtdb.ref(`/games/${gameKey}/_meta/synced_at`);
+    const ref = rtdb.ref(`/platforms/games/${gameKey}/_meta/synced_at`);
     let current = loadedSync || null;
     const cb = async (snap) => {
         const v = snap.val();
@@ -4361,7 +4361,7 @@ function watchGameData(gameKey, loadedSync) {
         current = v;
         if (CURRENT_GAME_KEY !== gameKey) return;
         try {
-            const data = (await rtdb.ref(`/games/${gameKey}`).once('value')).val();
+            const data = (await rtdb.ref(`/platforms/games/${gameKey}`).once('value')).val();
             if (!data) return;
             const open = new Set([...document.querySelectorAll('#section-container .category-section:not(.section-collapsed) > .category-header h2')].map(h => h.innerText));
             const y = window.scrollY;
@@ -4388,7 +4388,7 @@ async function loadAndHydrateGame(gameKey) {
     appState.updateStatus(`Loading game data from RTDB: /games/${gameKey}...`);
     if (rtdb) {
         try {
-            const snap = await rtdb.ref(`/games/${gameKey}`).once('value');
+            const snap = await rtdb.ref(`/platforms/games/${gameKey}`).once('value');
             const data = snap.val();
             if (data) {
                 appState.hydrateFromRawJson(data);
@@ -4407,7 +4407,7 @@ async function loadAndHydrateGame(gameKey) {
             console.warn("[RTDB Load Error]:", err);
         }
     }
-    appState.updateStatus(`[Error] Game '/games/${gameKey}' not found in RTDB.`);
+    appState.updateStatus(`[Error] Game '/platforms/games/${gameKey}' not found in RTDB.`);
     return false;
 }
 
@@ -4497,7 +4497,7 @@ async function initUniversalEngine() {
                     // Older accounts have a friend code but no /friend_codes lookup entry, so friends cannot add them. Repair it.
                     if (appState.myFriendCode) {
                         try {
-                            const fcRef = rtdb.ref(`/friend_codes/${appState.myFriendCode}`);
+                            const fcRef = rtdb.ref(`/accounts/friend_codes/${appState.myFriendCode}`);
                             if (!(await fcRef.once('value')).exists()) await fcRef.set(emailKey);
                         } catch (e) { console.warn('[friend code repair]', e && e.message); }
                     }

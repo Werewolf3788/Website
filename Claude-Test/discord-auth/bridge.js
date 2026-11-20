@@ -40,7 +40,7 @@ function mountBridge(app, { admin, fetchFn, cors }) {
   }
   async function guild() {
     if (cache.guild && Date.now() - cache.guildAt < 3600000) return cache.guild;
-    let code = ''; try { code = String((await db().ref('discord_bridge/invite').once('value')).val() || ''); } catch (e) {}
+    let code = ''; try { code = String((await db().ref('accounts/discord_bridge/invite').once('value')).val() || ''); } catch (e) {}
     code = (code || process.env.DISCORD_BRIDGE_INVITE || '').trim().replace(/^.*\//, '');
     if (!/^[A-Za-z0-9-]{2,32}$/.test(code)) return null;
     const r = await fetchFn(API + '/invites/' + code); const j = r.ok ? await r.json() : null;
@@ -53,7 +53,7 @@ function mountBridge(app, { admin, fetchFn, cors }) {
     let uid; try { uid = (await admin.auth().verifyIdToken(String(idToken || ''))).uid; } catch (e) { return { code: 401, error: 'signin' }; }
     if (!(await botToken())) return { code: 503, error: 'nobot' };
     const g = await guild(); if (!g) return { code: 503, error: 'noserver' };
-    const link = (await db().ref('auth_links/' + uid + '/discord').once('value')).val();
+    const link = (await db().ref('accounts/auth_links/' + uid + '/discord').once('value')).val();
     if (!link || !link.id) return { code: 403, error: 'notlinked' };
     const hit = cache.members.get(uid);
     if (hit && hit.did === link.id && Date.now() - hit.at < 600000) return hit.ok ? hit : { code: 403, error: 'notmember', invite: g.invite, guild: g.name };

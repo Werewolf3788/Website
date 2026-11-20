@@ -65,7 +65,7 @@
   var local = makeLocal();
   WW.mode = 'cloud'; // 'cloud' = Firebase (signed in), 'local' = this device only
   WW.useLocal = function () { WW.mode = 'local'; };
-  WW.roomRef = function (game, code) { return WW.mode === 'cloud' ? db.ref('game_rooms/' + game + '/' + code) : local.ref('game_rooms/' + game + '/solo'); };
+  WW.roomRef = function (game, code) { return WW.mode === 'cloud' ? db.ref('mobilegames/rooms/' + game + '/' + code) : local.ref('game_rooms/' + game + '/solo'); };
   WW.onError = function (msg) { alert(msg); };
 
   WW.signIn = function () {
@@ -110,14 +110,14 @@
     var ref = db.ref('users/' + key + '/friend_code');
     var existing = (await ref.once('value')).val();
     if (existing) {   // older accounts have users/{key}/friend_code but no friend_codes/{code} entry: add it so friends can find us
-      try { if (!(await db.ref('friend_codes/' + existing).once('value')).exists()) await db.ref('friend_codes/' + existing).set(key); } catch (e) {}
+      try { if (!(await db.ref('accounts/friend_codes/' + existing).once('value')).exists()) await db.ref('accounts/friend_codes/' + existing).set(key); } catch (e) {}
       return existing;
     }
     for (var i = 0; i < 6; i++) {
       var code = randomCode();
-      var taken = (await db.ref('friend_codes/' + code).once('value')).exists();
+      var taken = (await db.ref('accounts/friend_codes/' + code).once('value')).exists();
       if (taken) continue;
-      await db.ref('friend_codes/' + code).set(key);
+      await db.ref('accounts/friend_codes/' + code).set(key);
       await ref.set(code);
       return code;
     }
@@ -125,7 +125,7 @@
   };
 
   function saveRef(game) {
-    return (WW.mode === 'cloud' && WW.user) ? db.ref('games_saves/' + WW.user.uid + '/' + game) : local.ref('games_saves/local/' + game);
+    return (WW.mode === 'cloud' && WW.user) ? db.ref('mobilegames/saves/' + WW.user.uid + '/' + game) : local.ref('games_saves/local/' + game);
   }
   WW.loadSave = async function (game) { return (await saveRef(game).once('value')).val(); };
   WW.writeSave = function (game, data) {
@@ -164,7 +164,7 @@
   // ---- "now playing" status shown to friends. Keyed by the player's FRIEND CODE (game_rooms/presence/{code}), because that is
   // what every friends list stores, so no other lookup is needed. (Also mirrored to users/{key}/now_playing for older readers.)
   function playRef() { return (WW.mode === 'cloud' && WW.user && WW.user.email) ? db.ref('users/' + (WW.playKey || WW.emailKey(WW.user.email)) + '/now_playing') : null; }
-  function presenceRef() { return (WW.mode === 'cloud' && WW.user && WW.friendCode) ? db.ref('game_rooms/presence/' + WW.friendCode) : null; }
+  function presenceRef() { return (WW.mode === 'cloud' && WW.user && WW.friendCode) ? db.ref('mobilegames/rooms/presence/' + WW.friendCode) : null; }
   WW.publishPlaying = function (info) {
     var who = String((WW.user && WW.user.displayName) || '').split(' ')[0] || 'Friend';
     [presenceRef(), playRef()].forEach(function (r, i) {
@@ -191,7 +191,7 @@
   WW.clearPlaying = function () { [presenceRef(), playRef()].forEach(function (r) { if (r) r.remove().catch(function () {}); }); };
 
   // ---- win / loss history (games_saves/{uid}/history, private to each player)
-  function histRef() { return (WW.mode === 'cloud' && WW.user) ? db.ref('games_saves/' + WW.user.uid + '/history') : local.ref('games_saves/local/history'); }
+  function histRef() { return (WW.mode === 'cloud' && WW.user) ? db.ref('mobilegames/saves/' + WW.user.uid + '/history') : local.ref('games_saves/local/history'); }
   WW.recordResult = async function (key, rec) {
     try {
       var r = histRef().child(String(key).replace(/[^A-Za-z0-9_-]/g, '_'));
@@ -215,7 +215,7 @@
       });
       var tag = myTag(), up = {};
       Object.keys(per).forEach(function (g) { if (!/^[a-z0-9_-]{2,24}$/.test(g)) return; ['w', 'l', 'bw', 'bl'].forEach(function (k) { up[g + '/' + WW.user.uid + '/' + k] = per[g][k]; }); ['n', 'av', 't'].forEach(function (k) { up[g + '/' + WW.user.uid + '/' + k] = tag[k]; }); });
-      if (Object.keys(up).length) await db.ref('game_leaders').update(up);
+      if (Object.keys(up).length) await db.ref('mobilegames/leaders').update(up);
       Object.keys(per).forEach(function (g) { if (!/^[a-z0-9_-]{2,24}$/.test(g)) return; var p = per[g]; WW.publishProgress(g, { kind: 'record', w: p.w, l: p.l, bw: p.bw, bl: p.bl }); });
     } catch (e) { console.warn('leaders', e); }
   };
@@ -223,12 +223,12 @@
   WW.postBest = async function (game, score, lowerIsBetter) {
     if (!leadersOn() || !(score > 0)) return;
     try {
-      var ref = db.ref('game_leaders/' + game + '/' + WW.user.uid), cur = (await ref.child('best').once('value')).val();
+      var ref = db.ref('mobilegames/leaders/' + game + '/' + WW.user.uid), cur = (await ref.child('best').once('value')).val();
       var tag = myTag(); if (typeof cur !== 'number' || (lowerIsBetter ? score < cur : score > cur)) tag.best = score;
       await ref.update(tag);
     } catch (e) { console.warn('leaders', e); }
   };
-  WW.loadLeaders = async function () { if (!leadersOn()) return null; try { return (await db.ref('game_leaders').once('value')).val() || {}; } catch (e) { console.warn('leaders', e); return null; } };
+  WW.loadLeaders = async function () { if (!leadersOn()) return null; try { return (await db.ref('mobilegames/leaders').once('value')).val() || {}; } catch (e) { console.warn('leaders', e); return null; } };
   WW.loadHistory = async function () {
     try { var v = (await histRef().once('value')).val() || {}; return Object.keys(v).map(function (k) { return v[k]; }).filter(Boolean).sort(function (a, b) { return (b.t || 0) - (a.t || 0); }); } catch (e) { return []; }
   };
@@ -268,12 +268,12 @@
       var item = { code: code, name: fo.username || code, avatar: fo.avatar_url || '', plays: [] };
       try {
         // 1) the friend's status, straight from their friend code
-        var pr = (await db.ref('game_rooms/presence/' + code).once('value')).val();
+        var pr = (await db.ref('mobilegames/rooms/presence/' + code).once('value')).val();
         if (pr && pr.t && now - pr.t < 150000) item.plays.push({ kind: 'mobile', game: pr.game, title: pr.title, status: pr.status || '', room: pr.room || code, open: pr.open | 0, solo: !!pr.solo });
       } catch (e) { console.warn('friend presence', e); }
       try {
         // 2) optional extras (avatar, privacy setting, PlayStation / Steam) when their profile can be found
-        var uk = await ownerKeyOfCode((await db.ref('friend_codes/' + code).once('value')).val(), code);
+        var uk = await ownerKeyOfCode((await db.ref('accounts/friend_codes/' + code).once('value')).val(), code);
         if (uk) {
           var prof = (await db.ref('users/' + uk).once('value')).val() || {};
           var scope = prof.tracking_scope || 'friends';
@@ -292,8 +292,8 @@
           if (xt) { try { var xr = await fetch('https://playstation-stats-default-rtdb.firebaseio.com/xbox/gamertags/' + encodeURIComponent(xt) + '.json?t=' + Date.now()); var xd = xr.ok ? await xr.json() : null; if (xd && /online/i.test(xd.presenceState || '') && xd.presenceText && !/^(home|online)$/i.test(String(xd.presenceText).trim())) item.plays.push({ kind: 'console', platform: 'Xbox', title: String(xd.presenceText), status: '' }); } catch (e) {} }
           var sid = String(prof.steam_id || '').trim();
           if (sid) {
-            if (!/^7656119\d{10}$/.test(sid)) { var vn = (await db.ref('steam_vanity/' + sid.toLowerCase()).once('value')).val(); sid = typeof vn === 'string' ? vn : ''; }
-            if (sid) { var sp = (await db.ref('steam_users/' + sid + '/profile').once('value')).val(); if (sp && sp.currentGame) item.plays.push({ kind: 'console', platform: 'Steam', title: sp.currentGame, status: '' }); }
+            if (!/^7656119\d{10}$/.test(sid)) { var vn = (await db.ref('platforms/steam_vanity/' + sid.toLowerCase()).once('value')).val(); sid = typeof vn === 'string' ? vn : ''; }
+            if (sid) { var sp = (await db.ref('platforms/steam_users/' + sid + '/profile').once('value')).val(); if (sp && sp.currentGame) item.plays.push({ kind: 'console', platform: 'Steam', title: sp.currentGame, status: '' }); }
           }
         }
       } catch (e) { console.warn('friend extras', e); }
@@ -307,7 +307,7 @@
     auth.onAuthStateChanged(async function (user) {
       WW.user = user || null; WW.friendCode = null;
       if (user) { try { WW.friendCode = await WW.ensureFriendCode(user); } catch (e) { console.error(e); } }
-      if (user && WW.friendCode) { try { var pk = (await db.ref('friend_codes/' + WW.friendCode).once('value')).val(); WW.playKey = (await ownerKeyOfCode(pk, WW.friendCode)) || null; } catch (e) { WW.playKey = null; } }   // friends read us at the key our friend code points to
+      if (user && WW.friendCode) { try { var pk = (await db.ref('accounts/friend_codes/' + WW.friendCode).once('value')).val(); WW.playKey = (await ownerKeyOfCode(pk, WW.friendCode)) || null; } catch (e) { WW.playKey = null; } }   // friends read us at the key our friend code points to
       if (user) await WW.loadAvatar(user);
       cb(WW.user, WW.friendCode);
     });
