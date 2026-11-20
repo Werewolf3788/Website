@@ -27,6 +27,9 @@ const psnApi = require("psn-api");
 const { initializeApp, cert, getApps } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+// Every player's game data is also filed in Kevin's Firestore under their friend code
+// (user/{code}/platform/ps/...). See scripts/friend-store.js.
+const friendStore = require("../scripts/friend-store");
 
 const {
     exchangeNpssoForCode,
@@ -640,6 +643,41 @@ async function writeCardDelta(onlineId, oldRecord, newRecord) {
     if (!keys.length) { console.log(`[RTDB] ${id}: nothing changed.`); return; }
     await rtdbRef(`gamertags/${id}`).update(patch);
     console.log(`[RTDB] ${id}: updated ${keys.length} field(s): ${keys.slice(0, 10).join(", ")}${keys.length > 10 ? ", ..." : ""}`);
+}
+
+/* ---------- copies under the player's friend code (Kevin's Firestore) ---------- */
+let friendStoreOk = null;
+async function toFriendCode(what, onlineId, fn) {
+    if (friendStoreOk === null) {
+        try { friendStoreOk = friendStore.init(); if (friendStoreOk) await friendStore.loadIndex(); }
+        catch (e) { console.warn(`[FRIEND CODE] setup failed: ${e.message}`); friendStoreOk = false; }
+    }
+    if (!friendStoreOk) return;
+    try { await fn(); }
+    catch (e) { console.warn(`[FRIEND CODE] ${onlineId} ${what}: ${e.message}`); }
+}
+
+/** One time per player: copy everything already saved in playstation-stats under their friend code
+ *  (new trophies are copied as they come in). Re-runs if they get a friend code later. */
+async function backfillFriendCode(onlineId, playerRef) {
+    await toFriendCode("backfill", onlineId, async () => {
+        const t = await friendStore.platformRef("ps", onlineId);
+        const cur = (await t.ref.get()).data() || {};
+        if (cur.psnBackfilledAt) return;
+        if (!t.pending) await friendStore.clearPending("ps", onlineId);
+        const [player, tps, lib] = await Promise.all([playerRef.get(), playerRef.collection("trophyProgress").get(), playerRef.collection("library").get()]);
+        const p = player.exists ? player.data() : {};
+        const { trophyTitleSync: _ts, progressHash: _ph, rawProfile: _rp, ...light } = p;
+        let games = 0;
+        for (const d of tps.docs) {
+            const tp = d.data() || {};
+            await friendStore.writeGame("ps", onlineId, tp.title || d.id, tp.gameKey || d.id, "psn", tp);
+            games++;
+        }
+        for (const d of lib.docs) await t.ref.collection("library").doc(d.id).set(d.data());
+        await t.ref.set(plain({ psn: light, psnBackfilledAt: nowEt(), ...(t.pending ? { platform: "ps", ident: onlineId } : {}) }), { merge: true });
+        console.log(`[FRIEND CODE] ${onlineId}: copied ${games} game(s) + library to ${t.pending ? "pending (no friend code yet)" : "user/" + t.code}.`);
+    });
 }
 
 async function writeChunkedItems(parentRef, subName, items, prevPages) {
@@ -1795,10 +1833,12 @@ async function getFullUserData(ctx) {
             if (mapKeys.length) {
                 const h = crypto.createHash("sha1").update(JSON.stringify(sub.progressMap)).digest("hex").slice(0, 16);
                 if (trophyHashes[cId] !== h) {
-                    await playerRef.collection("trophyProgress").doc(String(cId)).set(plain({
+                    const tp = {
                         commId: cId, gameKey: gameIndex[String(cId).toUpperCase()]?.key || toGameKey(gName),
                         title: gName, updatedAt: nowEt(), trophies: sub.progressMap
-                    }));
+                    };
+                    await playerRef.collection("trophyProgress").doc(String(cId)).set(plain(tp));
+                    await toFriendCode("trophies", onlineId, () => friendStore.writeGame("ps", onlineId, gName, tp.gameKey, "psn", { ...tp, platform: gPlat }));
                     trophyHashes[cId] = h;
                     playerDirty = true;
                 }
@@ -1870,6 +1910,10 @@ async function getFullUserData(ctx) {
             const libHash = crypto.createHash("sha1").update(JSON.stringify(allGames)).digest("hex");
             if (libHash !== player.libraryHash) {
                 playerDoc.libraryPages = await writeChunkedItems(playerRef, "library", allGames, player.libraryPages);
+                await toFriendCode("library", onlineId, async () => {
+                    const t = await friendStore.platformRef("ps", onlineId);
+                    await writeChunkedItems(t.ref, "library", allGames, player.libraryPages);
+                });
                 playerDoc.libraryHash = libHash;
                 playerDoc.libraryCount = allGames.length;
             }
@@ -1879,6 +1923,13 @@ async function getFullUserData(ctx) {
             }
         }
         if (playerDirty) await playerRef.set(plain(playerDoc), { merge: true });
+        if (playerDirty) {
+            const { trophyTitleSync: _ts, progressHash: _ph, rawProfile: _rp, ...light } = playerDoc;
+            await toFriendCode("account", onlineId, () => friendStore.writePlatform("ps", onlineId, "psn", {
+                ...light, trophySummary: stats || null, trophyLevel: stats?.trophyLevel ?? null
+            }));
+        }
+        await backfillFriendCode(onlineId, playerRef);
 
         await col("raw_telemetry").doc(safeKey(onlineId)).set(plain({
             profile: profile || {}, presence: rawP, trophySummary: stats || {}, fetchedAt: new Date().toISOString(),
@@ -2070,6 +2121,7 @@ async function executeSyncPass() {
                 if (Object.keys(diff).length) { await rtdbRef(`gamertags/${safeKey(id)}`).update(diff); changed++; Object.assign(existing, diff); }
                 cards[id] = existing;
                 active.add(id);
+                await backfillFriendCode(id, col("players").doc(safeKey(id)));
                 return;
             }
 
