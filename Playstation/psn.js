@@ -1465,28 +1465,7 @@ let heavyRefreshHappened = false;
 async function savePsnToFriendCodes(onlineId, accountId, card, allGames, trophyLists) {
     const codes = new Set([...(psnCodes.byTag[String(onlineId || "").toLowerCase()] || []), ...(psnCodes.byId[String(accountId || "")] || [])]);
     if (!codes.size) return;
-    const games = allGames.map((g) => {
-        const commId = g.npCommunicationId || null, map = commId && trophyLists[commId];
-        // every trophy of the game (locked ones too), so the profile needs nothing else to show the list
-        const list = map ? Object.values(map).filter(Boolean).map((t) => {
-            const cur = Number(t.currentValue ?? 0), tgt = Number(t.targetValue ?? 0);
-            return { id: String(t.trophyId), n: t.name || "", d: t.detail || "", i: t.icon || "", r: t.type || "", rare: t.earnedRate ?? null,
-                e: !!t.earned, t: t.earned ? (t.timestamp || null) : null, pr: !t.earned && tgt > 0 ? `${cur}/${tgt}` : null, h: !!t.hidden };
-        }) : undefined;
-        return {
-            title: g.name, art: g.art || null, progress: g.definedTotal ? g.progress || 0 : null,
-            earned: g.definedTotal ? g.earnedTotal || 0 : null, total: g.definedTotal || null,
-            hours: g.nativePlaytimeHours || null, lastPlayed: g.lastPlayed ? Date.parse(g.lastPlayed) || null : null,
-            playing: !!card.online && !!card.currentGame && normalizeTitleName(card.currentGame) === normalizeTitleName(g.name),
-            list, extra: { commId, titleId: g.titleId || g.npTitleId || null, platform: g.platform || null, trophies: g.definedTrophies || null }
-        };
-    });
-    const ts = card.trophySummary || {};
-    const profile = {
-        name: onlineId, avatar: card.avatar || null, online: !!card.online, currentGame: card.online ? (card.currentGame || null) : null,
-        stats: { level: card.level || 0, trophies: ts.total || 0, platinum: ts.platinum || 0, gold: ts.gold || 0, silver: ts.silver || 0, bronze: ts.bronze || 0, games: card.gamesPlayed || games.length },
-        recent: (card.mostRecentTrophies || []).slice(0, 10).map((t) => ({ n: t.name || "", i: t.icon || "", g: t.gameTitle || "", r: t.type || "", t: t.timestamp || null }))
-    };
+    const { profile, games } = friendGames.psnFromSync(onlineId, card, allGames, trophyLists);
     for (const code of codes) {
         const r = await friendGames.savePlatform(code, "ps", profile, games);
         console.log(`[FRIEND CODE] ${onlineId} -> user/${code}/platform/ps (${r.written || 0} doc(s) written)`);
