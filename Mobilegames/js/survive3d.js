@@ -463,6 +463,17 @@ function deliver(dt) {
 // a build that's been paid in full (by allies, or by your crews feeding the builds) starts by itself: no need to stand on it
 // skipping a timer costs 1 💎 per 10 minutes left (at least 2), so gems stay worth something
 const finishCost = u => u ? Math.max(2, Math.ceil((u.end - NOW()) / 600000)) : 2;
+// metal piles up fastest, so it can also finish a timer (15 🔩 per minute left, at least 20) or be traded at the Smelter
+const metalFinish = u => u ? Math.max(20, Math.ceil((u.end - NOW()) / 60000) * 15) : 20;
+const TRADE = { wood: 3, food: 2 };   // 🔩 per 1 wood / 1 food
+function tradeRows() {
+  const m = Math.floor(st.res.metal || 0);
+  let h = '<div class="row"><div class="g"><b>🔄 Trade metal</b><div class="muted">Got more 🔩 than you can use? Smelt it into building supplies: ' + RES.metal + TRADE.wood + ' → ' + RES.wood + '1, ' + RES.metal + TRADE.food + ' → ' + RES.food + '1.</div></div></div>';
+  ['wood', 'food'].forEach(k => { const r = TRADE[k], o = k === 'wood' ? 10 : 15;
+    h += '<div class="row"><div class="g">' + RES.metal + ' → ' + RES[k] + '</div>' + [1, 10].map(x => '<button class="b" style="margin-left:6px" data-a="trade" data-k="' + k + '" data-n="' + o * x + '"' + (m >= o * x * r ? '' : ' disabled') + '>' + RES.metal + o * x * r + ' → ' + RES[k] + o * x + '</button>').join('') +
+      '<button class="b alt" style="margin-left:6px" data-a="trade" data-k="' + k + '" data-n="half"' + (m >= r * 2 ? '' : ' disabled') + '>Half my ' + RES.metal + '</button></div>'; });
+  return h;
+}
 function autoComplete() { if (tour) return; const k = Object.keys(pads).find(key => pads[key] && !Object.keys(padLeft(key, pads[key])).length); if (k) complete(k, pads[k]); }
 function complete(key, p) {
   delete st.paid[key];
@@ -634,9 +645,10 @@ function buildingPanel(id, info) {
   if (id === 'pp') h += '<div class="muted">Every other building can only be upgraded up to the Power Plant’s level.</div>';
   if (D.out) h += '<div class="muted">Makes ' + RES[D.out] + ' ' + (D.rate * b.lvl * efficiency() * 60).toFixed(1) + '/min into its pile (holds ' + 40 * b.lvl + '). Walk up to it to collect. Workers: ' + survivors() + ' survivors for ' + producers().length * 2 + ' jobs' + (st.res.food <= 0 ? ' · <b style="color:#fca5a5">no food — half speed</b>' : '') + '.</div>';
   if (id.indexOf('house') === 0) h += '<div class="muted">Each house level shelters 2 more survivors to work your buildings.</div>';
-  if (b.up) h += '<div class="row"><div class="g">Upgrading to level ' + b.up.to + '<div class="pb"><i style="width:' + Math.min(100, 100 - (b.up.end - NOW()) / b.up.total * 100) + '%"></i></div><div class="muted">' + fmt((b.up.end - NOW()) / 1000) + ' left · ' + Object.keys(b.up.h || {}).length + '/' + MAX_HELPS + ' ally helps</div></div><button class="b alt" data-a="finish" data-id="' + id + '" ' + (st.res.gems >= finishCost(b.up) ? '' : 'disabled') + '>⚡ Finish 💎' + finishCost(b.up) + '</button></div>';
+  if (b.up) h += '<div class="row"><div class="g">Upgrading to level ' + b.up.to + '<div class="pb"><i style="width:' + Math.min(100, 100 - (b.up.end - NOW()) / b.up.total * 100) + '%"></i></div><div class="muted">' + fmt((b.up.end - NOW()) / 1000) + ' left · ' + Object.keys(b.up.h || {}).length + '/' + MAX_HELPS + ' ally helps</div></div><button class="b alt" data-a="finish" data-id="' + id + '" ' + (st.res.gems >= finishCost(b.up) ? '' : 'disabled') + '>⚡ Finish 💎' + finishCost(b.up) + '</button><button class="b alt" style="margin-left:6px" data-a="mfinish" data-id="' + id + '" ' + (st.res.metal >= metalFinish(b.up) ? '' : 'disabled') + '>⚡ Finish 🔩' + metalFinish(b.up) + '</button></div>';
   else if (b.lvl >= cap(id)) h += '<div class="row muted">Max for now — upgrade the 🔌 Power Plant first.</div>';
   else h += '<div class="row muted">Stand on the yellow pad in front of it to deliver resources for the next level.</div>';
+  if (id === 'smelter') h += tradeRows();
   show(h + moveRow(id));
 }
 // ------------------------------------------------------------ town layout: move any building to a new spot in your home area
@@ -719,6 +731,9 @@ function doAct(a, d) {
   if (a === 'recruit') { const c = HEROES[d.id].cost; if (!canPay(c)) return; pay(c); st.heroes[d.id] = { lvl: 1 }; syncHeroes(); toast(HEROES[d.id].n + ' joined your squad!'); heroPanel(); }
   if (a === 'herolvl') { const o = st.heroes[d.id], c = heroUpCost(o.lvl); if (!canPay(c)) return; pay(c); o.lvl++; syncHeroes(); heroes[d.id].hp = heroes[d.id].max; heroPanel(); }
   if (a === 'weapon') { const c = weaponCost(st.weapon); if (!canPay(c)) return; pay(c); st.weapon++; toast('⚔️ Weapon level ' + st.weapon); workshopPanel(); }
+  if (a === 'mfinish') { const u = st.b[d.id].up, mc = metalFinish(u); if (!u || st.res.metal < mc) return; st.res.metal -= mc; u.end = NOW(); economy(0); syncBuildings(); syncPads(); closeSheet(); toast('⚡ Finished with ' + RES.metal + mc); }
+  if (a === 'trade') { const k = d.k, r = TRADE[k]; if (!r) return; const n = d.n === 'half' ? Math.floor(Math.floor((st.res.metal || 0) / 2) / r) : +d.n; if (!(n > 0) || st.res.metal < n * r) return;
+    st.res.metal -= n * r; st.res[k] = (st.res[k] || 0) + n; toast('🔄 ' + RES.metal + n * r + ' → ' + RES[k] + n); sfx(520, .12, .06); persist(); hud(); return buildingPanel('smelter'); }
   if (a === 'finish') { const fc = finishCost(st.b[d.id].up); if (!st.b[d.id].up || st.res.gems < fc) return; st.res.gems -= fc; st.b[d.id].up.end = NOW(); economy(0); syncBuildings(); syncPads(); closeSheet(); }
   if (a === 'visit') return visit(($('vcode').value || '').trim().toUpperCase());
   if (a === 'visitf') return visit(d.code);
