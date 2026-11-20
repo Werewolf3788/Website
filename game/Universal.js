@@ -1540,6 +1540,7 @@ function liveBlock(list) {
 function renderSquadRoster() {
     const el = document.getElementById('friendsRosterContainer'); if (!el) return;
     const list = toArr(appState.friendsProgress);
+    addFriendTrophyCompletions(list);
     const cards = [...document.querySelectorAll('#section-container .game-item-card')].filter(c => !String(c.getAttribute('data-id')).startsWith('wpn_'));
     const total = cards.filter(c => c.getAttribute('data-type') !== 'ribbon').length;
     const data = appState.gameData || {};
@@ -1597,8 +1598,30 @@ window.appState.showFriendAllGames = async function(code, btn) {
     }));
     box.innerHTML = rows.join('') || '<div style="font-size:0.72rem;color:#94a3b8;">No games found.</div>';
 };
+// A friend's trophies can complete whole sets (e.g. "The Whole Story" = every document),
+// same as for you: add those items to what the friend has, so their chips show everywhere.
+function addFriendTrophyCompletions(list) {
+    const groups = Object.values(appState.collectibles || {}).filter(g => Array.isArray(g.trophy_completes));
+    if (!groups.length) return;
+    const nameOf = {}; Object.entries(appState.trophies || {}).forEach(([id, t]) => { if (t && t.name) nameOf[id] = xnorm(t.name); });
+    list.forEach(f => {
+        if (!f.done || f._trophyAutoSize === f.done.size) return;
+        const earned = new Set(); f.done.forEach(id => { if (nameOf[id]) earned.add(nameOf[id]); });
+        groups.forEach(g => g.trophy_completes.forEach(rule => {
+            if (!rule || !earned.has(xnorm(rule.trophy))) return;
+            const cats = Array.isArray(rule.categories) ? rule.categories.map(xnorm) : null;
+            Object.entries(g.items || {}).forEach(([id, it]) => {
+                if (cats && !cats.includes(xnorm(it.category))) return;
+                f.done.add(id);
+                if (rule.bonus_stars && it.bonus_for) f.done.add('bonus:' + it.bonus_for.id);
+            });
+        }));
+        f._trophyAutoSize = f.done.size;
+    });
+}
 function applyFriendMarks() {
     const list = toArr(appState.friendsProgress);
+    addFriendTrophyCompletions(list);
     document.querySelectorAll('#section-container .game-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
         const isRibbon = card.getAttribute('data-type') === 'ribbon';
