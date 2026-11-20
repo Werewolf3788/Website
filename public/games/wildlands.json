@@ -9552,17 +9552,18 @@
           "long": -60.0557,
           "id": "bm_espiritu_santo_01",
           "name": "Quiet Running",
-          "location": "Just northeast of Alta Gracia · 📍 -13.9391, -60.0557",
+          "location": "In Alta Gracia, on crates in the walled yard by the Com Centro · 📍 -13.9391, -60.0557",
           "category": "Bonus Medal",
-          "guide": "Reduces noise by 10%. Works once you've unlocked the Quiet Running skill. Just northeast of Alta Gracia (Formerly a gold mining town, now a pilgrimage town). 📍 Lat -13.9391, Long -60.0557.",
+          "guide": "Reduces noise by 10%. Works once you've unlocked the Quiet Running skill. In Alta Gracia (a former gold mining town, now a pilgrimage town). Go through the open metal gate into the walled yard next to the 'COM CENTRO' building (red radio/satellite sign on the roof). The medal is on ground level, sitting on top of a stack of dark green crates against the red brick wall with white graffiti. In-game Tacmap readout there: about Lat -13.920, Long -60.061. 📍 Map data: Lat -13.9391, Long -60.0557.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/espiritu_santo.jpg",
+          "location_image_url": "/public/games/wildlands/images/spots/bm_espiritu_santo_01.jpg",
           "bonus_for": {
             "group": "physical_skills",
             "id": "skill_quiet_running"
           },
           "map_x": 0.85477,
-          "map_y": 0.12679
+          "map_y": 0.12679,
+          "verified": "Found in-game"
         },
         {
           "region": "Flor de Oro",
