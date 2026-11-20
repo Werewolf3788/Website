@@ -161,8 +161,17 @@ let K = null, S = {}, SEC = {};
 function banner(msg, bad) { const b = $("banner"); b.textContent = msg; b.className = bad ? "err" : "good"; }
 const on = (ok, yes, no) => ok ? `<span class="ok">✔ ${yes}</span>` : `<span class="bad">✖ ${no}</span>`;
 
-/* wake the Render service early so the Connect buttons don't wait on it */
-fetch(SYNC + "/health", { mode: "no-cors" }).catch(() => {});
+/* The free Render service sleeps. Wake it early, and make Connect wait until it really answers:
+   if the sign-in is sent while it's still starting, Render reloads the page and the sign-in is lost. */
+async function awake(maxMs = 90000) {
+  const end = Date.now() + maxMs;
+  while (Date.now() < end) {
+    try { const r = await fetch(SYNC + "/health", { cache: "no-store" }); if (r.ok && (await r.json()).ok) return true; } catch (e) {}
+    await new Promise((res) => setTimeout(res, 3000));
+  }
+  return false;
+}
+awake();
 
 /* messages coming back from a sign-in */
 (() => {
@@ -220,7 +229,10 @@ async function save(obj, msg) {
 
 /* Twitch / Kick: hand off to the Render service with a fresh site sign-in */
 document.querySelectorAll("[data-connect]").forEach((b) => b.onclick = async () => {
-  b.disabled = true; b.textContent = "Opening…";
+  const label = b.textContent;
+  b.disabled = true; b.textContent = "Waking up the sync service…";
+  if (!(await awake())) { b.disabled = false; b.textContent = label; return banner("The sync service didn't wake up. Wait a moment and click Connect again.", true); }
+  b.textContent = "Opening…";
   const f = $("connectForm");
   f.action = `${SYNC}/connect/${b.dataset.connect}`;
   f.id_token.value = await auth.currentUser.getIdToken(true);

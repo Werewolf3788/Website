@@ -80,7 +80,7 @@ function verify(state) {
 
 const app = express();
 app.get("/", (req, res) => res.type("text").send("ww-stream-sync running. Last pass: " + (last.at || "not yet")));
-app.get("/health", (req, res) => res.send("ok"));
+app.get("/health", (req, res) => { res.set("Access-Control-Allow-Origin", "*"); res.json({ ok: true }); });
 app.get("/wake", (req, res) => { res.type("text").send("awake"); if (!running) tick(); });
 app.get("/status", (req, res) => res.json(last));
 
@@ -98,6 +98,10 @@ function safeBack(u) {
 function backTo(res, back, params) { res.redirect(back + "?" + new URLSearchParams(params)); }
 
 app.get("/setup", (req, res) => res.redirect(SETUP_PAGE_URL));
+
+/* A Connect click that reaches us as a plain page load (e.g. Render reloading the page while
+ * the service was waking up) carries no sign-in - send the person back to try again. */
+app.get("/connect/:provider", (req, res) => backTo(res, SETUP_PAGE_URL, { error: "The sync service was just waking up. Click Connect again." }));
 
 /* First connection for a site user: turn the sync on with safe defaults (never overwrites). */
 async function ensureDefaults(key) {
