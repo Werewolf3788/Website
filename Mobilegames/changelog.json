@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 36,
+   "date": "Nov 20",
+   "game": "all",
+   "items": [
+    "🎯 New game: Werewolf Recon, a 3D open-world squad shooter. First province: Itacua",
+    "Skill Points, weapon cases, accessory cases and bonus medals sit where they are on the Wildlands tracker map, and the skill trees use the same ranks and costs",
+    "Drone and binoculars to mark enemies, squad sync shot, trucks, night vision, and thermal vision once you unlock it. Plays with keyboard and mouse, a PS5/Xbox controller or touch"
+   ]
+  },
+  {
    "id": 35,
    "date": "Nov 20",
    "game": "all",

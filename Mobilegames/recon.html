@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Werewolf Recon</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;transition:filter .25s}
+  .hud{position:fixed;z-index:5}
+  body.nohud .hud,body.nohud #touch{display:none!important}
+  #top{top:0;left:0;right:0;padding:calc(6px + env(safe-area-inset-top)) 12px 6px;font-size:.82rem;background:linear-gradient(#000a,#0000);text-shadow:0 1px 3px #000;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  #top button{color:#e2e8f0;background:none;border:0;font:inherit;padding:0 4px;cursor:pointer}
+  #xpbar{display:inline-block;width:70px;height:6px;background:#334155;border-radius:3px;vertical-align:middle;overflow:hidden}#xpbar i{display:block;height:100%;background:#38bdf8;width:0}
+  #res{top:calc(34px + env(safe-area-inset-top));left:12px;font-size:.78rem;text-shadow:0 1px 3px #000;pointer-events:none;line-height:1.5}
+  #mini{top:calc(34px + env(safe-area-inset-top));right:10px;width:130px;height:130px;border-radius:50%;background:#0009;border:2px solid #fff3;pointer-events:none}
+  #cross{left:50%;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;pointer-events:none}
+  #cross:before,#cross:after{content:'';position:absolute;background:#fffc;box-shadow:0 0 2px #000}
+  #cross:before{left:13px;top:0;width:2px;height:28px;clip-path:polygon(0 0,100% 0,100% 35%,0 35%,0 65%,100% 65%,100% 100%,0 100%)}
+  #cross:after{top:13px;left:0;height:2px;width:28px;clip-path:polygon(0 0,35% 0,35% 100%,0 100%,0 0,65% 0,100% 0,100% 100%,65% 100%)}
+  #cross.hit:before,#cross.hit:after{background:#f87171}
+  #wep{right:14px;bottom:calc(14px + env(safe-area-inset-bottom));text-align:right;text-shadow:0 2px 4px #000;pointer-events:none;font-size:.85rem}
+  #wep b{font-size:1.6rem;font-variant-numeric:tabular-nums}
+  #vitals{left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(46vw,260px);pointer-events:none}
+  #vitals div{height:7px;border-radius:4px;background:#0008;margin-top:4px;overflow:hidden}#vitals i{display:block;height:100%}
+  #hp i{background:#f8fafc}#st i{background:#facc15}#bat i{background:#38bdf8}
+  #det{left:0;right:0;top:calc(70px + env(safe-area-inset-top));text-align:center;font-weight:800;letter-spacing:.1em;pointer-events:none;text-shadow:0 1px 4px #000}
+  #toast{left:0;right:0;top:calc(96px + env(safe-area-inset-top));text-align:center;color:#fde68a;font-weight:700;text-shadow:0 1px 3px #000;pointer-events:none;padding:0 12px;min-height:1.3em}
+  #center{left:0;right:0;top:36%;text-align:center;font-size:2.2rem;font-weight:900;text-shadow:0 3px 10px #000;pointer-events:none}
+  #hurt{position:fixed;inset:0;z-index:4;pointer-events:none;box-shadow:inset 0 0 120px #dc2626;opacity:0;transition:opacity .3s}
+  #hint{left:12px;bottom:calc(14px + env(safe-area-inset-bottom));font-size:.72rem;color:#cbd5e1;text-shadow:0 1px 3px #000;pointer-events:none;max-width:34vw;line-height:1.4}
+  /* touch */
+  #touch{display:none}
+  body.touch #touch{display:block} body.pad #touch{display:none} body.touch #hint{display:none}
+  body.touch #wep{bottom:auto;top:calc(172px + env(safe-area-inset-top));right:12px;font-size:.75rem} body.touch #wep b{font-size:1.15rem}
+  body.touch #vitals{bottom:calc(150px + env(safe-area-inset-bottom))}
+  .stk{position:fixed;z-index:6;width:120px;height:120px;border-radius:50%;background:#ffffff1c;border:2px solid #ffffff40;touch-action:none;left:18px;bottom:calc(22px + env(safe-area-inset-bottom))}
+  .stk i{position:absolute;left:38px;top:38px;width:40px;height:40px;border-radius:50%;background:#ffffff99;pointer-events:none}
+  #tbtns{position:fixed;z-index:6;right:10px;bottom:calc(14px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,50px);gap:7px;direction:rtl}
+  #tbtns button,#ttop button{width:50px;height:50px;border:0;border-radius:14px;background:#ffffff26;color:#fff;font-weight:800;font-size:.68rem;touch-action:none;direction:ltr;line-height:1.1;padding:0}
+  #tbtns button.big{background:#ef444477;font-size:.8rem} #tbtns button.on{background:#ffffff70}
+  #ttop{position:fixed;z-index:6;left:10px;top:calc(120px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:6px}
+  #ttop button{width:44px;height:40px;font-size:1rem}
+  @media (orientation:portrait){ body.touch #res{top:calc(56px + env(safe-area-inset-top))} body.touch #vitals{bottom:calc(200px + env(safe-area-inset-bottom))} body.touch #mini{top:calc(56px + env(safe-area-inset-top));width:110px;height:110px} body.touch #wep{top:calc(172px + env(safe-area-inset-top))} body.touch #ttop{top:calc(100px + env(safe-area-inset-top))} }
+  @media (orientation:landscape){ body.touch #wep{top:calc(150px + env(safe-area-inset-top))} body.touch #vitals{bottom:calc(10px + env(safe-area-inset-bottom))} #ttop{top:calc(60px + env(safe-area-inset-top))} #tbtns{grid-template-columns:repeat(5,48px)} #tbtns button{width:48px;height:46px} }
+  /* overlays */
+  .ov{position:fixed;inset:0;z-index:20;background:#000c;display:none;align-items:center;justify-content:center;padding:12px}
+  .ov.show{display:flex}
+  .box{background:#1e293b;border-radius:16px;padding:16px;width:min(96vw,620px);max-height:92vh;overflow-y:auto}
+  .box h2{margin:0 0 8px} .muted{color:#94a3b8;font-size:.85rem}
+  .box button{background:#22c55e;color:#04210f;border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:800;cursor:pointer;margin:4px 4px 0 0}
+  .box button.alt{background:#334155;color:#e2e8f0} .box button:disabled{opacity:.4;cursor:default}
+  .tabs{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0 10px}.tabs button{padding:7px 10px!important;font-size:.8rem}.tabs button.sel{outline:3px solid #fde68a}
+  .sk{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #334155}
+  .sk .n{flex:1}.sk .n small{display:block;color:#94a3b8;font-size:.75rem}
+  .rk{display:flex;gap:3px}.rk i{width:14px;height:14px;border-radius:3px;background:#334155}.rk i.on{background:#38bdf8}
+  .sk button{padding:6px 9px!important;font-size:.75rem;min-width:92px}
+  canvas#tacc{width:min(100%,68vh);margin:0 auto;border-radius:10px;background:#0f172a;display:block;touch-action:none}
+  .keys{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.8rem}.keys b{color:#fde68a;white-space:nowrap}
+  #wheel .box{width:min(92vw,360px)} #wheel button{display:block;width:100%;text-align:left}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="hurt"></div>
+<div id="top" class="hud"><span>🎯 <b>Werewolf Recon</b> · <span id="prov">Itacua</span> · Lv <b id="lvl">1</b> <span id="xpbar"><i></i></span></span><span><button id="muteBtn" title="Sound">🔊</button> <button id="mapBtn">🗺️ Map</button> <button id="skBtn">⬆️ Skills</button> · <button id="gamesBtn">☰ Games</button></span></div>
+<div id="res" class="hud"></div>
+<canvas id="mini" class="hud" width="260" height="260"></canvas>
+<div id="cross" class="hud"></div>
+<div id="det" class="hud"></div>
+<div id="toast" class="hud"></div>
+<div id="center" class="hud"></div>
+<div id="wep" class="hud"></div>
+<div id="vitals" class="hud"><div id="hp"><i></i></div><div id="st"><i></i></div><div id="bat" style="display:none"><i></i></div></div>
+<div id="hint" class="hud"></div>
+<div id="touch">
+  <div class="stk" id="sL"><i></i></div>
+  <div id="ttop"><button data-b="map">🗺️</button><button data-b="drone">🛸</button><button data-b="bino">🔭</button><button data-b="vision">👁️</button><button data-b="squad">🎖️</button></div>
+  <div id="tbtns">
+    <button data-b="fire" class="big">FIRE</button><button data-b="aim">AIM</button><button data-b="jump">JUMP</button><button data-b="crouch">CROUCH<br><small>hold: prone</small></button>
+    <button data-b="reload">RELOAD</button><button data-b="swap">SWAP<br><small>hold: holster</small></button><button data-b="throw">💣</button><button data-b="mark">MARK</button>
+    <button data-b="use">USE<br><small>truck / takedown</small></button><button data-b="sprint">SPRINT</button><button data-b="heal">❤️</button><button data-b="shoulder">⇆</button>
+  </div>
+</div>
+
+<div id="ov" class="ov show"><div class="box" id="ovBox"><h2>🎯 Werewolf Recon</h2><div class="muted">Loading the province…</div></div></div>
+<div id="tac" class="ov"><div class="box"><h2>🗺️ Tactical map · <span id="tacProv"></span></h2><canvas id="tacc" width="900" height="900"></canvas><div id="tacLeg" class="muted" style="margin-top:8px"></div><button class="alt" data-close>Close (M)</button></div></div>
+<div id="sk" class="ov"><div class="box"><h2>⬆️ Skills &amp; loadout</h2><div id="skTop" class="muted"></div><div class="tabs" id="skTabs"></div><div id="skList"></div><button class="alt" data-close>Close (J)</button></div></div>
+<div id="wheel" class="ov"><div class="box"><h2>🎖️ Squad orders</h2><div id="wheelList"></div><button class="alt" data-close>Close (Tab)</button></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>document.write('<script src="js/common.js"><\/script>');</script>
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/gamepad.js"><\/script>');</script>
+<script>document.write('<script type="module" src="js/recon3d.js"><\/script>');</script>
+</body>
+</html>
