@@ -86,6 +86,9 @@ async function runUser({ key, cfg, user }) {
             await store.saveState(key, { alerted_stream_id: s.id });
         }
         log(key, `live: stream ${s.id} (${s.game_name})`);
+        if (sec.kick_refresh && kick.ensureChatSubscription) {
+            kick.ensureChatSubscription(key).then((x) => log(key, "Kick chat: " + x)).catch((e) => log(key, "Kick chat subscribe failed: " + e.message));
+        }
     }
 
     chat.start(key, { cfg, broadcasterId });

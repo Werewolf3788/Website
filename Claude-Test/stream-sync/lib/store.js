@@ -36,6 +36,27 @@ async function saveSecret(key, field, value) { await update("user_secrets/" + ke
 async function saveState(key, obj) { await update("users/" + key + "/stream_sync_state", obj); }
 async function state(key) { return (await get("users/" + key + "/stream_sync_state")) || {}; }
 
+/** Firebase sign-in from the setup page -> site user key (same key style as the site). */
+async function userFromIdToken(idToken) {
+    db();
+    const t = await admin.auth().verifyIdToken(String(idToken || ""));
+    const key = t.email ? String(t.email).toLowerCase().replace(/\./g, "_").replace("@", "_at_") : t.uid;
+    return { key, email: t.email || null, uid: t.uid };
+}
+
+async function saveSettings(key, obj) { await update("users/" + key + "/stream_sync", obj); }
+
+/** Kick chat webhooks name the broadcaster by Kick user id. */
+async function userByKickId(kickUserId) {
+    const want = String(kickUserId || "");
+    if (!want) return null;
+    const users = (await get("users")) || {};
+    for (const [key, u] of Object.entries(users)) {
+        if (u && u.stream_sync && String(u.stream_sync.kick_user_id || "") === want) return key;
+    }
+    return null;
+}
+
 /** Find the site user whose stream_sync.<field> matches a platform login. */
 async function userByLogin(field, login) {
     const want = String(login || "").toLowerCase();
@@ -75,4 +96,4 @@ async function psnCard(onlineId) {
     return null;
 }
 
-module.exports = { psnCard, db, get, update, set, enabledUsers, secrets, saveSecret, saveState, state, userByLogin, psnAccountId };
+module.exports = { psnCard, db, get, update, set, enabledUsers, secrets, saveSecret, saveState, state, saveSettings, userFromIdToken, userByKickId, userByLogin, psnAccountId };

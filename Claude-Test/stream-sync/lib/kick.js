@@ -1,4 +1,5 @@
-/* Kick public API: stream title + category. OAuth 2.1 with PKCE.
+/* Kick public API: stream title + category, and Kick chat -> Twitch through
+ * Kick's official chat events (webhook). OAuth 2.1 with PKCE.
  * App credentials: owner's user_secrets kick_client_id / kick_client_secret.
  * User refresh token: user_secrets/{key}/kick_refresh (rotates; saved back). */
 "use strict";
@@ -8,7 +9,7 @@ const store = require("./store");
 
 const API = "https://api.kick.com/public";
 const IDP = "https://id.kick.com/oauth";
-const SCOPES = "user:read channel:read channel:write";
+const SCOPES = "user:read channel:read channel:write events:subscribe";
 
 const toks = new Map();
 
@@ -94,7 +95,44 @@ async function exchangeCode(code, redirectUri, state) {
     const j = await tokenRequest({ grant_type: "authorization_code", code, redirect_uri: redirectUri, code_verifier: p.verifier });
     const me = await api("GET", "/v1/users", j.access_token);
     const u = Array.isArray(me.data) ? me.data[0] : null;
-    return { refresh: j.refresh_token, login: u ? (u.name || u.username || u.slug) : null };
+    return { refresh: j.refresh_token, login: u ? (u.name || u.username || u.slug) : null, userId: u && u.user_id != null ? String(u.user_id) : null };
 }
 
-module.exports = { creds, token, searchCategories, updateChannel, authorizeUrl, exchangeCode };
+/* ---- Kick chat -> Twitch (official "chat.message.sent" webhook) ----
+ * The webhook URL is set once on the Kick app (kick.com/settings/developer):
+ *   https://ww-stream-sync.onrender.com/webhooks/kick
+ * Each streamer is subscribed to their own chat when they connect Kick and again
+ * at the start of each stream (only if the subscription is missing). */
+const CHAT_EVENT = "chat.message.sent";
+async function ensureChatSubscription(key) {
+    const tok = await token(key);
+    if (!tok) return "kick not connected";
+    const list = await api("GET", "/v1/events/subscriptions", tok).catch(() => ({ data: [] }));
+    const have = (Array.isArray(list.data) ? list.data : []).some((x) => (x.event || x.name) === CHAT_EVENT && (x.method || "webhook") === "webhook");
+    if (have) return "subscribed";
+    await api("POST", "/v1/events/subscriptions", tok, { events: [{ name: CHAT_EVENT, version: 1 }], method: "webhook" });
+    return "subscribed now";
+}
+
+let kickKey = null; // Kick's public key, used to check webhook signatures
+async function publicKey() {
+    if (kickKey) return kickKey;
+    const r = await fetch(API + "/v1/public-key");
+    const j = await r.json().catch(() => ({}));
+    const k = j && j.data && j.data.public_key;
+    if (!k) throw new Error("Kick public key unavailable");
+    kickKey = k;
+    return k;
+}
+
+/** True only if the webhook really came from Kick. raw = exact request body (Buffer/string). */
+async function verifyWebhook(headers, raw) {
+    const id = headers["kick-event-message-id"], ts = headers["kick-event-message-timestamp"], sig = headers["kick-event-signature"];
+    if (!id || !ts || !sig) return false;
+    const v = crypto.createVerify("RSA-SHA256");
+    v.update(`${id}.${ts}.${Buffer.isBuffer(raw) ? raw.toString("utf8") : String(raw)}`);
+    v.end();
+    try { return v.verify(await publicKey(), Buffer.from(String(sig), "base64")); } catch (e) { return false; }
+}
+
+module.exports = { creds, token, searchCategories, updateChannel, authorizeUrl, exchangeCode, ensureChatSubscription, verifyWebhook, CHAT_EVENT };
