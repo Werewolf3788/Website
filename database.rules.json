@@ -105,7 +105,10 @@
       "push_subscriptions": {
         "$id": {
           ".write": "$id.matches(/^[0-9a-f]{32}$/)",
-          ".validate": "newData.hasChildren(['endpoint', 'keys']) && newData.child('endpoint').isString() && newData.child('endpoint').val().beginsWith('https://')"
+          ".validate": "newData.hasChildren(['endpoint', 'keys']) && newData.child('endpoint').isString() && newData.child('endpoint').val().beginsWith('https://')",
+          "user": {
+            ".validate": "newData.isString() && newData.val().length <= 120"
+          }
         }
       },
       "auth_links": {
@@ -117,6 +120,12 @@
       "discord_links": {
         ".read": false,
         ".write": false
+      },
+      "push_queue": {
+        "$id": {
+          ".write": "auth != null && !data.exists()",
+          ".validate": "newData.hasChildren(['to', 'title', 'body', 'at']) && newData.child('title').isString() && newData.child('title').val().length <= 120 && newData.child('body').isString() && newData.child('body').val().length <= 300"
+        }
       }
     },
     "social": {

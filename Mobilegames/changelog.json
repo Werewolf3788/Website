@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 38,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "🤝 On a computer, a see-through Ally progress panel on the left shows each ally's Power Plant level, areas, supplies and upgrade timers. Click its title to hide it",
+    "⚡ When your Power Plant levels up, your allies hear about it: a note in their game, plus a phone/desktop notification if they turned on 🔔 notifications on the site"
+   ]
+  },
+  {
    "id": 37,
    "date": "Nov 20",
    "game": "survive",
