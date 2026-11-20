@@ -90,3 +90,15 @@ test("Kick chat reaches Twitch while live, posted as the streamer when that's pi
     chat.stop("fan_at_gmail_com");
     assert.deepStrictEqual(saved.sent, [{ msg: "[KICK] kickviewer: hello from kick", postAs: "streamer" }]);
 });
+
+test("a Connect that arrives as a plain page load goes back to the page with a retry message", async () => {
+    const r = await realFetch(base + "/connect/twitch", { redirect: "manual" });
+    assert.strictEqual(r.status, 302);
+    assert.match(r.headers.get("location"), /setup\?error=.*waking\+up/);
+});
+
+test("/health answers the setup page (CORS) once awake", async () => {
+    const r = await realFetch(base + "/health");
+    assert.strictEqual(r.headers.get("access-control-allow-origin"), "*");
+    assert.deepStrictEqual(await r.json(), { ok: true });
+});
