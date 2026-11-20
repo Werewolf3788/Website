@@ -2,214 +2,263 @@
   "rules": {
     ".read": false,
     ".write": false,
-
-    "utm_links":      { ".read": true, ".write": "auth != null" },
-    "movies_guide":   { ".read": true, ".write": "auth != null" },
-    "music_releases": { ".read": true, ".write": "auth != null" },
-
-    "games":          { ".read": true, ".write": "auth != null" },
-    "games_catalog":  { ".read": true, ".write": "auth != null" },
-
-    "psn":            { ".read": true, ".write": "auth != null" },
-    "xbox":           { ".read": true, ".write": false },
-    "steam_users":    { ".read": true, ".write": false },
-    "steam_games":    { ".read": true, ".write": false },
-    "steam_vanity":   { ".read": "auth != null", ".write": false },
-
     "users": {
-      ".indexOn": ["friend_code"],
+      ".indexOn": [
+        "friend_code"
+      ],
       "$k": {
         ".read": "auth != null",
         ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        "username":        { ".validate": "newData.isString() && newData.val().length <= 32" },
-        "primary_color":   { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" },
-        "secondary_color": { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" },
-        "discord_signin_id":  { ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[0-9]{17,20}$/))" }
+        "username": {
+          ".validate": "newData.isString() && newData.val().length <= 32"
+        },
+        "primary_color": {
+          ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
+        },
+        "secondary_color": {
+          ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
+        },
+        "discord_signin_id": {
+          ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[0-9]{17,20}$/))"
+        }
       }
     },
-
-    "auth_links": {
-      "$uid": { ".read": "auth != null && $uid === auth.uid", ".write": false }
-    },
-    "discord_links": { ".read": false, ".write": false },
-
     "user_secrets": {
       "$k": {
-        ".read":  "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        "psn_npsso": { ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[A-Za-z0-9]{64}$/))" },
-        "discord_signin_key": { ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[0-9a-f]{64}$/))" }
-      }
-    },
-
-    "friend_codes": {
-      "$c": {
-        ".read": "auth != null",
-        ".write": "auth != null && ((!data.exists() && (newData.val() === auth.uid || (auth.token.email != null && newData.val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))) || (data.exists() && (data.val() === auth.uid || (auth.token.email != null && data.val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))))"
-      }
-    },
-
-    "friend_requests": {
-      "$k": {
         ".read": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        "$code": {
+        ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        "psn_npsso": {
+          ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[A-Za-z0-9]{64}$/))"
+        },
+        "discord_signin_key": {
+          ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[0-9a-f]{64}$/))"
+        }
+      }
+    },
+    "utm_links": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "movies_guide": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "psn": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "accounts": {
+      "friend_codes": {
+        "$c": {
           ".read": "auth != null",
-          ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && ($k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || newData.child('from_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || data.child('from_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))) || newData.child('from_key').val() === auth.uid || data.child('from_key').val() === auth.uid)"
+          ".write": "auth != null && ((!data.exists() && (newData.val() === auth.uid || (auth.token.email != null && newData.val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))) || (data.exists() && (data.val() === auth.uid || (auth.token.email != null && data.val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))))"
         }
-      }
-    },
-
-    "games_saves": {
-      "$uid": {
-        ".read": "auth != null && $uid === auth.uid",
-        ".write": "auth != null && $uid === auth.uid"
-      }
-    },
-
-    "wifi": {
-      "$owner": {
-        ".read": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        ".write": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        "$id": {
-          ".read": "auth != null && auth.token.email != null && root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val() != null && (root.child('friend_codes').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || root.child('friend_codes').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).child('email_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')) && ((data.child('share').val() === 'close' && root.child('users').child($owner).child('friends').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).child('close_friend').val() === true) || (data.child('share').val() === 'picked' && data.child('to').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).val() === true))",
-          ".validate": "newData.hasChildren(['ssid','share'])",
-          "ssid": {
-            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 64"
-          },
-          "password": {
-            ".validate": "newData.isString() && newData.val().length <= 128"
-          },
-          "label": {
-            ".validate": "newData.isString() && newData.val().length <= 48"
-          },
-          "note": {
-            ".validate": "newData.isString() && newData.val().length <= 200"
-          },
-          "share": {
-            ".validate": "newData.isString() && newData.val().matches(/^(private|close|picked)$/)"
+      },
+      "friend_requests": {
+        "$k": {
+          ".read": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+          "$code": {
+            ".read": "auth != null",
+            ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && ($k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || newData.child('from_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || data.child('from_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))) || newData.child('from_key').val() === auth.uid || data.child('from_key').val() === auth.uid)"
           }
         }
-      }
-    },
-    "wifi_index": {
-      "$owner": {
-        ".read": "auth != null",
-        ".write": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))"
-      }
-    },
-
-    "game_leaders": {
-      ".read": "auth != null",
-      "$game": {
-        ".validate": "$game.matches(/^[a-z0-9_-]{2,24}$/)",
-        "$uid": {
-          ".write": "auth != null && $uid === auth.uid",
-          "w": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+      },
+      "profiles": {
+        "$k": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')",
+          "bio": {
+            ".validate": "newData.isString() && newData.val().length <= 280"
           },
-          "l": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
-          },
-          "bw": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
-          },
-          "bl": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
-          },
-          "best": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
-          },
-          "t": {
-            ".validate": "newData.isNumber()"
-          },
-          "n": {
-            ".validate": "newData.isString() && newData.val().length <= 24"
-          },
-          "av": {
-            ".validate": "newData.isString() && newData.val().length <= 600"
-          },
-          "$other": {
-            ".validate": false
+          "displayName": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
           }
         }
-      }
-    },
-
-    "pranks": {
-      ".read": "auth != null",
-      ".write": "auth != null && auth.token.email === 'raykevin71888@gmail.com'"
-    },
-
-    "game_rooms": {
-      "$game": {
+      },
+      "profileMedia": {
+        "$k": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')"
+        }
+      },
+      "public_profiles": {
         "$code": {
-          ".read": "auth != null && $game.matches(/^[a-z0-9_-]{2,24}$/)",
-          ".write": "auth != null && $game.matches(/^[a-z0-9_-]{2,24}$/)"
+          ".read": true,
+          ".write": "auth != null && auth.token.email != null && root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val() === $code",
+          "bio": {
+            ".validate": "newData.isString() && newData.val().length <= 280"
+          },
+          "displayName": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          }
+        }
+      },
+      "presence": {
+        "$k": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')"
+        }
+      },
+      "push_subscriptions": {
+        "$id": {
+          ".write": "$id.matches(/^[0-9a-f]{32}$/)",
+          ".validate": "newData.hasChildren(['endpoint', 'keys']) && newData.child('endpoint').isString() && newData.child('endpoint').val().beginsWith('https://')"
+        }
+      },
+      "auth_links": {
+        "$uid": {
+          ".read": "auth != null && $uid === auth.uid",
+          ".write": false
+        }
+      },
+      "discord_links": {
+        ".read": false,
+        ".write": false
+      }
+    },
+    "social": {
+      "messages": {
+        "$tid": {
+          ".read": "auth != null && auth.token.email != null && ($tid.beginsWith(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') + '__') || $tid.endsWith('__' + auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+          ".write": "auth != null && auth.token.email != null && ($tid.beginsWith(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') + '__') || $tid.endsWith('__' + auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+          "$m": {
+            ".validate": "newData.hasChildren(['from', 'text', 'ts']) && newData.child('text').isString() && newData.child('text').val().length <= 1000"
+          }
+        }
+      },
+      "userThreads": {
+        "$me": {
+          ".read": "auth != null && auth.token.email != null && $me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')",
+          "$other": {
+            ".read": "auth != null && auth.token.email != null && ($me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || $other === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))",
+            ".write": "auth != null && auth.token.email != null && ($me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || $other === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))"
+          }
+        }
+      },
+      "achFeed": {
+        ".read": "auth != null",
+        ".indexOn": [
+          "ts"
+        ],
+        "$id": {
+          ".write": "auth != null && !data.exists()",
+          ".validate": "newData.hasChildren(['n', 'a', 't', 'ts']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isString() && newData.child('t').val().length <= 60"
         }
       }
     },
-
-    "push_subscriptions": {
-      "$id": {
-        ".write": "$id.matches(/^[0-9a-f]{32}$/)",
-        ".validate": "newData.hasChildren(['endpoint', 'keys']) && newData.child('endpoint').isString() && newData.child('endpoint').val().beginsWith('https://')"
-      }
-    },
-
-    "profiles": {
-      "$k": {
-        ".read": "auth != null",
-        ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')",
-        "bio":         { ".validate": "newData.isString() && newData.val().length <= 280" },
-        "displayName": { ".validate": "newData.isString() && newData.val().length <= 40" }
-      }
-    },
-
-    "profileMedia": {
-      "$k": {
-        ".read": "auth != null",
-        ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')"
-      }
-    },
-
-    "public_profiles": {
-      "$code": {
+    "site": {
+      "music_releases": {
         ".read": true,
-        ".write": "auth != null && auth.token.email != null && root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val() === $code",
-        "bio":         { ".validate": "newData.isString() && newData.val().length <= 280" },
-        "displayName": { ".validate": "newData.isString() && newData.val().length <= 40" }
+        ".write": "auth != null"
+      },
+      "wifi": {
+        "$owner": {
+          ".read": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+          ".write": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+          "$id": {
+            ".read": "auth != null && auth.token.email != null && root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val() != null && (root.child('accounts').child('friend_codes').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || root.child('accounts').child('friend_codes').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).child('email_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')) && ((data.child('share').val() === 'close' && root.child('users').child($owner).child('friends').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).child('close_friend').val() === true) || (data.child('share').val() === 'picked' && data.child('to').child(root.child('users').child(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')).child('friend_code').val()).val() === true))",
+            ".validate": "newData.hasChildren(['ssid','share'])",
+            "ssid": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 64"
+            },
+            "password": {
+              ".validate": "newData.isString() && newData.val().length <= 128"
+            },
+            "label": {
+              ".validate": "newData.isString() && newData.val().length <= 48"
+            },
+            "note": {
+              ".validate": "newData.isString() && newData.val().length <= 200"
+            },
+            "share": {
+              ".validate": "newData.isString() && newData.val().matches(/^(private|close|picked)$/)"
+            }
+          }
+        }
+      },
+      "wifi_index": {
+        "$owner": {
+          ".read": "auth != null",
+          ".write": "auth != null && ($owner === auth.uid || (auth.token.email != null && $owner === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))"
+        }
       }
     },
-
-    "achFeed": {
-      ".read": "auth != null",
-      ".indexOn": ["ts"],
-      "$id": {
-        ".write": "auth != null && !data.exists()",
-        ".validate": "newData.hasChildren(['n', 'a', 't', 'ts']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isString() && newData.child('t').val().length <= 60"
-      }
-    },
-
-    "presence": {
-      "$k": {
+    "platforms": {
+      "games": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "games_catalog": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "xbox": {
+        ".read": true,
+        ".write": false
+      },
+      "steam_users": {
+        ".read": true,
+        ".write": false
+      },
+      "steam_games": {
+        ".read": true,
+        ".write": false
+      },
+      "steam_vanity": {
         ".read": "auth != null",
-        ".write": "auth != null && auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')"
+        ".write": false
       }
     },
-
-    "messages": {
-      "$tid": {
-        ".read":  "auth != null && auth.token.email != null && ($tid.beginsWith(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') + '__') || $tid.endsWith('__' + auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        ".write": "auth != null && auth.token.email != null && ($tid.beginsWith(auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') + '__') || $tid.endsWith('__' + auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        "$m": { ".validate": "newData.hasChildren(['from', 'text', 'ts']) && newData.child('text').isString() && newData.child('text').val().length <= 1000" }
-      }
-    },
-
-    "userThreads": {
-      "$me": {
-        ".read": "auth != null && auth.token.email != null && $me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')",
-        "$other": { ".read": "auth != null && auth.token.email != null && ($me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || $other === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))",
-          ".write": "auth != null && auth.token.email != null && ($me === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || $other === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))" }
+    "mobilegames": {
+      "rooms": {
+        "$game": {
+          "$code": {
+            ".read": "auth != null && $game.matches(/^[a-z0-9_-]{2,24}$/)",
+            ".write": "auth != null && $game.matches(/^[a-z0-9_-]{2,24}$/)"
+          }
+        }
+      },
+      "leaders": {
+        ".read": "auth != null",
+        "$game": {
+          ".validate": "$game.matches(/^[a-z0-9_-]{2,24}$/)",
+          "$uid": {
+            ".write": "auth != null && $uid === auth.uid",
+            "w": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+            },
+            "l": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+            },
+            "bw": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+            },
+            "bl": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+            },
+            "best": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000000"
+            },
+            "t": {
+              ".validate": "newData.isNumber()"
+            },
+            "n": {
+              ".validate": "newData.isString() && newData.val().length <= 24"
+            },
+            "av": {
+              ".validate": "newData.isString() && newData.val().length <= 600"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "saves": {
+        "$uid": {
+          ".read": "auth != null && $uid === auth.uid",
+          ".write": "auth != null && $uid === auth.uid"
+        }
       }
     }
   }
