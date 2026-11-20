@@ -10003,17 +10003,18 @@
           "long": -59.1814,
           "id": "bm_villa_verde_01",
           "name": "VHC Destruction",
-          "location": "Just south of Outpost · 📍 -13.782, -59.1814",
+          "location": "Inside a wooden stilt house at the Outpost (coca fields), on the radio desk · 📍 -13.782, -59.1814",
           "category": "Bonus Medal",
-          "guide": "Increases the damage done to vehicles by 20%. Works once you've unlocked the VHC Destruction skill. Just south of Outpost (Protects the coca fields from rebel raids). 📍 Lat -13.782, Long -59.1814.",
+          "guide": "Increases the damage done to vehicles by 20%. Works once you've unlocked the VHC Destruction skill. At the small Outpost that protects the coca fields in northeast Villa Verde (Rally Point here, fast travel to it). It's among the wooden buildings raised on stilts: go up the outside wooden staircase into the house. Inside, the medal sits on a desk with radio equipment and a lamp, next to a big TV showing static on the wall. In-game Tacmap readout at the Rally Point: about Lat -13.762, Long -59.188. 📍 Map data: Lat -13.782, Long -59.1814.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg",
+          "location_image_url": "/public/games/wildlands/images/spots/bm_villa_verde_01.jpg",
           "bonus_for": {
             "group": "weapon_skills",
             "id": "skill_vhc_destruction"
           },
           "map_x": 0.95569,
-          "map_y": 0.10857
+          "map_y": 0.10857,
+          "verified": "Found in-game"
         },
         {
           "region": "Villa Verde",
