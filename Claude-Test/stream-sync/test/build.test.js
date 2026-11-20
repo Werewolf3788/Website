@@ -63,3 +63,11 @@ test("OAuth state signing", () => {
     assert.strictEqual(verify(s).role, "bot");
     assert.strictEqual(verify(s.replace(/.$/, (c) => (c === "A" ? "B" : "A"))), null);
 });
+
+test("title formats", () => {
+    const a = { status: "Chapter 2", game: "Ghost Recon® Wildlands", mentions: ["ray"] };
+    assert.strictEqual(B.buildTitle({ ...a }), "Chapter 2 w/ @ray");
+    assert.strictEqual(B.buildTitle({ ...a, format: "game_status" }), "Ghost Recon Wildlands - Chapter 2 w/ @ray");
+    assert.strictEqual(B.buildTitle({ ...a, format: "game" }), "Ghost Recon Wildlands w/ @ray");
+    assert.strictEqual(B.buildTitle({ ...a, status: "", format: "game_status" }), "Ghost Recon Wildlands w/ @ray");
+});
