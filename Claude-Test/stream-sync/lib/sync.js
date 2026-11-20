@@ -98,15 +98,20 @@ async function runUser({ key, cfg, user }) {
     const snap = await psn.snapshot(key, cfg, myTag, Object.keys(squad), m.firstPsnCheckPending).catch((e) => ({ error: e.message }));
     m.firstPsnCheckPending = false;
     const out = { live: true, stream_id: s.id, twitch_category: s.game_name, checked_at: Date.now() };
-    if (!snap || snap.error) {
-        out.psn = snap ? "PSN error: " + snap.error : "no PlayStation data (no psn_npsso and no psn_online_id)";
+    const source = cfg.source || "auto";   // auto: PlayStation when in a game there, otherwise copy Twitch
+    if (!snap || snap.error) out.psn = snap ? "PSN error: " + snap.error : "no PlayStation data (no psn_npsso and no psn_online_id)";
+    const me = snap && !snap.error ? snap.me : null;
+    if (me) { out.psn_source = snap.source; out.psn_game = me.title || null; out.psn_status = me.status || null; }
+    if (source === "twitch" || !me || !me.online || !me.title) {
+        if (source === "playstation") { await store.saveState(key, out); return out; }
+        /* PC / OBS streamers (or not on PlayStation right now): whatever is set on Twitch goes to YouTube and Kick */
+        out.mode = "copy Twitch";
+        await copyTwitchToOthers(key, cfg, sec, broadcasterId, m, out);
+        out.chat = chat.status(key);
         await store.saveState(key, out);
         return out;
     }
-    const me = snap.me;
-    out.psn_source = snap.source; out.psn_game = me.title || null;
-    out.psn_status = me.status || null;
-    if (!me.online || !me.title) { await store.saveState(key, out); return out; }
+    out.mode = "PlayStation";
 
     const playingWith = B.squadInGame(me, squad, snap.friends);
     out.squad = playingWith;
@@ -161,6 +166,35 @@ async function runUser({ key, cfg, user }) {
     out.chat = chat.status(key);
     await store.saveState(key, out);
     return out;
+}
+
+/** Twitch is the source: copy its title (and category for Kick) to YouTube and Kick. Twitch itself is left alone. */
+async function copyTwitchToOthers(key, cfg, sec, broadcasterId, m, out) {
+    const ch = await twitch.channel(broadcasterId).catch(() => null);
+    if (!ch) { out.copy = "couldn't read the Twitch channel"; return; }
+    out.title = ch.title || "";
+    out.twitch_category = ch.game_name || out.twitch_category;
+
+    const ytMode = cfg.youtube_mode || "same";
+    if (ytMode !== "off" && ch.title) {
+        const base = ytMode === "base_plus_status" ? String(cfg.youtube_base || "").trim() : "";
+        const ytTitle = B.clip(base ? `${base} | ${ch.title}` : ch.title, B.YOUTUBE_TITLE_MAX);
+        if (ytTitle !== m.yt) {
+            try { out.youtube = await youtubeTitle(key, sec, ytTitle); if (/^ok/i.test(out.youtube)) m.yt = ytTitle; }
+            catch (e) { out.youtube = "error: " + e.message; }
+        }
+    }
+
+    if (sec.kick_refresh) {
+        try {
+            const kp = {};
+            const kTitle = B.clip(ch.title || "", B.KICK_TITLE_MAX);
+            if (kTitle && kTitle !== m.kickTitle) kp.stream_title = kTitle;
+            const kc = ch.game_name ? await kickCategory(key, ch.game_name, cfg.category_overrides || {}) : null;
+            if (kc && kc.id !== m.kickCat) kp.category_id = Number(kc.id);
+            if (Object.keys(kp).length) { await kick.updateChannel(key, kp); if (kp.stream_title) m.kickTitle = kTitle; if (kc) m.kickCat = kc.id; out.kick = "updated"; }
+        } catch (e) { out.kick = "error: " + e.message; }
+    }
 }
 
 module.exports = { runUser };

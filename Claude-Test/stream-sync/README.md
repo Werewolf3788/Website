@@ -50,6 +50,8 @@ Written with starter values for the app owner on first run (`seed-owner.json`). 
 | `youtube_mode` | `same` (same title as Twitch), `base_plus_status` (`youtube_base | status`), or `off` |
 | `discord_live_alert` | `false` to skip the Discord alert |
 | `chat.youtube_channel_id`, `chat.tiktok_username` | chats to relay into Twitch (set by the setup page) |
+| `source` | `auto` (default: PlayStation when in a game there, otherwise copy the Twitch title + category to YouTube/Kick), `twitch` (always copy Twitch - PC/OBS streamers), `playstation` |
+| `title_format`, `mention_squad` | title shows `status` / `game_status` / `game`; add @friends in the same game |
 | `chat.post_as` | `bot` (default) or `streamer` - who relayed chat is posted as |
 | `kick_login`, `kick_user_id` | set when Kick is connected |
 

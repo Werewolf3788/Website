@@ -71,3 +71,20 @@ test("status changes -> new title everywhere", async () => {
     assert.deepStrictEqual(calls.patch[2], { title: "Chapter 2 w/ @raymystyro" });
     assert.strictEqual(calls.yt[1], "Chapter 2 w/ @raymystyro");
 });
+
+test("not on PlayStation (PC / OBS): Twitch title is copied to YouTube, Twitch itself left alone", async () => {
+    presence = { me: { online: false }, friends: {} };
+    channel = { ...channel, title: "PC grind night | Elden Ring", game_name: "Elden Ring" };
+    const before = calls.patch.length;
+    const out = await runUser({ key: "k", cfg });
+    assert.strictEqual(out.mode, "copy Twitch");
+    assert.strictEqual(calls.patch.length, before);
+    assert.strictEqual(calls.yt.at(-1), "PC grind night | Elden Ring");
+});
+
+test("source set to PlayStation only: nothing copied when not on PlayStation", async () => {
+    channel = { ...channel, title: "Another title" };
+    const yt = calls.yt.length;
+    await runUser({ key: "k", cfg: { ...cfg, source: "playstation" } });
+    assert.strictEqual(calls.yt.length, yt);
+});
