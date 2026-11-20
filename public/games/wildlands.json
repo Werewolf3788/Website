@@ -2123,7 +2123,7 @@
     "kingslayer_files": {
       "quest_name": "Kingslayer Files",
       "region": "Bolivia-wide",
-      "description": "All 201 base-game Kingslayer Files across the 21 provinces, numbered the same way as the in-game province list: 138 Documents, 46 Legends and 17 Videos. Videos (Bowman briefings) unlock automatically from story progress. Each card says what's nearby and gives Lat/Long you can match on the in-game Tacmap or MapGenie. Files only appear on your map once you get close or visit nearby ? locations. The Whole Story trophy only needs the collectible documents. Operation Oracle (DLC) adds 12 more, not listed here.",
+      "description": "All 201 base-game Kingslayer Files across the 21 provinces, numbered the same way as the in-game province list: 138 Documents, 46 Legends and 17 Videos. Videos (Bowman briefings) unlock automatically from story progress. Each card says what's nearby and gives Lat/Long you can match on the in-game Tacmap or MapGenie. Files only appear on your map once you get close or visit nearby ? locations. The Whole Story trophy only needs the collectible documents. Operation Oracle (DLC) adds 12 more, not listed here. Numbers follow the same order as the game's own Kingslayer Files list for each province (Bowman Briefing first, then Recordings, Picture Evidence, Legends).",
       "total_base_game": 201,
       "dlc_additions": {
         "Operation Oracle": 12
@@ -2142,13 +2142,11 @@
       "items": [
         {
           "region": "Barvechos",
-          "lat": -17.5936,
-          "long": -64.4567,
           "id": "ksf_barvechos_01",
           "name": "#1 El Pulpo",
-          "location": "Bowman Briefing · Southwest of Observation Post · 📍 -17.5936, -64.4567",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Barvechos",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Barvechos for the first time. Accountant to the cartel, expert money-launderer. Southwest of Observation Post (Watches the rebels' movements). 📍 Lat -17.5936, Long -64.4567.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Barvechos for the first time. Accountant to the cartel, expert money-launderer.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/barvechos.jpg",
           "tags": "kingslayer file video"
@@ -2246,13 +2244,11 @@
         },
         {
           "region": "Caimanes",
-          "lat": -16.7683,
-          "long": -60.7422,
           "id": "ksf_caimanes_01",
           "name": "#1 El Cerebro",
-          "location": "Bowman Briefing · West of Malpaso Farm · 📍 -16.7683, -60.7422",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Caimanes",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Caimanes for the first time. Recruited by Nidia Flores, highly intelligent but crazy, he designs drug subs for the cartel. West of Malpaso Farm (A corn farm). 📍 Lat -16.7683, Long -60.7422.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Caimanes for the first time. Recruited by Nidia Flores, highly intelligent but crazy, he designs drug subs for the cartel.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/caimanes.jpg",
           "tags": "kingslayer file video"
@@ -2389,13 +2385,11 @@
         },
         {
           "region": "Espiritu Santo",
-          "lat": -15.5834,
-          "long": -61.484,
           "id": "ksf_espiritu_santo_01",
           "name": "#1 La Santera",
-          "location": "Bowman Briefing · Southeast of Outpost · 📍 -15.5834, -61.484",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Espiritu Santo",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Espiritu Santo for the first time. A fanatical priestess, she's into the darker side of Santa Muerte. Southeast of Outpost (Storage for the chemicals used in the lab). 📍 Lat -15.5834, Long -61.484.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Espiritu Santo for the first time. A fanatical priestess, she's into the darker side of Santa Muerte.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/espiritu_santo.jpg",
           "tags": "kingslayer file video"
@@ -2519,13 +2513,11 @@
         },
         {
           "region": "Flor de Oro",
-          "lat": -19.8369,
-          "long": -61.479,
           "id": "ksf_flor_de_oro_01",
           "name": "#1 General Baro",
-          "location": "Bowman Briefing · Just southwest of Checkpoint · 📍 -19.8369, -61.479",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Flor de Oro",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Flor de Oro for the first time. Leader of Bolivia's La Unidad, in the cartel's pocket. Just southwest of Checkpoint (Controls the road to Malca). 📍 Lat -19.8369, Long -61.479.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Flor de Oro for the first time. Leader of Bolivia's La Unidad, in the cartel's pocket.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/flor_de_oro.jpg",
           "tags": "kingslayer file video"
@@ -2675,13 +2667,11 @@
         },
         {
           "region": "Itacua",
-          "lat": -16.6234,
-          "long": -63.5678,
           "id": "ksf_itacua_01",
           "name": "#1 La Yuri & El Polito",
-          "location": "Bowman Briefing · Just east of Yopil · 📍 -16.6234, -63.5678",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Itacua",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"Amaru's Rescue\". Medically-trained. Crazy in love. Torturers. Just east of Yopil (The cartel kidnapped every villager here). 📍 Lat -16.6234, Long -63.5678.",
+          "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"Amaru's Rescue\". Medically-trained. Crazy in love. Torturers.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/itacua.jpg",
           "tags": "kingslayer file video"
@@ -2805,13 +2795,11 @@
         },
         {
           "region": "Koani",
-          "lat": -15.2049,
-          "long": -66.7492,
           "id": "ksf_koani_01",
           "name": "#1 Boston Reed",
-          "location": "Bowman Briefing · Northeast of Unidad Campsite · 📍 -15.2049, -66.7492",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Koani",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Koani for the first time. Pilot. Coke smuggler. Wild man. Northeast of Unidad Campsite (A temporary Unidad camp). 📍 Lat -15.2049, Long -66.7492.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Koani for the first time. Pilot. Coke smuggler. Wild man.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/koani.jpg",
           "tags": "kingslayer file video"
@@ -3117,13 +3105,11 @@
         },
         {
           "region": "Libertad",
-          "lat": -20.6956,
-          "long": -59.2659,
           "id": "ksf_libertad_01",
           "name": "#1 Marcus Jensen",
-          "location": "Bowman Briefing · At Chemical Institute Via-B Gas · 📍 -20.6956, -59.2659",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Libertad",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"Chemical Trail\". A brilliant chemist, he works for the cartel because he likes the money and girls. At Chemical Institute Via-B Gas (A school for cartel chemists). 📍 Lat -20.6956, Long -59.2659.",
+          "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"Chemical Trail\". A brilliant chemist, he works for the cartel because he likes the money and girls.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/libertad.jpg",
           "tags": "kingslayer file video"
@@ -3273,13 +3259,11 @@
         },
         {
           "region": "Malca",
-          "lat": -19.2561,
-          "long": -63.5907,
           "id": "ksf_malca_01",
           "name": "#1 El Chido",
-          "location": "Bowman Briefing · Southeast of Santa Muerte Tomb · 📍 -19.2561, -63.5907",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Malca",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Malca for the first time. World's most-famous narcocorrido singer, loved by the Santa Blanca drug cartel. Southeast of Santa Muerte Tomb (La Plaga's tomb, under construction). 📍 Lat -19.2561, Long -63.5907.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Malca for the first time. World's most-famous narcocorrido singer, loved by the Santa Blanca drug cartel.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/malca.jpg",
           "tags": "kingslayer file video"
@@ -3533,13 +3517,11 @@
         },
         {
           "region": "Mojocoyo",
-          "lat": -15.7429,
-          "long": -65.9138,
           "id": "ksf_mojocoyo_01",
           "name": "#1 Antonio",
-          "location": "Bowman Briefing · Just east of Rancho Sabala · 📍 -15.7429, -65.9138",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Mojocoyo",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically during the story mission \"Mojocoyo's Boss\". Paranoid cokehead, in charge of smuggling logistics. Just east of Rancho Sabala (Capital of the province and the main quinoa market). 📍 Lat -15.7429, Long -65.9138.",
+          "guide": "This Kingslayer File unlocks automatically during the story mission \"Mojocoyo's Boss\". Paranoid cokehead, in charge of smuggling logistics.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/mojocoyo.jpg",
           "tags": "kingslayer file video"
@@ -3715,13 +3697,11 @@
         },
         {
           "region": "Montuyoc",
-          "lat": -16.9113,
-          "long": -66.5865,
           "id": "ksf_montuyoc_01",
           "name": "#1 Carl Bookhart",
-          "location": "Bowman Briefing · Northwest of Vieja Granja · 📍 -16.9113, -66.5865",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Montuyoc",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"The Deserter\". American mercenary, has trained Santa Blanca's troops into an elite military force. Northwest of Vieja Granja (A rebel hideout now controlled by the hostiles). 📍 Lat -16.9113, Long -66.5865.",
+          "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"The Deserter\". American mercenary, has trained Santa Blanca's troops into an elite military force.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/montuyoc.jpg",
           "tags": "kingslayer file video"
@@ -3871,13 +3851,11 @@
         },
         {
           "region": "Ocoro",
-          "lat": -16.2813,
-          "long": -62.7455,
           "id": "ksf_ocoro_01",
           "name": "#1 El Emisario",
-          "location": "Bowman Briefing · Just east of Zona Narco Prohibida · 📍 -16.2813, -62.7455",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Ocoro",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Ocoro for the first time. Cocaine producer and grandson of the highest ranking Bolivian in the cartel. Just east of Zona Narco Prohibida (Sicarios intercept all rebel intruders from Itacua). 📍 Lat -16.2813, Long -62.7455.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Ocoro for the first time. Cocaine producer and grandson of the highest ranking Bolivian in the cartel.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/ocoro.jpg",
           "tags": "kingslayer file video"
@@ -3988,13 +3966,11 @@
         },
         {
           "region": "P.N. de Agua Verde",
-          "lat": -16.1594,
-          "long": -63.4545,
           "id": "ksf_p_n_de_agua_verde_01",
           "name": "#1 Carzita",
-          "location": "Bowman Briefing · West of Agua Verde Delta · 📍 -16.1594, -63.4545",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter P.N. de Agua Verde",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering P.N. de Agua Verde for the first time. The privileged son of a telecom billionaire, in charge of the cartel's resort. West of Agua Verde Delta (Southern part of P.N. de Agua Verde). 📍 Lat -16.1594, Long -63.4545.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering P.N. de Agua Verde for the first time. The privileged son of a telecom billionaire, in charge of the cartel's resort.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file video"
@@ -4131,13 +4107,11 @@
         },
         {
           "region": "Pucara",
-          "lat": -18.1451,
-          "long": -63.8273,
           "id": "ksf_pucara_01",
           "name": "#1 DJ Perico",
-          "location": "Bowman Briefing · Out in the open, south of Outpost · 📍 -18.1451, -63.8273",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Pucara",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Pucara for the first time. Wannabe tough guy, disc jockey for Santa Blanca Cartel Radio. Out in the open, south of Outpost (Controls the area). 📍 Lat -18.1451, Long -63.8273.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Pucara for the first time. Wannabe tough guy, disc jockey for Santa Blanca Cartel Radio.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/pucara.jpg",
           "tags": "kingslayer file video"
@@ -4287,13 +4261,11 @@
         },
         {
           "region": "Remanzo",
-          "lat": -14.8907,
-          "long": -66.078,
           "id": "ksf_remanzo_01",
           "name": "#1 El Gato",
-          "location": "Bowman Briefing · Southwest of Poco · 📍 -14.8907, -66.078",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Remanzo",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Remanzo for the first time. Manager of packaging, has survived more mortal injuries than Rasputin. Southwest of Poco (A potters' village, now used by the cartel). 📍 Lat -14.8907, Long -66.078.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Remanzo for the first time. Manager of packaging, has survived more mortal injuries than Rasputin.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/remanzo.jpg",
           "tags": "kingslayer file video"
@@ -4378,13 +4350,11 @@
         },
         {
           "region": "San Mateo",
-          "lat": -15.4904,
-          "long": -63.9102,
           "id": "ksf_san_mateo_01",
           "name": "#1 El Pozolero",
-          "location": "Bowman Briefing · North of Sicario House · 📍 -15.4904, -63.9102",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter San Mateo",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"The Death Truck\". Mysterious and feared, he disposes of dead bodies for the cartel. North of Sicario House (Hunt the rebel agents). 📍 Lat -15.4904, Long -63.9102.",
+          "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"The Death Truck\". Mysterious and feared, he disposes of dead bodies for the cartel.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/san_mateo.jpg",
           "tags": "kingslayer file video"
@@ -4521,13 +4491,11 @@
         },
         {
           "region": "Tabacal",
-          "lat": -14.5892,
-          "long": -63.7877,
           "id": "ksf_tabacal_01",
           "name": "#1 Madre Coca",
-          "location": "Bowman Briefing · Northeast of Cardoza · 📍 -14.5892, -63.7877",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Tabacal",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Tabacal for the first time. After a lifetime picking coca leaves, she manages the cartel's coca fields. Northeast of Cardoza (A coffee-farmer and cattle town). 📍 Lat -14.5892, Long -63.7877.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Tabacal for the first time. After a lifetime picking coca leaves, she manages the cartel's coca fields.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/tabacal.jpg",
           "tags": "kingslayer file video"
@@ -4612,13 +4580,11 @@
         },
         {
           "region": "Villa Verde",
-          "lat": -14.6103,
-          "long": -59.9798,
           "id": "ksf_villa_verde_01",
           "name": "#1 El Wey",
-          "location": "Bowman Briefing · West of Villa Verde · 📍 -14.6103, -59.9798",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Villa Verde",
           "category": "Video",
-          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Villa Verde for the first time. In charge of the cartel's mining operation, he got his face burned off in a chemical accident. West of Villa Verde (The traditional capital of Bolivian coca trading). 📍 Lat -14.6103, Long -59.9798.",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Villa Verde for the first time. In charge of the cartel's mining operation, he got his face burned off in a chemical accident.",
           "image_url": "/public/games/wildlands/images/icons/kingslayer_file.png",
           "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg",
           "tags": "kingslayer file video"
