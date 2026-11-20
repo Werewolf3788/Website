@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 37,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "📐 Move your buildings: open any building and tap 📐 Move, walk to the new spot (it floats in front of you) and tap 📍 Place here. Aim it at another building and the two swap places. ↩️ Original spot puts it back",
+    "🔩 Metal from rocks now goes into your buildings: every upgrade from level 2 on takes metal, and the Smelter, Hero Hall, Workshop and the 2nd and 3rd Houses need some to build. New areas cost a little metal from your 2nd unlock on",
+    "Allies see your town the way you've laid it out"
+   ]
+  },
+  {
    "id": 36,
    "date": "Nov 20",
    "game": "all",
