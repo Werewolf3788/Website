@@ -1,5 +1,6 @@
 # One-time move of game data to the friend code in Firestore. Manual: Actions -> "Friend Code Move" -> Run workflow.
-# check = list what would move + show the Firestore rules; copy = copy (old copies kept); cleanup = delete the old email-key copies.
+# check = list what would move + show the Firestore rules; copy = copy (old copies kept, incl. PlayStation games/trophies
+# from Ray's project, read only); cleanup = delete the old email-key copies.
 name: Friend Code Move
 on:
   workflow_dispatch:
@@ -21,4 +22,5 @@ jobs:
       - run: node Claude-Test/sync/friendcode-move.js
         env:
           GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}   # read only: copies PlayStation data already in Ray's project
           MODE: ${{ github.event.inputs.mode }}

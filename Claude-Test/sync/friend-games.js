@@ -110,5 +110,39 @@ async function savePlatform(code, plat, profile, games) {
     return { written: 0 };
 }
 
+/* ---------- PlayStation: turn the PSN sync's data into savePlatform() input ----------
+ * Used by Playstation/psn.js on every run and by friendcode-move.js to copy what is already in Ray's project.
+ * card = player card (psn/gamertags/{id}); allGames = merged title list; trophyLists = { commId: { trophyId: trophy } } */
+const normTitle = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+function psnFromSync(onlineId, card, allGames, trophyLists) {
+    card = card || {}; trophyLists = trophyLists || {};
+    const seen = new Set(), games = [];
+    for (const g of allGames || []) {
+        if (!g || seen.has(g)) continue; seen.add(g);
+        const commId = g.npCommunicationId || g.commId || null, map = commId && trophyLists[commId];
+        // every trophy of the game (locked ones too); left out when not known, so a saved list stays
+        const list = map ? Object.values(map).filter(Boolean).map((t) => {
+            const cur = Number(t.currentValue ?? 0), tgt = Number(t.targetValue ?? 0);
+            return { id: String(t.trophyId), n: t.name || "", d: t.detail || "", i: t.icon || "", r: t.type || "", rare: t.earnedRate ?? null,
+                e: !!t.earned, t: t.earned ? (t.timestamp || null) : null, pr: !t.earned && tgt > 0 ? `${cur}/${tgt}` : null, h: !!t.hidden };
+        }) : undefined;
+        const defined = g.definedTotal || 0;
+        games.push({
+            title: g.name || g.trophyTitleName || "PlayStation game", art: g.art || g.posterArt || null,
+            progress: defined ? g.progress || 0 : null, earned: defined ? g.earnedTotal || 0 : null, total: defined || null,
+            hours: g.nativePlaytimeHours || null, lastPlayed: g.lastPlayed ? Date.parse(g.lastPlayed) || null : null,
+            playing: !!card.online && !!card.currentGame && normTitle(card.currentGame) === normTitle(g.name),
+            list, extra: { commId, titleId: g.titleId || g.npTitleId || null, platform: g.platform || null, trophies: g.definedTrophies || null }
+        });
+    }
+    const ts = card.trophySummary || {};
+    const profile = {
+        name: card.onlineId || onlineId, avatar: card.avatar || null, online: !!card.online, currentGame: card.online ? (card.currentGame || null) : null,
+        stats: { level: card.level || 0, trophies: ts.total || 0, platinum: ts.platinum || 0, gold: ts.gold || 0, silver: ts.silver || 0, bronze: ts.bronze || 0, games: card.gamesPlayed || games.length },
+        recent: (card.mostRecentTrophies || []).slice(0, 10).map((t) => ({ n: t.name || "", i: t.icon || "", g: t.gameTitle || "", r: t.type || "", t: t.timestamp || null }))
+    };
+    return { profile, games };
+}
+
 function useDb(db) { fs = db; }   // tests
-module.exports = { firestore, gameId, friendCodeOf, savePlatform, useDb };
+module.exports = { firestore, gameId, friendCodeOf, savePlatform, psnFromSync, useDb };

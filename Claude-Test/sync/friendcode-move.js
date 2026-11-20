@@ -12,6 +12,9 @@
  *           2) Mobile game progress in users/{key}/mobile_progress (Realtime Database,
  *              read only) is copied to user/{CODE}/platform/mobile/game/{game}.progress
  *              when that game has no progress there yet.
+ *           3) PlayStation games + trophies already in Ray's project (playstation-stats, READ ONLY:
+ *              psn/gamertags/{id} card, players/{id}/library + trophyProgress) are saved to
+ *              user/{CODE}/platform/ps, the same way the PSN sync saves them on every run.
  *   cleanup : deletes the email-key copies (user/{emailKey}/...) once every one of
  *             their games is under the friend code. Nothing in the Realtime Database is changed.
  * ============================================================================ */
@@ -30,6 +33,47 @@ const creds = raw.startsWith("{") ? JSON.parse(raw) : JSON.parse(Buffer.from(raw
 if (typeof creds.private_key === "string") creds.private_key = creds.private_key.replace(/\\n/g, "\n");
 const app = initializeApp({ credential: cert(creds), databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com" });
 const fs = getFirestore(app), rtdb = getDatabase(app);
+
+const friendGames = require("./friend-games.js");
+// Ray's project, read only (same secret the PSN sync uses). Optional: without it the PlayStation step is skipped.
+let rayFs = null, rayDb = null;
+try {
+    const r = (process.env.FIREBASE_SERVICE_RAY || "").trim();
+    if (r) {
+        const rc = r.startsWith("{") ? JSON.parse(r) : JSON.parse(Buffer.from(r, "base64").toString("utf-8"));
+        if (typeof rc.private_key === "string") rc.private_key = rc.private_key.replace(/\\n/g, "\n");
+        const rayApp = initializeApp({ credential: cert(rc), databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com" }, "rayRead");
+        rayFs = getFirestore(rayApp); rayDb = getDatabase(rayApp);
+    }
+} catch (e) { console.warn(`Ray's project not available: ${e.message}`); }
+// PSN accounts set by the sync itself (no psn_username needed for these)
+const CORE_PSN = [["raykevin71888", "WildHorse_Spirit"], ["cartnalray9", "OneLIVIDMAN"]];
+
+async function copyPsn(emailKey, user, code) {
+    if (!rayFs) return 0;
+    let tag = String(user.psn_username || user.psn_online_id || "").trim();
+    if (!tag) { const c = CORE_PSN.find(([m]) => emailKey.toLowerCase().includes(m)); if (c) tag = c[1]; }
+    if (!tag) return 0;
+    // the player doc id is the PSN name with its exact capitals
+    let id = tag.replace(/[.$#\[\]\/]/g, "_"), pdoc = await rayFs.collection("players").doc(id).get();
+    if (!pdoc.exists) {
+        const all = await rayFs.collection("players").select().get();
+        const hit = all.docs.find((d) => d.id.toLowerCase() === id.toLowerCase());
+        if (!hit) { console.log(`  ${code}: PSN ${tag} not found in Ray's project`); return 0; }
+        id = hit.id; pdoc = await rayFs.collection("players").doc(id).get();
+    }
+    const card = (await rayDb.ref(`psn/gamertags/${id}`).once("value")).val() || {};
+    const lib = await rayFs.collection("players").doc(id).collection("library").get();
+    let allGames = []; lib.docs.sort((a, b) => a.id.localeCompare(b.id)).forEach((d) => { allGames = allGames.concat((d.data() || {}).items || []); });
+    if (!allGames.length) allGames = card.recentGames || [];
+    const tp = await rayFs.collection("players").doc(id).collection("trophyProgress").get();
+    const trophyLists = {}; tp.forEach((d) => { const v = d.data() || {}; if (v.trophies) trophyLists[v.commId || d.id] = v.trophies; });
+    const { profile, games } = friendGames.psnFromSync(id, card, allGames, trophyLists);
+    console.log(`  ${code}: PSN ${id}: ${games.length} games, ${Object.keys(trophyLists).length} with trophy lists`);
+    if (MODE !== "copy") return 0;
+    const r = await friendGames.savePlatform(code, "ps", profile, games);
+    return r.written || 0;
+}
 
 const ts = (v) => (v && typeof v.toMillis === "function" ? v.toMillis() : Number(v) || 0);
 
@@ -58,7 +102,7 @@ async function main() {
     }
     console.log(`${Object.keys(codeOf).length} members with a friend code.`);
 
-    let copied = 0, kept = 0, mobile = 0, deleted = 0, blocked = 0;
+    let copied = 0, kept = 0, mobile = 0, deleted = 0, blocked = 0, psnDocs = 0;
     for (const [emailKey, code] of Object.entries(codeOf)) {
         // 1) Game Companion saves under the email key
         let all = 0, moved = 0;
@@ -93,6 +137,9 @@ async function main() {
             }
         }
 
+        // 3) PlayStation from Ray's project (read only)
+        try { psnDocs += await copyPsn(emailKey, users[emailKey] || {}, code); } catch (e) { console.warn(`  ${code}: PSN copy failed: ${e.message}`); }
+
         // 2) Mobile game progress from the Realtime Database (read only)
         const mp = (users[emailKey] || {}).mobile_progress || {};
         for (const [game, info] of Object.entries(mp)) {
@@ -105,7 +152,7 @@ async function main() {
             if (MODE === "copy") { await dst.set({ progress: info }, { merge: true }); mobile++; }
         }
     }
-    console.log(`Done. Game saves copied: ${copied}, already under the friend code: ${kept}, mobile progress copied: ${mobile}` +
+    console.log(`Done. Game saves copied: ${copied}, already under the friend code: ${kept}, mobile progress copied: ${mobile}, PlayStation docs written: ${psnDocs}` +
         (MODE === "cleanup" ? `, email copies deleted: ${deleted}, left alone: ${blocked}` : "") + ".");
     if (MODE === "check") console.log("Nothing was written (check mode).");
 }
