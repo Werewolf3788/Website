@@ -9534,17 +9534,18 @@
           "long": -60.4453,
           "id": "bm_caimanes_01",
           "name": "Binocular Recon",
-          "location": "Just south of Outpost · 📍 -17.9453, -60.4453",
+          "location": "Top of the tall steel tower on the river bridge at the Outpost · 📍 -17.9453, -60.4453",
           "category": "Bonus Medal",
-          "guide": "15% efficiency increase. Works once you've unlocked the Binocular Recon skill. Just south of Outpost (Controls river traffic). 📍 Lat -17.9453, Long -60.4453.",
+          "guide": "15% efficiency increase. Works once you've unlocked the Binocular Recon skill. At the Outpost that controls river traffic, where the road crosses the river on a bridge. The bridge has a tall rusty steel lift tower at its south end. Climb the stairs inside the tower all the way to the top deck (sandbags and gabion walls up there, plus an ammo crate). The medal is on a stack of black cases and wooden crates against the sandbags. Expect cartel guards on the bridge and tower levels. In-game Tacmap readout: about Lat -17.936, Long -60.447. 📍 Map data: Lat -17.9453, Long -60.4453.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/caimanes.jpg",
+          "location_image_url": "/public/games/wildlands/images/spots/bm_caimanes_01.jpg",
           "bonus_for": {
             "group": "item_skills",
             "id": "skill_binocular_recon"
           },
           "map_x": 0.81018,
-          "map_y": 0.59424
+          "map_y": 0.59424,
+          "verified": "Found in-game"
         },
         {
           "region": "Espiritu Santo",
@@ -10003,17 +10004,18 @@
           "long": -59.1814,
           "id": "bm_villa_verde_01",
           "name": "VHC Destruction",
-          "location": "Just south of Outpost · 📍 -13.782, -59.1814",
+          "location": "Inside a wooden stilt house at the Outpost (coca fields), on the radio desk · 📍 -13.782, -59.1814",
           "category": "Bonus Medal",
-          "guide": "Increases the damage done to vehicles by 20%. Works once you've unlocked the VHC Destruction skill. Just south of Outpost (Protects the coca fields from rebel raids). 📍 Lat -13.782, Long -59.1814.",
+          "guide": "Increases the damage done to vehicles by 20%. Works once you've unlocked the VHC Destruction skill. At the small Outpost that protects the coca fields in northeast Villa Verde (Rally Point here, fast travel to it). It's among the wooden buildings raised on stilts: go up the outside wooden staircase into the house. Inside, the medal sits on a desk with radio equipment and a lamp, next to a big TV showing static on the wall. In-game Tacmap readout at the Rally Point: about Lat -13.762, Long -59.188. 📍 Map data: Lat -13.782, Long -59.1814.",
           "image_url": "/public/games/wildlands/images/icons/bonus_medal.png",
-          "location_image_url": "/public/games/wildlands/images/provinces/villa_verde.jpg",
+          "location_image_url": "/public/games/wildlands/images/spots/bm_villa_verde_01.jpg",
           "bonus_for": {
             "group": "weapon_skills",
             "id": "skill_vhc_destruction"
           },
           "map_x": 0.95569,
-          "map_y": 0.10857
+          "map_y": 0.10857,
+          "verified": "Found in-game"
         },
         {
           "region": "Villa Verde",

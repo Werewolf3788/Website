@@ -1933,7 +1933,12 @@ function ensureUniversalStyles() {
         .mission-region { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin-left: 8px; }
         .tier-box-wrap { display: inline-flex; gap: 4px; flex: 0 0 auto; flex-wrap: wrap; }
         .tier-gap { width: 8px; flex: 0 0 auto; }
-        .wm-wrap { position: relative; width: 100%; aspect-ratio: 1 / 1; max-height: 80vh; overflow: hidden; border-radius: 12px; background: #0b1220; touch-action: none; cursor: grab; }
+        .wm-legend { position: absolute; left: 10px; top: 10px; z-index: 3; background: rgba(15,23,42,.88); border: 1px solid #334155; border-radius: 10px; padding: 8px 10px; font-size: .72rem; font-weight: 800; color: #e2e8f0; line-height: 1.7; pointer-events: auto; }
+        .wm-legend div { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+        .wm-legend div.off { opacity: .35; text-decoration: line-through; }
+        .wm-legend i { width: 11px; height: 11px; border-radius: 50%; border: 2px solid #0f172a; box-shadow: 0 0 0 1px rgba(255,255,255,.35); display: inline-block; }
+        .wm-legend small { color: #94a3b8; font-weight: 700; margin-left: auto; padding-left: 8px; }
+        .wm-wrap { position: relative; isolation: isolate; margin-top: 4px; width: 100%; aspect-ratio: 1 / 1; max-height: 80vh; overflow: hidden; border-radius: 12px; background: #0b1220; touch-action: none; cursor: grab; }
         .wm-wrap.dragging { cursor: grabbing; }
         .wm-inner { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 0 0; }
         .wm-inner > img { width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
@@ -1942,7 +1947,7 @@ function ensureUniversalStyles() {
         .wm-wrap.hide-got .wm-pin.got { display: none; }
         .wm-pin.off, .wm-pin.miss { display: none; }
         .wm-pin.sel { box-shadow: 0 0 0 3px #fff; z-index: 2; }
-        .wm-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+        .wm-bar { position: relative; z-index: 6; min-height: 32px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
         .wm-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: .75rem; font-weight: 800; cursor: pointer; }
         .wm-chip.off { opacity: .4; }
         .wm-chip i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
@@ -2198,6 +2203,7 @@ function worldMapHtml(data) {
             </div>
             <div class="wm-wrap${wmState.hideGot ? ' hide-got' : ''}" id="wmWrap">
                 <div class="wm-inner" id="wmInner"><img src="${escapeHtml(wm.image_url)}" alt="Map">${pins.join('')}</div>
+                <div class="wm-legend" id="wmLegend">${layers.map(l => `<div data-layer="${escapeHtml(l.group)}"${wmState.layersOn[l.group] === false ? ' class="off"' : ''}><i style="background:${escapeHtml(l.color)}"></i>${escapeHtml(l.label)}<small data-count="${escapeHtml(l.group)}"></small></div>`).join('')}<div style="cursor:default;opacity:.7;"><i style="background:#64748b;opacity:.4"></i>Collected (dimmed)</div></div>
                 <div class="wm-zoom"><button type="button" data-z="in">+</button><button type="button" data-z="out">−</button><button type="button" data-z="reset">⟲</button></div>
                 <div class="wm-pop" id="wmPop" hidden></div>
             </div>
@@ -2220,8 +2226,9 @@ function wmZoomAt(f, cx, cy) {
 function setupWorldMap(data) {
     const wrap = document.getElementById('wmWrap'); if (!wrap) return;
     const save = () => { try { localStorage.setItem('wmLayers', JSON.stringify(wmState.layersOn)); localStorage.setItem('wmHideGot', wmState.hideGot ? '1' : '0'); } catch (e) {} };
-    document.querySelectorAll('.wm-chip[data-layer]').forEach(b => b.onclick = () => {
-        const g = b.dataset.layer; wmState.layersOn[g] = wmState.layersOn[g] === false; b.classList.toggle('off', !wmState.layersOn[g]); save(); updateWorldMap();
+    document.querySelectorAll('.wm-chip[data-layer], #wmLegend [data-layer]').forEach(b => b.onclick = (e) => {
+        e.stopPropagation(); const g = b.dataset.layer; wmState.layersOn[g] = wmState.layersOn[g] === false;
+        document.querySelectorAll(`.wm-chip[data-layer="${g}"], #wmLegend [data-layer="${g}"]`).forEach(x => x.classList.toggle('off', !wmState.layersOn[g])); save(); updateWorldMap();
     });
     const gotBtn = document.getElementById('wmGotBtn');
     if (gotBtn) gotBtn.onclick = () => { wmState.hideGot = !wmState.hideGot; wrap.classList.toggle('hide-got', wmState.hideGot); gotBtn.textContent = wmState.hideGot ? '👁 Show collected' : '🙈 Hide collected'; save(); updateWorldMap(); };
@@ -2233,7 +2240,7 @@ function setupWorldMap(data) {
     wrap.addEventListener('wheel', e => { e.preventDefault(); const r = wrap.getBoundingClientRect(); wmZoomAt(e.deltaY < 0 ? 1.25 : 0.8, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
     const pts = new Map(); let moved = 0, pinchD = 0;
     wrap.addEventListener('pointerdown', e => {
-        if (e.target.closest('.wm-zoom, .wm-pop')) return;
+        if (e.target.closest('.wm-zoom, .wm-pop, .wm-legend')) return;
         pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); moved = 0; wrap.classList.add('dragging');
         if (pts.size === 2) { const [a, b] = [...pts.values()]; pinchD = Math.hypot(a.x - b.x, a.y - b.y); }
     });
@@ -2279,7 +2286,7 @@ function updateWorldMap() {
     const inner = document.getElementById('wmInner'); if (!inner) return;
     const q = ((document.getElementById('universalSearchInput') || {}).value || '').trim().toLowerCase();
     const shown = q ? new Set([...document.querySelectorAll('#section-container .game-item-card:not(.search-hidden)')].map(c => (c.getAttribute('data-group') || '') + '|' + c.getAttribute('data-id'))) : null;
-    let need = 0, got = 0;
+    let need = 0, got = 0; const per = {};
     inner.querySelectorAll('.wm-pin').forEach(p => {
         const g = p.dataset.g, id = p.dataset.id, it = appState.collectibles[g]?.items?.[id];
         const has = !!(it && it.collected);
@@ -2287,7 +2294,9 @@ function updateWorldMap() {
         p.classList.toggle('off', wmState.layersOn && wmState.layersOn[g] === false);
         p.classList.toggle('miss', !!shown && !shown.has(g + '|' + id));
         if (!p.classList.contains('off') && !p.classList.contains('miss')) { if (has) got++; else need++; }
+        const pc = per[g] || (per[g] = [0, 0]); pc[1]++; if (has) pc[0]++;
     });
+    document.querySelectorAll('#wmLegend [data-count]').forEach(el => { const c = per[el.dataset.count] || [0, 0]; el.textContent = `${c[0]}/${c[1]}`; });
     const cnt = document.getElementById('wmCount'); if (cnt) cnt.textContent = `${need} still to find · ${got} collected`;
     if (wmState.sel) wmShowPop();
 }
