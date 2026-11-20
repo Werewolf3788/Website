@@ -907,6 +907,7 @@ window.appState.applyStateToUI = function() {
         });
     });
 
+    updateWorldMap();
     if (reconcileBonusLinks(this)) { clearTimeout(this._bonusSaveTimer); this._bonusSaveTimer = setTimeout(() => this.saveProgress(), 800); }
     applyTrophyCompletions(this);
 
@@ -1932,6 +1933,25 @@ function ensureUniversalStyles() {
         .mission-region { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin-left: 8px; }
         .tier-box-wrap { display: inline-flex; gap: 4px; flex: 0 0 auto; flex-wrap: wrap; }
         .tier-gap { width: 8px; flex: 0 0 auto; }
+        .wm-wrap { position: relative; width: 100%; aspect-ratio: 1 / 1; max-height: 80vh; overflow: hidden; border-radius: 12px; background: #0b1220; touch-action: none; cursor: grab; }
+        .wm-wrap.dragging { cursor: grabbing; }
+        .wm-inner { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 0 0; }
+        .wm-inner > img { width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+        .wm-pin { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; border: 2px solid #0f172a; box-shadow: 0 0 0 1px rgba(255,255,255,.35); transform: scale(calc(1 / var(--wm-s, 1))); cursor: pointer; padding: 0; }
+        .wm-pin.got { opacity: .25; filter: grayscale(1); }
+        .wm-wrap.hide-got .wm-pin.got { display: none; }
+        .wm-pin.off, .wm-pin.miss { display: none; }
+        .wm-pin.sel { box-shadow: 0 0 0 3px #fff; z-index: 2; }
+        .wm-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+        .wm-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: .75rem; font-weight: 800; cursor: pointer; }
+        .wm-chip.off { opacity: .4; }
+        .wm-chip i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .wm-zoom { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 3; }
+        .wm-zoom button { width: 34px; height: 34px; border-radius: 8px; border: 1px solid #334155; background: rgba(15,23,42,.9); color: #fff; font-weight: 900; font-size: 1rem; cursor: pointer; }
+        .wm-pop { position: absolute; left: 10px; bottom: 10px; right: 10px; max-width: 420px; background: rgba(15,23,42,.96); border: 1px solid #334155; border-radius: 10px; padding: 10px 12px; color: #e2e8f0; font-size: .8rem; z-index: 4; }
+        .wm-pop b { color: #fff; font-size: .9rem; }
+        .wm-pop .wm-pop-x { position: absolute; right: 8px; top: 6px; background: none; border: 0; color: #94a3b8; font-size: 1rem; cursor: pointer; }
+        .wm-count { font-size: .75rem; color: #94a3b8; margin-left: auto; }
         .tier-row { margin-top: 10px; }
         .tier-box { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.22);
             background: #0f172a; color: #94a3b8; font-size: 0.8rem; font-weight: 800; cursor: pointer;
@@ -2148,6 +2168,128 @@ function currentTierGroup(groups, level) {
     let edge = 0;
     for (let i = 0; i < groups.length; i++) { edge += Number(groups[i].levels) || 0; if (level < edge || i === groups.length - 1) return { i, g: groups[i], maxed: level >= edge }; }
     return null;
+}
+// ---------------------------------------------------------------------------
+// World map: a pin for every collectible that has map_x/map_y (0-1 across the map
+// picture). Collected pins dim (or hide); tap a pin for details and a tick button.
+// ---------------------------------------------------------------------------
+const wmState = { s: 1, x: 0, y: 0, hideGot: false, layersOn: null, sel: null };
+function worldMapHtml(data) {
+    const wm = data && data.world_map; if (!wm || !wm.image_url) return '';
+    const layers = wm.layers || [];
+    if (!wmState.layersOn) { try { wmState.layersOn = JSON.parse(localStorage.getItem('wmLayers') || 'null'); } catch (e) {} }
+    if (!wmState.layersOn) wmState.layersOn = Object.fromEntries(layers.map(l => [l.group, true]));
+    try { wmState.hideGot = localStorage.getItem('wmHideGot') === '1'; } catch (e) {}
+    const pins = [];
+    layers.forEach(l => {
+        const g = data.collectibles && data.collectibles[l.group]; if (!g) return;
+        (g.items || []).forEach(it => {
+            if (it.map_x == null || it.map_y == null) return;
+            pins.push(`<button type="button" class="wm-pin" data-g="${escapeHtml(l.group)}" data-id="${escapeHtml(it.id)}" style="left:${it.map_x * 100}%;top:${it.map_y * 100}%;background:${escapeHtml(l.color || '#fff')}" title="${escapeHtml((it.region ? it.region + ' · ' : '') + (it.name || ''))}"></button>`);
+        });
+    });
+    return `<div class="category-section" id="worldMapSection">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🗺️ Interactive Map</h2><span>▾</span></div>
+        <div class="section-content">
+            <div class="wm-bar">
+                ${layers.map(l => `<button type="button" class="wm-chip${wmState.layersOn[l.group] === false ? ' off' : ''}" data-layer="${escapeHtml(l.group)}"><i style="background:${escapeHtml(l.color)}"></i>${escapeHtml(l.label)}</button>`).join('')}
+                <button type="button" class="wm-chip" id="wmGotBtn">${wmState.hideGot ? '👁 Show collected' : '🙈 Hide collected'}</button>
+                <span class="wm-count" id="wmCount"></span>
+            </div>
+            <div class="wm-wrap${wmState.hideGot ? ' hide-got' : ''}" id="wmWrap">
+                <div class="wm-inner" id="wmInner"><img src="${escapeHtml(wm.image_url)}" alt="Map">${pins.join('')}</div>
+                <div class="wm-zoom"><button type="button" data-z="in">+</button><button type="button" data-z="out">−</button><button type="button" data-z="reset">⟲</button></div>
+                <div class="wm-pop" id="wmPop" hidden></div>
+            </div>
+            <div style="font-size:.7rem;color:#64748b;margin-top:6px;">Drag to move, scroll or pinch to zoom. Bright pins are what you still need; tap one for details. Searching above filters the pins too.</div>
+        </div></div>`;
+}
+function wmApply() {
+    const inner = document.getElementById('wmInner'), wrap = document.getElementById('wmWrap'); if (!inner || !wrap) return;
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    wmState.s = Math.min(8, Math.max(1, wmState.s));
+    wmState.x = Math.min(0, Math.max(W - W * wmState.s, wmState.x));
+    wmState.y = Math.min(0, Math.max(H - H * wmState.s, wmState.y));
+    inner.style.transform = `translate(${wmState.x}px,${wmState.y}px) scale(${wmState.s})`;
+    inner.style.setProperty('--wm-s', wmState.s);
+}
+function wmZoomAt(f, cx, cy) {
+    const s0 = wmState.s, s1 = Math.min(8, Math.max(1, s0 * f));
+    wmState.x = cx - (cx - wmState.x) * (s1 / s0); wmState.y = cy - (cy - wmState.y) * (s1 / s0); wmState.s = s1; wmApply();
+}
+function setupWorldMap(data) {
+    const wrap = document.getElementById('wmWrap'); if (!wrap) return;
+    const save = () => { try { localStorage.setItem('wmLayers', JSON.stringify(wmState.layersOn)); localStorage.setItem('wmHideGot', wmState.hideGot ? '1' : '0'); } catch (e) {} };
+    document.querySelectorAll('.wm-chip[data-layer]').forEach(b => b.onclick = () => {
+        const g = b.dataset.layer; wmState.layersOn[g] = wmState.layersOn[g] === false; b.classList.toggle('off', !wmState.layersOn[g]); save(); updateWorldMap();
+    });
+    const gotBtn = document.getElementById('wmGotBtn');
+    if (gotBtn) gotBtn.onclick = () => { wmState.hideGot = !wmState.hideGot; wrap.classList.toggle('hide-got', wmState.hideGot); gotBtn.textContent = wmState.hideGot ? '👁 Show collected' : '🙈 Hide collected'; save(); updateWorldMap(); };
+    wrap.querySelectorAll('.wm-zoom button').forEach(b => b.onclick = (e) => {
+        e.stopPropagation(); const r = wrap.getBoundingClientRect();
+        if (b.dataset.z === 'reset') { wmState.s = 1; wmState.x = 0; wmState.y = 0; wmApply(); return; }
+        wmZoomAt(b.dataset.z === 'in' ? 1.6 : 1 / 1.6, r.width / 2, r.height / 2);
+    });
+    wrap.addEventListener('wheel', e => { e.preventDefault(); const r = wrap.getBoundingClientRect(); wmZoomAt(e.deltaY < 0 ? 1.25 : 0.8, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+    const pts = new Map(); let moved = 0, pinchD = 0;
+    wrap.addEventListener('pointerdown', e => {
+        if (e.target.closest('.wm-zoom, .wm-pop')) return;
+        pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); moved = 0; wrap.classList.add('dragging');
+        if (pts.size === 2) { const [a, b] = [...pts.values()]; pinchD = Math.hypot(a.x - b.x, a.y - b.y); }
+    });
+    wrap.addEventListener('pointermove', e => {
+        const p = pts.get(e.pointerId); if (!p) return;
+        if (pts.size === 2) {
+            pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y), r = wrap.getBoundingClientRect();
+            if (pinchD) wmZoomAt(d / pinchD, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); pinchD = d; moved += 10; return;
+        }
+        const dx = e.clientX - p.x, dy = e.clientY - p.y; moved += Math.abs(dx) + Math.abs(dy);
+        if (moved > 4 && !wrap.hasPointerCapture(e.pointerId)) { try { wrap.setPointerCapture(e.pointerId); } catch (_) {} }
+        wmState.x += dx; wmState.y += dy; pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); wmApply();
+    });
+    const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinchD = 0; if (!pts.size) wrap.classList.remove('dragging'); };
+    wrap.addEventListener('pointerup', up); wrap.addEventListener('pointercancel', up);
+    wrap.addEventListener('click', e => {
+        const pin = e.target.closest('.wm-pin'); if (!pin || moved > 6) return;
+        wmState.sel = { g: pin.dataset.g, id: pin.dataset.id }; wmShowPop();
+    });
+    window.addEventListener('resize', wmApply);
+    wmApply(); updateWorldMap();
+}
+function wmShowPop() {
+    const pop = document.getElementById('wmPop'); if (!pop) return;
+    document.querySelectorAll('.wm-pin.sel').forEach(p => p.classList.remove('sel'));
+    if (!wmState.sel) { pop.hidden = true; return; }
+    const { g, id } = wmState.sel;
+    const it = appState.collectibles[g]?.items?.[id]; if (!it) { pop.hidden = true; return; }
+    const pin = document.querySelector(`.wm-pin[data-g="${CSS.escape(g)}"][data-id="${CSS.escape(id)}"]`); if (pin) pin.classList.add('sel');
+    const friends = toArr(appState.friendsProgress).filter(f => f.done && (f.done.has(id) || (it.bonus_for && f.done.has('bonus:' + it.bonus_for.id)))).map(f => friendBadge(f, '')).join('');
+    pop.innerHTML = `<button type="button" class="wm-pop-x" onclick="wmState.sel=null;wmShowPop()">✕</button>
+        <div style="font-size:.68rem;color:#94a3b8;font-weight:800;text-transform:uppercase;">${escapeHtml(it.region || '')}</div>
+        <b>${escapeHtml(it.name || id)}</b>
+        <div style="margin:3px 0 6px;color:#cbd5e1;">${escapeHtml(it.location || '')}</div>
+        ${it.guide ? `<div style="color:#94a3b8;max-height:5.5em;overflow:auto;">${escapeHtml(it.guide)}</div>` : ''}
+        ${friends ? `<div style="margin-top:6px;">${friends}</div>` : ''}
+        <button type="button" class="uni-search-btn" style="margin-top:8px;" onclick="appState.toggleItem('${escapeHtml(id)}','collectible','${escapeHtml(g)}'); wmShowPop();">${it.collected ? '✓ Collected — untick' : '☐ Mark collected'}</button>`;
+    pop.hidden = false;
+}
+window.wmState = wmState; window.wmShowPop = wmShowPop;
+function updateWorldMap() {
+    const inner = document.getElementById('wmInner'); if (!inner) return;
+    const q = ((document.getElementById('universalSearchInput') || {}).value || '').trim().toLowerCase();
+    const shown = q ? new Set([...document.querySelectorAll('#section-container .game-item-card:not(.search-hidden)')].map(c => (c.getAttribute('data-group') || '') + '|' + c.getAttribute('data-id'))) : null;
+    let need = 0, got = 0;
+    inner.querySelectorAll('.wm-pin').forEach(p => {
+        const g = p.dataset.g, id = p.dataset.id, it = appState.collectibles[g]?.items?.[id];
+        const has = !!(it && it.collected);
+        p.classList.toggle('got', has);
+        p.classList.toggle('off', wmState.layersOn && wmState.layersOn[g] === false);
+        p.classList.toggle('miss', !!shown && !shown.has(g + '|' + id));
+        if (!p.classList.contains('off') && !p.classList.contains('miss')) { if (has) got++; else need++; }
+    });
+    const cnt = document.getElementById('wmCount'); if (cnt) cnt.textContent = `${need} still to find · ${got} collected`;
+    if (wmState.sel) wmShowPop();
 }
 function buildItemCard(o) {
     const search = [o.title, o.sub, o.body, o.badge, o.ctx, o.type].filter(Boolean).join(' ').toLowerCase();
@@ -2587,7 +2729,7 @@ function runUniversalSearch(raw) {
 
     const q = String(raw || '').trim().toLowerCase();
     const cards = container.querySelectorAll('.game-item-card');
-    const sections = Array.from(container.querySelectorAll('.category-section'));
+    const sections = Array.from(container.querySelectorAll('.category-section')).filter(s => s.id !== 'worldMapSection');
 
     if (!q) {
         cards.forEach(c => c.classList.remove('search-hidden'));
@@ -2599,7 +2741,7 @@ function runUniversalSearch(raw) {
             }
         });
         if (countEl) countEl.innerText = '';
-        document.querySelectorAll('.mark-shown-bar').forEach(b => { b.hidden = true; });
+        document.querySelectorAll('.mark-shown-bar').forEach(b => { b.hidden = true; }); updateWorldMap();
         return;
     }
 
@@ -2624,7 +2766,7 @@ function runUniversalSearch(raw) {
     });
 
     if (countEl) countEl.innerText = matches ? `${matches} result${matches === 1 ? '' : 's'}` : 'No results';
-    document.querySelectorAll('.mark-shown-bar').forEach(b => { b.hidden = !matches; });
+    document.querySelectorAll('.mark-shown-bar').forEach(b => { b.hidden = !matches; }); updateWorldMap();
 }
 // Bulk marking: with a search active, tick (or clear) every checkbox card still showing,
 // e.g. search "koani skill point" then "Mark all shown". Cards with rank boxes are skipped.
@@ -3893,7 +4035,8 @@ function renderUniversalCompanion(data) {
             <button type="button" class="uni-search-btn" id="uniCollapseAll">Collapse all</button>
             <div class="uni-search-count" id="universalSearchCount"></div>
         </div>`;
-    container.innerHTML = searchBar + pinnedHtml + html;
+    container.innerHTML = searchBar + worldMapHtml(data) + pinnedHtml + html;
+    setupWorldMap(data);
     appState.applyStateToUI();
     setupUniversalSearch();
 }
