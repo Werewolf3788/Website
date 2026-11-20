@@ -32,6 +32,8 @@
 
 const { initializeApp, cert, getApps } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
+const friendGames = require("../Claude-Test/sync/friend-games.js");   // also saves each player's games to Firestore under their friend code
+let kevinUsers = {};   // users read from Kevin's DB this run (for friend codes)
 
 const KEVIN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const RAY_RTDB_URL = "https://playstation-stats-default-rtdb.firebaseio.com";
@@ -148,6 +150,7 @@ async function readKevinNodes() {
             console.warn(`[KEVIN DB] REST read failed: ${e.message}`);
         }
     }
+    kevinUsers = users;
     return { users, secrets, friendCodes, ok };
 }
 
@@ -398,6 +401,27 @@ async function getRecentAchievementTitles(xuid, apiKey) {
     }
 }
 
+/* Same data saved in Kevin's Firestore under the member's friend code: user/{code}/platform/xbox */
+async function saveXboxToFriendCode(acc, profile, titles) {
+    const code = friendGames.friendCodeOf(kevinUsers[acc.emailKey]);
+    if (!code) return;
+    const online = /online/i.test(String(profile.presenceState || ""));
+    const games = (titles || []).map((t) => ({
+        title: t.titleName, art: t.image || null,
+        earned: t.totalAchievements ? t.currentAchievements : null, total: t.totalAchievements || null,
+        progress: t.totalAchievements ? (t.currentAchievements / t.totalAchievements) * 100 : null,
+        lastPlayed: t.lastPlayed ? Date.parse(t.lastPlayed) || null : null,
+        playing: online && !!profile.presenceText && String(profile.presenceText).toLowerCase().includes(String(t.titleName || "").toLowerCase()),
+        extra: { titleId: t.titleId, gamerscore: t.currentGamerscore, gamerscoreTotal: t.totalGamerscore, devices: t.devices }
+    }));
+    const prof = {
+        name: profile.gamertag, avatar: profile.gamerPicture || null, online, currentGame: online ? (profile.presenceText || null) : null,
+        stats: { gamerscore: profile.gamerscore || 0, games: games.length, achievements: games.reduce((n, g) => n + (g.earned || 0), 0) }
+    };
+    const r = await friendGames.savePlatform(code, "xbox", prof, games);
+    console.log(`[XBOX]   -> user/${code}/platform/xbox (${r.written || 0} doc(s) written)`);
+}
+
 /* ----------------------------------------------------------------------------
  * Main
  * -------------------------------------------------------------------------- */
@@ -452,6 +476,7 @@ async function main() {
             await rtdbRef(`gamertags/${profile.gamertag}`).set(card);
             await mirrorToKevin(profile.gamertag, card);
             try { await rayDb.ref(`psn/xbox_cards/${String(profile.gamertag).replace(/[.$#\[\]\/]/g, "_")}`).set(JSON.parse(JSON.stringify(card, (k2, v) => (k2 === "sourceEmailKey" || k2 === "keyOwnerEmailKey" || k2 === "syncedViaFriendKey") ? undefined : v))); } catch (e) { console.warn(`[XBOX] Ray psn copy failed: ${e.message}`); }
+            await saveXboxToFriendCode(acc, profile, titles).catch((e) => console.warn(`[XBOX] friend-code save for ${profile.gamertag}: ${e.message}`));
             usersByGamerTag[profile.gamertag] = acc.emailKey;
             okCount++;
             const xuidNote = profile.xuidVerified === true ? ", XUID verified" : profile.xuidVerified === false ? ", XUID MISMATCH" : "";

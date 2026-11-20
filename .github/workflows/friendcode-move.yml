@@ -1,0 +1,24 @@
+# One-time move of game data to the friend code in Firestore. Manual: Actions -> "Friend Code Move" -> Run workflow.
+# check = list what would move + show the Firestore rules; copy = copy (old copies kept); cleanup = delete the old email-key copies.
+name: Friend Code Move
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'check, copy or cleanup'
+        default: check
+permissions:
+  contents: read
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save firebase-admin google-auth-library
+      - run: node Claude-Test/sync/friendcode-move.js
+        env:
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          MODE: ${{ github.event.inputs.mode }}

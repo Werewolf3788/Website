@@ -247,7 +247,7 @@ function flushSave() {
   if (player.driving && player.veh === 'combine' && save.combine) { save.combine.x = +combineLocal.x.toFixed(2); save.combine.z = +combineLocal.z.toFixed(2); save.combine.ry = +combineLocal.ry.toFixed(3); }
   WW.writeSave(saveKey, JSON.parse(JSON.stringify(save))); pushFarmer();
 }
-async function persistNow() { clearTimeout(saveTimer); if (me) await WW.writeSave(saveKey, JSON.parse(JSON.stringify(save))); }
+async function persistNow() { clearTimeout(saveTimer); if (me) { await WW.writeSave(saveKey, JSON.parse(JSON.stringify(save))); if (WW.flushSaves) WW.flushSaves(); } }
 // One readable record per farmer in the farm room: game_rooms/farm/{room}/farmers/{uid} = name, level, xp, coins, fields, animals, harvested, avatar, color, tractor.
 // (the full private save - seeds, bag, orders, stats ... - stays in games_saves/{uid}/{farm|farm_mp_CODE})
 function pushFarmer(extra) {

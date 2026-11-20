@@ -135,11 +135,10 @@ const LEVELS = [['public','Everyone'],['friends','Friends'],['close','Close frie
 const LV_RANK = { public:0, friends:1, close:2, private:3 };
 const REL_LABEL = ['Public view','Friend view','Close-friend view'];
 const PLATS = { psn:{name:'PlayStation',icon:'fab fa-playstation'}, xbox:{name:'Xbox',icon:'fab fa-xbox'}, steam:{name:'Steam',icon:'fab fa-steam'} };
-const RAY_DB = 'https://playstation-stats-default-rtdb.firebaseio.com';   // Xbox sync output lives here (Xbox/xbox.js)
 // Game Companion saves: Firestore  user/{key}/platform/{ps|xbox|steam|pc}/game/{gameName}
 const TRACK_PLATS = { ps:'psn', xbox:'xbox', steam:'steam', pc:'steam' };
 
-const S = { ownerKey:null, isOwner:false, rel:0, viewAs:null, U:{}, profile:{}, media:{}, plat:{}, psnRaw:null,
+const S = { ownerKey:null, isOwner:false, rel:0, viewAs:null, U:{}, profile:{}, media:{}, plat:{},
             tab:'all', tracking:null, presence:null, myFriends:{}, edit:null };
 
 /* ---------- helpers ---------- */
@@ -229,7 +228,7 @@ async function publishPublic() {
     if (isPub('steam') && platId('steam')) { const sid = await steamId64(platId('steam')); if (sid) out.steam = sid; }
     if (isPub('tracking')) {
       if (Array.isArray(S.tracking)) out.tracking = S.tracking.slice(0, 40).map(t => ({ title:t.title, platform:t.platform || '', status:t.status || '', progress:t.progress, note:t.note || '', updated:t.updated || 0, wl:t.wl || null }));
-      if (S.U.mobile_progress) out.mobile_progress = S.U.mobile_progress;
+      if (S.mobileProg && Object.keys(S.mobileProg).length) out.mobile_progress = S.mobileProg;
     }
     const cur = (await ref.once('value').catch(() => null));
     const old = cur && cur.val(); if (old) delete old.updatedAt;
@@ -248,7 +247,8 @@ async function bootPublic(q) {
   }
   if (!snap) { signInView(true); return; }
   S.isOwner = false; S.rel = 0; S.myFriends = {}; S.ownerKey = null;
-  S.U = { friend_code:snap.code, username:snap.username || '', avatar_url:snap.avatar || '', tracking_scope:snap.tracking_scope || 'friends', mobile_progress:snap.mobile_progress || null };
+  S.U = { friend_code:snap.code, username:snap.username || '', avatar_url:snap.avatar || '', tracking_scope:snap.tracking_scope || 'friends' };
+  S.mobileProg = snap.mobile_progress || {};
   if (snap.psn) { S.U.psn_username = snap.psn; S.U.psn_username_scope = 'public'; }
   if (snap.xbox) { S.U.xbox_gamertag = snap.xbox; S.U.xbox_gamertag_scope = 'public'; }
   if (snap.steam) { S.U.steam_id = snap.steam; S.U.steam_id_scope = 'public'; }
@@ -326,6 +326,18 @@ async function loadProfile() {
   }
   applyTheme();
   if (canSee('tracking')) S.trackP = loadTracking(); else S.tracking = null;
+  loadMobile();
+}
+
+/* mobile games progress: Firestore user/{friendCode}/platform/mobile/game/{game}.progress (written by the games in /Mobilegames) */
+async function loadMobile() {
+  S.mobileProg = {};
+  const code = ownerCode(); if (!code) return;
+  try {
+    const fs = await W.loadFirestore(), snap = await fs.collection('user').doc(code).collection('platform').doc('mobile').collection('game').get();
+    snap.forEach(d => { const v = d.data() || {}; if (v.progress) S.mobileProg[d.id] = v.progress; });
+  } catch (e) { console.warn('[profile] mobile', e && (e.code || e.message)); }
+  if (!$('#profile-root').hidden) render();
 }
 
 function applyTheme() {
@@ -351,153 +363,41 @@ function dedupeGames(list, keyOf, better) {
 }
 const furtherAlong = (a, b) => (a.playing && !b.playing) || (!(b.playing && !a.playing) && (num(a.progress) > num(b.progress) || (num(a.progress) === num(b.progress) && num(a.updated || a.lastPlayed) > num(b.updated || b.lastPlayed))));
 
-/* ---------- platform loaders ---------- */
+/* ---------- platform loaders: everything from ONE place, Firestore user/{friendCode}/platform/{ps|xbox|steam} ----------
+   Written by the PlayStation, Xbox and Steam sync jobs (Claude-Test/sync/friend-games.js). One summary doc per platform,
+   so a profile costs a handful of reads; each game's full trophy list is on user/{code}/platform/{p}/game/{gameId}.sync */
+const FS_PLAT = { psn:'ps', xbox:'xbox', steam:'steam' };
+const ownerCode = () => String(S.U.friend_code || '').toUpperCase();
 async function loadPlatforms() {
-  S.plat = {}; S.psnRaw = null;
-  const fns = { psn: loadPsn, xbox: loadXbox, steam: loadSteam };
+  S.plat = {};
+  const code = ownerCode(); if (!code) return;
+  let fs = null; try { fs = await W.loadFirestore(); } catch (e) {} if (!fs) return;
   await Promise.all(Object.keys(PLATS).map(async (p) => {
-    const id = platId(p); if (!id) return;
+    if (!platId(p)) return;
     if (!S.isOwner && !canSee(p)) return;                // never even fetch what the viewer may not see
     let d = null;
-    try { d = await fns[p](id); } catch (e) { console.warn('[profile]', p, e); }
+    try { const doc = await fs.collection('user').doc(code).collection('platform').doc(FS_PLAT[p]).get(); if (doc.exists) d = fromSummary(p, doc.data() || {}, code); }
+    catch (e) { console.warn('[profile]', p, e); }
     if (d && Array.isArray(d.games)) d.games = dedupeGames(d.games, g => normTitle(g.title), furtherAlong);
     // a platform with nothing synced yet stays hidden; it shows up as soon as it has data
     if (d) S.plat[p] = d; else delete S.plat[p];
   }));
 }
-
-async function loadPsn(tag) {
-  let u = null;
-  let src = DB();
-  outer: for (const base of [...new Set([DB(), RAY_DB])]) for (const t of [...new Set([tag, tag.toLowerCase()])]) {
-    try { const r = await fetch(`${base}/psn/gamertags/${encodeURIComponent(t)}.json?t=${Date.now()}`);
-      if (r.ok) { u = await r.json(); if (u) { src = base; break outer; } } } catch (e) {}
-  }
-  if (!u) return null;
-  S.psnRaw = u; S.psnSrc = src;
-  const ah = u.activeHunt || {};
-  const activeId = String(u.commId || ah.commId || ah.npCommunicationId || '').toUpperCase();
-  const online = u.online === true || u.online === 'true';
-  const list = arr(u.recentGames).map(g => {
-    const id = String(g.npCommunicationId || g.commId || '').toUpperCase();
-    return { platform:'psn', id, gameKey:g.gameKey || '', title:g.name || g.trophyTitleName || 'Game', poster:secure(g.posterArt || g.art || ''),
-      progress:num(g.progress), earned:g.earnedTotal, total:g.definedTotal, hours:g.nativePlaytimeFormatted || '',
-      lastPlayed:g.lastPlayedDateTime || g.lastUpdatedDateTime || '', playing: online && !!id && id === activeId };
-  });
-  { // the same title often appears twice (PS4 + PS5 edition, repeated syncs): keep one card, the furthest along
-    const seen = new Map();
-    for (const g of list.splice(0)) {
-      const k = (g.title || g.id).toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\b(ps4|ps5|playstation (4|5)|director s cut|edition)\b/g, '').trim() || g.id;
-      const cur = seen.get(k);
-      if (!cur || (g.playing && !cur.playing) || (!(cur.playing && !g.playing) && g.progress > cur.progress)) seen.set(k, g);
-    }
-    list.push(...seen.values());
-  }
-  if (activeId && !list.some(g => g.id === activeId)) {
-    list.unshift({ platform:'psn', id:activeId, title:ah.title || u.currentGame || 'Active hunt', poster:secure(ah.art || ah.posterArt || u.currentGameArt || ''),
-      progress:num(ah.progress), earned:undefined, total:undefined, hours:ah.nativePlaytimeFormatted || '', lastPlayed:u.lastUpdated || '', playing: online });
-  }
-  // fill missing posters/totals from the master skeleton (same source the squad hub uses)
-  await Promise.all(list.slice(0, 12).filter(g => g.id.startsWith('NPWR') && (!g.poster || g.total == null)).map(async g => {
-    try {
-      const r = await fetch(`${src}/psn/games/${g.id}.json`); if (!r.ok) return; const s = await r.json(); if (!s) return;
-      g.poster = g.poster || secure(s.posterArt || '');
-      if (g.title === 'Active hunt') g.title = s.name || s.trophyTitleName || g.title;
-      if (g.total == null) g.total = arr(s.trophies).length || undefined;
-    } catch (e) {}
-  }));
-  const sm = u.trophySummary || {}, et = sm.earnedTrophies || {};
-  const g4 = k => sm[k] !== undefined ? sm[k] : (et[k] || 0);
-  const total = sm.total !== undefined ? sm.total : g4('platinum') + g4('gold') + g4('silver') + g4('bronze');
-  return {
-    platform:'psn', name:u.onlineId || tag, avatar:secure(u.avatar || u.image || (u.allAvatars && u.allAvatars[0]) || ''),
-    online, currentGame:online ? (u.currentGame || '') : '', activity:u.currentGameActivity || (u.gameStatus && String(u.gameStatus).toLowerCase() !== String(u.currentGame || '').toLowerCase() ? u.gameStatus : '') || '', plus:!!u.plus,
-    stats:[['Level', u.level || sm.trophyLevel || '--'], ['Trophies', num(total).toLocaleString()], ['Games', u.gamesPlayed || list.length]],
-    breakdown:{ platinum:g4('platinum'), gold:g4('gold'), silver:g4('silver'), bronze:g4('bronze') },
-    games:list, recent:arr(u.mostRecentTrophies)
-  };
-}
-
-// Xbox: written by Xbox/xbox.js to the playstation-stats DB at /xbox/gamertags/{gamertag}
-async function loadXbox(tag) {
-  let d = null;
-  const tags = [...new Set([tag, tag.toLowerCase()])];
-  // 1) Kevin's DB through the member's sign-in (Xbox sync mirrors cards here)
-  for (const t of tags) { if (d) break; try { d = (await W.db.ref('platforms/xbox/gamertags/' + t.replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); } catch (e) {} }
-  // 2) the sync's original home in Ray's DB, then public REST on Kevin's DB
-  // 1b) the same card is also copied under /psn/xbox_cards, a path the live database rules already allow the site to read
-  for (const t of tags) { if (d) break; try { d = (await W.db.ref('psn/xbox_cards/' + t.replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); } catch (e) {} }
-  outer: for (const base of d ? [] : [...new Set([RAY_DB, DB()])]) for (const t of tags) {
-    for (const path of ['psn/xbox_cards/' + t.replace(/[.$#\[\]\/]/g, '_'), 'xbox/gamertags/' + encodeURIComponent(t), 'platforms/xbox/gamertags/' + encodeURIComponent(t)]) {
-      try { const r = await fetch(`${base}/${path}.json?t=${Date.now()}`); if (r.ok) { d = await r.json(); if (d) break outer; } } catch (e) {}
-    }
-  }
-  if (!d) return null;
-  const online = /online/i.test(d.presenceState || '');
-  const games = arr(d.recentTitles).map(t => {
-    const total = num(t.totalAchievements), got = num(t.currentAchievements);
-    return { platform:'xbox', id:String(t.titleName), title:t.titleName || 'Game', poster:secure(t.image || ''), progress: num(t.totalGamerscore) ? Math.round(num(t.currentGamerscore) / num(t.totalGamerscore) * 100) : (total ? Math.round(got / total * 100) : 0),
-      earned:got, total:total || undefined, hours:t.totalGamerscore ? `${num(t.currentGamerscore)}/${num(t.totalGamerscore)} G` : '', lastPlayed:t.lastPlayed || '',
-      playing: online && !!d.presenceText && String(d.presenceText).toLowerCase().includes(String(t.titleName || '').toLowerCase()), achievements:[] };
-  });
-  const gotAll = games.reduce((n, g) => n + num(g.earned), 0);
-  return { platform:'xbox', name:d.gamertag || tag, avatar:secure(d.gamerPicture || ''), online,
-    currentGame: online ? (d.presenceText || '') : '', activity:'',
-    stats:[['Gamerscore', num(d.gamerscore).toLocaleString()], ['Recent games', games.length], ['Achievements', gotAll.toLocaleString()]],
-    games, recent:[] };
-}
-
-// Steam: written by scripts/steam-sync.js to /steam_users/{steamId64}
-async function loadSteam(raw) {
-  let id = String(raw).trim().replace(/\/+$/, '').split('/').pop();
-  if (!/^7656119\d{10}$/.test(id)) {
-    const vn = (await W.db.ref('platforms/steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value').catch(() => null));
-    id = vn && typeof vn.val() === 'string' ? vn.val() : '';
-    if (!id) return null;
-  }
-  const g = async (c) => (await W.db.ref(`platforms/steam_users/${id}/${c}`).once('value').catch(() => ({ val: () => null }))).val();
-  let [profile, games, ach, tot, lib] = await Promise.all([g('profile'), g('games'), g('ach'), g('achTotals'), g('library')]);
-  if (!profile || !lib) { // Firestore copy (steam_players/{id} + library/page_N) covers everyone the sync has seen
-    try {
-      const fs = await W.loadFirestore(), root = fs.collection('steam_players').doc(id);
-      const head = await root.get();
-      if (head.exists) {
-        const pages = await root.collection('library').get(), merged = {};
-        pages.forEach(d => Object.assign(merged, (d.data() || {}).games || {}));
-        if (Object.keys(merged).length) lib = merged;
-        if (!ach) { // per-game achievement counts, if the sync stored them
-          const as = await root.collection('ach').get().catch(() => null), o = {};
-          if (as) as.forEach(d => { const v = d.data() || {}; Object.entries(v.games || v).forEach(([k, x]) => { if (x && typeof x === 'object' && ('total' in x || 'got' in x)) o[k] = x; }); });
-          if (Object.keys(o).length) ach = o;
-        }
-        if (!profile) profile = { name: (head.data() || {}).name || id, avatar: (head.data() || {}).avatar || '' };
-      }
-    } catch (e) { console.warn('[profile] steam firestore', e); }
-  }
-  if (!profile) return null;
-  const achOf = (appid) => (ach && ach[appid]) || {};
-  // every owned game (library), recently played first, then by last played / hours; falls back to the recent list
-  const recentIds = new Set(arr(games && games.recent).map(r => String(r.appid)));
-  const all = lib && typeof lib === 'object'
-    ? Object.entries(lib).map(([appid, v]) => ({ appid, name:v.n, minutesTotal:v.t || 0, last:v.l || 0 }))
-        .sort((a, b) => (recentIds.has(b.appid) - recentIds.has(a.appid)) || (b.last - a.last) || (b.minutesTotal - a.minutesTotal))
-    : arr(games && games.recent).map(r => ({ appid:String(r.appid), name:r.name, minutesTotal:r.minutesTotal || 0, last:0 }));
-  const list = all.map(r => {
-    const a = achOf(r.appid), total = num(a.total), got = num(a.got);
-    return { platform:'steam', id:String(r.appid), title:r.name || ('App ' + r.appid), progress: total ? Math.round(got / total * 100) : 0,
-      poster:`https://cdn.cloudflare.steamstatic.com/steam/apps/${r.appid}/library_600x900.jpg`,
-      earned: total ? got : undefined, total: total || undefined,
-      hours: r.minutesTotal ? (r.minutesTotal / 60).toFixed(1) + ' hrs' : '', lastPlayed:'',
-      playing: !!profile.currentGameId && String(profile.currentGameId) === String(r.appid), achievements:[],
-      steamUnlocks: a.u ? Object.values(a.u).map(x => Object.values(x)) : [] };
-  });
-  if (profile.currentGameId && !list.some(x => x.playing)) {
-    list.unshift({ platform:'steam', id:String(profile.currentGameId), title:profile.currentGame || 'Playing', progress:0, poster:`https://cdn.cloudflare.steamstatic.com/steam/apps/${profile.currentGameId}/library_600x900.jpg`, hours:'', playing:true, achievements:[] });
-  }
-  return { platform:'steam', name:profile.name || id, avatar:secure(profile.avatar || ''), online: !!profile.state && profile.state !== 'offline',
-    currentGame:profile.currentGame || '', activity:'',
-    stats:[['Games', (games && games.count) || list.length], ['Achievements', num(tot && tot.got).toLocaleString()], ['Perfect games', num(tot && tot.perfect)]],
-    games:list, recent:[] };
+function fromSummary(p, v, code) {
+  const pr = v.profile || {}, st = pr.stats || {};
+  const games = Object.entries(v.games || {}).map(([id, g]) => ({
+    platform:p, id, code, title:g.t || id, poster:secure(g.art || ''), progress: g.p == null ? 0 : num(g.p),
+    earned: g.e == null ? undefined : g.e, total: g.n == null ? undefined : g.n,
+    hours: g.h ? g.h + ' hrs' : '', lastPlayed: g.l || '', playing: !!g.now, achievements:[] }))
+    .sort((a, b) => (b.playing - a.playing) || (num(b.lastPlayed) - num(a.lastPlayed)) || (parseFloat(b.hours) || 0) - (parseFloat(a.hours) || 0));
+  const base = { platform:p, name:pr.name || platId(p), avatar:secure(pr.avatar || ''), online:!!pr.online, currentGame:pr.currentGame || '', activity:'', games, recent:[] };
+  if (p === 'psn') return { ...base,
+    stats:[['Level', st.level || '--'], ['Trophies', num(st.trophies).toLocaleString()], ['Games', st.games || games.length]],
+    breakdown:{ platinum:num(st.platinum), gold:num(st.gold), silver:num(st.silver), bronze:num(st.bronze) },
+    recent: arr(pr.recent).map(t => ({ name:t.n, icon:t.i, gameTitle:t.g, timestamp:t.t })) };
+  if (p === 'xbox') return { ...base,
+    stats:[['Gamerscore', num(st.gamerscore).toLocaleString()], ['Recent games', games.length], ['Achievements', num(st.achievements).toLocaleString()]] };
+  return { ...base, stats:[['Games', st.games || games.length], ['Achievements', num(st.achievements).toLocaleString()], ['Perfect games', num(st.perfect)]] };
 }
 
 /* Game Companion saves (Firestore user/{key}/platform/{p}/game/{name}) */
@@ -520,7 +420,7 @@ function wlCard(w) {
 async function readTracking(fs, ids) {
   const out = [], seen = new Set();
   for (const id of ids) for (const p of Object.keys(TRACK_PLATS)) {
-    let snap; try { snap = await fs.collection('user').doc(id).collection('platform').doc(p).collection('game').get(); } catch (e) { continue; }
+    let snap; try { snap = await fs.collection('user').doc(id).collection('platform').doc(p).collection('game').where('updatedAt', '>', new Date(0)).get(); } catch (e) { continue; }
     snap.forEach(doc => {
       const sk = p + '|' + doc.id; if (seen.has(sk)) return; seen.add(sk);
       const d = doc.data() || {};
@@ -536,12 +436,12 @@ async function readTracking(fs, ids) {
   // same game saved twice (or on two platforms with identical progress): show it once
   return dedupeGames(dedupeGames(out, t => normTitle(t.title) + '|' + t.platform, furtherAlong), t => normTitle(t.title) + '|' + (t.progress == null ? 'x' : t.progress), furtherAlong);
 }
-const idsFor = (code, key) => [...new Set([String(code || '').toUpperCase(), String(code || ''), key].filter(Boolean))];
+const idsFor = (code) => [String(code || '').toUpperCase()].filter(Boolean);   // everything is saved under the friend code
 
 async function loadTracking() {
   try {
     const fs = await W.loadFirestore();
-    S.tracking = await readTracking(fs, idsFor(S.U.friend_code, S.ownerKey));
+    S.tracking = await readTracking(fs, idsFor(S.U.friend_code));
   } catch (e) { console.warn('[tracking]', e); S.tracking = { error:true }; }
   if (!$('#profile-root').hidden) render();
   loadFriendProgress();
@@ -560,7 +460,7 @@ async function loadFriendProgress() {
       let ok = scope !== 'private';
       if (scope === 'close') ok = !!(prof.friends && prof.friends[S.U.friend_code] && prof.friends[S.U.friend_code].close_friend === true);
       if (!ok) return { code, name, hidden:true, games:[] };
-      return { code, name, games:(await readTracking(fs, idsFor(code, key))).slice(0, 4) };
+      return { code, name, games:(await readTracking(fs, idsFor(code))).slice(0, 4) };
     }));
   } catch (e) { console.warn('[friends progress]', e); S.friendsProg = null; }
   if (!$('#profile-root').hidden) render();
@@ -737,11 +637,11 @@ function renderTab(vp) {
   const mt = $('#more-track'); if (mt) mt.onclick = () => { S.tab = 'tracking'; render(); };
 }
 
-/* ---------- mobile games progress (users/{key}/mobile_progress/{game}, written by the games in /Mobilegames) ---------- */
+/* ---------- mobile games progress (S.mobileProg, loaded from the friend code by loadMobile) ---------- */
 const MG = { farm: ['🌾', 'Neighborly Acre'], farm_mp: ['🌾', 'Neighborly Acre (multiplayer)'], survive: ['🏚️', 'Tile Survival'], wahoo: ['🎲', 'Wahoo'], tycoon: ['🏙️', 'Monopoly'],
   frogger: ['🐸', 'Frogger'], race: ['🏎️', 'Werewolf Racing'], battleship: ['🚢', 'Battleship'], mahjong: ['🀄', 'Tile Match'] };
 function mobileHtml() {
-  const mp = S.U.mobile_progress || {}, keys = Object.keys(mp).filter(k => mp[k]).sort((a, b) => (mp[b].t || 0) - (mp[a].t || 0));
+  const mp = S.mobileProg || {}, keys = Object.keys(mp).filter(k => mp[k]).sort((a, b) => (mp[b].t || 0) - (mp[a].t || 0));
   if (!keys.length) return `<section class="card mute" style="padding:1rem"><div class="h2"><i class="fas fa-mobile-screen"></i> Mobile games</div>No mobile game progress yet.${S.isOwner ? ' Play Neighborly Acre, Tile Survival or the board games and it shows up here.' : ''}</section>`;
   const n = v => Number(v || 0).toLocaleString();
   const rows = keys.map(k => {
@@ -769,53 +669,17 @@ function trackingHtml() {
   return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${S.tracking.length ? trackingRows(S.tracking) : '<div class="mute" style="font-size:.85rem">No tracked games found yet.</div>'}${friendsInner()}</section>`;
 }
 
-/* ---------- PlayStation project Firestore (written by Playstation/psn.js): full trophy lists + per-player progress ---------- */
-let _psnFs = null;
-async function psnFs() {
-  if (_psnFs) return _psnFs;
-  _psnFs = (async () => {
-    try {
-      const fb = window.firebase; if (!fb.firestore) await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = `https://www.gstatic.com/firebasejs/${fb.SDK_VERSION}/firebase-firestore-compat.js`; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
-      const app = fb.apps.find(a => a.name === 'psnstats') || fb.initializeApp({ apiKey: "AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI", authDomain: "playstation-stats.firebaseapp.com", databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com", projectId: "playstation-stats", storageBucket: "playstation-stats.firebasestorage.app", messagingSenderId: "748816703249", appId: "1:748816703249:web:3413fac9800148aa42b6b0" }, 'psnstats');
-      try { await fb.auth(app).signInAnonymously(); } catch (e) {}
-      return fb.firestore(app);
-    } catch (e) { console.warn('[psn firestore]', e); return null; }
-  })();
-  return _psnFs;
+/* ---------- a game's full trophy / achievement list: user/{code}/platform/{ps|xbox|steam}/game/{gameId}.sync.list ---------- */
+async function syncedList(code, p, gameId) {
+  if (!code || !gameId) return null;
+  try {
+    const fs = await W.loadFirestore();
+    const d = await fs.collection('user').doc(String(code).toUpperCase()).collection('platform').doc(FS_PLAT[p]).collection('game').doc(gameId).get();
+    return d.exists ? (((d.data() || {}).sync || {}).list || null) : null;
+  } catch (e) { return null; }
 }
-/** Full trophy catalog for a game (meta/gameIndex -> games/{key}.trophies): every trophy's name, icon, rank, rarity. Same source as the Game Companion. */
-const _skel = {};
-async function psnCatalog(commId, gameKey) {
-  const id = String(commId || '').toUpperCase(); if (!id) return [];
-  if (_skel[id]) return _skel[id];
-  _skel[id] = (async () => {
-    try {
-      const fs = await psnFs(); if (!fs) return [];
-      let key = gameKey || '';
-      if (!key) { const idx = await fs.collection('meta').doc('gameIndex').get(); const entry = idx.exists && (idx.data().entries || {})[id]; key = entry && entry.key || ''; }
-      if (!key) return [];
-      const doc = await fs.collection('games').doc(key).get(); if (!doc.exists) return [];
-      return arr(doc.data().trophies);
-    } catch (e) { console.warn('[psn catalog]', e && e.message); return []; }
-  })();
-  return _skel[id];
-}
-/** One player's trophy progress for one game: { trophyId: {earned, earnedDate, timestamp, currentValue, targetValue...} } or null.
- *  Tries the synced Firestore copy first, then the live copy in the PlayStation realtime database. */
-async function psnTrophyMap(tag, commId) {
-  if (!tag || !commId) return null;
-  const tags = [...new Set([String(tag), String(tag).toLowerCase()])];
-  const fs = await psnFs();
-  if (fs) for (const t of tags) {
-    try { const d = await fs.collection('players').doc(t).collection('trophyProgress').doc(String(commId)).get(); if (d.exists && (d.data() || {}).trophies) return d.data().trophies; } catch (e) {}
-  }
-  for (const t of tags) {
-    try { const r = await fetch(`${RAY_DB}/psn/gamertags/${encodeURIComponent(t)}/liveTrophyProgress/${encodeURIComponent(commId)}.json`); if (r.ok) { const v = await r.json(); if (v) return v; } } catch (e) {}
-  }
-  return null;
-}
-/** Friends who have a PlayStation name and share it (their own privacy setting), with their trophies for this game */
-async function friendTrophyMaps(commId) {
+/** Friends who share their PlayStation name (their own privacy setting), with their trophies for this game, from their friend code */
+async function friendTrophyMaps(gameId) {
   if (!W.me) return [];
   const friends = S.isOwner ? (S.U.friends || {}) : (S.myFriends || {}), out = [];
   await Promise.all(Object.entries(friends).map(async ([fk, fo]) => {
@@ -824,8 +688,9 @@ async function friendTrophyMaps(commId) {
       const prof = (await W.db.ref('users/' + key).once('value')).val() || {}, tag = String(prof.psn_username || '').trim(), sc = prof.psn_username_scope || 'private';
       if (!tag || sc === 'private') return;
       if (sc === 'close' && !(prof.friends && prof.friends[S.viewerCode || W.me.friendCode] && prof.friends[S.viewerCode || W.me.friendCode].close_friend === true)) return;
-      const m = await psnTrophyMap(tag, commId); if (!m) return;
-      out.push({ code, name: prof.username || prof.display_name || tag, map: m });
+      const list = await syncedList(code, 'psn', gameId); if (!list) return;
+      const map = {}; list.forEach(t => { map[String(t.id)] = { earned: !!t.e, timestamp: t.t }; });
+      out.push({ code, name: prof.username || prof.display_name || tag, map });
     } catch (e) {}
   }));
   return out;
@@ -848,28 +713,12 @@ async function openGame(g) {
   if (!canSee('trophies')) return;
 
   let items = [], friendsMaps = [], note = '';
-  if (g.platform === 'psn') {
-    const tag = (S.psnRaw && S.psnRaw.onlineId) || platId('psn');
-    const [cat, mine, fr] = await Promise.all([psnCatalog(g.id, g.gameKey), psnTrophyMap(tag, g.id), friendTrophyMaps(g.id)]);
-    friendsMaps = fr.filter(f => String(f.code).toUpperCase() !== String(S.U.friend_code || '').toUpperCase());
-    const live = (S.psnRaw && S.psnRaw.liveTrophyProgress && S.psnRaw.liveTrophyProgress[g.id]) || {};
-    const prog = mine || live || {};
-    const base = cat.length ? cat : Object.values(prog);              // catalog first; the progress copy also carries names/icons
-    items = base.map(t => { const id = String(t.trophyId), l = prog[id] || {};
-      const tg = Number(l.targetValue ?? l.trophyProgressTargetValue) || 0, cv = Number(l.currentValue ?? l.trophyProgress) || 0;
-      return { id, name:t.name || t.trophyName || t.title || l.name, desc:t.detail || t.description || t.trophyDetail || l.detail || '', icon:secure(t.icon || t.trophyIconUrl || l.icon || ''),
-        earned:!!l.earned, at:l.timestamp || l.earnedDate || '', rarity:t.rarity || l.rarity || '', rank:t.type || t.rank || t.trophyType || l.type || '', prog:(tg > 0 && !l.earned) ? `${cv}/${tg}` : '' }; });
-    if (!cat.length && !items.length) note = 'The trophy list for this game has not been synced yet.';
-    else if (!mine && !Object.keys(live).length) note = 'Trophy list loaded. Your earned trophies for this game have not synced yet, so they show as locked.';
-  } else if (g.platform === 'steam' && g.steamUnlocks) {
-    try {
-      const sc = (await W.db.ref('platforms/steam_games/' + g.id + '/ach').once('value')).val() || {};
-      const got = {}; g.steamUnlocks.forEach(x => { got[x[0]] = Number(x[1]) || 0; });
-      const icon = (f) => f ? `https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/${g.id}/${f}.jpg` : '';
-      const keys = Object.keys(sc); Object.keys(got).forEach(k => { if (!(k in sc)) keys.push(k); });
-      items = keys.map(k => { const d = sc[k] || {}, e = k in got;
-        return { name:d.n || k, desc:d.d || (d.h ? 'Hidden achievement' : ''), icon:icon(e ? d.i : (d.g || d.i)), earned:e, at:e && got[k] ? got[k] * 1000 : '' }; });
-    } catch (e) {}
+  if (FS_PLAT[g.platform]) {
+    const [mine, fr] = await Promise.all([syncedList(g.code || ownerCode(), g.platform, g.id), g.platform === 'psn' ? friendTrophyMaps(g.id) : []]);
+    friendsMaps = fr.filter(f => String(f.code).toUpperCase() !== ownerCode());
+    items = arr(mine).map(t => ({ id:String(t.id), name:t.n || 'Trophy', desc:t.d || (t.h ? 'Hidden' : ''), icon:secure(t.i || ''), earned:!!t.e,
+      at:t.t || '', rarity: t.rare != null ? t.rare + '%' : '', rank:t.r || '', prog:t.pr || '' }));
+    if (!items.length) note = 'The trophy list for this game has not been synced yet.';
   } else {
     items = g.achievements.map(a => ({ name:a.name || a.title, desc:a.description || a.desc, icon:secure(a.icon || a.image || ''), earned:!!(a.earned ?? a.achieved ?? a.unlocked), at:a.earnedAt || a.unlockTime || '' }));
   }

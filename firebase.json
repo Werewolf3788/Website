@@ -12,7 +12,8 @@
       "games/fs25/data/raw/**",
       "**/*.md",
       "database.rules.json",
-      "**/__pycache__/**"
+      "**/__pycache__/**",
+      "Claude-Test/sync/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
