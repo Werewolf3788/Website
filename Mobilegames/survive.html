@@ -35,9 +35,21 @@
   input{background:#0f172a;color:#e2e8f0;border:1px solid #475569;border-radius:10px;padding:9px;font:inherit;text-transform:uppercase}
   .pb{height:8px;background:#0008;border-radius:4px;overflow:hidden}.pb i{display:block;height:100%;background:#38bdf8}
   @media (orientation:landscape) and (max-height:560px){#side{top:8px;right:8px;flex-direction:row}#side button{width:46px;height:46px;font-size:1.15rem}#toast{top:56px}}
+  /* ally progress: a see-through panel on desktop only (phones keep the 🤝 Allies button) */
+  #allyHud{position:fixed;left:8px;top:calc(58px + env(safe-area-inset-top));width:270px;max-height:calc(100vh - 170px);overflow-y:auto;z-index:5;display:none;background:#0f172a59;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);border:1px solid #ffffff1f;border-radius:14px;padding:8px 10px;font-size:.78rem;text-shadow:0 1px 2px #000;scrollbar-width:thin}
+  #allyHud h4{margin:0;font-size:.85rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;pointer-events:auto}
+  #allyHud h4 span{font-weight:600;color:#94a3b8;font-size:.72rem}
+  #allyHud.min .al{display:none}
+  #allyHud .al{margin-top:8px;padding-top:6px;border-top:1px solid #ffffff14}
+  #allyHud .al b{font-size:.85rem} #allyHud .dim{color:#cbd5e1;opacity:.8}
+  #allyHud .up{margin-top:3px} #allyHud .pb{height:5px;margin-top:2px;background:#0006}
+  #allyHud .on{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-right:4px;vertical-align:1px}
+  #allyHud .off{background:#64748b}
+  @media (min-width:1000px) and (hover:hover) and (pointer:fine){ #allyHud.has{display:block} }
 </style>
 </head>
 <body>
+<div id="allyHud"></div>
 <canvas id="c"></canvas>
 <div id="hud"><span class="chip" id="r_wood">0</span><span class="chip" id="r_food">🍖 0</span><span class="chip" id="r_metal">🔩 0</span><span class="chip" id="r_gems">💎 0</span><span class="chip">🔌 Lv <span id="ppl">1</span> · 👥 <span id="surv">3</span></span><span class="chip" style="display:flex;align-items:center;gap:6px">❤️ <span id="hpw"><span id="hp" style="display:block"></span></span></span></div>
 <div id="side"><button id="bHeroes">🛡️<small>Heroes</small></button><button id="bAllies">🤝<small>Allies</small></button><button id="bMap">🗺️<small>Map</small></button><button id="bQuests">📜<small>Quests</small></button><button id="bShop">🛒<small>Shop</small></button><button id="bMute">🔊<small>Sound</small></button><button id="gamesBtn">☰<small>Games</small></button></div>
