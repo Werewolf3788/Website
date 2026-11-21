@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths-ignore:
+      - 'Claude-Test/overlay-saves/**'
       - 'public/games/**'
       - 'Playstation/**'
       - 'game/data/**'

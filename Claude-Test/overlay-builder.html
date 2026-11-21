@@ -209,11 +209,23 @@
       </div>
 
       <div class="preview">
-        <div class="pv-top"><b><i class="fa-solid fa-link" style="color:var(--accent)"></i> Your overlay links</b></div>
+        <div class="pv-top"><b><i class="fa-solid fa-link" style="color:var(--accent)"></i> Your overlay links</b><span id="saveState"></span></div>
+        <div class="link" style="margin-bottom:10px">
+          <input type="text" id="saveName" placeholder="Name this overlay (e.g. Wildlands nights)" maxlength="60">
+          <button class="btn sm main" id="saveBtn"><i class="fa-solid fa-floppy-disk"></i> <span>Save</span></button>
+        </div>
+        <p class="hint" id="saveHint" style="margin:0 0 10px">Save to get short links that never change — edit and save again later and OBS updates on its own within a minute.</p>
         <div class="links" id="links"></div>
+        <details style="margin-top:10px" id="mineBox"><summary class="hint" style="cursor:pointer">My saved overlays</summary>
+          <div id="mine" style="display:flex;flex-direction:column;gap:6px;margin-top:8px"></div>
+        </details>
+        <div id="editLinkBox" style="display:none;margin-top:10px">
+          <div class="hint" style="margin-bottom:6px"><b>Edit on another device:</b> open this private link there. Anyone with it can change this overlay, so don't share it.</div>
+          <div class="link"><input type="text" readonly id="editLink"><button class="btn sm" data-copy="editLink"><i class="fa-regular fa-copy"></i></button></div>
+        </div>
         <p class="hint" style="margin:12px 0 0"><b>How to add it:</b> in OBS or Streamlabs add a <b>Browser Source</b>, paste the link, set Width <b>1920</b> and Height <b>1080</b>. Tick “Refresh browser when scene becomes active” so the Starting Soon countdown restarts. Change something here later? Copy the new link and paste it over the old one.</p>
         <details style="margin-top:10px"><summary class="hint" style="cursor:pointer">Edit an overlay you made before</summary>
-          <div class="link" style="margin-top:8px"><input type="text" id="loadLink" placeholder="Paste your old overlay link"><button class="btn sm" id="loadBtn">Load</button></div>
+          <div class="link" style="margin-top:8px"><input type="text" id="loadLink" placeholder="Paste any of your overlay links"><button class="btn sm" id="loadBtn">Load</button></div>
         </details>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
           <button class="btn sm" id="resetBtn"><i class="fa-solid fa-rotate-left"></i> Start over</button>
@@ -387,12 +399,16 @@
       return;
     }
     if (b.id === 'loadBtn') {
+      var sm = $('#loadLink').value.match(/[?&#]s=([a-z0-9]{10})(?:.*?[&#]k=([A-Za-z0-9_-]+))?/);
+      if (sm) { openSaved(sm[1], sm[2]); return; }
       var code = C.fromLink($('#loadLink').value);
       if (!code) { toast('That doesn\'t look like an overlay link'); return; }
-      C.decode(code).then(function (c) { cfg = c; cfg.scene = 'live'; fill(); changed(); lookupTwitch(); toast('Loaded your overlay'); }).catch(function () { toast('Couldn\'t read that link'); });
+      C.decode(code).then(function (c) { cfg = c; cfg.scene = 'live'; saved = null; savedCode = ''; fill(); changed(); lookupTwitch(); toast('Loaded your overlay'); }).catch(function () { toast('Couldn\'t read that link'); });
       return;
     }
-    if (b.id === 'resetBtn') { if (confirm('Start over with a blank overlay?')) { cfg = C.clone(C.DEFAULTS); fill(); changed(); lookupTwitch(); } return; }
+    if (b.id === 'saveBtn') { doSave(); return; }
+    if (b.dataset.open) { var x = mine().filter(function (m) { return m.id === b.dataset.open; })[0]; openSaved(b.dataset.open, x && x.key); return; }
+    if (b.id === 'resetBtn') { if (confirm('Start over with a blank overlay? (Your saved overlays stay saved.)')) { cfg = C.clone(C.DEFAULTS); saved = null; savedCode = ''; $('#saveName').value = ''; history.replaceState(null, '', location.pathname); fill(); changed(); lookupTwitch(); renderMine(); } return; }
     if (b.dataset.plan) { $$('.plan').forEach(function (x) { x.classList.toggle('on', x === b); }); plan = b.dataset.plan; return; }
   });
 
@@ -408,11 +424,68 @@
   }
   pv.addEventListener('load', function () { pvReady = true; changed(); });
 
+  /* ---------- saving to GitHub (through ww-discord-auth) ---------- */
+  var MINE = 'ww_overlay_studio_saves', BUILDER = location.origin + location.pathname;
+  var saved = null, savedCode = '';      // { id, key, name } of the overlay being edited
+  function mine() { try { return JSON.parse(localStorage.getItem(MINE) || '[]'); } catch (e) { return []; } }
+  function setMine(list) { try { localStorage.setItem(MINE, JSON.stringify(list.slice(0, 50))); } catch (e) {} }
+  function rememberSave(s) { var l = mine().filter(function (x) { return x.id !== s.id; }); l.unshift(s); setMine(l); renderMine(); }
+  function renderMine() {
+    var l = mine(), box = $('#mine');
+    $('#mineBox').style.display = l.length ? '' : 'none';
+    box.innerHTML = l.map(function (x) {
+      return '<div class="link"><span style="width:auto;flex:1;color:var(--text)">' + esc(x.name || x.id) + (x.channel ? ' <small class="hint">· ' + esc(x.channel) + '</small>' : '') + '</span>' +
+        '<button class="btn sm" data-open="' + esc(x.id) + '">' + (saved && saved.id === x.id ? 'Editing' : 'Open') + '</button></div>';
+    }).join('');
+  }
+  function stateLine() {
+    var st = $('#saveState');
+    $('#saveBtn span').textContent = saved ? 'Save changes' : 'Save';
+    $('#editLinkBox').style.display = saved ? '' : 'none';
+    if (saved) $('#editLink').value = BUILDER + '#s=' + saved.id + '&k=' + saved.key;
+    if (!saved) { st.innerHTML = ''; return; }
+    C.encode(withScene('live')).then(function (code) {
+      st.innerHTML = code === savedCode ? '<span class="tag">Saved</span>' : '<span class="tag" style="background:#fbbf24">Unsaved changes</span>';
+    });
+  }
+  function withScene(sc) { var c = C.clone(cfg); c.scene = sc; return c; }
+  function openSaved(id, key) {
+    return fetch(AUTH + '/overlay/get/' + id).then(function (r) { if (!r.ok) throw r.status; return r.json(); }).then(function (d) {
+      return C.decode(d.c).then(function (c) {
+        cfg = c; cfg.scene = 'live'; savedCode = d.c;
+        var known = mine().filter(function (x) { return x.id === id; })[0];
+        saved = { id: id, key: key || (known && known.key) || '', name: d.name };
+        if (!saved.key) saved = null;   // no edit key = view only, saving makes a copy
+        $('#saveName').value = d.name || '';
+        if (saved) rememberSave({ id: id, key: saved.key, name: d.name, channel: d.channel });
+        fill(); changed(); lookupTwitch(); renderMine(); stateLine();
+        toast(saved ? 'Opened "' + (d.name || id) + '"' : 'Opened a copy — Save makes it yours');
+      });
+    }).catch(function () { toast('Couldn\'t open that saved overlay (server may be waking up — try again)'); });
+  }
+  function doSave() {
+    var btn = $('#saveBtn'); btn.disabled = true; $('#saveBtn span').textContent = 'Saving…';
+    C.encode(withScene('live')).then(function (code) {
+      var data = { c: code, name: $('#saveName').value || (chan() ? chan() + ' overlay' : 'My overlay') };
+      if (saved) { data.id = saved.id; data.key = saved.key; }
+      return post('/overlay/save', data).then(function (j) {
+        if (!j.id) throw new Error(j.error || 'Save failed');
+        saved = { id: j.id, key: j.key, name: data.name }; savedCode = code;
+        rememberSave({ id: j.id, key: j.key, name: data.name, channel: chan() });
+        try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch (e) {}
+        history.replaceState(null, '', '#s=' + j.id + '&k=' + j.key);
+        makeLinks(); toast('Saved! Your OBS links stay the same.');
+      });
+    }).catch(function (e) { toast(e && e.message ? e.message : 'Save failed — the server may be waking up, try again'); })
+      .then(function () { btn.disabled = false; stateLine(); });
+  }
+
   var SCN = [['live', 'Live overlay'], ['starting', 'Starting soon'], ['brb', 'Be right back'], ['ending', 'Ending']];
   function makeLinks() {
-    Promise.all(SCN.map(function (s) { var c = C.clone(cfg); c.scene = s[0]; return C.encode(c); })).then(function (codes) {
+    stateLine();
+    Promise.all(SCN.map(function (s) { return C.encode(withScene(s[0])); })).then(function (codes) {
       $('#links').innerHTML = SCN.map(function (s, i) {
-        var url = LIVE + '#c=' + codes[i];
+        var url = saved ? LIVE + '?s=' + saved.id + (s[0] === 'live' ? '' : '&scene=' + s[0]) : LIVE + '#c=' + codes[i];
         return '<div class="link"><span>' + s[1] + '</span><input type="text" readonly id="lk' + i + '" value="' + esc(url) + '">' +
           '<button class="btn sm main" data-copy="lk' + i + '"><i class="fa-regular fa-copy"></i> Copy</button>' +
           '<a class="btn sm" href="' + esc(url) + '" target="_blank" rel="noopener" title="Open"><i class="fa-solid fa-up-right-from-square"></i></a></div>';
@@ -487,9 +560,12 @@
   } else loadPayPal();
 
   /* ---------- start ---------- */
-  var saved = null; try { saved = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) {}
+  var draft = null; try { draft = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) {}
+  renderMine();
+  var hm = location.hash.match(/[#&]s=([a-z0-9]{10})(?:&k=([A-Za-z0-9_-]+))?/);
+  if (hm) { $$('#pvbgSeg button')[1].classList.add('on'); fill(); openSaved(hm[1], hm[2]); return; }
   var fromUrl = C.fromLink(location.hash);
-  (fromUrl ? C.decode(fromUrl) : Promise.resolve(saved ? C.merge(C.DEFAULTS, saved) : C.clone(C.DEFAULTS))).then(function (c) {
+  (fromUrl ? C.decode(fromUrl) : Promise.resolve(draft ? C.merge(C.DEFAULTS, draft) : C.clone(C.DEFAULTS))).then(function (c) {
     cfg = c; cfg.scene = cfg.scene || 'live';
     var qs = new URLSearchParams(location.search).get('channel'); if (qs && !cfg.channel) cfg.channel = qs;
     $$('#pvbgSeg button')[1].classList.add('on');

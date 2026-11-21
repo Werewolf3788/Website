@@ -103,6 +103,7 @@ function createApp(deps) {
   require('./bridge').mountBridge(app, { admin, fetchFn, cors });   // Discord server channels in the site messenger
   const paypal = require('./paypal').mountPayPal(app, { admin, fetchFn });   // PayPal shop for the mobile games (/pay/...)
   require('./overlay-pro').mountOverlayPro(app, { admin, fetchFn, cors, paypal });   // Overlay Studio watermark passes (/overlay/...)
+  require('./overlay-save').mountOverlaySave(app, { admin, fetchFn, cors });   // Overlay Studio saves -> GitHub (/overlay/save, /overlay/get)
 
   app.get('/login', async (req, res) => {
     const next = safeNext(req.query.next);

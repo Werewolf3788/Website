@@ -578,8 +578,35 @@
     if (e.data.type === 'overlay-wm') showWatermark();
   });
 
-  var code = C.fromLink(location.hash) || params.get('c') || '';
-  C.decode(code).then(apply).catch(function () { apply({}); stage.appendChild(el('div', 'hint', 'This overlay link looks broken.<br>Make a new one in the Overlay Studio.')); });
+  function broken(msg) { apply({}); stage.appendChild(el('div', 'hint', msg || 'This overlay link looks broken.<br>Make a new one in the Overlay Studio.')); }
+
+  // Saved overlays: overlay-live?s={id}&scene=starting  -> design comes from GitHub (via the site's server),
+  // checked every minute so edits saved in the Studio show up in OBS on their own.
+  var SAVE_API = 'https://ww-discord-auth.onrender.com/overlay/get/';
+  var RAW = 'https://raw.githubusercontent.com/Werewolf3788/website/main/Claude-Test/overlay-saves/';
+  var savedId = String(params.get('s') || '').toLowerCase().replace(/[^a-z0-9]/g, ''), lastStamp = null;
+  function fetchSaved() {
+    return fetch(SAVE_API + savedId + '?v=' + Date.now()).then(function (r) { if (r.status === 404) throw { gone: true }; if (!r.ok) throw 0; return r.json(); })
+      .catch(function (e) { if (e && e.gone) throw e; return fetch(RAW + savedId + '.json?v=' + Date.now()).then(function (r) { if (!r.ok) throw { gone: r.status === 404 }; return r.json(); }); });
+  }
+  function pollSaved(first) {
+    fetchSaved().then(function (d) {
+      if (!d || !d.c) throw 0;
+      if (d.updated === lastStamp) return;
+      lastStamp = d.updated;
+      return C.decode(d.c).then(apply);
+    }).catch(function (e) {
+      if (first) broken(e && e.gone ? 'This saved overlay was not found.<br>Open the Overlay Studio and save it again.' : 'Loading your overlay… (the server may be waking up)');
+      if (first && !(e && e.gone)) setTimeout(function () { pollSaved(true); }, 15000);
+    });
+  }
+  if (savedId && !DEMO) {
+    pollSaved(true);
+    setInterval(function () { if (lastStamp !== null) pollSaved(false); }, 60000);
+  } else {
+    var code = C.fromLink(location.hash) || params.get('c') || '';
+    C.decode(code).then(apply).catch(function () { broken(); });
+  }
 
   if (DEMO) {
     setInterval(demoChat, 2200); demoChat(); demoChat(); demoChat();
