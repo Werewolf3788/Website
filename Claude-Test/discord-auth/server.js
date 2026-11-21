@@ -101,6 +101,7 @@ function createApp(deps) {
 
   app.get('/health', (_req, res) => res.send('ok'));
   require('./bridge').mountBridge(app, { admin, fetchFn, cors });   // Discord server channels in the site messenger
+  require('./paypal').mountPayPal(app, { admin, fetchFn });   // PayPal shop for the mobile games (/pay/...)
 
   app.get('/login', async (req, res) => {
     const next = safeNext(req.query.next);

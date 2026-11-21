@@ -31,3 +31,11 @@ Setup, once:
 4. The server is picked by invite code: Firebase `discord_bridge/invite`, else env `DISCORD_BRIDGE_INVITE`.
 
 Only channels the bot can read are shown, so hide a channel from the bot's role to keep it off the site. Posts from the site appear under the person's Discord name and avatar (via a "Pack Hub" webhook) and can never ping @everyone, roles or users.
+
+## PayPal shop (paypal.js)
+Real-money packs for the mobile games (first: Tile Survival "Survivor Supply Crate", $9.99 = 2,000 wood/food/metal).
+Keys come from the Key Vault (Keys sheet → Firebase user_secrets/{DISCORD_APP_OWNER_KEY}): `paypal_client_id`, `paypal_secret`,
+`paypal_mode` (`live` or `sandbox`). Get them at developer.paypal.com → Apps & Credentials (Live tab, or Sandbox to test).
+Routes: GET /pay/config, POST /pay/create, POST /pay/capture. The server captures the order with PayPal and checks
+status/amount/player before writing the grant to Firestore (`purchases/{orderId}` ledger + the player's
+`user/{CODE}/platform/mobile/game/survive3_shop/orders/{orderId}`). Prices live in PACKS in paypal.js.
