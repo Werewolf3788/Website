@@ -18,9 +18,18 @@
 'use strict';
 
 // what can be bought. Prices are set HERE (server side) so a page can't change them.
+// boostPlayMs: Overdrive, +50% production counted only while the player is in the game.
 const PACKS = {
-  survive_2000: { game: 'survive3', name: 'Survivor Supply Crate', desc: '2,000 wood, 2,000 food and 2,000 metal in Tile Survival', price: '9.99', res: { wood: 2000, food: 2000, metal: 2000 } }
+  survive_starter:   { game: 'survive3', name: 'Starter Pack',          icon: '🎒', desc: '500 wood, food and metal',                     price: '1.99', res: { wood: 500, food: 500, metal: 500 } },
+  survive_2000:      { game: 'survive3', name: 'Survivor Supply Crate', icon: '📦', desc: '2,000 wood, food and metal',                   price: '4.99', res: { wood: 2000, food: 2000, metal: 2000 } },
+  survive_vault:     { game: 'survive3', name: "Builder's Vault",       icon: '🏗️', desc: '6,000 wood, food and metal + 25 gems',         price: '9.99', res: { wood: 6000, food: 6000, metal: 6000, gems: 25 } },
+  survive_gems:      { game: 'survive3', name: 'Gem Pouch',             icon: '💎', desc: '60 gems (skip upgrade timers)',                price: '2.99', res: { gems: 60 } },
+  survive_coal:      { game: 'survive3', name: 'Coal Cart',             icon: '⚫', desc: '300 coal',                                     price: '1.99', res: { coal: 300 } },
+  survive_overdrive: { game: 'survive3', name: 'Overdrive',             icon: '🔥', desc: '+50% production for 8 hours of play time (only counts down while you play)', price: '8.00', res: {}, boostPlayMs: 8 * 3600000 }
 };
+// allies (anyone on the owner's friends list) never pay more than this for any item
+const ALLY_CAP = '5.00';
+const money = v => (Math.round(parseFloat(v) * 100) / 100).toFixed(2);
 const CURRENCY = 'USD';
 const PAY_ORIGINS = ['https://entertainment-71888.web.app', 'https://entertainment-71888.firebaseapp.com', 'https://werewolf3788.github.io'];
 
@@ -54,6 +63,19 @@ function mountPayPal(app, { admin, fetchFn }) {
     const r = await fetchFn(k.api + path, { method: 'POST', headers: { Authorization: 'Bearer ' + await token(k), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
     return { status: r.status, json: await r.json().catch(() => null) };
   }
+  // is this friend code on the owner's friends list? (users/{owner}/friends: keyed by code, or entries with friend_code)
+  const allyCache = { set: null, at: 0 };
+  async function isAlly(code) {
+    const owner = process.env.DISCORD_APP_OWNER_KEY; if (!owner) return false;
+    if (!allyCache.set || Date.now() - allyCache.at > 60000) {
+      const fr = (await db().ref('users/' + owner + '/friends').once('value')).val() || {}, set = new Set();
+      Object.keys(fr).forEach(k => { set.add(String(k).toUpperCase()); const fc = fr[k] && fr[k].friend_code; if (fc) set.add(String(fc).toUpperCase()); });
+      try { const mine = (await db().ref('users/' + owner + '/friend_code').once('value')).val(); if (mine) set.add(String(mine).toUpperCase()); } catch (e) {}
+      allyCache.set = set; allyCache.at = Date.now();
+    }
+    return allyCache.set.has(code);
+  }
+  const priceFor = (P, ally) => ally && parseFloat(P.price) > parseFloat(ALLY_CAP) ? ALLY_CAP : money(P.price);
   // signed-in player -> their friend code (same accounts the rest of the site uses)
   async function who(idToken) {
     let u; try { u = await admin.auth().verifyIdToken(String(idToken || '')); } catch (e) { return null; }
@@ -65,8 +87,16 @@ function mountPayPal(app, { admin, fetchFn }) {
 
   app.get('/pay/config', async (req, res) => {
     cors(req, res); const k = await keys();
-    const packs = {}; Object.keys(PACKS).forEach(id => { const p = PACKS[id]; packs[id] = { game: p.game, name: p.name, desc: p.desc, price: p.price, res: p.res }; });
-    res.json({ clientId: k.id && k.secret ? k.id : '', currency: CURRENCY, mode: k.mode, packs });
+    const packs = {}; Object.keys(PACKS).forEach(id => { const p = PACKS[id]; packs[id] = { game: p.game, name: p.name, icon: p.icon, desc: p.desc, price: money(p.price), res: p.res, boostPlayMs: p.boostPlayMs || 0 }; });
+    res.json({ clientId: k.id && k.secret ? k.id : '', currency: CURRENCY, mode: k.mode, allyCap: ALLY_CAP, packs });
+  });
+  // the signed-in player's own prices (allies get the ally price)
+  app.post('/pay/me', async (req, res) => {
+    cors(req, res);
+    const me = await who(req.body && req.body.idToken); if (!me) return res.status(401).json({ error: 'Sign in (with a friend code) to buy.' });
+    const ally = await isAlly(me.code).catch(() => false), prices = {};
+    Object.keys(PACKS).forEach(id => { prices[id] = priceFor(PACKS[id], ally); });
+    res.json({ code: me.code, ally, prices });
   });
 
   app.post('/pay/create', async (req, res) => {
@@ -75,7 +105,8 @@ function mountPayPal(app, { admin, fetchFn }) {
       const me = await who(req.body && req.body.idToken); if (!me) return res.status(401).json({ error: 'Sign in (with a friend code) to buy.' });
       const packId = String(req.body.pack || ''), P = PACKS[packId]; if (!P) return res.status(400).json({ error: 'Unknown pack.' });
       const k = await keys(); if (!k.id || !k.secret) return res.status(503).json({ error: 'The shop isn’t set up yet.' });
-      const r = await papi(k, '/v2/checkout/orders', { intent: 'CAPTURE', purchase_units: [{ reference_id: packId, custom_id: me.code + '|' + packId, description: P.name + ': ' + P.desc, amount: { currency_code: CURRENCY, value: P.price } }],
+      const ally = await isAlly(me.code).catch(() => false), price = priceFor(P, ally);
+      const r = await papi(k, '/v2/checkout/orders', { intent: 'CAPTURE', purchase_units: [{ reference_id: packId, custom_id: me.code + '|' + packId + '|' + price, description: (P.name + ': ' + P.desc + (ally && price !== money(P.price) ? ' (ally price)' : '')).slice(0, 127), amount: { currency_code: CURRENCY, value: price } }],
         application_context: { brand_name: 'Werewolf Games', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW' } });
       if (r.status >= 300 || !r.json || !r.json.id) { console.error('[pay create]', r.status, JSON.stringify(r.json)); return res.status(502).json({ error: 'PayPal could not start the order.' }); }
       res.json({ id: r.json.id });
@@ -93,14 +124,15 @@ function mountPayPal(app, { admin, fetchFn }) {
       let r = await papi(k, '/v2/checkout/orders/' + orderId + '/capture');
       if (r.status === 422 && r.json && JSON.stringify(r.json).indexOf('ORDER_ALREADY_CAPTURED') >= 0) r = { status: 200, json: (await fetchFn(k.api + '/v2/checkout/orders/' + orderId, { headers: { Authorization: 'Bearer ' + await token(k) } }).then(x => x.json())) };
       const o = r.json || {}, pu = (o.purchase_units || [])[0] || {}, cap = (((pu.payments || {}).captures) || [])[0] || {};
-      const [code, packId] = String(pu.custom_id || cap.custom_id || '').split('|'), P = PACKS[packId];
+      const [code, packId, want] = String(pu.custom_id || cap.custom_id || '').split('|'), P = PACKS[packId];
       const amt = cap.amount || pu.amount || {};
       if (o.status !== 'COMPLETED' || cap.status !== 'COMPLETED') return res.status(402).json({ error: 'PayPal hasn’t completed this payment (' + (cap.status || o.status || r.status) + ').' });
       if (!P || code !== me.code) return res.status(403).json({ error: 'That order isn’t yours.' });
-      if (amt.currency_code !== CURRENCY || amt.value !== P.price) return res.status(402).json({ error: 'Payment amount doesn’t match.' });
-      const row = { code, uid: me.uid, pack: packId, game: P.game, price: P.price, currency: CURRENCY, capture: cap.id || '', payer: ((o.payer || {}).email_address) || '', mode: k.mode, at: Date.now() };
+      const ok = want ? (want === money(P.price) || want === ALLY_CAP) && money(amt.value) === want : money(amt.value) === money(P.price);   // the price set when the order was made: full, or the ally price
+      if (amt.currency_code !== CURRENCY || !ok) return res.status(402).json({ error: 'Payment amount doesn’t match.' });
+      const row = { code, uid: me.uid, pack: packId, game: P.game, price: money(amt.value), ally: money(amt.value) !== money(P.price) ? 1 : 0, currency: CURRENCY, capture: cap.id || '', payer: ((o.payer || {}).email_address) || '', mode: k.mode, at: Date.now() };
       try { await ledger.create(row); } catch (e) { return res.json({ ok: true, already: true, pack: packId }); }   // someone else just recorded it: pay out once only
-      const grant = { pack: packId, name: P.name, res: P.res, price: P.price, at: row.at };
+      const grant = { pack: packId, name: P.name, res: P.res, boostPlayMs: P.boostPlayMs || 0, price: money(amt.value), ally: row.ally, at: row.at };
       await fs().collection('user').doc(code).collection('platform').doc('mobile').collection('game').doc(P.game + '_shop').collection('orders').doc(orderId).set(grant);
       console.log('[pay] paid', code, packId, orderId);
       res.json({ ok: true, orderId, grant });
