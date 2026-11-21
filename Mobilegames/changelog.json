@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 45,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "⚒️ New building: the Coal Mine, out in the quarry next to the coal cave (needs that area unlocked and Power Plant level 4). Its ⚒️ coal miners climb down into the cave, break the ⚫ coal seams and carry the coal up to its pile",
+    "The Coal Mine is optional: the Power Plant never waits for it to catch up"
+   ]
+  },
+  {
    "id": 44,
    "date": "Nov 20",
    "game": "survive",
