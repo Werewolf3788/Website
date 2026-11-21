@@ -139,5 +139,6 @@ function mountPayPal(app, { admin, fetchFn }) {
       res.json({ ok: true, orderId, grant });
     } catch (e) { console.error('[pay capture]', e && e.message); res.status(500).json({ error: 'Could not confirm the payment. If you were charged, it will show up next time you open the game.' }); }
   });
+  return { keys, token, papi };   // shared with overlay-pro.js (same PayPal account)
 }
 module.exports = { mountPayPal, PACKS };
