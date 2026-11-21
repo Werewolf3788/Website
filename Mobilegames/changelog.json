@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 43,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "✅ After a purchase, a receipt now stays on screen: \"Payment approved by PayPal\", what you got and the PayPal order number",
+    "🧾 The 🛒 Shop lists your past purchases"
+   ]
+  },
+  {
    "id": 42,
    "date": "Nov 20",
    "game": "survive",
