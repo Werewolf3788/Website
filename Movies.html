@@ -587,7 +587,9 @@ const STORES = [
   { key:'google',         label:'Google TV',        short:'G',  color:'#4285F4', ink:'#fff', col:6 },
   { key:'moviesanywhere', label:'Movies Anywhere',  short:'MA', color:'#00aeef', ink:'#fff', col:7 },
   { key:'youtube',        label:'YouTube',          short:'▶',  color:'#FF0000', ink:'#fff', col:8 },
-  { key:'justwatch',      label:'JustWatch',        short:'JW', color:'#f5c518', ink:'#111', col:9 }
+  { key:'justwatch',      label:'JustWatch',        short:'JW', color:'#f5c518', ink:'#111', col:9 },
+  // Disney+ (column X): streaming, not owned. The link only shows while column U (Streaming On) lists Disney.
+  { key:'disney',         label:'Disney+',          short:'D+', color:'#113ccf', ink:'#fff', col:23, streamGate:/disney/i }
 ];
 const STORE = Object.fromEntries(STORES.map(s => [s.key, s]));
 // Stores that count as "owned" (JustWatch alone doesn't put a title in the library)
@@ -731,7 +733,8 @@ function buildCatalog(csvText) {
     rowCount++;
 
     const links = {}; let owned = false;
-    STORES.forEach(s => { const v = cell(s.col); if (isUrl(v)) { links[s.key] = normUrl(v); storeCounts[s.key]++; if (OWNED_STORES.includes(s.key)) owned = true; } });
+    const streamRaw = cell(COL.streaming);
+    STORES.forEach(s => { const v = cell(s.col); if (s.streamGate && !s.streamGate.test(streamRaw)) return; if (isUrl(v)) { links[s.key] = normUrl(v); storeCounts[s.key]++; if (OWNED_STORES.includes(s.key)) owned = true; } });
     const familyShare = checked(cell(STORE.google.col));
     const ytFree = checked(cell(STORE.youtube.col)) || /free/i.test(cell(STORE.youtube.col));
     if (familyShare || ytFree) owned = true;
@@ -1100,7 +1103,7 @@ function detailHtml(m) {
   const stores = STORES.filter(s => m.links[s.key]).sort((a, b) => (b.key === state.store) - (a.key === state.store));
   const buy = stores.map(s => `<a href="${esc(storeUrl(m, s))}" target="_blank" rel="${s.key === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${s.key}" class="${s.key === state.store ? 'hl' : ''}">
       <span class="logo" style="background:${s.color};color:${s.ink}">${esc(s.short)}</span>
-      <span>${esc(s.label)}<small>${s.key === 'amazon' ? 'Affiliate link' : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store'}</small></span><span class="arr">↗</span></a>`).join('');
+      <span>${esc(s.label)}<small>${s.key === 'amazon' ? 'Affiliate link' : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : s.key === 'disney' ? 'Streaming now' : 'Open in store'}</small></span><span class="arr">↗</span></a>`).join('');
   const sameColl = m.collection ? catalog.filter(x => x.collection === m.collection && x.key !== m.key) : [];
   const similar = catalog.filter(x => x.key !== m.key && x.genres.some(g => m.genres.includes(g)) && !sameColl.includes(x)).sort((a, b) => b.genres.filter(g => m.genres.includes(g)).length - a.genres.filter(g => m.genres.includes(g)).length || b.ts - a.ts).slice(0, 20);
   return `<button class="d-close" data-close aria-label="Close">${ICON.close}</button>
