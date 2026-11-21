@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 49,
+   "date": "Nov 20",
+   "game": "recon",
+   "items": [
+    "🚨 Camp alarms: every camp has a siren. When a camp spots you, one guard runs for it. Take him down before he gets there and nobody else comes. If the alarm goes off, the nearest camps send reinforcements",
+    "Enemies now stay in their own camp: gunfire only stirs the camp it happens at, and guards only chase you to the edge of their camp (unless the alarm brought them)",
+    "🎚️ Difficulty: 🟢 Beginner, 🔵 Easy, 🟡 Normal or 🔴 Hard, on the start screen and in the pause menu. Beginner enemies hit softly, spot you slowly, go down fast and take a long time to sound the alarm"
+   ]
+  },
+  {
    "id": 48,
    "date": "Nov 20",
    "game": "calm",

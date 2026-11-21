@@ -11,6 +11,16 @@ const WW = window.WW, PAD = window.WWPad;
 const GAME = 'recon', TITLE = 'Werewolf Recon', PROVINCE = 'Itacua';
 const SIZE = 420, HALF = SIZE / 2, SEG = 150, PLAY = 155;     // world is SIZE x SIZE metres; spots fill +-PLAY
 const LOCAL_KEY = 'recon_save_v1';
+// difficulty (saved per player, changeable any time in the pause menu): how hard enemies hit, how fast they spot you,
+// how much damage they take, how well they aim, and how long a guard needs at the alarm before it goes off
+const DIFFS = {
+  beginner: { n: '🟢 Beginner', d: 'For new keyboard players: enemies hit softly, spot you slowly, go down fast and take a long time to sound the alarm', dmg: .35, det: .45, hp: .6, acc: .6, alarm: 9 },
+  easy:     { n: '🔵 Easy',     d: 'Forgiving: weaker, slower enemies', dmg: .6, det: .7, hp: .8, acc: .8, alarm: 6 },
+  normal:   { n: '🟡 Normal',   d: 'The game as designed', dmg: 1, det: 1, hp: 1, acc: 1, alarm: 4 },
+  hard:     { n: '🔴 Hard',     d: 'Enemies hit harder, spot you faster, take more hits and sound the alarm quickly', dmg: 1.4, det: 1.35, hp: 1.3, acc: 1.15, alarm: 2.5 }
+};
+const DIFF_ORDER = ['beginner', 'easy', 'normal', 'hard'];
+const DF = () => DIFFS[(typeof S !== 'undefined' && S && S.diff) || 'normal'] || DIFFS.normal;
 const isTouch = (matchMedia && matchMedia('(pointer:coarse)').matches) || ('ontouchstart' in window);
 if (isTouch) document.body.classList.add('touch');
 const V3 = THREE.Vector3;
@@ -259,6 +269,10 @@ function buildWorld(items) {
     const tx = c.x - 9, tz = c.z + 7; [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(p => scene.add(box(.2, 5, .2, roof, tx + p[0], y + 2.5, tz + p[1])));
     scene.add(box(2.6, .25, 2.6, roof, tx, y + 5, tz)); colliders.push({ x0: tx - 1.3, x1: tx + 1.3, z0: tz - 1.3, z1: tz + 1.3, top: y + 5.1 });
     c.tower = { x: tx, z: tz, y: y + 5.15 };
+    // the camp alarm: a siren on a pole. If a guard reaches it while the camp is on alert, nearby camps send reinforcements
+    { const ax = c.x - 1, az = c.z - 10, ay = hAt(ax, az); c.alarmAt = { x: ax, z: az };
+      scene.add(box(.14, 3, .14, mat(0x6b7280), ax, ay + 1.5, az)); scene.add(box(.7, .5, .45, mat(0x991b1b), ax, ay + 1.4, az + .25));
+      c.siren = box(.45, .35, .45, mat(0xef4444), ax, ay + 3.15, az); scene.add(c.siren); colliders.push({ x0: ax - .3, x1: ax + .3, z0: az - .3, z1: az + .5, top: ay + 1.7 }); }
     // a red flag shows the camp is still held
     c.flag = box(1, .6, .04, mat(0xb91c1c), c.x + 1.3, y + 5.6, c.z); scene.add(box(.08, 5.6, .08, mat(0xdddddd), c.x + .8, y + 2.8, c.z)); scene.add(c.flag);
     // supply crates (resources), two per camp
@@ -328,7 +342,7 @@ function spawnSquad() {
 }
 function spawnCampGuards(c) {
   c.guards.forEach(e => { scene.remove(e.m); scene.remove(e.mark); scene.remove(e.ind); const i = enemies.indexOf(e); if (i >= 0) enemies.splice(i, 1); });
-  c.guards = []; c.alerted = false; c.cleared = false; c.flag.visible = true;
+  c.guards = []; c.alerted = false; c.cleared = false; c.flag.visible = true; c.alarmOn = 0; c.runner = null;
   for (let k = 0; k < c.size; k++) {
     const onTower = k === 0 && !!c.tower, a = k / c.size * Math.PI * 2 + rnd(-.3, .3), rr = c.post ? rnd(2.5, 5.5) : rnd(4, 9), x = onTower ? c.tower.x : c.x + Math.cos(a) * rr, z = onTower ? c.tower.z : c.z + Math.sin(a) * rr;
     const m = makeSoldier(0x7f1d1d, 'enemy'); scene.add(m);
@@ -357,6 +371,7 @@ const SFX = {
   hit: () => tone(1800, .05, .12, 'square'), head: () => { tone(1200, .07, .18, 'square'); tone(1800, .07, .12, 'square', .05); },
   pick: () => { tone(660, .1, .15, 'triangle'); tone(990, .14, .15, 'triangle', .08); },
   alert: () => { tone(520, .18, .2, 'sawtooth'); tone(780, .25, .2, 'sawtooth', .16); },
+  siren: () => { for (let k = 0; k < 4; k++) { tone(600, .35, .22, 'square', k * .7, 950); tone(950, .35, .22, 'square', k * .7 + .35, 600); } },
   reload: () => { noise(.05, .2, 3000); noise(.06, .25, 2000, 1, .35); },
   click: () => tone(2500, .02, .1, 'square'), hurt: () => noise(.15, .35, 600),
   level: () => [523, 659, 784, 1046].forEach((f, i) => tone(f, .25, .15, 'triangle', i * .1))
@@ -598,7 +613,7 @@ function damageEnemy(e, dmg, head, how, by) {
   if (e.dead) return;
   if (MP.client) { netHit(e, dmg, head, how); return; }        // in a friend's game the host decides hits
   const shooter = by && MP.remotes[by];
-  e.hp -= dmg; if (!e.alert && how !== 'melee' && how !== 'sync') alertEnemy(e, true);
+  e.hp -= dmg / DF().hp; if (!e.alert && how !== 'melee' && how !== 'sync') alertEnemy(e, true);
   e.last.copy(shooter ? shooter.pos : P.pos);
   if (e.hp > 0) return;
   e.dead = true; e.deadT = 0; e.marked = false; e.mark.visible = false; e.ind.visible = false;
@@ -621,7 +636,29 @@ function alertEnemy(e, spread) {
   if (!was) { e.ind.material.map = TEX.alert; e.ind.material.needsUpdate = true; }
   if (spread && e.camp && !e.camp.alerted) { e.camp.alerted = true; SFX.alert(); say('⚠️ ' + e.camp.name + ' is on alert'); setTimeout(() => e.camp.guards.forEach(g => { if (!g.dead && !g.alert) { g.alert = true; g.det = 1; g.seenT = now(); g.last.copy(P.pos); g.ind.material.map = TEX.alert; } }), 900); }
 }
-function noiseEvent(p, r) { if (MP.client) { netNoise(p, r); return; } enemies.forEach(e => { if (!e.dead && e.pos.distanceTo(p) < r) { if (r > 30) alertEnemy(e, true); else e.det = Math.max(e.det, .6); e.last.copy(p); } }); }
+// gunfire only stirs the camp it happens at (or guards standing right there): other camps stay put unless the alarm goes off
+const nearOwnCamp = (e, p) => !e.camp || Math.hypot(e.camp.x - p.x, e.camp.z - p.z) < (e.camp.post ? 32 : 48) || e.pos.distanceTo(p) < 22;
+function triggerAlarm(c) {
+  if (c.alarmOn || c.cleared) return; c.alarmOn = now(); SFX.siren(); big('🚨 ALARM at ' + c.name, 2600); say('🚨 ' + c.name + ' sounded the alarm: reinforcements from nearby camps are on their way!', 5000);
+  // up to two other camps within 170 m send about half their guards (never the tower lookout)
+  mainCamps().filter(o => o !== c && !o.cleared).map(o => ({ o, d: Math.hypot(o.x - c.x, o.z - c.z) })).filter(q => q.d < 170).sort((a, b) => a.d - b.d).slice(0, 2).forEach(q => {
+    const live = q.o.guards.filter(g => !g.dead && !g.tower); live.slice(0, Math.max(1, Math.ceil(live.length / 2))).forEach(g => { g.resp = true; g.alert = true; g.det = 1; g.seenT = now(); g.last.set(c.x, 0, c.z); g.ind.material.map = TEX.alert; g.ind.material.needsUpdate = true; });
+  });
+}
+function alarmTick(dt) {     // a guard from an alerted camp runs for the siren; kill him first and nobody else comes
+  const T = now();
+  mainCamps().forEach(c => {
+    if (c.siren) c.siren.material.color.setHex(c.alarmOn && Math.floor(T * 4) % 2 ? 0xfde047 : 0xef4444);
+    if (c.cleared || !c.alerted) { if (c.alarmOn && (c.cleared || T - c.alarmOn > 20)) c.alarmOn = 0; if (c.runner) { c.runner.toAlarm = false; c.runner = null; } return; }
+    if (c.alarmOn || !c.alarmAt) return;
+    if (c.runner && (c.runner.dead || !c.runner.toAlarm)) { c.runner = null; c.nextRunT = T + 6; say('🔕 The guard going for the alarm is down', 2500); }
+    if (!c.runner && T > (c.nextRunT || 0)) {
+      let best = null, bd = 1e9; c.guards.forEach(g => { if (g.dead || g.tower) return; const d = Math.hypot(g.pos.x - c.alarmAt.x, g.pos.z - c.alarmAt.z); if (d < bd) { bd = d; best = g; } });
+      if (best) { c.runner = best; best.toAlarm = true; best.alarmT = 0; say('🏃 A guard at ' + c.name + ' is running for the alarm: stop him!', 4000); }
+    }
+  });
+}
+function noiseEvent(p, r) { if (MP.client) { netNoise(p, r); return; } enemies.forEach(e => { if (!e.dead && e.pos.distanceTo(p) < r && nearOwnCamp(e, p)) { if (r > 30) alertEnemy(e, true); else e.det = Math.max(e.det, .6); e.last.copy(p); } }); }
 function fireGun(dt, wantFire) {
   const n = curGun(); if (!n || P.holster || P.reloadT > 0 || P.mode !== 'foot' || P.bino) return;
   const s = gstat(n), g = gs(n), t = now();
@@ -694,8 +731,8 @@ function respawn(here) {
   } else {
     P.pos.set(rally.x, hAt(rally.x, rally.z), rally.z); P.hp = maxHP();
     refill(rank('ammo_retention') > 0 || true);
-    enemies.forEach(e => { if (!e.dead) { e.alert = false; e.det = 0; e.ind.visible = false; } });
-    camps.forEach(c => { c.alerted = false; });
+    enemies.forEach(e => { if (!e.dead) { e.alert = false; e.det = 0; e.ind.visible = false; e.resp = false; e.toAlarm = false; } });
+    camps.forEach(c => { c.alerted = false; c.alarmOn = 0; c.runner = null; });
     say('⛺ Reset at the rally point');
   }
   squad.forEach((b, i) => { b.pos.set(P.pos.x + b.off[0], 0, P.pos.z + b.off[1]); b.down = false; b.hp = botMaxHP(); b.revT = 0; });
@@ -912,6 +949,7 @@ function pickupsTick() {
 }
 function enemiesTick(dt) {
   if (MP.client) { puppetEnemies(dt); return; }
+  alarmTick(dt);
   const T = now(), night = dayK < .35, hs = humans();
   let anyAlert = false, maxDet = 0;
   enemies.forEach(e => {
@@ -929,7 +967,7 @@ function enemiesTick(dt) {
     });
     const sees = !!seen;
     if (!e.alert) {
-      if (sees) e.det += dt * (dist < 5 ? 2.5 : 1.2 * (1.15 - dist / view)) * (seen.local ? 1 - eff('detection') : 1);
+      if (sees) e.det += dt * (dist < 5 ? 2.5 : 1.2 * (1.15 - dist / view)) * (seen.local ? 1 - eff('detection') : 1) * DF().det;
       else e.det = Math.max(0, e.det - dt * .12);
       if (sees) e.last.copy(seen.pos);
       if (e.det >= 1) { alertEnemy(e, true); if (seen) e.last.copy(seen.pos); }
@@ -939,7 +977,18 @@ function enemiesTick(dt) {
     } else {
       anyAlert = true;
       if (sees) { e.seenT = T; e.last.copy(seen.pos); }
-      const target = e.last; e.yaw = turnTo(e.yaw, Math.atan2(-(target.x - e.pos.x), -(target.z - e.pos.z)), dt * 4);
+      let target = e.last;
+      if (e.toAlarm && e.camp && e.camp.alarmAt) {   // running for the siren
+        const A = e.camp.alarmAt, d = Math.hypot(A.x - e.pos.x, A.z - e.pos.z);
+        if (d > 1.3) { stepEnemy(e, new V3(A.x, 0, A.z), 4, dt); e.yaw = turnTo(e.yaw, Math.atan2(-(A.x - e.pos.x), -(A.z - e.pos.z)), dt * 6); }
+        else { e.alarmT = (e.alarmT || 0) + dt; if (e.alarmT >= DF().alarm) { e.toAlarm = false; triggerAlarm(e.camp); } }
+        if (T - e.seenT > 28) { e.alert = false; e.toAlarm = false; }
+      } else {
+      if (!e.resp && e.camp) {   // stay on your own camp's ground: chase only to its edge
+        const L = e.camp.post ? 22 : 36, dx = target.x - e.camp.x, dz = target.z - e.camp.z, dd = Math.hypot(dx, dz);
+        if (dd > L) target = new V3(e.camp.x + dx / dd * L, 0, e.camp.z + dz / dd * L);
+      }
+      e.yaw = turnTo(e.yaw, Math.atan2(-(e.last.x - e.pos.x), -(e.last.z - e.pos.z)), dt * 4);
       if (!e.tower) { const d = Math.hypot(target.x - e.pos.x, target.z - e.pos.z); if (d > 20 || !sees) stepEnemy(e, target, 3.6, dt); else if (d < 9) { const away = e.pos.clone().sub(target).add(e.pos); stepEnemy(e, away, 2.4, dt); } }
       e.shotT -= dt;
       if (e.shotT <= 0) {     // shoot at whoever they can see: a player (most likely) or an AI squadmate
@@ -949,7 +998,8 @@ function enemiesTick(dt) {
         if (opts.length) { opts.sort((a, b) => a.d - b.d); const o = opts[0], tp = o.t === 'P' ? P.pos : o.t.pos; e.shotT = rnd(.8, 1.6); e.yaw = Math.atan2(-(tp.x - e.pos.x), -(tp.z - e.pos.z)); enemyShoot(e, o.t === 'P' ? dist : o.d, o.t); }
         else e.shotT = .3;
       }
-      if (T - e.seenT > 28) { e.alert = false; e.det = .4; e.ind.material.map = TEX.sus; if (e.camp) e.camp.alerted = false; }
+      if (T - e.seenT > (e.resp ? 75 : 28)) { e.alert = false; e.resp = false; e.det = .4; e.ind.material.map = TEX.sus; if (e.camp) e.camp.alerted = false; }
+      }
     }
     maxDet = Math.max(maxDet, e.alert ? 1 : e.det);
     if (e.flinch > 0) e.flinch -= dt; e.m.userData.torso.rotation.x = e.flinch > 0 ? .35 : 0;
@@ -973,23 +1023,23 @@ function enemyShoot(e, dist, tgt) {
   e.sc = ((e.sc | 0) + 1) % 10;
   flash(from, .8); SFX.shot(false, 'ar', clamp(1 - dist / 120, .15, .8));
   if (tgt && tgt.remote) {        // at a friend: they get hit (or not) in their own game
-    const hit = Math.random() < clamp(.62 - dist / 110, .1, .55) * (tgt.stance === 2 ? .55 : tgt.stance === 1 ? .8 : 1) * (tgt.sprint ? .65 : 1);
+    const hit = Math.random() < clamp(.62 - dist / 110, .1, .55) * (tgt.stance === 2 ? .55 : tgt.stance === 1 ? .8 : 1) * (tgt.sprint ? .65 : 1) * DF().acc;
     tracer(from, eye(tgt.pos, 1.2).add(hit ? new V3() : new V3(rnd(-1.5, 1.5), rnd(-.5, 1), rnd(-1.5, 1.5))), 0xfca5a5);
-    netTo(tgt.id, { k: 'shot', i: enemies.indexOf(e), hit: hit ? 1 : 0, d: Math.round(rnd(8, 14)) }); return;
+    netTo(tgt.id, { k: 'shot', i: enemies.indexOf(e), hit: hit ? 1 : 0, d: Math.max(1, Math.round(rnd(8, 14) * DF().dmg)) }); return;
   }
   if (tgt && tgt !== 'P') {      // at a squadmate
-    const b = tgt, to = eye(b.pos, 1.3), hit = Math.random() < clamp(.5 - dist / 120, .1, .45);
+    const b = tgt, to = eye(b.pos, 1.3), hit = Math.random() < clamp(.5 - dist / 120, .1, .45) * DF().acc;
     if (!hit) to.add(new V3(rnd(-1.5, 1.5), rnd(-.5, 1.2), rnd(-1.5, 1.5)));
     tracer(from, to, 0xfca5a5);
-    if (hit) { b.hp -= rnd(9, 15); b.hurtT = now(); if (b.hp <= 0 && !b.down) { b.down = true; b.revT = 0; b.hp = 0; say('⛑️ ' + b.name + ' is down! Get to them (E / hold □) or a squadmate will'); } }
+    if (hit) { b.hp -= rnd(9, 15) * DF().dmg; b.hurtT = now(); if (b.hp <= 0 && !b.down) { b.down = true; b.revT = 0; b.hp = 0; say('⛑️ ' + b.name + ' is down! Get to them (E / hold □) or a squadmate will'); } }
     return;
   }
   const to = eye(P.pos, P.stance === 2 ? .3 : P.stance === 1 ? .9 : 1.3);
-  let ch = clamp(.62 - dist / 110, .1, .55) * (P.stance === 2 ? .55 : P.stance === 1 ? .8 : 1) * (P.sprint ? .65 : 1) * (P.mode === 'vehicle' ? .7 : 1);
+  let ch = clamp(.62 - dist / 110, .1, .55) * (P.stance === 2 ? .55 : P.stance === 1 ? .8 : 1) * (P.sprint ? .65 : 1) * (P.mode === 'vehicle' ? .7 : 1) * DF().acc;
   const hit = Math.random() < ch;
   if (!hit) to.add(new V3(rnd(-1.5, 1.5), rnd(-.5, 1.2), rnd(-1.5, 1.5)));
   tracer(from, to, 0xfca5a5);
-  if (hit) { hurtPlayer(rnd(8, 14)); squadHelp = now(); }
+  if (hit) { hurtPlayer(rnd(8, 14) * DF().dmg); squadHelp = now(); }
 }
 let squadHelp = -99, squadCalled = false;
 function squadTick(dt) {
@@ -1358,11 +1408,16 @@ function openWheel() {
 function pause() {
   if (!started) return; show('ov');
   $('ovBox').innerHTML = '<h2>⏸️ Paused</h2><div class="muted">' + PROVINCE + ' · Level ' + S.level + ' · ' + campCount() + ' camps cleared</div>'
-    + '<div style="margin-top:8px"><button id="pRes">▶ Resume</button><button class="alt" id="pMap">🗺️ Map</button><button class="alt" id="pSk">⬆️ Skills</button><button class="alt" id="pCoop">' + (MP.on ? '🚪 Leave co-op' : '👥 Host co-op') + '</button><button class="alt" id="pSquad">🎖️ AI squad: ' + (S.squadOff ? 'Off' : 'On') + '</button><button class="alt" id="pKeys">🎮 Controls</button><button class="alt" id="pLeave">Leave</button></div><div id="pK"></div>';
+    + '<div style="margin-top:8px"><button id="pRes">▶ Resume</button><button class="alt" id="pMap">🗺️ Map</button><button class="alt" id="pSk">⬆️ Skills</button><button class="alt" id="pCoop">' + (MP.on ? '🚪 Leave co-op' : '👥 Host co-op') + '</button><button class="alt" id="pSquad">🎖️ AI squad: ' + (S.squadOff ? 'Off' : 'On') + '</button><button class="alt" id="pKeys">🎮 Controls</button><button class="alt" id="pLeave">Leave</button></div>' + diffHtml() + '<div id="pK"></div>';
   $('pCoop').onclick = () => { saveNow(); if (MP.on) location.href = 'recon.html'; else if (WW.user && WW.friendCode) location.href = 'recon.html?room=' + encodeURIComponent(WW.friendCode); else say('Sign in on the games hub to host co-op'); };
   if (MP.on) $('ovBox').insertAdjacentHTML('beforeend', '<div class="muted" style="margin-top:8px">👥 Co-op room <b>' + esc(MP.code) + '</b> · ' + humans().length + '/' + MAXP + ' players: ' + [myNameR()].concat(Object.values(MP.remotes).filter(r => !r.stale).map(r => r.name)).map(esc).join(', ') + '. Friends join from the games hub (Join on your name) or with your friend code. The game keeps running while this menu is open.</div>');
-  $('pSquad').onclick = () => { S.squadOff = !S.squadOff; if (!S.squadOff) squad.forEach(b => { b.pos.set(P.pos.x + b.off[0], 0, P.pos.z + b.off[1]); b.down = false; b.hp = botMaxHP(); }); save(true); pause(); }; $('pRes').onclick = resume; $('pMap').onclick = openTac; $('pSk').onclick = openSkills; $('pKeys').onclick = () => { $('pK').innerHTML = controlsHtml(); }; $('pLeave').onclick = () => { saveNow(); location.href = 'index.html'; };
+  $('pSquad').onclick = () => { S.squadOff = !S.squadOff; if (!S.squadOff) squad.forEach(b => { b.pos.set(P.pos.x + b.off[0], 0, P.pos.z + b.off[1]); b.down = false; b.hp = botMaxHP(); }); save(true); pause(); }; $('pRes').onclick = resume; $('pMap').onclick = openTac; $('pSk').onclick = openSkills; $('pKeys').onclick = () => { $('pK').innerHTML = controlsHtml(); }; diffWire(pause); $('pLeave').onclick = () => { saveNow(); location.href = 'index.html'; };
 }
+function diffHtml() {
+  const cur = S.diff || 'normal';
+  return '<div style="margin-top:10px"><b>Difficulty</b><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">' + DIFF_ORDER.map(k => '<button class="' + (k === cur ? '' : 'alt') + '" data-diff="' + k + '">' + DIFFS[k].n + '</button>').join('') + '</div><div class="muted" style="margin-top:4px">' + esc(DIFFS[cur].d) + (MP.on && !MP.host ? ' · In co-op the host’s difficulty is used.' : '') + '</div></div>';
+}
+function diffWire(redraw) { $('ovBox').querySelectorAll('[data-diff]').forEach(b => b.onclick = () => { S.diff = b.getAttribute('data-diff'); save(true); say('Difficulty: ' + DIFFS[S.diff].n); redraw(); }); }
 function resume() { $('ov').classList.remove('show'); if (!isTouch && canvas.requestPointerLock) canvas.requestPointerLock(); ac(); }
 function controlsHtml() {
   const rows = (t, list) => '<h3 style="margin:12px 0 4px">' + t + '</h3><div class="keys">' + list.map(r => '<b>' + r[0] + '</b><span>' + r[1] + '</span>').join('') + '</div>';
@@ -1375,9 +1430,9 @@ function startScreen(user, co) {
   $('ovBox').innerHTML = '<h2>🎯 Werewolf Recon</h2><div class="muted">Province: <b>' + PROVINCE + '</b>. The ' + 'La Calavera cartel holds ' + mainCamps().length + ' camps and ' + posts().length + ' guard posts here. Sneak in, mark guards with your drone, take them out with your squad\'s sync shot, and grab the Skill Points, weapon cases and accessory cases. They sit where they do on your tracker map.</div>'
     + '<div class="muted" style="margin-top:8px">' + (user ? '✅ Signed in: progress saves to your account (friend code ' + esc(WW.friendCode || '…') + ').' : '💾 Not signed in: progress saves on this device only. <a href="#" id="sgn" style="color:#86efac">Sign in</a> to keep it on every device.') + '</div>'
     + (co ? '<div class="muted" style="margin-top:8px;color:' + (co.ok ? '#93c5fd' : '#fca5a5') + '">' + (co.ok ? (co.host ? '👥 You\u2019re hosting a co-op squad (room ' + esc(MP.code) + '). Friends join from the games hub. Each friend takes an AI squadmate\u2019s place.' : '👥 Joining ' + esc(co.hostName) + '\u2019s squad. Their camps and enemies are shared; your XP, pickups and skills stay your own.') : '⚠️ ' + esc(co.why) + ' You can still play on your own.') + '</div>' : '')
-    + '<div style="margin-top:10px"><button id="go">▶ Deploy</button><button class="alt" id="keys">🎮 Controls</button></div><div id="pK"></div>';
+    + diffHtml() + '<div style="margin-top:10px"><button id="go">▶ Deploy</button><button class="alt" id="keys">🎮 Controls</button></div><div id="pK"></div>';
   $('go').onclick = () => { started = true; $('ov').classList.remove('show'); ac(); if (!isTouch && canvas.requestPointerLock) canvas.requestPointerLock(); say(S.level === 1 && !S.kills ? 'Start at the ⛺ rally point · the 🚙 truck gets you there faster' : 'Welcome back'); publish(); };
-  $('keys').onclick = () => { $('pK').innerHTML = controlsHtml(); };
+  $('keys').onclick = () => { $('pK').innerHTML = controlsHtml(); }; diffWire(() => startScreen(user, co));
   const s = $('sgn'); if (s) s.onclick = e => { e.preventDefault(); WW.signIn(); };
 }
 async function boot(user) {
