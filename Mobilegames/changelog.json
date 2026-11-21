@@ -2,6 +2,30 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 47,
+   "date": "Nov 20",
+   "game": "recon",
+   "items": [
+    "👥 Co-op: up to 4 friends in one squad. Host from the games hub (or ⏸ → 👥 Host co-op); friends tap Join on your name or type your friend code. Each friend takes an AI squadmate's place",
+    "Everyone fights the same guards, shares marks for sync shots, and can revive each other. Your XP, pickups and skills stay your own",
+    "⚡ Fast travel to a friend from the map when you're not in a firefight",
+    "💀 When your bleed-out timer runs out you choose: ⛑️ revive where you fell or ⟲ reset at the rally point. The AI squad can be switched off in the pause menu"
+   ]
+  },
+  {
+   "id": 46,
+   "date": "Nov 20",
+   "game": "recon",
+   "items": [
+    "🛡️ Every Skill Point, accessory case and medal is now guarded by its own small guard post: clear it (or sneak past) to grab what it protects",
+    "🔫 Shots you can see: muzzle flashes, bright tracers, hit puffs and enemies flinching. Recoil kicks your aim up but settles back to where you were aiming",
+    "🎖️ Your squad fights back: they open fire on anyone shooting at you, call out contacts, can get downed, and revive each other",
+    "⛑️ When you go down you're not out: a squadmate runs over and revives you before you bleed out. Revive downed squadmates yourself with E / hold □",
+    "🚙 Trucks sit on all four wheels, lean the right way on slopes and bounce over bumps; hills slow you down or speed you up",
+    "🗺️ The map shows a big YOU arrow and your squad"
+   ]
+  },
+  {
    "id": 45,
    "date": "Nov 20",
    "game": "survive",
