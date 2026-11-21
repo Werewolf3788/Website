@@ -78,7 +78,7 @@
   .screen .pvbg{position:absolute;inset:0;background-size:cover;background-position:center}
   .screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
   .bg-game{background:linear-gradient(160deg,#2b4a3a 0%,#1f3326 35%,#5a6b4b 60%,#8aa1b5 61%,#b8cfe0 100%)}
-  .bg-check{background:repeating-conic-gradient(#2a2a2a 0 25%,#1d1d1d 0 50%) 0 0/32px 32px}
+  .screen .pvbg.bg-check{background:repeating-conic-gradient(#3a3a3a 0 25%,#262626 0 50%);background-size:24px 24px}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);
     background:var(--panel2);color:var(--text);font:800 13px Inter;cursor:pointer;text-decoration:none;white-space:nowrap}
   .btn.main{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -134,7 +134,7 @@
           <label class="f">Box style
             <div class="seg" data-seg="panelStyle"><button data-v="glass">Glass</button><button data-v="solid">Solid</button><button data-v="outline">Outline</button></div>
           </label>
-          <label class="f">Box see-through <input type="range" min="10" max="100" data-k="panelOpacity"></label>
+          <label class="f">Box fill (all the way left = no boxes, just text) <input type="range" min="0" max="100" data-k="panelOpacity"></label>
           <label class="f">Corner roundness <input type="range" min="0" max="30" data-k="radius"></label>
           <div class="row">
             <label class="f">Font<select data-k="font" id="fontSel"></select></label>
@@ -155,10 +155,15 @@
           <label class="f">Full-screen frame (PNG with see-through middle, 1920×1080)
             <input type="url" data-k="frameImg" data-img placeholder="https://…">
           </label>
-          <label class="f">Background for Starting / BRB / Ending screens
+          <label class="f">Screen background
+            <div class="seg" data-seg="sceneBg"><button data-v="clear">See-through</button><button data-v="color">My colors</button><button data-v="image">Picture</button></div>
+          </label>
+          <div class="hint">See-through (default) lets your game, webcam or other OBS sources show behind the overlay. “My colors” and “Picture” fill the Starting / BRB / Ending screens.</div>
+          <label class="f">Background picture (when “Picture” is picked)
             <input type="url" data-k="bgImg" data-img placeholder="https://…">
           </label>
-          <label class="f">Background darkness <input type="range" min="0" max="90" data-k="bgDim"></label>
+          <label class="f">Picture darkness <input type="range" min="0" max="90" data-k="bgDim"></label>
+          <div class="tog">Also fill the Live overlay<label class="sw"><input type="checkbox" data-k="bgLive"><span></span></label></div>
           <div class="hint">Paste a link to any picture. Google Drive links work — set the file to <b>"Anyone with the link"</b>. Imgur, Discord and Dropbox links work too.</div>
         </div>
       </details>
@@ -195,7 +200,7 @@
             <button data-v="live">Live</button><button data-v="starting">Starting</button><button data-v="brb">BRB</button><button data-v="ending">Ending</button>
           </div>
         </div>
-        <div class="screen"><div class="pvbg bg-game" id="pvbg"></div><iframe id="pv" title="Overlay preview" src="overlay-live.html?demo=1"></iframe></div>
+        <div class="screen"><div class="pvbg bg-check" id="pvbg"></div><iframe id="pv" title="Overlay preview" src="overlay-live.html?demo=1"></iframe></div>
         <div class="pv-top" style="margin:10px 0 0">
           <div class="seg" id="pvbgSeg"><button data-v="game">Game</button><button data-v="check">See-through</button><button data-v="dark">Dark</button></div>
           <button class="btn sm" id="testAlert"><i class="fa-solid fa-bell"></i> Test alert</button>
@@ -487,7 +492,7 @@
   (fromUrl ? C.decode(fromUrl) : Promise.resolve(saved ? C.merge(C.DEFAULTS, saved) : C.clone(C.DEFAULTS))).then(function (c) {
     cfg = c; cfg.scene = cfg.scene || 'live';
     var qs = new URLSearchParams(location.search).get('channel'); if (qs && !cfg.channel) cfg.channel = qs;
-    $$('#pvbgSeg button')[0].classList.add('on');
+    $$('#pvbgSeg button')[1].classList.add('on');
     fill(); makeLinks(); lookupTwitch();
     if (pvReady) changed();
   });

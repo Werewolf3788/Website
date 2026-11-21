@@ -49,7 +49,7 @@
     scene: 'live',                 // live | starting | brb | ending
     preset: 'werewolf',
     accent: '#ff5f1f', accent2: '#ffd700', panel: '#0b0b10', text: '#ffffff',
-    panelOpacity: 82,              // 0-100
+    panelOpacity: 82,              // 0-100 (0 = no boxes, text only)
     panelStyle: 'glass',           // glass | solid | outline
     radius: 12,
     glow: true,
@@ -58,7 +58,9 @@
     fontScale: 100,                // %
     margin: 40,
     frameImg: '',                  // full-screen PNG drawn on top (transparent areas show the game)
-    bgImg: '',                     // background picture (used on Starting/BRB/Ending)
+    sceneBg: 'clear',              // clear (see-through, default) | color | image
+    bgImg: '',                     // background picture, used when sceneBg = image
+    bgLive: false,                 // also put the color/picture behind the Live overlay (normally off)
     bgDim: 45,
 
     brand:   { on: true,  pos: 'br', logo: '', name: '', tag: '', round: true },

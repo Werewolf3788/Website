@@ -18,7 +18,8 @@
 <script src="overlay-core.js"></script>
 <style>
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent}
+  :root{color-scheme:normal}
+  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent!important;background-color:rgba(0,0,0,0)!important}
   #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
     font-family:var(--font),Inter,Roboto,sans-serif;color:var(--text);font-size:calc(20px * var(--fs))}
   .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
@@ -131,6 +132,8 @@
   .scene .dots span:nth-child(2){animation-delay:.2s}.scene .dots span:nth-child(3){animation-delay:.4s}
   @keyframes bob{50%{transform:translateY(-14px);opacity:.5}}
 
+  .clear-boxes .panel,.clear-boxes .msg,.clear-boxes .msg .t,.clear-boxes .ticker,.clear-boxes .alert{box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .clear-boxes .scene h1,.clear-boxes .panel,.clear-boxes .msg{text-shadow:0 0 4px #000,0 0 2px #000,1px 1px 0 #000}
   .no-anim *{animation:none!important;transition:none!important}
   /* watermark (free overlays, once an hour) */
   .wm{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:16px;
@@ -213,13 +216,13 @@
     C.POSITIONS.forEach(function (p) { anchors[p] = el('div', 'anc ' + p); stage.appendChild(anchors[p]); });
     var live = cfg.scene === 'live', sc = cfg.scenes[cfg.scene] || {};
 
-    if (cfg.bgImg && !live) {
+    // Background: see-through unless the user picked a color or a picture (OBS shows the game/cam behind it)
+    if (cfg.sceneBg === 'image' && cfg.bgImg && (!live || cfg.bgLive)) {
       var bg = el('div', 'bg'); bg.style.backgroundImage = 'url("' + C.fixImg(cfg.bgImg) + '")'; stage.appendChild(bg);
-    } else if (!live) {
+    } else if (cfg.sceneBg === 'color' && (!live || cfg.bgLive)) {
       var bg2 = el('div', 'bg'); bg2.style.background = 'radial-gradient(circle at 30% 20%,' + hexA(cfg.accent, .35) + ',transparent 55%),radial-gradient(circle at 80% 80%,' + hexA(cfg.accent2, .25) + ',transparent 50%),' + cfg.panel;
       stage.appendChild(bg2);
     }
-
     if (!live) buildScene(sc);
 
     if (live && cfg.cam.on) buildCam();
