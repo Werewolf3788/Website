@@ -905,9 +905,15 @@ const pendSet = l => { try { localStorage.setItem(PEND_KEY, JSON.stringify(l)); 
 function grantOrder(id, g) {   // add a paid order's resources to YOUR settlement, once
   const H = tour ? tour.home : st; if (!g || !g.res) return false; H.orders = H.orders || {}; if (H.orders[id]) return false;
   H.orders[id] = NOW(); Object.keys(g.res).forEach(k => { H.res[k] = (H.res[k] || 0) + (+g.res[k] || 0); });
+  H.receipts = (H.receipts || []).concat({ id: id, name: g.name || 'Pack', price: g.price || '', res: g.res, at: NOW(), test: shopCfg && shopCfg.mode === 'sandbox' ? 1 : 0 }).slice(-20);
   if (tour) tour.S && Object.keys(g.res).forEach(k => { st.res[k] = (st.res[k] || 0) + (+g.res[k] || 0); tour.S[k] = (tour.S[k] || 0) + (+g.res[k] || 0); });   // visiting: it's yours, not part of the trip's split
   sfx(784, .2, .08); sfx(1046, .35, .08, .15); toast('📦 Thank you! ' + (g.name || 'Pack') + ': +' + costTxt(g.res), 7000);
-  persist(); cloudSave(); hud(); return true;
+  persist(); cloudSave(); hud();
+  // a receipt that stays on screen until closed, so it's clear PayPal approved it
+  show('<h3>✅ Payment approved by PayPal</h3>' + (shopCfg && shopCfg.mode === 'sandbox' ? '<div class="muted" style="color:#fde68a">Test mode: no real money was charged.</div>' : '') +
+    '<div class="row"><div class="g"><b>📦 ' + escH(g.name || 'Pack') + (g.price ? ' · $' + escH(g.price) : '') + '</b><div class="muted">Added to your settlement: ' + costTxt(g.res) + '</div><div class="muted">PayPal order <b>' + escH(id) + '</b> · ' + new Date().toLocaleString() + '</div></div></div>' +
+    '<div class="muted">Thank you for supporting the game! Your purchases are listed in 🛒 Shop.</div>');
+  return true;
 }
 async function confirmOrder(id) {
   const j = await payPost('/pay/capture', { idToken: await idTok(), orderId: id });
@@ -928,8 +934,10 @@ async function shopPanel(note) {
   const cfg = await shopConfig(), P = cfg && cfg.packs && cfg.packs[SHOP_PACK];
   if (!P) return show(h + '<div class="row muted">The shop couldn’t be reached. Give it a minute (the shop server may be waking up) and try again.</div>');
   h += '<div class="row"><div class="g"><b>📦 ' + WW.esc(P.name) + ' · $' + WW.esc(P.price) + '</b><div class="muted">' + costTxt(P.res) + ' added to your settlement as soon as PayPal confirms the payment. Works on all your devices.</div></div></div>';
-  if (!cfg.clientId) return show(h + '<div class="row muted">The shop isn’t open yet. Check back soon!</div>');
-  show(h + (cfg.mode === 'sandbox' ? '<div class="muted" style="color:#fde68a">Test mode: no real money is charged.</div>' : '') + '<div id="ppBtns" style="margin-top:8px;min-height:50px;background:#fff;border-radius:10px;padding:8px"></div><div class="muted" style="margin-top:6px">Payments are handled securely by PayPal (PayPal or card). Sales are final; if something goes wrong, message werewolf.</div>');
+  const rc = ((tour ? tour.home : st).receipts || []).slice().reverse();
+  const hist = rc.length ? '<div class="row"><div class="g"><b>🧾 Your purchases</b>' + rc.map(r => '<div class="muted">✅ ' + new Date(r.at).toLocaleDateString() + ' · ' + escH(r.name) + (r.price ? ' $' + escH(r.price) : '') + (r.test ? ' (test)' : '') + ' · order ' + escH(r.id) + '</div>').join('') + '</div></div>' : '';
+  if (!cfg.clientId) return show(h + hist + '<div class="row muted">The shop isn’t open yet. Check back soon!</div>');
+  show(h + (cfg.mode === 'sandbox' ? '<div class="muted" style="color:#fde68a">Test mode: no real money is charged.</div>' : '') + hist + '<div id="ppBtns" style="margin-top:8px;min-height:50px;background:#fff;border-radius:10px;padding:8px"></div><div class="muted" style="margin-top:6px">Payments are handled securely by PayPal (PayPal or card). Sales are final; if something goes wrong, message werewolf.</div>');
   try {
     const pp = await loadPayPal(cfg.clientId), box = $('ppBtns'); if (!box) return;
     pp.Buttons({ style: { layout: 'vertical', shape: 'pill', label: 'pay' },
