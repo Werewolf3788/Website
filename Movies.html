@@ -314,9 +314,22 @@ main{padding-bottom:40px}
 .buy a .logo{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:900;font-size:13px;color:#fff;flex-shrink:0}
 .buy a small{display:block;color:var(--dim);font-weight:600;font-size:11.5px}
 .buy a.hl{border-color:#fff}
+/* Logo cards: the store's artwork replaces the name (name stays for screen readers) */
+.buy a.has-img{flex-direction:column;align-items:stretch;gap:0;padding:0;overflow:hidden}
+.buy a.has-img .art{display:block;position:relative;aspect-ratio:16/9;width:100%;overflow:hidden;background:#0b0b10}
+.buy a.has-img .art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.buy a.has-img .art.fit img{object-fit:contain}
+.buy a.has-img .cap{display:flex;align-items:center;gap:8px;padding:8px 12px}
+.buy a.has-img .cap small{font-size:12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+a.tag.tag-disney img{height:24px;width:auto;display:block}
 .buy a .arr{margin-left:auto;color:var(--dim)}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
 .tag{padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600;color:#d6d6de}
+/* Disney tag with a link (sheet column X): Impact Blue #113CCF, Soft Sky Blue #BFF5FD, white */
+a.tag.tag-disney{display:inline-flex;align-items:center;gap:6px;background:#113CCF;border-color:#BFF5FD;color:#FFFFFF;text-decoration:none;box-shadow:0 0 0 1px rgba(191,245,253,.25),0 0 14px rgba(17,60,207,.55);transition:background .15s,box-shadow .15s}
+a.tag.tag-disney:hover,a.tag.tag-disney:focus-visible{background:#1a4be6;box-shadow:0 0 0 2px #BFF5FD,0 0 18px rgba(17,60,207,.8);outline:none}
+a.tag.tag-disney .arr{color:#BFF5FD;font-size:12px}
 .disclose{font-size:12px;color:var(--dim);margin-top:10px}
 .d-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .d-section .row{padding-left:0;padding-right:0}
@@ -581,13 +594,15 @@ const CFG = {
 const PUSH_READY = !!(CFG.firebase.apiKey && CFG.firebase.messagingSenderId && CFG.firebase.appId && CFG.vapidKey && CFG.pushEndpoint);
 
 const STORES = [
-  { key:'amazon',         label:'Amazon',           short:'a',  color:'#FF9900', ink:'#111', col:3 },
-  { key:'apple',          label:'Apple TV',         short:'tv', color:'#3a3a3c', ink:'#fff', col:4 },
-  { key:'fandango',       label:'Fandango at Home', short:'F',  color:'#3d2bd6', ink:'#fff', col:5 },
-  { key:'google',         label:'Google TV',        short:'G',  color:'#4285F4', ink:'#fff', col:6 },
-  { key:'moviesanywhere', label:'Movies Anywhere',  short:'MA', color:'#00aeef', ink:'#fff', col:7 },
-  { key:'youtube',        label:'YouTube',          short:'▶',  color:'#FF0000', ink:'#fff', col:8 },
-  { key:'justwatch',      label:'JustWatch',        short:'JW', color:'#f5c518', ink:'#111', col:9 }
+  { key:'amazon',         label:'Amazon',           short:'a',  color:'#FF9900', ink:'#111', col:3, img:'/Images/stores/amazon.webp' },
+  { key:'apple',          label:'Apple TV',         short:'tv', color:'#3a3a3c', ink:'#fff', col:4, img:'/Images/stores/apple.webp' },
+  { key:'fandango',       label:'Fandango at Home', short:'F',  color:'#3d2bd6', ink:'#fff', col:5, img:'/Images/stores/fandango.webp' },
+  { key:'google',         label:'Google TV',        short:'G',  color:'#4285F4', ink:'#fff', col:6, img:'/Images/stores/google.webp' },
+  { key:'moviesanywhere', label:'Movies Anywhere',  short:'MA', color:'#00aeef', ink:'#fff', col:7, img:'/Images/stores/moviesanywhere.webp' },
+  { key:'youtube',        label:'YouTube',          short:'▶',  color:'#FF0000', ink:'#fff', col:8, img:'/Images/stores/youtube.webp' },
+  { key:'justwatch',      label:'JustWatch',        short:'JW', color:'#f5c518', ink:'#111', col:9 },
+  // Disney+ (column X): streaming, not owned. The link only shows while column U (Streaming On) lists Disney.
+  { key:'disney',         label:'Disney+',          short:'D+', color:'#113ccf', ink:'#fff', col:23, img:'/Images/stores/disney.webp', streamGate:/disney/i }
 ];
 const STORE = Object.fromEntries(STORES.map(s => [s.key, s]));
 // Stores that count as "owned" (JustWatch alone doesn't put a title in the library)
@@ -731,7 +746,8 @@ function buildCatalog(csvText) {
     rowCount++;
 
     const links = {}; let owned = false;
-    STORES.forEach(s => { const v = cell(s.col); if (isUrl(v)) { links[s.key] = normUrl(v); storeCounts[s.key]++; if (OWNED_STORES.includes(s.key)) owned = true; } });
+    const streamRaw = cell(COL.streaming);
+    STORES.forEach(s => { const v = cell(s.col); if (s.streamGate && !s.streamGate.test(streamRaw)) return; if (isUrl(v)) { links[s.key] = normUrl(v); storeCounts[s.key]++; if (OWNED_STORES.includes(s.key)) owned = true; } });
     const familyShare = checked(cell(STORE.google.col));
     const ytFree = checked(cell(STORE.youtube.col)) || /free/i.test(cell(STORE.youtube.col));
     if (familyShare || ytFree) owned = true;
@@ -1097,10 +1113,12 @@ function sourceLink(m) {
 function detailHtml(m) {
   const meta = [m.rating ? `<span class="chip-rating">${esc(m.rating)}</span>` : '', m.year, m.runtime, m.edition].filter(Boolean);
   const src = sourceLink(m);
-  const stores = STORES.filter(s => m.links[s.key]).sort((a, b) => (b.key === state.store) - (a.key === state.store));
-  const buy = stores.map(s => `<a href="${esc(storeUrl(m, s))}" target="_blank" rel="${s.key === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${s.key}" class="${s.key === state.store ? 'hl' : ''}">
-      <span class="logo" style="background:${s.color};color:${s.ink}">${esc(s.short)}</span>
-      <span>${esc(s.label)}<small>${s.key === 'amazon' ? 'Affiliate link' : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store'}</small></span><span class="arr">↗</span></a>`).join('');
+  const stores = STORES.filter(s => m.links[s.key] && s.key !== 'disney').sort((a, b) => (b.key === state.store) - (a.key === state.store));
+  const buyNote = s => s.key === 'amazon' ? 'Affiliate link' : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store';
+  const buy = stores.map(s => `<a href="${esc(storeUrl(m, s))}" target="_blank" rel="${s.key === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${s.key}" class="${[s.key === state.store ? 'hl' : '', s.img ? 'has-img' : ''].join(' ').trim()}" aria-label="${esc(s.label)}: ${esc(buyNote(s))}">
+      ${s.img
+        ? `<span class="art${s.key === 'amazon' ? ' fit' : ''}" style="background:${s.key === 'amazon' ? '#1a98ff' : '#0b0b10'}"><img src="${s.img}" alt="${esc(s.label)}" loading="lazy" onerror="this.closest('a').classList.remove('has-img');this.parentNode.outerHTML='<span class=&quot;logo&quot; style=&quot;background:${s.color};color:${s.ink}&quot;>${esc(s.short)}</span><span>${esc(s.label)}</span>'"></span><span class="cap"><small>${esc(buyNote(s))}</small><span class="arr">↗</span></span>`
+        : `<span class="logo" style="background:${s.color};color:${s.ink}">${esc(s.short)}</span><span>${esc(s.label)}<small>${esc(buyNote(s))}</small></span><span class="arr">↗</span>`}</a>`).join('');
   const sameColl = m.collection ? catalog.filter(x => x.collection === m.collection && x.key !== m.key) : [];
   const similar = catalog.filter(x => x.key !== m.key && x.genres.some(g => m.genres.includes(g)) && !sameColl.includes(x)).sort((a, b) => b.genres.filter(g => m.genres.includes(g)).length - a.genres.filter(g => m.genres.includes(g)).length || b.ts - a.ts).slice(0, 20);
   return `<button class="d-close" data-close aria-label="Close">${ICON.close}</button>
@@ -1122,7 +1140,7 @@ function detailHtml(m) {
         <button class="btn btn-ghost" type="button" data-share>${ICON.share}Share</button></div>
     </div></div>
   ${buy ? `<div class="d-section"><h3>Where to watch</h3><div class="buy">${buy}</div>${m.links.amazon ? '<p class="disclose">Amazon links are affiliate links: Werewolf3788 earns from qualifying purchases. Other store links are not affiliate links.</p>' : ''}</div>` : ''}
-  ${m.streamOn.length ? `<div class="d-section"><h3>Also streaming on</h3><div class="tags">${m.streamOn.map(s => `<span class="tag">${esc(s)}</span>`).join('')}</div></div>` : ''}
+  ${m.streamOn.length ? `<div class="d-section"><h3>Also streaming on</h3><div class="tags">${m.streamOn.map(s => m.links.disney && /disney/i.test(s) ? `<a class="tag tag-disney" href="${esc(m.links.disney)}" target="_blank" rel="noopener" data-out="disney" title="Watch on Disney+" aria-label="Watch on ${esc(s)}"><img src="${STORE.disney.img}" alt="${esc(s)}" onerror="this.outerHTML='${esc(s)}'"><span class="arr">↗</span></a>` : `<span class="tag">${esc(s)}</span>`).join('')}</div></div>` : ''}
   ${sameColl.length ? `<div class="d-section"><h3>More in ${esc(m.collection)}</h3><div class="row">${sameColl.slice(0, 20).map(card).join('')}</div></div>` : ''}
   ${similar.length ? `<div class="d-section"><h3>More like this</h3><div class="row">${similar.map(card).join('')}</div></div>` : ''}`;
 }
