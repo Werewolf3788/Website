@@ -50,14 +50,15 @@ function mountPayPal(app, { admin, fetchFn }) {
       mode: s(process.env.PAYPAL_MODE || v.paypal_mode || 'live').toLowerCase() === 'sandbox' ? 'sandbox' : 'live'
     };
     k.api = k.mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+    if (!cache.keys || cache.keys.id !== k.id || cache.keys.mode !== k.mode || cache.keys.secret !== k.secret) { cache.tok = ''; cache.tokEnd = 0; }   // switched sandbox <-> live (or new keys): log in to PayPal again
     cache.keys = k; cache.at = Date.now(); return k;
   }
   async function token(k) {
-    if (cache.tok && Date.now() < cache.tokEnd) return cache.tok;
+    if (cache.tok && Date.now() < cache.tokEnd && cache.tokFor === k.mode + k.id) return cache.tok;
     const r = await fetchFn(k.api + '/v1/oauth2/token', { method: 'POST', headers: { Authorization: 'Basic ' + Buffer.from(k.id + ':' + k.secret).toString('base64'), 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'grant_type=client_credentials' });
     const j = await r.json().catch(() => ({}));
     if (!r.ok || !j.access_token) throw new Error('PayPal sign-in failed (' + r.status + ')');
-    cache.tok = j.access_token; cache.tokEnd = Date.now() + Math.max(60, (j.expires_in || 300) - 120) * 1000; return cache.tok;
+    cache.tokFor = k.mode + k.id; cache.tok = j.access_token; cache.tokEnd = Date.now() + Math.max(60, (j.expires_in || 300) - 120) * 1000; return cache.tok;
   }
   async function papi(k, path, body) {
     const r = await fetchFn(k.api + path, { method: 'POST', headers: { Authorization: 'Bearer ' + await token(k), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
