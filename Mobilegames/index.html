@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
 <meta name="google-adsense-account" content="ca-pub-2509348249117288">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
      crossorigin="anonymous"></script>
@@ -104,6 +112,11 @@
   <div class="muted">A 3D survival settlement: walk your survivor around (drag anywhere, WASD or a controller), chop trees, mine rocks and hunt, carry resources to build pads, push back the fog area by area, and fight the infected and orange bosses with Sarge, Rusty and Leila. 21 missions from Sarge, and <b>allies</b> can help speed up your upgrade timers. Free, saves to your account.</div>
   <div class="row"><button id="playSurv">Play</button></div>
 </div>
+<div class="card" style="border:1px solid #2dd4bf">
+  <h2 style="margin:0 0 4px">🌿 Calm Space</h2>
+  <div class="muted">For rough days: light a lantern with slow breathing, find the fireflies to ground yourself, stack a cairn to cool off, gentle memory games, a <b>reasons jar</b>, your own plan for hard moments, and one-tap texts to <b>your people</b>. Everything you put in it stays <b>private on your device</b>. Nothing is uploaded or shown to friends.</div>
+  <div class="row"><button id="playCalm">Open</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -140,6 +153,7 @@
     location.href = 'farm.html?mp=' + encodeURIComponent(c);
   };
   $('playMj').onclick = function () { location.href = 'mahjong.html'; };
+  $('playCalm').onclick = function () { location.href = 'calm.html'; };
   $('playSurv').onclick = function () { location.href = 'survive.html'; };
   $('playFrog').onclick = function () { location.href = 'frogger.html'; };
   $('playShip').onclick = function () { location.href = 'battleship.html'; };
