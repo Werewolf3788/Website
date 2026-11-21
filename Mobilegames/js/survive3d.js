@@ -641,7 +641,7 @@ function workshopPanel() {
 function bInfo(id, L) {
   const D = BD[id];
   if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : '') + ' It only levels up once every building has caught up to it.'; }
-  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '. 3% of what it makes helps build your other buildings (5% to the Power Plant once they\u2019re all caught up), and a full pile\u2019s extra goes there too.' + (ROLES[id] ? ' ' + crewSize(L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + 's (' + AWAY_CREW + ' keep working while you\u2019re away)' + (id === 'lumber' ? ' chop trees' : id === 'smelter' ? ' break rocks' : ' hunt deer') + ' and bring the haul here.' : '');
+  if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '. 3% of what it makes helps build your other buildings (5% to the Power Plant once they\u2019re all caught up), and a full pile\u2019s extra goes there too.' + (ROLES[id] ? ' ' + crewSize(L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + 's (' + AWAY_CREW + ' keep working while you\u2019re away)' + (id === 'lumber' ? ' chop trees and giant oaks' : id === 'smelter' ? ' break rocks, iron veins, wrecked cars and 💎 crystals' : ' hunt deer and pick berry bushes, mushrooms and beehives') + ' and bring the haul here.' : '');
   if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
   if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '. ' + Math.min(4, L) + ' infected hunter' + (Math.min(4, L) > 1 ? 's' : '') + ' (❤️' + (60 + 25 * L) + ', ' + (6 + 3 * L) + ' damage) hunt down the infected for you.';
   if (id === 'workshop') return 'Your weapon can be upgraded up to level ' + (L + 1) + ' (' + weaponDmg(L + 1) + ' damage).';
@@ -1356,13 +1356,17 @@ function hud() {
   $('ppl').textContent = lvl('pp'); $('surv').textContent = survivors(); $('hp').style.width = Math.max(0, st.hp / player.hpMax * 100) + '%';
 }
 // ------------------------------------------------------------ workers: each producing building sends out its own crew (1 per level, up to 4)
-// Lumberyard -> lumberjacks chop trees · Smelter -> miners break rocks · Farm -> hunters catch deer. They carry the haul
+// Lumberyard -> lumberjacks chop trees (+ giant oaks) · Smelter -> miners break rocks (+ iron, wrecks, crystals) · Farm -> hunters catch deer (+ berries, mushrooms, hives). They carry the haul
 // back to the building's pile, which you collect as usual.
 const ROLES = {
-  lumber:  { name: '🌳 Lumberjack', shirt: 0xb45309, hat: 0xfacc15, tool: 'axe', list: () => trees, work: 2.4, load: 3, res: 'wood' },
-  smelter: { name: '⛏️ Miner',      shirt: 0x475569, hat: 0xf97316, tool: 'axe', list: () => rocks, work: 3.2, load: 2, res: 'metal' },
-  farm:    { name: '🏹 Hunter',     shirt: 0x166534, hat: 0x78350f, tool: 'gun', list: () => deer,  work: 1.6, load: 5, res: 'food' }
+  lumber:  { name: '🌳 Lumberjack', shirt: 0xb45309, hat: 0xfacc15, tool: 'axe', list: () => trees.concat(crewFinds('lumber')), work: 2.4, load: 3, res: 'wood' },
+  smelter: { name: '⛏️ Miner',      shirt: 0x475569, hat: 0xf97316, tool: 'axe', list: () => rocks.concat(crewFinds('smelter')), work: 3.2, load: 2, res: 'metal' },
+  farm:    { name: '🏹 Hunter',     shirt: 0x166534, hat: 0x78350f, tool: 'gun', list: () => deer.concat(crewFinds('farm')),  work: 1.6, load: 5, res: 'food' }
 };
+// the crews also work the special finds out in your areas, and bring back the whole haul (crystals' 💎 and a wreck's wood too).
+// pri: how much further a crew will walk for it (a crystal 3x as far as a plain rock)
+const FIND_CREW = { oak: ['lumber', 1.5], iron: ['smelter', 1.5], wreck: ['smelter', 2], crystal: ['smelter', 3], berry: ['farm', 1], shroom: ['farm', 1], hive: ['farm', 1.5] };
+const crewFinds = role => finds.filter(f => FIND_CREW[f.kind] && FIND_CREW[f.kind][0] === role);
 const workers = [];
 function syncWorkers() {
   if (tour && tour.raid) { workers.splice(0).forEach(w => scene.remove(w.mesh)); return; }   // raiding: only their defenders are out
@@ -1379,6 +1383,7 @@ function syncWorkers() {
 }
 function knockDown(o, now) {   // same as when you do it yourself
   o.down = true;
+  if (o.find) { o.at = now + o.re; o.mesh.visible = false; if (FIND[o.kind].keep) { st.findAt = st.findAt || {}; st.findAt[o.id] = o.at; } return; }
   if (o.kind === 'tree') { o.at = now + 45000; o.top.visible = false; if (o.trunk) o.trunk.scale.y = .3; }
   else if (o.kind === 'rock') { o.at = now + 90000; o.mesh.visible = false; }
   else { o.at = now + 90000; o.mesh.visible = false; if (o.bar) o.bar.visible = false; }
@@ -1388,18 +1393,23 @@ function updateWorkers(dt, now) {
     const R = ROLES[w.role], B = BD[w.role]; let sp = 0;
     const walk = (tx, tz, near) => { const d = Math.hypot(tx - w.x, tz - w.z); if (d < (near || .9)) return true; sp = w.role === 'farm' ? 3.8 : 3.2; const nx = w.x + (tx - w.x) / d * sp * dt, nz = w.z + (tz - w.z) / d * sp * dt; moveTo(w, nx, nz, .35); w.mesh.rotation.y = Math.atan2(tx - w.x, tz - w.z); return false; };
     if (w.state === 'seek') {
-      let best = null, bd = 1e9; R.list().forEach(o => { if (o.down || workers.some(q => q !== w && q.tgt === o) || guards.some(q => q.job && q.job.o === o)) return; const d = Math.hypot(o.x - B.x, o.z - B.z); if (d < bd) { bd = d; best = o; } });
+      let best = null, bd = 1e9; R.list().forEach(o => { if (o.down || workers.some(q => q !== w && q.tgt === o) || guards.some(q => q.job && q.job.o === o)) return; const d = Math.hypot(o.x - B.x, o.z - B.z) / (o.find && FIND_CREW[o.kind] ? FIND_CREW[o.kind][1] : 1); if (d < bd) { bd = d; best = o; } });
       if (best) { w.tgt = best; w.state = 'walk'; }   // nothing left standing: wait for things to grow back / come back
     } else if (w.state === 'walk') {
       if (!w.tgt || w.tgt.down) { w.state = 'seek'; w.tgt = null; }
-      else if (walk(w.tgt.x, w.tgt.z, w.role === 'farm' ? 1.6 : (w.tgt.r || .5) + .5)) { w.state = 'work'; w.t = R.work; }
+      else if (walk(w.tgt.x, w.tgt.z, w.role === 'farm' && !w.tgt.find ? 1.6 : (w.tgt.r || .5) + .5)) { w.state = 'work'; w.t = R.work * (w.tgt.find ? Math.max(1, w.tgt.max / 5) : 1); }
     } else if (w.state === 'work') {
       const o = w.tgt; if (!o || o.down) { w.state = 'seek'; w.tgt = null; return; }
-      if (w.role === 'farm' && Math.hypot(o.x - w.x, o.z - w.z) > 2.2) { w.state = 'walk'; return; }   // the deer ran: chase it
+      if (w.role === 'farm' && !o.find && Math.hypot(o.x - w.x, o.z - w.z) > 2.2) { w.state = 'walk'; return; }   // the deer ran: chase it
       w.mesh.rotation.y = Math.atan2(o.x - w.x, o.z - w.z); w.t -= dt; if (Math.floor(w.t * 2.5) !== Math.floor((w.t + dt) * 2.5)) { w.mesh.userData.swing = 1; o.shake = .25; }
-      if (w.t <= 0) { knockDown(o, now); w.tgt = null; w.state = 'carry'; w.load = R.load; }
+      if (w.t <= 0) { knockDown(o, now); w.tgt = null; w.state = 'carry'; w.load = R.load; w.haul = o.find ? Object.assign({}, o.res) : null; }
     } else if (w.state === 'carry') {
-      if (walk(B.x + (B.r + 1) * .7, B.z + (B.r + 1) * .7)) { if (!tour) addToPile(w.role, w.load); fly(RES[R.res], w, { x: B.x, z: B.z }); w.load = 0; w.state = 'seek'; }
+      if (walk(B.x + (B.r + 1) * .7, B.z + (B.r + 1) * .7)) {
+        const h = w.haul || { [R.res]: w.load };
+        if (!tour) Object.keys(h).forEach(k => { const n = +h[k] || 0; if (!n) return; if (k === R.res) addToPile(w.role, n); else { st.res[k] = (st.res[k] || 0) + n; st.stats[k] = (st.stats[k] || 0) + n; } });   // the building's own resource goes to its pile, extras (💎, a wreck's wood) straight to you
+        Object.keys(h).forEach((k, i) => setTimeout(() => fly(RES[k], w, { x: B.x, z: B.z }), i * 120));
+        if (h.gems && !tour) toast(ROLES[w.role].name + ' found ' + RES.gems + h.gems + '!');
+        w.load = 0; w.haul = null; w.state = 'seek'; }
     }
     w.mesh.position.set(w.x, 0, w.z); animHuman(w.mesh, sp, dt);
     const carrying = w.state === 'carry';
