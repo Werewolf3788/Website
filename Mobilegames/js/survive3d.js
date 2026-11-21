@@ -20,7 +20,7 @@ function drawLog(g, x, y, s) {   // a log lying on its side, s px wide, centred 
 const LOG_URL = (() => { try { const c = document.createElement('canvas'); c.width = 64; c.height = 64; drawLog(c.getContext('2d'), 32, 32, 60); return c.toDataURL(); } catch (e) { return ''; } })();
 const escH = t => String(t).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[ch]);
 const RH = h => String(h).split(LOGT).join('<img src="' + LOG_URL + '" alt="wood" style="height:1.15em;vertical-align:-.25em">');
-const RES = { wood: LOGT, food: '🍖', metal: '🔩', gems: '💎' };
+const RES = { wood: LOGT, food: '🍖', metal: '🔩', coal: '⚫', gems: '💎' };
 const SAVE_KEY = 'ts3_save', CLOUD_KEY = 'survive3', MAX_HELPS = 5, HELP_CUT = .15, CAMP_RESPAWN = 10 * 60000, BOSS_RESPAWN = 60 * 60000;
 
 // ------------------------------------------------------------ buildings (all in the home area around the Power Plant)
@@ -54,6 +54,7 @@ function costFor(id, lvl) {
   Object.keys(base).forEach(k => { o[k] = Math.round(base[k] * f); });
   // metal (from rocks) is a real building material: every upgrade from level 2 on takes about 40% as much metal as wood
   if (id === 'pp' && lvl >= 3) o.metal = Math.round(30 * Math.pow(1.7, lvl - 3));
+  if (id === 'pp' && lvl >= 4) o.coal = Math.round(15 * Math.pow(1.6, lvl - 4));   // ⚫ coal from the cave keeps the plant running
   if (id !== 'pp' && lvl >= 2) o.metal = Math.max(o.metal || 0, Math.round((o.wood || 0) * .4));
   return o;
 }
@@ -76,7 +77,7 @@ const DIRS = [[0, -1, 4, -10.8], [1, 0, 10.8, -4], [0, 1, 4, 10.8], [-1, 0, -10.
 
 // ------------------------------------------------------------ save
 let st = null;
-function fresh() { return { v: 3, res: { wood: 0, food: 10, metal: 0, gems: 5 }, hp: 100, b: { pp: { lvl: 1 } }, piles: {}, paid: {}, zones: { '2,2': 1 }, camps: {}, boss: {}, heroes: { sarge: { lvl: 1 } }, lay: {}, weapon: 1, q: 0, stats: { wood: 0, metal: 0, food: 0, kills: 0, camps: 0, bosses: 0, zones: 0, collected: 0 }, last: NOW(), saved: 0 }; }
+function fresh() { return { v: 3, res: { wood: 0, food: 10, metal: 0, coal: 0, gems: 5 }, hp: 100, b: { pp: { lvl: 1 } }, piles: {}, paid: {}, zones: { '2,2': 1 }, camps: {}, boss: {}, heroes: { sarge: { lvl: 1 } }, lay: {}, weapon: 1, q: 0, stats: { wood: 0, metal: 0, food: 0, coal: 0, kills: 0, camps: 0, bosses: 0, zones: 0, collected: 0 }, last: NOW(), saved: 0 }; }
 function fix(s) {
   const f = fresh(); Object.keys(f).forEach(k => { if (s[k] === undefined) s[k] = f[k]; });
   Object.keys(f.res).forEach(k => { s.res[k] = +s.res[k] || 0; }); Object.keys(f.stats).forEach(k => { s.stats[k] = +s.stats[k] || 0; });
@@ -88,7 +89,7 @@ const lvl = id => st.b[id].lvl;
 const cap = id => id === 'pp' ? 20 : lvl('pp');
 const survivors = () => 3 + 2 * ['house1', 'house2', 'house3'].reduce((a, h) => a + lvl(h), 0);
 const producers = () => Object.keys(BD).filter(id => BD[id].out && lvl(id) > 0);
-function efficiency() { const need = producers().length * 2, s = survivors(); let e = need ? Math.min(1, s / need) : 1; if (st.res.food <= 0) e *= .5; return e; }
+function efficiency() { const need = producers().length * 2, s = survivors(); let e = need ? Math.min(1, s / need) : 1; if (st.res.food <= 0) e *= .5; if ((st.boostEnd || 0) > NOW()) e *= 1.5; return e; }   // ⚫ burning coal: +50%
 const canPay = c => Object.keys(c).every(k => st.res[k] >= c[k]);
 const pay = c => Object.keys(c).forEach(k => { st.res[k] -= c[k]; });
 const give = c => Object.keys(c).forEach(k => { st.res[k] = (st.res[k] || 0) + c[k]; });
@@ -295,10 +296,14 @@ const FIND = {
   hive:     { n: 'Wild beehive',   res: { food: 9 },             hp: 4,  re: 240,  r: .6 },
   wreck:    { n: 'Wrecked car',    res: { metal: 10, wood: 2 },  hp: 10, re: 300,  r: 1.3 },
   crate:    { n: 'Supply crate',   res: { wood: 8, food: 8, metal: 6 }, hp: 4, re: 900, r: .7, keep: 1 },
-  crystal:  { n: 'Crystal',        res: { gems: 1, metal: 4 },   hp: 14, re: 7200, r: .7, keep: 1 }
+  crystal:  { n: 'Crystal',        res: { gems: 1, metal: 4 },   hp: 14, re: 7200, r: .7, keep: 1 },
+  coal:     { n: 'Coal seam',      res: { coal: 3 },             hp: 6,  re: 120,  r: .9 }
 };
 function makeFind(kind, x, z, mul, id) {
   const F = FIND[kind], g = new THREE.Group(); g.position.set(x, 0, z);
+  if (kind === 'coal') { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.95, 0), mat(0x3f3f46)); m.position.y = .55; m.scale.set(1.3, .95, 1.1); m.castShadow = true; g.add(m);
+    [[.45, .85, .35], [-.4, .7, .45], [.15, 1.1, -.35], [-.2, .95, -.4], [.6, .5, -.2]].forEach(q => { const c = new THREE.Mesh(new THREE.DodecahedronGeometry(.22, 0), mat(0x0a0a0a)); c.position.set(q[0], q[1], q[2]); g.add(c); });
+    [[.3, 1.05, .2], [-.5, .8, .1]].forEach(q => { const sp = new THREE.Mesh(new THREE.OctahedronGeometry(.06, 0), new THREE.MeshBasicMaterial({ color: 0xfde68a })); sp.position.set(q[0], q[1], q[2]); g.add(sp); }); }
   const ball = (r, c, px, py, pz) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), mat(c)); m.position.set(px, py, pz); m.castShadow = true; g.add(m); return m; };
   if (kind === 'berry') { ball(.6, 0x2f7a35, 0, .5, 0); ball(.45, 0x3c9142, .35, .55, .2); [[.3, .8, .45], [-.35, .7, .4], [.1, .95, -.4], [-.4, .5, -.3], [.55, .45, -.1]].forEach(p => ball(.11, 0xdc2626, p[0], p[1], p[2])); }
   else if (kind === 'shroom') { [[0, 0, 1], [.35, .2, .7], [-.3, .25, .6]].forEach(p => { cyl(g, .07 * p[2], .09 * p[2], .4 * p[2], 0xf5f5f4, p[0], .2 * p[2], p[1]); const c = ball(.25 * p[2], 0xdc2626, p[0], .42 * p[2], p[1]); c.scale.y = .6; }); }
@@ -534,7 +539,7 @@ if (PAD) PAD.on('connect', n => toast('🎮 ' + n + ' connected: left stick move
 
 // ------------------------------------------------------------ helpers for the world
 const d2 = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
-function blockedAt(x, z) { const [i, j] = zoneAt(x, z); if (i < 0 || j < 0 || i >= G || j >= G) return true; return !st.zones[i + ',' + j]; }
+function blockedAt(x, z) { if (inCaveAt(x, z)) return false; const [i, j] = zoneAt(x, z); if (i < 0 || j < 0 || i >= G || j >= G) return true; return !st.zones[i + ',' + j]; }
 function pushOut(o, rad) {
   Object.keys(BD).forEach(id => { if (!bldMeshes[id] || (moving && moving.id === id)) return; const D = BD[id], dx = o.x - D.x, dz = o.z - D.z, d = Math.hypot(dx, dz), m = D.r + rad; if (d < m && d > 0) { o.x = D.x + dx / d * m; o.z = D.z + dz / d * m; } });
   const near = n => { if (n.down) return; const dx = o.x - n.x, dz = o.z - n.z, d = Math.hypot(dx, dz), m = n.r + rad; if (d < m && d > 0) { o.x = n.x + dx / d * m; o.z = n.z + dz / d * m; } };
@@ -558,6 +563,18 @@ function hitZombie(z, dmg, by) {
 
 // ------------------------------------------------------------ quests (Sarge's missions)
 const nearestPadKey = pre => { let best = null, bd = 1e9; Object.keys(pads).forEach(k => { if (k.indexOf(pre) !== 0) return; const d = d2(player, pads[k]); if (d < bd) { bd = d; best = pads[k]; } }); return best; };
+// a tree, rock or find broken by you or one of your heroes: the haul is yours (quiet = a hero did it: no big toast)
+function collectNode(node, now, quiet) {
+  if (node.find) {
+    if (!quiet) return harvestFind(node, now);
+    node.down = true; node.at = now + node.re; node.mesh.visible = false;
+    if (FIND[node.kind].keep) { st.findAt = st.findAt || {}; st.findAt[node.id] = node.at; }
+    Object.keys(node.res).forEach((r, i) => { const n = node.res[r]; st.res[r] = (st.res[r] || 0) + n; st.stats[r] = (st.stats[r] || 0) + n; setTimeout(() => fly(RES[r], node, player), i * 120); });
+    if (node.res.gems) toast(FIND[node.kind].n + ': +' + costTxt(node.res)); return;
+  }
+  node.down = true; node.at = now + (node.kind === 'tree' ? 45000 : 90000); node.top.visible = false; if (node.kind === 'tree') node.trunk.scale.y = .3; else node.mesh.visible = false;
+  const r = node.kind === 'tree' ? 'wood' : 'metal', n = node.kind === 'tree' ? 3 : 2; st.res[r] += n; st.stats[r] += n; for (let k = 0; k < n; k++) setTimeout(() => fly(RES[r], node, player), k * 90);
+}
 const nearestNode = arr => { let best = null, bd = 1e9; arr.forEach(n => { if (n.down || n.dead) return; const d = d2(player, n); if (d < bd) { bd = d; best = n; } }); return best; };
 const bPos = id => ({ x: BD[id].x, z: BD[id].z });
 const padFor = id => nearestPadKey('b:' + id + ':') || bPos(id);
@@ -642,7 +659,7 @@ function buildingPanel(id, info) {
   if (info || !b0.lvl) return show('<h3>' + D0.i + ' ' + D0.n + (b0.lvl ? ' · level ' + b0.lvl : ' · not built yet') + '</h3>' + infoBlock(id) + (b0.lvl ? '<div class="row"><button class="b" data-a="bopen" data-id="' + id + '">Open</button></div>' : '<div class="row muted">' + (D0.need > lvl('pp') ? 'Unlocks with 🔌 Power Plant level ' + D0.need + '.' : 'Stand on its yellow pad to build it.') + '</div>') + moveRow(id));
   if (id === 'hall') return heroPanel(true); if (id === 'workshop') return workshopPanel();
   const D = BD[id], b = st.b[id]; let h = '<h3>' + D.i + ' ' + D.n + ' · level ' + b.lvl + '</h3>' + infoBlock(id);
-  if (id === 'pp') h += '<div class="muted">Every other building can only be upgraded up to the Power Plant’s level.</div>';
+  if (id === 'pp') h += '<div class="muted">Every other building can only be upgraded up to the Power Plant’s level.</div>' + coalRow();
   if (D.out) h += '<div class="muted">Makes ' + RES[D.out] + ' ' + (D.rate * b.lvl * efficiency() * 60).toFixed(1) + '/min into its pile (holds ' + 40 * b.lvl + '). Walk up to it to collect. Workers: ' + survivors() + ' survivors for ' + producers().length * 2 + ' jobs' + (st.res.food <= 0 ? ' · <b style="color:#fca5a5">no food — half speed</b>' : '') + '.</div>';
   if (id.indexOf('house') === 0) h += '<div class="muted">Each house level shelters 2 more survivors to work your buildings.</div>';
   if (b.up) h += '<div class="row"><div class="g">Upgrading to level ' + b.up.to + '<div class="pb"><i style="width:' + Math.min(100, 100 - (b.up.end - NOW()) / b.up.total * 100) + '%"></i></div><div class="muted">' + fmt((b.up.end - NOW()) / 1000) + ' left · ' + Object.keys(b.up.h || {}).length + '/' + MAX_HELPS + ' ally helps</div></div><button class="b alt" data-a="finish" data-id="' + id + '" ' + (st.res.gems >= finishCost(b.up) ? '' : 'disabled') + '>⚡ Finish 💎' + finishCost(b.up) + '</button><button class="b alt" style="margin-left:6px" data-a="mfinish" data-id="' + id + '" ' + (st.res.metal >= metalFinish(b.up) ? '' : 'disabled') + '>⚡ Finish 🔩' + metalFinish(b.up) + '</button></div>';
@@ -657,6 +674,60 @@ function buildingPanel(id, info) {
 const HOME_TREES = [[-11, -11], [11, -11], [-11, 11], [11, 11], [-4.5, -11.3], [-11.3, 4.5], [11.3, 4.5], [-4.5, 11.3]];
 const padOff = id => id === 'pp' ? 3.9 : 3.4;   // each building's build/upgrade pad sits this far in front (+z) of it
 let moving = null;   // { id, ghost, x, z, ok, why }
+// ------------------------------------------------------------ the cave: an entrance in the quarry east of town (area 3,2) leads down
+// into a dark mine (built off the map at CAVE) full of ⚫ coal seams. Walk into the entrance to go in, onto ⬆ Exit to come out.
+// Coal goes into Power Plant upgrades (level 4+) and can be burned at the Power Plant for +50% production.
+const CAVE = { x: 0, z: -230, hw: 16, hd: 11, zone: '3,2' }, CAVE_DOOR = { x: zc(3) + 7, z: zc(2) - 7 };
+const CAVE_EXIT = { x: CAVE.x, z: CAVE.z + CAVE.hd - 1.2 };
+const inCaveAt = (x, z) => Math.abs(x - CAVE.x) <= CAVE.hw && Math.abs(z - CAVE.z) <= CAVE.hd;
+const inCave = () => !!player && inCaveAt(player.x, player.z);
+let caveCd = 0;
+function caveOpen() { return !tour && st.zones[CAVE.zone]; }
+function buildCave() {   // called from loadWorld (home only, once the quarry is unlocked)
+  if (!caveOpen()) return; const objs = zoneObjs.cave = zoneObjs.cave || [];
+  // entrance: a rocky mound with a dark mouth
+  const d = new THREE.Group(); d.position.set(CAVE_DOOR.x, 0, CAVE_DOOR.z);
+  [[0, 1.2, -.6, 2.2], [-1.6, .8, -.3, 1.4], [1.6, .9, -.4, 1.5], [0, 2.4, -.9, 1.3]].forEach(q => { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(q[3], 0), mat(0x78716c)); m.position.set(q[0], q[1], q[2]); m.castShadow = true; d.add(m); });
+  const mouth = new THREE.Mesh(new THREE.CircleGeometry(1.15, 20, 0, Math.PI), new THREE.MeshBasicMaterial({ color: 0x0c0a09 })); mouth.position.set(0, .02, .9); d.add(mouth);
+  const mouth2 = new THREE.Mesh(new THREE.PlaneGeometry(2.3, .1), new THREE.MeshBasicMaterial({ color: 0x0c0a09 })); mouth2.position.set(0, .03, .9); d.add(mouth2);
+  [-1.25, 1.25].forEach(x => { cyl(d, .08, .1, 1.8, 0x854d0e, x, .9, 1); const f = new THREE.Mesh(new THREE.SphereGeometry(.16, 8, 6), new THREE.MeshBasicMaterial({ color: 0xf97316 })); f.position.set(x, 1.9, 1); d.add(f); });
+  const lb = textSprite(5); lb.position.set(0, 4.2, 0); lb.userData.set('🕳️ Coal cave · walk in', '#fde68a'); d.add(lb);
+  scene.add(d); objs.push(d);
+  // inside: floor, rock walls, torches, coal seams
+  const g = new THREE.Group(); g.position.set(CAVE.x, 0, CAVE.z);
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(CAVE.hw * 2 + 6, CAVE.hd * 2 + 6), new THREE.MeshLambertMaterial({ color: 0x6b6158 })); fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; g.add(fl);
+  const R = rng(4242);
+  for (let a = 0; a < 70; a++) {   // boulders all around the edge
+    const t = a / 70, side = Math.floor(t * 4), u = (t * 4) % 1, w = CAVE.hw + 1.6, h = CAVE.hd + 1.6;
+    const px = side === 0 ? -w + u * 2 * w : side === 1 ? w : side === 2 ? w - u * 2 * w : -w, pz = side === 0 ? -h : side === 1 ? -h + u * 2 * h : side === 2 ? h : h - u * 2 * h;
+    if (side === 2 && Math.abs(px) < 2.2) continue;   // leave the exit open
+    const m = new THREE.Mesh(new THREE.DodecahedronGeometry(1.3 + R() * 1.2, 0), mat(R() < .5 ? 0x57534e : 0x44403c)); m.position.set(px + (R() - .5), .9 + R(), pz + (R() - .5)); m.rotation.set(R() * 3, R() * 3, 0); g.add(m);
+  }
+  for (let a = 0; a < 8; a++) { const tx = (a % 4 - 1.5) * 9, tz = a < 4 ? -CAVE.hd + .3 : CAVE.hd - .3; cyl(g, .07, .09, 1.6, 0x78350f, tx, .8, tz); const f = new THREE.Mesh(new THREE.SphereGeometry(.18, 8, 6), new THREE.MeshBasicMaterial({ color: 0xfb923c })); f.position.set(tx, 1.75, tz); g.add(f); }
+  const ex = textSprite(4); ex.position.set(0, 3, CAVE.hd - 1.2); ex.userData.set('⬆ Exit', '#bbf7d0'); g.add(ex);
+  const pad = new THREE.Mesh(new THREE.PlaneGeometry(3, 1.6), new THREE.MeshBasicMaterial({ color: 0x86efac, transparent: true, opacity: .35 })); pad.rotation.x = -Math.PI / 2; pad.position.set(0, .04, CAVE.hd - 1.2); g.add(pad);
+  scene.add(g); objs.push(g);
+  const spots = [[-12, -7], [-6, -8], [1, -7.5], [8, -8], [13, -6], [-13, -1], [-7, 0], [6, -1], [12, 1], [-10, 5], [-3, 4], [10, 6]];
+  spots.forEach((q, i) => makeFind('coal', CAVE.x + q[0], CAVE.z + q[1], 1, 'cave:' + i));
+}
+function caveTick(now) {
+  if (tour || player.dead || now < caveCd) return;
+  if (!inCave() && st.zones[CAVE.zone] && Math.hypot(player.x - CAVE_DOOR.x, player.z - (CAVE_DOOR.z + 1.4)) < 1.4) {
+    caveCd = now + 1500; player.x = CAVE.x; player.z = CAVE.z + CAVE.hd - 3.5; player.ry = Math.PI; sfx(140, .3, .08);
+    toast('🕳️ You climb down into the coal cave. Break the ⚫ coal seams, then head for ⬆ Exit.', 5000);
+  } else if (inCave() && Math.abs(player.x - CAVE_EXIT.x) < 1.5 && Math.abs(player.z - CAVE_EXIT.z) < 1) {
+    caveCd = now + 1500; player.x = CAVE_DOOR.x; player.z = CAVE_DOOR.z + 3; player.ry = 0; sfx(520, .2, .06); toast('☀️ Back out in the quarry');
+  }
+}
+function burnCoal() {
+  const c = 20; if ((st.res.coal || 0) < c) return; const now = NOW(), left = Math.max(0, (st.boostEnd || 0) - now);
+  if (left > 110 * 60000) return toast('🔥 The furnace is already full (up to 2 hours)');
+  st.res.coal -= c; st.boostEnd = now + left + 10 * 60000; sfx(220, .3, .08); toast('🔥 Furnace stoked: +50% production for ' + fmt((st.boostEnd - now) / 1000)); persist(); hud();
+}
+function coalRow() {
+  const left = Math.max(0, (st.boostEnd || 0) - NOW());
+  return '<div class="row"><div class="g"><b>🔥 Burn coal</b><div class="muted">' + RES.coal + '20 = +50% production from every building for 10 minutes (stacks up to 2 hours). ' + (left ? '<b style="color:#fde68a">Burning: ' + fmt(left / 1000) + ' left</b>' : 'Get ' + RES.coal + ' coal in the cave in the quarry east of town.') + '</div></div><button class="b" data-a="burncoal" ' + ((st.res.coal || 0) >= 20 ? '' : 'disabled') + '>🔥 Burn ' + RES.coal + '20</button></div>';
+}
 function moveRow(id) {
   if (tour) return '';
   const moved = st.lay && st.lay[id];
@@ -748,6 +819,7 @@ function doAct(a, d) {
   if (a === 'help') return helpFriend(d.k);
   if (a === 'bopen') return buildingPanel(d.id);
   if (a === 'bmove') return moveStart(d.id);
+  if (a === 'burncoal') { burnCoal(); return buildingPanel('pp'); }
   if (a === 'bhome') return moveHome(d.id);
   persist(); hud();
 }
@@ -1422,6 +1494,7 @@ function loadWorld() {
   Object.keys(fogs).forEach(k => { scene.remove(fogs[k]); delete fogs[k]; });
   Object.keys(bldMeshes).forEach(k => { scene.remove(bldMeshes[k]); delete bldMeshes[k]; }); Object.keys(bldLabels).forEach(k => { scene.remove(bldLabels[k]); delete bldLabels[k]; });
   Object.keys(pads).forEach(k => { scene.remove(pads[k].mesh); delete pads[k]; });
+  buildCave();
   Object.keys(heroes).forEach(k => { scene.remove(heroes[k].mesh); delete heroes[k]; });
   for (let i = 0; i < G; i++) for (let j = 0; j < G; j++) { const k = i + ',' + j; if (st.zones[k]) spawnZoneContents(i, j); else makeFog(i, j); }
   syncBuildings(); syncPads(); syncHeroes(); syncWorkers(); syncGuards(); hud(); checkQuest();
@@ -1464,6 +1537,7 @@ function dayNight() {
   const k = h < 12 ? ramp(5.5, 7.5) : 1 - ramp(18, 20);                     // 0 = night, 1 = day
   const dusk = Math.max(0, 1 - Math.abs(h - (h < 12 ? 6.5 : 19)) / 1.2) * .55;  // orange glow around sunrise / sunset
   _sky.copy(SKY_NIGHT).lerp(SKY_DAY, k).lerp(SKY_DUSK, dusk);
+  if (player && inCave()) _sky.set(0x0c0a09);
   scene.background.copy(_sky); scene.fog.color.copy(_sky);
   hemi.intensity = .45 + 1.15 * k; sun.intensity = .35 + 1.85 * k; sun.color.set(k < .2 ? 0x8ea4e8 : dusk > .2 ? 0xffc28a : 0xfff2d8);
 }
@@ -1518,9 +1592,7 @@ function frameInner() {
           if (dr.hp <= 0) { dr.down = true; dr.at = now + 90000; dr.mesh.visible = false; st.res.food += 5; st.stats.food += 5; fly('🍖', dr, player); } }
         else if (node && d2(player, node) < node.r + 1.3) {
           player.ry = Math.atan2(node.x - player.x, node.z - player.z); node.hp -= 1 + Math.floor((st.weapon - 1) / 2); node.shake = .25; pMesh.userData.swing = 1; player.cd = Math.max(.18, .38 - .03 * (st.weapon - 1)); sfx(node.kind === 'tree' ? 300 : 900, .05, .05);
-          if (node.hp <= 0 && node.find) harvestFind(node, now);
-          else if (node.hp <= 0) { node.down = true; node.at = now + (node.kind === 'tree' ? 45000 : 90000); node.top.visible = node.kind === 'tree' ? false : false; if (node.kind === 'tree') node.trunk.scale.y = .3; else node.mesh.visible = false;
-            const r = node.kind === 'tree' ? 'wood' : 'metal', n = node.kind === 'tree' ? 3 : 2; st.res[r] += n; st.stats[r] += n; for (let k = 0; k < n; k++) setTimeout(() => fly(RES[r], node, player), k * 90); }
+          if (node.hp <= 0) collectNode(node, now);
         }
       }
     }
@@ -1542,8 +1614,16 @@ function frameInner() {
     let tx = fx, tz = fz, sp = 0;
     if (H.heal && h.cd <= 0) { const team = allies().filter(a => a.isPlayer ? st.hp < player.hpMax : a.hp < a.max).sort((a, b) => (a.isPlayer ? st.hp / player.hpMax : a.hp / a.max) - (b.isPlayer ? st.hp / player.hpMax : b.hp / b.max))[0];
       if (team && d2(h, team) < H.range + 2) { const s = heroStat(id, st.heroes[id].lvl).heal; if (team.isPlayer) st.hp = Math.min(player.hpMax, st.hp + s); else team.hp = Math.min(team.max, team.hp + s); tracer(h, team, 0x4ade80); h.cd = H.cd; } }
+    // nothing to fight: help gather. Each hero picks a tree, rock or find near you (one each) and breaks it; the haul is yours
+    if (!foe && !(tour && (tour.arena || tour.raid))) {
+      if (h.job && (h.job.down || d2(h.job, player) > 9)) h.job = null;
+      if (!h.job && h.cd <= 0) { let best = null, bd = 7; trees.concat(rocks, finds).forEach(n => { if (n.down || Object.keys(heroes).some(k => k !== id && heroes[k].job === n) || workers.some(w => w.tgt === n)) return; const d = d2(player, n); if (d < bd) { bd = d; best = n; } }); h.job = best; if (!best) h.cd = 1; }
+      if (h.job) { const n = h.job, d = d2(h, n);
+        if (d > n.r + 1) { tx = n.x; tz = n.z; }
+        else { tx = h.x; tz = h.z; h.mesh.rotation.y = Math.atan2(n.x - h.x, n.z - h.z); if (h.cd <= 0) { n.hp -= 1; n.shake = .25; h.mesh.userData.swing = 1; h.cd = .7; if (n.hp <= 0) { collectNode(n, now, true); h.job = null; } } } }
+    } else h.job = null;
     if (foe) { const d = d2(h, foe); if (d > H.range) { tx = foe.x; tz = foe.z; } else { tx = h.x; tz = h.z; if (h.cd <= 0) { hitZombie(foe, heroStat(id, st.heroes[id].lvl).atk, id); h.cd = H.cd; h.mesh.userData.swing = 1; if (H.range > 2) tracer(h, foe); } h.mesh.rotation.y = Math.atan2(foe.x - h.x, foe.z - h.z); } }
-    const dd = Math.hypot(tx - h.x, tz - h.z); if (dd > .3) { sp = Math.min(7.5, dd * 3); const nx = h.x + (tx - h.x) / dd * sp * dt, nz = h.z + (tz - h.z) / dd * sp * dt; moveTo(h, nx, nz, .4); if (!foe) h.mesh.rotation.y = Math.atan2(tx - h.x, tz - h.z); }
+    const dd = Math.hypot(tx - h.x, tz - h.z); if (dd > .3) { sp = Math.min(7.5, dd * 3); const nx = h.x + (tx - h.x) / dd * sp * dt, nz = h.z + (tz - h.z) / dd * sp * dt; moveTo(h, nx, nz, .4); if (!foe && !(h.job && d2(h, h.job) <= h.job.r + 1)) h.mesh.rotation.y = Math.atan2(tx - h.x, tz - h.z); }
     if (d2(h, player) > 25) { h.x = player.x; h.z = player.z; }
     if (!zombies.some(z => !z.dead && d2(z, h) < 9)) h.hp = Math.min(h.max, h.hp + 5 * dt);
     h.mesh.position.set(h.x, 0, h.z); animHuman(h.mesh, sp, dt); setBar(h.bar, h.hp / h.max); faceCam(h.bar);
@@ -1567,7 +1647,7 @@ function frameInner() {
     const pd = d2(d, player); if (pd < 4 && !player.dead) { d.vx = (d.x - player.x) / pd * 2.2; d.vz = (d.z - player.z) / pd * 2.2; }
     const nx = d.x + d.vx * dt, nz = d.z + d.vz * dt; if (Math.hypot(nx - d.hx, nz - d.hz) < 8 && !blockedAt(nx, nz)) { d.x = nx; d.z = nz; }
     d.mesh.position.set(d.x, 0, d.z); if (d.vx || d.vz) d.mesh.rotation.y = Math.atan2(d.vx, d.vz); if (d.bar.visible) faceCam(d.bar); });
-  updateWorkers(dt, now); updateGuards(dt, now); updateOthers(dt, now); updateNeighbours(dt);
+  caveTick(now); updateWorkers(dt, now); updateGuards(dt, now); updateOthers(dt, now); updateNeighbours(dt);
   trees.concat(rocks, finds).forEach(n => {
     if (n.down && now > n.at && d2(n, player) > 2) { n.down = false; n.hp = n.max; n.top.visible = true; n.mesh.visible = true; if (n.trunk) n.trunk.scale.y = 1; }
     if (n.shake > 0) { n.shake -= dt; n.mesh.rotation.z = Math.sin(n.shake * 60) * .06; } else n.mesh.rotation.z = 0;
@@ -1599,7 +1679,8 @@ function frameInner() {
   camZ += ((overview ? 4.6 : userZoom) - camZ) * Math.min(1, dt * 6);
   const zoom = (innerWidth > innerHeight ? 1.1 : 1.6) * camZ, cx = overview ? 0 : player.x, cz = overview ? 0 : player.z;
   camera.position.set(cx + 13 * zoom, 19 * zoom, cz + 13 * zoom); camera.lookAt(cx, 0, cz);
-  scene.fog.near = 60 * Math.max(1, camZ); scene.fog.far = 120 * Math.max(1, camZ) + 40 * Math.max(0, camZ - 1);
+  if (inCave()) { scene.fog.near = 42; scene.fog.far = 95; }
+  else { scene.fog.near = 60 * Math.max(1, camZ); scene.fog.far = 120 * Math.max(1, camZ) + 40 * Math.max(0, camZ - 1); }
   const big = camZ > 2.2; Object.keys(others).forEach(u => { const o = others[u]; if (!o.pin) { o.pin = iconSprite('🤝', 4); o.pin.position.y = 6; o.mesh.add(o.pin); } o.pin.visible = big; });
   if (!youPin) { youPin = iconSprite('📍', 4); youPin.position.y = 6; pMesh.add(youPin); } youPin.visible = big;
   sun.position.set(player.x + 20, 40, player.z + 10); sun.target.position.set(player.x, 0, player.z);

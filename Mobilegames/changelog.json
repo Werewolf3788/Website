@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 41,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "🕳️ A coal cave! Unlock the ⛰️ quarry east of town and walk into the cave mouth to climb down. Break the ⚫ coal seams inside, then walk onto ⬆ Exit",
+    "⚫ Coal is needed for Power Plant upgrades from level 4, and you can burn it at the Power Plant: 20 coal = +50% production from every building for 10 minutes (stacks up to 2 hours)",
+    "🛡️ Your heroes now help gather: when there's nothing to fight, each one breaks a tree, rock, find or coal seam near you and the haul is yours"
+   ]
+  },
+  {
    "id": 40,
    "date": "Nov 20",
    "game": "survive",
