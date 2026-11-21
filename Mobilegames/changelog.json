@@ -2,6 +2,7 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+<<<<<<< HEAD
    "id": 47,
    "date": "Nov 20",
    "game": "recon",
@@ -32,6 +33,15 @@
    "items": [
     "⚒️ New building: the Coal Mine, out in the quarry next to the coal cave (needs that area unlocked and Power Plant level 4). Its ⚒️ coal miners climb down into the cave, break the ⚫ coal seams and carry the coal up to its pile",
     "The Coal Mine is optional: the Power Plant never waits for it to catch up"
+=======
+   "id": 45,
+   "date": "Nov 20",
+   "game": "calm",
+   "items": [
+    "🌿 New: Calm Space, for rough days. Light a lantern with slow breathing, find the fireflies to ground yourself, stack a cairn to cool off when you're angry, and gentle memory games",
+    "🫙 A reasons jar and your own plan for hard moments, plus one-tap texts to the people you trust and help lines that are always one button away",
+    "🔒 Everything you put in Calm Space stays on your device only, with an optional PIN and a backup file"
+>>>>>>> 9ddc13d (Add Calm Space (private, on-device wellbeing game) and Google tag G-JDNSLD3GFE on game and movie pages)
    ]
   },
   {

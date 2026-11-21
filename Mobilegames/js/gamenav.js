@@ -11,6 +11,7 @@
     { n: 'Tile Match', i: '🀄', d: 'Mahjong-style tile matching: clear the board, no paywall', u: 'Mobilegames/mahjong.html', k: 'mahjong' },
     { n: 'Tile Survival', i: '🏚️', d: '3D survival base: gather, build, clear fog, fight with heroes', u: 'Mobilegames/survive.html', k: 'survive' },
     { n: 'Werewolf Recon', i: '🎯', d: '3D open-world squad shooter: drone, sync shots, skill trees', u: 'Mobilegames/recon.html', k: 'recon' },
+    { n: 'Calm Space', i: '🌿', d: 'Breathe, ground, cool down, reasons jar, your people (private, on your device)', u: 'Mobilegames/calm.html', k: 'calm' },
     { n: 'Battleship', i: '🚢', d: 'Sink the fleet: vs the computer or a friend', u: 'Mobilegames/battleship.html', k: 'battleship' }
   ];
   var HUBS = [{ n: 'All games hub', u: 'Mobilegames/' }, { n: 'Main site', u: '' }];
