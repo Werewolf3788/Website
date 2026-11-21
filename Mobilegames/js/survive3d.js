@@ -33,11 +33,14 @@ const BD = {
   hall:     { n: 'Hero Hall',   i: '🛡️', x: 0,  z: -8, r: 2.3, need: 2, cost: { wood: 80, metal: 30 } },
   house2:   { n: 'House',       i: '🏠', x: -8, z: 8,  r: 2.0, need: 2, cost: { wood: 50, food: 20, metal: 15 } },
   workshop: { n: 'Workshop',    i: '🔨', x: 8,  z: 8,  r: 2.2, need: 3, cost: { wood: 90, metal: 45 } },
-  house3:   { n: 'House',       i: '🏠', x: 0,  z: 8,  r: 2.0, need: 3, cost: { wood: 80, food: 30, metal: 30 } }
+  house3:   { n: 'House',       i: '🏠', x: 0,  z: 8,  r: 2.0, need: 3, cost: { wood: 80, food: 30, metal: 30 } },
+  // out in the quarry (area 3,2) next to the coal cave: coal miners go down and bring ⚫ coal up. Only once that area is unlocked.
+  mine:     { n: 'Coal Mine',   i: '⚒️', x: 22, z: -6, r: 2.2, need: 4, cost: { wood: 120, metal: 60 }, out: 'coal', rate: .04, zone: '3,2' }
 };
 // where each building starts. Players can move them around their town (st.lay = { id: { x, z } }); applyLayout writes
 // the current town's layout into BD so everything that reads BD[id].x / .z (crews, pads, walls, labels) follows along
 const BD0 = {}; Object.keys(BD).forEach(id => { BD0[id] = { x: BD[id].x, z: BD[id].z }; });
+const bAvail = id => !BD[id].zone || !!(st && st.zones && st.zones[BD[id].zone]);   // the Coal Mine needs the quarry unlocked
 function applyLayout(lay) { Object.keys(BD).forEach(id => { const p = lay && lay[id]; BD[id].x = p && isFinite(p.x) ? +p.x : BD0[id].x; BD[id].z = p && isFinite(p.z) ? +p.z : BD0[id].z; }); }
 const HEROES = {
   sarge: { n: 'Sarge', i: '🎖️', role: 'Tank · front line', hp: 150, atk: 9, cd: 1, range: 1.6, shirt: 0x4d6b3a, hat: 0x3f5a2e, cost: {} },
@@ -393,6 +396,12 @@ function bldMesh(id, l) {
   } else if (t === 'hall') {
     box(g, 3.6, 2.3, 2.8, 0x64748b, 0, 1.15, 0); box(g, 3.9, .3, 3.1, 0x334155, 0, 2.45, 0); cyl(g, .06, .06, 2.4, 0xd4d4d8, 1.4, 3.6, -.9); box(g, .9, .55, .04, 0xdc2626, 1.85, 4.4, -.9);
     box(g, 1, 1.3, .05, 0x1e293b, 0, .65, 1.42); box(g, .7, .8, .06, 0x3b82f6, 0, 1.75, 1.43);
+  } else if (t === 'mine') {   // a wooden headframe with a wheel, a shed and a coal cart on rails
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(q => { const leg = cyl(g, .12, .14, 4, 0x78350f, q[0] * .9, 2, q[1] * .9); leg.rotation.z = q[0] * .12; leg.rotation.x = -q[1] * .12; });
+    box(g, 2.2, .2, 2.2, 0x92400e, 0, 4, 0); const wh = new THREE.Mesh(new THREE.TorusGeometry(.7, .1, 6, 16), mat(0x374151)); wh.position.set(0, 4.6, 0); g.add(wh);
+    box(g, 2.6, 1.4, 1.8, 0x57534e, 0, .7, -1.6); roof(g, 2.9, 2.1, .7, 0x44403c, 1.4);
+    box(g, 3.4, .06, .12, 0x6b7280, .6, .05, 1.3); box(g, 3.4, .06, .12, 0x6b7280, .6, .05, 1.9);
+    box(g, 1, .5, .7, 0x52525b, 1, .4, 1.6); [[.6, 1.35], [1.3, 1.85], [.9, 1.6]].forEach(q => { const c = new THREE.Mesh(new THREE.DodecahedronGeometry(.18, 0), mat(0x0a0a0a)); c.position.set(q[0], .75, q[1]); g.add(c); });
   } else if (t === 'workshop') {
     box(g, 3, 1.6, 2.4, 0xa16207, 0, .8, -.2); roof(g, 3.3, 2.8, 1, 0x78350f, 2.1); box(g, .7, .45, .4, 0x27272a, 1.6, .5, 1.3); box(g, .9, .15, .5, 0x3f3f46, 1.6, .8, 1.3);
   }
@@ -417,10 +426,11 @@ function syncBuildings() {
 // ------------------------------------------------------------ pads: stand on them and your resources flow in
 const pads = {};
 // nothing gets left behind: the Power Plant only goes up once every building it has unlocked has caught up to its level
-function behindPP() { const P = lvl('pp'); return Object.keys(BD).filter(id => id !== 'pp' && BD[id].need <= P && ((st.b[id].lvl | 0) < P || st.b[id].up)); }
+function behindPP() { const P = lvl('pp'); return Object.keys(BD).filter(id => id !== 'pp' && !BD[id].zone && BD[id].need <= P && ((st.b[id].lvl | 0) < P || st.b[id].up)); }
 function wantedPads() {
   const w = {};
   Object.keys(BD).forEach(id => { const b = st.b[id], D = BD[id]; if (b.up) return; const l = b.lvl;
+    if (!bAvail(id)) return;
     if (l === 0 && lvl('pp') >= D.need) w['b:' + id + ':1'] = { kind: 'build', id: id, to: 1, x: D.x, z: D.z + (l ? 3.4 : 0) };
     else if (l > 0 && l < cap(id) && !(id === 'pp' && behindPP().length)) w['b:' + id + ':' + (l + 1)] = { kind: 'build', id: id, to: l + 1, x: D.x, z: D.z + (id === 'pp' ? 3.9 : 3.4) }; });
   for (let i = 0; i < G; i++) for (let j = 0; j < G; j++) {
@@ -641,6 +651,7 @@ function workshopPanel() {
 function bInfo(id, L) {
   const D = BD[id];
   if (id === 'pp') { const nu = Object.keys(BD).filter(k => BD[k].need === L && k !== 'pp').map(k => BD[k].i + ' ' + BD[k].n); return 'Other buildings can be upgraded up to level ' + L + '.' + (nu.length && L > 1 ? ' New buildings: ' + nu.join(', ') + '.' : '') + ' It only levels up once every building has caught up to it.'; }
+  if (id === 'mine') return 'Coal miners go down into the cave and bring up about ' + RES.coal + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '. Collect it like the other piles. Upgrading it is optional: the Power Plant never waits for it.';
   if (D.out) return 'Makes about ' + RES[D.out] + ' ' + (D.rate * L * 60).toFixed(1) + '/min with a full crew, into a pile that holds ' + 40 * L + '. 3% of what it makes helps build your other buildings (5% to the Power Plant once they\u2019re all caught up), and a full pile\u2019s extra goes there too.' + (ROLES[id] ? ' ' + crewSize(L) + ' ' + ROLES[id].name.replace(/^\S+ /, '').toLowerCase() + 's (' + AWAY_CREW + ' keep working while you\u2019re away)' + (id === 'lumber' ? ' chop trees and giant oaks' : id === 'smelter' ? ' break rocks, iron veins, wrecked cars and 💎 crystals' : ' hunt deer and pick berry bushes, mushrooms and beehives') + ' and bring the haul here.' : '');
   if (id.indexOf('house') === 0) return 'Shelters ' + 2 * L + ' survivors to work your buildings.';
   if (id === 'hall') return 'Heroes can be trained up to level ' + 5 * L + '. ' + Math.min(4, L) + ' infected hunter' + (Math.min(4, L) > 1 ? 's' : '') + ' (❤️' + (60 + 25 * L) + ', ' + (6 + 3 * L) + ' damage) hunt down the infected for you.';
@@ -729,7 +740,7 @@ function coalRow() {
   return '<div class="row"><div class="g"><b>🔥 Burn coal</b><div class="muted">' + RES.coal + '20 = +50% production from every building for 10 minutes (stacks up to 2 hours). ' + (left ? '<b style="color:#fde68a">Burning: ' + fmt(left / 1000) + ' left</b>' : 'Get ' + RES.coal + ' coal in the cave in the quarry east of town.') + '</div></div><button class="b" data-a="burncoal" ' + ((st.res.coal || 0) >= 20 ? '' : 'disabled') + '>🔥 Burn ' + RES.coal + '20</button></div>';
 }
 function moveRow(id) {
-  if (tour) return '';
+  if (tour || BD[id].zone) return '';
   const moved = st.lay && st.lay[id];
   return '<div class="row"><div class="g"><b>📐 Layout</b><div class="muted">Move this building anywhere in your home area. Crews, pads and everything else follow it.</div></div><button class="b alt" data-a="bmove" data-id="' + id + '">📐 Move</button>' + (moved ? '<button class="b alt" style="margin-left:6px" data-a="bhome" data-id="' + id + '">↩️ Original spot</button>' : '') + '</div>';
 }
@@ -1248,7 +1259,7 @@ function syncNeighbours() {
     const pad = new THREE.Mesh(new THREE.CircleGeometry(15, 32), new THREE.MeshLambertMaterial({ color: 0x8fbf63 })); pad.rotation.x = -Math.PI / 2; pad.position.y = .03; g.add(pad); pick.push(pad);
     const ringP = new THREE.Mesh(new THREE.RingGeometry(3.4, 5.2, 40), new THREE.MeshLambertMaterial({ color: 0xcbb68a })); ringP.rotation.x = -Math.PI / 2; ringP.position.y = .05; g.add(ringP);
     const b = (f.pub.w || {}).b || {}, lay = (f.pub.w || {}).lay || {};
-    Object.keys(BD).forEach(id => { const l = ((b[id] || {}).lvl) | 0; if (l < 1) return; const m = bldMesh(id, l), at = lay[id] && isFinite(lay[id].x) ? lay[id] : BD0[id]; m.position.set(+at.x, 0, +at.z); g.add(m); pick.push(m); });
+    Object.keys(BD).forEach(id => { const l = ((b[id] || {}).lvl) | 0; if (l < 1 || BD[id].zone) return; const m = bldMesh(id, l), at = lay[id] && isFinite(lay[id].x) ? lay[id] : BD0[id]; m.position.set(+at.x, 0, +at.z); g.add(m); pick.push(m); });
     const sign = textSprite(16); sign.material.fog = false; sign.position.set(0, 10, 0); g.add(sign); sign.userData.set('🤝 ' + f.name + ' · Power Plant Lv' + (f.pub.pp || 1) + ' · tap to visit', '#a5f3fc');
     scene.add(g);
     // a dirt road from your map's edge to their town
@@ -1369,7 +1380,9 @@ function hud() {
 const ROLES = {
   lumber:  { name: '🌳 Lumberjack', shirt: 0xb45309, hat: 0xfacc15, tool: 'axe', list: () => trees.concat(crewFinds('lumber')), work: 2.4, load: 3, res: 'wood' },
   smelter: { name: '⛏️ Miner',      shirt: 0x475569, hat: 0xf97316, tool: 'axe', list: () => rocks.concat(crewFinds('smelter')), work: 3.2, load: 2, res: 'metal' },
-  farm:    { name: '🏹 Hunter',     shirt: 0x166534, hat: 0x78350f, tool: 'gun', list: () => deer.concat(crewFinds('farm')),  work: 1.6, load: 5, res: 'food' }
+  farm:    { name: '🏹 Hunter',     shirt: 0x166534, hat: 0x78350f, tool: 'gun', list: () => deer.concat(crewFinds('farm')),  work: 1.6, load: 5, res: 'food' },
+  // coal miners climb down the cave mouth, break a ⚫ coal seam inside (you can see it go down in the cave) and carry the coal up
+  mine:    { name: '⚒️ Coal miner', shirt: 0x27272a, hat: 0xfacc15, tool: 'axe', list: () => finds.filter(f => f.kind === 'coal'), work: 5, load: 3, res: 'coal', cave: 1 }
 };
 // the crews also work the special finds out in your areas, and bring back the whole haul (crystals' 💎 and a wreck's wood too).
 // pri: how much further a crew will walk for it (a crystal 3x as far as a plain rock)
@@ -1405,9 +1418,12 @@ function updateWorkers(dt, now) {
       if (best) { w.tgt = best; w.state = 'walk'; }   // nothing left standing: wait for things to grow back / come back
     } else if (w.state === 'walk') {
       if (!w.tgt || w.tgt.down) { w.state = 'seek'; w.tgt = null; }
+      else if (R.cave) { if (walk(CAVE_DOOR.x, CAVE_DOOR.z + 1.6, .8)) { w.state = 'work'; w.t = R.work; w.mesh.visible = false; } }   // into the cave
       else if (walk(w.tgt.x, w.tgt.z, w.role === 'farm' && !w.tgt.find ? 1.6 : (w.tgt.r || .5) + .5)) { w.state = 'work'; w.t = R.work * (w.tgt.find ? Math.max(1, w.tgt.max / 5) : 1); }
     } else if (w.state === 'work') {
-      const o = w.tgt; if (!o || o.down) { w.state = 'seek'; w.tgt = null; return; }
+      const o = w.tgt;
+      if (R.cave) { w.t -= dt; if (w.t <= 0) { if (o && !o.down) knockDown(o, now); w.tgt = null; w.mesh.visible = true; w.state = 'carry'; w.load = R.load; w.haul = null; } w.mesh.position.set(w.x, 0, w.z); return; }   // down in the cave, out of sight
+      if (!o || o.down) { w.state = 'seek'; w.tgt = null; return; }
       if (w.role === 'farm' && !o.find && Math.hypot(o.x - w.x, o.z - w.z) > 2.2) { w.state = 'walk'; return; }   // the deer ran: chase it
       w.mesh.rotation.y = Math.atan2(o.x - w.x, o.z - w.z); w.t -= dt; if (Math.floor(w.t * 2.5) !== Math.floor((w.t + dt) * 2.5)) { w.mesh.userData.swing = 1; o.shake = .25; }
       if (w.t <= 0) { knockDown(o, now); w.tgt = null; w.state = 'carry'; w.load = R.load; w.haul = o.find ? Object.assign({}, o.res) : null; }
@@ -1421,7 +1437,7 @@ function updateWorkers(dt, now) {
     }
     w.mesh.position.set(w.x, 0, w.z); animHuman(w.mesh, sp, dt);
     const carrying = w.state === 'carry';
-    if (w.mesh.userData.logs !== carrying) { w.mesh.userData.logs = carrying; if (carrying) { const col = R.res === 'wood' ? 0xa0703f : R.res === 'metal' ? 0x9ca3af : 0xb45309, lg = R.res === 'wood' ? cyl(w.mesh, .12, .12, .8, col, 0, 1.3, -.3, 6) : box(w.mesh, .45, .35, .35, col, 0, 1.3, -.3); if (R.res === 'wood') lg.rotation.z = Math.PI / 2; w.mesh.userData.logMesh = lg; } else if (w.mesh.userData.logMesh) { w.mesh.remove(w.mesh.userData.logMesh); w.mesh.userData.logMesh = null; } }
+    if (w.mesh.userData.logs !== carrying) { w.mesh.userData.logs = carrying; if (carrying) { const col = R.res === 'wood' ? 0xa0703f : R.res === 'metal' ? 0x9ca3af : R.res === 'coal' ? 0x111111 : 0xb45309, lg = R.res === 'wood' ? cyl(w.mesh, .12, .12, .8, col, 0, 1.3, -.3, 6) : box(w.mesh, .45, .35, .35, col, 0, 1.3, -.3); if (R.res === 'wood') lg.rotation.z = Math.PI / 2; w.mesh.userData.logMesh = lg; } else if (w.mesh.userData.logMesh) { w.mesh.remove(w.mesh.userData.logMesh); w.mesh.userData.logMesh = null; } }
   });
 }
 // ------------------------------------------------------------ who else is here: everyone standing in the same settlement sees each other walk around
