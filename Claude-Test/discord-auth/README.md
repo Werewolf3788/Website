@@ -33,7 +33,7 @@ Setup, once:
 Only channels the bot can read are shown, so hide a channel from the bot's role to keep it off the site. Posts from the site appear under the person's Discord name and avatar (via a "Pack Hub" webhook) and can never ping @everyone, roles or users.
 
 ## PayPal shop (paypal.js)
-Real-money packs for the mobile games (first: Tile Survival "Survivor Supply Crate", $9.99 = 2,000 wood/food/metal).
+Real-money packs for the mobile games (Tile Survival: Starter $1.99, Supply Crate $4.99, Builder's Vault $9.99, Gem Pouch $2.99, Coal Cart $1.99, Overdrive $8). Allies (on the owner's friends list) pay at most ALLY_CAP ($5). POST /pay/me returns the player's own prices.
 Keys come from the Key Vault (Keys sheet → Firebase user_secrets/{DISCORD_APP_OWNER_KEY}): `paypal_client_id`, `paypal_secret`,
 `paypal_mode` (`live` or `sandbox`). Get them at developer.paypal.com → Apps & Credentials (Live tab, or Sandbox to test).
 Routes: GET /pay/config, POST /pay/create, POST /pay/capture. The server captures the order with PayPal and checks
