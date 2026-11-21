@@ -666,17 +666,33 @@ function goDown() {     // down, not out: a squadmate runs over to revive you be
   if (P.mode === 'down' || P.mode === 'dead') return;
   if (P.mode === 'vehicle') exitVehicle(true); if (P.mode === 'drone') toggleDrone(true);
   P.bino = false; P.reloadT = 0; P.mode = 'down'; P.hp = 0; P.downT = now(); P.bleed = 30 * (1 + eff('bleed_out_time')); P.revT = 0;
-  big('YOU ARE DOWN', 2200); say(squad.some(b => !b.down) ? 'Hang on: your squad is coming to revive you · E / hold □ to give up' : 'Your whole squad is down · E / hold □ to respawn at the rally point', 5000);
+  big('YOU ARE DOWN', 2200); say(!S.squadOff && squad.some(b => !b.down) ? 'Hang on: your squad is coming to revive you · E / hold □ to skip the wait' : 'Your whole squad is down · E / hold □ to skip the wait', 5000);
 }
 function die() {
   if (P.mode === 'vehicle') exitVehicle(true); if (P.mode === 'drone') toggleDrone(true);
-  P.mode = 'dead'; P.deadT = now(); P.hp = 0; big('You bled out', 3000); say('Respawning at the rally point ⛺');
+  P.mode = 'dead'; P.deadT = now(); P.hp = 0; $('center').textContent = '';
+  setTimeout(deathScreen, 700);
 }
-function respawn() {
-  P.mode = 'foot'; P.pos.set(rally.x, hAt(rally.x, rally.z), rally.z); P.hp = maxHP(); P.stance = 0; P.bino = false;
-  refill(rank('ammo_retention') > 0 || true);
-  enemies.forEach(e => { if (!e.dead) { e.alert = false; e.det = 0; e.ind.visible = false; } });
-  camps.forEach(c => { c.alerted = false; });
+function deathScreen() {     // the countdown ran out: get revived where you fell, or reset at the rally point
+  if (P.mode !== 'dead') return; show('ov');
+  $('ovBox').innerHTML = '<h2>💀 You bled out</h2><div class="muted">Your squad couldn\u2019t reach you in time. Get back in the fight where you fell, or reset at the rally point ⛺ (camps calm down, full ammo).</div>'
+    + '<div style="margin-top:10px"><button id="dRev">⛑️ Revive here</button><button class="alt" id="dReset">⟲ Reset at rally point</button></div>';
+  $('dRev').onclick = () => { respawn(true); closeMenus(); resume(); };
+  $('dReset').onclick = () => { respawn(false); closeMenus(); resume(); };
+}
+function respawn(here) {
+  P.mode = 'foot'; P.stance = 0; P.bino = false; P.revT = 0; P.hurtT = now();
+  if (here) {     // back up where you fell, a little hurt; the squad regroups on you and the enemy pauses a moment
+    P.hp = maxHP() * .5; P.pos.y = groundAt(P.pos.x, P.pos.z, P.pos.y + .5);
+    enemies.forEach(e => { if (!e.dead) e.shotT = Math.max(e.shotT, rnd(2.5, 4)); });
+    say('⛑️ Back on your feet: find cover!');
+  } else {
+    P.pos.set(rally.x, hAt(rally.x, rally.z), rally.z); P.hp = maxHP();
+    refill(rank('ammo_retention') > 0 || true);
+    enemies.forEach(e => { if (!e.dead) { e.alert = false; e.det = 0; e.ind.visible = false; } });
+    camps.forEach(c => { c.alerted = false; });
+    say('⛺ Reset at the rally point');
+  }
   squad.forEach((b, i) => { b.pos.set(P.pos.x + b.off[0], 0, P.pos.z + b.off[1]); b.down = false; b.hp = botMaxHP(); b.revT = 0; });
 }
 
@@ -698,6 +714,7 @@ function spotMarking(dt, origin, dir, maxD, state, speed) {
   else state.markT = 0;
 }
 function syncShot() {
+  if (S.squadOff) { say('Sync shot needs your AI squad: turn it on in the pause menu'); return; }
   const max = 3 + (rank('extra_sync_shot') ? effNum('extra_sync_shot') : 0);
   const list = enemies.filter(e => e.marked && !e.dead && e.pos.distanceTo(P.pos) < 180).sort((a, b) => a.pos.distanceTo(P.pos) - b.pos.distanceTo(P.pos)).slice(0, max);
   if (!list.length) { say('Mark targets first (R1 tap / middle mouse / drone / binoculars)'); return; }
@@ -769,7 +786,7 @@ function update(dt, pad) {
   const wantAim = mouseR || TI.held.aim || (pad && pad.aiming);
   const wantFire = mouseL || TI.held.fire || (pad && pad.fire);
 
-  if (P.mode === 'dead') { if (T - P.deadT > 3.5) respawn(); }
+  if (P.mode === 'dead') { /* waiting on the revive / reset choice */ }
   else if (P.mode === 'down') {
     P.bleed -= dt; $('center').textContent = '⛑️ DOWN · ' + Math.max(0, Math.ceil(P.bleed)) + 's' + (P.revT > 0 ? ' · reviving ' + Math.round(P.revT / reviveTime() * 100) + '%' : '');
     if (P.bleed <= 0) { $('center').textContent = ''; die(); }
@@ -912,7 +929,7 @@ function enemiesTick(dt) {
       if (e.shotT <= 0) {     // shoot at whoever they can see: you (most likely) or one of your squad
         const ee2 = eye(e.pos, 1.45), opts = [];
         if (sees && dist < 85) opts.push({ t: 'P', d: dist * .75 });
-        squad.forEach(b => { if (b.down || P.mode === 'vehicle') return; const d = b.pos.distanceTo(e.pos); if (d < 70 && los(ee2, eye(b.pos, 1.3))) opts.push({ t: b, d }); });
+        squad.forEach(b => { if (b.down || P.mode === 'vehicle' || S.squadOff) return; const d = b.pos.distanceTo(e.pos); if (d < 70 && los(ee2, eye(b.pos, 1.3))) opts.push({ t: b, d }); });
         if (opts.length) { opts.sort((a, b) => a.d - b.d); const o = opts[0]; e.shotT = rnd(.8, 1.6); e.yaw = Math.atan2(-((o.t === 'P' ? P.pos : o.t.pos).x - e.pos.x), -((o.t === 'P' ? P.pos : o.t.pos).z - e.pos.z)); enemyShoot(e, o.t === 'P' ? dist : o.d, o.t); }
         else e.shotT = .3;
       }
@@ -951,7 +968,8 @@ function enemyShoot(e, dist, tgt) {
 }
 let squadHelp = -99, squadCalled = false;
 function squadTick(dt) {
-  if (P.mode === 'vehicle') return;
+  squad.forEach(b => { b.m.visible = !S.squadOff && P.mode !== 'vehicle'; });
+  if (P.mode === 'vehicle' || S.squadOff) return;
   const fwd = new V3(-Math.sin(P.yaw), 0, -Math.cos(P.yaw)), right = new V3(Math.cos(P.yaw), 0, -Math.sin(P.yaw)), T = now();
   const fight = enemies.some(e => !e.dead && e.alert && e.pos.distanceTo(P.pos) < 140);
   if (fight && !squadCalled) { squadCalled = true; const b = squad.find(x => !x.down); if (b) say(b.name + ': "Contact! Engaging!"'); } else if (!fight) squadCalled = false;
@@ -998,7 +1016,7 @@ function squadTick(dt) {
     }
     b.m.position.copy(b.pos); b.m.rotation.y = b.face; animLegs(b.m, b.phase, b.moving ? .6 : 0); b.moving = false;
   });
-  if (P.mode === 'down' && !up.length && !P.toldAlone) { P.toldAlone = true; say('Your whole squad is down · E / hold □ to respawn at the rally point', 5000); }
+  if (P.mode === 'down' && !up.length && !P.toldAlone) { P.toldAlone = true; say('Your whole squad is down · E / hold □ to skip the wait', 5000); }
   if (P.mode !== 'down') P.toldAlone = false;
 }
 let squadOpenFire = false;
@@ -1010,7 +1028,7 @@ function publish() { if (WW && WW.user && WW.publishPlaying) WW.publishPlaying({
 // ------------------------------------------------------------------ HUD drawing
 function hudNow() {
   $('lvl').textContent = S.level; $('xpbar').firstChild.style.width = Math.round(S.xp / xpNeed() * 100) + '%';
-  $('res').innerHTML = '⬆️ <b>' + S.sp + '</b> SP · ' + RES.map(r => r[1] + ' ' + (S.res[r[0]] | 0)).join(' · ') + '<br>🎖️ ' + squad.map(b => (b.down ? '⛑️' : b.hp < botMaxHP() * .5 ? '🟠' : '🟢') + b.name).join(' ') + (countMarked() ? '<br>🔺 ' + countMarked() + ' marked' + (syncCool > 0 ? ' · sync ' + Math.ceil(syncCool) + 's' : ' · sync ready') : '');
+  $('res').innerHTML = '⬆️ <b>' + S.sp + '</b> SP · ' + RES.map(r => r[1] + ' ' + (S.res[r[0]] | 0)).join(' · ') + (S.squadOff ? '' : '<br>🎖️ ' + squad.map(b => (b.down ? '⛑️' : b.hp < botMaxHP() * .5 ? '🟠' : '🟢') + b.name).join(' ')) + (countMarked() ? '<br>🔺 ' + countMarked() + ' marked' + (syncCool > 0 ? ' · sync ' + Math.ceil(syncCool) + 's' : ' · sync ready') : '');
   const n = curGun();
   if (P.mode === 'vehicle') $('wep').innerHTML = '🚙 <b>' + Math.round(Math.abs(P.veh.spd) * 3.6) + '</b> km/h';
   else if (P.mode === 'drone') $('wep').innerHTML = '🛸 Drone' + (droneZoom > 1 ? ' · ' + droneZoom + 'x' : '') + '<br><b>' + (D.bat === Infinity ? '∞' : Math.ceil(D.bat) + 's') + '</b>';
@@ -1035,7 +1053,7 @@ function drawMini() {
   pickups.forEach(p => { if (!p.mesh.visible) return; g.fillStyle = '#' + p.color.toString(16).padStart(6, '0'); g.beginPath(); g.arc(p.x, p.z, 2.2, 0, 7); g.fill(); });
   vehicles.forEach(v => { g.fillStyle = '#cbd5e1'; g.fillRect(v.pos.x - 1.5, v.pos.z - 1.5, 3, 3); });
   enemies.forEach(e => { if (e.dead || !(e.marked || e.alert)) return; g.fillStyle = e.alert ? '#ef4444' : '#fca5a5'; g.beginPath(); g.arc(e.pos.x, e.pos.z, 2, 0, 7); g.fill(); });
-  squad.forEach(b => { g.fillStyle = '#86efac'; g.beginPath(); g.arc(b.pos.x, b.pos.z, 1.6, 0, 7); g.fill(); });
+  if (!S.squadOff) squad.forEach(b => { g.fillStyle = '#86efac'; g.beginPath(); g.arc(b.pos.x, b.pos.z, 1.6, 0, 7); g.fill(); });
   g.restore();
   g.fillStyle = '#fff'; g.beginPath(); g.moveTo(W / 2, W / 2 - 10); g.lineTo(W / 2 + 7, W / 2 + 8); g.lineTo(W / 2 - 7, W / 2 + 8); g.closePath(); g.fill();
 }
@@ -1059,7 +1077,7 @@ function drawTac() {
   enemies.forEach(e => { if (e.dead || !e.marked) return; g.fillStyle = '#ef4444'; g.beginPath(); g.arc(W2T(e.pos.x), W2T(e.pos.z), 6, 0, 7); g.fill(); });
   // your squad (green, ⛑️ when down) and you (a big arrow in your colour with a pulsing ring and a YOU tag)
   g.font = '700 17px system-ui';
-  squad.forEach(b => { const x = W2T(b.pos.x), z = W2T(b.pos.z); g.fillStyle = b.down ? '#f87171' : '#4ade80'; g.strokeStyle = '#000'; g.lineWidth = 3; g.beginPath(); g.arc(x, z, 9, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#fff'; g.strokeText((b.down ? '⛑️ ' : '') + b.name, x, z - 18); g.fillText((b.down ? '⛑️ ' : '') + b.name, x, z - 18); });
+  if (!S.squadOff) squad.forEach(b => { const x = W2T(b.pos.x), z = W2T(b.pos.z); g.fillStyle = b.down ? '#f87171' : '#4ade80'; g.strokeStyle = '#000'; g.lineWidth = 3; g.beginPath(); g.arc(x, z, 9, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#fff'; g.strokeText((b.down ? '⛑️ ' : '') + b.name, x, z - 18); g.fillText((b.down ? '⛑️ ' : '') + b.name, x, z - 18); });
   const px = W2T(P.pos.x), pz = W2T(P.pos.z), pulse = (performance.now() / 900) % 1, mc = (WW.myColor && WW.myColor('#fde047')) || '#fde047';
   g.strokeStyle = 'rgba(253,224,71,' + (1 - pulse) + ')'; g.lineWidth = 4; g.beginPath(); g.arc(px, pz, 22 + pulse * 30, 0, 7); g.stroke();
   g.save(); g.translate(px, pz); g.rotate(-P.yaw); g.fillStyle = mc; g.strokeStyle = '#fff'; g.lineWidth = 4; g.beginPath(); g.moveTo(0, -26); g.lineTo(17, 16); g.lineTo(0, 8); g.lineTo(-17, 16); g.closePath(); g.stroke(); g.fill(); g.restore();
@@ -1069,7 +1087,7 @@ function drawTac() {
 }
 
 // ------------------------------------------------------------------ menus
-function closeMenus() { document.querySelectorAll('.ov').forEach(o => { if (o.id !== 'ov' || started) o.classList.remove('show'); }); padSel = 0; }
+function closeMenus() { document.querySelectorAll('.ov').forEach(o => { if (o.id !== 'ov' || (started && P.mode !== 'dead')) o.classList.remove('show'); }); padSel = 0; }   // the death screen stays until you pick revive or reset
 function show(id) { closeMenus(); $(id).classList.add('show'); if (document.exitPointerLock && locked) document.exitPointerLock(); K.clear(); mouseL = mouseR = false; padSel = 0; }
 document.querySelectorAll('[data-close]').forEach(b => b.onclick = closeMenus);
 $('mapBtn').onclick = () => openTac(); $('skBtn').onclick = () => openSkills();
@@ -1123,8 +1141,8 @@ function openWheel() {
 function pause() {
   if (!started) return; show('ov');
   $('ovBox').innerHTML = '<h2>⏸️ Paused</h2><div class="muted">' + PROVINCE + ' · Level ' + S.level + ' · ' + campCount() + ' camps cleared</div>'
-    + '<div style="margin-top:8px"><button id="pRes">▶ Resume</button><button class="alt" id="pMap">🗺️ Map</button><button class="alt" id="pSk">⬆️ Skills</button><button class="alt" id="pKeys">🎮 Controls</button><button class="alt" id="pLeave">Leave</button></div><div id="pK"></div>';
-  $('pRes').onclick = resume; $('pMap').onclick = openTac; $('pSk').onclick = openSkills; $('pKeys').onclick = () => { $('pK').innerHTML = controlsHtml(); }; $('pLeave').onclick = () => { saveNow(); location.href = 'index.html'; };
+    + '<div style="margin-top:8px"><button id="pRes">▶ Resume</button><button class="alt" id="pMap">🗺️ Map</button><button class="alt" id="pSk">⬆️ Skills</button><button class="alt" id="pSquad">🎖️ AI squad: ' + (S.squadOff ? 'Off' : 'On') + '</button><button class="alt" id="pKeys">🎮 Controls</button><button class="alt" id="pLeave">Leave</button></div><div id="pK"></div>';
+  $('pSquad').onclick = () => { S.squadOff = !S.squadOff; if (!S.squadOff) squad.forEach(b => { b.pos.set(P.pos.x + b.off[0], 0, P.pos.z + b.off[1]); b.down = false; b.hp = botMaxHP(); }); save(true); pause(); }; $('pRes').onclick = resume; $('pMap').onclick = openTac; $('pSk').onclick = openSkills; $('pKeys').onclick = () => { $('pK').innerHTML = controlsHtml(); }; $('pLeave').onclick = () => { saveNow(); location.href = 'index.html'; };
 }
 function resume() { $('ov').classList.remove('show'); if (!isTouch && canvas.requestPointerLock) canvas.requestPointerLock(); ac(); }
 function controlsHtml() {
