@@ -317,6 +317,10 @@ main{padding-bottom:40px}
 .buy a .arr{margin-left:auto;color:var(--dim)}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
 .tag{padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600;color:#d6d6de}
+/* Disney tag with a link (sheet column X): Impact Blue #113CCF, Soft Sky Blue #BFF5FD, white */
+a.tag.tag-disney{display:inline-flex;align-items:center;gap:6px;background:#113CCF;border-color:#BFF5FD;color:#FFFFFF;text-decoration:none;box-shadow:0 0 0 1px rgba(191,245,253,.25),0 0 14px rgba(17,60,207,.55);transition:background .15s,box-shadow .15s}
+a.tag.tag-disney:hover,a.tag.tag-disney:focus-visible{background:#1a4be6;box-shadow:0 0 0 2px #BFF5FD,0 0 18px rgba(17,60,207,.8);outline:none}
+a.tag.tag-disney .arr{color:#BFF5FD;font-size:12px}
 .disclose{font-size:12px;color:var(--dim);margin-top:10px}
 .d-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .d-section .row{padding-left:0;padding-right:0}
@@ -1100,10 +1104,10 @@ function sourceLink(m) {
 function detailHtml(m) {
   const meta = [m.rating ? `<span class="chip-rating">${esc(m.rating)}</span>` : '', m.year, m.runtime, m.edition].filter(Boolean);
   const src = sourceLink(m);
-  const stores = STORES.filter(s => m.links[s.key]).sort((a, b) => (b.key === state.store) - (a.key === state.store));
+  const stores = STORES.filter(s => m.links[s.key] && s.key !== 'disney').sort((a, b) => (b.key === state.store) - (a.key === state.store));
   const buy = stores.map(s => `<a href="${esc(storeUrl(m, s))}" target="_blank" rel="${s.key === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${s.key}" class="${s.key === state.store ? 'hl' : ''}">
       <span class="logo" style="background:${s.color};color:${s.ink}">${esc(s.short)}</span>
-      <span>${esc(s.label)}<small>${s.key === 'amazon' ? 'Affiliate link' : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : s.key === 'disney' ? 'Streaming now' : 'Open in store'}</small></span><span class="arr">↗</span></a>`).join('');
+      <span>${esc(s.label)}<small>${s.key === 'amazon' ? 'Affiliate link' : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store'}</small></span><span class="arr">↗</span></a>`).join('');
   const sameColl = m.collection ? catalog.filter(x => x.collection === m.collection && x.key !== m.key) : [];
   const similar = catalog.filter(x => x.key !== m.key && x.genres.some(g => m.genres.includes(g)) && !sameColl.includes(x)).sort((a, b) => b.genres.filter(g => m.genres.includes(g)).length - a.genres.filter(g => m.genres.includes(g)).length || b.ts - a.ts).slice(0, 20);
   return `<button class="d-close" data-close aria-label="Close">${ICON.close}</button>
@@ -1125,7 +1129,7 @@ function detailHtml(m) {
         <button class="btn btn-ghost" type="button" data-share>${ICON.share}Share</button></div>
     </div></div>
   ${buy ? `<div class="d-section"><h3>Where to watch</h3><div class="buy">${buy}</div>${m.links.amazon ? '<p class="disclose">Amazon links are affiliate links: Werewolf3788 earns from qualifying purchases. Other store links are not affiliate links.</p>' : ''}</div>` : ''}
-  ${m.streamOn.length ? `<div class="d-section"><h3>Also streaming on</h3><div class="tags">${m.streamOn.map(s => `<span class="tag">${esc(s)}</span>`).join('')}</div></div>` : ''}
+  ${m.streamOn.length ? `<div class="d-section"><h3>Also streaming on</h3><div class="tags">${m.streamOn.map(s => m.links.disney && /disney/i.test(s) ? `<a class="tag tag-disney" href="${esc(m.links.disney)}" target="_blank" rel="noopener" data-out="disney" title="Watch on Disney+">${esc(s)}<span class="arr">↗</span></a>` : `<span class="tag">${esc(s)}</span>`).join('')}</div></div>` : ''}
   ${sameColl.length ? `<div class="d-section"><h3>More in ${esc(m.collection)}</h3><div class="row">${sameColl.slice(0, 20).map(card).join('')}</div></div>` : ''}
   ${similar.length ? `<div class="d-section"><h3>More like this</h3><div class="row">${similar.map(card).join('')}</div></div>` : ''}`;
 }
