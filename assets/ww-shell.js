@@ -571,12 +571,15 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
         const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(endpoint));
         return [...new Uint8Array(buf)].slice(0, 16).map(b => b.toString(16).padStart(2, '0')).join('');
     }
+    // who this device belongs to (user key), so game pushes can go to just your friends (e.g. Tile Survival allies)
+    function pushUserKey() { const u = window.WWAuth && window.WWAuth.user; return u && u.email ? String(u.email).trim().toLowerCase().replace(/@/g, '_at_').replace(/\./g, '_') : null; }
+    window.addEventListener('ww-auth', async () => { try { const s = await currentSubscription(); if (s && pushUserKey()) await saveSubscription(s); } catch (e) {} });
     async function saveSubscription(sub) {
         const json = sub.toJSON();
         const id = await subscriptionId(json.endpoint);
         const res = await fetch(`${RTDB}/accounts/push_subscriptions/${id}.json`, {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ endpoint: json.endpoint, keys: json.keys, page: location.pathname, ua: navigator.userAgent.slice(0, 160), created_at: new Date().toISOString() })
+            body: JSON.stringify({ endpoint: json.endpoint, keys: json.keys, user: pushUserKey() || undefined, page: location.pathname, ua: navigator.userAgent.slice(0, 160), created_at: new Date().toISOString() })
         });
         if (!res.ok) throw new Error('save HTTP ' + res.status);
     }

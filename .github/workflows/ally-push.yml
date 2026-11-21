@@ -1,0 +1,33 @@
+name: Ally Push Notifications
+
+# Sends queued game pushes to specific friends (e.g. Tile Survival Power Plant level-ups to that player's allies).
+# Queue: RTDB accounts/push_queue (written by the games). Script: scripts/ally-push.js
+on:
+  schedule:
+    # off the top of the hour (GitHub delays busy minutes); roughly every 10 minutes
+    - cron: '7,17,27,37,47,57 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ally-push
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save web-push@3 google-auth-library@9
+      - name: Send
+        run: node scripts/ally-push.js
+        env:
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}

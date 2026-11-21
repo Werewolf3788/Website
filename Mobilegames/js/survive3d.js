@@ -867,6 +867,54 @@ async function loadAllyList() {
   allyLoading = false; if (sheet.style.display === 'flex' && !visiting && card.innerHTML.indexOf('🤝 Allies') >= 0) alliesPanel();
   setTimeout(() => { allyList = null; }, 60000);   // refresh the list after a minute
 }
+// ------------------------------------------------------------ ally progress (desktop only): a see-through panel on the left that
+// shows each ally's settlement from what they publish (Power Plant level, areas, supplies, upgrades with their timers, team boss).
+// Click its title to fold it away; the choice is remembered on this device. Phones and tablets keep using 🤝 Allies.
+const allyHudOK = () => !!(window.matchMedia && matchMedia('(min-width:1000px) and (hover:hover) and (pointer:fine)').matches);
+let allyHudMin = false; try { allyHudMin = localStorage.getItem('survive_allyhud_min') === '1'; } catch (e) {}
+function allyAgo(t) { const m = Math.max(0, Math.round((NOW() - (t || 0)) / 60000)); return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; }
+function renderAllyHud() {
+  const el = $('allyHud'); if (!el) return;
+  if (!allyHudOK() || !WW || WW.mode !== 'cloud' || !WW.user) { el.classList.remove('has'); return; }
+  if (!allyList) { if (!allyLoading) loadAllyList(); }
+  const list = (allyList || []).filter(f => f.pub && f.code !== code);
+  el.classList.add('has'); el.classList.toggle('min', allyHudMin);
+  let h = '<h4 data-ah="1">🤝 Ally progress <span>' + (allyList ? list.length + ' playing · ' : '') + (allyHudMin ? 'show ▸' : 'hide ▾') + '</span></h4>';
+  if (!allyList) h += '<div class="al dim">Loading your allies…</div>';
+  else if (!list.length) h += '<div class="al dim">No allies playing Tile Survival yet. Friends you add on the games hub show up here once they start.</div>';
+  else list.forEach(f => {
+    const p = f.pub, live = NOW() - (p.at || 0) < 10 * 60000, ups = (p.ups || []).filter(u => u.end > NOW()), r = p.res || {};
+    h += '<div class="al"><span class="on' + (live ? '' : ' off') + '"></span><b>' + WW.esc(f.name) + '</b> <span class="dim">· ' + allyAgo(p.at) + '</span>'
+      + '<div>⚡ Power Plant Lv' + (p.pp || 1) + ' · 🗺️ ' + (p.zones || 0) + ' area' + ((p.zones || 0) === 1 ? '' : 's') + '</div>'
+      + '<div class="dim">' + RES.wood + fmtN(r.wood) + ' · ' + RES.food + fmtN(r.food) + ' · ' + RES.metal + fmtN(r.metal) + '</div>'
+      + (f.tb ? '<div style="color:#86efac">👹 Team boss up: join from 🤝 Allies</div>' : '')
+      + (ups.length ? ups.map(u => '<div class="up">' + (u.i || '⬆') + ' ' + WW.esc(u.n || u.id) + ' → Lv' + u.to + ' <span class="dim">' + fmt((u.end - NOW()) / 1000) + ' · ' + (u.c || 0) + '/' + MAX_HELPS + ' helps</span><div class="pb"><i style="width:' + Math.max(0, Math.min(100, 100 - (u.end - NOW()) / (u.total || 1) * 100)).toFixed(1) + '%"></i></div></div>').join('') : '<div class="dim">No upgrades running</div>')
+      + '</div>';
+  });
+  if (el.innerHTML !== h) el.innerHTML = h;
+}
+function fmtN(v) { v = Math.floor(v || 0); return v >= 10000 ? (v / 1000).toFixed(v >= 100000 ? 0 : 1) + 'k' : String(v); }
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-ah]'); if (!t) return; allyHudMin = !allyHudMin; try { localStorage.setItem('survive_allyhud_min', allyHudMin ? '1' : '0'); } catch (x) {} renderAllyHud(); });
+setInterval(() => { try { renderAllyHud(); } catch (e) {} }, 1000);
+addEventListener('resize', () => { try { renderAllyHud(); } catch (e) {} });
+
+// ------------------------------------------------------------ Power Plant level-up: tell every ally. A note pops up in their game
+// (if they're playing) and a push notification goes to their phone/desktop (if they turned on 🔔 notifications on the site).
+// Pushes are queued at accounts/push_queue and sent by .github/workflows/ally-push.yml. st.ppNote = last level announced.
+function ppWatch() {
+  if (tour || !st || !st.b || !code || !WW || WW.mode !== 'cloud' || !WW.user) return;
+  const L = lvl('pp'); if (st.ppNote == null) { st.ppNote = L; persist(); return; }   // first run: no announcement for levels reached before this existed
+  if (L <= st.ppNote) return;
+  if (!shareAllies) { loadAllyList(); return; }                                      // wait for the ally list, then announce
+  st.ppNote = L; persist();
+  const name = myName(), A = shareAllies.filter(f => f.code !== code);
+  if (!A.length) return;
+  A.forEach(f => { try { WW.roomRef('survive', f.code).child('gifts').push({ from: name, code: code, note: 'pp', lvl: L, at: NOW() }); } catch (e) {} });
+  try { WW.db.ref('accounts/push_queue').push({ from: name, fromCode: code, to: A.map(f => f.code), title: '⚡ ' + name + '’s Power Plant hit level ' + L, body: 'Your Tile Survival ally ' + name + ' just upgraded their Power Plant to level ' + L + '. Drop by and help with their next upgrade!', url: './Mobilegames/survive.html', tag: 'survive-pp-' + code, at: firebase.database.ServerValue.TIMESTAMP }).catch(e => console.warn('push queue', e && (e.code || e.message))); } catch (e) {}
+  toast('⚡ Your allies were told your Power Plant reached level ' + L, 4000);
+}
+setInterval(() => { try { ppWatch(); } catch (e) {} }, 5000);
+
 // ------------------------------------------------------------ raids: attack an ally's settlement. Their heroes and infected hunters
 // defend it on their own (they don't need to be online). Beat every defender and you take 10% of their stockpile; they get
 // a message and a revenge raid. One raid per ally every 8 hours (revenge skips the wait).
@@ -1134,6 +1182,7 @@ function listenGifts() {
 function applyGifts() {
   if (tour || !giftQ.length) return; const pads = wantedPads();
   giftQ.splice(0).forEach(g => {
+    if (g.note === 'pp') { toast('⚡ ' + (g.from || 'An ally') + '’s Power Plant reached level ' + (g.lvl || '?') + '!', 6000); sfx(660, .18, .07); allyList = null; return; }
     if (g.note === 'tboss') { if (NOW() - (g.at || 0) < TB_TIME) { toast(g.lair ? '📣 ' + (g.from || 'An ally') + ' needs help with a Lv' + g.lair + ' lair boss! Open 🤝 Allies and tap Join boss.' : '👹 ' + (g.from || 'An ally') + ' started a team boss fight! Open 🤝 Allies and tap Join boss.', 8000); sfx(440, .2, .07); allyList = null; } return; }
     if (g.raid) { const lost = {}; Object.keys(g.res || {}).forEach(k => { const n = Math.min(st.res[k] || 0, -(+g.res[k] || 0)); if (n > 0) { st.res[k] -= n; lost[k] = n; } });
       if (g.code) { st.raidedBy = st.raidedBy || {}; st.raidedBy[g.code] = NOW(); }
