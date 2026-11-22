@@ -81,8 +81,7 @@
   .ticker{position:absolute;left:0;right:0;height:54px;z-index:30;display:flex;align-items:center;overflow:hidden;
     background:var(--panel-bg);border-top:3px solid var(--accent);border-bottom:3px solid var(--accent);font-weight:800}
   .ticker.top{top:0} .ticker.bottom{bottom:0}
-  .ticker .run{white-space:nowrap;padding-left:100%;animation:tick var(--tspeed) linear infinite}
-  @keyframes tick{to{transform:translateX(-100%)}}
+  .ticker .run{position:absolute;left:0;top:50%;white-space:nowrap;will-change:transform}
 
   /* cam */
   .cam{position:absolute;z-index:15;border:var(--cb) solid var(--accent);box-shadow:var(--shadow)}
@@ -202,7 +201,6 @@
     s.setProperty('--cw', cfg.chat.width + 'px');
     s.setProperty('--csize', (cfg.chat.size / 100) + 'em');
     s.setProperty('--cb', cfg.cam.border + 'px');
-    s.setProperty('--tspeed', Math.max(10, 200 - cfg.ticker.speed * 1.8) + 's');
     stage.classList.toggle('no-anim', !cfg.animate);
     document.getElementById('font-link').href = 'https://fonts.googleapis.com/css2?family=' +
       encodeURIComponent(cfg.font) + ':wght@400;600;700;800;900&display=swap';
@@ -327,12 +325,26 @@
     return q;
   }
 
+  // One sentence crosses the whole bar; the next one enters on the right just as the last one reaches the left edge.
+  // (If the text is wider than the screen, the next copy follows a short gap behind its end.)
   function buildTicker() {
     var t = el('div', 'ticker ' + cfg.ticker.edge);
-    var txt = esc(cfg.ticker.text);
-    t.innerHTML = '<div class="run">' + txt + '&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;' + txt + '</div>';
     stage.appendChild(t);
+    var html = esc(cfg.ticker.text), W = 1920, GAP = 120;
+    var pxPerSec = 40 + cfg.ticker.speed * 3;            // speed slider 1-100 -> about 43-340 px a second
+    function launch() {
+      if (!t.isConnected) return;
+      var r = el('div', 'run', html); t.appendChild(r);
+      var tw = r.offsetWidth || 600;                      // measured each time so a late-loading font is right
+      var anim = r.animate([{ transform: 'translate(' + W + 'px,-50%)' }, { transform: 'translate(' + (-tw) + 'px,-50%)' }],
+        { duration: (W + tw) / pxPerSec * 1000, easing: 'linear' });
+      anim.onfinish = function () { r.remove(); };
+      var spacing = Math.max(W, tw + GAP);               // next copy starts when this one's front reaches the left edge
+      timers.push(setTimeout(launch, spacing / pxPerSec * 1000));
+    }
+    launch();
   }
+
 
   function buildCam() {
     var c = el('div', 'cam ' + cfg.cam.shape);
