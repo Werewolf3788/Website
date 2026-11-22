@@ -1,6 +1,6 @@
 /* ============================================================================
  * Overlay Studio - shared settings, presets and link encoder
- *   Used by overlay-builder.html (the form) and overlay-live.html (what OBS shows)
+ *   Used by /overlay-studio.html (the form) and /overlay/live.html (what OBS shows)
  *
  * The whole overlay design is packed into the link itself (#c=...), so:
  *   - nothing is saved to Firebase (costs nothing, no sign-in needed)

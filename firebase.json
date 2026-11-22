@@ -14,7 +14,7 @@
       "database.rules.json",
       "**/__pycache__/**",
       "Claude-Test/sync/**",
-      "Claude-Test/overlay-saves/**"
+      "overlay/saves/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,

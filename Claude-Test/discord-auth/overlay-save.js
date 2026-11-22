@@ -2,7 +2,7 @@
  * Overlay Studio - save overlays to GitHub (mounted on ww-discord-auth)
  *
  * Saved overlays live in the Website repo as small JSON files:
- *     Claude-Test/overlay-saves/{id}.json   { id, name, channel, c, editHash, created, updated }
+ *     overlay/saves/{id}.json   { id, name, channel, c, editHash, created, updated }
  *   c        = the packed design (same string the #c=... links use)
  *   editHash = sha256 of the private edit key the builder keeps; only that key can overwrite the file
  *
@@ -19,7 +19,7 @@ const zlib = require('zlib');
 
 const REPO = process.env.OVERLAY_REPO || 'Werewolf3788/website';
 const BRANCH = process.env.OVERLAY_BRANCH || 'main';
-const DIR = 'Claude-Test/overlay-saves';
+const DIR = 'overlay/saves';
 const SITE_ORIGINS = ['https://entertainment-71888.web.app', 'https://entertainment-71888.firebaseapp.com', 'https://werewolf3788.github.io'];
 const MAX_CODE = 16000;              // packed design size limit (a normal one is ~300-1500 chars)
 const SAVES_PER_HOUR = 30;           // per visitor IP

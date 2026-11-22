@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+ * Overlay Studio - LIVE overlay  -  /overlay/live#c=...  or  /overlay/live?s={saved id}&scene=...
+ * This is the page users paste into OBS / Streamlabs as a Browser Source (1920x1080).
+ * The design comes from the link (#c=...) made by overlay-studio.html.
+ * Twitch data comes from the username in the design - no keys needed:
+ *   chat + subs/raids/bits  -> Twitch chat (anonymous read-only connection)
+ *   game, title, followers, avatar, uptime -> decapi.me
+ * ?demo=1 fills it with fake chat (used by the builder preview).
+ * ========================================================================== -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overlay</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link id="font-link" rel="stylesheet" href="">
+<script src="overlay-core.js"></script>
+<style>
+  *{box-sizing:border-box}
+  :root{color-scheme:normal}
+  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent!important;background-color:rgba(0,0,0,0)!important}
+  #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
+    font-family:var(--font),Inter,Roboto,sans-serif;color:var(--text);font-size:calc(20px * var(--fs))}
+  .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+  .bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--dim))}
+  .frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:40;pointer-events:none}
+
+  .anc{position:absolute;display:flex;flex-direction:column;gap:14px;z-index:20;max-width:900px}
+  .anc.tl{top:var(--mt);left:var(--m);align-items:flex-start}
+  .anc.tc{top:var(--mt);left:50%;transform:translateX(-50%);align-items:center}
+  .anc.tr{top:var(--mt);right:var(--m);align-items:flex-end}
+  .anc.ml{top:50%;left:var(--m);transform:translateY(-50%);align-items:flex-start}
+  .anc.mc{top:50%;left:50%;transform:translate(-50%,-50%);align-items:center}
+  .anc.mr{top:50%;right:var(--m);transform:translateY(-50%);align-items:flex-end}
+  .anc.bl{bottom:var(--mb);left:var(--m);align-items:flex-start;justify-content:flex-end}
+  .anc.bc{bottom:var(--mb);left:50%;transform:translateX(-50%);align-items:center;justify-content:flex-end}
+  .anc.br{bottom:var(--mb);right:var(--m);align-items:flex-end;justify-content:flex-end}
+
+  .panel{background:var(--panel-bg);border-radius:var(--r);padding:10px 18px;font-weight:700;
+    box-shadow:var(--shadow);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:var(--pborder)}
+  .accent-l{border-left:5px solid var(--accent)}
+  .accent-r{border-right:5px solid var(--accent)}
+  .pill{display:flex;align-items:center;gap:12px}
+  .pill i{color:var(--accent)}
+
+  /* brand */
+  .brand{display:flex;align-items:center;gap:18px}
+  .brand .txt{display:flex;flex-direction:column;gap:4px}
+  .anc.tr .brand,.anc.mr .brand,.anc.br .brand{flex-direction:row-reverse;text-align:right}
+  .brand .name{font-size:1.7em;font-weight:900;text-transform:uppercase;text-shadow:0 0 10px #000,0 0 6px var(--accent)}
+  .brand .tag{font-size:.85em;color:var(--accent2);font-weight:700}
+  .brand img{width:120px;height:120px;object-fit:cover;border:4px solid var(--accent);background:#000;filter:var(--logo-glow)}
+  .brand img.round{border-radius:50%} .brand img.sq{border-radius:var(--r)}
+
+  /* game / title */
+  .game{display:flex;flex-direction:column;gap:2px}
+  .game small{font-size:.7em;color:var(--accent2);text-transform:uppercase;letter-spacing:2px}
+  .game b{font-size:1.4em;font-weight:900;text-transform:uppercase}
+  .title-box{max-width:700px;font-size:.95em}
+
+  /* goal */
+  .goal{width:380px}
+  .goal .row{display:flex;justify-content:space-between;font-size:.8em;margin-bottom:6px}
+  .goal .bar{height:14px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden}
+  .goal .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1s}
+
+  /* socials */
+  .socials{display:flex;gap:10px;flex-wrap:wrap}
+  .soc{display:flex;align-items:center;gap:10px;font-size:.9em}
+  .soc i{font-size:1.2em;color:var(--accent)}
+  .soc.rot{animation:socIn .6s ease}
+  @keyframes socIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  /* qr */
+  .qr{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px}
+  .qr img{width:110px;height:110px;background:#fff;padding:5px;border-radius:6px}
+  .qr span{font-size:.7em}
+
+  /* ticker */
+  .ticker{position:absolute;left:0;right:0;height:54px;z-index:30;display:flex;align-items:center;overflow:hidden;
+    background:var(--panel-bg);border-top:3px solid var(--accent);border-bottom:3px solid var(--accent);font-weight:800}
+  .ticker.top{top:0} .ticker.bottom{bottom:0}
+  .ticker .run{white-space:nowrap;padding-left:100%;animation:tick var(--tspeed) linear infinite}
+  @keyframes tick{to{transform:translateX(-100%)}}
+
+  /* cam */
+  .cam{position:absolute;z-index:15;border:var(--cb) solid var(--accent);box-shadow:var(--shadow)}
+  .cam.rounded{border-radius:calc(var(--r) * 1.5)} .cam.circle{border-radius:50%} .cam.square{border-radius:0}
+  .cam .lbl{position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);white-space:nowrap;padding:4px 16px;
+    background:var(--accent);color:#fff;font-weight:900;border-radius:99px;font-size:.8em;text-transform:uppercase}
+
+  /* chat */
+  .chat{display:flex;flex-direction:column;gap:6px;width:var(--cw);font-size:var(--csize)}
+  .anc.tl .chat,.anc.tc .chat,.anc.tr .chat{flex-direction:column}
+  .msg{animation:msgIn .35s ease;transition:opacity .6s, transform .6s}
+  .msg.out{opacity:0;transform:translateX(-20px)}
+  @keyframes msgIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+  .msg .u{font-weight:900;margin-right:6px}
+  .msg .t{font-weight:600;word-wrap:break-word;overflow-wrap:anywhere}
+  .msg img.em{height:1.6em;vertical-align:middle;margin:-4px 1px}
+  .msg .bd{font-size:.75em;margin-right:5px;color:var(--accent2)}
+  .msg.action .t{font-style:italic}
+  .chat.classic .msg{background:var(--panel-bg);border-left:4px solid var(--accent);padding:7px 12px;border-radius:calc(var(--r) / 2)}
+  .chat.bubbles .msg{display:flex;flex-direction:column;align-items:flex-start}
+  .chat.bubbles .msg .u{font-size:.8em;margin:0 0 3px 10px}
+  .chat.bubbles .msg .t{background:var(--panel-bg);padding:9px 14px;border-radius:18px 18px 18px 4px;box-shadow:var(--shadow);border:var(--pborder)}
+  .chat.cards .msg{background:var(--panel-bg);border-radius:var(--r);padding:10px 14px;box-shadow:var(--shadow);border:1px solid var(--accent)}
+  .chat.cards .msg .hd{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:.8em}
+  .chat.cards .msg .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;font-size:.8em}
+  .chat.minimal .msg{text-shadow:0 0 4px #000,0 0 2px #000,1px 1px 0 #000}
+
+  /* alerts */
+  .alert{display:flex;align-items:center;gap:18px;padding:18px 28px;min-width:520px;max-width:900px;border:2px solid var(--accent);
+    background:var(--panel-bg);border-radius:var(--r);box-shadow:0 0 40px var(--accent);animation:alIn .6s cubic-bezier(.2,1.4,.4,1)}
+  .alert.leave{animation:alOut .5s ease forwards}
+  .alert img{max-height:110px;max-width:160px}
+  .alert .ic{font-size:2.6em;color:var(--accent2)}
+  .alert h2{margin:0;font-size:1.6em;font-weight:900}
+  .alert h2 em{font-style:normal;color:var(--accent)}
+  .alert p{margin:4px 0 0;font-size:.95em;opacity:.9}
+  @keyframes alIn{from{opacity:0;transform:scale(.6) translateY(-30px)}to{opacity:1;transform:none}}
+  @keyframes alOut{to{opacity:0;transform:scale(.8) translateY(-30px)}}
+
+  /* full screen scenes */
+  .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:10;text-align:center}
+  .scene img.slogo{width:220px;height:220px;object-fit:cover;border-radius:50%;border:6px solid var(--accent);filter:var(--logo-glow)}
+  .scene h1{margin:0;font-size:5em;font-weight:900;text-transform:uppercase;letter-spacing:4px;text-shadow:0 0 30px var(--accent)}
+  .scene p{margin:0;font-size:1.6em;color:var(--accent2);font-weight:700}
+  .scene .count{font-size:4.2em;font-weight:900;font-variant-numeric:tabular-nums}
+  .scene .dots span{display:inline-block;width:16px;height:16px;margin:0 6px;border-radius:50%;background:var(--accent);animation:bob 1.2s infinite}
+  .scene .dots span:nth-child(2){animation-delay:.2s}.scene .dots span:nth-child(3){animation-delay:.4s}
+  @keyframes bob{50%{transform:translateY(-14px);opacity:.5}}
+
+  .clear-boxes .panel,.clear-boxes .msg,.clear-boxes .msg .t,.clear-boxes .ticker,.clear-boxes .alert{box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .clear-boxes .scene h1,.clear-boxes .panel,.clear-boxes .msg{text-shadow:0 0 4px #000,0 0 2px #000,1px 1px 0 #000}
+  .no-anim *{animation:none!important;transition:none!important}
+  /* watermark (free overlays, once an hour) */
+  .wm{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:16px;
+    padding:14px 26px;border-radius:16px;background:rgba(10,10,14,.92);border:2px solid #ff5f1f;color:#fff;
+    font:800 24px Inter,Roboto,sans-serif;box-shadow:0 0 30px rgba(255,95,31,.6);white-space:nowrap;animation:alIn .6s ease}
+  .wm i{color:#ff5f1f;font-size:30px} .wm small{display:block;font-weight:600;font-size:17px;color:#ffd7c4}
+  .wm.leave{animation:alOut .5s ease forwards}
+  .hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:20px 30px;font:700 22px Inter,sans-serif;
+    color:#fff;background:rgba(0,0,0,.75);border-radius:12px;text-align:center}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(function () {
+  'use strict';
+  var C = window.OverlayCore;
+  var stage = document.getElementById('stage');
+  var params = new URLSearchParams(location.search);
+  var DEMO = params.get('demo') === '1';
+  var SE = params.get('src') === 'se';   // inside a StreamElements custom widget: alerts come from SE events instead of chat
+  var cfg = C.clone(C.DEFAULTS);
+  var timers = [];
+  var chatBox = null, alertBox = null, alertQueue = [], alertBusy = false;
+  var tw = { game: '', title: '', followers: null, avatar: '', uptime: '' };
+
+  /* ---------------- sizing ---------------- */
+  function fit() {
+    var s = Math.min(innerWidth / 1920, innerHeight / 1080) || 1;
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  addEventListener('resize', fit); fit();
+
+  /* ---------------- helpers ---------------- */
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function hexA(hex, a) {
+    var h = String(hex || '#000').replace('#', '');
+    if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+    var n = parseInt(h, 16) || 0;
+    return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+  function every(fn, ms) { fn(); timers.push(setInterval(fn, ms)); }
+  function chan() { return String(cfg.channel || '').trim().toLowerCase().replace(/^@/, '').replace(/^https?:\/\/(www\.)?twitch\.tv\//, '').split(/[/?#]/)[0]; }
+  function logoSrc() { return C.fixImg(cfg.brand.logo) || tw.avatar || ''; }
+
+  /* ---------------- theme ---------------- */
+  function applyTheme() {
+    var s = stage.style, a = cfg.panelOpacity / 100;
+    s.setProperty('--accent', cfg.accent);
+    s.setProperty('--accent2', cfg.accent2);
+    s.setProperty('--text', cfg.text);
+    s.setProperty('--font', "'" + cfg.font + "'");
+    s.setProperty('--fs', cfg.fontScale / 100);
+    s.setProperty('--r', cfg.radius + 'px');
+    s.setProperty('--m', cfg.margin + 'px');
+    var tk = cfg.ticker.on ? 54 : 0;
+    s.setProperty('--mt', (cfg.margin + (cfg.ticker.edge === 'top' ? tk : 0)) + 'px');
+    s.setProperty('--mb', (cfg.margin + (cfg.ticker.edge === 'bottom' ? tk : 0)) + 'px');
+    s.setProperty('--dim', cfg.bgDim / 100);
+    s.setProperty('--panel-bg', cfg.panelStyle === 'outline' ? hexA(cfg.panel, a * .35) : hexA(cfg.panel, a));
+    s.setProperty('--blur', cfg.panelStyle === 'glass' ? 'blur(10px)' : 'none');
+    s.setProperty('--pborder', cfg.panelStyle === 'outline' ? '2px solid ' + cfg.accent : '1px solid ' + hexA(cfg.text, .08));
+    s.setProperty('--shadow', cfg.glow ? '0 0 18px ' + hexA(cfg.accent, .45) : '0 4px 14px rgba(0,0,0,.4)');
+    s.setProperty('--logo-glow', cfg.glow ? 'drop-shadow(0 0 12px ' + cfg.accent + ')' : 'none');
+    s.setProperty('--cw', cfg.chat.width + 'px');
+    s.setProperty('--csize', (cfg.chat.size / 100) + 'em');
+    s.setProperty('--cb', cfg.cam.border + 'px');
+    s.setProperty('--tspeed', Math.max(10, 200 - cfg.ticker.speed * 1.8) + 's');
+    stage.classList.toggle('no-anim', !cfg.animate);
+    document.getElementById('font-link').href = 'https://fonts.googleapis.com/css2?family=' +
+      encodeURIComponent(cfg.font) + ':wght@400;600;700;800;900&display=swap';
+  }
+
+  /* ---------------- build ---------------- */
+  function render() {
+    timers.forEach(clearInterval); timers = [];
+    stage.innerHTML = '';
+    applyTheme();
+    var anchors = {};
+    C.POSITIONS.forEach(function (p) { anchors[p] = el('div', 'anc ' + p); stage.appendChild(anchors[p]); });
+    var live = cfg.scene === 'live', sc = cfg.scenes[cfg.scene] || {};
+
+    // Background: see-through unless the user picked a color or a picture (OBS shows the game/cam behind it)
+    if (cfg.sceneBg === 'image' && cfg.bgImg && (!live || cfg.bgLive)) {
+      var bg = el('div', 'bg'); bg.style.backgroundImage = 'url("' + C.fixImg(cfg.bgImg) + '")'; stage.appendChild(bg);
+    } else if (cfg.sceneBg === 'color' && (!live || cfg.bgLive)) {
+      var bg2 = el('div', 'bg'); bg2.style.background = 'radial-gradient(circle at 30% 20%,' + hexA(cfg.accent, .35) + ',transparent 55%),radial-gradient(circle at 80% 80%,' + hexA(cfg.accent2, .25) + ',transparent 50%),' + cfg.panel;
+      stage.appendChild(bg2);
+    }
+    if (!live) buildScene(sc);
+
+    if (live && cfg.cam.on) buildCam();
+    if (live && cfg.brand.on) anchors[cfg.brand.pos].appendChild(buildBrand());
+    if (live && cfg.game.on) anchors[cfg.game.pos].appendChild(buildGame());
+    if (live && cfg.title.on) anchors[cfg.title.pos].appendChild(buildTitle());
+    if (cfg.clock.on) anchors[cfg.clock.pos].appendChild(buildClock());
+    if (cfg.goal.on) anchors[cfg.goal.pos].appendChild(buildGoal());
+    if (cfg.socials.on && cfg.socials.list.length) anchors[cfg.socials.pos].appendChild(buildSocials());
+    if (cfg.qr.on && cfg.qr.url) anchors[cfg.qr.pos].appendChild(buildQR());
+    if (cfg.ticker.on) buildTicker();
+
+    var showChat = cfg.chat.on && (live || sc.chat);
+    chatBox = null;
+    if (showChat) { chatBox = el('div', 'chat ' + cfg.chat.style); anchors[cfg.chat.pos].appendChild(chatBox); }
+    alertBox = el('div', 'alerts'); anchors[cfg.alerts.on ? cfg.alerts.pos : 'tc'].appendChild(alertBox);
+
+    if (cfg.frameImg) { var f = el('img', 'frame'); f.src = C.fixImg(cfg.frameImg); stage.appendChild(f); }
+
+    if (!chan() && !DEMO) {
+      stage.appendChild(el('div', 'hint', 'Add your Twitch username in the Overlay Studio<br>to get chat, alerts and game info.'));
+    }
+    fillTwitch();
+  }
+
+  function buildBrand() {
+    var b = el('div', 'brand'), src = logoSrc();
+    if (src) { var i = el('img', cfg.brand.round ? 'round' : 'sq'); i.src = src; i.dataset.logo = '1'; b.appendChild(i); }
+    var name = cfg.brand.name || chan();
+    if (name || cfg.brand.tag) {
+      var t = el('div', 'txt');
+      if (name) t.appendChild(el('div', 'name', esc(name)));
+      if (cfg.brand.tag) t.appendChild(el('div', 'tag', esc(cfg.brand.tag)));
+      b.appendChild(t);
+    }
+    return b;
+  }
+
+  function buildGame() {
+    var g = el('div', 'panel game ' + sideCls(cfg.game.pos));
+    g.innerHTML = (cfg.game.prefix ? '<small>' + esc(cfg.game.prefix) + '</small>' : '') + '<b data-tw="game">' + esc(tw.game || '…') + '</b>';
+    return g;
+  }
+  function buildTitle() {
+    var t = el('div', 'panel title-box pill ' + sideCls(cfg.title.pos));
+    t.innerHTML = '<i class="fa-solid fa-signal"></i><span data-tw="title">' + esc(tw.title || '…') + '</span>';
+    return t;
+  }
+  function sideCls(pos) { return /r$/.test(pos) ? 'accent-r' : 'accent-l'; }
+
+  function buildClock() {
+    var c = el('div', 'panel pill ' + sideCls(cfg.clock.pos)), span = el('span');
+    c.innerHTML = '<i class="fa-regular fa-clock"></i>';
+    c.appendChild(span);
+    var tzLabel = cfg.clock.label;
+    every(function () {
+      var o = { hour: 'numeric', minute: '2-digit', hour12: !cfg.clock.h24 };
+      if (cfg.clock.tz) o.timeZone = cfg.clock.tz;
+      var t; try { t = new Date().toLocaleTimeString([], o); } catch (e) { t = new Date().toLocaleTimeString(); }
+      span.textContent = t + (tzLabel ? ' | ' + tzLabel : '') + (tw.uptime ? '  •  LIVE ' + tw.uptime : '');
+    }, 1000);
+    return c;
+  }
+
+  function buildGoal() {
+    var g = el('div', 'panel goal');
+    g.innerHTML = '<div class="row"><span>' + esc(cfg.goal.label) + '</span><span data-tw="goalnum">' +
+      (tw.followers == null ? '…' : tw.followers) + ' / ' + cfg.goal.target + '</span></div><div class="bar"><div class="fill"></div></div>';
+    setGoal(g);
+    return g;
+  }
+  function setGoal(root) {
+    root = root || stage;
+    var f = root.querySelector('.goal .fill'), n = root.querySelector('[data-tw="goalnum"]');
+    if (!f) return;
+    var v = tw.followers || 0;
+    f.style.width = Math.min(100, v / Math.max(1, cfg.goal.target) * 100) + '%';
+    if (n) n.textContent = (tw.followers == null ? '…' : v) + ' / ' + cfg.goal.target;
+  }
+
+  function socialHTML(s) {
+    var d = C.SOCIALS[s.k] || C.SOCIALS.web;
+    return '<i class="' + d.icon + '"></i><span>' + esc(s.v) + '</span>';
+  }
+  function buildSocials() {
+    var list = cfg.socials.list.filter(function (s) { return s && s.v; });
+    if (!cfg.socials.rotate || list.length < 2) {
+      var w = el('div', 'socials');
+      list.forEach(function (s) { w.appendChild(el('div', 'panel soc', socialHTML(s))); });
+      return w;
+    }
+    var box = el('div', 'panel soc rot'), i = 0;
+    every(function () { box.classList.remove('rot'); void box.offsetWidth; box.classList.add('rot'); box.innerHTML = socialHTML(list[i++ % list.length]); }, 6000);
+    return box;
+  }
+
+  function buildQR() {
+    var q = el('div', 'panel qr');
+    q.innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=' + encodeURIComponent(cfg.qr.url) + '">' +
+      (cfg.qr.label ? '<span>' + esc(cfg.qr.label) + '</span>' : '');
+    return q;
+  }
+
+  function buildTicker() {
+    var t = el('div', 'ticker ' + cfg.ticker.edge);
+    var txt = esc(cfg.ticker.text);
+    t.innerHTML = '<div class="run">' + txt + '&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;' + txt + '</div>';
+    stage.appendChild(t);
+  }
+
+  function buildCam() {
+    var c = el('div', 'cam ' + cfg.cam.shape);
+    c.style.left = cfg.cam.x + 'px'; c.style.top = cfg.cam.y + 'px';
+    c.style.width = cfg.cam.w + 'px'; c.style.height = (cfg.cam.shape === 'circle' ? cfg.cam.w : cfg.cam.h) + 'px';
+    if (cfg.cam.label) c.appendChild(el('div', 'lbl', esc(cfg.cam.label)));
+    if (DEMO) c.style.background = 'repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 12px,transparent 12px 24px)';
+    stage.appendChild(c);
+  }
+
+  function buildScene(sc) {
+    var s = el('div', 'scene'), src = logoSrc();
+    if (src) { var i = el('img', 'slogo'); i.src = src; i.dataset.logo = '1'; s.appendChild(i); }
+    s.appendChild(el('h1', '', esc(sc.title || '')));
+    if (sc.sub) s.appendChild(el('p', '', esc(sc.sub)));
+    if (cfg.scene === 'starting' && sc.mins > 0) {
+      var cnt = el('div', 'count'), end = Date.now() + sc.mins * 60000;
+      s.appendChild(cnt);
+      every(function () {
+        var left = Math.max(0, Math.round((end - Date.now()) / 1000));
+        cnt.textContent = left ? Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0') : 'Any moment now…';
+      }, 500);
+    } else {
+      s.appendChild(el('div', 'dots', '<span></span><span></span><span></span>'));
+    }
+    stage.appendChild(s);
+  }
+
+  /* ---------------- Twitch info (decapi.me, no key) ---------------- */
+  var lastInfoChan = '', infoTimer = null;
+  function fillTwitch() {
+    stage.querySelectorAll('[data-tw="game"]').forEach(function (n) { n.textContent = tw.game || (DEMO ? 'Your Game Here' : '…'); });
+    stage.querySelectorAll('[data-tw="title"]').forEach(function (n) { n.textContent = tw.title || (DEMO ? 'Your stream title shows here' : '…'); });
+    setGoal();
+  }
+  function getText(path) {
+    return fetch('https://decapi.me/twitch/' + path + '/' + encodeURIComponent(chan()) + '?v=' + Date.now())
+      .then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) { return (t || '').trim(); })
+      .catch(function () { return ''; });
+  }
+  function bad(t) { return !t || /error|not found|no user|404|rate limit|invalid/i.test(t); }
+  function pollInfo() {
+    if (!chan()) return;
+    getText('game').then(function (t) { if (!bad(t)) tw.game = t; fillTwitch(); });
+    getText('title').then(function (t) { if (!bad(t)) tw.title = t; fillTwitch(); });
+    if (cfg.goal.on) getText('followcount').then(function (t) { var n = parseInt(String(t).replace(/,/g, ''), 10); if (!isNaN(n)) tw.followers = n; fillTwitch(); });
+    getText('uptime').then(function (t) { tw.uptime = (/offline/i.test(t) || bad(t)) ? '' : t.replace(/ (\d+) seconds?$/, '').replace(/hours?/, 'h').replace(/minutes?/, 'm').replace(/,/g, ''); });
+  }
+  function startInfo() {
+    if (chan() === lastInfoChan) return;
+    lastInfoChan = chan(); tw = { game: '', title: '', followers: null, avatar: '', uptime: '' };
+    clearInterval(infoTimer);
+    if (!chan()) return;
+    getText('avatar').then(function (t) {
+      if (/^https?:\/\//.test(t)) { tw.avatar = t; if (!C.fixImg(cfg.brand.logo)) render(); }
+    });
+    pollInfo(); infoTimer = setInterval(pollInfo, 60000);
+  }
+
+  /* ---------------- Twitch chat (anonymous, read-only) ---------------- */
+  var ws = null, wsChan = '', retry = 0;
+  function unesc(v) { return v.replace(/\\s/g, ' ').replace(/\\:/g, ';').replace(/\\\\/g, '\\').replace(/\\r/g, '').replace(/\\n/g, ''); }
+  function parse(line) {
+    var tags = {}, prefix = '', text = '';
+    if (line[0] === '@') { var sp = line.indexOf(' '); line.slice(1, sp).split(';').forEach(function (kv) { var e = kv.indexOf('='); tags[kv.slice(0, e)] = unesc(kv.slice(e + 1)); }); line = line.slice(sp + 1); }
+    if (line[0] === ':') { var sp2 = line.indexOf(' '); prefix = line.slice(1, sp2); line = line.slice(sp2 + 1); }
+    var ti = line.indexOf(' :'); if (ti >= 0) { text = line.slice(ti + 2); line = line.slice(0, ti); }
+    var parts = line.split(' ');
+    return { tags: tags, prefix: prefix, cmd: parts[0], params: parts.slice(1), text: text };
+  }
+  function connectChat() {
+    var c = chan();
+    if (c === wsChan && ws) return;
+    if (ws) { ws.onclose = null; try { ws.close(); } catch (e) {} ws = null; }
+    wsChan = c;
+    if (!c) return;
+    ws = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+    ws.onopen = function () {
+      retry = 0;
+      ws.send('CAP REQ :twitch.tv/tags twitch.tv/commands');
+      ws.send('PASS SCHMOOPIIE');
+      ws.send('NICK justinfan' + Math.floor(10000 + Math.random() * 80000));
+      ws.send('JOIN #' + c);
+    };
+    ws.onmessage = function (ev) {
+      String(ev.data).split('\r\n').forEach(function (line) {
+        if (!line) return;
+        if (line.indexOf('PING') === 0) { ws.send('PONG' + line.slice(4)); return; }
+        handle(parse(line));
+      });
+    };
+    ws.onclose = function () { ws = null; var keep = wsChan; wsChan = ''; setTimeout(function () { if (chan() === keep) connectChat(); }, Math.min(30000, 2000 * ++retry)); };
+  }
+
+  function handle(m) {
+    var t = m.tags, name = t['display-name'] || (m.prefix.split('!')[0]);
+    if (m.cmd === 'PRIVMSG') {
+      if (t.bits && cfg.alerts.bits && !SE) alert('bits', name, t.bits + ' bits', stripAction(m.text));
+      addChat({ id: t.id, user: name, login: m.prefix.split('!')[0], color: t.color, text: m.text, emotes: t.emotes, badges: t.badges || '' });
+    } else if (m.cmd === 'USERNOTICE' && !SE) {
+      var id = t['msg-id'];
+      if ((id === 'sub' || id === 'resub') && cfg.alerts.subs) {
+        var mo = t['msg-param-cumulative-months'];
+        alert('sub', name, id === 'resub' && mo ? 'subscribed for ' + mo + ' months' : 'just subscribed', m.text);
+      } else if (id === 'subgift' && cfg.alerts.gifts) {
+        if (!t['msg-param-community-gift-id']) alert('gift', name, 'gifted a sub to ' + (t['msg-param-recipient-display-name'] || ''), '');
+      } else if (id === 'submysterygift' && cfg.alerts.gifts) {
+        alert('gift', name, 'gifted ' + (t['msg-param-mass-gift-count'] || '') + ' subs!', '');
+      } else if (id === 'raid' && cfg.alerts.raids) {
+        alert('raid', t['msg-param-displayName'] || name, 'is raiding with ' + (t['msg-param-viewerCount'] || '') + ' viewers!', '');
+      }
+    } else if (m.cmd === 'CLEARMSG') {
+      removeMsgs(function (n) { return n.dataset.id === t['target-msg-id']; });
+    } else if (m.cmd === 'CLEARCHAT') {
+      if (m.text) removeMsgs(function (n) { return n.dataset.login === m.text.toLowerCase(); });
+      else removeMsgs(function () { return true; });
+    }
+  }
+  function removeMsgs(test) { if (!chatBox) return; [].slice.call(chatBox.children).forEach(function (n) { if (test(n)) n.remove(); }); }
+  function stripAction(s) { return String(s).replace(/^\u0001ACTION /, '').replace(/\u0001$/, ''); }
+
+  function emoteHTML(text, emotes) {
+    var chars = Array.from(text), marks = [];
+    if (emotes) emotes.split('/').forEach(function (part) {
+      var p = part.split(':'); if (!p[1]) return;
+      p[1].split(',').forEach(function (r) { var ab = r.split('-'); marks.push({ s: +ab[0], e: +ab[1], id: p[0] }); });
+    });
+    marks.sort(function (a, b) { return a.s - b.s; });
+    var out = '', i = 0;
+    marks.forEach(function (mk) {
+      out += esc(chars.slice(i, mk.s).join(''));
+      out += '<img class="em" src="https://static-cdn.jtvnw.net/emoticons/v2/' + mk.id + '/default/dark/2.0" alt="">';
+      i = mk.e + 1;
+    });
+    return out + esc(chars.slice(i).join(''));
+  }
+
+  var BADGE = { broadcaster: 'fa-solid fa-video', moderator: 'fa-solid fa-shield-halved', vip: 'fa-solid fa-gem', subscriber: 'fa-solid fa-star' };
+  var COLORS = ['#ff4d4d', '#4dd2ff', '#7cff4d', '#ffb84d', '#c84dff', '#ff4dc4', '#4dffb8', '#ffe14d'];
+  function userColor(name, c) { if (c) return c; var h = 0; for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0; return COLORS[h % COLORS.length]; }
+
+  function addChat(d) {
+    if (!chatBox) return;
+    var hide = String(cfg.chat.hide || '').toLowerCase().split(/[\s,]+/).filter(Boolean);
+    if (hide.indexOf(String(d.login || d.user).toLowerCase()) > -1) return;
+    if (/^!/.test(d.text)) return; // hide bot commands
+    var action = /^\u0001ACTION /.test(d.text), text = stripAction(d.text);
+    var col = userColor(d.user, d.color);
+    var badges = '';
+    if (cfg.chat.badges) Object.keys(BADGE).forEach(function (b) { if (d.badges.indexOf(b + '/') > -1) badges += '<i class="bd ' + BADGE[b] + '"></i>'; });
+    var m = el('div', 'msg' + (action ? ' action' : ''));
+    m.dataset.id = d.id || ''; m.dataset.login = String(d.login || '').toLowerCase();
+    var body = emoteHTML(text, d.emotes);
+    if (cfg.chat.style === 'cards') {
+      m.innerHTML = '<div class="hd"><span class="av" style="background:' + esc(col) + '">' + esc(d.user.charAt(0).toUpperCase()) + '</span>' +
+        badges + '<span class="u" style="color:' + esc(col) + '">' + esc(d.user) + '</span></div><div class="t">' + body + '</div>';
+    } else {
+      m.innerHTML = '<span class="u" style="color:' + esc(col) + '">' + badges + esc(d.user) + (cfg.chat.style === 'bubbles' ? '' : ':') + '</span><span class="t">' + body + '</span>';
+    }
+    chatBox.appendChild(m);
+    while (chatBox.children.length > cfg.chat.max) chatBox.firstChild.remove();
+    if (cfg.chat.fade > 0) setTimeout(function () { m.classList.add('out'); setTimeout(function () { m.remove(); }, 700); }, cfg.chat.fade * 1000);
+  }
+
+  /* ---------------- alerts ---------------- */
+  var ALERT_IC = { sub: 'fa-solid fa-star', gift: 'fa-solid fa-gift', raid: 'fa-solid fa-people-group', bits: 'fa-solid fa-gem', follow: 'fa-solid fa-heart', tip: 'fa-solid fa-sack-dollar' };
+  function alert(kind, who, what, note) {
+    if (!cfg.alerts.on) return;
+    alertQueue.push({ kind: kind, who: who, what: what, note: note });
+    nextAlert();
+  }
+  function nextAlert() {
+    if (alertBusy || !alertQueue.length || !alertBox) return;
+    alertBusy = true;
+    var a = alertQueue.shift(), box = el('div', 'alert');
+    var img = C.fixImg(cfg.alerts.img);
+    box.innerHTML = (img ? '<img src="' + esc(img) + '">' : '<i class="ic ' + ALERT_IC[a.kind] + '"></i>') +
+      '<div><h2><em>' + esc(a.who) + '</em> ' + esc(a.what) + '</h2>' + (a.note ? '<p>' + esc(a.note) + '</p>' : '') + '</div>';
+    alertBox.appendChild(box);
+    if (cfg.alerts.sound) { try { var au = new Audio(C.fixImg(cfg.alerts.sound)); au.volume = .8; au.play().catch(function () {}); } catch (e) {} }
+    setTimeout(function () {
+      box.classList.add('leave');
+      setTimeout(function () { box.remove(); alertBusy = false; nextAlert(); }, 550);
+    }, Math.max(2, cfg.alerts.secs) * 1000);
+  }
+
+  /* ---------------- demo (builder preview) ---------------- */
+  var DEMO_USERS = ['NightHowler', 'PixelPaws', 'ModemBot', 'LunaRaider', 'TacoTank', 'GhostRecon_Fan', 'ChillWolf'];
+  var DEMO_TEXT = ['GG that was clean 🔥', 'hello chat!', 'how long have you been playing this?', 'LET\'S GOOO', 'that sniper shot though',
+    'first time here, love the overlay', 'lurking but vibing', 'clip it!!', 'what settings do you use?'];
+  function demoChat() {
+    var u = DEMO_USERS[Math.floor(Math.random() * DEMO_USERS.length)];
+    addChat({ user: u, login: u.toLowerCase(), text: DEMO_TEXT[Math.floor(Math.random() * DEMO_TEXT.length)], badges: Math.random() < .3 ? 'subscriber/1' : '' });
+  }
+  function testAlert(kind) {
+    var k = kind || ['sub', 'raid', 'gift', 'bits'][Math.floor(Math.random() * 4)];
+    if (k === 'sub') alert('sub', 'PixelPaws', 'subscribed for 6 months', 'Love the streams!');
+    if (k === 'raid') alert('raid', 'LunaRaider', 'is raiding with 42 viewers!', '');
+    if (k === 'gift') alert('gift', 'TacoTank', 'gifted 5 subs!', '');
+    if (k === 'bits') alert('bits', 'ChillWolf', '500 bits', 'take my bits');
+    if (k === 'follow') alert('follow', 'NewFriend', 'just followed', '');
+  }
+
+  /* ---------------- watermark (free overlays) ----------------
+   * Every hour (first one 2 minutes after the overlay loads) a banner shows where the overlay was made.
+   * Channels with a paid pass ($5/month, $50/year) never see it. The paid list lives on the
+   * site's login server (Firestore overlay_pro/{channel}); a page can't mark itself paid. */
+  var PRO_API = 'https://ww-discord-auth.onrender.com/overlay/pro/';
+  var STUDIO_URL = location.origin + location.pathname.replace(/overlay\/live(\.html)?$/, 'overlay-studio');
+  var isPro = false, proChecked = '';
+  function checkPro() {
+    var c = chan(); if (!c || DEMO) { isPro = false; return Promise.resolve(); }
+    return fetch(PRO_API + encodeURIComponent(c)).then(function (r) { return r.json(); })
+      .then(function (j) { isPro = !!(j && j.pro); proChecked = c; }).catch(function () { /* keep last answer */ });
+  }
+  function showWatermark() {
+    var old = stage.querySelector('.wm'); if (old) old.remove();
+    var w = el('div', 'wm', '<i class="fa-solid fa-wand-magic-sparkles"></i><div>Overlay made at ' +
+      esc(STUDIO_URL.replace(/^https?:\/\//, '')) + '<small>Make your own free • remove this from $5/month</small></div>');
+    stage.appendChild(w);
+    setTimeout(function () { w.classList.add('leave'); setTimeout(function () { w.remove(); }, 550); }, 12000);
+  }
+  function watermarkTick() {
+    checkPro().then(function () { if (!isPro) showWatermark(); });
+  }
+  if (!DEMO) {
+    setTimeout(function () { watermarkTick(); setInterval(watermarkTick, 3600000); }, 120000);
+  }
+
+  /* ---------------- start ---------------- */
+  function apply(newCfg) {
+    cfg = C.merge(C.DEFAULTS, newCfg);
+    var sceneOverride = params.get('scene'); if (sceneOverride && !DEMO) cfg.scene = sceneOverride;
+    render();
+    if (!DEMO) { startInfo(); connectChat(); }
+    else { startInfo(); }
+  }
+
+  // Live updates from the builder preview
+  // Events forwarded by the StreamElements custom widget (follows, subs, tips, bits, raids).
+  // Only ever turned into an alert card - nothing else can be changed this way.
+  function seEvent(d) {
+    var who = String(d.name || 'Someone').slice(0, 40), n = Math.max(0, parseFloat(d.amount) || 0), msg = String(d.message || '').slice(0, 200);
+    switch (String(d.listener)) {
+      case 'follower-latest': if (cfg.alerts.follows !== false) alert('follow', who, 'just followed!', ''); break;
+      case 'subscriber-latest':
+        if (d.bulkGifted) { if (cfg.alerts.gifts) alert('gift', who, 'gifted ' + n + ' subs!', ''); }
+        else if (d.gifted) { if (cfg.alerts.gifts) alert('gift', String(d.sender || who).slice(0, 40), 'gifted a sub to ' + who, ''); }
+        else if (cfg.alerts.subs) alert('sub', who, n > 1 ? 'subscribed for ' + n + ' months' : 'just subscribed', msg);
+        break;
+      case 'tip-latest': if (cfg.alerts.tips !== false) alert('tip', who, 'tipped $' + n.toFixed(2), msg); break;
+      case 'cheer-latest': if (cfg.alerts.bits) alert('bits', who, n + ' bits', msg); break;
+      case 'raid-latest': if (cfg.alerts.raids) alert('raid', who, 'is raiding with ' + n + ' viewers!', ''); break;
+    }
+  }
+  addEventListener('message', function (e) {
+    if (SE && e.data && e.data.type === 'se-event' && e.source === parent) { seEvent(e.data); return; }
+    if (e.origin !== location.origin || !e.data) return;
+    if (e.data.type === 'overlay-cfg') apply(e.data.cfg);
+    if (e.data.type === 'overlay-alert') testAlert(e.data.kind);
+    if (e.data.type === 'overlay-wm') showWatermark();
+  });
+
+  function broken(msg) { apply({}); stage.appendChild(el('div', 'hint', msg || 'This overlay link looks broken.<br>Make a new one in the Overlay Studio.')); }
+
+  // Saved overlays: overlay/live?s={id}&scene=starting  -> design comes from GitHub (via the site's server),
+  // checked every minute so edits saved in the Studio show up in OBS on their own.
+  var SAVE_API = 'https://ww-discord-auth.onrender.com/overlay/get/';
+  var RAW = 'https://raw.githubusercontent.com/Werewolf3788/website/main/overlay/saves/';
+  var savedId = String(params.get('s') || '').toLowerCase().replace(/[^a-z0-9]/g, ''), lastStamp = null;
+  function fetchSaved() {
+    return fetch(SAVE_API + savedId + '?v=' + Date.now()).then(function (r) { if (r.status === 404) throw { gone: true }; if (!r.ok) throw 0; return r.json(); })
+      .catch(function (e) { if (e && e.gone) throw e; return fetch(RAW + savedId + '.json?v=' + Date.now()).then(function (r) { if (!r.ok) throw { gone: r.status === 404 }; return r.json(); }); });
+  }
+  function pollSaved(first) {
+    fetchSaved().then(function (d) {
+      if (!d || !d.c) throw 0;
+      if (d.updated === lastStamp) return;
+      lastStamp = d.updated;
+      return C.decode(d.c).then(apply);
+    }).catch(function (e) {
+      if (first) broken(e && e.gone ? 'This saved overlay was not found.<br>Open the Overlay Studio and save it again.' : 'Loading your overlay… (the server may be waking up)');
+      if (first && !(e && e.gone)) setTimeout(function () { pollSaved(true); }, 15000);
+    });
+  }
+  if (savedId && !DEMO) {
+    pollSaved(true);
+    setInterval(function () { if (lastStamp !== null) pollSaved(false); }, 60000);
+  } else {
+    var code = C.fromLink(location.hash) || params.get('c') || '';
+    C.decode(code).then(apply).catch(function () { broken(); });
+  }
+
+  if (DEMO) {
+    setInterval(demoChat, 2200); demoChat(); demoChat(); demoChat();
+  }
+})();
+</script>
+</body>
+</html>
