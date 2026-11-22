@@ -281,6 +281,13 @@ function buildWorld(items) {
   // pickups
   const LOOK = { sp: [0x38bdf8, '⬆️'], weapon: [0xf97316, '🔫'], acc: [0xa78bfa, '🔧'], medal: [0xfacc15, '🏅'], crate: [0x65a30d, '📦'] };
   items.forEach(it => {
+    // Nothing spawns on a roof or tower top you can't climb: slide it out to the open ground beside the building
+    for (let pass = 0; pass < 4; pass++) {
+      const c = colliders.find(o => o.top - hAt(it.x, it.z) > 1.2 && it.x > o.x0 - .8 && it.x < o.x1 + .8 && it.z > o.z0 - .8 && it.z < o.z1 + .8);
+      if (!c) break;
+      const out = [[c.x0 - 1.2 - it.x, 0], [c.x1 + 1.2 - it.x, 0], [0, c.z0 - 1.2 - it.z], [0, c.z1 + 1.2 - it.z]].sort((p, q) => Math.hypot(p[0], p[1]) - Math.hypot(q[0], q[1]))[0];
+      it.x += out[0]; it.z += out[1];
+    }
     const L = LOOK[it.kind], g = new THREE.Group(), y = groundAt(it.x, it.z, 999);
     const m = it.kind === 'crate' ? box(1, .7, .7, mat(0x4d7c0f), 0, .35, 0) : it.kind === 'sp' ? new THREE.Mesh(new THREE.OctahedronGeometry(.4), mat(L[0], { emissive: L[0], emissiveIntensity: .7 })) : box(it.kind === 'weapon' ? 1.3 : .8, .4, .5, mat(L[0], { emissive: L[0], emissiveIntensity: .35 }), 0, .2, 0);
     if (it.kind === 'sp') m.position.y = 1.1;
