@@ -32,7 +32,7 @@
 
 const { initializeApp, cert, getApps } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
-const friendGames = require("../Claude-Test/sync/friend-games.js");   // also saves each player's games to Firestore under their friend code
+const friendGames = require("../scripts/friend-games.js");   // also saves each player's games to Firestore under their friend code
 let kevinUsers = {};   // users read from Kevin's DB this run (for friend codes)
 
 const KEVIN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";

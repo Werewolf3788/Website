@@ -16,7 +16,7 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'game/data/**'
+      - 'games/data/**'
       - 'README.md'
 
 permissions:
@@ -64,7 +64,7 @@ jobs:
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "werewolf3788-bot@users.noreply.github.com"
-          git add game/data/game.json game/data/games/ 2>/dev/null || true
+          git add games/data/game.json games/data/games/ 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -m "Automated Game Sync [skip ci] [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
             git pull --rebase origin main

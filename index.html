@@ -552,7 +552,7 @@
                 <p class="mt-2 text-slate-300 text-sm sm:text-base max-w-xl">
                     <span id="hero-text">Track your games and trophies across PlayStation, Xbox and Steam, see what your friends are playing, chat, and browse the Werewolf Cinema movie library. Sign in to see your friends.</span>
                 </p>
-                <div id="hero-signin" class="mt-4"><a href="Claude-Test/profile.html" class="live-chip" style="text-decoration:none;background:#ff5f1f;color:#fff;font-weight:800"><i class="fa-brands fa-google"></i> Sign in</a></div>
+                <div id="hero-signin" class="mt-4"><a href="profile.html" class="live-chip" style="text-decoration:none;background:#ff5f1f;color:#fff;font-weight:800"><i class="fa-brands fa-google"></i> Sign in</a></div>
                 <div class="mt-4 flex flex-wrap items-center gap-3">
                     <span id="online-summary" class="live-chip" style="display:none"><span class="live-dot"></span><span id="online-summary-text">Checking PlayStation...</span></span>
                     <a href="#cinema" class="live-chip" style="text-decoration:none"><i class="fa-solid fa-film text-orange-400"></i> Cinema</a>
@@ -748,7 +748,7 @@
     <section id="my-friends" class="py-6 sm:py-10" style="display:none">
         <div class="w-[92vw] md:w-[80vw] mx-auto">
             <div class="flex items-end justify-between mb-3 px-1 gap-3 flex-wrap">
-                <h2 style="font-size: clamp(20px, 4vw, 28px);">My Friends <a id="mf-code" class="text-orange-400 font-mono" style="font-size:.7em;text-decoration:none" href="Claude-Test/profile.html"></a></h2>
+                <h2 style="font-size: clamp(20px, 4vw, 28px);">My Friends <a id="mf-code" class="text-orange-400 font-mono" style="font-size:.7em;text-decoration:none" href="profile.html"></a></h2>
                 <span id="mf-note" class="text-[11px] text-slate-400 font-bold uppercase tracking-widest"></span>
             </div>
             <div id="mf-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
@@ -805,8 +805,8 @@
     </section>
 
     <!-- =========================================================================
-         Games slideshow: every mobile game (Mobilegames/) and every game tracker
-         (game/all.html?game=KEY). Tap a slide to open that game.
+         Games slideshow: every mobile game (games/mobile/) and every game tracker
+         (games/all.html?game=KEY). Tap a slide to open that game.
          Tracker list follows /platforms/games_catalog (tiny index), so a new
          tracker file in public/games shows up here on its own.
          ========================================================================= -->
@@ -835,16 +835,16 @@
     <script>
     (function () {
         var MOBILE = [
-            { t: 'Neighborly Acre', e: '🌾', u: 'Mobilegames/farm.html', g: ['#14532d', '#84cc16'], s: '3D co-op farm' },
-            { t: 'Tile Survival', e: '🏚️', u: 'Mobilegames/survive.html', g: ['#1c1917', '#b45309'], s: '3D survival settlement' },
-            { t: 'Werewolf Recon', e: '🎯', u: 'Mobilegames/recon.html', g: ['#1f2937', '#4d7c0f'], s: 'Open-world squad shooter' },
-            { t: 'Werewolf Racing', e: '🏎️', u: 'Mobilegames/race.html', g: ['#450a0a', '#ef4444'], s: '3D car racing' },
-            { t: 'Monopoly', e: '🏙️', u: 'Mobilegames/tycoon.html', g: ['#064e3b', '#10b981'], s: 'Board game, 2-4 players' },
-            { t: 'Wahoo', e: '🎲', u: 'Mobilegames/wahoo.html', g: ['#3b0764', '#a855f7'], s: 'Board game, 2-4 players' },
-            { t: 'Battleship', e: '🚢', u: 'Mobilegames/battleship.html', g: ['#0c4a6e', '#0ea5e9'], s: 'Classic naval battle' },
-            { t: 'Frogger', e: '🐸', u: 'Mobilegames/frogger.html', g: ['#14532d', '#22d3ee'], s: 'Race up to 8 friends' },
-            { t: 'Tile Match', e: '🀄', u: 'Mobilegames/mahjong.html', g: ['#7c2d12', '#f59e0b'], s: 'Mahjong-style tiles' },
-            { t: 'Calm Space', e: '🌿', u: 'Mobilegames/calm.html', g: ['#134e4a', '#2dd4bf'], s: 'For rough days' }
+            { t: 'Neighborly Acre', e: '🌾', u: 'games/mobile/farm.html', g: ['#14532d', '#84cc16'], s: '3D co-op farm' },
+            { t: 'Tile Survival', e: '🏚️', u: 'games/mobile/survive.html', g: ['#1c1917', '#b45309'], s: '3D survival settlement' },
+            { t: 'Werewolf Recon', e: '🎯', u: 'games/mobile/recon.html', g: ['#1f2937', '#4d7c0f'], s: 'Open-world squad shooter' },
+            { t: 'Werewolf Racing', e: '🏎️', u: 'games/mobile/race.html', g: ['#450a0a', '#ef4444'], s: '3D car racing' },
+            { t: 'Monopoly', e: '🏙️', u: 'games/mobile/tycoon.html', g: ['#064e3b', '#10b981'], s: 'Board game, 2-4 players' },
+            { t: 'Wahoo', e: '🎲', u: 'games/mobile/wahoo.html', g: ['#3b0764', '#a855f7'], s: 'Board game, 2-4 players' },
+            { t: 'Battleship', e: '🚢', u: 'games/mobile/battleship.html', g: ['#0c4a6e', '#0ea5e9'], s: 'Classic naval battle' },
+            { t: 'Frogger', e: '🐸', u: 'games/mobile/frogger.html', g: ['#14532d', '#22d3ee'], s: 'Race up to 8 friends' },
+            { t: 'Tile Match', e: '🀄', u: 'games/mobile/mahjong.html', g: ['#7c2d12', '#f59e0b'], s: 'Mahjong-style tiles' },
+            { t: 'Calm Space', e: '🌿', u: 'games/mobile/calm.html', g: ['#134e4a', '#2dd4bf'], s: 'For rough days' }
         ];
         // Known trackers: Steam app ids give clean 2:3 cover art. Keys match public/games/{key}.json
         var TRACKERS = {
@@ -870,7 +870,7 @@
             var k = TRACKERS[key] || {};
             var art = (extra && extra.art) || {};
             var imgs = [art.poster].concat(steamArt(k.app), [extra && extra.image_url, art.wallpaper]).map(secure).filter(Boolean);
-            return { kind: 'tracker', t: k.t || title || key, e: '🎮', u: 'game/all.html?game=' + encodeURIComponent(key), g: ['#0f172a', '#1d4ed8'], s: 'Game tracker', imgs: imgs };
+            return { kind: 'tracker', t: k.t || title || key, e: '🎮', u: 'games/all.html?game=' + encodeURIComponent(key), g: ['#0f172a', '#1d4ed8'], s: 'Game tracker', imgs: imgs };
         }
         var trackers = Object.keys(TRACKERS).map(function (k) { return trackerSlide(k); });
         var filter = 'all', timer = null, paused = false, resumeT = null;
@@ -1021,7 +1021,7 @@
             <button type="button" onclick="nextMusicRelease(event)" aria-label="Next Release" class="text-slate-400 hover:text-white p-1 text-xs">
                 <i class="fa-solid fa-chevron-right"></i>
             </button>
-            <a href="Claude-Test/music.html" aria-label="All releases" title="All releases" class="text-slate-400 hover:text-orange-400 p-1 text-xs">
+            <a href="music.html" aria-label="All releases" title="All releases" class="text-slate-400 hover:text-orange-400 p-1 text-xs">
                 <i class="fa-solid fa-compact-disc"></i>
             </a>
             <button type="button" onclick="toggleAlbumCountdown(event)" aria-label="Minimize release badge" class="text-slate-400 hover:text-red-400 p-1 ml-0.5 text-xs">
@@ -2407,7 +2407,7 @@ function buildCinemaFromCsv(text) {
       document.getElementById('hero-text').textContent = 'Your friends, live. Tap a friend to open their profile and see how they are progressing. Only friends can open each other\u2019s profiles.';
       document.getElementById('hero-signin').style.display = 'none';
       var sec = document.getElementById('my-friends'), grid = document.getElementById('mf-grid'); sec.style.display = '';
-      var codeEl = document.getElementById('mf-code'); codeEl.textContent = me.friendCode ? '#' + me.friendCode : ''; if (me.friendCode) codeEl.href = 'Claude-Test/profile.html#' + me.friendCode;
+      var codeEl = document.getElementById('mf-code'); codeEl.textContent = me.friendCode ? '#' + me.friendCode : ''; if (me.friendCode) codeEl.href = 'profile.html#' + me.friendCode;
       var v = {}; try { v = (await W.db.ref('users/' + me.key + '/friends').once('value')).val() || {}; } catch (e) {}
       var codes = Object.keys(v).map(function (k) { var f = v[k] && typeof v[k] === 'object' ? v[k] : {}; return { code: String(f.friend_code || k).toUpperCase(), name: f.username || '', close: f.close_friend === true }; });
       if (!codes.length) { grid.innerHTML = '<div class="custom-card p-5 text-slate-300 text-sm" style="grid-column:1/-1">No friends yet. Add a friend code in Settings and they will show up here.</div>'; return; }
@@ -2436,7 +2436,7 @@ function buildCinemaFromCsv(text) {
         var name = u.username || u.display_name || c.name || c.code, av = secure(u.avatar_url || u.photoURL || u.photo_url || u.avatar || (u.profile && u.profile.avatar) || pav.filter(Boolean)[0]);
         var playing = plays.map(function (p) { return p.icon + ' ' + esc(p.title) + ' <span style="opacity:.7">on ' + p.where + (p.status ? ' \u00b7 ' + esc(p.status) : '') + '</span>'; }).join('<br>');
         var idle = hidden ? 'Keeps status private' : 'Not playing right now';
-        return '<a href="Claude-Test/profile.html#' + encodeURIComponent(c.code) + '" class="custom-card p-5" style="display:flex;gap:12px;align-items:center;text-decoration:none;color:inherit">' +
+        return '<a href="profile.html#' + encodeURIComponent(c.code) + '" class="custom-card p-5" style="display:flex;gap:12px;align-items:center;text-decoration:none;color:inherit">' +
           (av ? '<img src="' + esc(av) + '" alt="" referrerpolicy="no-referrer" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none" onerror="this.outerHTML=\'<span style=&quot;width:52px;height:52px;border-radius:50%;background:#334155;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none&quot;>' + esc(name.charAt(0).toUpperCase()) + '</span>\'">' : '<span style="width:52px;height:52px;border-radius:50%;background:#334155;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none">' + esc(name.charAt(0).toUpperCase()) + '</span>') +
           '<div style="min-width:0;flex:1"><div style="font-weight:800" class="truncate">' + esc(name) + (c.close ? ' <span title="Close friend" style="color:#facc15">\u2605</span>' : '') + '</div>' +
           '<div class="text-slate-400 font-mono" style="font-size:.7rem">#' + esc(c.code) + '</div>' +

@@ -27,7 +27,7 @@ const psnApi = require("psn-api");
 const { initializeApp, cert, getApps } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
-const friendGames = require("../Claude-Test/sync/friend-games.js");   // also saves each player's games to Kevin's Firestore under their friend code
+const friendGames = require("../scripts/friend-games.js");   // also saves each player's games to Kevin's Firestore under their friend code
 const psnCodes = { byTag: {}, byId: {} };   // PSN online ID / account ID -> friend codes (from Kevin's /users)
 
 const {

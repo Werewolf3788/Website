@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 20
       - run: npm install --no-save firebase-admin google-auth-library
-      - run: node Claude-Test/sync/friendcode-move.js
+      - run: node scripts/friendcode-move.js
         env:
           GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
           FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}   # read only: copies PlayStation data already in Ray's project

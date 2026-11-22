@@ -27,7 +27,7 @@
 "use strict";
 
 const KEVIN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
-const friendGames = require("../Claude-Test/sync/friend-games.js");   // also saves every player's games to Firestore under their friend code
+const friendGames = require("./friend-games.js");   // also saves every player's games to Firestore under their friend code
 const API = "https://api.steampowered.com";
 let SITE_KEY = (process.env.STEAM_API_KEY || "").trim().toUpperCase();
 const KEY_RX = /^[0-9A-F]{32}$/;
