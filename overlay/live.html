@@ -311,6 +311,7 @@
   function lum(hex) { var h = String(hex || '#000').replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); var n = parseInt(h, 16) || 0; return ((n >> 16 & 255) * .299 + (n >> 8 & 255) * .587 + (n & 255) * .114) / 255; }
   function gameTheme(force) {
     if (!cfg.gameTheme || !cfg.gameTheme.on || !window.GameThemes || cfg.scene !== 'live') return;
+    if (!DEMO && !isPro) return;   // "Match my game" is part of the paid pass (the Studio preview shows it to everyone)
     var g = shownGame() || 'offline';
     if (!force && g === themedFor) return;
     themedFor = g;
@@ -644,7 +645,11 @@
     setTimeout(function () { w.classList.add('leave'); setTimeout(function () { w.remove(); }, 550); }, 12000);
   }
   function watermarkTick() {
-    checkPro().then(function () { if (!isPro) showWatermark(); });
+    var was = isPro;
+    checkPro().then(function () {
+      if (!isPro) showWatermark();
+      if (was !== isPro && cfg.gameTheme && cfg.gameTheme.on) render();   // pass started/ran out: turn game themes on/off
+    });
   }
   if (!DEMO) {
     setTimeout(function () { watermarkTick(); setInterval(watermarkTick, 3600000); }, 120000);
@@ -655,6 +660,8 @@
     cfg = C.merge(C.DEFAULTS, newCfg);
     var sceneOverride = params.get('scene'); if (sceneOverride && !DEMO) cfg.scene = sceneOverride;
     render();
+    // paid feature: find out if this channel has a pass, then switch game themes on
+    if (!DEMO && cfg.gameTheme && cfg.gameTheme.on) checkPro().then(function () { if (isPro) gameTheme(true); });
     if (!DEMO) { startInfo(); connectChat(); }
     else { startInfo(); }
   }
