@@ -610,14 +610,16 @@
 
   <!-- Section 6: Persistent 24-Hour NY Timestamp & Version Footer (Lines 603-611) -->
   <footer class="persistent-footer">
-    <div><span class="status-dot"></span>Live CSV Feed: Google Sheets</div>
-    <div id="ny-clock">NY Time: Loading... | Version: 1.0.0</div>
+    <div><span class="status-dot"></span>Live CSV Feed: Google Sheets <span id="last-sync"></span></div>
+    <div id="ny-clock">NY Time: Loading... | Version: 1.1.0</div>
   </footer>
 
   <!-- Section 7: CSV Parser, Countdown Engine & DOM Controller (Lines 613-915) -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const APP_VERSION = "1.0.0";
+      const APP_VERSION = "1.1.0";
+      // Bump both of these every time this page changes, so the footer shows which copy you're looking at
+      const APP_UPDATED = "2026-11-22 05:15";
       const CSV_URL = "//docs.google.com/spreadsheets/d/e/2PACX-1vTr4PBHQznFnTvHBOxBgZnLqbxYlc9QhsZFeHee_qzkpRdE99OCCxn2nJkGY2sGlHXzIOjNvnsxierz/pub?output=csv";
       const CACHE_KEY = "sub_tracker_csv_cache_v1";
       const FALLBACK_ICON = "//www.google.com/s2/favicons?domain=sheets.google.com&sz=128";
@@ -714,7 +716,7 @@
           second: "2-digit",
           hour12: false
         });
-        nyEl.textContent = `NY Time: ${formatter.format(now).replace(",", "")} | Version: ${APP_VERSION}`;
+        nyEl.textContent = `NY Time: ${formatter.format(now).replace(",", "")} | Version: ${APP_VERSION} (updated ${APP_UPDATED})`;
       }
       updateNYClock();
       setInterval(updateNYClock, 1000);
@@ -800,6 +802,10 @@
           localStorage.setItem(CACHE_KEY, csvText);
           processRows(rows);
           if (syncStatusText) syncStatusText.textContent = `Synced ${subscriptions.length} subscriptions`;
+          const lastSyncEl = document.getElementById("last-sync");
+          if (lastSyncEl) lastSyncEl.textContent = "· last synced " + new Intl.DateTimeFormat("en-CA", {
+            timeZone: "America/New_York", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false
+          }).format(new Date()).replace(",", "");
         } catch (err) {
           console.warn("Live CSV fetch failed, checking localStorage fallback:", err);
           const cached = localStorage.getItem(CACHE_KEY);
