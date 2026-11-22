@@ -322,14 +322,14 @@ main{padding-bottom:40px}
 .buy a.has-img .cap{display:flex;align-items:center;gap:8px;padding:8px 12px}
 .buy a.has-img .cap small{font-size:12px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-a.tag.tag-disney img{height:24px;width:auto;display:block}
 .buy a .arr{margin-left:auto;color:var(--dim)}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
 .tag{padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600;color:#d6d6de}
-/* Disney tag with a link (sheet column X): Impact Blue #113CCF, Soft Sky Blue #BFF5FD, white */
-a.tag.tag-disney{display:inline-flex;align-items:center;gap:6px;background:#113CCF;border-color:#BFF5FD;color:#FFFFFF;text-decoration:none;box-shadow:0 0 0 1px rgba(191,245,253,.25),0 0 14px rgba(17,60,207,.55);transition:background .15s,box-shadow .15s}
-a.tag.tag-disney:hover,a.tag.tag-disney:focus-visible{background:#1a4be6;box-shadow:0 0 0 2px #BFF5FD,0 0 18px rgba(17,60,207,.8);outline:none}
-a.tag.tag-disney .arr{color:#BFF5FD;font-size:12px}
+/* Streaming tag with a link: logo on the service's brand colors (Disney: Impact Blue #113CCF / Soft Sky Blue #BFF5FD) */
+a.tag.tag-svc{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--svc-bg);border-color:var(--svc-bd);color:#fff;text-decoration:none;box-shadow:0 0 12px color-mix(in srgb,var(--svc-bd) 45%,transparent);transition:box-shadow .15s,transform .15s}
+a.tag.tag-svc:hover,a.tag.tag-svc:focus-visible{box-shadow:0 0 0 2px var(--svc-bd),0 0 18px color-mix(in srgb,var(--svc-bd) 70%,transparent);transform:translateY(-1px);outline:none}
+a.tag.tag-svc img{height:24px;width:auto;display:block;border-radius:4px}
+a.tag.tag-svc .arr{color:var(--svc-bd);font-size:12px}
 .disclose{font-size:12px;color:var(--dim);margin-top:10px}
 .d-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .d-section .row{padding-left:0;padding-right:0}
@@ -605,6 +605,18 @@ const STORES = [
   { key:'disney',         label:'Disney+',          short:'D+', color:'#113ccf', ink:'#fff', col:23, img:'/Images/stores/disney.webp', streamGate:/disney/i }
 ];
 const STORE = Object.fromEntries(STORES.map(s => [s.key, s]));
+// Streaming services shown in "Also streaming on". A tag lights up (logo + brand colors, clickable) only when
+// column U (Streaming On) lists the service AND there is a link for it. Link column is found by its header name
+// (e.g. a column titled "Hulu (Y) |"), so adding a new service column to the sheet needs no code change.
+// Prime Video has no column of its own: it reuses the Amazon store link.
+const STREAMERS = [
+  { key:'disney', label:'Disney+',     match:/disney/i,      header:/^disney/i, col:23, img:'/Images/stores/disney.webp',          bg:'#113CCF', bd:'#BFF5FD' },
+  { key:'prime',  label:'Prime Video', match:/prime video/i, useStore:'amazon',         img:'/Images/stores/prime-free-chip.webp', bg:'#0a1c4a', bd:'#00A8E1' },
+  { key:'hulu',   label:'Hulu',        match:/^hulu\b/i,     header:/^hulu/i,           img:'/Images/stores/hulu.webp',            bg:'#000000', bd:'#1CE783' },
+  { key:'tubi',   label:'Tubi',        match:/^tubi\b/i,     header:/^tubi/i,           img:'/Images/stores/tubi.webp',            bg:'#1a0a4a', bd:'#FFFF13' },
+  { key:'plex',   label:'Plex',        match:/^plex\b/i,     header:/^plex/i,           img:'/Images/stores/plex.webp',            bg:'#111111', bd:'#E5A00D' }
+];
+const streamerFor = name => STREAMERS.find(x => x.match.test(name));
 // Stores that count as "owned" (JustWatch alone doesn't put a title in the library)
 const OWNED_STORES = ['amazon','apple','fandango','google','moviesanywhere','youtube'];
 
@@ -735,6 +747,10 @@ function buildCatalog(csvText) {
   const nums = [];
   for (let c = COL.streaming + 1; c < header.length; c++) { const v = String(header[c] || '').replace(/[,\s]/g, ''); if (/^\d+$/.test(v)) nums.push(+v); }
 
+  const hdrName = c => String(header[c] || '').replace(/\(.*$|\|.*$/g, '').trim();
+  const svcCol = {};
+  STREAMERS.forEach(x => { if (!x.header) return; for (let c = COL.streaming + 1; c < header.length; c++) if (x.header.test(hdrName(c))) { svcCol[x.key] = c; break; } if (svcCol[x.key] == null && x.col != null) svcCol[x.key] = x.col; });
+  STORES.forEach(st => { if (st.streamGate && svcCol[st.key] != null) st.col = svcCol[st.key]; });
   const out = new Map(), storeCounts = Object.fromEntries(STORES.map(s => [s.key, 0]));
   let rowCount = 0;
   const now = new Date(), todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -775,6 +791,10 @@ function buildCatalog(csvText) {
       poster, poster2, cast, runtime: cell(COL.runtime), genres, genre: genres.join(', '), isTV,
       type: isTV ? 'TV Show' : 'Movie', rating, description: cell(COL.description),
       streamOn: streamList(cell(COL.streaming)), links, familyShare, ytFree,
+      streamLinks: (() => { const o = {}; const svcNames = streamList(streamRaw); STREAMERS.forEach(x => { if (!svcNames.some(n => x.match.test(n))) return;
+        const v = x.useStore ? links[x.useStore] : (svcCol[x.key] != null ? cell(svcCol[x.key]) : '');
+        if (x.useStore ? v : isUrl(v)) o[x.key] = x.useStore ? v : normUrl(v); }); return o; })(),
+      onPrime: /prime video/i.test(streamRaw) && !!links.amazon,
       isMA: !!links.moviesanywhere,
       search: [title, year, cast.join(' '), genres.join(' '), cell(COL.collection), edition, id].join(' ').toLowerCase()
     });
@@ -1132,14 +1152,26 @@ function sourceLink(m) {
   if (l.startsWith('tvdb-')) return ['TheTVDB', `https://thetvdb.com/dereferrer/series/${id.slice(5).split('-')[0]}`];
   return null;
 }
+function streamTagsHtml(m) {
+  if (!m.streamOn.length) return '';
+  const seen = new Set(), tags = [];
+  m.streamOn.forEach(name => {
+    const x = streamerFor(name);
+    if (x) { if (seen.has(x.key)) return; seen.add(x.key); }   // "Prime Video" + "Prime Video with Ads" = one tag
+    const url = x && m.streamLinks[x.key];
+    if (url) tags.push(`<a class="tag tag-svc" style="--svc-bg:${x.bg};--svc-bd:${x.bd}" href="${esc(url)}" target="_blank" rel="${x.useStore === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${x.useStore || x.key}" title="Watch on ${esc(x.label)}" aria-label="Watch on ${esc(x.label)}"><img src="${x.img}" alt="${esc(x.label)}" onerror="this.outerHTML='${esc(x.label)}'"><span class="arr">↗</span></a>`);
+    else tags.push(`<span class="tag">${esc(x && x.useStore ? x.label : name)}</span>`);
+  });
+  return `<div class="d-section"><h3>Also streaming on</h3><div class="tags">${tags.join('')}</div></div>`;
+}
 function detailHtml(m) {
   const meta = [m.rating ? `<span class="chip-rating">${esc(m.rating)}</span>` : '', m.year, m.runtime, m.edition].filter(Boolean);
   const src = sourceLink(m);
   const stores = STORES.filter(s => m.links[s.key] && s.key !== 'disney').sort((a, b) => (b.key === state.store) - (a.key === state.store));
-  const buyNote = s => s.key === 'amazon' ? 'Affiliate link' : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store';
+  const buyNote = s => s.key === 'amazon' ? (m.onPrime ? 'Included with Prime · Affiliate link' : 'Affiliate link') : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store';
   const buy = stores.map(s => `<a href="${esc(storeUrl(m, s))}" target="_blank" rel="${s.key === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${s.key}" class="${[s.key === state.store ? 'hl' : '', s.img ? 'has-img' : ''].join(' ').trim()}" aria-label="${esc(s.label)}: ${esc(buyNote(s))}">
       ${s.img
-        ? `<span class="art${s.key === 'amazon' ? ' fit' : ''}" style="background:${s.key === 'amazon' ? '#1a98ff' : '#0b0b10'}"><img src="${s.img}" alt="${esc(s.label)}" loading="lazy" onerror="this.closest('a').classList.remove('has-img');this.parentNode.outerHTML='<span class=&quot;logo&quot; style=&quot;background:${s.color};color:${s.ink}&quot;>${esc(s.short)}</span><span>${esc(s.label)}</span>'"></span><span class="cap"><small>${esc(buyNote(s))}</small><span class="arr">↗</span></span>`
+        ? `<span class="art${s.key === 'amazon' && !m.onPrime ? ' fit' : ''}" style="background:${s.key === 'amazon' ? '#1a98ff' : '#0b0b10'}"><img src="${s.key === 'amazon' && m.onPrime ? '/Images/stores/prime-free.webp' : s.img}" alt="${esc(s.key === 'amazon' && m.onPrime ? 'Prime Video' : s.label)}" loading="lazy" onerror="this.closest('a').classList.remove('has-img');this.parentNode.outerHTML='<span class=&quot;logo&quot; style=&quot;background:${s.color};color:${s.ink}&quot;>${esc(s.short)}</span><span>${esc(s.label)}</span>'"></span><span class="cap"><small>${esc(buyNote(s))}</small><span class="arr">↗</span></span>`
         : `<span class="logo" style="background:${s.color};color:${s.ink}">${esc(s.short)}</span><span>${esc(s.label)}<small>${esc(buyNote(s))}</small></span><span class="arr">↗</span>`}</a>`).join('');
   const sameColl = m.collection ? catalog.filter(x => x.collection === m.collection && x.key !== m.key) : [];
   const similar = catalog.filter(x => x.key !== m.key && x.genres.some(g => m.genres.includes(g)) && !sameColl.includes(x)).sort((a, b) => b.genres.filter(g => m.genres.includes(g)).length - a.genres.filter(g => m.genres.includes(g)).length || b.ts - a.ts).slice(0, 20);
@@ -1162,7 +1194,7 @@ function detailHtml(m) {
         <button class="btn btn-ghost" type="button" data-share>${ICON.share}Share</button></div>
     </div></div>
   ${buy ? `<div class="d-section"><h3>Where to watch</h3><div class="buy">${buy}</div>${m.links.amazon ? '<p class="disclose">Amazon links are affiliate links: Werewolf3788 earns from qualifying purchases. Other store links are not affiliate links.</p>' : ''}</div>` : ''}
-  ${m.streamOn.length ? `<div class="d-section"><h3>Also streaming on</h3><div class="tags">${m.streamOn.map(s => m.links.disney && /disney/i.test(s) ? `<a class="tag tag-disney" href="${esc(m.links.disney)}" target="_blank" rel="noopener" data-out="disney" title="Watch on Disney+" aria-label="Watch on ${esc(s)}"><img src="${STORE.disney.img}" alt="${esc(s)}" onerror="this.outerHTML='${esc(s)}'"><span class="arr">↗</span></a>` : `<span class="tag">${esc(s)}</span>`).join('')}</div></div>` : ''}
+  ${streamTagsHtml(m)}
   ${sameColl.length ? `<div class="d-section"><h3>More in ${esc(m.collection)}</h3><div class="row">${sameColl.slice(0, 20).map(card).join('')}</div></div>` : ''}
   ${similar.length ? `<div class="d-section"><h3>More like this</h3><div class="row">${similar.map(card).join('')}</div></div>` : ''}`;
 }
