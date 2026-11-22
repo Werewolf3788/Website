@@ -1091,7 +1091,7 @@ function squadTick(dt) {
     b.shotT -= dt;
     if (b !== medic || !b.moving) {
       const be = eye(b.pos, 1.5);
-      const foes = enemies.filter(e => !e.dead && (e.alert || (squadOpenFire && e.marked)) && e.pos.distanceTo(b.pos) < 90);
+      const foes = enemies.filter(e => !e.dead && (e.alert || (squadOpenFire >= 1 && e.marked) || (squadOpenFire === 2 && e.pos.distanceTo(b.pos) < 75)) && e.pos.distanceTo(b.pos) < 90);
       foes.sort((x, y) => x.pos.distanceTo(b.pos) - y.pos.distanceTo(b.pos));
       const foe = foes.find(e => los(be, eye(e.pos, 1.4)));
       if (foe) {
@@ -1109,7 +1109,7 @@ function squadTick(dt) {
   if (P.mode === 'down' && !up.length && !P.toldAlone) { P.toldAlone = true; say('Your whole squad is down · E / hold □ to skip the wait', 5000); }
   if (P.mode !== 'down') P.toldAlone = false;
 }
-let squadOpenFire = false;
+let squadOpenFire = 0;   // 0 = only fight back, 1 = shoot marked targets, 2 = fire at will (any guard they can see)
 function reinforce() {      // cleared camps are re-garrisoned 20 minutes later (when you are not close by)
   if (MP.client) return;
   camps.forEach(c => { const t = S.camps[c.id]; if (c.cleared && t && Date.now() - t > 20 * 60 * 1000 && Math.hypot(P.pos.x - c.x, P.pos.z - c.z) > 120) { delete S.camps[c.id]; spawnCampGuards(c); pickups.forEach(p => { if (p.kind === 'crate' && p.camp === c.id) { delete S.picked[p.id]; p.mesh.visible = true; } }); say('📻 Reinforcements reached ' + c.name); save(); } });
@@ -1416,9 +1416,11 @@ function renderLoadout() {
 function openWheel() {
   show('wheel'); const m = countMarked();
   const opts = [['🎯 Sync shot' + (m ? ' (' + m + ' marked)' : ' (mark targets first)') + (syncCool > 0 ? ' · ' + Math.ceil(syncCool) + 's' : ''), () => syncShot()],
-    ['🔁 Regroup on me', () => { squad.forEach(b => { b.hold = false; }); squadOpenFire = false; say('Squad: "Moving to you"'); }],
+    ['🔁 Regroup on me', () => { squad.forEach(b => { b.hold = false; }); say('Squad: "Moving to you"'); }],
     ['✋ Hold position', () => { squad.forEach(b => { b.hold = true; }); say('Squad: "Holding here"'); }],
-    [squadOpenFire ? '🤫 Hold fire' : '🔥 Open fire on marked targets', () => { squadOpenFire = !squadOpenFire; say(squadOpenFire ? 'Squad: "Engaging marked targets"' : 'Squad: "Holding fire"'); }]];
+    ['🔥 Fire at will' + (squadOpenFire === 2 ? ' ✓' : ''), () => { squadOpenFire = 2; say('Squad: "Weapons free, taking any shot we\'ve got"'); }],
+    ['🎯 Shoot marked targets' + (squadOpenFire === 1 ? ' ✓' : ''), () => { squadOpenFire = 1; say('Squad: "Engaging marked targets"'); }],
+    ['🤫 Hold fire (only fight back)' + (squadOpenFire === 0 ? ' ✓' : ''), () => { squadOpenFire = 0; say('Squad: "Holding fire"'); }]];
   if (MP.client) opts.splice(1);
   $('wheelList').innerHTML = opts.map((o, i) => '<button class="alt" data-w="' + i + '">' + (i + 1) + ' · ' + o[0] + '</button>').join('');
   $('wheelList').querySelectorAll('[data-w]').forEach(b => b.onclick = () => { closeMenus(); opts[+b.getAttribute('data-w')][1](); });

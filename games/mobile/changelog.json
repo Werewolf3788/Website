@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 53,
+   "date": "Nov 22",
+   "game": "recon",
+   "items": [
+    "🔥 New squad order: Fire at will. Your AI squad shoots any guard they can see, no marking needed (Tab / hold R1 for squad orders)",
+    "Squad orders now let you pick Fire at will, Shoot marked targets, or Hold fire, with a ✓ next to the one that's on. Regroup no longer resets it"
+   ]
+  },
+  {
    "id": 52,
    "date": "Nov 22",
    "game": "recon",
