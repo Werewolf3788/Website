@@ -25,6 +25,11 @@
     "trailingSlash": false,
     "redirects": [
       {
+        "source": "/Ray/images/:rest*",
+        "destination": "/Images/:rest*",
+        "type": 301
+      },
+      {
         "source": "/game/:rest*",
         "destination": "/games/:rest*",
         "type": 301
