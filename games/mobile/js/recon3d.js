@@ -1075,6 +1075,7 @@ function squadTick(dt) {
     if (b.hp < botMaxHP() && T - (b.hurtT || 0) > 6) b.hp = Math.min(botMaxHP(), b.hp + dt * 8);
     let tgt = null, run = false;
     if (b === medic) { tgt = (patient === 'P' ? P.pos : patient.pos).clone(); run = true; }
+    else if (b.flankTo && !b.hold) { tgt = b.flankTo.clone(); run = true; }    // in a fight but can't see the shooter: move up beside you to get a clear shot
     else if (!b.hold) tgt = P.pos.clone().addScaledVector(right, b.off[0] * (fight ? 1.8 : 1)).addScaledVector(fwd, -b.off[1] * (fight ? 1.4 : 1));
     if (tgt) {
       const d = Math.hypot(tgt.x - b.pos.x, tgt.z - b.pos.z);
@@ -1091,16 +1092,21 @@ function squadTick(dt) {
     b.shotT -= dt;
     if (b !== medic || !b.moving) {
       const be = eye(b.pos, 1.5);
-      const foes = enemies.filter(e => !e.dead && (e.alert || (squadOpenFire >= 1 && e.marked) || (squadOpenFire === 2 && e.pos.distanceTo(b.pos) < 75)) && e.pos.distanceTo(b.pos) < 90);
+      // always fight back, on every difficulty: any guard that is in the fight, out to 120 m
+      const foes = enemies.filter(e => !e.dead && (e.alert || (squadOpenFire >= 1 && e.marked) || (squadOpenFire === 2 && e.pos.distanceTo(b.pos) < 75)) && e.pos.distanceTo(b.pos) < 120);
       foes.sort((x, y) => x.pos.distanceTo(b.pos) - y.pos.distanceTo(b.pos));
       const foe = foes.find(e => los(be, eye(e.pos, 1.4)));
+      const angry = foes.filter(e => e.alert);
+      // nobody in sight but the squad is under fire: head for a spot beside you, toward the nearest shooter
+      if (!foe && angry.length && b !== medic) { const f0 = angry[0], dir = new V3(f0.pos.x - P.pos.x, 0, f0.pos.z - P.pos.z).normalize(); b.flankTo = P.pos.clone().addScaledVector(dir, 5).addScaledVector(right, (b.off[0] >= 0 ? 1 : -1) * (3 + Math.abs(b.off[0]))); }
+      else b.flankTo = null;
       if (foe) {
         b.face = Math.atan2(-(foe.pos.x - b.pos.x), -(foe.pos.z - b.pos.z));
         if (b.shotT <= 0) {
           b.shotT = rnd(.45, .95); const dist = foe.pos.distanceTo(b.pos), h = Math.random() < clamp(.55 - dist / 150, .18, .5);
           const from = be.clone().addScaledVector(new V3(-Math.sin(b.face), 0, -Math.cos(b.face)), .55);
           b.sc = ((b.sc | 0) + 1) % 10; flash(from, .7); tracer(from, eye(foe.pos, h ? 1.4 : 2.3), 0xbbf7d0); SFX.shot(false, 'ar', clamp(.7 - dist / 150, .2, .6));
-          if (h) { damageEnemy(foe, 28 * (1 + eff('trained_rebels')), false, 'squad'); foe.flinch = .18; }
+          if (h) { damageEnemy(foe, 28 * (1 + eff('trained_rebels')) * DF().hp, false, 'squad'); foe.flinch = .18; }
         }
       } else if (foes[0]) b.face = turnTo(b.face, Math.atan2(-(foes[0].pos.x - b.pos.x), -(foes[0].pos.z - b.pos.z)), dt * 4);
     }

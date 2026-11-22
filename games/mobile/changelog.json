@@ -2,6 +2,14 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 54,
+   "date": "Nov 22",
+   "game": "recon",
+   "items": [
+    "🎖️ Your AI squad always fights back now, on every difficulty: they hit just as hard on Hard as on Normal, engage shooters out to 120 m, and move up beside you when they can't see who's shooting"
+   ]
+  },
+  {
    "id": 53,
    "date": "Nov 22",
    "game": "recon",
