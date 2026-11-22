@@ -421,7 +421,7 @@
       return;
     }
     if (b.id === 'testAlert') { pv.contentWindow.postMessage({ type: 'overlay-alert' }, location.origin); return; }
-    if (b.id === 'testWm') { pv.contentWindow.postMessage({ type: 'overlay-wm' }, location.origin); return; }
+    if (b.id === 'testWm') { pv.contentWindow.postMessage({ type: 'overlay-wm', month: priceInfo && priceInfo.plans && priceInfo.plans.month ? priceInfo.plans.month.price : '' }, location.origin); return; }
     if (b.dataset.copy) {
       var inp = $('#' + b.dataset.copy); inp.select();
       (navigator.clipboard ? navigator.clipboard.writeText(inp.value) : Promise.reject()).then(function () { toast('Link copied!'); }, function () { document.execCommand('copy'); toast('Link copied!'); });

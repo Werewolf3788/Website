@@ -562,16 +562,16 @@
    * site's login server (Firestore overlay_pro/{channel}); a page can't mark itself paid. */
   var PRO_API = 'https://ww-discord-auth.onrender.com/overlay/pro/';
   var STUDIO_URL = location.origin + location.pathname.replace(/overlay\/live(\.html)?$/, 'overlay-studio');
-  var isPro = false, proChecked = '';
+  var isPro = false, proChecked = '', monthPrice = '5';
   function checkPro() {
     var c = chan(); if (!c || DEMO) { isPro = false; return Promise.resolve(); }
     return fetch(PRO_API + encodeURIComponent(c)).then(function (r) { return r.json(); })
-      .then(function (j) { isPro = !!(j && j.pro); proChecked = c; }).catch(function () { /* keep last answer */ });
+      .then(function (j) { isPro = !!(j && j.pro); proChecked = c; if (j && j.month) monthPrice = String(parseFloat(j.month)); }).catch(function () { /* keep last answer */ });
   }
   function showWatermark() {
     var old = stage.querySelector('.wm'); if (old) old.remove();
     var w = el('div', 'wm', '<i class="fa-solid fa-wand-magic-sparkles"></i><div>Overlay made at ' +
-      esc(STUDIO_URL.replace(/^https?:\/\//, '')) + '<small>Make your own free • remove this from $5/month</small></div>');
+      esc(STUDIO_URL.replace(/^https?:\/\//, '')) + '<small>Make your own free • remove this from $' + esc(monthPrice) + '/month</small></div>');
     stage.appendChild(w);
     setTimeout(function () { w.classList.add('leave'); setTimeout(function () { w.remove(); }, 550); }, 12000);
   }
@@ -613,7 +613,7 @@
     if (e.origin !== location.origin || !e.data) return;
     if (e.data.type === 'overlay-cfg') apply(e.data.cfg);
     if (e.data.type === 'overlay-alert') testAlert(e.data.kind);
-    if (e.data.type === 'overlay-wm') showWatermark();
+    if (e.data.type === 'overlay-wm') { if (e.data.month) monthPrice = String(parseFloat(e.data.month)); showWatermark(); }
   });
 
   function broken(msg) { apply({}); stage.appendChild(el('div', 'hint', msg || 'This overlay link looks broken.<br>Make a new one in the Overlay Studio.')); }

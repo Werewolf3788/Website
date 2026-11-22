@@ -79,7 +79,8 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
     try {
       const d = await fs().collection('overlay_pro').doc(ch).get();
       const until = d.exists ? Number(d.data().until || 0) : 0;
-      const body = { pro: until > Date.now(), until };
+      let tier = 'standard'; try { tier = (await channelTier(ch)).tier; } catch (e) { /* Twitch unreachable: show the regular price */ }
+      const body = { pro: until > Date.now(), until, tier, month: PRICES[tier].month, year: PRICES[tier].year };
       proCache.set(ch, { at: Date.now(), body }); res.json(body);
     } catch (e) { console.error('[overlay pro]', e && e.message); res.json({ pro: false }); }
   });
