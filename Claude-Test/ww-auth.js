@@ -132,7 +132,10 @@
 .ww-acct-pop a.ww-acct-prof{display:flex;align-items:center;justify-content:center;width:100%;min-height:40px;margin-bottom:6px;border-radius:10px;border:1px solid var(--ww-border,rgba(148,163,184,.3));background:var(--ww-accent,#ff5f1f);color:#fff;font:700 .85rem var(--ww-font,system-ui,sans-serif);text-decoration:none}
 .ww-acct-pop button{width:100%;min-height:40px;border-radius:10px;border:1px solid var(--ww-border,rgba(148,163,184,.3));background:var(--ww-bg-2,#1e293b);color:inherit;font:700 .85rem var(--ww-font,system-ui,sans-serif);cursor:pointer}
 .ww-acct-row{display:flex;align-items:center;gap:10px;padding:10px 4px 12px;border-bottom:1px solid var(--ww-border,rgba(148,163,184,.2));margin-bottom:6px}
-.ww-acct-row .ww-acct{flex:1 1 auto}
+.ww-acct-row{flex-wrap:wrap}.ww-acct-row .ww-acct{flex:1 1 auto}
+.ww-fr-btn{font-family:ui-monospace,Consolas,monospace;letter-spacing:.03em;white-space:nowrap}.ww-fr-btn:hover{border-color:#ff5f1f}
+.ww-fr-wide{width:100%;justify-content:center}
+@media(max-width:480px){.ww-fr-btn:not(.ww-fr-wide) span{display:none}}
 .ww-acct-row .ww-acct-btn{max-width:none;width:100%;justify-content:center}
 .ww-acct-row .ww-acct-pop{position:static;display:block;border:0;box-shadow:none;background:none;padding:0;min-width:0}
 `;
@@ -147,7 +150,7 @@
     function chipHtml(inRow) {
         if (user) {
             const av = user.photo ? `<img src="${esc(user.photo)}" alt="" referrerpolicy="no-referrer">` : '';
-            return `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn is-in" data-ww-acct-toggle aria-haspopup="true">${av}<span>${esc(user.name)}</span></button>
+            return `<button type="button" class="ww-acct-btn ww-fr-btn is-in" data-ww-friend title="Your friend code: add a friend or see friend requests">👥 <span data-ww-fcode>Add friend</span></button><div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn is-in" data-ww-acct-toggle aria-haspopup="true">${av}<span>${esc(user.name)}</span></button>
 <div class="ww-acct-pop"><small>${esc(user.email)}</small>${profileLink()}<button type="button" data-ww-acct-out>Sign out</button></div></div>`;
         }
         return `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn" data-ww-acct-in>Sign in</button>${DISCORD_AUTH ? '<button type="button" class="ww-acct-btn" data-ww-acct-discord>Discord</button>' : ''}</div>`;
@@ -163,7 +166,7 @@
             const slots = bar ? [bar.querySelector('[data-ww-nav-slot]')] : Array.from(document.querySelectorAll('[data-ww-nav-slot]'));
             slots.filter(Boolean).forEach(slot => {
                 const w = document.createElement('div');
-                w.setAttribute('data-ww-acct-mount', ''); w.style.cssText = 'display:inline-flex;align-items:center;margin-left:8px;flex:0 0 auto';
+                w.setAttribute('data-ww-acct-mount', ''); w.style.cssText = 'display:inline-flex;align-items:center;gap:8px;margin-left:8px;flex:0 0 auto';
                 w.innerHTML = chipHtml();
                 if (bar) bar.appendChild(w); else slot.insertAdjacentElement('afterend', w);
             });
@@ -173,11 +176,12 @@
             const row = document.createElement('div');
             row.className = 'ww-acct-row'; row.setAttribute('data-ww-acct-mount', '');
             row.innerHTML = user
-                ? `<div class="ww-acct" data-ww-acct><div class="ww-acct-pop"><small>Signed in as ${esc(user.name)}<br>${esc(user.email)}</small>${profileLink()}<button type="button" data-ww-acct-out>Sign out</button></div></div>`
+                ? `<button type="button" class="ww-acct-btn ww-fr-btn is-in ww-fr-wide" data-ww-friend title="Your friend code: add a friend or see friend requests">👥 <span data-ww-fcode>Add friend</span></button><div class="ww-acct" data-ww-acct><div class="ww-acct-pop"><small>Signed in as ${esc(user.name)}<br>${esc(user.email)}</small>${profileLink()}<button type="button" data-ww-acct-out>Sign out</button></div></div>`
                 : `<div class="ww-acct" data-ww-acct><button type="button" class="ww-acct-btn" data-ww-acct-in>Sign in with Google</button>${DISCORD_AUTH ? '<button type="button" class="ww-acct-btn" data-ww-acct-discord>Sign in with Discord</button>' : ''}</div>`;
             const first = box.querySelector('.ww-sheet-title, .ww-drawer-head');
             if (first) first.insertAdjacentElement('afterend', row); else box.insertBefore(row, box.firstChild);
         });
+        document.dispatchEvent(new Event('ww-acct-mounted'));
     }
 
     document.addEventListener('click', (e) => {

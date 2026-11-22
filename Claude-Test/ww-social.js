@@ -203,6 +203,12 @@
     '.m .cp{display:inline-block;margin:3px 0 3px 6px;vertical-align:middle;background:rgba(255,255,255,.14);color:inherit;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}.m .cp:hover{background:rgba(255,255,255,.25)}.m .cp.ok{background:#10b981;border-color:#10b981;color:#fff}',
     '.m .emb{border-left:3px solid #5865f2;padding-left:8px;margin-top:4px;font-size:13px;opacity:.9}',
     '.empty a{display:inline-block;margin-top:10px;background:#5865f2;color:#fff;border-radius:10px;padding:8px 14px;font-weight:700;text-decoration:none;font-size:13px}',
+    '.addf{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:8px}',
+    '.addf .mine{display:flex;align-items:center;gap:8px;font-size:13px;color:#9aa4b2}.addf .mine b{color:#ff8a4c;font-family:ui-monospace,Consolas,monospace;font-size:14px;letter-spacing:.04em}',
+    '.addf .mine button,.rq button{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:inherit;border-radius:8px;padding:4px 10px;font-weight:700;font-size:12px;cursor:pointer}',
+    '.addf .in{display:flex;gap:8px}.addf input{font-size:15px;padding:8px 10px;text-transform:uppercase}',
+    '.addf .msg{font-size:12px;min-height:0}.addf .msg.ok{color:#34d399}.addf .msg.bad{color:#f87171}',
+    '.rq{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.05)}.rq .nm{flex:1}.rq .acc{background:#ff5f1f;border-color:#ff5f1f;color:#fff}',
     '.chat{flex:1;display:flex;flex-direction:column;min-height:0}',
     '.msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}',
     '.m{max-width:80%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.35;white-space:pre-wrap;word-break:break-word;background:rgba(255,255,255,.09);align-self:flex-start}',
@@ -323,12 +329,15 @@
     };
 
     watchThreads();
+    watchRequests();
+    syncFriendChips();
   }
 
   function teardownMessenger() {
     if (threadsRef && threadsCb) threadsRef.off('value', threadsCb);
     if (msgsRef && msgsCb) msgsRef.off('child_added', msgsCb);
     threadsRef = msgsRef = null; threads = {}; seen = {}; firstThreads = true; friends = null; openOther = null;
+    if (reqRef) { try { reqRef.off(); } catch (e) {} reqRef = null; } reqs = {}; firstReqs = true; addBox = null;
     if (UI) { UI.host.remove(); UI = null; }
   }
 
@@ -338,7 +347,7 @@
 
   function refreshBadge() {
     if (!UI) return;
-    var n = totalUnread();
+    var n = totalUnread() + pendingReqs().length;
     UI.badge.hidden = n === 0;
     UI.badge.textContent = n > 99 ? '99+' : String(n);
     var base = document.title.replace(/^\(\d+\)\s*/, '');
@@ -375,10 +384,10 @@
     }
   }
 
-  function toast(k, name, text) {
+  function toast(k, name, text, isRequest) {
     if (!UI) return;
     var t = el('div', 'toast'); t.append(el('b', null, name), el('span', null, text));
-    t.onclick = function () { t.remove(); openChat(k, name); };
+    t.onclick = function () { t.remove(); if (isRequest) WW.openAddFriend(); else openChat(k, name); };
     UI.toasts.appendChild(t);
     setTimeout(function () { t.remove(); }, 7000);
   }
@@ -413,11 +422,124 @@
     return friends;
   }
 
+  /* ---------- friends by friend code (same records as Settings) ----------
+   *   users/{me}/friends/{CODE}                = { friend_code, username, avatar_url, added_at }
+   *   accounts/friend_requests/{theirKey}/{MY} = { from_key, from_code, username, avatar_url, at, status }  */
+  var reqRef = null, reqs = {}, firstReqs = true, addBox = null;
+  function pendingReqs() {
+    return Object.keys(reqs).filter(function (c) { var r = reqs[c]; return r && r.from_key && /^[A-Z0-9]{8}$/.test(c); })
+      .map(function (c) { return { code: c, username: reqs[c].username || '', avatar: reqs[c].avatar_url || '', key: reqs[c].from_key }; });
+  }
+  function watchRequests() {
+    reqRef = WW.db.ref('accounts/friend_requests/' + WW.me.key);
+    reqRef.on('value', async function (s) {
+      var v = s.val() || {}, mine = {};
+      try { mine = (await WW.db.ref('users/' + WW.me.key + '/friends').once('value')).val() || {}; } catch (e) {}
+      Object.keys(v).forEach(function (c) { if (mine[c]) delete v[c]; });   // already friends: nothing to accept
+      if (!firstReqs) Object.keys(v).forEach(function (c) { if (!reqs[c] && UI) toast(null, '👥 Friend request', (v[c].username || c) + ' wants to be friends', true); });
+      reqs = v; firstReqs = false; refreshBadge();
+      if (UI && !UI.panel.hidden && !openOther && tab === 'site') renderList();
+    }, function (e) { console.warn('[WW] friend requests', e && e.message); });
+  }
+  function cleanCode(raw) {
+    var t = String(raw || '').toUpperCase(), m = t.match(/\b[A-Z0-9]{8}\b/) || t.replace(/[^A-Z0-9]/g, '').match(/^[A-Z0-9]{8}$/);
+    return m ? m[0] : t.replace(/[^A-Z0-9]/g, '');
+  }
+  WW.addFriend = async function (raw) {
+    var code = cleanCode(raw), me = WW.me;
+    if (!me) return { ok: false, msg: 'Sign in first, then add your friend.' };
+    if (!/^[A-Z0-9]{8}$/.test(code)) return { ok: false, msg: 'A friend code is 8 letters and numbers. Check it and try again.' };
+    if (code === me.friendCode) return { ok: false, msg: 'That is your own code. Send it to a friend instead.' };
+    var db = WW.db;
+    if ((await db.ref('users/' + me.key + '/friends/' + code).once('value')).exists()) return { ok: false, msg: 'Already on your friends list.' };
+    var raw0 = (await db.ref('accounts/friend_codes/' + code).once('value')).val();
+    if (raw0 == null || raw0 === '') return { ok: false, msg: 'No player has the code ' + code + '. Check it with your friend (0 vs O, 1 vs I).' };
+    var fk = await WW.ownerKeyOfCode(code);
+    if (fk === me.key) return { ok: false, msg: 'That is your own code.' };
+    var prof = {}; if (fk) { try { prof = (await db.ref('users/' + fk).once('value')).val() || {}; } catch (e) {} }
+    var snap = raw0 && typeof raw0 === 'object' ? raw0 : {};
+    var f = { friend_code: code, username: String(prof.username || snap.username || snap.display_name || code).slice(0, 32), avatar_url: String(prof.avatar_url || snap.avatar_url || ''), added_at: Date.now() };
+    await db.ref('users/' + me.key + '/friends/' + code).set(f);
+    var sent = false;
+    if (fk && me.friendCode) {
+      try {
+        if (reqs[code]) await db.ref('accounts/friend_requests/' + me.key + '/' + code).remove();   // they asked first: this accepts it
+        else if (!(await db.ref('users/' + fk + '/friends/' + me.friendCode).once('value')).exists()) {
+          await db.ref('accounts/friend_requests/' + fk + '/' + me.friendCode).set({ from_key: me.key, from_code: me.friendCode, username: me.name || me.friendCode, avatar_url: me.avatar || '', at: Date.now(), status: 'pending' });
+          sent = true;
+        }
+      } catch (e) { console.warn('[WW] friend request', e && e.message); }
+    }
+    friends = null;
+    return { ok: true, msg: 'Added ' + f.username + '.' + (sent ? ' A friend request was sent so you show up on their list too.' : '') };
+  };
+  async function acceptRequest(code) {
+    var r = reqs[code]; if (!r) return;
+    try {
+      var owner = await WW.ownerKeyOfCode(code);
+      if (owner && owner !== r.from_key) { await declineRequest(code); return; }
+      await WW.db.ref('users/' + WW.me.key + '/friends/' + code).set({ friend_code: code, username: String(r.username || code).slice(0, 32), avatar_url: String(r.avatar_url || ''), added_at: Date.now() });
+      await WW.db.ref('accounts/friend_requests/' + WW.me.key + '/' + code).remove();
+      friends = null;
+    } catch (e) { console.warn('[WW] accept', e && e.message); }
+  }
+  async function declineRequest(code) {
+    try { await WW.db.ref('accounts/friend_requests/' + WW.me.key + '/' + code).remove(); } catch (e) {}
+  }
+  function friendBox() {
+    if (addBox) return addBox;
+    var box = el('div', 'addf'), mine = el('div', 'mine'), code = WW.me.friendCode;
+    mine.append(document.createTextNode('Your friend code: '), el('b', null, code || '…'));
+    if (code) { var cp = el('button', null, '📋 Copy'); cp.type = 'button'; cp.onclick = function () { copyText(code).then(function () { cp.textContent = '✓ Copied'; setTimeout(function () { cp.textContent = '📋 Copy'; }, 2000); }); }; mine.appendChild(cp); }
+    var row = el('form', 'in'), inp = document.createElement('input'), go = el('button', 'send', 'Add friend'), msg = el('div', 'msg');
+    row.style.cssText = 'padding:0;border:0'; inp.placeholder = "Friend's code (8 letters/numbers)"; inp.maxLength = 40; inp.autocomplete = 'off'; go.type = 'submit';
+    row.append(inp, go);
+    row.onsubmit = async function (e) {
+      e.preventDefault(); if (!inp.value.trim()) return;
+      go.disabled = true; go.textContent = 'Adding…'; msg.className = 'msg'; msg.textContent = '';
+      var r; try { r = await WW.addFriend(inp.value); } catch (err) { r = { ok: false, msg: /permission/i.test(String(err && (err.code || err.message))) ? 'The database refused the save. Sign out, sign in again and retry.' : 'Could not add that friend. Try again.' }; }
+      go.disabled = false; go.textContent = 'Add friend'; msg.className = 'msg ' + (r.ok ? 'ok' : 'bad'); msg.textContent = r.msg;
+      if (r.ok) { inp.value = ''; var keep = addBox; renderList().then(function () { if (keep) keep.querySelector('.msg').textContent = r.msg; }); }
+    };
+    box.append(mine, row, msg); addBox = box; UI.addInput = inp; return box;
+  }
+  // header chips on every page ("👥 #CODE") open the messenger straight at the add-friend box
+  WW.openAddFriend = function () {
+    if (!UI) return;
+    if (UI.panel.hidden) openPanel();
+    if (tab !== 'site') setTab('site'); else if (openOther) showList();
+    setTimeout(function () { if (UI && UI.addInput) UI.addInput.focus(); }, 60);
+  };
+  function syncFriendChips() {
+    var code = WW.me && WW.me.friendCode;
+    document.querySelectorAll('[data-ww-fcode]').forEach(function (n) { n.textContent = code ? '#' + code : 'Add friend'; });
+  }
+  window.addEventListener('ww-shell-rendered', function () { setTimeout(syncFriendChips, 0); });
+  document.addEventListener('ww-acct-mounted', syncFriendChips);
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('[data-ww-friend]');
+    if (!t) return; e.preventDefault();
+    if (WW.me && UI) WW.openAddFriend(); else if (window.WWAuth) window.WWAuth.signIn();
+  });
+
   async function renderList() {
     if (!UI) return;
     var fr = await loadFriends();
     if (!UI || tab !== 'site') return;
     var L = UI.list; L.textContent = '';
+    L.appendChild(friendBox());
+    var pr = pendingReqs();
+    if (pr.length) {
+      L.appendChild(el('div', 'sec', 'Friend requests'));
+      pr.forEach(function (r) {
+        var row = el('div', 'rq'), av = el('div', 'av', initial(r.username || r.code)), nm = el('div', 'nm');
+        nm.append(el('div', 'nm', r.username || r.code), el('div', 'pv', r.code));
+        var ok = el('button', 'acc', 'Accept'), no = el('button', null, 'Decline'); ok.type = no.type = 'button';
+        ok.onclick = function () { ok.disabled = no.disabled = true; acceptRequest(r.code); };
+        no.onclick = function () { ok.disabled = no.disabled = true; declineRequest(r.code); };
+        row.append(av, nm, ok, no); L.appendChild(row);
+      });
+    }
     var keys = Object.keys(threads).sort(function (a, b) { return (threads[b].ts || 0) - (threads[a].ts || 0); });
     if (keys.length) {
       L.appendChild(el('div', 'sec', 'Conversations'));
@@ -428,7 +550,7 @@
       L.appendChild(el('div', 'sec', 'Friends'));
       rest.forEach(function (f) { L.appendChild(rowFor(f.key, f.name, 'Say hi', 0, 0)); });
     }
-    if (!keys.length && !rest.length) L.appendChild(el('div', 'empty', 'No friends to message yet. Add a friend by friend code in Settings.'));
+    if (!keys.length && !rest.length) L.appendChild(el('div', 'empty', 'No friends to message yet. Add one with their friend code above.'));
     // presence dots
     L.querySelectorAll('.av').forEach(function (av) {
       var k = av.dataset.key;
@@ -474,7 +596,9 @@
     var box = el('div', 'empty'), a;
     if (j.error === 'notlinked') { box.textContent = 'Connect your Discord account to read and send the server’s messages here, without installing Discord.'; box.appendChild(document.createElement('br')); a = el('a', null, 'Connect Discord in Settings'); a.href = new URL('../security/setting.html', SCRIPT_SRC).href; box.appendChild(a); }
     else if (j.error === 'notmember') { box.textContent = 'Your Discord account is connected, but it is not in ' + (j.guild || 'the server') + ' yet.'; box.appendChild(document.createElement('br')); a = el('a', null, 'Join the server'); a.href = j.invite; a.target = '_blank'; a.rel = 'noopener'; box.appendChild(a); }
-    else if (j.error === 'nobot' || j.error === 'noserver' || j.error === 'botnotin') box.textContent = 'Discord is not connected to the site yet (the bot still has to be added to the server).';
+    else if (j.error === 'nobot') box.textContent = 'Discord setup step 1 of 3 is missing: the bot token. Add a row named discord_bot_token to the Keys sheet.';
+    else if (j.error === 'noserver') box.textContent = 'Discord setup step 2 of 3 is missing: which server to use. Put a never-expiring invite link for the server in the Firebase database at accounts/discord_bridge/invite.';
+    else if (j.error === 'botnotin') box.textContent = 'Discord setup step 3 of 3 is missing: the bot is not in ' + (j.guild || 'the server') + ' yet. Invite the bot to the server.';
     else if (j.error === 'signin') box.textContent = 'Sign in again to use Discord here.';
     else box.textContent = 'Could not reach Discord right now. Try again in a minute.';
     return box;

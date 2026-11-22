@@ -165,7 +165,7 @@ const viewRank = () => S.isOwner ? (S.viewAs === null ? 3 : S.viewAs) : S.rel;
 const SCOPE_FIELD = { psn:'psn_username_scope', xbox:'xbox_gamertag_scope', steam:'steam_id_scope', tracking:'tracking_scope' };
 const levelOf = (sec) => SCOPE_FIELD[sec]
   ? (S.U[SCOPE_FIELD[sec]] || (sec === 'tracking' ? 'friends' : 'private'))
-  : ((S.profile.privacy || {})[sec] || 'friends');
+  : ((S.profile.privacy || {})[sec] || (sec === 'trophies' ? (S.U.tracking_scope || 'friends') : 'friends'));   // trophies follow "Game & trophy tracking" in Settings unless set on the profile
 const canSee = (sec) => viewRank() >= (LV_RANK[levelOf(sec)] ?? 3);
 const platId = (p) => String(S.U[{ psn:'psn_username', xbox:'xbox_gamertag', steam:'steam_id' }[p]] || '').trim();
 const visiblePlats = () => Object.keys(PLATS).filter(p => platId(p) && canSee(p) && S.plat[p]);
@@ -226,6 +226,17 @@ async function publishPublic() {
     if (isPub('psn') && platId('psn')) out.psn = platId('psn');
     if (isPub('xbox') && platId('xbox')) out.xbox = platId('xbox');
     if (isPub('steam') && platId('steam')) { const sid = await steamId64(platId('steam')); if (sid) out.steam = sid; }
+    // small copy of each PUBLIC platform's stats + latest games, so signed-out visitors see them too
+    // (they may not be allowed to read the Firestore summaries directly). Only what is set to Public.
+    const pc = {};
+    ['psn', 'xbox', 'steam'].forEach(x => {
+      const d = S.plat[x]; if (!d || !isPub(x) || !platId(x)) return;
+      pc[x] = { name:d.name || '', avatar:d.avatar || '', stats:d.stats || [], breakdown:d.breakdown || null,
+        recent:(d.recent || []).slice(0, 8),
+        games:(d.games || []).slice(0, 12).map(g => ({ id:g.id, title:g.title, poster:g.poster || '', progress:g.progress || 0,
+          earned:g.earned == null ? null : g.earned, total:g.total == null ? null : g.total, hours:g.hours || '', lastPlayed:g.lastPlayed || '' })) };
+    });
+    if (Object.keys(pc).length) out.plat = JSON.parse(JSON.stringify(pc));
     if (isPub('tracking')) {
       if (Array.isArray(S.tracking)) out.tracking = S.tracking.slice(0, 40).map(t => ({ title:t.title, platform:t.platform || '', status:t.status || '', progress:t.progress, note:t.note || '', updated:t.updated || 0, wl:t.wl || null }));
       if (S.mobileProg && Object.keys(S.mobileProg).length) out.mobile_progress = S.mobileProg;
@@ -257,6 +268,13 @@ async function bootPublic(q) {
   S.tracking = Array.isArray(snap.tracking) ? snap.tracking : null;
   applyTheme();
   await loadPlatforms();
+  // anything Firestore would not hand a signed-out visitor comes from the owner's public copy
+  Object.entries(snap.plat || {}).forEach(([p, d]) => {
+    if (S.plat[p] || !d || !platId(p)) return;
+    S.plat[p] = { platform:p, name:d.name || platId(p), avatar:d.avatar || '', online:false, currentGame:'', activity:'',
+      stats:d.stats || [], breakdown:d.breakdown || undefined, recent:d.recent || [],
+      games:(d.games || []).map(g => ({ ...g, platform:p, code:snap.code, earned:g.earned == null ? undefined : g.earned, total:g.total == null ? undefined : g.total, playing:false, achievements:[] })) };
+  });
   document.title = displayName() + ' | Pack Hub';
   setTabIcon(avatarOf() || Object.values(S.plat).map(x => x && x.avatar).find(Boolean) || '');
   $('#state-msg').hidden = true; $('#profile-root').hidden = false;
