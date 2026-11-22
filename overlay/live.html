@@ -311,7 +311,7 @@
   function lum(hex) { var h = String(hex || '#000').replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); var n = parseInt(h, 16) || 0; return ((n >> 16 & 255) * .299 + (n >> 8 & 255) * .587 + (n & 255) * .114) / 255; }
   function gameTheme(force) {
     if (!cfg.gameTheme || !cfg.gameTheme.on || !window.GameThemes || cfg.scene !== 'live') return;
-    if (!DEMO && !isPro) return;   // "Match my game" is part of the paid pass (the Studio preview shows it to everyone)
+    if (!DEMO && !gamesOk) return;   // "Match my game": paid pass, or an ally on the owner's friends list (the Studio preview shows it to everyone)
     var g = shownGame() || 'offline';
     if (!force && g === themedFor) return;
     themedFor = g;
@@ -631,11 +631,11 @@
    * site's login server (Firestore overlay_pro/{channel}); a page can't mark itself paid. */
   var PRO_API = 'https://ww-discord-auth.onrender.com/overlay/pro/';
   var STUDIO_URL = location.origin + location.pathname.replace(/overlay\/live(\.html)?$/, 'overlay-studio');
-  var isPro = false, proChecked = '', monthPrice = '5';
+  var isPro = false, gamesOk = false, proChecked = '', monthPrice = '5';
   function checkPro() {
     var a = acct(), c = a.platform + ':' + a.name; if (!C.accountOk(a) || DEMO) { isPro = false; return Promise.resolve(); }
     return fetch(PRO_API + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); })
-      .then(function (j) { isPro = !!(j && j.pro); proChecked = c; if (j && j.month) monthPrice = String(parseFloat(j.month)); }).catch(function () { /* keep last answer */ });
+      .then(function (j) { isPro = !!(j && j.pro); gamesOk = !!(j && (j.games || j.pro)); proChecked = c; if (j && j.month) monthPrice = String(parseFloat(j.month)); }).catch(function () { /* keep last answer */ });
   }
   function showWatermark() {
     var old = stage.querySelector('.wm'); if (old) old.remove();
@@ -645,10 +645,10 @@
     setTimeout(function () { w.classList.add('leave'); setTimeout(function () { w.remove(); }, 550); }, 12000);
   }
   function watermarkTick() {
-    var was = isPro;
+    var was = gamesOk;
     checkPro().then(function () {
       if (!isPro) showWatermark();
-      if (was !== isPro && cfg.gameTheme && cfg.gameTheme.on) render();   // pass started/ran out: turn game themes on/off
+      if (was !== gamesOk && cfg.gameTheme && cfg.gameTheme.on) render();   // pass started/ran out: turn game themes on/off
     });
   }
   if (!DEMO) {
@@ -661,7 +661,7 @@
     var sceneOverride = params.get('scene'); if (sceneOverride && !DEMO) cfg.scene = sceneOverride;
     render();
     // paid feature: find out if this channel has a pass, then switch game themes on
-    if (!DEMO && cfg.gameTheme && cfg.gameTheme.on) checkPro().then(function () { if (isPro) gameTheme(true); });
+    if (!DEMO && cfg.gameTheme && cfg.gameTheme.on) checkPro().then(function () { if (gamesOk) gameTheme(true); });
     if (!DEMO) { startInfo(); connectChat(); }
     else { startInfo(); }
   }

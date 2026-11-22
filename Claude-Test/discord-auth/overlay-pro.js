@@ -82,7 +82,33 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
     tierCache.set(ch, { at: Date.now(), v }); return v;
   }
 
-  // /overlay/pro/:name?platform=twitch|youtube|kick  -> { pro, until, tier, month, year }
+  // ---- Allies: the owner's friends list (users/{owner}/friends) gets "Match my game" free ----
+  // friend code -> accounts/friend_codes/{CODE} -> user key -> users/{key}/twitch_username
+  // Kept as a set of lower-case Twitch names, rebuilt at most every 10 minutes.
+  let allies = { at: 0, set: new Set() };
+  async function allyChannels() {
+    if (Date.now() - allies.at < 10 * 60000) return allies.set;
+    const owner = process.env.DISCORD_APP_OWNER_KEY, db = admin.database(), set = new Set();
+    try {
+      const keys = new Set(owner ? [owner] : []);
+      const friends = owner ? (await db.ref('users/' + owner + '/friends').once('value')).val() || {} : {};
+      await Promise.all(Object.keys(friends).map(async code => {
+        const f = friends[code] || {}, c = String(f.friend_code || code).toUpperCase();
+        const k = (await db.ref('accounts/friend_codes/' + c).once('value')).val();
+        if (typeof k === 'string' && k) keys.add(k);
+      }));
+      await Promise.all([...keys].map(async k => {
+        const t = cleanChan((await db.ref('users/' + k + '/twitch_username').once('value')).val() || '');
+        if (okChan(t)) set.add(t);
+      }));
+      allies = { at: Date.now(), set };
+    } catch (e) { console.error('[overlay allies]', e && e.message); }
+    return allies.set;
+  }
+
+  // /overlay/pro/:name?platform=twitch|youtube|kick  -> { pro, until, tier, month, year, ally, games }
+  //   ally  = this Twitch channel belongs to the owner or someone on his friends list
+  //   games = "Match my game" is unlocked (paid pass OR ally)
   app.get('/overlay/pro/:channel', async (req, res) => {
     cors(req, res);
     const a = account(req.query.platform, req.params.channel); if (!a) return res.json({ pro: false });
@@ -91,7 +117,9 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
       const d = await fs().collection('overlay_pro').doc(a.id).get();
       const until = d.exists ? Number(d.data().until || 0) : 0;
       let tier = 'standard'; if (a.platform === 'twitch') { try { tier = (await channelTier(a.name)).tier; } catch (e) { /* Twitch unreachable: regular price */ } }
-      const body = { pro: until > Date.now(), until, tier, month: PRICES[tier].month, year: PRICES[tier].year, account: a.label };
+      let ally = false; if (a.platform === 'twitch') { try { ally = (await allyChannels()).has(a.name); } catch (e) { /* keep false */ } }
+      const pro = until > Date.now();
+      const body = { pro, until, tier, month: PRICES[tier].month, year: PRICES[tier].year, account: a.label, ally, games: pro || ally };
       proCache.set(a.id, { at: Date.now(), body }); res.json(body);
     } catch (e) { console.error('[overlay pro]', e && e.message); res.json({ pro: false }); }
   });
