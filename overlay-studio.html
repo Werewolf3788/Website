@@ -223,13 +223,16 @@
       </div>
 
       <div class="preview">
-        <div class="pv-top"><b><i class="fa-solid fa-link" style="color:var(--accent)"></i> Your overlay links</b><span id="saveState"></span></div>
+        <div class="pv-top"><b><i class="fa-solid fa-link" style="color:var(--accent)"></i> Get your overlay</b><span id="saveState"></span></div>
+        <label class="f" style="margin-bottom:.75rem">Where will you use it?
+          <div class="seg" id="useSeg"><button data-v="obs"><i class="fa-solid fa-display"></i> OBS / Streamlabs (link)</button><button data-v="se"><i class="fa-solid fa-code"></i> StreamElements (code)</button></div>
+        </label>
         <div class="link" style="margin-bottom:0.625rem">
           <input type="text" id="saveName" placeholder="Name this overlay (e.g. Wildlands nights)" maxlength="60">
           <button class="btn sm main" id="saveBtn"><i class="fa-solid fa-floppy-disk"></i> <span>Save</span></button>
         </div>
         <p class="hint" id="saveHint" style="margin:0 0 0.625rem">Save to get short links that never change — edit and save again later and OBS updates on its own within a minute.</p>
-        <div class="links" id="links"></div>
+        <div id="obsOnly"><div class="links" id="links"></div></div>
         <details style="margin-top:0.625rem" id="mineBox"><summary class="hint" style="cursor:pointer">My saved overlays</summary>
           <div id="mine" style="display:flex;flex-direction:column;gap:0.375rem;margin-top:0.5rem"></div>
         </details>
@@ -237,9 +240,9 @@
           <div class="hint" style="margin-bottom:0.375rem"><b>Edit on another device:</b> open this private link there. Anyone with it can change this overlay, so don't share it.</div>
           <div class="link"><input type="text" readonly id="editLink"><button class="btn sm" data-copy="editLink"><i class="fa-regular fa-copy"></i></button></div>
         </div>
-        <p class="hint" style="margin:0.75rem 0 0"><b>How to add it:</b> in OBS or Streamlabs add a <b>Browser Source</b>, paste the link, set Width <b>1920</b> and Height <b>1080</b>. Tick “Refresh browser when scene becomes active” so the Starting Soon countdown restarts. Change something here later? Copy the new link and paste it over the old one.</p>
-        <details style="margin-top:0.625rem" id="seBox"><summary class="hint" style="cursor:pointer;color:#ffb38f"><b>Using StreamElements?</b> Get the code to paste</summary>
-          <p class="hint" style="margin:0.5rem 0">In your StreamElements overlay (1920×1080): <b>+ → Static / Custom → Custom widget</b> → <b>Open editor</b>. Paste each box below into the matching tab (HTML, CSS, JS), click <b>Done</b>, then stretch the widget to fill the whole screen and save. Follows and tips will pop up too.</p>
+        <p class="hint" id="obsHow" style="margin:0.75rem 0 0"><b>How to add it:</b> in OBS or Streamlabs add a <b>Browser Source</b>, paste the link, set Width <b>1920</b> and Height <b>1080</b>. Tick “Refresh browser when scene becomes active” so the Starting Soon countdown restarts. Change something here later? Copy the new link and paste it over the old one.</p>
+        <div style="margin-top:0.625rem;display:none" id="seBox">
+          <p class="hint" style="margin:0 0 0.5rem"><b>How to add it:</b> in your StreamElements overlay (1920×1080): <b>+ → Static / Custom → Custom widget</b> → <b>Open editor</b>. Paste each box below into the matching tab (HTML, CSS, JS), click <b>Done</b>, then set the widget to <b>X 0, Y 0, Width 1920, Height 1080</b> and save. Replace the example code that’s already in each tab (Ctrl+A, then paste). Follows and tips will pop up too.</p>
           <div class="link" style="margin-bottom:0.375rem"><span>Screen</span><select id="seScene"><option value="live">Live overlay</option><option value="starting">Starting soon</option><option value="brb">Be right back</option><option value="ending">Ending</option></select></div>
           <div class="hint" style="margin:0.375rem 0 0.25rem"><b>HTML</b></div>
           <div class="link"><textarea readonly id="seHtml" style="min-height:4.375rem;font:500 0.75rem ui-monospace,monospace"></textarea><button class="btn sm main" data-copy="seHtml">Copy</button></div>
@@ -248,7 +251,7 @@
           <div class="hint" style="margin:0.375rem 0 0.25rem"><b>JS</b></div>
           <div class="link"><textarea readonly id="seJs" style="min-height:5.625rem;font:500 0.75rem ui-monospace,monospace"></textarea><button class="btn sm main" data-copy="seJs">Copy</button></div>
           <p class="hint" style="margin:0.375rem 0 0">Saved your overlay? Then this code never needs changing — just press Save here after edits. Not saved yet? Copy the code again after changes.</p>
-        </details>
+        </div>
         <details style="margin-top:0.625rem"><summary class="hint" style="cursor:pointer">Edit an overlay you made before</summary>
           <div class="link" style="margin-top:0.5rem"><input type="text" id="loadLink" placeholder="Paste any of your overlay links"><button class="btn sm" id="loadBtn">Load</button></div>
         </details>
@@ -507,6 +510,21 @@
   }
 
   var SCN = [['live', 'Live overlay'], ['starting', 'Starting soon'], ['brb', 'Be right back'], ['ending', 'Ending']];
+  /* ---------- OBS link vs StreamElements code ---------- */
+  var USE = 'ww_overlay_studio_use', use = 'obs';
+  try { use = localStorage.getItem(USE) || 'obs'; } catch (e) {}
+  function showUse() {
+    $$('#useSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === use); });
+    $('#obsOnly').style.display = use === 'obs' ? '' : 'none';
+    $('#obsHow').style.display = use === 'obs' ? '' : 'none';
+    $('#seBox').style.display = use === 'se' ? '' : 'none';
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('#useSeg button'); if (!b) return;
+    use = b.dataset.v; try { localStorage.setItem(USE, use); } catch (x) {} showUse();
+  });
+  setTimeout(showUse, 0);
+
   /* ---------- StreamElements custom widget code ---------- */
   var lastCodes = null;
   function makeSE(codes) {

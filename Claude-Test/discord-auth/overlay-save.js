@@ -122,7 +122,9 @@ function mountOverlaySave(app, { admin, fetchFn, cors: baseCors }) {
       if (r.status === 409 || r.status === 422) {       // someone else's commit landed first: refresh sha, try once more
         const h = await load(id, true); if (h.sha) body.sha = h.sha; r = await gh('PUT', DIR + '/' + id + '.json', body);
       }
-      if (r.status !== 200 && r.status !== 201) { console.error('[overlay save]', r.status, JSON.stringify(r.json).slice(0, 300)); return res.status(502).json({ error: 'GitHub didn’t accept the save (' + r.status + '). Try again.' }); }
+      if (r.status !== 200 && r.status !== 201) { console.error('[overlay save]', r.status, JSON.stringify(r.json).slice(0, 300)); return res.status(502).json({ error: (r.status === 401 || r.status === 403 || r.status === 404)
+        ? 'Saving is switched off right now (the site’s GitHub key can’t write files). Your links above still work.'
+        : 'GitHub didn’t accept the save (' + r.status + '). Try again.' }); }
       cache.set(id, { at: Date.now(), doc, sha: r.json && r.json.content && r.json.content.sha });
       console.log('[overlay] saved', id, channel);
       res.json({ id, key, updated: doc.updated });
