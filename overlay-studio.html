@@ -273,8 +273,8 @@
       </div>
 
       <div class="preview pro" id="proBox">
-        <div class="pv-top"><b><i class="fa-solid fa-crown" style="color:#ffd700"></i> Remove the watermark</b><span id="proStatus"></span></div>
-        <p class="hint" style="margin:0 0 0.625rem">Free overlays show a small “Overlay made at …” banner once an hour. A pass hides it for your Twitch channel — all of your overlay links, right away.</p>
+        <div class="pv-top"><b><i class="fa-solid fa-crown" style="color:#ffd700"></i> Go Pro: no watermark + Match my game</b><span id="proStatus"></span></div>
+        <p class="hint" style="margin:0 0 0.625rem">Free overlays show a small “Overlay made at …” banner once an hour. A pass hides it for your Twitch channel — all of your overlay links, right away — and unlocks <b>Match my game</b>: colors and edge effects that change with the game you're streaming.</p>
         <div class="plans">
           <button class="plan on" data-plan="month"><b id="pMonth">$5</b><small>per month</small></button>
           <button class="plan" data-plan="year"><b id="pYear">$50</b><small>per year · 2 months free</small></button>
@@ -348,7 +348,8 @@
     { k: 'poster', icon: 'fa-solid fa-image-portrait', name: 'Game poster (box art)', fields: [
       ['range', 'poster.size', 'Size (%)', 60, 200],
       ['note', 'Shows the box art of the game you\'re streaming, straight from Twitch. It hides itself when you\'re offline or Twitch has no art for the game.']] },
-    { k: 'gameTheme', icon: 'fa-solid fa-wand-magic-sparkles', name: 'Match my game (auto colors & effects)', nopos: true, fields: [
+    { k: 'gameTheme', icon: 'fa-solid fa-crown', name: 'Match my game (auto colors & effects) - Pro', nopos: true, fields: [
+      ['note', 'Pro feature: included with the paid pass (the same one that removes the watermark), and free for Werewolf's allies (his friends list). Try it free here in the preview; on stream it turns on as soon as your channel has a pass or is an ally.'],
       ['text', 'gameTheme.test', 'Try a game in the preview (e.g. Phasmophobia, Ready or Not, Farming Simulator 25)'],
       ['note', 'Your colors and effects change with the game you\'re streaming: dripping blood for horror, red & blue police lights for cop games, camo for hunting, a mud-to-harvest crop cycle for farming, and more. Effects only sit on the edges of your boxes, so the middle of the screen stays clear. While this is on it replaces the colors you picked above.']] },
     { k: 'title', icon: 'fa-solid fa-heading', name: 'Stream title', fields: [] },
@@ -655,7 +656,8 @@
     updatePrices();
     if (!C.accountOk(a)) { st.innerHTML = ''; return; }
     fetch(AUTH + '/overlay/pro/' + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); }).then(function (j) {
-      st.innerHTML = j.pro ? '<span class="tag">No watermark until ' + new Date(j.until).toLocaleDateString() + '</span>' : '<span class="hint">Free version</span>';
+      st.innerHTML = j.pro ? '<span class="tag">Pro (no watermark + Match my game) until ' + new Date(j.until).toLocaleDateString() + '</span>'
+        : j.ally ? '<span class="tag">Werewolf ally: Match my game unlocked</span>' : '<span class="hint">Free version</span>';
     }).catch(function () { st.innerHTML = ''; });
   }
   function post(path, data) {
