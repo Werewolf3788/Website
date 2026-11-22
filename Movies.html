@@ -764,14 +764,15 @@ function buildCatalog(csvText) {
     const isTV = /tv/i.test(typeRaw) || /^tvdb/i.test(id);
     const key = ((id || title.toLowerCase()).replace(/[^\w-]/g, '') + (isStdEd ? '' : '_' + edition.toLowerCase().replace(/[^\w-]/g, ''))) || ('row' + r);
     const ts = parseDate(cell(COL.dateAdded));
-    const poster = [cell(COL.poster), cell(COL.posterArt)].find(u => /^https?:\/\//i.test(u)) || '';
+    const posters = cinPosterCandidates([cell(COL.poster), cell(COL.posterArt)]);
+    const poster = posters[0] || '', poster2 = posters[1] || '';
     const genres = cell(COL.genre).split(/[,/|]/).map(g => g.trim()).filter(Boolean);
     const cast = [...new Set(cell(COL.actors).split(/[,;]/).map(a => a.trim()).filter(Boolean))];
 
     out.set(key, {
       key, id, title, year, edition: isStdEd ? '' : edition, collection: cell(COL.collection),
       ts, added: ts ? new Date(ts).toLocaleDateString('en-US') : '', isToday: ts >= todayStart,
-      poster, cast, runtime: cell(COL.runtime), genres, genre: genres.join(', '), isTV,
+      poster, poster2, cast, runtime: cell(COL.runtime), genres, genre: genres.join(', '), isTV,
       type: isTV ? 'TV Show' : 'Movie', rating, description: cell(COL.description),
       streamOn: streamList(cell(COL.streaming)), links, familyShare, ytFree,
       isMA: !!links.moviesanywhere,
@@ -902,6 +903,27 @@ function filtered(opts = {}) {
 }
 
 /* ---------------- rendering ---------------- */
+/* Poster cleanup shared with index.html: http->https, TMDb original->w780, Drive share links, =IMAGE() formulas, dead-link fallback */
+function cinPosterUrl(raw) {
+    let u = String(raw || '').trim();
+    const f = u.match(/^=?\s*image\(\s*["']([^"']+)["']/i); if (f) u = f[1];
+    u = u.replace(/^["']|["']$/g, '').trim();
+    if (!u || /^n\/?a$/i.test(u)) return '';
+    u = u.replace(/\s/g, '%20');
+    if (u.startsWith('//')) u = 'https:' + u;
+    else if (/^http:\/\//i.test(u)) u = 'https://' + u.slice(7);
+    else if (!/^https:\/\//i.test(u)) { if (/^(www\.|[\w-]+\.[\w.-]+\/)/i.test(u)) u = 'https://' + u; else return ''; }
+    const drive = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/i);
+    if (drive) return 'https://drive.google.com/thumbnail?id=' + drive[1] + '&sz=w800';
+    u = u.replace(/(image\.tmdb\.org\/t\/p\/)original\//i, '$1w780/');
+    return u;
+}
+function cinPosterCandidates(list) {
+    const out = [];
+    list.forEach(v => { const u = cinPosterUrl(v); if (u && !out.includes(u)) out.push(u); });
+    return out;
+}
+
 const thumb = (u, w) => (u || '').replace(/(image\.tmdb\.org\/t\/p\/)(?:original|w\d+)\//, '$1' + w + '/');
 const titleUrl = m => '?t=' + encodeURIComponent(m.id || m.key);
 function storeDots(m) { return STORES.filter(s => hasStore(m, s.key)).map(s => `<i style="background:${s.color}" title="${esc(s.label)}"></i>`).join(''); }
@@ -914,7 +936,7 @@ function card(m) {
   if (m.ytFree) b.push('<span class="bdg free">Free</span>');
   const sub = [m.year, m.isTV ? 'TV' : m.runtime].filter(Boolean).join(' · ');
   return `<a class="card" href="${titleUrl(m)}" data-key="${esc(m.key)}" aria-label="${esc(m.title + (m.year ? ' (' + m.year + ')' : ''))}">
-    <div class="pw"><div class="noimg">${esc(m.title)}</div>${m.poster ? `<img src="${esc(thumb(m.poster, 'w342'))}" alt="" width="200" height="300" loading="lazy" decoding="async" onload="this.classList.add('ld')" onerror="this.remove()">` : ''}
+    <div class="pw"><div class="noimg">${esc(m.title)}</div>${m.poster ? `<img src="${esc(thumb(m.poster, 'w342'))}" alt="" width="200" height="300" loading="lazy" decoding="async" data-alt="${esc(thumb(m.poster2, 'w342'))}" onload="this.classList.add('ld')" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=''}else this.remove()">` : ''}
       <div class="badges">${b.join('')}</div>
       <div class="ov">${esc([m.rating, m.genres[0]].filter(Boolean).join(' · '))}<div class="stores">${storeDots(m)}</div></div></div>
     <div class="ct notranslate" translate="no">${esc(m.title)}</div><div class="cs">${esc(sub)}</div></a>`;
@@ -952,7 +974,7 @@ function heroHtml(m) {
       <a class="btn btn-ghost" href="${titleUrl(m)}" data-key="${esc(m.key)}">${ICON.info}Details</a></div>
     <div class="hero-dots">${heroList.map((x, i) => `<button type="button" class="${i === heroIdx ? 'on' : ''}" data-hero="${i}" aria-label="Show ${esc(x.title)}"></button>`).join('')}</div>
     <div class="inventory"><span><b>${fmt(stats.imdb)}</b> / ${fmt(stats.titles)} titles</span></div>
-  </div>${m.poster ? `<img class="hero-poster" src="${esc(m.poster)}" alt="${esc(m.title)} poster">` : ''}</div>`;
+  </div>${m.poster ? `<img class="hero-poster" src="${esc(m.poster)}" data-alt="${esc(m.poster2)}" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=''}else this.remove()" alt="${esc(m.title)} poster">` : ''}</div>`;
 }
 function setHero(i) {
   const el = $('#hero'); if (!el || !heroList.length) return;
@@ -1123,7 +1145,7 @@ function detailHtml(m) {
   const similar = catalog.filter(x => x.key !== m.key && x.genres.some(g => m.genres.includes(g)) && !sameColl.includes(x)).sort((a, b) => b.genres.filter(g => m.genres.includes(g)).length - a.genres.filter(g => m.genres.includes(g)).length || b.ts - a.ts).slice(0, 20);
   return `<button class="d-close" data-close aria-label="Close">${ICON.close}</button>
   <div class="d-hero"><div class="d-bg" style="background-image:url('${esc(m.poster || CFG.fallbackImg)}')"></div>
-    <img class="d-poster" src="${esc(m.poster || CFG.fallbackImg)}" alt="${esc(m.title)} poster" data-zoom>
+    <img class="d-poster" src="${esc(m.poster || CFG.fallbackImg)}" data-alt="${esc(m.poster2 || CFG.fallbackImg)}" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=''}else{this.onerror=null;this.src='${CFG.fallbackImg}'}" alt="${esc(m.title)} poster" data-zoom>
     <div>
       <div class="d-type">${m.type}${m.isToday ? ' · Added today' : m.isNew ? ' · New' : ''}</div>
       <h2 class="d-title notranslate" translate="no" id="d-title">${esc(m.title)}</h2>

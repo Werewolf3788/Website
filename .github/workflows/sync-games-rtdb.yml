@@ -149,6 +149,12 @@ jobs:
                               "updated_at": updated_at,
                               "synced_at": sync_time
                           }
+                          # Cover art for the home page Games slideshow (index.html reads only this small index)
+                          art = raw_data.get("art") if isinstance(raw_data.get("art"), dict) else {}
+                          if art.get("poster") or art.get("wallpaper"):
+                              catalog_index[game_key]["art"] = {k: art[k] for k in ("poster", "wallpaper") if art.get(k)}
+                          if raw_data.get("image_url"):
+                              catalog_index[game_key]["image_url"] = raw_data.get("image_url")
                       else:
                           print(f"⚠️ Unexpected status {resp.status} for {filename}")
                           failed_files.append((filename, f"HTTP Status {resp.status}"))
