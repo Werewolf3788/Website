@@ -594,15 +594,15 @@ const CFG = {
 const PUSH_READY = !!(CFG.firebase.apiKey && CFG.firebase.messagingSenderId && CFG.firebase.appId && CFG.vapidKey && CFG.pushEndpoint);
 
 const STORES = [
-  { key:'amazon',         label:'Amazon',           short:'a',  color:'#FF9900', ink:'#111', col:3, img:'/Images/stores/amazon.webp' },
-  { key:'apple',          label:'Apple TV',         short:'tv', color:'#3a3a3c', ink:'#fff', col:4, img:'/Images/stores/apple.webp' },
-  { key:'fandango',       label:'Fandango at Home', short:'F',  color:'#3d2bd6', ink:'#fff', col:5, img:'/Images/stores/fandango.webp' },
-  { key:'google',         label:'Google TV',        short:'G',  color:'#4285F4', ink:'#fff', col:6, img:'/Images/stores/google.webp' },
-  { key:'moviesanywhere', label:'Movies Anywhere',  short:'MA', color:'#00aeef', ink:'#fff', col:7, img:'/Images/stores/moviesanywhere.webp' },
-  { key:'youtube',        label:'YouTube',          short:'▶',  color:'#FF0000', ink:'#fff', col:8, img:'/Images/stores/youtube.webp' },
+  { key:'amazon',         label:'Amazon',           short:'a',  color:'#FF9900', ink:'#111', col:3, img:'Images/stores/amazon.webp' },
+  { key:'apple',          label:'Apple TV',         short:'tv', color:'#3a3a3c', ink:'#fff', col:4, img:'Images/stores/apple.webp' },
+  { key:'fandango',       label:'Fandango at Home', short:'F',  color:'#3d2bd6', ink:'#fff', col:5, img:'Images/stores/fandango.webp' },
+  { key:'google',         label:'Google TV',        short:'G',  color:'#4285F4', ink:'#fff', col:6, img:'Images/stores/google.webp' },
+  { key:'moviesanywhere', label:'Movies Anywhere',  short:'MA', color:'#00aeef', ink:'#fff', col:7, img:'Images/stores/moviesanywhere.webp' },
+  { key:'youtube',        label:'YouTube',          short:'▶',  color:'#FF0000', ink:'#fff', col:8, img:'Images/stores/youtube.webp' },
   { key:'justwatch',      label:'JustWatch',        short:'JW', color:'#f5c518', ink:'#111', col:9 },
   // Disney+ (column X): streaming, not owned. The link only shows while column U (Streaming On) lists Disney.
-  { key:'disney',         label:'Disney+',          short:'D+', color:'#113ccf', ink:'#fff', col:23, img:'/Images/stores/disney.webp', streamGate:/disney/i }
+  { key:'disney',         label:'Disney+',          short:'D+', color:'#113ccf', ink:'#fff', col:23, img:'Images/stores/disney.webp', streamGate:/disney/i }
 ];
 const STORE = Object.fromEntries(STORES.map(s => [s.key, s]));
 // Streaming services shown in "Also streaming on". A tag lights up (logo + brand colors, clickable) only when
@@ -610,11 +610,11 @@ const STORE = Object.fromEntries(STORES.map(s => [s.key, s]));
 // (e.g. a column titled "Hulu (Y) |"), so adding a new service column to the sheet needs no code change.
 // Prime Video has no column of its own: it reuses the Amazon store link.
 const STREAMERS = [
-  { key:'disney', label:'Disney+',     match:/disney/i,      header:/^disney/i, col:23, img:'/Images/stores/disney.webp',          bg:'#113CCF', bd:'#BFF5FD' },
-  { key:'prime',  label:'Prime Video', match:/prime video/i, useStore:'amazon',         img:'/Images/stores/prime-free-chip.webp', bg:'#0a1c4a', bd:'#00A8E1' },
-  { key:'hulu',   label:'Hulu',        match:/^hulu\b/i,     header:/^hulu/i,           img:'/Images/stores/hulu.webp',            bg:'#000000', bd:'#1CE783' },
-  { key:'tubi',   label:'Tubi',        match:/^tubi\b/i,     header:/^tubi/i,           img:'/Images/stores/tubi.webp',            bg:'#1a0a4a', bd:'#FFFF13' },
-  { key:'plex',   label:'Plex',        match:/^plex\b/i,     header:/^plex/i,           img:'/Images/stores/plex.webp',            bg:'#111111', bd:'#E5A00D' }
+  { key:'disney', label:'Disney+',     match:/disney/i,      header:/^disney/i, col:23, img:'Images/stores/disney.webp',          bg:'#113CCF', bd:'#BFF5FD' },
+  { key:'prime',  label:'Prime Video', match:/prime video/i, useStore:'amazon',         img:'Images/stores/prime-free-chip.webp', bg:'#0a1c4a', bd:'#00A8E1' },
+  { key:'hulu',   label:'Hulu',        match:/^hulu\b/i,     header:/^hulu/i,           img:'Images/stores/hulu.webp',            bg:'#000000', bd:'#1CE783' },
+  { key:'tubi',   label:'Tubi',        match:/^tubi\b/i,     header:/^tubi/i,           img:'Images/stores/tubi.webp',            bg:'#1a0a4a', bd:'#FFFF13' },
+  { key:'plex',   label:'Plex',        match:/^plex\b/i,     header:/^plex/i,           img:'Images/stores/plex.webp',            bg:'#111111', bd:'#E5A00D' }
 ];
 const streamerFor = name => STREAMERS.find(x => x.match.test(name));
 // Stores that count as "owned" (JustWatch alone doesn't put a title in the library)
@@ -1171,7 +1171,7 @@ function detailHtml(m) {
   const buyNote = s => s.key === 'amazon' ? (m.onPrime ? 'Included with Prime · Affiliate link' : 'Affiliate link') : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store';
   const buy = stores.map(s => `<a href="${esc(storeUrl(m, s))}" target="_blank" rel="${s.key === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${s.key}" class="${[s.key === state.store ? 'hl' : '', s.img ? 'has-img' : ''].join(' ').trim()}" aria-label="${esc(s.label)}: ${esc(buyNote(s))}">
       ${s.img
-        ? `<span class="art${s.key === 'amazon' && !m.onPrime ? ' fit' : ''}" style="background:${s.key === 'amazon' ? '#1a98ff' : '#0b0b10'}"><img src="${s.key === 'amazon' && m.onPrime ? '/Images/stores/prime-free.webp' : s.img}" alt="${esc(s.key === 'amazon' && m.onPrime ? 'Prime Video' : s.label)}" loading="lazy" onerror="this.closest('a').classList.remove('has-img');this.parentNode.outerHTML='<span class=&quot;logo&quot; style=&quot;background:${s.color};color:${s.ink}&quot;>${esc(s.short)}</span><span>${esc(s.label)}</span>'"></span><span class="cap"><small>${esc(buyNote(s))}</small><span class="arr">↗</span></span>`
+        ? `<span class="art${s.key === 'amazon' && !m.onPrime ? ' fit' : ''}" style="background:${s.key === 'amazon' ? '#1a98ff' : '#0b0b10'}"><img src="${s.key === 'amazon' && m.onPrime ? 'Images/stores/prime-free.webp' : s.img}" alt="${esc(s.key === 'amazon' && m.onPrime ? 'Prime Video' : s.label)}" loading="lazy" onerror="this.closest('a').classList.remove('has-img');this.parentNode.outerHTML='<span class=&quot;logo&quot; style=&quot;background:${s.color};color:${s.ink}&quot;>${esc(s.short)}</span><span>${esc(s.label)}</span>'"></span><span class="cap"><small>${esc(buyNote(s))}</small><span class="arr">↗</span></span>`
         : `<span class="logo" style="background:${s.color};color:${s.ink}">${esc(s.short)}</span><span>${esc(s.label)}<small>${esc(buyNote(s))}</small></span><span class="arr">↗</span>`}</a>`).join('');
   const sameColl = m.collection ? catalog.filter(x => x.collection === m.collection && x.key !== m.key) : [];
   const similar = catalog.filter(x => x.key !== m.key && x.genres.some(g => m.genres.includes(g)) && !sameColl.includes(x)).sort((a, b) => b.genres.filter(g => m.genres.includes(g)).length - a.genres.filter(g => m.genres.includes(g)).length || b.ts - a.ts).slice(0, 20);
