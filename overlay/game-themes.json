@@ -1,0 +1,161 @@
+{
+  "_about": "Shared game themes for every stream overlay (Overlay Studio + hand-made overlays). Loaded by overlay/game-themes.js. A game is matched by: 1) exact name in 'games', 2) a whole-word 'keywords' hit (themes are checked top to bottom, first hit wins), 3) its IGDB genres/themes from game-genres.json against 'genres', 4) the 'default' theme. Colors: primary = glow, accent = highlight text/borders, border = frame color, panel = box background, text = main text. Effects only decorate the edges of the pieces they are given (avatar, poster, QR box, name banner...). Nothing is ever drawn in the middle of the screen.",
+  "version": 1,
+  "channels": ["phoenix_darkfire", "werewolf3788"],
+  "themes": [
+    {
+      "id": "default", "name": "Default (blue)",
+      "colors": { "primary": "#0055ff", "accent": "#00d4ff", "border": "#0055ff", "panel": "#001a33", "text": "#ffffff" },
+      "effect": { "type": "pulse" }
+    },
+    {
+      "id": "rebuild3", "name": "Rebuild 3",
+      "games": ["Rebuild 3: Gangs of Deadsville"], "keywords": ["rebuild 3", "rebuild3", "deadsville"],
+      "colors": { "primary": "#ff0000", "accent": "#ff5555", "border": "#ff0000", "panel": "#260000", "text": "#ffffff" },
+      "effect": { "type": "blood", "colors": ["#b30000", "#ff1a1a"] }
+    },
+    {
+      "id": "sonic", "name": "Sonic blue & gold",
+      "keywords": ["sonic", "shadow the hedgehog", "tails", "knuckles", "dr. eggman", "green hill"],
+      "colors": { "primary": "#004999", "accent": "#ffd700", "border": "#004999", "panel": "#001f40", "text": "#ffffff" },
+      "effect": { "type": "speed", "colors": ["#00d4ff", "#ffd700"] }
+    },
+    {
+      "id": "kimchi", "name": "Kimchi (starry cream)",
+      "keywords": ["kimchi", "stars in the trash"],
+      "colors": { "primary": "#f8e69e", "accent": "#ffffff", "border": "#f8e69e", "panel": "#38321e", "text": "#ffffff" },
+      "effect": { "type": "particles", "shape": "star", "dir": "up", "colors": ["#ffffff", "#f8e69e"], "count": 8 }
+    },
+    {
+      "id": "dontstarve", "name": "Don't Starve (dusk)",
+      "keywords": ["don't starve", "dont starve"],
+      "colors": { "primary": "#333e5c", "accent": "#92a2b8", "border": "#333e5c", "panel": "#161b29", "text": "#e6ecf5" },
+      "effect": { "type": "particles", "shape": "dot", "dir": "up", "colors": ["#ff9a3c", "#7c8ba1"], "count": 6 }
+    },
+    {
+      "id": "police", "name": "Police lights (red & blue)",
+      "keywords": ["police", "swat", "cop", "cops", "sheriff", "ready or not", "hot pursuit", "most wanted", "rainbow six", "contraband police", "911 operator", "lspdfr", "patrol"],
+      "genres": [],
+      "colors": { "primary": "#1f4bff", "accent": "#ffffff", "border": "#ff1f1f", "panel": "#05070f", "text": "#ffffff" },
+      "effect": { "type": "lights", "colors": ["#ff1f1f", "#1f4bff"] }
+    },
+    {
+      "id": "horror", "name": "Blood red (horror)",
+      "keywords": ["occult", "resident evil", "silent hill", "outlast", "phasmophobia", "lethal company", "dead by daylight", "dbd", "horror", "scary", "amnesia", "fnaf", "five nights at", "demonologist", "slender", "slenderman", "visage", "devour", "pacify", "evil within", "alien isolation", "soma", "until dawn", "alan wake"],
+      "genres": ["Horror"],
+      "colors": { "primary": "#8b0000", "accent": "#ff3333", "border": "#8b0000", "panel": "#140000", "text": "#ffffff" },
+      "effect": { "type": "blood", "colors": ["#7a0000", "#c40000"] }
+    },
+    {
+      "id": "zombie", "name": "Toxic green (zombie)",
+      "keywords": ["zombie", "zombies", "7 days to die", "project zomboid", "state of decay", "dying light", "dayz", "left 4 dead", "dead island", "undead", "the last of us"],
+      "colors": { "primary": "#39ff14", "accent": "#b6ff3b", "border": "#2a7a12", "panel": "#071204", "text": "#eaffdf" },
+      "effect": { "type": "flicker", "colors": ["#39ff14", "#7dff4d"] }
+    },
+    {
+      "id": "hunting", "name": "Woodland camo (hunting)",
+      "keywords": ["hunter", "hunting", "thehunter", "call of the wild", "way of the hunter", "deer", "duck season", "big buck"],
+      "colors": { "primary": "#ff6a00", "accent": "#ff8c1a", "border": "#4b5320", "panel": "#1b1d12", "text": "#f3efe0" },
+      "effect": { "type": "camo", "colors": ["#4b5320", "#2f3a1c", "#6b5a3a", "#1c1f12"] }
+    },
+    {
+      "id": "military", "name": "Desert camo (military)",
+      "keywords": ["call of duty", "warzone", "battlefield", "arma", "squad", "hell let loose", "insurgency", "ghost recon", "delta force", "helldivers"],
+      "genres": ["Warfare", "Tactical"],
+      "colors": { "primary": "#c2a878", "accent": "#e3d3a7", "border": "#6b5d3f", "panel": "#1a170f", "text": "#f5efdc" },
+      "effect": { "type": "camo", "colors": ["#c2a878", "#8a7650", "#5c4f33", "#d8c79f"] }
+    },
+    {
+      "id": "farming", "name": "Crop cycle (farming)",
+      "keywords": ["farming", "farm", "farmer", "fs25", "fs22", "harvest", "ranch simulator", "tractor"],
+      "colors": { "primary": "#9acd32", "accent": "#e8c547", "border": "#5a3d22", "panel": "#140e07", "text": "#fff8e6" },
+      "effect": { "type": "crops", "stages": [
+        { "name": "Mud", "color": "#5a3d22" },
+        { "name": "Fertilizer", "color": "#7d8c9a" },
+        { "name": "Lime", "color": "#efeee4" },
+        { "name": "Sprout", "color": "#a8e063" },
+        { "name": "Growing", "color": "#4f9d2a" },
+        { "name": "Harvest", "color": "#e8c547" }
+      ], "seconds": 60 }
+    },
+    {
+      "id": "racing", "name": "Speed lines (racing)",
+      "keywords": ["racing", "race", "forza", "gran turismo", "need for speed", "mario kart", "f1", "nascar", "rally", "dirt", "the crew", "beamng", "assetto corsa", "iracing", "motorsport", "trackmania"],
+      "genres": ["Racing"],
+      "colors": { "primary": "#ffcc00", "accent": "#ffffff", "border": "#ffcc00", "panel": "#0d0d0d", "text": "#ffffff" },
+      "effect": { "type": "speed", "colors": ["#ffffff", "#111111"] }
+    },
+    {
+      "id": "baldurs-gate", "name": "Baldur's Gate (gold & mind-flayer purple)",
+      "keywords": ["baldur's gate", "baldurs gate"],
+      "colors": { "primary": "#6b2d8c", "accent": "#c9a14a", "border": "#c9a14a", "panel": "#1a120b", "text": "#f6ead0" },
+      "effect": { "type": "particles", "shape": "spark", "dir": "up", "colors": ["#c9a14a", "#b3261e", "#9b59d0"], "count": 10, "pulse": "#6b2d8c" }
+    },
+    {
+      "id": "fantasy", "name": "Purple & gold (fantasy)",
+      "keywords": ["elden ring", "skyrim", "elder scrolls", "witcher", "dragon age", "diablo", "warcraft", "hogwarts", "zelda", "final fantasy", "dark souls", "lord of the rings"],
+      "genres": ["Fantasy", "Role-playing (RPG)"],
+      "colors": { "primary": "#7b2cbf", "accent": "#ffd166", "border": "#7b2cbf", "panel": "#12081c", "text": "#fbf3ff" },
+      "effect": { "type": "particles", "shape": "spark", "dir": "up", "colors": ["#ffd166", "#c77dff"], "count": 9 }
+    },
+    {
+      "id": "scifi", "name": "Neon space (sci-fi)",
+      "keywords": ["space", "starfield", "no man's sky", "mass effect", "cyberpunk", "halo", "destiny", "star wars", "star citizen", "elite dangerous", "subnautica below zero", "alien"],
+      "genres": ["Science fiction"],
+      "colors": { "primary": "#00e5ff", "accent": "#ff2bd6", "border": "#00e5ff", "panel": "#05031a", "text": "#ecfbff" },
+      "effect": { "type": "particles", "shape": "star", "dir": "side", "colors": ["#00e5ff", "#ff2bd6", "#ffffff"], "count": 10, "pulse": "#ff2bd6" }
+    },
+    {
+      "id": "winter", "name": "Icy blue (snow)",
+      "keywords": ["snow", "snowrunner", "winter", "frost", "frostpunk", "the long dark", "ice", "arctic", "christmas"],
+      "colors": { "primary": "#9ad8ff", "accent": "#ffffff", "border": "#9ad8ff", "panel": "#06121d", "text": "#ffffff" },
+      "effect": { "type": "particles", "shape": "flake", "dir": "down", "colors": ["#ffffff", "#cdeeff"], "count": 12 }
+    },
+    {
+      "id": "underwater", "name": "Deep blue (underwater / fishing)",
+      "keywords": ["subnautica", "fishing", "fish", "ocean", "sea", "abzu", "dredge", "raft", "under the waves", "bass"],
+      "colors": { "primary": "#0096c7", "accent": "#90e0ef", "border": "#0077b6", "panel": "#03111f", "text": "#eaf8ff" },
+      "effect": { "type": "particles", "shape": "bubble", "dir": "up", "colors": ["#caf0f8", "#90e0ef"], "count": 10 }
+    },
+    {
+      "id": "western", "name": "Sepia dust (western)",
+      "keywords": ["red dead", "western", "cowboy", "outlaw", "wild west", "desperados", "hard west"],
+      "colors": { "primary": "#c08a4a", "accent": "#f2d29b", "border": "#8b5a2b", "panel": "#1c1209", "text": "#fbefdc" },
+      "effect": { "type": "particles", "shape": "dot", "dir": "side", "colors": ["#d9b38c", "#a67c52"], "count": 10 }
+    },
+    {
+      "id": "food", "name": "Kitchen (food & cooking)",
+      "keywords": ["pizzeria", "pizza", "cooking", "chef", "restaurant", "burger", "diner", "overcooked", "bakery", "food", "kitchen", "recipe", "sushi", "boba", "baking", "papa's", "papas"],
+      "colors": { "primary": "#8f1a00", "accent": "#fcdd39", "border": "#de6f17", "panel": "#2b0000", "text": "#ffffff" },
+      "effect": { "type": "particles", "shape": "dot", "dir": "up", "colors": ["#ffffff", "#fcdd39"], "count": 6 }
+    },
+    {
+      "id": "cozy", "name": "Soft pastels (cozy)",
+      "keywords": ["stardew", "animal crossing", "the sims", "sims 4", "unpacking", "spiritfarer", "coral island", "dreamlight", "palia", "slime rancher", "minecraft", "cozy grove", "fae farm", "garden"],
+      "genres": ["Comedy", "Kids", "Party"],
+      "colors": { "primary": "#ffafcc", "accent": "#bde0fe", "border": "#cdb4db", "panel": "#1d1520", "text": "#fffafd" },
+      "effect": { "type": "particles", "shape": "petal", "dir": "down", "colors": ["#ffafcc", "#ffc8dd", "#bde0fe", "#caffbf"], "count": 9 }
+    },
+    {
+      "id": "survival", "name": "Campfire embers (survival)",
+      "keywords": ["survival", "the forest", "sons of the forest", "valheim", "rust", "ark", "conan exiles", "green hell", "the isle", "grounded", "palworld", "enshrouded", "v rising"],
+      "genres": ["Survival"],
+      "colors": { "primary": "#ff7b00", "accent": "#ffb347", "border": "#5c3a1e", "panel": "#140c06", "text": "#fff2e0" },
+      "effect": { "type": "particles", "shape": "dot", "dir": "up", "colors": ["#ff7b00", "#ffb347", "#ff4500"], "count": 10 }
+    },
+    {
+      "id": "noir", "name": "Rainy noir (mystery)",
+      "keywords": ["mouse: p.i.", "mouse p.i", "mouse pi", "detective", "noir", "l.a. noire", "sherlock", "mystery"],
+      "genres": ["Mystery", "Thriller", "Point-and-click"],
+      "colors": { "primary": "#cfcfcf", "accent": "#f2c14e", "border": "#6e6e6e", "panel": "#0b0b0b", "text": "#f5f5f5" },
+      "effect": { "type": "particles", "shape": "rain", "dir": "down", "colors": ["#bfc8d6", "#8892a0"], "count": 14 }
+    },
+    {
+      "id": "sports", "name": "Stadium lights (sports)",
+      "keywords": ["fifa", "ea sports fc", "madden", "nba 2k", "2k", "nhl", "mlb the show", "rocket league", "pga", "golf", "wwe", "ufc", "football", "basketball", "soccer", "hockey"],
+      "genres": ["Sport"],
+      "colors": { "primary": "#ffffff", "accent": "#00c853", "border": "#00c853", "panel": "#04140a", "text": "#ffffff" },
+      "effect": { "type": "stadium", "colors": ["#ffffff", "#00c853"] }
+    }
+  ]
+}
