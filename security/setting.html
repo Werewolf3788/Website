@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Settings - Werewolf Project & WOTH Hub</title>
@@ -33,10 +36,38 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 .rgb input{width:64px;text-align:center}
 .savebar{position:sticky;bottom:0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px;padding:12px 0;background:var(--bg-secondary);border-top:1px solid var(--border-color)}
 .savebar .hint{margin:0}
+/* Desktop: use ~80% of the screen and lay the sections out as cards; phones stay stacked */
+#app{column-width:420px;column-gap:16px}
+#app>.row:first-child,#app>.savebar{column-span:all}
+#app>.card{break-inside:avoid;margin-bottom:16px}
+.card{background:rgba(255,255,255,.02);border:1px solid var(--border-color);border-radius:8px;padding:16px 18px;min-width:0}
+.card>h2:first-child{margin-top:0}
+.savebar{z-index:4}
+#authBox{max-width:560px}
+@media(min-width:900px){.container{max-width:none;width:80vw}}
+#tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px;column-span:all}
+.pill{border-radius:999px;padding:7px 16px;background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-main);font-weight:600;cursor:pointer}
+.pill.on{background:var(--primary);border-color:var(--primary);color:#fff}
+#wifiPane{column-span:all}
+#wifiPane .net{break-inside:avoid;margin-bottom:12px}
+#wifiPane .nets{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;align-items:start}
+#wifiPane .net .row{margin-top:8px}
+#wifiPane .pick{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+#wifiPane .pick label{display:flex;gap:8px;align-items:center;font-weight:500;margin:0}
+#wifiPane .pick input{width:auto}
+#wifiPane .qr{display:block;margin:10px auto 0;background:#fff;padding:8px;border-radius:8px;max-width:220px;width:100%;image-rendering:pixelated}
+#wifiPane .qr img{display:block;width:100%;image-rendering:pixelated}#wifiPane .qr .hint{color:#333;font-size:12px;line-height:1.35;margin:6px 2px 2px;text-align:center}
+#wifiPane .kv{display:flex;gap:8px;justify-content:space-between;font-size:.9rem;padding:2px 0}
+#wifiPane .kv span:first-child{color:var(--text-muted)}
 .hidden{display:none!important}
+.container{min-height:100vh}
 #msg{position:sticky;top:8px;z-index:5;padding:10px 14px;border-radius:6px;margin-bottom:12px;background:var(--bg-surface);border:1px solid var(--border-color)}
 #google_translate_element,.goog-te-banner-frame,.skiptranslate,.goog-logo-link{display:none!important}
 </style>
+    <link rel="stylesheet" href="../assets/ww-shell.css">
+    <script src="../assets/menu-sheet.js"></script>
+    <style id="ww-reserve">html:not(.ww-bar-ready) body::before{content:"";display:block;height:60px}</style>
+    <script defer src="../assets/ww-shell.js"></script>
 </head>
 <body>
 <div class="container">
@@ -46,7 +77,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 <div id="google_translate_element"></div>
 
 <!-- SIGN IN -->
-<section id="authBox">
+<section id="authBox" class="hidden">
   <h2>Sign in</h2>
   <div class="row"><button class="primary" id="gBtn">Continue with Google</button></div>
   <label>Email &amp; password</label>
@@ -58,20 +89,32 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 <section id="app" class="hidden">
   <div class="row"><img id="av" class="avatar" alt="Your avatar"><div><strong id="who"></strong><div class="hint" id="whoSub"></div></div><button id="out" style="margin-left:auto">Sign out</button></div>
 
+  <div id="tabs" role="tablist">
+    <button type="button" class="pill on" data-tab="account">👤 Account</button>
+    <button type="button" class="pill" data-tab="privacy">🔒 Privacy settings</button>
+    <button type="button" class="pill" data-tab="sync">🎮 Game accounts</button>
+    <button type="button" class="pill" data-tab="wifi">📶 Wi-Fi networks</button>
+  </div>
+
   <div id="linkBox">
   <h2>Sign-in methods</h2>
-  <p class="hint">Link an email or Google so you can always get back in. Everything stays on the same profile.</p>
+  <p class="hint">Every way you can sign in to this profile. Connect more so you can always get back in; everything stays on the same profile.</p>
   <div id="methods" class="box"></div>
-  <div id="lEmailBox"><label>Link email &amp; password</label>
+  <div id="lEmailBox" class="hidden"><label>Link email &amp; password</label>
     <div class="row"><input id="lem" type="email" placeholder="Email" autocomplete="email"><input id="lpw" type="password" placeholder="New password (6+ characters)" autocomplete="new-password"><button id="lEmBtn">Link email</button></div></div>
-  <div class="row" style="margin-top:8px"><button id="lGoogle">Link Google</button></div>
   </div>
 
   <h2>Profile</h2>
   <label for="username">Display name / gamer tag</label><input id="username" maxlength="32">
   <label>Friend code</label>
   <div class="row"><input id="friend_code" readonly><button id="cp">Copy</button></div>
+  <p class="hint" id="codeState" role="status" style="min-height:1.2em"></p>
   <p class="hint">Share this 8-character code so friends can see your display name, platform badge and hunting logs.</p>
+  <label for="add_code">Add a friend</label>
+  <div class="row"><input id="add_code" maxlength="64" inputmode="text" placeholder="Friend's 8-character code" autocapitalize="characters" autocomplete="off" spellcheck="false"><button id="addFr" type="button">Add friend</button></div>
+  <p class="hint" id="addState" role="status" style="min-height:1.2em"></p>
+  <div id="reqBox" class="box hidden"><strong>Friend requests</strong><p class="hint" style="margin:4px 0 8px">These people added you. Accept to add them to your list too.</p><div id="reqList"></div></div>
+  <p class="hint">Type the code your friend copied from their own Settings. They show up in the list below straight away, no Save needed.</p>
 
   <h2>Profile image</h2>
   <div class="row"><select id="avatar_source">
@@ -80,19 +123,66 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
     <input id="avatar_custom" placeholder="https://..." class="hidden"></div>
 
   <h2>Linked accounts</h2>
-  <p class="hint">Choose who can see each handle. Account ID and NPSSO below are always private.</p>
+  <p class="hint">Choose who can see each handle. Account ID, NPSSO, Steam API key and Microsoft API key below are always private.</p>
   <div id="handles"></div>
+
+  <h2>Game &amp; trophy tracking</h2>
+  <p class="hint">Who can see your game tracker progress (checklists, collectibles, ribbons, hunting logs) and your PlayStation trophies, on the Games page and on your profile. This covers every game and platform. The handle settings above only control whether your usernames are shown.</p>
+  <div class="row"><select id="tracking_scope">
+    <option value="public">Public (anyone)</option><option value="friends">Friends</option>
+    <option value="close">Close friends only</option><option value="private">No One (Private)</option></select></div>
+  <label>Close friends</label>
+  <p class="hint">Tick the friends who count as close friends. They see your tracking when it's set to "Close friends only".</p>
+  <div id="closeFriends" class="box"></div>
 
   <h2>PlayStation sync (private)</h2>
   <div class="box sec"><strong>Owner-only.</strong> These values are never shown to friends. They hide automatically 60 seconds after you reveal them.</div>
   <label for="psn_account_id">PSN Account ID #</label><div class="row" data-secret="psn_account_id"></div>
   <label for="psn_npsso">PSN NPSSO cookie</label><div class="row" data-secret="psn_npsso"></div>
+  <div class="box"><strong>To get your PSN Account ID</strong>
+    <p>Open <a href="https://psn.flipscreen.games" target="_blank" rel="noopener">psn.flipscreen.games</a>, type your PlayStation username and copy the long number it shows (the Account ID, usually 19 digits). Paste it in the Account ID box above. If the site already knows that ID, your PlayStation username fills in by itself (and the other way round).</p>
+    <p id="accState" class="hint"></p><button type="button" id="usePsn" class="hidden"></button></div>
   <div class="box"><strong>How to get your NPSSO</strong>
     <p>1. Sign in to PlayStation in this browser. 2. Open <a href="https://ca.account.sony.com/api/v1/ssocookie" target="_blank" rel="noopener">ca.account.sony.com/api/v1/ssocookie</a>. 3. Paste everything it shows, or only the 64-character value. We keep just the token.</p>
     <p id="npssoState" class="hint"></p></div>
 
   <h2>Steam</h2>
-  <p class="hint">Use your 64-bit Steam ID (17 digits). Your game details must be public on Steam. Find yours at <a href="https://steamcommunity.com/id/Werewolf3788/friends/add" target="_blank" rel="noopener">your Steam friends page</a>; the number in the profile link is your ID.</p>
+  <p class="hint">Put your Steam ID in the Steam ID box under Linked accounts. You can paste the 17-digit number (starts with 7656119), your profile link, or your custom profile name. To find it, open <a href="https://store.steampowered.com/account/" target="_blank" rel="noopener">your Steam account page</a> (the number is under your name) or look yourself up at <a href="https://steamid.io" target="_blank" rel="noopener">steamid.io</a>.</p>
+  <div class="box sec"><strong>Make your Steam data visible to the site.</strong>
+    <p>On Steam open <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">Profile &gt; Edit Profile &gt; Privacy Settings</a> and set <em>My profile</em>, <em>Game details</em> and <em>Friends list</em> to <strong>Public</strong>. Steam only shares friends and games for public profiles. The site checks Steam every 2 hours.</p>
+    <p id="steamState" class="hint"></p></div>
+  <label for="steam_api_key">Steam Web API key (private, optional)</label><div class="row" data-secret="steam_api_key"></div>
+  <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
+    <p>Optional: the site uses its own key if you leave this empty. To use yours, open <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener">steamcommunity.com/dev/apikey</a>, sign in, enter <code>entertainment-71888.firebaseapp.com</code> as the domain, and paste the 32-character key. A key does not unlock a private Steam profile; the privacy settings above still apply.</p>
+    <p id="steamKeyState" class="hint"></p></div>
+
+  <div id="discordBox" class="hidden">
+  <h2>Discord sign-in</h2>
+  <p class="hint">Your Discord app's details. Find both at <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">discord.com/developers/applications</a> &gt; your app &gt; General Information. Never paste the Client Secret here.</p>
+  <label for="discord_signin_id">Discord Application ID</label><div class="row"><input id="discord_signin_id" inputmode="numeric" autocomplete="off" placeholder="17-20 digit number"></div>
+  <label for="discord_signin_key">Discord Public Key</label><div class="row" data-secret="discord_signin_key"></div>
+  <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it, kept in the same private store as the other API keys.
+    <p id="discordKeyState" class="hint"></p></div>
+  </div>
+
+  <h2>Xbox / Microsoft sync (private)</h2>
+  <p class="hint">Put your Xbox gamertag in the Xbox gamertag box under Linked accounts. The API key below is what lets the site actually pull your achievements and presence, the same way the PSN NPSSO cookie does for PlayStation.</p>
+  <label for="xbox_user_id">Xbox User ID # (XUID, optional)</label><div class="row" data-secret="xbox_user_id"></div>
+  <div class="box"><strong>Optional, but recommended.</strong> The site looks you up by gamertag, which is a fuzzy name search and can match the wrong person if your gamertag is common or has changed. Saving your XUID here lets it confirm it found the right account instead of guessing.
+    <p>Both this and the API key below are on your <a href="https://xbl.io/dashboard/settings" target="_blank" rel="noopener">xbl.io dashboard settings</a> page. Paste just the number here.</p>
+    <p id="xuidState" class="hint"></p></div>
+  <div class="box sec"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
+    <p>Xbox has no simple key of its own like PSN's NPSSO, so the site uses <a href="https://xbl.io" target="_blank" rel="noopener">xbl.io (OpenXBL)</a> to bridge your Microsoft account. Sign in there with the same Microsoft account as your Xbox gamertag, then copy the API key from your <a href="https://xbl.io/dashboard/settings" target="_blank" rel="noopener">xbl.io dashboard settings</a> page and paste it below.</p></div>
+  <label for="xbox_api_key">Microsoft / Xbox API key (OpenXBL)</label><div class="row" data-secret="xbox_api_key"></div>
+  <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
+    <p id="xboxKeyState" class="hint"></p></div>
+
+  <h2>Destiny 2</h2>
+  <p class="hint">Enter your Bungie name (like <code>Guardian#1234</code>) in the Destiny 2 box under Linked accounts. Find it in Destiny 2 under Settings, or on <a href="https://www.bungie.net" target="_blank" rel="noopener">bungie.net</a>. Your PlayStation account must be linked to Bungie, and Destiny's privacy settings must allow public activity. The site checks every 6 hours.</p>
+  <label for="bungie_api_key">Bungie API key (private, optional)</label><div class="row" data-secret="bungie_api_key"></div>
+  <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
+    <p>Free key from <a href="https://www.bungie.net/en/Application" target="_blank" rel="noopener">bungie.net/en/Application</a>. Create an app, then paste the API Key here. Close friends of the owner use the owner's key.</p>
+    <p id="bungieKeyState" class="hint"></p></div>
 
   <h2>Personal links (up to 5)</h2>
   <div id="links"></div>
@@ -105,6 +195,16 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <h2>Language</h2>
   <div class="row"><select id="lang"><option value="auto">Match my device</option></select></div>
   <p class="hint">The site translates automatically to your device language. Pick another here to override it.</p>
+
+  <div id="wifiPane" class="hidden" data-tab="wifi">
+    <p class="hint">Save Wi-Fi networks you own and choose who can see each one. Passwords are never shown on your profile; only you and the people you pick can read them here.</p>
+    <div class="row" style="margin:6px 0 12px">
+      <button type="button" class="pill on" data-wsub="mine">My networks</button>
+      <button type="button" class="pill" data-wsub="shared">Shared with me</button>
+    </div>
+    <div id="wifiMine"></div>
+    <div id="wifiShared" class="hidden"></div>
+  </div>
 
   <div class="savebar"><button class="primary" id="save">Save settings</button><span id="saveState" class="hint" role="status"></span></div>
 
@@ -140,17 +240,23 @@ firebase.initializeApp({
   messagingSenderId:"660524340277",appId:"1:660524340277:web:ef8f4ed04fa985a4f88d7c"
 });
 const auth=firebase.auth(),db=firebase.database(),fs=firebase.firestore();
+// PlayStation Stats project (read-only here): used to look up PSN username <-> Account ID
+const appP=firebase.initializeApp({apiKey:"AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI",authDomain:"playstation-stats.firebaseapp.com",
+  databaseURL:"https://playstation-stats-default-rtdb.firebaseio.com",projectId:"playstation-stats",
+  storageBucket:"playstation-stats.firebasestorage.app",messagingSenderId:"748816703249",appId:"1:748816703249:web:3413fac9800148aa42b6b0"},"psnstats");
+const dbP=appP.database(),fsP=appP.firestore();
+const psnReady=appP.auth().signInAnonymously().catch(()=>{});
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const say=(t,bad)=>{const m=$('msg');m.textContent=t;m.style.borderColor=bad?'var(--danger)':'var(--accent-green)';m.classList.remove('hidden');clearTimeout(say.t);say.t=setTimeout(()=>m.classList.add('hidden'),6000)};
 // same key style as your existing data: cartnalray9_at_gmail_com
 const keyOf=u=>u.email?u.email.toLowerCase().replace(/\./g,'_').replace('@','_at_'):u.uid;
-const HANDLES=[['psn_username','PlayStation username','psn_username_scope'],['steam_id','Steam ID','steam_id_scope'],['xbox_gamertag','Xbox gamertag','xbox_gamertag_scope'],['twitch_username','Twitch username','twitch_scope']];
+const HANDLES=[['psn_username','PlayStation username','psn_username_scope'],['steam_id','Steam ID','steam_id_scope'],['xbox_gamertag','Xbox gamertag','xbox_gamertag_scope'],['twitch_username','Twitch username','twitch_scope'],['bungie_name','Destiny 2 Bungie name (Name#1234)','bungie_name_scope']];
 const SCOPES=[['private','No One (Private)'],['friends','Friends'],['public','Public']];
 let U,K,D={},S={};
 let loading=true,dirty=false;
 const setState=(t,c)=>{const e=$('saveState');e.textContent=t;e.style.color=c||'var(--text-muted)'};
-const markDirty=e=>{if(loading||(e&&e.target&&e.target.closest&&e.target.closest('#linkBox')))return;dirty=true;setState('Unsaved changes','var(--secondary)')};
+const markDirty=e=>{if(loading||(e&&e.target&&e.target.closest&&(e.target.closest('#linkBox')||e.target.id==='add_code')))return;dirty=true;setState('Unsaved changes','var(--secondary)')};
 $('app').addEventListener('input',markDirty);$('app').addEventListener('change',markDirty);
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 
@@ -187,6 +293,79 @@ $('psn_npsso').addEventListener('input',e=>{
   else{st.textContent='No 64-character token found yet.';st.style.color='var(--text-muted)'}
 });
 
+// Account ID: keep only the digits (accepts a pasted line like "Account ID: 2732...")
+$('psn_account_id').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('accState');
+  if(!v){st.textContent='';return}
+  const m=v.match(/\d{10,20}/);
+  if(m){if(m[0]!==v)e.target.value=m[0];st.textContent='Account ID detected ('+m[0].length+' digits).';st.style.color='var(--accent-green)'}
+  else{st.textContent='The Account ID is a long number only (no letters).';st.style.color='var(--text-muted)'}
+});
+
+// Steam API key: 32 hex characters (accepts "Key: XXXX" pasted from Steam)
+$('steam_api_key').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('steamKeyState');
+  if(!v){st.textContent='';return}
+  const m=v.match(/\b[0-9A-Fa-f]{32}\b/);
+  if(m){e.target.value=m[0].toUpperCase();st.textContent='Key detected (32 characters).';st.style.color='var(--accent-green)'}
+  else{st.textContent='A Steam key is 32 letters A-F and numbers.';st.style.color='var(--text-muted)'}
+});
+
+// Microsoft/Xbox (OpenXBL) API key: no fixed format published, just trim and
+// sanity-check a reasonable length so an empty/truncated paste gets caught.
+$('xbox_api_key').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('xboxKeyState');
+  if(!v){st.textContent='';return}
+  if(v.length<20){st.textContent='That looks too short for an xbl.io key. Double-check the paste.';st.style.color='var(--text-muted)'}
+  else{st.textContent='Key ready to save ('+v.length+' characters).';st.style.color='var(--accent-green)'}
+});
+
+// Xbox User ID (XUID) - optional, digits only, used server-side to confirm the
+// right account was matched by the fuzzy gamertag search.
+$('xbox_user_id').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('xuidState');
+  if(!v){st.textContent='';return}
+  if(!/^\d+$/.test(v)){st.textContent='XUIDs are numbers only.';st.style.color='var(--text-muted)'}
+  else if(v.length<10){st.textContent='That looks too short for an XUID. Double-check the paste.';st.style.color='var(--text-muted)'}
+  else{st.textContent='XUID ready to save.';st.style.color='var(--accent-green)'}
+});
+
+// Discord Public Key: a 64-character hex string (Ed25519 public key).
+$('discord_signin_key').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('discordKeyState');
+  if(!v){st.textContent='';return}
+  if(!/^[0-9A-Fa-f]{64}$/.test(v)){st.textContent='A Public Key is 64 letters (a-f) and numbers.';st.style.color='var(--text-muted)'}
+  else{st.textContent='Public Key ready to save.';st.style.color='var(--accent-green)'}
+});
+
+// ---- PSN: Account ID <-> username lookup (site's PSN data: tracked players + their PSN friends) ----
+let psnMap=null;
+async function psnTagMap(){if(psnMap)return psnMap;await psnReady;
+  try{psnMap=(await dbP.ref('psn/usersByGamerTag').get()).val()||{}}catch(e){psnMap={}}return psnMap}
+async function psnNameFor(id){
+  const m=await psnTagMap();const hit=Object.keys(m).find(t=>String(m[t])===id);if(hit)return hit;
+  try{const q=await fsP.collection('friendsDirectory').where('accountId','==',id).limit(1).get();if(!q.empty)return q.docs[0].data().onlineId||q.docs[0].id}catch(e){}
+  return''}
+async function psnIdFor(name){const n=name.toLowerCase();
+  const m=await psnTagMap();const hit=Object.keys(m).find(t=>t.toLowerCase()===n);if(hit&&m[hit])return String(m[hit]);
+  try{const d=await fsP.collection('friendsDirectory').doc(name.replace(/[.$#\[\]\/]/g,'_')).get();if(d.exists&&d.data().accountId)return String(d.data().accountId)}catch(e){}
+  return''}
+async function fillPsnName(){
+  const id=$('psn_account_id').value.trim(),st=$('accState');if(!/^\d{10,20}$/.test(id)){$('usePsn').classList.add('hidden');return}
+  const name=await psnNameFor(id);if($('psn_account_id').value.trim()!==id)return;
+  const cur=$('psn_username').value.trim(),ub=$('usePsn');ub.classList.add('hidden');
+  if(!name){st.innerHTML='Account ID '+esc(id)+'. Username not in the site\'s PSN data yet, so type it in the PlayStation username box.';st.style.color='var(--text-muted)';return}
+  if(!cur){$('psn_username').value=name;st.textContent='Username filled in: '+name+'. Press Save settings to keep it.';st.style.color='var(--accent-green)';if(!loading)markDirty();$('avatar_source').value==='psn'&&resolveAvatar();return}
+  if(cur.toLowerCase()===name.toLowerCase()){st.textContent='Account ID matches '+name+'.';st.style.color='var(--accent-green)';return}
+  st.innerHTML='This Account ID belongs to <strong>'+esc(name)+'</strong>, not '+esc(cur)+'.';st.style.color='var(--secondary)';
+  ub.textContent='Use '+name;ub.classList.remove('hidden');
+  ub.onclick=()=>{$('psn_username').value=name;markDirty();fillPsnName();$('avatar_source').value==='psn'&&resolveAvatar()}}
+async function fillPsnId(){
+  const name=$('psn_username').value.trim();if(!name||$('psn_account_id').value.trim())return;
+  const id=await psnIdFor(name);if(id&&!$('psn_account_id').value.trim()){$('psn_account_id').value=id;$('accState').textContent='Account ID filled in from your username: '+id+'. Press Save settings to keep it.';$('accState').style.color='var(--accent-green)';markDirty()}}
+let psnT;$('psn_account_id').addEventListener('input',()=>{clearTimeout(psnT);psnT=setTimeout(fillPsnName,500)});
+$('psn_username').addEventListener('change',()=>{fillPsnId();fillPsnName()});
+
 // ---- Colors ----
 const okHex=h=>/^#[0-9a-f]{6}$/i.test(h);
 const toRgb=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
@@ -214,51 +393,230 @@ async function resolveAvatar(){
   else if(s==='psn'){const n=$('psn_username').value.trim().toLowerCase();url='';
     if(n){try{const v=(await db.ref('psn/gamertags/'+n+'/avatar').get()).val();url=typeof v==='string'?v:(v&&v.url)||''}catch(e){}}
     if(!url)say('No PlayStation image found yet for that username.',1)}
-  else if(s==='steam'){const id=$('steam_id').value.trim();url='';
-    if(id){try{const v=(await db.ref('steam_users/'+id+'/profile/avatar').get()).val();url=typeof v==='string'?v:(v&&v.url)||''}catch(e){}}
-    if(!url)say('No Steam image found yet for that ID.',1)}
+  else if(s==='steam'){const id=await steamId64();url='';
+    if(id){try{const v=(await db.ref('platforms/steam_users/'+id+'/profile/avatar').get()).val();url=typeof v==='string'?v:(v&&v.url)||''}catch(e){}}
+    if(!url)say('No Steam image found yet for that ID. It appears after the next Steam sync (every 2 hours).',1)}
   else if(s==='twitch'){const n=$('twitch_username').value.trim();
     if(n){try{const t=(await (await fetch('https://decapi.me/twitch/avatar/'+encodeURIComponent(n))).text()).trim();if(/^https?:/.test(t))url=t;else say('Twitch image not found for that name.',1)}catch(e){}}}
   $('av').src=url||'';return url;
 }
+// ---- Steam: accept a 17-digit ID, a profile link or a custom name ----
+function cleanSteam(v){v=String(v||'').trim();
+  const p=v.match(/steamcommunity\.com\/profiles\/(\d{17})/i);if(p)return p[1];
+  const d=v.match(/\b(7656119\d{10})\b/);if(d)return d[1];
+  const c=v.match(/steamcommunity\.com\/id\/([^\/?#\s]+)/i);if(c)return c[1];
+  return v.replace(/\/+$/,'')}
+async function steamId64(){const v=cleanSteam($('steam_id').value);if(!v)return'';if(/^7656119\d{10}$/.test(v))return v;
+  try{return (await db.ref('platforms/steam_vanity/'+v.toLowerCase().replace(/[.$#\[\]\/]/g,'_')).get()).val()||''}catch(e){return''}}
+async function showSteam(){const st=$('steamState');st.textContent='';const raw=$('steam_id').value.trim();if(!raw)return;
+  const id=await steamId64();
+  if(!id){st.textContent='Saved. Your custom name is matched to a Steam ID on the next sync (every 2 hours).';st.style.color='var(--text-muted)';return}
+  let s=null;try{const b='platforms/steam_users/'+id+'/',g=async c=>(await db.ref(b+c).get()).val();   // small parts only: the library and achievements can be large
+    const [profile,fpub,fcount,games,achTotals,updated_at]=await Promise.all([g('profile'),g('friends/public'),g('friends/count'),g('games'),g('achTotals'),g('updated_at')]);
+    s=updated_at?{profile,friends:{public:fpub,count:fcount},games,achTotals,updated_at}:null}catch(e){}
+  if(!s){st.textContent='Steam ID '+id+'. Not synced yet. Check back after the next sync (every 2 hours).';st.style.color='var(--text-muted)';return}
+  const bits=[];
+  bits.push(s.profile&&s.profile.public?'Profile public':'Profile is private on Steam');
+  bits.push(s.friends&&s.friends.public?(s.friends.count||0)+' friends found':'Friends list hidden');
+  bits.push(s.games&&s.games.public?(s.games.count||0)+' games found':'Game details hidden');
+  if(s.achTotals&&s.achTotals.total)bits.push(s.achTotals.got+' of '+s.achTotals.total+' achievements in '+s.achTotals.games+' games');
+  st.textContent=(s.profile&&s.profile.name?s.profile.name+': ':'')+bits.join(' · ')+'. Last sync '+new Date(s.updated_at).toLocaleString()+'.';
+  st.style.color=(s.friends&&s.friends.public&&s.games&&s.games.public)?'var(--accent-green)':'var(--secondary)'}
+$('steam_id').addEventListener('change',e=>{const v=cleanSteam(e.target.value);if(v!==e.target.value.trim())e.target.value=v;showSteam()});
+
 $('avatar_source').onchange=resolveAvatar;
 $('avatar_custom').onchange=resolveAvatar;
 [['twitch_username','twitch'],['psn_username','psn'],['steam_id','steam']].forEach(([f,s])=>$(f).addEventListener('change',()=>$('avatar_source').value===s&&resolveAvatar()));
 
 // ---- Load / save ----
+// friend_codes/{CODE} is the owner's user key (plain text) in newer records, but a profile-style object in older ones.
+// Returns the owner's user key when it can be worked out, otherwise null.
+async function ownerKeyOfCode(v, code, readVal) {
+  if (typeof v === 'string') return v || null;
+  if (!v || typeof v !== 'object') return null;
+  const cands = [];
+  const add = (x) => { if (typeof x !== 'string') return; x = x.trim(); if (!x || x.length > 120) return; cands.push(x.indexOf('@') > -1 ? x.toLowerCase().replace(/\./g, '_').replace('@', '_at_') : x); };
+  ['user_key', 'userKey', 'email_key', 'emailKey', 'key', 'owner', 'uid', 'email', 'user'].forEach((f) => add(v[f]));
+  Object.keys(v).forEach((f) => add(v[f]));
+  for (const c of new Set(cands)) {
+    if (/[.$#\[\]\/]/.test(c)) continue;
+    try { const fc = await readVal('users/' + c + '/friend_code'); if (String(fc || '').toUpperCase() === String(code).toUpperCase()) return c; } catch (e) {}
+  }
+  return null;
+}
+const rv=async p=>(await db.ref(p).get()).val();
 const rand8=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b%32]).join('');
+const codeMsg=(t,bad)=>{const e=$('codeState');if(!e)return;e.textContent=t;e.style.color=bad?'var(--danger)':'var(--accent-green)'};
 async function ensureFriendCode(){
-  if(D.friend_code)return D.friend_code;
-  for(let i=0;i<5;i++){const c=rand8();const r=await db.ref('friend_codes/'+c).get();
-    if(!r.exists()){await db.ref('friend_codes/'+c).set(K);D.friend_code=c;await db.ref('users/'+K+'/friend_code').set(c);return c}}
+  if(D.friend_code){
+    // Older accounts have the code on their profile but no /friend_codes lookup, so nobody could add them. Repair it, then check.
+    try{
+      const ref=db.ref('accounts/friend_codes/'+D.friend_code);
+      let cur=(await ref.get()).val();
+      if(!cur){await ref.set(K);cur=(await ref.get()).val()}
+      if(cur===K)codeMsg('Your code is active: friends can add you with it.');
+      else if(typeof cur==='string')codeMsg('This code is already registered to a different account ('+cur+'). Tell Kevin so it can be sorted out.',1);
+      else if(cur&&typeof cur==='object'){
+        const o=await ownerKeyOfCode(cur,D.friend_code,rv);
+        if(o&&o!==K)codeMsg('This code is registered to a different account ('+o+'). Tell Kevin so it can be sorted out.',1);
+        else codeMsg('Your code is active: friends can add you with it.');   // older record format, still works
+      }
+      else if(cur)codeMsg('The entry for your code has an unexpected value ('+JSON.stringify(cur).slice(0,70)+'). Tell Kevin.',1);
+      else codeMsg('The write for your code did not stick (nothing was stored for '+D.friend_code+' after saving). Reload and try once more; if it repeats, tell Kevin.',1);
+    }catch(e){console.warn('[friend code repair]',e&&e.message);codeMsg('Could not activate your code: '+(/permission/i.test(e&&e.message||'')?'the database refused the write (rules need publishing).':(e&&e.message||'unknown error')),1)}
+    return D.friend_code;
+  }
+  for(let i=0;i<5;i++){const c=rand8();const r=await db.ref('accounts/friend_codes/'+c).get();
+    if(!r.exists()){await db.ref('accounts/friend_codes/'+c).set(K);D.friend_code=c;await db.ref('users/'+K+'/friend_code').set(c);codeMsg('Your code is active: friends can add you with it.');return c}}
   throw new Error('Could not create a friend code. Try again.');
 }
 async function load(){
   loading=true;
   D=(await db.ref('users/'+K).get()).val()||{};
+  {const av=D.avatar_url||U.photoURL||'';try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){}}
   if(!D.updated_at&&!D.username){
     const t=Date.now(),init={username:U.displayName||(U.email||'').split('@')[0]||'Hunter',avatar_source:'google',avatar_url:U.photoURL||'',primary_color:'#0088ff',secondary_color:'#f5a623',created_at:t,updated_at:t};
     try{await db.ref('users/'+K).update(init);Object.assign(D,init);say('Profile created in your account.')}catch(e){say(e.message,1)}
   }
   try{S=(await db.ref('user_secrets/'+K).get()).val()||{}}catch(e){S={};say('Could not read private keys. Publish the user_secrets rules in Realtime Database.',1)}
   $('who').textContent=D.username||U.displayName||U.email||U.phoneNumber;
+  $('discordBox').classList.toggle('hidden',(U.email||'').toLowerCase()!=='raykevin71888@gmail.com');   // Discord app details: owner account only
   $('whoSub').textContent=U.email||U.phoneNumber||'';
   $('username').value=D.username||U.displayName||'';
   $('avatar_source').value=D.avatar_source||'google';$('avatar_custom').value=D.avatar_source==='custom'?D.avatar_url||'':'';
   HANDLES.forEach(([f,,s])=>{$(f).value=D[f]||'';$(s).value=D[s]||'private'});
+  $('discord_signin_id').value=D.discord_signin_id||'';$('discord_signin_key').value=S.discord_signin_key||'';$('discordKeyState').textContent=S.discord_signin_key?'Public Key saved.':'';
   $('psn_account_id').value=D.psn_account_id||S.psn_account_id||'';$('psn_npsso').value=S.psn_npsso||'';
+  $('steam_api_key').value=S.steam_api_key||'';$('steamKeyState').textContent=S.steam_api_key?(D.steam_api_key_valid===false?'Steam rejected the saved key. Paste a new one.':'Key saved.'):'';
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
+  $('bungie_api_key').value=S.bungie_api_key||'';$('bungieKeyState').textContent=S.bungie_api_key?'Key saved.':'';
+  $('xbox_api_key').value=S.xbox_api_key||'';$('xboxKeyState').textContent=S.xbox_api_key?(D.xbox_api_key_valid===false?'xbl.io rejected the saved key. Paste a new one.':'Key saved.'):'';
+  $('xbox_user_id').value=D.xbox_user_id||S.xbox_user_id||'';$('xuidState').textContent=D.xbox_user_id?(D.xbox_user_id_valid===false?'xbl.io could not match this XUID. Double-check it.':'XUID saved.'):'';
   (D.links||[]).slice(0,5).forEach((l,i)=>$('lk'+i).value=l);
   setColor(1,D.primary_color||'#0088ff');setColor(2,D.secondary_color||'#f5a623');
+  $('tracking_scope').value=D.tracking_scope||'friends';
+  renderCloseFriends();
   $('friend_code').value=await ensureFriendCode();
+  refreshFriendNames();
+  watchRequests();
   await resolveAvatar();
-  renderMethods();
+  showSteam();
+  if($('psn_account_id').value.trim())fillPsnName();else fillPsnId();
+  refreshMethods();
   loading=false;dirty=false;
   setState(D.updated_at?'Last saved: '+new Date(D.updated_at).toLocaleString():'Not saved yet');
+}
+function keepCloseTicks(){document.querySelectorAll('#closeFriends .cf').forEach(cb=>{if(D.friends&&D.friends[cb.dataset.code])D.friends[cb.dataset.code].close_friend=cb.checked})}
+function renderCloseFriends(){
+  const fr=Object.entries(D.friends||{});
+  $('closeFriends').innerHTML=fr.length?fr.map(([code,f])=>{f=f||{};const c=f.friend_code||code;
+    return `<div style="display:flex;gap:8px;align-items:center;margin:4px 0"><label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:0;flex:1"><input type="checkbox" class="cf" data-code="${esc(code)}" style="width:auto"${f.close_friend?' checked':''}> ${esc(f.username||c)} <span class="hint" style="margin:0">${esc(c)}</span></label><button type="button" class="rmfr" data-code="${esc(code)}">Remove</button></div>`}).join('')
+    :'<span class="hint">No friends added yet. Add one with their friend code above.</span>';
+  $('closeFriends').querySelectorAll('.rmfr').forEach(b=>b.onclick=async()=>{
+    const code=b.dataset.code,f=(D.friends||{})[code]||{};
+    if(!confirm('Remove '+(f.username||code)+' from your friends?'))return;
+    try{keepCloseTicks();await db.ref('users/'+K+'/friends/'+code).remove();delete D.friends[code];renderCloseFriends();say('Friend removed.')}catch(e){say(e.message,1)}});
+}
+const addMsg=(t,bad)=>{const e=$('addState');e.textContent=t;e.style.color=bad?'var(--danger)':'var(--accent-green)';say(t,bad)};
+async function addFriend(){
+  const code=extractFriendCode($('add_code').value);
+  if(!code)return false;
+  if(!K)return addMsg('Sign in first, then add your friend.',1),false;
+  if(!/^[A-Z0-9]{8}$/.test(code))return addMsg('A friend code is 8 letters and numbers. Check it and try again.',1),false;
+  if(code===D.friend_code)return addMsg("That's your own code. Send it to a friend instead.",1),false;
+  if((D.friends||{})[code])return addMsg('Already in your friends list.',1),false;
+  const b=$('addFr');b.disabled=true;b.textContent='Adding…';
+  try{
+    await ensureFriendCode().catch(()=>{});   // make sure MY code is registered so they can add me back
+    const raw=(await db.ref('accounts/friend_codes/'+code).get()).val();
+    if(raw==null||raw===''||(typeof raw!=='string'&&typeof raw!=='object'))return addMsg('No player has the code '+code+'. Check it with your friend (watch for 0 vs O and 1 vs I). If it is right, ask them to open Settings once while signed in, which activates older codes.',1),false;
+    const fk=await ownerKeyOfCode(raw,code,rv);   // null for older records that do not say whose they are
+    if(fk===K)return addMsg("That's your own code.",1),false;
+    const prof=fk?((await db.ref('users/'+fk).get()).val()||{}):{};
+    const snap=(raw&&typeof raw==='object')?raw:{};
+    const f={friend_code:code,username:String(prof.username||snap.username||snap.display_name||code).slice(0,32),avatar_url:String(prof.avatar_url||snap.avatar_url||''),added_at:Date.now()};
+    await db.ref('users/'+K+'/friends/'+code).set(f);
+    const back=(await db.ref('users/'+K+'/friends/'+code).get()).val();   // read it back so "Added" is only shown when it really saved
+    if(!back)throw new Error('The friend was not saved. Try again.');
+    keepCloseTicks();
+    D.friends=D.friends||{};D.friends[code]=f;
+    let sent=false;
+    try{   // also post a request to their account so they can accept and list you too
+      const mine=D.friend_code;
+      if(mine&&fk){
+        const already=(await db.ref('users/'+fk+'/friends/'+mine).get()).exists();
+        if(!already){
+          await db.ref('accounts/friend_requests/'+fk+'/'+mine).set({from_key:K,from_code:mine,username:($('username').value.trim()||D.username||mine),avatar_url:D.avatar_url||'',at:Date.now(),status:'pending'});
+          sent=true;
+        }
+      }
+    }catch(e){console.warn('[friend request]',e&&e.message)}
+    $('add_code').value='';renderCloseFriends();addMsg('Added '+f.username+' and saved to your account.'+(sent?' A friend request was sent so you show up on their list too.':''));
+    return true;
+  }catch(e){
+    addMsg(/permission/i.test(e.message||e.code||'')?'Could not save: the database refused the write. Sign out, sign in again and retry. If it still fails the database rules need publishing.':(e.message||'Could not add that friend.'),1);
+    return false;
+  }
+  finally{b.disabled=false;b.textContent='Add friend'}
+}
+let reqRef=null,reqCache={};
+function watchRequests(){
+  if(!K)return;
+  if(reqRef){try{reqRef.off()}catch(e){}}
+  reqRef=db.ref('accounts/friend_requests/'+K);
+  reqRef.on('value',snap=>{reqCache=snap.val()||{};renderRequests()},e=>console.warn('[friend requests]',e&&e.message));
+}
+function renderRequests(){
+  const rows=Object.entries(reqCache).filter(([c,r])=>r&&r.from_key&&/^[A-Z0-9]{8}$/.test(c)&&!(D.friends||{})[c]);
+  $('reqBox').classList.toggle('hidden',!rows.length);
+  $('reqList').innerHTML=rows.map(([c,r])=>`<div style="display:flex;gap:8px;align-items:center;margin:4px 0"><span style="flex:1">${esc(r.username||c)} <span class="hint" style="margin:0">${esc(c)}</span></span><button type="button" class="primary acc" data-code="${esc(c)}">Accept</button><button type="button" class="dec" data-code="${esc(c)}">Decline</button></div>`).join('');
+  $('reqList').querySelectorAll('.acc').forEach(b=>b.onclick=()=>acceptRequest(b.dataset.code));
+  $('reqList').querySelectorAll('.dec').forEach(b=>b.onclick=()=>declineRequest(b.dataset.code));
+}
+async function acceptRequest(code){
+  const r=reqCache[code];if(!r)return;
+  try{
+    const reg=(await db.ref('accounts/friend_codes/'+code).get()).val();
+    const regOwner=await ownerKeyOfCode(reg,code,rv);
+    if(regOwner&&regOwner!==r.from_key)return say('That request does not match the code owner, so it was not accepted.',1);
+    const f={friend_code:code,username:String(r.username||code).slice(0,32),avatar_url:String(r.avatar_url||''),added_at:Date.now()};
+    await db.ref('users/'+K+'/friends/'+code).set(f);
+    await db.ref('accounts/friend_requests/'+K+'/'+code).remove();
+    keepCloseTicks();D.friends=D.friends||{};D.friends[code]=f;renderCloseFriends();say('Added '+f.username+'.');
+  }catch(e){say(e.message,1)}
+}
+async function declineRequest(code){
+  try{await db.ref('accounts/friend_requests/'+K+'/'+code).remove();say('Request removed.')}catch(e){say(e.message,1)}
+}
+$('addFr').onclick=addFriend;
+$('add_code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addFriend()}});
+// Pull a friend code out of whatever was pasted: "ABCD2345", "abcd 2345", "ABCD-2345", " ABCD2345\n", "Friend code: ABCD2345"
+function extractFriendCode(raw){
+  const t=String(raw||'').toUpperCase();
+  const squashed=t.replace(/[^A-Z0-9]/g,'');
+  if(squashed.length===8)return squashed;                                   // plain, spaced or dashed
+  const toks=(t.match(/(?:^|[^A-Z0-9])([A-Z0-9]{8})(?![A-Z0-9])/g)||[]).map(x=>x.replace(/[^A-Z0-9]/g,''));  // a code inside a sentence
+  if(toks.length)return toks.find(x=>/\d/.test(x))||toks[toks.length-1];
+  return squashed.slice(0,8);
+}
+$('add_code').addEventListener('paste',e=>{
+  const txt=(e.clipboardData||window.clipboardData).getData('text');
+  e.preventDefault();$('add_code').value=extractFriendCode(txt);$('addState').textContent='';
+});
+$('add_code').addEventListener('input',e=>{const el=e.target,v=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);if(el.value!==v)el.value=v});
+async function refreshFriendNames(){
+  const entries=Object.entries(D.friends||{});if(!entries.length)return;
+  let changed=false;
+  await Promise.all(entries.map(async([code,f])=>{
+    try{const fc=f&&f.friend_code||code;const fk=await ownerKeyOfCode((await db.ref('accounts/friend_codes/'+fc).get()).val(),fc,rv);if(!fk)return;
+      const u=(await db.ref('users/'+fk+'/username').get()).val();
+      if(u&&f&&f.username!==u){f.username=u;changed=true}}catch(e){}}));
+  if(changed){keepCloseTicks();renderCloseFriends()}
 }
 $('cp').onclick=()=>navigator.clipboard.writeText($('friend_code').value).then(()=>say('Friend code copied.'));
 
 $('save').onclick=async()=>{
+  if($('add_code').value.trim())await addFriend();   // a code typed but not added yet still gets added on Save
   const b=$('save');b.disabled=true;b.textContent='Saving…';
   try{
     const url=await resolveAvatar(),now=Date.now();
@@ -266,32 +624,258 @@ $('save').onclick=async()=>{
       primary_color:$('h1').value,secondary_color:$('h2x').value,
       links:[0,1,2,3,4].map(i=>$('lk'+i).value.trim()).filter(Boolean),updated_at:now};
     HANDLES.forEach(([f,,s])=>{pub[f]=$(f).value.trim();pub[s]=$(s).value});
+    const dId=$('discord_signin_id').value.trim(),dKey=$('discord_signin_key').value.trim().toLowerCase();
+    if(dId&&!/^\d{17,20}$/.test(dId))return say('Discord Application ID must be a 17-20 digit number.',1);
+    if(dKey&&!/^[0-9a-f]{64}$/.test(dKey))return say('Discord Public Key must be 64 characters (0-9, a-f).',1);
+    if(!$('discordBox').classList.contains('hidden'))pub.discord_signin_id=dId;
     const npsso=$('psn_npsso').value.trim();
     if(npsso&&!/^[A-Za-z0-9]{64}$/.test(npsso))return say('NPSSO must be exactly 64 letters and numbers.',1);
+    const skey=$('steam_api_key').value.trim().toUpperCase();
+    if(skey&&!/^[0-9A-F]{32}$/.test(skey))return say('Steam API key must be exactly 32 characters (0-9, A-F).',1);
+    if(skey&&skey!==S.steam_api_key)pub.steam_api_key_valid=true;
+    const bkey=$('bungie_api_key').value.trim();
+    if(bkey&&!/^[0-9a-f]{32}$/i.test(bkey))return say('Bungie API key must be 32 characters (letters and numbers).',1);
+    const xkey=$('xbox_api_key').value.trim();
+    if(xkey&&xkey.length<20)return say('That Microsoft/Xbox API key looks too short. Double-check the paste from xbl.io.',1);
+    if(xkey&&xkey!==S.xbox_api_key)pub.xbox_api_key_valid=true;
+    const xuid=$('xbox_user_id').value.trim();
+    if(xuid&&!/^\d{10,20}$/.test(xuid))return say('Xbox User ID (XUID) must be numbers only. Get it from xbl.io/dashboard/settings.',1);
+    if(xuid&&xuid!==D.xbox_user_id)pub.xbox_user_id_valid=true;
+    pub.xbox_user_id=xuid;
+    const acc=$('psn_account_id').value.trim();
+    if(acc&&!/^\d{10,20}$/.test(acc))return say('PSN Account ID must be numbers only. Get it from psn.flipscreen.games.',1);
     if(npsso&&npsso!==S.psn_npsso)pub.psn_npsso_valid=true;
     pub.psn_account_id=$('psn_account_id').value.trim();
+    pub.tracking_scope=$('tracking_scope').value;
+    const cfs={};document.querySelectorAll('#closeFriends .cf').forEach(cb=>{cfs['friends/'+cb.dataset.code+'/close_friend']=cb.checked});
     await db.ref('users/'+K).update(pub);
+    if(Object.keys(cfs).length)await db.ref('users/'+K).update(cfs);
     const back=(await db.ref('users/'+K).get()).val()||{};
     if(back.primary_color!==pub.primary_color||back.secondary_color!==pub.secondary_color||(back.avatar_url||'')!==(pub.avatar_url||'')||back.username!==pub.username)
       throw new Error('Saved, but the values read back differ. Try again.');
     D=back;dirty=false;
+    {const av=D.avatar_url||'';try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){}}
     let ok=true;
-    try{await db.ref('user_secrets/'+K).update({psn_npsso:npsso,updated_at:now})}catch(e){ok=false}
+    const secretsUpdate={psn_npsso:npsso,steam_api_key:skey,xbox_api_key:xkey,bungie_api_key:bkey,updated_at:now};
+    if(!$('discordBox').classList.contains('hidden'))secretsUpdate.discord_signin_key=dKey;
+    try{await db.ref('user_secrets/'+K).update(secretsUpdate);S.psn_npsso=npsso;S.steam_api_key=skey;S.xbox_api_key=xkey;S.bungie_api_key=bkey;if('discord_signin_key' in secretsUpdate)S.discord_signin_key=dKey}catch(e){ok=false}
     const t=new Date(now).toLocaleString();
     if(ok){say('Saved to your account.');setState('Saved to cloud: '+t+' ✓','var(--accent-green)')}
-    else{say('Profile saved, but the NPSSO could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. NPSSO not saved.','var(--danger)')}
+    else{say('Profile saved, but the NPSSO, Steam key and Microsoft key could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. Private keys not saved.','var(--danger)')}
   }catch(e){say(e.message,1);setState('Not saved. '+e.message,'var(--danger)')}
   finally{b.disabled=false;b.textContent='Save settings'}
 };
 
+// Turn each "h2 + its content" into a card so the page can sit in columns on wide screens
+(function(){
+  const app=$('app');
+  app.querySelectorAll('h2').forEach(h=>{
+    const parent=h.parentElement;
+    if(parent!==app){parent.classList.add('card');return}
+    const card=document.createElement('div');card.className='card';parent.insertBefore(card,h);
+    let n=h;
+    while(n){
+      if(n!==h&&(n.tagName==='H2'||(n.nodeType===1&&(n.classList.contains('savebar')||n.id==='wifiPane'||n.querySelector('h2')))))break;
+      const nx=n.nextSibling;card.appendChild(n);n=nx;
+    }
+  });
+})();
+// ---- Pills: Account / Privacy settings / Game accounts / Wi-Fi networks ----
+(function(){
+  const MAP=[[/sign-in methods|^profile|personal links|colors|language|delete account/i,'account'],[/linked accounts|tracking/i,'privacy'],[/playstation|steam|discord|xbox/i,'sync']];
+  $('app').querySelectorAll('.card').forEach(c=>{const h=c.querySelector('h2'),t=h?h.textContent.trim():'';const m=MAP.find(x=>x[0].test(t));c.dataset.tab=m?m[1]:'account'});
+  function show(tab){
+    try{sessionStorage.setItem('ww_set_tab',tab)}catch(e){}
+    $('tabs').querySelectorAll('.pill').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+    $('app').querySelectorAll('[data-tab]:not(.pill)').forEach(c=>c.classList.toggle('hidden',c.dataset.tab!==tab));
+    document.querySelector('#app .savebar').classList.toggle('hidden',tab==='wifi');
+    if(tab==='wifi'&&window.Wifi)Wifi.open();
+  }
+  $('tabs').onclick=e=>{const b=e.target.closest('.pill');if(b)show(b.dataset.tab)};
+  window.showTab=show;
+  let t='account';try{t=(location.hash.match(/tab=(\w+)/)||[])[1]||sessionStorage.getItem('ww_set_tab')||'account'}catch(e){}
+  show(['account','privacy','sync','wifi'].includes(t)?t:'account');
+})();
+
+// ---- Wi-Fi networks: wifi/{ownerKey}/{id} (rules decide who can read each one), wifi_index/{ownerKey}/{id}=true for shared ones ----
+window.Wifi=(function(){
+  const BANDS=['2.4 GHz','5 GHz','2.4 / 5 GHz','6 GHz'];
+  const newId=()=>'w'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  const qrText=(ssid,pw)=>{const q=v=>String(v).replace(/([\\;,:"])/g,'\\$1');return 'WIFI:T:'+(pw?'WPA':'nopass')+';S:'+q(ssid)+';'+(pw?'P:'+q(pw)+';':'')+';'};
+  const denied=e=>/permission_denied/i.test((e&&(e.code||e.message))||'');
+  let mine={},sub='mine',opened=false,mineRef=null,dirty=new Set(),remoteWaiting=null;
+  const friends=()=>Object.entries(D.friends||{}).map(([code,f])=>({code,name:(f&&f.username)||code,close:!!(f&&f.close_friend)}));
+  function loadQr(){return window.qrcode?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='../assets/qrcode.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+  async function showQr(box,ssid,pw){
+    const old=box.querySelector('.qr');if(old){old.remove();return}
+    try{await loadQr();if(qrcode.stringToBytesFuncs&&qrcode.stringToBytesFuncs['UTF-8'])qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];   // phones read Wi-Fi QR text as UTF-8
+      const q=qrcode(0,'M');q.addData(qrText(ssid,pw));q.make();const w=document.createElement('div');w.className='qr';
+      const i=document.createElement('img');i.alt='Wi-Fi QR code for '+ssid;i.src=q.createDataURL(6,8);w.appendChild(i);
+      const h=document.createElement('p');h.className='hint';h.textContent=pw?'Phone says "Unable to join"? The saved password must match the router exactly (capitals count), and the phone must be in range. On iPhone, forget the network first if it was saved before.':'Open network: no password is sent.';w.appendChild(h);box.appendChild(w)}
+    catch(e){say('Could not make the QR code. Copy the password instead.',1)}
+  }
+  function wireMask(root){
+    root.querySelectorAll('[data-act="eye"]').forEach(b=>{const inp=b.parentNode.querySelector('input');let t;const mask=()=>{inp.type='password';clearTimeout(t)};
+      b.onclick=()=>{if(inp.type==='password'){inp.type='text';clearTimeout(t);t=setTimeout(mask,60000)}else mask()}});
+    root.querySelectorAll('[data-act="copy"]').forEach(b=>{b.onclick=()=>{const v=b.parentNode.querySelector('input').value;if(!v)return;navigator.clipboard.writeText(v).then(()=>say('Password copied.'),()=>say('Could not copy. Show the password and copy it by hand.',1))}});
+  }
+  function cardHtml(id,it){
+    const fr=friends(),to=it.to||{},sh=it.share||'private';
+    return `<div class="box net" data-id="${esc(id)}">
+      <label>Name</label><input data-f="label" maxlength="48" placeholder="e.g. Home Wi-Fi" value="${esc(it.label||'')}">
+      <div class="row"><input data-f="ssid" maxlength="64" placeholder="Network name (SSID)" value="${esc(it.ssid||'')}"><select data-f="band">${BANDS.map(b=>`<option${it.band===b?' selected':''}>${b}</option>`).join('')}</select></div>
+      <div class="row"><input data-f="password" type="password" maxlength="128" placeholder="Password (leave empty for an open network)" autocomplete="off" spellcheck="false" value="${esc(it.password||'')}"><button type="button" data-act="eye" title="Show / hide">👁</button><button type="button" data-act="copy">Copy</button></div>
+      <div class="row"><input data-f="note" maxlength="200" placeholder="Note (optional), e.g. router is in the office" value="${esc(it.note||'')}"></div>
+      <label>Who can see it</label>
+      <select data-f="share"><option value="private"${sh==='private'?' selected':''}>Only me</option><option value="close"${sh==='close'?' selected':''}>All my close friends</option><option value="picked"${sh==='picked'?' selected':''}>Friends I pick</option></select>
+      <div class="hint" data-closeinfo style="${sh==='close'?'':'display:none'};margin-top:6px">${(()=>{const c=fr.filter(f=>f.close);return c.length?'Close friends right now: '+c.map(f=>esc(f.name)).join(', ')+'. Change them under Privacy settings.':'You have no close friends ticked yet. Tick them under Privacy settings.'})()}</div>
+      <div class="pick" data-pick style="${sh==='picked'?'':'display:none'}">${fr.length?fr.map(f=>`<label><input type="checkbox" class="to" data-code="${esc(f.code)}"${to[f.code]?' checked':''}> ${esc(f.name)}${f.close?' ⭐':''}</label>`).join(''):'<span class="hint">No friends added yet.</span>'}</div>
+      <div class="row"><button type="button" class="primary" data-act="save">Save</button><button type="button" data-act="qr">QR code</button><button type="button" class="danger" data-act="del" style="margin-left:auto">Delete</button></div>
+    </div>`;
+  }
+  function drawMine(){
+    const ids=Object.keys(mine);
+    $('wifiMine').innerHTML=`<div class="nets">${ids.map(id=>cardHtml(id,mine[id]||{})).join('')}</div>${ids.length?'':'<p class="hint">No networks saved yet.</p>'}<div class="row" style="margin-top:10px"><button type="button" class="primary" id="wifiAdd">+ Add a network</button></div>`;
+    wireMask($('wifiMine'));
+    $('wifiAdd').onclick=()=>{mine[newId()]={_new:1};drawMine()};
+    $('wifiMine').querySelectorAll('.net').forEach(card=>{
+      const id=card.dataset.id,f=n=>card.querySelector('[data-f="'+n+'"]');
+      card.addEventListener('input',()=>dirty.add(id));card.addEventListener('change',e=>{if(!e.target.closest('[data-act]'))dirty.add(id)});
+      f('share').onchange=()=>{card.querySelector('[data-pick]').style.display=f('share').value==='picked'?'':'none';card.querySelector('[data-closeinfo]').style.display=f('share').value==='close'?'':'none'};
+      card.querySelector('[data-act="qr"]').onclick=()=>{if(!f('ssid').value.trim())return say('Type the network name first.',1);const pw=f('password').value;if(pw!==pw.trim())say('Heads up: the password starts or ends with a space. If the router password doesn\u2019t, remove it and Save.',1);showQr(card,f('ssid').value.trim(),pw)};
+      card.querySelector('[data-act="del"]').onclick=async()=>{
+        if(mine[id]&&mine[id]._new){delete mine[id];dirty.delete(id);applyRemote();return drawMine()}
+        if(!confirm('Delete '+(f('label').value||f('ssid').value||'this network')+'? Anyone you shared it with loses it too.'))return;
+        try{dirty.delete(id);await db.ref('site/wifi_index/'+K+'/'+id).remove();await db.ref('site/wifi/'+K+'/'+id).remove();delete mine[id];drawMine();say('Network deleted.')}catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
+      };
+      card.querySelector('[data-act="save"]').onclick=async()=>{
+        const ssid=f('ssid').value.trim();if(!ssid)return say('Type the network name (SSID).',1);
+        const share=f('share').value,to={};if(share==='picked')card.querySelectorAll('.to:checked').forEach(c=>{to[c.dataset.code]=true});
+        if(share==='picked'&&!Object.keys(to).length)return say('Tick at least one friend, or choose "Only me".',1);
+        const it={label:f('label').value.trim()||ssid,ssid,band:f('band').value,password:f('password').value,note:f('note').value.trim(),share,owner_name:D.username||'',updated_at:Date.now()};
+        if(share==='picked')it.to=to;
+        try{dirty.delete(id);await db.ref('site/wifi/'+K+'/'+id).set(it);await db.ref('site/wifi_index/'+K+'/'+id).set(share==='private'?null:it.updated_at);mine[id]=it;applyRemote();
+          say(share==='private'?'Saved. Only you can see it.':share==='close'?'Saved and shared with your close friends.':'Saved and shared with the friends you picked.')}
+        catch(e){say(denied(e)?'Wi-Fi sharing is not switched on in the database yet.':e.message,1)}
+      };
+    });
+  }
+  async function ownerKey(code){
+    try{const v=(await db.ref('accounts/friend_codes/'+code).get()).val();return typeof v==='string'?v:(v&&(v.email_key||v.key))||null}catch(e){return null}
+  }
+  // ---- Shared with me: live. wifi_index/{friend} lists what they share; each network is watched on its own.
+  //      A network you're not allowed to see is refused by the rules and simply doesn't show. ----
+  const SH={};let shWatching=false,shTimer=null,shLast='';
+  function stopShared(){Object.values(SH).forEach(o=>{try{o.idx&&o.idx.off()}catch(e){}Object.values(o.refs).forEach(r=>{try{r.off()}catch(e){}})});Object.keys(SH).forEach(k=>delete SH[k]);shWatching=false;shLast=''}
+  function watchNet(key,id){
+    const o=SH[key];if(!o||o.refs[id])return;
+    const r=db.ref('site/wifi/'+key+'/'+id);o.refs[id]=r;
+    r.on('value',sn=>{const it=sn.val();if(it&&it.ssid)o.items[id]=it;else delete o.items[id];drawSharedSoon()},
+      ()=>{delete o.items[id];delete o.refs[id];drawSharedSoon()});   // not shared with you (any more)
+  }
+  async function startShared(){
+    if(shWatching)return drawSharedSoon();shWatching=true;
+    $('wifiShared').innerHTML='<p class="hint">Looking for networks your friends shared with you…</p>';
+    const list=friends();let pending=list.length;if(!pending)return drawSharedSoon(true);
+    await Promise.all(list.map(async fr=>{
+      const key=await ownerKey(fr.code);if(!key||key===K||SH[key]){if(--pending===0)drawSharedSoon(true);return}
+      const o=SH[key]={name:fr.name,items:{},refs:{},idx:db.ref('site/wifi_index/'+key),ready:false};
+      o.idx.on('value',sn=>{
+        const ids=sn.val()||{};
+        Object.keys(o.refs).forEach(id=>{if(!(id in ids)){try{o.refs[id].off()}catch(e){}delete o.refs[id];delete o.items[id]}});
+        Object.keys(ids).forEach(id=>{if(!o.refs[id])watchNet(key,id)});   // a re-save also re-checks one you lost access to
+        if(!o.ready){o.ready=true;if(--pending===0)drawSharedSoon(true)}else drawSharedSoon();
+      },()=>{if(!o.ready){o.ready=true;if(--pending===0)drawSharedSoon(true)}});
+    }));
+  }
+  function drawSharedSoon(first){clearTimeout(shTimer);shTimer=setTimeout(()=>drawShared(first),first?0:120)}
+  function drawShared(first){
+    if(sub!=='shared')return;
+    const box=$('wifiShared'),out=[];
+    Object.values(SH).forEach(o=>Object.entries(o.items).forEach(([id,it])=>out.push({id,from:o.name,it})));
+    out.sort((a,b)=>a.from.localeCompare(b.from)||String(a.it.label).localeCompare(String(b.it.label)));
+    const sig=JSON.stringify(out);if(sig===shLast&&!first)return;shLast=sig;
+    const openQr=new Set([...box.querySelectorAll('.net')].filter(c=>c.querySelector('.qr')).map(c=>c.dataset.id));
+    if(!out.length){box.innerHTML='<p class="hint">Nothing has been shared with you yet. A friend has to save a network and share it with their close friends or pick you.</p>';return}
+    box.innerHTML='<div class="nets">'+out.map((o,i)=>`<div class="box sec net" data-i="${i}" data-id="${esc(o.id)}"><strong>${esc(o.it.label||o.it.ssid)}</strong><div class="hint" style="margin:0">Shared by ${esc(o.from)}</div>
+      <div class="kv"><span>Network</span><span>${esc(o.it.ssid)}</span></div><div class="kv"><span>Band</span><span>${esc(o.it.band||'')}</span></div>${o.it.note?`<div class="kv"><span>Note</span><span>${esc(o.it.note)}</span></div>`:''}
+      ${o.it.password?`<div class="row"><input type="password" readonly value="${esc(o.it.password)}"><button type="button" data-act="eye" title="Show / hide">👁</button><button type="button" data-act="copy">Copy</button></div>`:'<div class="hint">Open network, no password.</div>'}
+      <div class="row"><button type="button" data-act="qr">QR code to join</button></div></div>`).join('')+'</div>';
+    wireMask(box);
+    box.querySelectorAll('.net').forEach(card=>{const o=out[+card.dataset.i];card.querySelector('[data-act="qr"]').onclick=()=>showQr(card,o.it.ssid,o.it.password);
+      if(openQr.has(card.dataset.id))showQr(card,o.it.ssid,o.it.password)});   // keep an open QR open (it now shows the new details)
+  }
+  function setSub(v){sub=v;document.querySelectorAll('#wifiPane [data-wsub]').forEach(b=>b.classList.toggle('on',b.dataset.wsub===v));$('wifiMine').classList.toggle('hidden',v!=='mine');$('wifiShared').classList.toggle('hidden',v!=='shared');if(v==='shared')startShared()}
+  document.querySelectorAll('#wifiPane [data-wsub]').forEach(b=>b.onclick=()=>setSub(b.dataset.wsub));
+  // ---- My networks: live too (changes from your other devices). A card you're editing is left alone until you save. ----
+  function applyRemote(){
+    if(!remoteWaiting||dirty.size)return;
+    const keep={};Object.entries(mine).forEach(([id,it])=>{if(it&&it._new)keep[id]=it});
+    mine=Object.assign({},remoteWaiting,keep);remoteWaiting=null;if(sub==='mine')drawMine();
+  }
+  async function open(){
+    if(!K)return;
+    if(!opened){opened=true;
+      await new Promise(done=>{mineRef=db.ref('site/wifi/'+K);let first=true;
+        mineRef.on('value',sn=>{remoteWaiting=sn.val()||{};if(first){first=false;mine={};applyRemote();done()}else applyRemote()},
+          e=>{mine={};if(denied(e))say('Wi-Fi sharing is not switched on in the database yet.',1);done()})});
+    }
+    if(sub==='mine')drawMine();else startShared();
+  }
+  return {open,_qrText:qrText,reset(){opened=false;mine={};dirty.clear();remoteWaiting=null;try{mineRef&&mineRef.off()}catch(e){}mineRef=null;stopShared()}};
+})();
+
 // ---- Link / unlink sign-in methods ----
-const PNAME={'google.com':'Google','password':'Email & password','phone':'Phone'};
+const DISCORD_AUTH='https://ww-discord-auth.onrender.com';
+let DL=null; // linked Discord account {id, username, avatar} or null
+async function loadDiscordLink(){
+  DL=null;
+  let denied=false;
+  try{const sn=await db.ref('accounts/auth_links/'+U.uid+'/discord').get();if(sn.exists())DL=sn.val()}catch(e){denied=true}
+  // Rules not published yet (or read refused): ask the login server instead
+  if(!DL&&denied){
+    try{const t=await U.getIdToken();
+      const r=await fetch(DISCORD_AUTH+'/status',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'idToken='+encodeURIComponent(t)});
+      if(r.ok){const j=await r.json();if(j.discord)DL=j.discord}}catch(e){}
+  }
+  if(!DL){try{const t=await U.getIdTokenResult();if(t.claims&&t.claims.discord_id)DL={id:t.claims.discord_id,username:''}}catch(e){}}
+}
+async function refreshMethods(){await loadDiscordLink();renderMethods()}
 function renderMethods(){
-  const pd=U.providerData,has=id=>pd.some(p=>p.providerId===id);
-  $('methods').innerHTML=pd.map(p=>`<div class="row" style="margin:4px 0"><span style="flex:1">${PNAME[p.providerId]||esc(p.providerId)}: ${esc(p.phoneNumber||p.email||'')}${p.providerId==='password'?(U.emailVerified?' (verified)':' (not verified)'):''}</span>${p.providerId==='phone'&&pd.length>1?'<button data-un="phone">Unlink</button>':''}</div>`).join('');
-  $('methods').querySelectorAll('[data-un]').forEach(b=>b.onclick=async()=>{if(!confirm('Remove this phone number from your sign-in methods?'))return;try{await U.unlink('phone');await afterLink()}catch(e){linkErr(e)}});
-  $('lEmailBox').classList.toggle('hidden',has('password'));
-  $('lGoogle').classList.toggle('hidden',has('google.com'));
+  const pd=U.providerData,g=pd.find(p=>p.providerId==='google.com'),pw=pd.find(p=>p.providerId==='password'),ph=pd.find(p=>p.providerId==='phone');
+  const total=pd.length+(DL?1:0);
+  const rows=[
+    {k:'google',n:'Google',on:!!g,d:g&&g.email},
+    {k:'email',n:'Email & password',on:!!pw,d:pw?pw.email+(U.emailVerified?' (verified)':' (not verified)'):''},
+    {k:'discord',n:'Discord',on:!!DL,d:DL&&DL.username}];
+  if(ph)rows.push({k:'phone',n:'Phone',on:true,d:ph.phoneNumber});
+  $('methods').innerHTML=rows.map(r=>`<div class="row" style="margin:6px 0;align-items:center"><strong style="min-width:150px">${r.n}</strong><span style="flex:1">${r.on?'<span style="color:var(--accent-green)">Connected</span>'+(r.d?' · '+esc(r.d):''):'<span class="hint">Not connected</span>'}</span>${r.on?(total>1?`<button data-un="${r.k}">Unlink</button>`:''):`<button data-ln="${r.k}">Link</button>`}</div>`).join('');
+  const PID={google:'google.com',email:'password',phone:'phone'};
+  $('methods').querySelectorAll('[data-un]').forEach(b=>b.onclick=async()=>{
+    const k=b.dataset.un;if(!confirm('Remove '+(rows.find(r=>r.k===k)||{}).n+' from your sign-in methods?'))return;
+    if(k==='discord')return unlinkDiscord();
+    try{await U.unlink(PID[k]);await afterLink()}catch(e){linkErr(e)}});
+  $('methods').querySelectorAll('[data-ln]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.ln;
+    if(k==='google')return U.linkWithPopup(new firebase.auth.GoogleAuthProvider()).then(afterLink).catch(linkErr);
+    if(k==='email'){$('lEmailBox').classList.remove('hidden');$('lem').focus();return}
+    if(k==='discord')return linkDiscord()});
+  if(pw)$('lEmailBox').classList.add('hidden');
+}
+async function linkDiscord(){
+  try{const t=await U.getIdToken(true);
+    const f=document.createElement('form');f.method='POST';f.action=DISCORD_AUTH+'/link';
+    [['idToken',t],['next',location.href.split('#')[0]]].forEach(([n,v])=>{const i=document.createElement('input');i.type='hidden';i.name=n;i.value=v;f.appendChild(i)});
+    document.body.appendChild(f);f.submit();
+  }catch(e){say(e.message,1)}
+}
+async function unlinkDiscord(){
+  try{const t=await U.getIdToken(true);
+    const r=await fetch(DISCORD_AUTH+'/unlink',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'idToken='+encodeURIComponent(t)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j.error||'Could not unlink Discord.');
+    await refreshMethods();say('Discord unlinked.');
+  }catch(e){say(e.message,1)}
 }
 const linkErr=e=>say({'auth/credential-already-in-use':'That phone number or email already belongs to another account. Sign in with it instead.','auth/email-already-in-use':'That email already belongs to another account. Sign in with it instead.','auth/provider-already-linked':'That method is already linked.','auth/requires-recent-login':'For security, sign out and sign in again, then retry.','auth/weak-password':'Password needs at least 6 characters.','auth/invalid-verification-code':'That code is not correct.'}[e.code]||e.message,1);
 async function migrate(a,b){
@@ -300,7 +884,7 @@ async function migrate(a,b){
     if(src.exists()&&!(await db.ref(n+'/'+b).get()).exists()){await db.ref(n+'/'+b).set(src.val());await db.ref(n+'/'+a).remove()}
   }
   const fc=(await db.ref('users/'+b+'/friend_code').get()).val();
-  if(fc)await db.ref('friend_codes/'+fc).set(b);
+  if(fc)await db.ref('accounts/friend_codes/'+fc).set(b);
 }
 async function adoptUidData(){
   if(!U.email||K===U.uid)return;
@@ -310,9 +894,8 @@ async function afterLink(){
   try{await U.reload();await U.getIdToken(true);
     const nk=keyOf(U);if(nk!==K){await migrate(K,nk);K=nk}
     await load();say('Sign-in methods updated.')}catch(e){say(e.message,1)}
-  renderMethods();
+  refreshMethods();
 }
-$('lGoogle').onclick=()=>U.linkWithPopup(new firebase.auth.GoogleAuthProvider()).then(afterLink).catch(linkErr);
 $('lEmBtn').onclick=()=>U.linkWithCredential(firebase.auth.EmailAuthProvider.credential($('lem').value.trim(),$('lpw').value))
   .then(async()=>{try{await U.sendEmailVerification()}catch(e){}await afterLink();say('Email linked. Check your inbox to verify it.')}).catch(linkErr);
 
@@ -321,7 +904,7 @@ $('del').onclick=async()=>{
   if(!confirm('Permanently delete your account and all cloud records?'))return;
   try{
     const code=D.friend_code;
-    if(code)await db.ref('friend_codes/'+code).remove();
+    if(code)await db.ref('accounts/friend_codes/'+code).remove();
     await db.ref('user_secrets/'+K).remove();
     await db.ref('users/'+K).remove();
     if(U.email){const doc=fs.collection('users').doc(U.email.toLowerCase());
@@ -331,9 +914,17 @@ $('del').onclick=async()=>{
   }catch(e){say(e.code==='auth/requires-recent-login'?'Records erased. Sign in again, then press delete once more to remove your login.':e.message,1)}
 };
 
+// If Firebase is slow or blocked, never leave the page blank
+setTimeout(()=>{if($('app').classList.contains('hidden')&&$('authBox').classList.contains('hidden'))$('authBox').classList.remove('hidden')},6000);
 auth.onAuthStateChanged(async u=>{
   U=u;$('authBox').classList.toggle('hidden',!!u);$('app').classList.toggle('hidden',!u);
-  if(u){K=keyOf(u);try{await adoptUidData();await load()}catch(e){say(e.message,1)}}
+  if(u){K=keyOf(u);try{await adoptUidData();await load()}catch(e){say(e.message,1)}
+    try{Wifi.reset();if(!$('wifiPane').classList.contains('hidden'))Wifi.open()}catch(e){}
+    // Back from the Discord login server after "Link Discord"
+    const h=location.hash,ok=/ww_discord_linked=1/.test(h),er=h.match(/ww_discord_link_error=([^&]+)/);
+    if(ok||er){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+      await refreshMethods();
+      if(ok)say('Discord linked. You can now sign in with it.');else say(decodeURIComponent(er[1]).replace(/\+/g,' '),1)}}
 });
 </script>
 </body>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Themes - Test Overlay</title>
+<!--
+  Test bench for overlay/game-themes.js + game-themes.json.
+  Built to look like a full stream overlay (name banner, avatar, game poster, QR code, ticker, friend cards)
+  so every theme and effect can be checked before it goes on a real stream.
+
+  Normal use (OBS Browser Source, 1920x1080) - NO buttons, nothing to click:
+    game-themes-test.html?channel=phoenix_darkfire
+      -> reads that channel's current game from Twitch (DecAPI) every minute and picks the colors/effects
+         from game-themes.json on its own. No channel given = werewolf3788.
+  Testing only (never on stream):
+    ?controls=1                                   -> shows the tester panel + the "center stays clear" guide
+    ?controls=1&game=Phasmophobia                 -> tester starting on that game
+    ?controls=1&theme=police                      -> tester forcing one theme
+-->
+<style>
+  :root{--gt-primary:#0055ff;--gt-accent:#00d4ff;--gt-border:#0055ff;--gt-panel:#001a33;--gt-text:#fff}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:'Arial Black',Arial,sans-serif;color:var(--gt-text)}
+  body.bg-dark{background:#0d0f14}
+  body.bg-check{background:repeating-conic-gradient(#2a2a2a 0 25%,#1d1d1d 0 50%) 0 0/40px 40px}
+  body.bg-game{background:radial-gradient(ellipse at 30% 40%,#3b4a5a,transparent 60%),radial-gradient(ellipse at 75% 65%,#4a3b2c,transparent 55%),linear-gradient(#22303c,#11161c)}
+  #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+  .t{transition:color .8s,background .8s,border-color .8s,box-shadow .8s}
+
+  /* top name banner */
+  .banner{position:absolute;left:0;right:0;top:0;height:120px;display:flex;justify-content:space-between;align-items:center;padding:0 190px;
+    background:linear-gradient(90deg,#000 0%,var(--gt-panel) 50%,#000 100%);border-bottom:4px solid var(--gt-border)}
+  .banner .w{font-size:40px;letter-spacing:10px;text-transform:uppercase;color:var(--gt-accent);text-shadow:0 0 15px var(--gt-primary),0 0 30px var(--gt-primary)}
+
+  /* bottom-left QR */
+  .qr{position:absolute;left:56px;bottom:40px;padding:10px;border-radius:13px;background:rgba(0,0,0,.7);border:1px solid var(--gt-border)}
+  .qr img{display:block;width:130px;height:130px;border-radius:6px;background:#fff;padding:2px}
+
+  /* bottom ticker */
+  .ticker{position:absolute;left:345px;right:806px;bottom:40px;height:44px;border-radius:6px;overflow:hidden;display:flex;align-items:center;
+    background:rgba(0,0,0,.55);border-top:1px solid var(--gt-border);border-bottom:1px solid var(--gt-border)}
+  .ticker span{white-space:nowrap;padding-left:100%;font-size:16px;text-transform:uppercase;letter-spacing:2px;color:var(--gt-accent);text-shadow:0 0 10px var(--gt-primary);animation:tick 28s linear infinite}
+  @keyframes tick{to{transform:translateX(-100%)}}
+
+  /* bottom-right identity */
+  .idbox{position:absolute;right:56px;bottom:32px;display:flex;align-items:flex-end;gap:28px}
+  .gameinfo{display:flex;flex-direction:column;align-items:flex-end;gap:16px;max-width:460px}
+  .gname{font-size:24px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:460px;text-shadow:0 0 15px var(--gt-accent)}
+  .poster{width:114px;height:152px;border-radius:9px;border:2px solid var(--gt-border);background:rgba(0,12,26,.95)}
+  .poster img{width:100%;height:100%;object-fit:cover;display:block;border-radius:7px}
+  .who{display:flex;flex-direction:column;align-items:center;gap:9px}
+  .stat{font:bold 12px Arial,sans-serif;letter-spacing:2px;padding:4px 10px;border-radius:4px;border:1px solid var(--gt-border);background:rgba(0,0,0,.7);color:var(--gt-accent)}
+  .stat b{color:#fff}
+  .avatar{width:108px;height:108px;border-radius:50%;padding:4px;background:linear-gradient(45deg,var(--gt-border),var(--gt-accent));box-shadow:0 0 20px var(--gt-primary)}
+  .avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid #000;display:block;background:#111}
+
+  /* right friend cards */
+  .friends{position:absolute;right:10px;top:430px;display:flex;flex-direction:column;gap:9px}
+  .friend{min-width:190px;padding:6px 12px;border-radius:4px;background:rgba(0,0,0,.85);border:1px solid var(--gt-border);border-right:4px solid var(--gt-accent)}
+  .friend b{display:block;font-size:12px;text-transform:uppercase}
+  .friend small{font:bold 10px Arial,sans-serif;color:var(--gt-accent);text-transform:uppercase}
+
+  /* "center stays clear" guide (only shown with ?controls=1) */
+  .center{position:absolute;left:520px;right:520px;top:220px;bottom:130px;border:2px dashed rgba(255,255,255,.28);border-radius:18px;display:flex;align-items:center;justify-content:center;
+    font:700 22px Arial,sans-serif;color:rgba(255,255,255,.45);letter-spacing:3px;text-transform:uppercase;text-align:center}
+
+  /* control panel */
+  #panel{position:fixed;left:12px;top:132px;width:330px;max-height:calc(100vh - 150px);overflow:auto;z-index:100;background:rgba(8,10,16,.94);border:1px solid #333;border-radius:12px;padding:14px;
+    font:13px system-ui,Segoe UI,Roboto,sans-serif;color:#eee;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+  #panel h3{margin:0 0 10px;font-size:14px;color:#fff}
+  #panel label{display:block;margin:10px 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#aaa}
+  #panel input{width:100%;padding:7px 9px;border-radius:6px;border:1px solid #444;background:#151820;color:#fff;font-size:13px}
+  #panel .row{display:flex;gap:6px}
+  #panel button{cursor:pointer;border:1px solid #444;background:#1b1f2a;color:#ddd;border-radius:6px;padding:6px 8px;font-size:12px}
+  #panel button:hover,#panel button.on{border-color:#fff;color:#fff;background:#2a3040}
+  #themes{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  #themes button{text-align:left;display:flex;align-items:center;gap:6px}
+  #themes i{width:12px;height:12px;border-radius:3px;flex:none}
+  #why{margin-top:10px;padding:8px;border-radius:6px;background:#11141b;color:#cfd6e4;font-size:12px;line-height:1.4}
+  #panel .hint{font-size:11px;color:#888;margin-top:8px;line-height:1.4}
+  body.clean #panel,body.clean .center{display:none}
+  #hide{position:fixed;left:12px;top:132px;z-index:101;display:none}
+</style>
+<script src="game-themes.js"></script>
+</head>
+<body class="bg-game">
+<div id="stage">
+  <header class="banner t" id="banner"><div class="w" id="nameL">Phoenix</div><div class="w" id="nameR">Darkfire</div></header>
+
+  <div class="center" id="center">Center of the screen<br>stays clear for the game</div>
+
+  <div class="friends">
+    <div class="friend t"><b>Werewolf3788</b><small>Retro classic</small></div>
+    <div class="friend t"><b>GriffinsCoffin</b><small>Just Chatting</small></div>
+  </div>
+
+  <div class="qr t" id="qr"><img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fentertainment-71888.web.app"></div>
+
+  <div class="ticker t" id="ticker"><span>Like what you see? Follow! &nbsp;&nbsp;&nbsp;&nbsp; Testing game themes &nbsp;&nbsp;&nbsp;&nbsp; Colors change with the game</span></div>
+
+  <div class="idbox">
+    <div class="gameinfo">
+      <div class="gname t" id="gname">Stream offline</div>
+      <div class="poster t" id="poster" style="display:none"><img id="posterImg" alt=""></div>
+    </div>
+    <div class="who">
+      <div class="stat t" id="stat">RECRUITS: <b>1337</b></div>
+      <div class="avatar t" id="avatar"><img id="avatarImg" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23222'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23555'/%3E%3Cpath d='M18 92c4-20 18-30 32-30s28 10 32 30' fill='%23555'/%3E%3C/svg%3E"></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel">
+  <h3>Game theme tester</h3>
+  <label>Type a game name</label>
+  <input id="game" placeholder="e.g. Ready or Not" autocomplete="off">
+  <div class="row" style="margin-top:6px;flex-wrap:wrap">
+    <button data-g="Phasmophobia">Phasmophobia</button><button data-g="Ready or Not">Ready or Not</button>
+    <button data-g="theHunter: Call of the Wild">theHunter</button><button data-g="Farming Simulator 25">Farming Sim 25</button>
+    <button data-g="Baldur's Gate 3">Baldur's Gate 3</button><button data-g="Forza Horizon 5">Forza</button>
+    <button data-g="Stream offline">Offline</button>
+  </div>
+  <div id="why"></div>
+  <label>Or pick a theme</label>
+  <div id="themes"></div>
+  <label>Follow a channel's real game</label>
+  <div class="row"><input id="chan" placeholder="twitch username"><button id="follow">Follow</button></div>
+  <label>Background</label>
+  <div class="row"><button data-bg="bg-game" class="on">Fake game</button><button data-bg="bg-check">See-through</button><button data-bg="bg-dark">Dark</button></div>
+  <div class="hint">Effects only sit on the edges of the banner, avatar, poster, QR box, ticker and cards. The dashed box is the middle of the screen and nothing should ever show up inside it.<br><br>On stream, leave off <b>controls=1</b>: the overlay then follows the channel's real Twitch game by itself, no buttons.</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var P = new URLSearchParams(location.search);
+  var $ = function (id) { return document.getElementById(id); };
+  var stage = $('stage');
+  // The overlay runs by itself. The tester panel only appears with ?controls=1 (just for you, never on stream).
+  var CONTROLS = P.get('controls') === '1';
+  if (!CONTROLS) document.body.classList.add('clean', 'bg-none'), document.body.classList.remove('bg-game');
+
+  function fit() { var s = Math.min(innerWidth / 1920, innerHeight / 1080) || 1; stage.style.transform = 'scale(' + s + ')'; }
+  addEventListener('resize', fit); fit();
+
+  // pieces that get the effect (the QR box is "safe": nothing is ever drawn over the code)
+  function targets() {
+    var t = [$('banner'), $('avatar'), $('stat'), $('ticker'), { el: $('qr'), safe: true }].concat([].slice.call(document.querySelectorAll('.friend')));
+    if ($('poster').style.display !== 'none') t.push($('poster'));
+    return t;
+  }
+
+  var current = '', forced = '';
+  function setName(chan) {
+    if (!chan) return;
+    var n = chan.replace(/_/g, ' ').trim().split(' ');
+    $('nameL').textContent = n[0]; $('nameR').textContent = n.slice(1).join(' ') || '';
+  }
+
+  function showPoster(game, done) {
+    var box = $('poster'), img = $('posterImg');
+    if (!game || /offline/i.test(game)) { box.style.display = 'none'; return done(); }
+    var url = GameThemes.boxArt(game);
+    fetch(url, { method: 'HEAD' }).then(function (r) {
+      var ok = r.ok && !/404_boxart/.test(r.url);
+      if (ok) { img.src = url; box.style.display = 'block'; } else box.style.display = 'none';
+    }).catch(function () { img.src = url; box.style.display = 'block'; }).then(done);
+  }
+
+  function setGame(game) {
+    current = game || 'Stream offline';
+    $('gname').textContent = current;
+    showPoster(current, function () {
+      var theme = forced ? GameThemes.theme(forced) : null;
+      var info = theme ? { theme: theme, why: 'picked' } : GameThemes.explain(current);
+      GameThemes.apply({ theme: info.theme, root: document.documentElement, targets: targets() });
+      var why = { name: 'exact game name', keyword: 'keyword "' + info.hit + '"', genre: 'IGDB genre "' + info.hit + '"', 'default': 'no match, default theme', picked: 'picked by hand' }[info.why];
+      $('why').innerHTML = '<b>' + info.theme.name + '</b><br>Matched by: ' + why;
+      [].forEach.call(document.querySelectorAll('#themes button'), function (b) { b.classList.toggle('on', b.dataset.t === info.theme.id); });
+    });
+  }
+
+  var stopWatch = null;
+  function follow(chan) {
+    chan = String(chan || '').toLowerCase().replace(/^.*twitch\.tv\//, '').replace(/[^a-z0-9_]/g, '');
+    if (stopWatch) stopWatch(); stopWatch = null;
+    if (!chan) return;
+    setName(chan); forced = '';
+    fetch('https://decapi.me/twitch/avatar/' + chan).then(function (r) { return r.text(); }).then(function (t) { if (/^https:\/\//.test(t.trim())) $('avatarImg').src = t.trim(); }).catch(function () {});
+    stopWatch = GameThemes.watch({ channel: chan, root: document.documentElement, targets: targets, onGame: function (g) { setGame(g); } });
+  }
+
+  GameThemes.load().then(function () {
+    $('themes').innerHTML = GameThemes.themes.map(function (t) {
+      return '<button data-t="' + t.id + '"><i style="background:linear-gradient(135deg,' + t.colors.border + ' 50%,' + t.colors.accent + ' 50%)"></i>' + t.name.replace(/\s*\(.*\)/, '') + '</button>';
+    }).join('');
+    if (!CONTROLS) {
+      // on stream: always follow the channel's real Twitch game, colors come from game-themes.json
+      follow(P.get('channel') || 'werewolf3788');
+      return;
+    }
+    forced = P.get('theme') || '';
+    if (P.get('channel')) { $('chan').value = P.get('channel'); follow(P.get('channel')); }
+    else setGame(P.get('game') || 'Phasmophobia');
+    if (P.get('game')) $('game').value = P.get('game');
+  });
+
+  var typing;
+  $('game').addEventListener('input', function (e) { clearTimeout(typing); typing = setTimeout(function () { forced = ''; setGame(e.target.value); }, 350); });
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.g) { forced = ''; $('game').value = b.dataset.g; if (stopWatch) { stopWatch(); stopWatch = null; } setGame(b.dataset.g); }
+    if (b.dataset.t) { forced = b.dataset.t; setGame(current); }
+    if (b.dataset.bg) { ['bg-game', 'bg-check', 'bg-dark'].forEach(function (c) { document.body.classList.remove(c); }); document.body.classList.add(b.dataset.bg);
+      [].forEach.call(document.querySelectorAll('[data-bg]'), function (x) { x.classList.toggle('on', x === b); }); }
+    if (b.id === 'follow') follow($('chan').value);
+  });
+  addEventListener('resize', function () { setGame(current); });
+})();
+</script>
+</body>
+</html>

@@ -19,15 +19,63 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so each file's last-changed date is available
+
+      - name: Install Firebase login helper
+        run: pip install --quiet google-auth requests
 
       - name: Validate and Push JSONs to RTDB
         shell: python
+        env:
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
         run: |
           import os
           import glob
           import json
           import urllib.request
           import urllib.error
+          import subprocess
+          from datetime import datetime, timezone
+
+          import urllib.parse
+
+          def rtdb_auth_query():
+              # Log in so the database rules can require auth for /games and /games_catalog
+              secret = (os.environ.get("FIREBASE_AUTH_SECRET") or "").strip()
+              if secret:
+                  return "?auth=" + urllib.parse.quote(secret)
+              raw = (os.environ.get("GCP_SA_KEY_WEBSITE") or "").strip()
+              if raw:
+                  import base64
+                  from google.oauth2 import service_account
+                  from google.auth.transport.requests import Request
+                  info = json.loads(raw if raw.startswith("{") else base64.b64decode(raw).decode())
+                  cred = service_account.Credentials.from_service_account_info(info, scopes=[
+                      "https://www.googleapis.com/auth/userinfo.email",
+                      "https://www.googleapis.com/auth/firebase.database"])
+                  cred.refresh(Request())
+                  return "?access_token=" + urllib.parse.quote(cred.token)
+              print("Warning: no GCP_SA_KEY_WEBSITE / FIREBASE_AUTH_SECRET - writing without login")
+              return ""
+
+          AUTH = rtdb_auth_query()
+          sync_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          commit_sha = os.environ.get("GITHUB_SHA", "")[:7]
+
+          def file_last_changed(path):
+              # When this file was last changed in git (ISO 8601, UTC)
+              try:
+                  out = subprocess.run(
+                      ["git", "log", "-1", "--format=%cI", "--", path],
+                      capture_output=True, text=True, check=True
+                  ).stdout.strip()
+                  if out:
+                      return datetime.fromisoformat(out).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+              except Exception:
+                  pass
+              return sync_time
 
           target_dir = "public/games"
           if not os.path.exists(target_dir):
@@ -44,6 +92,7 @@ jobs:
           failed_files = []
           catalog_index = {}
           success_count = 0
+          valid_keys = set()
 
           for filepath in json_files:
               filename = os.path.basename(filepath)
@@ -51,6 +100,8 @@ jobs:
 
               if game_key in ["manifest", "catalog"]:
                   continue
+
+              valid_keys.add(game_key)
 
               try:
                   with open(filepath, 'r', encoding='utf-8') as f:
@@ -60,6 +111,14 @@ jobs:
                   failed_files.append((filename, f"Syntax Error: {err}"))
                   continue
 
+              updated_at = file_last_changed(filepath)
+              if isinstance(raw_data, dict):
+                  raw_data["_meta"] = {
+                      "updated_at": updated_at,
+                      "synced_at": sync_time,
+                      "commit": commit_sha
+                  }
+
               try:
                   clean_payload = json.dumps(raw_data).encode('utf-8')
               except Exception as dump_err:
@@ -67,7 +126,7 @@ jobs:
                   failed_files.append((filename, f"Serialization Error: {dump_err}"))
                   continue
 
-              url = f"https://entertainment-71888-default-rtdb.firebaseio.com/games/{game_key}.json"
+              url = f"https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games/{game_key}.json{AUTH}"
               print(f"Pushing {filename} -> /games/{game_key} ...")
 
               req = urllib.request.Request(
@@ -80,14 +139,22 @@ jobs:
               try:
                   with urllib.request.urlopen(req) as resp:
                       if resp.status == 200:
-                          print(f"✅ Successfully synced: /games/{game_key}")
+                          print(f"✅ Successfully synced: /games/{game_key} (file last changed {updated_at})")
                           success_count += 1
                           game_title = raw_data.get("game") or raw_data.get("title") or game_key.upper()
                           catalog_index[game_key] = {
                               "key": game_key,
                               "title": game_title,
-                              "file": filename
+                              "file": filename,
+                              "updated_at": updated_at,
+                              "synced_at": sync_time
                           }
+                          # Cover art for the home page Games slideshow (index.html reads only this small index)
+                          art = raw_data.get("art") if isinstance(raw_data.get("art"), dict) else {}
+                          if art.get("poster") or art.get("wallpaper"):
+                              catalog_index[game_key]["art"] = {k: art[k] for k in ("poster", "wallpaper") if art.get(k)}
+                          if raw_data.get("image_url"):
+                              catalog_index[game_key]["image_url"] = raw_data.get("image_url")
                       else:
                           print(f"⚠️ Unexpected status {resp.status} for {filename}")
                           failed_files.append((filename, f"HTTP Status {resp.status}"))
@@ -95,9 +162,36 @@ jobs:
                   print(f"❌ Upload Error on {filename}: {net_err}")
                   failed_files.append((filename, f"Error: {net_err}"))
 
+          # Remove any /games/{key} left over from a renamed or deleted file (e.g. the
+          # WOTH2 -> woth2 rename left the old uppercase key behind forever, since this
+          # step only ever PUT the current files and never looked at what was already
+          # there). Left in place, a rename shows up on the site as a duplicate game pill
+          # instead of replacing the old entry.
+          try:
+              shallow_q = (AUTH + "&shallow=true") if AUTH else "?shallow=true"
+              list_url = "https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games.json" + shallow_q
+              with urllib.request.urlopen(list_url) as resp:
+                  existing_keys = json.loads(resp.read().decode('utf-8')) or {}
+              orphans = [k for k in existing_keys.keys() if k not in valid_keys]
+              for key in orphans:
+                  del_url = f"https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games/{key}.json{AUTH}"
+                  req_del = urllib.request.Request(del_url, method="DELETE")
+                  try:
+                      with urllib.request.urlopen(req_del) as del_resp:
+                          if del_resp.status == 200:
+                              print(f"🗑️ Removed orphaned /games/{key} (no matching file in public/games).")
+                          else:
+                              print(f"⚠️ Failed to remove orphaned /games/{key}: HTTP {del_resp.status}")
+                  except Exception as del_err:
+                      print(f"⚠️ Failed to remove orphaned /games/{key}: {del_err}")
+              if not orphans:
+                  print("No orphaned /games keys to remove.")
+          except Exception as list_err:
+              print(f"⚠️ Could not list /games for orphan cleanup: {list_err}")
+
           if catalog_index:
               catalog_payload = json.dumps(catalog_index).encode('utf-8')
-              catalog_url = "https://entertainment-71888-default-rtdb.firebaseio.com/games_catalog.json"
+              catalog_url = "https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games_catalog.json" + AUTH
               req_cat = urllib.request.Request(
                   catalog_url,
                   data=catalog_payload,

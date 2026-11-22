@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stream Sync Setup</title>
+<!--
+  Stream Sync setup (any site user). Signs in with the site's Firebase login, then:
+   - Twitch (streamer + bot) and Kick sign-ins go through the ww-stream-sync Render service
+     (they need the app secret), which saves the logins to user_secrets/<you>.
+   - YouTube sign-in finds your channel in the browser and saves it to your settings.
+   - TikTok name, "post chat as", PSN name and options are saved straight to Firebase.
+   - The site owner also gets a box for the Twitch/Kick app keys (saved to their user_secrets).
+  Nothing secret is shown on this page, only whether it's connected.
+-->
+<style>
+:root{--bg:#0c0a14;--card:#16131f;--line:#2a2540;--txt:#e2e8f0;--mut:#94a3b8;--tw:#9146ff;--yt:#ff3d3d;--kick:#53fc18;--tt:#25f4ee;--ok:#34d399;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--txt)}
+main{width:80vw;margin:0 auto;padding:24px 0 60px}
+@media (max-width:900px){main{width:auto;padding:16px}}
+h1{margin:0 0 4px;font-size:1.7rem}
+.sub{color:var(--mut);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:1200px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.card h2{margin:0;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.wide{grid-column:1/-1}
+p.hint{color:var(--mut);font-size:.88rem;margin:0}
+.state{font-size:.92rem}.ok{color:var(--ok)}.bad{color:var(--bad)}
+button,.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:10px 14px;cursor:pointer;color:#fff;background:#3b3456}
+button:disabled{opacity:.5;cursor:default}
+.tw{background:var(--tw)}.yt{background:var(--yt)}.kick{background:var(--kick);color:#000}.tt{background:var(--tt);color:#000}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--mut);padding:6px 10px;font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=text],input[type=password],select{font:inherit;background:#0f0d18;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-width:0;flex:1}
+label.opt{display:flex;gap:8px;align-items:center;cursor:pointer}
+#banner{display:none;padding:12px 14px;border-radius:10px;margin:0 0 16px;font-weight:600}
+#banner.good{display:block;background:#0f2e22;color:var(--ok)}#banner.err{display:block;background:#3a1418;color:var(--bad)}
+pre{background:#0f0d18;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:.82rem;margin:0;max-height:260px}
+#signin{max-width:460px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>Stream Sync Setup</h1>
+  <p class="sub">Sign in once, connect your accounts, and your PlayStation game, title and outside chats go to Twitch on their own while you're live.</p>
+  <div id="banner"></div>
+
+  <section id="signin" class="card">
+    <h2>Sign in to the site</h2>
+    <p class="hint">Use the same login as the rest of the site.</p>
+    <button id="gBtn" class="tw">Sign in with Google</button>
+  </section>
+
+  <div id="app" class="grid hidden">
+    <section class="card">
+      <h2><span class="dot" style="background:var(--tw)"></span>Twitch (streaming account)</h2>
+      <p class="hint">Changes your category, title and tags. Sign in with the account you stream on.</p>
+      <div class="state" id="twState">…</div>
+      <div class="row"><button class="tw" data-connect="twitch" data-role="broadcaster">Connect Twitch</button>
+        <button class="ghost" data-remove="twitch_broadcaster_refresh" data-login="twitch_login">Remove</button></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="dot" style="background:var(--tw)"></span>Twitch chat bot (optional)</h2>
+      <p class="hint">Posts the outside chats into your Twitch chat. Log out of your main account on twitch.tv first, or Twitch will sign that one in again.</p>
+      <div class="state" id="botState">…</div>
+      <div class="row"><button class="tw" data-connect="twitch" data-role="bot">Connect bot</button>
+        <button class="ghost" data-remove="twitch_bot_refresh" data-login="bot_login">Remove</button></div>
+    </section>
+
+    <section class="card">
+      <h2>Post outside chat as</h2>
+      <p class="hint">Who the YouTube / TikTok / Kick messages show up as in your Twitch chat.</p>
+      <label class="opt"><input type="radio" name="postAs" value="bot"> My chat bot <span class="hint">(uses your account if no bot is connected)</span></label>
+      <label class="opt"><input type="radio" name="postAs" value="streamer"> My own Twitch account</label>
+    </section>
+
+    <section class="card">
+      <h2><span class="dot" style="background:var(--yt)"></span>YouTube</h2>
+      <p class="hint">Sign in with the Google account that owns your YouTube channel. It only reads which channel is yours, then your live chat is relayed.</p>
+      <div class="state" id="ytState">…</div>
+      <div class="row"><button class="yt" id="ytBtn">Sign in with YouTube</button>
+        <button class="ghost" id="ytRemove">Remove</button></div>
+      <div class="row"><input type="text" id="ytId" placeholder="or paste your channel ID (UC…)"><button id="ytSave">Save</button></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="dot" style="background:var(--tt)"></span>TikTok</h2>
+      <p class="hint">TikTok has no sign-in for live chat, so just your TikTok name. Chat is read from your public live page.</p>
+      <div class="state" id="ttState">…</div>
+      <div class="row"><input type="text" id="ttName" placeholder="your TikTok name (no @)"><button class="tt" id="ttSave">Save</button></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="dot" style="background:var(--kick)"></span>Kick (optional)</h2>
+      <p class="hint">Sets your Kick title and category and relays Kick chat to Twitch.</p>
+      <div class="state" id="kickState">…</div>
+      <div class="row"><button class="kick" data-connect="kick">Connect Kick</button>
+        <button class="ghost" data-remove="kick_refresh" data-login="kick_login">Remove</button></div>
+    </section>
+
+    <section class="card">
+      <h2>PlayStation</h2>
+      <p class="hint">Your game and status come from the PlayStation database (no PlayStation password needed). Faster checks use the PSN sign-in saved in your Settings, if there is one.</p>
+      <div class="row"><input type="text" id="psnId" placeholder="your PSN name"><button id="psnSave">Save</button></div>
+      <div class="row"><span class="hint">Check PSN directly every</span>
+        <select id="psnPoll"><option value="0">never (database only)</option><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15">15 minutes</option></select></div>
+    </section>
+
+    <section class="card">
+      <h2>Options</h2>
+      <label class="opt"><input type="checkbox" id="optEnabled"> Stream Sync on</label>
+      <div class="row"><span class="hint">Game info comes from</span>
+        <select id="optSource"><option value="auto">PlayStation when I'm on it, otherwise my Twitch title (PC / OBS)</option><option value="twitch">always my Twitch title and category (PC / OBS)</option><option value="playstation">PlayStation only</option></select></div>
+      <p class="hint">PC / OBS: set your title and category on Twitch as usual; they're copied to YouTube and Kick. Outside chat still comes into Twitch either way.</p>
+      <label class="opt"><input type="checkbox" id="optTitle"> Update my stream title from my PlayStation game status</label>
+      <div class="row"><span class="hint">Title shows</span>
+        <select id="optFmt"><option value="status">game status (e.g. Chapter 2: The Past)</option><option value="game_status">game name - game status</option><option value="game">game name only</option></select></div>
+      <label class="opt"><input type="checkbox" id="optMention"> Add @friends playing the same game with me</label>
+      <p class="hint">Title right now: <b id="titlePreview">…</b></p>
+      <label class="opt"><input type="checkbox" id="optDiscord"> Discord "now live" alert</label>
+      <div class="row"><span class="hint">YouTube title</span>
+        <select id="optYt"><option value="same">same as Twitch</option><option value="base_plus_status">my YouTube title + status</option><option value="off">leave alone</option></select></div>
+    </section>
+
+    <section class="card" id="ownerCard">
+      <h2>App keys (site owner)</h2>
+      <p class="hint">From dev.twitch.tv and kick.com/settings/developer. Saved to your private secrets; never shown again.</p>
+      <div class="state" id="ownState">…</div>
+      <input type="text" id="twCid" placeholder="Twitch Client ID">
+      <input type="password" id="twSec" placeholder="Twitch Client Secret">
+      <input type="text" id="kCid" placeholder="Kick Client ID (optional)">
+      <input type="password" id="kSec" placeholder="Kick Client Secret (optional)">
+      <button id="ownSave">Save app keys</button>
+      <p class="hint">Redirect URLs: <code>…onrender.com/auth/twitch/callback</code>, <code>…/auth/kick/callback</code>. Kick webhook URL: <code>…/webhooks/kick</code></p>
+    </section>
+
+    <section class="card wide">
+      <h2>Last stream check</h2>
+      <p class="hint">Updates while you're live.</p>
+      <pre id="lastPass">Not live yet.</pre>
+    </section>
+  </div>
+</main>
+
+<form id="connectForm" method="post" class="hidden"><input name="id_token"><input name="role"><input name="back"></form>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const SYNC = "https://ww-stream-sync.onrender.com";
+const OWNER_KEY = "raykevin71888_at_gmail_com";   // site owner: sees the app-keys box
+const CFG = {apiKey:"AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",authDomain:"entertainment-71888.firebaseapp.com",
+  databaseURL:"https://entertainment-71888-default-rtdb.firebaseio.com",projectId:"entertainment-71888",
+  storageBucket:"entertainment-71888.firebasestorage.app",messagingSenderId:"660524340277",appId:"1:660524340277:web:ef8f4ed04fa985a4f88d7c"};
+firebase.initializeApp(CFG);
+const auth = firebase.auth(), db = firebase.database();
+const $ = (id) => document.getElementById(id);
+const keyOf = (u) => u.email ? u.email.toLowerCase().replace(/\./g, "_").replace("@", "_at_") : u.uid;
+let K = null, S = {}, SEC = {};
+
+function banner(msg, bad) { const b = $("banner"); b.textContent = msg; b.className = bad ? "err" : "good"; }
+const on = (ok, yes, no) => ok ? `<span class="ok">✔ ${yes}</span>` : `<span class="bad">✖ ${no}</span>`;
+
+/* The free Render service sleeps. Wake it early, and make Connect wait until it really answers:
+   if the sign-in is sent while it's still starting, Render reloads the page and the sign-in is lost. */
+async function awake(maxMs = 75000) {
+  const end = Date.now() + maxMs;
+  while (Date.now() < end) {
+    try { const r = await fetch(SYNC + "/health", { cache: "no-store" }); if (r.ok) return true; }
+    catch (e) {
+      /* Some browsers/ad blockers/VPNs block reading the answer; a no-cors request still
+         finishes only once the service has really answered, which is all we need. */
+      try { await fetch(SYNC + "/health?nc=" + Date.now(), { mode: "no-cors", cache: "no-store" }); return true; } catch (e2) {}
+    }
+    await new Promise((res) => setTimeout(res, 3000));
+  }
+  return false;
+}
+awake();
+
+/* messages coming back from a sign-in */
+(() => {
+  const q = new URLSearchParams(location.search);
+  const names = { twitch: "Twitch", twitch_bot: "Twitch bot", kick: "Kick" };
+  if (q.get("error")) banner(q.get("error"), true);
+  else if (q.get("connected")) banner(`Connected ${names[q.get("connected")] || q.get("connected")}${q.get("as") ? " as " + q.get("as") : ""}.${q.get("note") ? " " + q.get("note") : ""}`);
+  if (q.toString()) history.replaceState(null, "", location.pathname);
+})();
+
+$("gBtn").onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch((e) => banner(e.message, true));
+
+auth.onAuthStateChanged(async (u) => {
+  $("signin").classList.toggle("hidden", !!u);
+  $("app").classList.toggle("hidden", !u);
+  if (!u) return;
+  K = keyOf(u);
+  $("ownerCard").classList.toggle("hidden", K !== OWNER_KEY);
+  await load();
+  db.ref(`users/${K}/stream_sync_state`).on("value", (s) => {
+    const v = s.val();
+    $("lastPass").textContent = v ? JSON.stringify(v, (k, x) => (k.endsWith("_at") && typeof x === "number" ? new Date(x).toLocaleString() : x), 2) : "Not live yet.";
+  });
+});
+
+async function load() {
+  const [ss, sec, psn] = await Promise.all([
+    db.ref(`users/${K}/stream_sync`).once("value"),
+    db.ref(`user_secrets/${K}`).once("value"),
+    db.ref(`users/${K}/psn_username`).once("value")
+  ]);
+  S = ss.val() || {}; SEC = sec.val() || {};
+  const chat = S.chat || {};
+  $("twState").innerHTML = on(SEC.twitch_broadcaster_refresh, "Connected" + (S.twitch_login ? " as " + S.twitch_login : ""), "Not connected");
+  $("botState").innerHTML = on(SEC.twitch_bot_refresh, "Connected" + (S.bot_login ? " as " + S.bot_login : ""), "Not connected (chat will post as you)");
+  $("ytState").innerHTML = on(chat.youtube_channel_id, "Channel: " + (chat.youtube_channel_title || chat.youtube_channel_id), "Not set");
+  $("ttState").innerHTML = on(chat.tiktok_username, "@" + chat.tiktok_username, "Not set");
+  $("kickState").innerHTML = on(SEC.kick_refresh, "Connected" + (S.kick_login ? " as " + S.kick_login : ""), "Not connected");
+  $("ownState").innerHTML = on(SEC.twitch_client_id && SEC.twitch_client_secret, "Twitch app keys saved", "Twitch app keys missing") + "<br>" + on(SEC.kick_client_id && SEC.kick_client_secret, "Kick app keys saved", "Kick app keys not added");
+  document.querySelectorAll('input[name=postAs]').forEach((r) => r.checked = r.value === (chat.post_as || "bot"));
+  $("ytId").value = chat.youtube_channel_id || "";
+  $("ttName").value = chat.tiktok_username || "";
+  $("psnId").value = S.psn_online_id || psn.val() || "";
+  $("psnPoll").value = String(S.psn_poll_minutes === undefined ? (SEC.psn_npsso ? 5 : 0) : S.psn_poll_minutes);
+  $("optEnabled").checked = S.enabled === true;
+  $("optTitle").checked = S.update_title !== false;
+  $("optDiscord").checked = S.discord_live_alert !== false;
+  $("optYt").value = S.youtube_mode || "same";
+  $("optFmt").value = S.title_format || "status";
+  $("optSource").value = S.source || "auto";
+  $("optMention").checked = S.mention_squad !== false;
+  preview();
+}
+
+/* Live preview from the PlayStation database (public), same rules as the sync service */
+const PSN_DB = "https://playstation-stats-default-rtdb.firebaseio.com/psn/gamertags/";
+async function preview() {
+  const tag = $("psnId").value.trim();
+  if (!tag) { $("titlePreview").textContent = "(add your PSN name)"; return; }
+  try {
+    const [g, st] = await Promise.all(["currentGame", "gameStatus"].map((f) => fetch(PSN_DB + encodeURIComponent(tag) + "/" + f + ".json").then((r) => r.json())));
+    const clean = (x) => String(x || "").replace(/[™®©]/g, "").replace(/\s+/g, " ").trim();
+    const gm = /^dashboard$/i.test(clean(g)) ? "" : clean(g), sts = clean(st), f = $("optFmt").value;
+    const main = f === "game" ? gm : f === "game_status" ? (gm && sts && !sts.toLowerCase().includes(gm.toLowerCase()) ? gm + " - " + sts : sts || gm) : sts || gm;
+    const squad = Object.values(S.squad || {});
+    const tail = $("optMention").checked && squad.length ? "  (+ w/ @" + squad.join(" @") + " when they're in your game)" : "";
+    $("titlePreview").textContent = main ? main + tail : "(not in a game right now)";
+  } catch (e) { $("titlePreview").textContent = "(couldn't read PlayStation data)"; }
+}
+
+async function save(obj, msg) {
+  try { await db.ref(`users/${K}/stream_sync`).update(obj); banner(msg || "Saved."); await load(); }
+  catch (e) { banner(e.message, true); }
+}
+
+/* Twitch / Kick: hand off to the Render service with a fresh site sign-in */
+document.querySelectorAll("[data-connect]").forEach((b) => b.onclick = async () => {
+  b.disabled = true; b.textContent = "Waking up the sync service…";
+  await awake();   // if it couldn't be confirmed, go anyway: the service sends you back with a message if it wasn't ready
+  b.textContent = "Opening…";
+  const f = $("connectForm");
+  f.action = `${SYNC}/connect/${b.dataset.connect}`;
+  f.id_token.value = await auth.currentUser.getIdToken(true);
+  f.role.value = b.dataset.role || "";
+  f.back.value = location.origin + location.pathname;
+  f.submit();
+});
+
+document.querySelectorAll("[data-remove]").forEach((b) => b.onclick = async () => {
+  if (!confirm("Disconnect this account?")) return;
+  try {
+    await db.ref(`user_secrets/${K}/${b.dataset.remove}`).remove();
+    await db.ref(`users/${K}/stream_sync/${b.dataset.login}`).remove();
+    if (b.dataset.remove === "kick_refresh") await db.ref(`users/${K}/stream_sync/kick_user_id`).remove();
+    banner("Disconnected."); await load();
+  } catch (e) { banner(e.message, true); }
+});
+
+document.querySelectorAll('input[name=postAs]').forEach((r) => r.onchange = () => save({ "chat/post_as": r.value }, r.value === "bot" ? "Chat will post as your bot." : "Chat will post as your Twitch account."));
+
+/* YouTube: a separate sign-in just to read which channel is yours (doesn't change your site login) */
+$("ytBtn").onclick = async () => {
+  const ytApp = firebase.apps.find((a) => a.name === "yt") || firebase.initializeApp(CFG, "yt");
+  const p = new firebase.auth.GoogleAuthProvider();
+  p.addScope("https://www.googleapis.com/auth/youtube.readonly");
+  p.setCustomParameters({ prompt: "select_account" });
+  try {
+    const r = await ytApp.auth().signInWithPopup(p);
+    const tok = r.credential && r.credential.accessToken;
+    const j = await (await fetch("https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true", { headers: { Authorization: "Bearer " + tok } })).json();
+    await ytApp.auth().signOut();
+    const ch = j.items && j.items[0];
+    if (!ch) return banner("That Google account has no YouTube channel. Try again and pick the account (or brand account) your channel is on.", true);
+    await save({ "chat/youtube_channel_id": ch.id, "chat/youtube_channel_title": ch.snippet.title }, "YouTube channel saved: " + ch.snippet.title);
+  } catch (e) { banner("YouTube sign-in: " + e.message, true); }
+};
+$("ytSave").onclick = () => {
+  const v = $("ytId").value.trim();
+  if (v && !/^UC[\w-]{22}$/.test(v)) return banner("A channel ID starts with UC and is 24 characters (YouTube Studio > Settings > Channel > Advanced).", true);
+  save({ "chat/youtube_channel_id": v || null, "chat/youtube_channel_title": null }, v ? "YouTube channel saved." : "YouTube removed.");
+};
+$("ytRemove").onclick = () => save({ "chat/youtube_channel_id": null, "chat/youtube_channel_title": null }, "YouTube removed.");
+
+$("ttSave").onclick = () => {
+  const v = $("ttName").value.trim().replace(/^@/, "");
+  if (v && !/^[\w.]{2,24}$/.test(v)) return banner("That doesn't look like a TikTok name.", true);
+  save({ "chat/tiktok_username": v || null }, v ? "TikTok saved: @" + v : "TikTok removed.");
+};
+
+$("psnSave").onclick = () => save({ psn_online_id: $("psnId").value.trim() || null }, "PSN name saved.");
+$("psnPoll").onchange = () => save({ psn_poll_minutes: Number($("psnPoll").value) });
+$("optEnabled").onchange = (e) => save({ enabled: e.target.checked }, e.target.checked ? "Stream Sync is on." : "Stream Sync is off.");
+$("optTitle").onchange = (e) => save({ update_title: e.target.checked });
+$("optDiscord").onchange = (e) => save({ discord_live_alert: e.target.checked });
+$("optYt").onchange = (e) => save({ youtube_mode: e.target.value });
+$("optSource").onchange = (e) => save({ source: e.target.value }, "Saved where your game info comes from.");
+$("optFmt").onchange = (e) => save({ title_format: e.target.value }, "Title format saved.");
+$("optMention").onchange = (e) => save({ mention_squad: e.target.checked });
+
+$("ownSave").onclick = async () => {
+  const add = {};
+  [["twCid", "twitch_client_id"], ["twSec", "twitch_client_secret"], ["kCid", "kick_client_id"], ["kSec", "kick_client_secret"]].forEach(([id, f]) => { const v = $(id).value.trim(); if (v) add[f] = v; });
+  if (!Object.keys(add).length) return banner("Paste at least one key first.", true);
+  try { await db.ref(`user_secrets/${K}`).update(add); ["twCid", "twSec", "kCid", "kSec"].forEach((id) => $(id).value = ""); banner("App keys saved."); await load(); }
+  catch (e) { banner(e.message, true); }
+};
+</script>
+</body>
+</html>

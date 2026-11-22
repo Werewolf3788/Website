@@ -4,6 +4,13 @@ name: PSN Sync and Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'force = full pull (button), scheduled = normal 21-minute pull (StreamHook timer)'
+        default: force
+  # GitHub runs this cron late or skips it when it's busy (it was only firing every few
+  # hours). The real 21-minute clock is StreamHook.gs in Apps Script, which starts this
+  # workflow with mode=scheduled. The cron stays as a backup.
   schedule:
     - cron: '*/21 * * * *'
   push:
@@ -46,6 +53,7 @@ jobs:
           FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}
           FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
           GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          PSN_RUN_MODE: ${{ github.event.inputs.mode }}
         run: |
           node Playstation/psn.js
           if [ -f "scripts/sync_active_game.js" ]; then

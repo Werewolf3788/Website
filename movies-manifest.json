@@ -1,0 +1,28 @@
+{
+  "id": "/Movies",
+  "name": "Werewolf Cinema Library",
+  "short_name": "Werewolf Cinema",
+  "description": "Browse the Werewolf Cinema digital movie and TV library, with links to every store each title is on.",
+  "start_url": "./Movies?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0b0b0f",
+  "theme_color": "#0b0b0f",
+  "categories": ["entertainment", "lifestyle"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "icons/movies-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/movies-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/movies-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Recently added", "short_name": "New", "url": "./Movies?view=browse&source=shortcut", "icons": [{ "src": "icons/movies-192.png", "sizes": "192x192" }] },
+    { "name": "Movies", "url": "./Movies?view=movies&source=shortcut", "icons": [{ "src": "icons/movies-192.png", "sizes": "192x192" }] },
+    { "name": "TV Shows", "url": "./Movies?view=tv&source=shortcut", "icons": [{ "src": "icons/movies-192.png", "sizes": "192x192" }] },
+    { "name": "Search", "url": "./Movies?view=search&source=shortcut", "icons": [{ "src": "icons/movies-192.png", "sizes": "192x192" }] }
+  ]
+}

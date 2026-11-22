@@ -1,0 +1,38 @@
+{
+ "saveDir": "/profile/savegame3",
+ "mtimes": {
+  "careerSavegame.xml": null,
+  "collectibles.xml": null,
+  "economy.xml": null,
+  "environment.xml": null,
+  "farmland.xml": null,
+  "farms.xml": null,
+  "fields.xml": null,
+  "handTools.xml": null,
+  "items.xml": null,
+  "missions.xml": null,
+  "npc.xml": null,
+  "placeables.xml": null,
+  "players.xml": null,
+  "precisionFarming.xml": null,
+  "sales.xml": null,
+  "vehicles.xml": null
+ },
+ "lastCheck": "2026-11-15T10:56:56Z",
+ "lastMode": "light",
+ "lastFull": "2026-11-04T07:59:29Z",
+ "lastLight": "2026-11-15T10:56:56Z",
+ "lastChange": "2026-11-15T10:56:56Z",
+ "farmColors": {
+  "1": {
+   "primary": "#da8816",
+   "secondary": "#bd5b00"
+  },
+  "2": {
+   "primary": "#37ff00",
+   "secondary": "#f52424"
+  }
+ },
+ "mapSource": "FS25_The_Rural_Farmlands_Of_Ohio.zip:440668893:None",
+ "mapFetchedAt": 1793614258.341616
+}

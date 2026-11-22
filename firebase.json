@@ -5,7 +5,16 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      ".github/**"
+      ".github/**",
+      "psn.json",
+      "Playstation/**",
+      "scripts/**",
+      "games/fs25/data/raw/**",
+      "**/*.md",
+      "database.rules.json",
+      "**/__pycache__/**",
+      "Claude-Test/sync/**",
+      "overlay/saves/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
@@ -13,6 +22,30 @@
       {
         "source": "/fc5",
         "destination": "/game/index.html"
+      },
+      {
+        "source": "/fs25",
+        "destination": "/games/fs25/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css|html|json)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "/game/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       }
     ]
   }

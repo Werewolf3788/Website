@@ -1,11 +1,15 @@
 <!-- Line 1: Privacy Policy & User Data Protection Protocol -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 20:09 EDT | Firebase Sync Target: /utm_links | Version: 2.1.0] -->
+<!-- [Smart Cache-Buster Time: 2026-11-18 21:08 EST | Firebase Sync Target: /utm_links | Version: 2.2.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Werewolf Project & WOTH Hub</title>
+    <title>Privacy Policy - Werewolf Project</title>
 
     <!-- Line 9: Unified Branding Favicons via Relative Protocol -->
     <link rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
@@ -129,76 +133,173 @@
             border-top: 1px solid var(--border-color);
             padding-top: 20px;
         }
+
+        /* Desktop: ~80vw, contents sidebar + policy text side by side. Phones stay stacked. */
+        .layout { display: block; }
+        .toc { display: none; }
+        @media (min-width: 1000px) {
+            .container { max-width: none; width: 80vw; }
+            .layout { display: grid; grid-template-columns: 240px 1fr; gap: 36px; align-items: start; }
+            .toc { display: block; position: sticky; top: 80px; background: var(--bg-surface);
+                   border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; }
+            .toc strong { display: block; color: #fff; font-size: 0.85rem; margin-bottom: 8px; }
+            .toc a { display: block; font-size: 0.85rem; padding: 4px 0; color: var(--text-muted); }
+            .toc a:hover { color: var(--accent-blue); }
+            .policy { max-width: 900px; }
+        }
+        h2 { scroll-margin-top: 80px; }
+        .updated-note { font-size: 0.85rem; }
     </style>
+    <link rel="stylesheet" href="../assets/ww-shell.css">
+    <script src="../assets/menu-sheet.js"></script>
+    <style id="ww-reserve">html:not(.ww-bar-ready) body::before{content:"";display:block;height:60px}</style>
+    <script defer src="../assets/ww-shell.js"></script>
 </head>
 <body>
     <div class="container">
-        <a href="https://playstation-be936.web.app" class="nav-back">← Back to Hunting Hub</a>
+        <a href="../index.html" class="nav-back">← Back to Werewolf Project</a>
 
-        <h1>Privacy Policy</h1>
-        <p><strong>Effective Date:</strong> October 7, 2026</p>
+        <h1>Werewolf Project Privacy Policy</h1>
+        <p><strong>Effective Date:</strong> November 18, 2026</p>
+        <p class="updated-note">Previous version: October 7, 2026 (Hunting Hub only). This version covers the whole Werewolf Project site.</p>
 
-        <!-- Section 1 -->
-        <h2>1. Information We Collect</h2>
-        <p>When you sign in and interact with our platform, companion apps, or synchronization tools across Firebase, we collect and process the following information:</p>
+        <div class="layout">
+        <nav class="toc" aria-label="Contents">
+            <strong>Contents</strong>
+            <a href="#covers">1. What This Policy Covers</a>
+            <a href="#collect">2. Information We Collect</a>
+            <a href="#private">3. Private Credentials</a>
+            <a href="#where">4. Where Your Data Is Kept</a>
+            <a href="#use">5. How We Use &amp; Share Information</a>
+            <a href="#ads">6. Advertising, Analytics &amp; Affiliate Links</a>
+            <a href="#cookies">7. Cookies &amp; Local Storage</a>
+            <a href="#delete">8. Keeping &amp; Deleting Your Data</a>
+            <a href="#kids">9. Children's Privacy</a>
+            <a href="#security">10. Security</a>
+            <a href="#changes">11. Changes to This Policy</a>
+            <a href="#contact">12. Contact</a>
+        </nav>
+        <div class="policy">
+        <h2 id="covers">1. What This Policy Covers</h2>
+        <p>This policy covers everything in the Werewolf Project website (the <code>Werewolf3788/Website</code> repository), served at <a href="https://entertainment-71888.web.app">entertainment-71888.web.app</a> and on GitHub Pages, plus the helper services and scheduled jobs that run for it. That includes:</p>
         <ul>
-            <li><strong>Primary Authentication Identifiers:</strong> Your verified email address (resolved with precedence given to your Google OAuth profile if linked, or your standard registration address). Email addresses serve as the unique document identifier in Cloud Firestore (<code>users/{email}</code>) and as the sanitized root key in Firebase Realtime Database (<code>/users/{emailKey}</code>).</li>
-            <li><strong>Public & Shared Hunter Profile:</strong> Your custom display name/gamer tag, selected avatar preference (Google profile image, live Twitch DecAPI avatar, or custom URL), connected social links (capped at 5 personal shortcuts), and an auto-generated 8-character Friend Code.</li>
-            <li><strong>Gaming Handles & Telemetry Identifiers:</strong> Public and friend-scoped usernames for PlayStation Network, Steam, and Xbox Live, as well as Twitch handles used to query streaming state via DecAPI.</li>
-            <li><strong>Hunting Progress & Companion Logs:</strong> Harvest records, trophy ratings, watchlists, cull progression, herd management lifecycles, and dog skill allocations recorded in Cloud Firestore.</li>
+            <li><strong>Accounts &amp; Settings:</strong> sign-in (Google, email, Discord), the Settings page, Friend Codes and linked gaming accounts.</li>
+            <li><strong>Social:</strong> user profile pages, friends and friend requests, the site-wide messenger (including the Discord server bridge), online status and achievement pop-ups.</li>
+            <li><strong>Game stats &amp; trackers:</strong> PlayStation, Xbox and Steam stats; the Game Companion for every supported game (theHunter: Call of the Wild, Way of the Hunter, Sniper Elite, Ghost Recon Wildlands, Far Cry, Watch Dogs Legion, Ghost of Tsushima and more); and the Farming Simulator 25 server dashboard (until the server shuts down on November 24, 2026).</li>
+            <li><strong>Browser games:</strong> the Mobilegames hub (Neighborly Acre co-op farm, Wahoo, Battleship, Frogger, Mahjong, Racing, Survival, Tycoon and others).</li>
+            <li><strong>Streaming tools:</strong> stream overlays, user stream pages, the stream sync service (Twitch, YouTube, Kick, TikTok) and the trophy announcement chat bot.</li>
+            <li><strong>Entertainment &amp; extras:</strong> Werewolf Cinema (movies and TV), Music releases, the Deals page, the Subscription &amp; Renewal Tracker, Ray's Monopoly Vault, and the site's install-as-app and notification features.</li>
+        </ul>
+        <p>It is a personal, hobby-run project. "We" and "us" mean the site owner (werewolf). Partner sites linked from the menu (SK Ventures, SMLC, Quick-Links, StreamElements, SoundCloud, Discord) have their own privacy policies.</p>
+
+        <h2 id="collect">2. Information We Collect</h2>
+        <p>What we store depends on which features you use:</p>
+        <ul>
+            <li><strong>Account:</strong> Your email address and the sign-in methods you link (Google, email and password, or Discord). Your email is the key for your records in our database. With Discord sign-in, our login server receives your Discord user ID, username and avatar and saves a link between your Discord ID and your account.</li>
+            <li><strong>Profile:</strong> Display name/gamer tag, avatar (Google photo, Twitch avatar, or a custom link), up to 5 personal links, theme, colors and language choices, profile page bio and background, and an auto-generated 8-character Friend Code.</li>
+            <li><strong>Linked gaming accounts:</strong> Your PlayStation Network, Xbox gamertag (and Xbox user ID), Steam and Twitch names, plus the trophies, achievements, play time, recent games and online status our sync jobs fetch for them.</li>
+            <li><strong>Game Companion &amp; trackers:</strong> Progress you record for each game, such as harvest logs, trophy ratings, watchlists, herd management, checklists and collectibles.</li>
+            <li><strong>Friends &amp; messages:</strong> Friend requests, your friends list, and private messages you send in the site messenger. If you use the Discord pill in the messenger, messages you post there are sent to that Discord server's channel.</li>
+            <li><strong>Online status:</strong> Whether you are online and which page or game room you are in, so friends can see you and join games.</li>
+            <li><strong>Browser games:</strong> Game saves, shared game rooms (such as the co-op farm), leaderboard scores, and achievement announcements with your display name and avatar, shown to everyone who has the site open.</li>
+            <li><strong>Streaming tools (streamers who turn them on):</strong> Your stream sync settings (channels, tags, squad list, title options) and the chats you choose to relay. While you are live, chat messages and usernames from your YouTube and TikTok chat are passed into your Twitch chat. They are relayed, not stored.</li>
+            <li><strong>Farming Simulator 25 server:</strong> The dashboard reads the G-Portal server's save files, including which players are online and their farm progress. The server shuts down on November 24, 2026. After that, no new FS25 data is collected. Data already saved stays on the dashboard unless you ask us to remove it.</li>
+            <li><strong>Wi-Fi sharing (optional):</strong> Network names and passwords you save in Settings, with the sharing level you choose.</li>
+            <li><strong>Push notifications (optional):</strong> If you turn notifications on, your browser's push subscription (a device address, not your name or email).</li>
+            <li><strong>Subscription Tracker &amp; Monopoly Vault:</strong> These pages read lists from Google Sheets and JSON files kept by their owners. Visitors' data isn't collected there beyond sign-in.</li>
         </ul>
 
-        <!-- Section 2 -->
-        <h2>2. Strictly Private & Sensitive Credentials</h2>
+        <h2 id="private">3. Private Credentials</h2>
         <div class="callout-box callout-security">
-            <p><strong>Owner-Only Security Isolation:</strong> Backend telemetry keys—specifically your <strong>PSN Account ID #</strong> and your <strong>PSN NPSSO Session Cookie</strong>—are classified as strictly private credentials.</p>
+            <p><strong>Owner-only:</strong> Keys and tokens you give the site are stored in a locked part of the database (<code>user_secrets</code>) that only you and our background jobs can read. They are never shown to friends or on profiles.</p>
         </div>
+        <p>These include:</p>
         <ul>
-            <li><strong>Zero Public Exposure:</strong> These sensitive keys are locked to <code>No One (Private)</code> and are never shared with friends, displayed on public badges, or leaked in search queries. They are stored solely in your private RTDB record to authenticate background trophy synchronization workers.</li>
-            <li><strong>In-Browser Auto-Masking:</strong> On the Settings dashboard, sensitive credentials default to masked password fields and feature a 60-second timed reveal safeguard before automatically re-masking to prevent unauthorized over-the-shoulder viewing.</li>
-            <li><strong>Input Sanitization:</strong> NPSSO payloads pasted as raw Sony API responses are parsed client-side to isolate the bare 64-character token; expired session error responses are detected without storing unauthorized session tokens.</li>
+            <li>PlayStation Account ID and NPSSO session cookie.</li>
+            <li>Steam Web API key and OpenXBL (Xbox) key.</li>
+            <li>For streamers: Twitch, Kick and bot login tokens, a Discord webhook link, and YouTube hook settings.</li>
+        </ul>
+        <ul>
+            <li><strong>Masked on screen:</strong> In Settings these show as hidden fields, with a 60-second reveal that re-hides automatically.</li>
+            <li><strong>Cleaned on paste:</strong> If you paste a full Sony response instead of the bare NPSSO token, the page pulls out just the token in your browser. Expired-session responses are not saved.</li>
+            <li><strong>Owner's keys as a fallback:</strong> If you don't add your own Steam key, the site owner's key is used to look up your public stats.</li>
         </ul>
 
-        <!-- Section 3 -->
-        <h2>3. How Information is Used and Shared</h2>
-        <p>We process your data strictly to maintain core game companion utilities and multi-device synchronizations:</p>
+        <h2 id="where">4. Where Your Data Is Kept</h2>
         <ul>
-            <li><strong>Telemetry & Session Persistence:</strong> Your settings, live presence, and linked platforms stay synced in real time across desktop, tablet, and mobile browsers.</li>
-            <li><strong>Friend-Gated Telemetry Access:</strong> When another hunter exchanges an 8-character Friend Code with you, they receive access only to your display name, platform badge, and hunting logs. <strong>Your private email address and backend credentials remain completely invisible to companions.</strong></li>
-            <li><strong>Third-Party Microservices:</strong> When utilizing live Twitch lookups, your channel handle queries public DecAPI endpoints (<code>decapi.me/twitch/game/</code> and <code>decapi.me/twitch/avatar/</code>) to retrieve game titles and avatar artwork. No authentication tokens are transmitted to DecAPI.</li>
-            <li><strong>No Data Monetization:</strong> We never sell, lease, track, or share personal information with third-party advertising networks.</li>
+            <li><strong>Main database:</strong> Google Firebase project <code>entertainment-71888</code> (Realtime Database, Cloud Firestore and sign-in), run by the site owner.</li>
+            <li><strong>PlayStation &amp; Xbox stats:</strong> The PlayStation and Xbox sync jobs save game stats to a second Firebase project (<code>playstation-stats</code>), run by a co-owner of the site.</li>
+            <li><strong>Public website files:</strong> Some game data is saved as files in the public GitHub repository and website, so <strong>anyone can view it</strong>. This includes PlayStation trophy and game stats for linked players (PSN name, account ID, games, trophies and play time) and the Farming Simulator 25 server data.</li>
+            <li><strong>Your device:</strong> Settings, filters, checklists and offline game saves kept in your browser (see section 7).</li>
         </ul>
 
-        <!-- Section 4 -->
-        <h2>4. Data Erasure & Self-Service Account Closure</h2>
+        <h2 id="use">5. How We Use &amp; Share Information</h2>
+        <ul>
+            <li><strong>Running the site:</strong> Keeping your settings, linked accounts and progress synced across your devices, and running the games, messenger and stats pages.</li>
+            <li><strong>Friends:</strong> People you exchange Friend Codes with can see your display name, avatar, platform badges, online status, game stats and tracker logs. <strong>Your email and private credentials are never shown to friends.</strong></li>
+            <li><strong>Public pages:</strong> Profile pages, user stream pages, leaderboards, achievement pop-ups and game stats pages can be viewed by other visitors, using your display name and gamer tags rather than your email.</li>
+            <li><strong>Services that help run the site:</strong>
+                <ul>
+                    <li>Google Firebase, Google Sheets and Google Apps Script; GitHub Pages and GitHub Actions (hosting and scheduled sync jobs); Render (Discord login and stream sync servers).</li>
+                    <li>Sony PlayStation, Xbox (through OpenXBL) and Steam, which our sync jobs contact with your handles and keys to fetch your stats.</li>
+                    <li>Discord, for sign-in, the messenger bridge and live alerts.</li>
+                    <li>Twitch, YouTube, Kick and TikTok, for streamers who turn on stream sync, chat relay or the trophy bot.</li>
+                    <li>DecAPI (<code>decapi.me</code>), which gets your public Twitch name to look up your current game and avatar.</li>
+                    <li>G-Portal, which hosts the Farming Simulator 25 server until November 24, 2026.</li>
+                    <li>Images and fonts loaded from Steam, PlayStation, Twitch and Google servers, which can see your IP address when your browser fetches them.</li>
+                </ul>
+            </li>
+            <li><strong>We do not sell your personal information</strong>, and we never give your email, messages or private credentials to advertisers.</li>
+        </ul>
+
+        <h2 id="ads">6. Advertising, Analytics &amp; Affiliate Links</h2>
+        <ul>
+            <li><strong>Google AdSense:</strong> Pages on this site show ads served by Google. Google and its partners use cookies to serve ads based on your visits to this and other websites. You can turn off personalized ads at <a href="https://adssettings.google.com" target="_blank" rel="noopener">Google Ad Settings</a>, or opt out of many third-party ad cookies at <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener">aboutads.info</a>. See <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">how Google uses information from sites that use its services</a>.</li>
+            <li><strong>Google Analytics:</strong> We use Google Analytics to count visits and see which pages are used. It collects things like pages viewed, device and browser type, and approximate location, using cookies. It isn't linked to your account email. You can opt out with the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analytics opt-out add-on</a>.</li>
+            <li><strong>Amazon affiliate links:</strong> As an Amazon Associate, we earn from qualifying purchases. Links on the Deals page, Werewolf Cinema and game pages may go to Amazon, and Amazon may set its own cookies when you click them. Buying through them costs you nothing extra.</li>
+            <li><strong>Donations:</strong> Tips go through StreamElements. We don't see or store your payment details.</li>
+        </ul>
+
+        <h2 id="cookies">7. Cookies &amp; Local Storage</h2>
+        <p>The site uses browser storage (<code>localStorage</code>) to keep your filters, checklists, view choices, theme and offline game saves on your device, and a small offline cache so pages load faster when installed as an app. If you aren't signed in, this data stays on your device and never reaches our servers. Clearing your browser's site data removes it. Firebase sign-in also keeps you logged in using browser storage. Advertising and analytics cookies are described in section 6.</p>
+
+        <h2 id="delete">8. Keeping &amp; Deleting Your Data</h2>
+        <p>We keep your data while your account is active. You can delete it at any time.</p>
         <div class="callout-box callout-warning">
-            <p><strong>Full Self-Service Erasure:</strong> You retain complete ownership over your cloud data. You can permanently delete your entire profile and cloud telemetry at any time via <strong>Settings &gt; Delete Account &amp; Erase Cloud Records</strong>.</p>
+            <p><strong>Self-service deletion:</strong> Go to <strong>Settings &gt; Delete account &amp; erase cloud records</strong>.</p>
         </div>
-        <p>Executing account deletion performs an immediate, simultaneous purge across our cloud architecture:</p>
+        <p>This immediately removes:</p>
         <ul>
-            <li>Erases your settings node and linked handles from Firebase Realtime Database at <code>/users/{emailKey}</code>.</li>
-            <li>Removes your permanent lookup token from <code>/friend_codes/{code}</code>.</li>
-            <li>Purges your user document and companion subcollections from Cloud Firestore at <code>users/{email}</code>.</li>
-            <li>Revokes and deletes your master Firebase Authentication record.</li>
+            <li>Your settings and linked handles.</li>
+            <li>Your private credentials.</li>
+            <li>Your Friend Code.</li>
+            <li>Your main Cloud Firestore user record.</li>
+            <li>Your sign-in account.</li>
         </ul>
-        <p>Alternatively, you may request manual data purge by contacting our administration directly at <a href="mailto:tryouts-96-billet@icloud.com">tryouts-96-billet@icloud.com</a>. Manual requests are processed within 48 hours.</p>
+        <p>Everything else is removed on request: messages, profile page, game saves and leaderboard scores, stream sync settings, shared Wi-Fi entries, push subscriptions, and PlayStation/Xbox stats in the second database and public files. Email us (section 12) and we'll delete everything tied to your account within 48 hours. Messages you sent stay visible to the other person until then. Messages posted to Discord through the bridge are removed in Discord itself.</p>
 
-        <!-- Section 5 -->
-        <h2>5. Local Storage & Client Cache</h2>
-        <p>For visitors using our tools without signing in, configuration data (such as active filters, local checklists, and view toggles) is retained entirely in browser <code>localStorage</code>. This data never touches our servers and can be wiped instantly by clearing browser site data.</p>
+        <h2 id="kids">9. Children's Privacy</h2>
+        <p>This site is not directed at children under 13, and we do not knowingly collect personal information from them. If you believe a child under 13 has created an account, contact us and we will delete it.</p>
 
-        <!-- Section 6 -->
-        <h2>6. Administration & Inquiries</h2>
-        <p>For support inquiries, Google authorization disconnect assistance if locked out, or questions regarding our data protection standards, contact our dispatch team:</p>
+        <h2 id="security">10. Security</h2>
+        <p>Data is sent over HTTPS and protected by Firebase sign-in and database rules that limit who can read each record. Private credentials are readable only by you and our background jobs. No system is perfectly secure, so use a strong password and keep your NPSSO cookie, API keys and tokens to yourself.</p>
+
+        <h2 id="changes">11. Changes to This Policy</h2>
+        <p>We update this policy when the site adds or changes features. The effective date at the top and the build stamp at the bottom show when it last changed. Continuing to use the site after an update means you accept the new version.</p>
+
+        <h2 id="contact">12. Contact</h2>
+        <p>For privacy questions, data deletion requests, or help disconnecting Google or Discord if you're locked out:</p>
         <ul>
-            <li><strong>Direct Support Email:</strong> <a href="mailto:tryouts-96-billet@icloud.com">tryouts-96-billet@icloud.com</a></li>
-            <li><strong>Live Support Queue:</strong> Settings Hub floating WhatsApp encrypted dispatch portal.</li>
+            <li><strong>Email:</strong> <a href="mailto:tryouts-96-billet@icloud.com">tryouts-96-billet@icloud.com</a></li>
+            <li><strong>Live support:</strong> The WhatsApp support button on the Settings page.</li>
         </ul>
+        </div>
+        </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 Werewolf Project & WOTH Hunting Hub. All rights reserved.</p>
-        <p>Build / Cache Stamp: 2026-10-07 20:09 EDT | Version: 2.1.0</p>
+        <p>&copy; 2026 Werewolf Project. All rights reserved.</p>
+        <p>Build / Cache Stamp: 2026-11-18 21:08 EST | Version: 2.2.0</p>
     </footer>
 </body>
 </html>

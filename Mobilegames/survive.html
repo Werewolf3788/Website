@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Tile Survival</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #c{position:fixed;inset:0;width:100%;height:100%;touch-action:none;display:block}
+  #hud{position:fixed;left:0;right:0;top:0;padding:calc(6px + env(safe-area-inset-top)) 8px 6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;pointer-events:none;z-index:5}
+  .chip{background:#0f172acc;border:1px solid #ffffff22;border-radius:999px;padding:4px 10px;font-weight:800;font-size:.9rem;white-space:nowrap}
+  .chip small{font-weight:600;color:#86efac}
+  #hpw{width:110px;height:12px;background:#0008;border-radius:6px;overflow:hidden;border:1px solid #ffffff33}#hp{height:100%;width:100%;background:linear-gradient(90deg,#ef4444,#f87171)}
+  #side{position:fixed;right:8px;top:calc(56px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:8px;z-index:6}
+  #side button{width:54px;height:54px;border-radius:16px;border:2px solid #ffffff33;background:#1e293bdd;color:#fff;font-size:1.4rem;cursor:pointer;line-height:1}
+  #side button.on{border-color:#22c55e;background:#14532ddd} #side button small{display:block;font-size:.55rem;font-weight:700;margin-top:2px}
+  #quest{position:fixed;left:8px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:min(70vw,340px);background:#0f172ae6;border:2px solid #fbbf24;border-radius:14px;padding:8px 12px;font-weight:700;z-index:6;cursor:pointer;font-size:.92rem}
+  #quest small{display:block;color:#fde68a;font-weight:600;font-size:.72rem}
+  #act{position:fixed;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:6;display:none;background:#22c55e;color:#04210f;border:0;border-radius:16px;padding:14px 18px;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px #0008}
+  #toast{position:fixed;top:calc(52px + env(safe-area-inset-top));left:0;right:0;text-align:center;color:#fde68a;font-weight:800;text-shadow:0 2px 6px #000;pointer-events:none;z-index:7;padding:0 70px}
+  #jb,#jk{position:fixed;border-radius:50%;pointer-events:none;display:none;z-index:4}
+  #jb{width:110px;height:110px;margin:-55px 0 0 -55px;background:#ffffff22;border:3px solid #ffffff66}
+  #jk{width:48px;height:48px;margin:-24px 0 0 -24px;background:#ffffffcc}
+  #sheet{position:fixed;inset:0;z-index:20;background:#000b;display:none;align-items:flex-end;justify-content:center}
+  #card{background:#1e293b;border-radius:18px 18px 0 0;width:min(100%,560px);max-height:84vh;overflow-y:auto;padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
+  #card h3{margin:0 0 6px}.muted{color:#94a3b8;font-size:.82rem}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0;padding:8px;background:#0f172a;border-radius:12px}.row .g{flex:1;min-width:140px}
+  button.b{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:9px 13px;font:inherit;cursor:pointer}button.b:disabled{opacity:.35}button.b.alt{background:#475569;color:#e2e8f0}
+  input{background:#0f172a;color:#e2e8f0;border:1px solid #475569;border-radius:10px;padding:9px;font:inherit;text-transform:uppercase}
+  .pb{height:8px;background:#0008;border-radius:4px;overflow:hidden}.pb i{display:block;height:100%;background:#38bdf8}
+  @media (orientation:landscape) and (max-height:560px){#side{top:8px;right:8px;flex-direction:row}#side button{width:46px;height:46px;font-size:1.15rem}#toast{top:56px}}
+  /* ally progress: a see-through panel on desktop only (phones keep the 🤝 Allies button) */
+  #allyHud{position:fixed;left:8px;top:calc(58px + env(safe-area-inset-top));width:270px;max-height:calc(100vh - 170px);overflow-y:auto;z-index:5;display:none;background:#0f172a59;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);border:1px solid #ffffff1f;border-radius:14px;padding:8px 10px;font-size:.78rem;text-shadow:0 1px 2px #000;scrollbar-width:thin}
+  #allyHud h4{margin:0;font-size:.85rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;pointer-events:auto}
+  #allyHud h4 span{font-weight:600;color:#94a3b8;font-size:.72rem}
+  #allyHud.min .al{display:none}
+  #allyHud .al{margin-top:8px;padding-top:6px;border-top:1px solid #ffffff14}
+  #allyHud .al b{font-size:.85rem} #allyHud .dim{color:#cbd5e1;opacity:.8}
+  #allyHud .up{margin-top:3px} #allyHud .pb{height:5px;margin-top:2px;background:#0006}
+  #allyHud .on{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-right:4px;vertical-align:1px}
+  #allyHud .off{background:#64748b}
+  @media (min-width:1000px) and (hover:hover) and (pointer:fine){ #allyHud.has{display:block} }
+</style>
+</head>
+<body>
+<div id="allyHud"></div>
+<canvas id="c"></canvas>
+<div id="hud"><span class="chip" id="r_wood">0</span><span class="chip" id="r_food">🍖 0</span><span class="chip" id="r_metal">🔩 0</span><span class="chip" id="r_coal">⚫ 0</span><span class="chip" id="r_gems">💎 0</span><span class="chip">🔌 Lv <span id="ppl">1</span> · 👥 <span id="surv">3</span></span><span class="chip" style="display:flex;align-items:center;gap:6px">❤️ <span id="hpw"><span id="hp" style="display:block"></span></span></span></div>
+<div id="side"><button id="bHeroes">🛡️<small>Heroes</small></button><button id="bAllies">🤝<small>Allies</small></button><button id="bMap">🗺️<small>Map</small></button><button id="bQuests">📜<small>Quests</small></button><button id="bShop">🛒<small>Shop</small></button><button id="bMute">🔊<small>Sound</small></button><button id="gamesBtn">☰<small>Games</small></button></div>
+<div id="quest"></div>
+<button id="act"></button>
+<div id="toast"></div>
+<div id="jb"></div><div id="jk"></div>
+<div id="sheet"><div id="card"></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>document.write('<script src="js/common.js"><\/script>');</script>
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/gamepad.js"><\/script>');</script>
+<script>document.write('<script type="module" src="js/survive3d.js"><\/script>');</script>
+</body>
+</html>

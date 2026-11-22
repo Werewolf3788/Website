@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Wahoo</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
+  button{font:inherit;border:0;border-radius:10px;padding:10px 14px;background:#334155;color:#e2e8f0;cursor:pointer}
+  button.go{background:#22c55e;color:#04210f;font-weight:700} button:disabled{opacity:.4;cursor:default}
+  #top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
+  #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
+  #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
+  @media(min-width:860px){#main{grid-template-columns:minmax(0,640px) 1fr;align-items:start}}
+  #boardWrap{width:100%;max-width:640px;margin:0 auto;touch-action:manipulation}
+  #board{display:block;width:100%;height:auto;border-radius:14px;background:#0b1220;touch-action:none}
+  .ghost{cursor:pointer;animation:pulse .9s infinite;transform-box:fill-box;transform-origin:center}
+  #die.throw{animation:throw .55s ease-out}
+  @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-26px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}85%{transform:translateY(-6px) rotate(700deg)}100%{transform:translateY(0) rotate(720deg)}}
+  #emotes{display:flex;gap:6px;margin-top:10px} #emotes button{flex:1;padding:8px 0;font-size:1.2rem;background:#334155}
+  .emo{font-size:1.3rem;animation:pop .35s ease-out;transform-box:fill-box;transform-origin:center}
+  .emoB{animation:pop .35s ease-out;transform-box:fill-box;transform-origin:center}
+  @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+  .peg{transition:transform .32s ease-in-out}
+  .peg .ring{display:none;fill:none;stroke:#fff;stroke-width:.08}
+  .peg.can{cursor:pointer} .peg.can .ring{display:block;animation:pulse .9s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.25)}}
+  .peg .ring{transform-box:fill-box;transform-origin:center}
+  #panel{background:#1e293b;border-radius:14px;padding:12px}
+  #turn{font-weight:700;display:flex;align-items:center;gap:8px;min-height:1.6em}
+  .dot{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #fff;flex:none}
+  #dieRow{display:flex;align-items:center;gap:14px;margin:10px 0}
+  #die{width:78px;height:78px;border-radius:16px;background:#f8fafc;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:10px;gap:3px;border:0;flex:none;box-shadow:0 3px 0 #94a3b8}
+  #die i{border-radius:50%;background:transparent} #die i.on{background:#0f172a}
+  #die:disabled{opacity:1;box-shadow:none} #die.ready{box-shadow:0 0 0 4px #22c55e,0 3px 0 #16a34a;animation:pulse2 1s infinite}
+  @keyframes pulse2{50%{box-shadow:0 0 0 7px rgba(34,197,94,.45),0 3px 0 #16a34a}}
+  #msg{color:#fbbf24;font-size:.9rem;min-height:1.3em}
+  .seat{display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:10px;font-size:.92rem}
+  .seat.cur{background:#0f172a;outline:2px solid #475569}
+  .seat .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .seat button{padding:6px 10px;font-size:.8rem}
+  .muted{color:#94a3b8;font-size:.8rem}
+  details#hist{margin-top:10px;background:#0f172a;border-radius:10px;padding:8px 10px} details#hist summary{cursor:pointer;font-weight:700}
+  #banner{background:#14532d;border-radius:10px;padding:10px;margin-bottom:8px;text-align:center;font-weight:700}
+  #gate{position:fixed;inset:0;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px;z-index:9}
+</style>
+</head>
+<body>
+<div id="top">
+  <span>🎲 <b id="roomLabel">Wahoo</b> · 👥 <b id="count">1</b></span>
+  <span>🏆 <b id="wins">0</b></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
+</div>
+<div id="main">
+  <div id="boardWrap"><svg id="board" viewBox="0 0 15 15"></svg></div>
+  <div id="panel">
+    <div id="banner" style="display:none"></div>
+    <div id="turn"></div>
+    <div id="dieRow"><button id="die" aria-label="Roll the die"></button><div id="msg"></div></div>
+    <div id="seats"></div>
+    <div id="actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    <div id="emotes"></div>
+    <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
+    <div class="muted" id="rules" style="margin-top:10px">Roll a 1 or 6 to bring a peg out. A 6 gives another roll. Land on a rival to send it home. Fill all four slots of your home lane to win.<br><br><b>Controls:</b> tap the die, flick it, shake your phone or press Space to roll. Tap or drag a glowing peg onto a dashed spot (or tap the spot, or press 1-4) to move. Use the emoji row to react.<br><br>A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
+  </div>
+</div>
+<div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>document.write('<script src="js/common.js"><\/script>');</script>
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var qs = new URLSearchParams(location.search);
+  var roomCode = (qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var COLORS = ['#ef4444', '#22c55e', '#eab308', '#3b82f6'];
+  var LIGHT = ['#fecaca', '#bbf7d0', '#fef08a', '#bfdbfe'];
+  var NAMES = ['Red', 'Green', 'Yellow', 'Blue'];
+
+  // ---------- board geometry (15x15 cross board, 52-cell loop, 4-cell home lane per colour)
+  var TRACK = (function () {
+    var t = [], c, r; function add(a, b) { t.push([a, b]); }
+    for (c = 1; c <= 5; c++) add(c, 6);
+    for (r = 5; r >= 0; r--) add(6, r);
+    add(7, 0); add(8, 0);
+    for (r = 1; r <= 5; r++) add(8, r);
+    for (c = 9; c <= 14; c++) add(c, 6);
+    add(14, 7); add(14, 8);
+    for (c = 13; c >= 9; c--) add(c, 8);
+    for (r = 9; r <= 14; r++) add(8, r);
+    add(7, 14); add(6, 14);
+    for (r = 13; r >= 9; r--) add(6, r);
+    for (c = 5; c >= 0; c--) add(c, 8);
+    add(0, 7); add(0, 6);
+    return t;
+  })();
+  var START = [0, 13, 26, 39];
+  var LANE = [[[1,7],[2,7],[3,7],[4,7]], [[7,1],[7,2],[7,3],[7,4]], [[13,7],[12,7],[11,7],[10,7]], [[7,13],[7,12],[7,11],[7,10]]];
+  var CORNER = [[0, 0], [9, 0], [9, 9], [0, 9]];
+  var SLOT = [[2, 2], [4, 2], [2, 4], [4, 4]];
+  var PIPS = { 0: [], 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+  // peg progress: -1 in base, 0..50 on the loop, 51..54 home lane
+  function cellIdx(p, prog) { return (START[p] + prog) % 52; }
+  function pegXY(p, prog, i) {
+    var c;
+    if (prog < 0) return [CORNER[p][0] + SLOT[i][0], CORNER[p][1] + SLOT[i][1]];
+    c = prog <= 50 ? TRACK[cellIdx(p, prog)] : LANE[p][prog - 51];
+    return [c[0] + 0.5, c[1] + 0.5];
+  }
+
+  // ---------- rules (pure functions on the shared state object)
+  function seatOf(s, i) { return (s.seats && s.seats[i]) || null; }
+  function pegsOf(s, p) { var v = s.pegs && s.pegs[p]; return v ? [+v[0], +v[1], +v[2], +v[3]] : [-1, -1, -1, -1]; }
+  function seated(s) { var a = []; for (var i = 0; i < 4; i++) if (seatOf(s, i)) a.push(i); return a; }
+  function legal(s, p, roll) {
+    var pg = pegsOf(s, p), out = [], i, k, to, bad;
+    for (i = 0; i < 4; i++) {
+      var a = pg[i];
+      if (a === -1) { if ((roll === 1 || roll === 6) && pg.indexOf(0) === -1) out.push({ i: i, to: 0 }); continue; }
+      to = a + roll; if (to > 54) continue;
+      bad = false;
+      for (k = a + 1; k <= to; k++) if (k >= 51 && pg.indexOf(k) > -1) { bad = true; break; }
+      if (!bad && to <= 50 && pg.indexOf(to) > -1) bad = true;
+      if (!bad) out.push({ i: i, to: to });
+    }
+    return out;
+  }
+  function advanceTurn(s, again) {
+    if (again) return;
+    for (var k = 1; k <= 4; k++) { var n = (s.turn + k) % 4; if (seatOf(s, n)) { s.turn = n; return; } }
+  }
+  function doMove(s, i) {
+    var p = s.turn, roll = s.roll, m = null;
+    legal(s, p, roll).forEach(function (x) { if (x.i === i) m = x; });
+    if (!m) return false;
+    if (!s.pegs) s.pegs = {};
+    var pg = pegsOf(s, p), msg = NAMES[p] + ' moved ' + roll;
+    if (pg[i] === -1) msg = NAMES[p] + ' brought a peg out';
+    pg[i] = m.to;
+    if (m.to <= 50) {
+      var cell = cellIdx(p, m.to);
+      seated(s).forEach(function (q) {
+        if (q === p) return;
+        var pq = pegsOf(s, q), hit = false;
+        pq.forEach(function (v, j) { if (v >= 0 && v <= 50 && cellIdx(q, v) === cell) { pq[j] = -1; hit = true; } });
+        if (hit) { s.pegs[q] = pq; msg = NAMES[p] + ' sent ' + NAMES[q] + ' home!'; }
+      });
+    } else if (m.to >= 51) msg = NAMES[p] + ' reached the home lane';
+    s.pegs[p] = pg; s.lr = roll; s.lp = p; s.msg = msg; s.roll = 0;
+    if (pg.every(function (v) { return v >= 51; })) { s.status = 'done'; s.winner = p; s.msg = NAMES[p] + ' wins!'; }
+    else advanceTurn(s, roll === 6);
+    return true;
+  }
+  function doPass(s) {
+    if (!s.roll || legal(s, s.turn, s.roll).length) return false;
+    s.lr = s.roll; s.lp = s.turn; s.msg = NAMES[s.turn] + ' rolled ' + s.roll + ' - no move';
+    var six = s.roll === 6; s.roll = 0; advanceTurn(s, six); return true;
+  }
+  function botPick(s, L) {
+    var p = s.turn, pg = pegsOf(s, p), best = L[0].i, bs = -1e9;
+    L.forEach(function (m) {
+      var sc = Math.random() * 3, a = pg[m.i];
+      if (m.to >= 51) sc += 60 + m.to;
+      else {
+        if (m.to === 0) sc += 45;
+        var cell = cellIdx(p, m.to);
+        seated(s).forEach(function (q) { if (q !== p) pegsOf(s, q).forEach(function (v) { if (v >= 0 && v <= 50 && cellIdx(q, v) === cell) sc += 100; }); });
+        if (a >= 0) sc += (m.to - a) * 0.2 + a * 0.1;
+      }
+      if (sc > bs) { bs = sc; best = m.i; }
+    });
+    return best;
+  }
+
+  // ---------- session
+  var me = null, myName = 'Player', cloudCode = null, myCode = null, stateRef = null, presenceRef = null;
+  var beat = null;
+  var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0;
+
+  function say(t) { $('msg').textContent = t || ''; }
+  function gate(text, showBtn) { $('gateText').textContent = text; $('gateBtn').style.display = showBtn ? '' : 'none'; $('gate').style.display = 'flex'; }
+  WW.onError = function (m) { say(m); gate(m, true); };
+  $('gateBtn').onclick = function () { WW.signIn(); };
+  $('soloBtn').onclick = function () { location.href = 'wahoo.html'; };
+
+  function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
+  function isHost() { return !!S && !!me && S.hostUid === me.uid; }
+  // A table only runs while a seated human is really here (tab visible and touched in the last 2 minutes).
+  var lastAct = Date.now(), wasPaused = false;
+  function iAmActive() { return !document.hidden && Date.now() - lastAct < 120000; }
+  function onActivity() {
+    var wasIdle = !iAmActive(); lastAct = Date.now();
+    if (wasIdle && typeof beat === 'function') beat();
+    // Only redraw when the table actually leaves the paused state (redrawing on every tap would swallow button clicks).
+    if (S && wasPaused && !isPaused(S)) { wasPaused = false; render(); tick(); }
+  }
+  // Never rebuild the screen while a finger or mouse button is down, or the button being pressed disappears and the click is lost.
+  var pressing = false, renderPending = false, pressTimer = null;
+  document.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('#panel, #deeds, #board')) { pressing = true; clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressing = false; }, 3000); }
+  }, true);
+  function endPress() { if (!pressing) return; setTimeout(function () { pressing = false; if (renderPending) { renderPending = false; render(); } }, 80); }
+  document.addEventListener('pointerup', endPress, true); document.addEventListener('pointercancel', endPress, true);
+  ['pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(function (ev) { document.addEventListener(ev, onActivity, { passive: true }); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) onActivity(); else if (typeof beat === 'function') beat(); });
+  function activeIds() {
+    var ids = [];
+    Object.keys(players).forEach(function (u) { var e = players[u]; if (me && u === me.uid) return; if (e && e.a && WW.now() - (e.t || 0) < 90000) ids.push(u); });
+    if (me && iAmActive()) ids.push(me.uid);
+    return ids.sort();
+  }
+  function isPaused(s) {
+    if (!s || s.status !== 'playing') return false;
+    if (WW.mode !== 'cloud') return !iAmActive();
+    var act = activeIds();
+    return !seated(s).some(function (p) { var st = seatOf(s, p); return st && !st.bot && act.indexOf(st.uid) > -1; });
+  }
+  function isDriver() {
+    if (WW.mode !== 'cloud') return true;
+    if (!S) return false;
+    var ids = activeIds(); if (!ids.length) return false;
+    if (ids.indexOf(S.hostUid) > -1) return S.hostUid === me.uid;
+    return ids[0] === me.uid;
+  }
+
+  function mutate(fn) {
+    stateRef.transaction(function (cur) {
+      if (!cur) return cur;
+      var s = JSON.parse(JSON.stringify(cur));
+      if (fn(s) === false) return;
+      s.rid = (s.rid | 0) + 1; s.t = firebase.database.ServerValue.TIMESTAMP;
+      return s;
+    });
+  }
+  function actorOk(s) { var st = seatOf(s, s.turn); if (!st) return false; return (!st.bot && st.uid === me.uid) || isDriver(); }
+  function actRoll(v) { mutate(function (s) { if (s.status !== 'playing' || s.roll || !actorOk(s)) return false; s.roll = v; }); }
+  function actMove(i) { mutate(function (s) { if (s.status !== 'playing' || !s.roll || !actorOk(s)) return false; return doMove(s, i); }); }
+  function actPass() { mutate(function (s) { if (s.status !== 'playing' || !actorOk(s)) return false; return doPass(s); }); }
+
+  function drawDie(v) {
+    var h = '', on = PIPS[v] || [];
+    for (var i = 0; i < 9; i++) h += '<i' + (on.indexOf(i) > -1 ? ' class="on"' : '') + '></i>';
+    $('die').innerHTML = h;
+  }
+  function spinThen(cb) {
+    if (rolling) return; rolling = true; var n = 0; $('die').classList.remove('throw'); void $('die').offsetWidth; $('die').classList.add('throw');
+    var iv = setInterval(function () {
+      drawDie(1 + Math.floor(Math.random() * 6));
+      if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6)); }
+    }, 70);
+  }
+  function tryRoll() {
+    if (!S || S.status !== 'playing' || S.roll || rolling) return;
+    var st = seatOf(S, S.turn); if (!st || st.bot || st.uid !== me.uid) return;
+    spinThen(actRoll);
+  }
+  var dieStart = null, dieSwipe = 0, dragEnd = 0, drag = null, shakeOn = false, lastShake = 0;
+  $('die').onclick = function () { if (Date.now() - dieSwipe < 400) return; tryRoll(); };
+  $('die').addEventListener('pointerdown', function (e) { dieStart = [e.clientX, e.clientY]; });
+  function svgPt(e) { var svg = $('board'), pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; var m = pt.matrixTransform(svg.getScreenCTM().inverse()); return [m.x, m.y]; }
+  window.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 8) return;
+    drag.moved = true; drag.g.style.transition = 'none';
+    var pt = svgPt(e); drag.g.style.transform = 'translate(' + pt[0] + 'px,' + pt[1] + 'px)';
+  });
+  window.addEventListener('pointerup', function (e) {
+    if (dieStart) { var d = Math.hypot(e.clientX - dieStart[0], e.clientY - dieStart[1]); dieStart = null; if (d > 35) { dieSwipe = Date.now(); tryRoll(); } }
+    if (!drag) return;
+    var dr = drag; drag = null; dr.g.style.transition = ''; if (!dr.moved) return;
+    dragEnd = Date.now();
+    var pt = svgPt(e), hit = false;
+    if (S && S.roll) legal(S, S.turn, S.roll).forEach(function (m) { if (m.i === dr.i) { var xy = pegXY(S.turn, m.to, m.i); if (Math.hypot(pt[0] - xy[0], pt[1] - xy[1]) < 1.4) hit = true; } });
+    if (hit) actMove(dr.i); else render();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.repeat) return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); tryRoll(); }
+    else if (/^[1-4]$/.test(e.key) && S && S.status === 'playing' && S.roll && mySeat() === S.turn) {
+      var i = +e.key - 1; if (legal(S, S.turn, S.roll).some(function (m) { return m.i === i; })) actMove(i);
+    }
+  });
+  function enableShake() {
+    if (shakeOn) return; shakeOn = true;
+    function attach() {
+      window.addEventListener('devicemotion', function (e) {
+        var a = e.accelerationIncludingGravity; if (!a) return;
+        var m = Math.abs(a.x || 0) + Math.abs(a.y || 0) + Math.abs(a.z || 0);
+        if (m > 38 && Date.now() - lastShake > 1500) { lastShake = Date.now(); tryRoll(); }
+      });
+    }
+    if (window.DeviceMotionEvent && DeviceMotionEvent.requestPermission) DeviceMotionEvent.requestPermission().then(function (r) { if (r === 'granted') attach(); }).catch(function () {});
+    else if (window.DeviceMotionEvent) attach();
+  }
+  document.addEventListener('pointerup', enableShake, { once: true });
+
+  // ---------- sound, vibration, emotes
+  var EMOS = ['👍', '😂', '😮', '😡', '🎉'], emotes = {}, emoSeen = {}, roomRefG = null, lastEmo = 0, ac = null;
+  var muted = false; try { muted = localStorage.getItem('wh_mute') === '1'; } catch (e) {}
+  $('snd').textContent = muted ? '🔇' : '🔊';
+  $('snd').onclick = function () { muted = !muted; try { localStorage.setItem('wh_mute', muted ? '1' : '0'); } catch (e) {} $('snd').textContent = muted ? '🔇' : '🔊'; };
+  function tone(f, d, t0, type, vol) {
+    if (muted) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + (t0 || 0);
+      o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(vol || .12, t); g.gain.exponentialRampToValueAtTime(.001, t + d);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d);
+    } catch (e) {}
+  }
+  function sfx(k) {
+    if (k === 'roll') for (var i = 0; i < 5; i++) tone(300 + Math.random() * 300, .05, i * .06, 'square', .05);
+    else if (k === 'step') tone(520, .08, 0, 'triangle');
+    else if (k === 'out') { tone(440, .08); tone(660, .1, .08); }
+    else if (k === 'bump') { tone(180, .18, 0, 'sawtooth', .14); tone(120, .25, .08, 'sawtooth', .12); }
+    else if (k === 'win') [523, 659, 784, 1047].forEach(function (f, j) { tone(f, .2, j * .12, 'triangle', .15); });
+    else if (k === 'pop') tone(880, .07, 0, 'sine', .1);
+    else if (k === 'turn') tone(660, .06, 0, 'sine', .08);
+  }
+  function buzz(p) { if (!muted && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} }
+  function events(a, b) {
+    if (b.status === 'done' && a.status !== 'done') { sfx('win'); buzz([80, 60, 80]); return; }
+    if (!a.roll && b.roll) sfx('roll');
+    else if (a.roll && !b.roll) {
+      var m = b.msg || '';
+      if (/sent/.test(m)) { sfx('bump'); buzz(120); } else if (/brought/.test(m)) sfx('out'); else if (!/no move/.test(m)) sfx('step');
+    }
+    var ms = mySeat();
+    if (ms >= 0 && b.status === 'playing' && b.turn === ms && !b.roll && (a.turn !== ms || a.roll)) { sfx('turn'); buzz(40); }
+  }
+  function emoOf(p) { var e = emotes && emotes[p]; return (e && WW.now() - (e.t || 0) < 4000) ? ' <span class="emo">' + e.e + '</span>' : ''; }
+  $('emotes').addEventListener('click', function (ev) {
+    var b = ev.target.closest ? ev.target.closest('button[data-e]') : null, ms = mySeat();
+    if (!b || ms < 0 || !roomRefG || Date.now() - lastEmo < 800) return;
+    lastEmo = Date.now();
+    emotes = emotes || {}; emotes[ms] = { e: b.dataset.e, t: WW.now() }; render(); setTimeout(render, 4200);
+    roomRefG.child('emotes/' + ms).set({ e: b.dataset.e, t: firebase.database.ServerValue.TIMESTAMP }).catch(function (err) { say('Reaction could not be sent: ' + ((err && err.message) || err)); });
+  });
+
+  // drives bots, away players, forced passes and single-choice moves
+  function tick() {
+    var s = S; if (!s || s.status !== 'playing' || rolling) return;
+    if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
+    var st = seatOf(s, s.turn); if (!st) return;
+    var mine = !st.bot && st.uid === me.uid, auto = false;
+    if (!mine) {
+      if (!isDriver()) return;
+      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid];
+      var idle = WW.now() - (s.t || 0) > 60000;
+      auto = st.bot || away || idle;
+      if (!auto) return;
+    }
+    var key = s.rid + ':' + s.turn + ':' + s.roll, now = Date.now();
+    if (acted.k === key && now - acted.t < 4000) return;
+    var L = s.roll ? legal(s, s.turn, s.roll) : [];
+    function mark() { acted = { k: key, t: now }; }
+    if (!s.roll) { if (auto) { mark(); setTimeout(function () { spinThen(actRoll); }, st.bot ? 800 : 300); } return; }
+    if (!L.length) { mark(); setTimeout(actPass, 1100); return; }
+    if (L.length === 1) { mark(); setTimeout(function () { actMove(L[0].i); }, mine ? 650 : 900); return; }
+    if (auto) { mark(); setTimeout(function () { actMove(botPick(s, L)); }, 1000); }
+  }
+  setInterval(tick, 2000);
+
+  // ---------- lobby actions
+  function firstName() { return (myName || 'Player'); }
+
+  // ---- who counts as "in the game": a table only runs while a human is playing it
+  function otherHumansPresent() {
+    if (WW.mode !== 'cloud' || !S) return false;
+    return seated(S).some(function (p) { var st = seatOf(S, p); return st && !st.bot && st.uid !== me.uid && !!players[st.uid]; });
+  }
+  function toBot(s, slot) { s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }
+  function humanCount(s) { return seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length; }
+  function markStarted(s) { seated(s).forEach(function (p) { var st = seatOf(s, p); if (st && !st.bot) st.f = s.gid; }); }
+  // Jumping into a table nobody else is playing restarts it; otherwise you take over a bot's seat in the running game.
+  function sit(slot) {
+    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent();
+    mutate(function (s) {
+      var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
+      for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
+      if (!s.seats) s.seats = {};
+      var others = seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length;
+      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false, avatar: WW.avatar || '', f: 0 };
+      if (!others) s.hostUid = me.uid;
+      if (restart && s.status !== 'lobby') {
+        for (var j = 0; j < 4; j++) { var oo = seatOf(s, j); if (oo && !oo.bot && oo.uid !== me.uid) toBot(s, j); }
+        s.hostUid = me.uid; beginGame(s);
+      }
+    });
+  }
+  // Leaving hands your seat to a bot. If you were the last human the game ends and the table empties.
+  function leave(slot) {
+    autoSeatTried = true;
+    mutate(function (s) {
+      var cur = seatOf(s, slot); if (!cur || cur.bot || cur.uid !== me.uid) return false;
+      if (s.status === 'lobby') delete s.seats[slot]; else toBot(s, slot);
+      if (!humanCount(s)) { if (s.status !== 'lobby') resetToLobby(s); s.seats = {}; }
+    });
+  }
+  var reaping = false;
+  function reapAbsent() {
+    var s = S; if (!s || WW.mode !== 'cloud' || s.status === 'lobby' || reaping || !me || !isDriver()) return;
+    var act = null;
+    for (var i = 0; i < 4 && !act; i++) {
+      var st = seatOf(s, i); if (!st || st.bot || st.uid === me.uid) continue;
+      var here = !!players[st.uid];
+      if (here && st.gone) act = { k: 'back', i: i };
+      else if (!here && !st.gone) act = { k: 'gone', i: i };
+      else if (!here && st.gone && WW.now() - st.gone > 180000) act = { k: 'bot', i: i };
+    }
+    if (!act) return;
+    reaping = true; setTimeout(function () { reaping = false; }, 4000);
+    mutate(function (s2) {
+      var st2 = seatOf(s2, act.i); if (!st2 || st2.bot) return false;
+      if (act.k === 'back') delete st2.gone; else if (act.k === 'gone') st2.gone = WW.now(); else toBot(s2, act.i);
+    });
+  }
+  setInterval(reapAbsent, 10000);
+  var staleChecked = false;
+  function checkStale() {
+    if (staleChecked || !S) return; staleChecked = true;
+    setTimeout(function () {
+      if (WW.mode !== 'cloud' || !S || S.status !== 'playing' || mySeat() < 0 || WW.now() - (S.t || 0) < 600000 || otherHumansPresent()) return;
+      mutate(function (s) {
+        if (s.status !== 'playing') return false;
+        for (var j = 0; j < 4; j++) { var o = seatOf(s, j); if (o && !o.bot && o.uid !== me.uid) toBot(s, j); }
+        resetToLobby(s); s.msg = 'The last game ended while everyone was away.';
+      });
+    }, 4000);
+  }
+  function addBot(slot) { mutate(function (s) { if (s.status !== 'lobby' || seatOf(s, slot) || s.hostUid !== me.uid) return false; if (!s.seats) s.seats = {}; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
+  function fillBots() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid) return false; if (!s.seats) s.seats = {}; for (var i = 0; i < 4; i++) if (!seatOf(s, i)) s.seats[i] = { uid: 'bot' + i, name: NAMES[i] + ' Bot', bot: true }; }); }
+  function removeBot(slot) { mutate(function (s) { var c = seatOf(s, slot); if (s.status !== 'lobby' || !c || !c.bot || s.hostUid !== me.uid) return false; delete s.seats[slot]; }); }
+  function resetToLobby(s) { s.status = 'lobby'; s.pegs = {}; s.roll = 0; s.winner = -1; s.msg = ''; }
+  function beginGame(s) {
+    s.pegs = {}; seated(s).forEach(function (p) { s.pegs[p] = [-1, -1, -1, -1]; });
+    s.status = 'playing'; s.turn = seated(s)[0]; s.roll = 0; s.winner = -1; s.gid = (s.gid | 0) + 1; s.lr = 0; s.msg = 'Game on! ' + NAMES[s.turn] + ' rolls first.'; markStarted(s);
+  }
+  function startGame() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false; beginGame(s); }); }
+  function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; resetToLobby(s); }); }
+
+  // ---------- drawing
+  var pegEls = [];
+  function buildBoard() {
+    var h = '<rect width="15" height="15" fill="#0b1220"/>', p, i;
+    for (p = 0; p < 4; p++) {
+      var o = CORNER[p];
+      h += '<rect x="' + o[0] + '" y="' + o[1] + '" width="6" height="6" rx=".5" fill="' + COLORS[p] + '"/><rect x="' + (o[0] + .6) + '" y="' + (o[1] + .6) + '" width="4.8" height="4.8" rx=".4" fill="' + LIGHT[p] + '"/>';
+      SLOT.forEach(function (sl) { h += '<circle cx="' + (o[0] + sl[0]) + '" cy="' + (o[1] + sl[1]) + '" r=".55" fill="#fff" opacity=".7"/>'; });
+    }
+    TRACK.forEach(function (c, k) {
+      var fill = '#f1f5f9'; for (var q = 0; q < 4; q++) if (START[q] === k) fill = COLORS[q];
+      h += '<rect x="' + c[0] + '" y="' + c[1] + '" width="1" height="1" fill="' + fill + '" stroke="#64748b" stroke-width=".04"/>';
+    });
+    for (p = 0; p < 4; p++) LANE[p].forEach(function (c) { h += '<rect x="' + c[0] + '" y="' + c[1] + '" width="1" height="1" fill="' + COLORS[p] + '" opacity=".6" stroke="#64748b" stroke-width=".04"/>'; });
+    [[5,7,0],[7,5,1],[9,7,2],[7,9,3]].forEach(function (d) { h += '<rect x="' + d[0] + '" y="' + d[1] + '" width="1" height="1" fill="' + LIGHT[d[2]] + '" stroke="#64748b" stroke-width=".04"/>'; });
+    h += '<polygon points="6,6 6,9 7.5,7.5" fill="' + COLORS[0] + '"/><polygon points="6,6 9,6 7.5,7.5" fill="' + COLORS[1] + '"/><polygon points="9,6 9,9 7.5,7.5" fill="' + COLORS[2] + '"/><polygon points="6,9 9,9 7.5,7.5" fill="' + COLORS[3] + '"/>';
+    h += '<g id="pegs"></g><g id="ghosts"></g><g id="emoLayer" pointer-events="none"></g>';
+    $('board').innerHTML = h;
+    var NS = 'http://www.w3.org/2000/svg', layer = $('pegs');
+    for (p = 0; p < 4; p++) {
+      pegEls[p] = [];
+      for (i = 0; i < 4; i++) {
+        var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'peg'); g.dataset.i = i; g.dataset.p = p;
+        g.innerHTML = '<circle class="ring" r=".5"/>' + WW.shape(p, .36, COLORS[p], '#fff', .09) + '<text y="' + (p === 1 ? .3 : .17) + '" text-anchor="middle" font-size=".5" font-weight="700" fill="#fff" stroke="#0007" stroke-width=".03" pointer-events="none">' + (i + 1) + '</text><circle class="hit" r=".6" fill="transparent"/>';
+        var xy = pegXY(p, -1, i); g.style.transform = 'translate(' + xy[0] + 'px,' + xy[1] + 'px)';
+        layer.appendChild(g); pegEls[p][i] = g;
+      }
+    }
+    layer.addEventListener('click', function (e) {
+      if (Date.now() - dragEnd < 400) return;
+      var g = e.target.closest ? e.target.closest('.peg') : null;
+      if (g && g.classList.contains('can')) actMove(+g.dataset.i);
+    });
+    $('ghosts').addEventListener('click', function (e) {
+      var g = e.target.closest ? e.target.closest('.ghost') : null;
+      if (g) actMove(+g.dataset.i);
+    });
+    layer.addEventListener('pointerdown', function (e) {
+      var g = e.target.closest ? e.target.closest('.peg') : null;
+      if (g && g.classList.contains('can')) drag = { g: g, i: +g.dataset.i, x: e.clientX, y: e.clientY, moved: false };
+    });
+  }
+
+  function dot(p) { return WW.shapeIcon(p, 16, COLORS[p]); }
+  function render() {
+    var s = S; if (!s) return;
+    if (pressing) { renderPending = true; return; }
+    var ms = mySeat(), myTurn = s.status === 'playing' && ms === s.turn && !s.roll;
+    var canMove = {};
+    if (s.status === 'playing' && s.roll && ms === s.turn) legal(s, s.turn, s.roll).forEach(function (m) { canMove[m.i] = 1; });
+    var p, i;
+    for (p = 0; p < 4; p++) {
+      var st = seatOf(s, p), pg = pegsOf(s, p);
+      for (i = 0; i < 4; i++) {
+        var g = pegEls[p][i];
+        g.style.display = st ? '' : 'none';
+        var xy = pegXY(p, pg[i], i); g.style.transform = 'translate(' + xy[0] + 'px,' + xy[1] + 'px)';
+        g.classList.toggle('can', p === s.turn && !!canMove[i]);
+      }
+    }
+    var gh = '';
+    if (s.status === 'playing' && s.roll && ms === s.turn) legal(s, s.turn, s.roll).forEach(function (m) {
+      var xy = pegXY(s.turn, m.to, m.i);
+      gh += '<circle class="ghost" data-i="' + m.i + '" cx="' + xy[0] + '" cy="' + xy[1] + '" r=".42" fill="' + COLORS[s.turn] + '" fill-opacity=".35" stroke="#fff" stroke-width=".07" stroke-dasharray=".18 .12"/>';
+    });
+    $('ghosts').innerHTML = gh;
+    var eo = '';
+    for (p = 0; p < 4; p++) { var em = emotes && emotes[p]; if (em && seatOf(s, p) && WW.now() - (em.t || 0) < 4000) eo += '<text class="emoB" x="' + (CORNER[p][0] + 3) + '" y="' + (CORNER[p][1] + 3) + '" text-anchor="middle" dominant-baseline="central" font-size="2.6">' + em.e + '</text>'; }
+    $('emoLayer').innerHTML = eo;
+    // dice + turn
+    var shown = s.roll || s.lr || 0; if (!rolling) drawDie(shown);
+    $('die').disabled = !myTurn; $('die').classList.toggle('ready', myTurn);
+    if (s.status === 'playing') {
+      var cs = seatOf(s, s.turn);
+      $('turn').innerHTML = dot(s.turn) + (ms === s.turn ? 'Your turn' : (cs ? cs.name : NAMES[s.turn]) + '’s turn');
+      if (myTurn) say('Tap the die to roll.');
+      else if (ms === s.turn && s.roll && Object.keys(canMove).length > 1) say('Tap a glowing peg to move it.');
+      else say(s.msg || '');
+    } else if (s.status === 'lobby') { $('turn').textContent = 'Get ready'; say('Pick your seat, add bots or invite friends, then start.'); }
+    else { $('turn').innerHTML = dot(s.winner) + NAMES[s.winner] + ' won'; say(''); }
+    var ban = $('banner');
+    if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else ban.style.display = 'none';
+    // seats
+    var h = '';
+    for (p = 0; p < 4; p++) {
+      var q = seatOf(s, p), btn = '';
+      var homeN = pegsOf(s, p).filter(function (v) { return v >= 51; }).length;
+      if (!q) {
+        if (ms < 0) btn += '<button data-a="sit" data-p="' + p + '">Sit here</button>';
+        if (s.status === 'lobby' && isHost()) btn += ' <button data-a="bot" data-p="' + p + '">+ Bot</button>';
+        h += '<div class="seat">' + dot(p) + '<span class="nm muted">' + NAMES[p] + ' - empty</span>' + btn + '</div>';
+      } else {
+        var tag = q.bot ? ' 🤖' : (q.uid === me.uid ? ' (you)' : '');
+        if (!q.bot && q.uid === me.uid && s.status === 'playing' && (q.f | 0) !== (s.gid | 0)) tag += ' · joined late, not counted';
+        if (q.bot && ms < 0) btn += '<button data-a="sit" data-p="' + p + '">' + (s.status === 'lobby' ? 'Take seat' : 'Jump in') + '</button>';
+        if (q.bot && s.status === 'lobby' && isHost()) btn += ' <button data-a="rm" data-p="' + p + '">Remove</button>';
+        if (!q.bot && q.uid === me.uid) btn += '<button data-a="leave" data-p="' + p + '">Leave</button>';
+        h += '<div class="seat' + (s.status === 'playing' && s.turn === p ? ' cur' : '') + '">' + dot(p) + (q.bot ? '' : WW.avatarHtml(q.avatar, q.name, 22)) + '<span class="nm">' + q.name + tag + (s.status !== 'lobby' ? ' · ' + homeN + '/4 home' : '') + '</span>' + emoOf(p) + btn + '</div>';
+      }
+    }
+    $('seats').innerHTML = h;
+    var a = '';
+    if (s.status === 'lobby' && isHost()) a += '<button class="go" data-a="start"' + (seated(s).length < 2 ? ' disabled' : '') + '>Start game</button> <button data-a="fill">Fill with bots</button>';
+    if (s.status === 'lobby' && !isHost()) a += '<span class="muted">Waiting for the host to start.</span>';
+    if (s.status === 'done' && isHost()) a += '<button class="go" data-a="again">Play again</button>';
+    if (s.status === 'done' && !isHost()) a += '<span class="muted">Waiting for the host to set up the next game.</span>';
+    $('actions').innerHTML = a;
+    var eh = ''; if (ms >= 0) EMOS.forEach(function (x) { eh += '<button data-e="' + x + '">' + x + '</button>'; });
+    if ($('emotes').dataset.on !== String(ms >= 0)) { $('emotes').innerHTML = eh; $('emotes').dataset.on = String(ms >= 0); }
+    var cnt = WW.mode === 'cloud' ? Object.keys(players).length : 1; $('count').textContent = cnt || 1;
+  }
+  $('panel').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('button[data-a]') : null; if (!b || b.disabled) return;
+    var a = b.dataset.a, p = +b.dataset.p;
+    if (a === 'sit') sit(p); else if (a === 'bot') addBot(p); else if (a === 'rm') removeBot(p);
+    else if (a === 'leave') { if (!S || S.status !== 'playing' || confirm('Leave this game? If you are the last player the game ends, and this game will not count toward your record.')) leave(p); } else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
+  });
+  $('shareBtn').onclick = function () {
+    if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
+    var url = location.origin + location.pathname + '?room=' + cloudCode;
+    if (navigator.share) navigator.share({ title: 'Join my Wahoo game', text: 'Wahoo room ' + cloudCode, url: url }).catch(function () {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); });
+    else say('Share this code: ' + cloudCode);
+  };
+
+  var pubTimer = null;
+  function seatCounts(s) {
+    var humans = 0, bots = 0, open = 0;
+    for (var i = 0; i < 4; i++) { var st = seatOf(s, i); if (!st) open++; else if (st.bot) { bots++; open++; } else humans++; }
+    return { humans: humans, bots: bots, open: open };
+  }
+  function statusText(s) {
+    var c = seatCounts(s), ms = mySeat();
+    var people = c.humans + ' player' + (c.humans === 1 ? '' : 's') + (c.bots ? ' + ' + c.bots + ' bot' + (c.bots === 1 ? '' : 's') : '');
+    var tail = c.open ? ' · ' + c.open + ' open seat' + (c.open === 1 ? '' : 's') : ' · table full';
+    if (s.status === 'playing' && ms >= 0) { var n = pegsOf(s, ms).filter(function (v) { return v >= 51; }).length; return n + '/4 pegs home · ' + people + tail; }
+    return (s.status === 'done' ? 'Game over' : 'Lobby') + ' · ' + people + tail;
+  }
+  function publish() {
+    if (!S || mySeat() < 0 || WW.mode !== 'cloud') return;
+    WW.publishPlaying({ game: 'wahoo', title: 'Wahoo', room: cloudCode, status: statusText(S), open: seatCounts(S).open });
+  }
+  function publishSoon() { clearTimeout(pubTimer); pubTimer = setTimeout(publish, 1500); }
+  setInterval(publish, 30000);
+  function refreshHistory() {
+    if (!$('hist').open) return;
+    WW.loadHistory().then(function (l) { $('histBody').innerHTML = WW.historyHtml(l, 'wahoo'); });
+  }
+  $('hist').addEventListener('toggle', refreshHistory);
+  async function recordStats(s) {
+    var ms = mySeat();
+    if (s.status !== 'done' || ms < 0) return;
+    var mst = seatOf(s, ms); if (!mst || mst.bot || mst.uid !== me.uid || mst.f !== s.gid) return; // only players who played from the first move to the last get credit
+    var key = 'wahoo_' + (cloudCode || 'solo') + '_' + s.gid; if (statKey === key) return; statKey = key;
+    var opp = [], win = null;
+    seated(s).forEach(function (p) { var st = seatOf(s, p), o = { n: st.name, b: !!st.bot }; if (!st.bot) o.u = st.uid; if (p === s.winner) win = o; if (p !== ms) opp.push(o); });
+    var added = await WW.recordResult(key, { game: 'wahoo', title: 'Wahoo', room: cloudCode || 'solo', result: s.winner === ms ? 'win' : 'loss', opp: opp, winner: win });
+    if (!added) return;
+    var sv = (await WW.loadSave('wahoo')) || {};
+    sv.played = (sv.played | 0) + 1; if (s.winner === ms) sv.wins = (sv.wins | 0) + 1;
+    wins = sv.wins | 0; $('wins').textContent = wins; WW.writeSave('wahoo', sv);
+    refreshHistory();
+  }
+
+  async function begin(user, code) {
+    myCode = code;
+    var roomId = roomCode || (user ? code : null), ref = null;
+    if (user && roomId) {
+      try {
+        ref = WW.roomRef('wahoo', roomId);
+        var meta = (await ref.child('meta').once('value')).val();
+        if (!meta) {
+          if (roomId === code) await ref.child('meta').set({ host: (user.displayName || 'Player').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP });
+          else { gate('Room ' + roomId + ' not found. Ask your friend to open Wahoo once first.', false); return; }
+        }
+        me = user; cloudCode = roomId; WW.mode = 'cloud';
+        $('roomLabel').textContent = (roomId === code ? 'My table' : 'Friend’s table') + ' · ' + roomId;
+      } catch (e) {
+        if (roomCode && roomCode !== code) { gate('Could not reach that table online yet (the game database rules still need to be added). Try solo for now.', false); return; }
+        console.warn(e); user = null; ref = null; say('Online tables are not switched on yet, so you are playing solo on this device.');
+      }
+    } else if (roomCode) { gate('Sign in to join a friend’s table.', true); return; }
+    if (!ref || WW.mode !== 'cloud') { WW.useLocal(); ref = WW.roomRef('wahoo', 'solo'); me = { uid: 'local' }; $('roomLabel').textContent = 'Solo · this device'; }
+    $('gate').style.display = 'none';
+    myName = ((user && user.displayName) || 'You').split(' ')[0].slice(0, 12);
+    var sv = await WW.loadSave('wahoo'); if (sv) { wins = sv.wins | 0; $('wins').textContent = wins; }
+    buildBoard();
+    stateRef = ref.child('state'); roomRefG = ref;
+    ref.child('emotes').on('value', function (snap) {
+      emotes = snap.val() || {};
+      Object.keys(emotes).forEach(function (k) { var e = emotes[k]; if (e && emoSeen[k] !== e.t) { if (emoSeen[k] !== undefined) sfx('pop'); emoSeen[k] = e.t; } });
+      render(); setTimeout(render, 4200);
+    });
+    var isOwner = WW.mode !== 'cloud' || roomId === code;
+    if (isOwner) {
+      await stateRef.transaction(function (cur) {
+        if (cur) return cur;
+        return { status: 'lobby', hostUid: me.uid, seats: (function () { var o = {}; o[0] = { uid: me.uid, name: myName, bot: false, avatar: WW.avatar || '' }; return o; })(), turn: 0, roll: 0, winner: -1, rid: 1, gid: 0, lr: 0, msg: '', t: firebase.database.ServerValue.TIMESTAMP };
+      });
+    }
+    if (WW.mode === 'cloud') {
+      ref.child('players').on('value', function (snap) { players = snap.val() || {}; render(); });
+      presenceRef = ref.child('players/' + me.uid);
+      presenceRef.onDisconnect().remove();
+      beat = function () { presenceRef.set({ n: myName, a: iAmActive() ? 1 : 0, t: firebase.database.ServerValue.TIMESTAMP }); };
+      beat(); setInterval(beat, 20000);
+    }
+    stateRef.on('value', function (snap) {
+      var prev = S; S = snap.val();
+      if (S && prev && prev.rid !== S.rid) events(prev, S);
+      if (!S) { gate('This table is not open yet. Ask the host to open it first.', false); return; }
+      $('gate').style.display = 'none';
+      if (!autoSeatTried && mySeat() < 0 && S.status === 'lobby') {
+        autoSeatTried = true;
+        for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (!st) { sit(i); break; } }
+      }
+      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
+      autoSeatTried = true; checkStale(); render(); tick(); recordStats(S); publishSoon();
+    });
+  }
+
+  var started = false, startedAsUser = false;
+  WW.onReady(function (user, code) {
+    if (started) { if (!!user !== startedAsUser) location.reload(); return; }
+    started = true; startedAsUser = !!user;
+    $('gateBtn').style.display = 'none';
+    begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), false); });
+  });
+})();
+</script>
+</body>
+</html>

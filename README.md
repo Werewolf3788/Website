@@ -62,3 +62,39 @@ The top tactical bar tracks progress across these categories:
 2. In your companion script, set the game name to match:
    `progress/{game_name}` (like `COTW`, `sniper-elite-5`, `woth2`, `FarCry5`).
 3. Add a row in your Google Sheet with the game name, poster picture, and URL path (`/fc5`).
+
+## Game JSON conventions (game tracker)
+
+Every game in `public/games/*.json` is cross-referenced with PlayStation trophies automatically by `game/Universal.js`:
+
+- **Medals ↔ trophies:** a medal with the same name as a PSN trophy is synced (progress like 22/150 or 25%, and earned). Use `"psn_trophy": <trophyId>` on a medal to link it when the names differ.
+- **Trophies → missions:** a trophy whose description is "Complete <mission title>" (or "Complete Mission N") ticks that mission when earned; trophies that mention a mission title, "Mission N" or a mission's region show "Happens in …".
+- **Trophies → collectibles:** "Collect N personal letters / classified documents / hidden items", "Destroy N Dead-eye targets", "Interact with N workbenches" show the tracker's count on the trophy card.
+- **Rank:** `"campaign_rank": { "max": 40, "trophyId": 9, "trophyIds": [9] }` fills the rank from the matching PSN trophies.
+- **Hunting games:** trophies come from the PSN skeleton (playstation-stats); species names and "harvest N" trophies show your harvest counts.
+- Trophy icons and progress always come from the playstation-stats project (PSN engine).
+
+---
+
+## 6. Game Data — Free to Reuse
+
+The files in `public/games/*.json` are a standalone, hand-researched and
+corrected dataset: collectible locations, mission lists, and progress
+metrics for each supported game, cross-checked against official guides,
+community wikis, and in-game verification. They are not just a database
+for this site — they're intended as a reusable reference.
+
+**License:** released under [CC0](./LICENSE-DATA.md) (public domain). Use
+them in your own tracker, tool, wiki edit, dataset, or AI/LLM reference
+pipeline, no permission or attribution required.
+
+**Format:** one JSON file per game (e.g. `wdlegion.json`, `farcry5.json`),
+each with a consistent shape: `game`, `platforms`, `boroughs`/`regions`,
+`metrics`, `trophies`, and a `collectibles` object broken into typed
+categories (e.g. `text_files`, `relics`, `audio_logs`), where each item has
+an `id`, `name`, `region`, and a short `guide` describing how to find it.
+
+**Coverage:** see the `public/games/` folder for the current list of
+supported titles. Entries are added and corrected as they're verified —
+if you spot something wrong or missing, it's a plain JSON file, so a pull
+request is the fastest way to fix it.

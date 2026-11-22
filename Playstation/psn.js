@@ -17,6 +17,8 @@
  *       friendsDirectory/bucket_NN, raw_telemetry/{onlineId}, meta/*
  *       system/tokens, system/private_{onlineId}   (private: no client rules)
  *   No psn.json is written. Nothing secret is written to RTDB.
+ *   Kevin's DB gets no PSN data at all -- a leftover /psn mirror there is
+ *   removed once by clearKevinPsnMirror() and nothing writes it back.
  * ============================================================================ */
 "use strict";
 
@@ -25,6 +27,8 @@ const psnApi = require("psn-api");
 const { initializeApp, cert, getApps } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+const friendGames = require("../Claude-Test/sync/friend-games.js");   // also saves each player's games to Kevin's Firestore under their friend code
+const psnCodes = { byTag: {}, byId: {} };   // PSN online ID / account ID -> friend codes (from Kevin's /users)
 
 const {
     exchangeNpssoForCode,
@@ -54,7 +58,8 @@ const RAY_RTDB_URL = "https://playstation-stats-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
 const ENGINE_VERSION = "68.0.0";
 const AMAZON_TAG = "moviesanywhere02-20";
-const IS_MANUAL = process.env.GITHUB_EVENT_NAME === "workflow_dispatch";
+// A timer-started run (StreamHook.gs, mode=scheduled) behaves like the cron, not like the Run button.
+const IS_MANUAL = process.env.GITHUB_EVENT_NAME === "workflow_dispatch" && process.env.PSN_RUN_MODE !== "scheduled";
 
 const CORE_PACK = [
     { key: "wildhorse_spirit", tag: "WildHorse_Spirit", id: "4087137467908566201", emailMatch: "raykevin71888", env: "PSN_NPSSO_WEREWOLF" },
@@ -73,12 +78,21 @@ const RTDB_CARD_KEYS = new Set([
     "currentSessionSeconds", "amazonAffiliateUrl", "platform", "gameBuildVersion",
     "isStreamingRemotePlay", "displayPlatform", "activeHunt", "playSessions", "recentGames",
     "mostRecentTrophies", "liveTrophyProgress", "friendsCount", "purchasedCount", "rawPresence",
-    "npssoValid", "npssoStatus", "handshakeText", "handshakeState", "lastUpdated"
+    "npssoValid", "npssoStatus", "handshakeText", "handshakeState", "lastUpdated", "progressPulledAtMs"
 ]);
+
+// While a player is in a game, trophy progress (22/150, 25%) is re-read this often even if no trophy popped.
+const PROGRESS_REFRESH_MS = 15 * 60 * 1000;
+
+// If a player never gets caught online between sync runs (a whole play session can start and end
+// between two scheduled ticks), the presence-based gate below would skip them forever and silently
+// lose any trophies earned during that session. This forces a real pull every so often regardless of
+// whether presence currently reads "offline," so a missed session still gets picked up eventually.
+const OFFLINE_CATCHUP_MS = 3 * 3600 * 1000;
 
 const PULL_CONFIG = {
     SKELETON_REFRESH_RECENT_TITLES: 20,
-    PROGRESS_REFRESH_RECENT_TITLES: 0,
+    PROGRESS_REFRESH_RECENT_TITLES: 3,      // re-read trophy progress (22/150, 25%) for your 3 most recent games every full pull
     LIVE_PROGRESS_BACKFILL_PER_RUN: 12,   // games active this year get filled into liveTrophyProgress a few per run
     HEAVY_REFRESH_MS: 6 * 3600 * 1000,
     SKELETON_STALE_MS: 24 * 3600 * 1000,
@@ -238,7 +252,7 @@ function gameActiveRecently(map, lastActivity, isActiveNow) {
 function earnedOrInProgress(map) {
     const out = {};
     for (const [k, t] of Object.entries(asObjectMap(map))) {
-        if (t && (t.earned || (t.currentValue || 0) > 0)) out[k] = t;
+        if (t && (t.earned || (t.currentValue || 0) > 0 || parseFloat(t.progressRate) > 0 || t.progressedDateTime)) out[k] = t;
     }
     return out;
 }
@@ -668,6 +682,32 @@ async function saveTokenStore() {
 }
 
 /* ============================================================================
+ * Kevin's DB (entertainment-71888) should hold no PSN data at all -- every
+ * player page now reaches PSN data through assets/psn-source.js, which
+ * transparently redirects any /psn/... fetch against entertainment-71888 to
+ * Ray's playstation-stats project. That shim covers every PSN URL these
+ * pages use (gamertags, games, usersByGamerTag), so the old copy this engine
+ * used to write into Kevin's DB as a fallback is unnecessary duplication.
+ * This one-time pass removes that leftover /psn node from Kevin's DB; once
+ * it's gone this is a cheap no-op on every future run.
+ * ============================================================================ */
+async function clearKevinPsnMirror() {
+    const raw = (process.env.GCP_SA_KEY_WEBSITE || "").trim();
+    if (!raw) { console.log("[MIRROR CLEANUP] Skipped: no GCP_SA_KEY_WEBSITE."); return; }
+    try {
+        const creds = parseServiceAccount(raw, "GCP_SA_KEY_WEBSITE");
+        const kdb = getDatabase(getNamedApp("kevinApp", creds, KEVIN_RTDB_URL));
+        const existing = (await kdb.ref("psn").once("value")).val();
+        if (existing) {
+            await kdb.ref("psn").remove();
+            console.log("[MIRROR CLEANUP] Removed leftover /psn node from Kevin's DB.");
+        }
+    } catch (e) {
+        console.warn(`[MIRROR CLEANUP] Failed: ${e.message}`);
+    }
+}
+
+/* ============================================================================
  * Kevin's Firebase (READ-ONLY): PSN IDs + NPSSO cookies only
  * ============================================================================ */
 async function readKevinNodes() {
@@ -712,6 +752,7 @@ async function readKevinCredentials() {
 
     const coreNpssos = {};
     const coreIds = {};
+    const coreTags = {};          // exact spelling from /users/{email}/psn_username
     const cookieUpdated = {};
     for (const m of CORE_PACK) {
         coreNpssos[m.key] = normalizeNpsso(process.env[m.env] || "");
@@ -734,15 +775,22 @@ async function readKevinCredentials() {
             (idStr && idStr === m.id) ||
             (tag && tag.toLowerCase() === m.tag.toLowerCase()) ||
             (m.emailMatch && emailKey.toLowerCase().includes(m.emailMatch)));
+        const fcode = friendGames.friendCodeOf(u);
+        if (fcode) {
+            const addCode = (map, k) => { if (!k) return; (map[k] = map[k] || new Set()).add(fcode); };
+            addCode(psnCodes.byTag, tag && tag.toLowerCase()); addCode(psnCodes.byId, idStr);
+            if (core) { addCode(psnCodes.byTag, core.tag.toLowerCase()); addCode(psnCodes.byId, core.id); }
+        }
         if (core) {
             if (idStr) coreIds[core.key] = idStr;
+            if (tag) coreTags[core.key] = tag;
             if (cookie) { coreNpssos[core.key] = cookie; cookieUpdated[core.key] = updatedAt; }
         } else if (idStr || cookie) {
             guests.push({ emailKey, accountId: idStr || null, tag, npsso: cookie, updatedAt });
         }
     }
     console.log(`[KEVIN DB] Cookies: ${CORE_PACK.map((m) => `${m.tag}=${!!coreNpssos[m.key]}`).join(", ")}; guests=${guests.length}`);
-    return { coreNpssos, coreIds, cookieUpdated, guests, usersReadOk: ok };
+    return { coreNpssos, coreIds, coreTags, cookieUpdated, guests, usersReadOk: ok };
 }
 
 /* ============================================================================
@@ -1237,6 +1285,19 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
             }
         }
 
+        // PS5 progress (22/150, 25%) is only returned by the "trophy2" service. If this set has
+        // progress trophies but the reply carried no progress at all, ask trophy2 again.
+        const hasProgressDefs = (skeleton?.trophies || []).some((t) => (t.targetValue || 0) > 0);
+        const gotProgress = (earnedRes?.trophies || []).some((t) => t.progress !== undefined || t.progressRate !== undefined);
+        if (hasProgressDefs && !gotProgress && opt.npServiceName !== "trophy2") {
+            const t2 = await callPsn("getUserTrophiesEarnedForTitle(trophy2)", () => getUserTrophiesEarnedForTitle(auth, targetId, id, "all", { npServiceName: "trophy2" }), {}, true);
+            if (t2 && t2.trophies && t2.trophies.length) {
+                opt = { npServiceName: "trophy2" };
+                earnedRes = t2;
+                groupRes = await callPsn("getUserTrophyGroupEarningsForTitle(trophy2)", () => getUserTrophyGroupEarningsForTitle(auth, targetId, id, opt), {}, true);
+            }
+        }
+
         const earnedStatus = [...(earnedRes?.trophies || [])];
         if (earnedRes?.totalItemCount && earnedRes.totalItemCount > earnedStatus.length) {
             let off = earnedStatus.length;
@@ -1255,7 +1316,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
 
         earnedStatus.forEach((s) => {
             const sk = skelTrophies.find((t) => t.trophyId === s.trophyId);
-            const cur = s.progress !== undefined ? parseInt(s.progress, 10) : (s.trophyProgress !== undefined ? parseInt(s.trophyProgress, 10) : 0);
+            const cur = s.progress !== undefined ? (parseInt(s.progress, 10) || 0) : (s.trophyProgress !== undefined ? (parseInt(s.trophyProgress, 10) || 0) : 0);
             const target = sk?.targetValue || (s.trophyProgressTargetValue ? parseInt(s.trophyProgressTargetValue, 10) : 0);
             const rateStr = s.progressRate !== undefined ? `${s.progressRate}%` : null;
             let ratio = null;
@@ -1354,6 +1415,10 @@ async function evaluateUserActivityDelta(auth, targetId, scope, existing, force)
     const needsBackfill = existing.gameStatus === undefined;
     if (!liveOnline && !storedOnline) {
         if (needsBackfill) return { hasDelta: true, statusOnly: true, reason: "GAME_STATUS_BACKFILL", ...base };
+        const lastProg = Number(existing.progressPulledAtMs) || 0;
+        if (Date.now() - lastProg > OFFLINE_CATCHUP_MS) {
+            return { hasDelta: true, reason: "OFFLINE_CATCHUP", ...base };
+        }
         return { hasDelta: false, reason: "OFFLINE_SKIPPED", ...base };
     }
     if (liveOnline !== storedOnline) {
@@ -1372,6 +1437,8 @@ async function evaluateUserActivityDelta(auth, targetId, scope, existing, force)
             if (liveTotal !== storedTotal) return { hasDelta: true, reason: `NEW_TROPHY (${storedTotal} -> ${liveTotal})`, ...base };
             if ((stats.trophyLevel || 0) !== (existing.level || 0)) return { hasDelta: true, reason: "LEVEL_DELTA", ...base };
         }
+        const lastProg = Number(existing.progressPulledAtMs) || 0;
+        if (Date.now() - lastProg > PROGRESS_REFRESH_MS) return { hasDelta: true, reason: "TROPHY_PROGRESS_REFRESH", ...base };
         const storedStatus = existing.gameStatus || null;
         if (storedStatus !== liveStatus) {
             return { hasDelta: true, statusOnly: true, reason: `GAME_STATUS_CHANGE ("${storedStatus || "none"}" -> "${liveStatus || "none"}")`, ...base };
@@ -1393,6 +1460,17 @@ async function applyStatusOnlyUpdate(onlineId, existing, liveGameStatus) {
  * ============================================================================ */
 const friendsByPlayer = {};
 let heavyRefreshHappened = false;
+
+/* Same data saved in Kevin's Firestore under each member's friend code: user/{code}/platform/ps (Ray's project is unchanged). */
+async function savePsnToFriendCodes(onlineId, accountId, card, allGames, trophyLists) {
+    const codes = new Set([...(psnCodes.byTag[String(onlineId || "").toLowerCase()] || []), ...(psnCodes.byId[String(accountId || "")] || [])]);
+    if (!codes.size) return;
+    const { profile, games } = friendGames.psnFromSync(onlineId, card, allGames, trophyLists);
+    for (const code of codes) {
+        const r = await friendGames.savePlatform(code, "ps", profile, games);
+        console.log(`[FRIEND CODE] ${onlineId} -> user/${code}/platform/ps (${r.written || 0} doc(s) written)`);
+    }
+}
 
 async function getFullUserData(ctx) {
     const { auth, gamerTag, isSelf, targetId, existing, force } = ctx;
@@ -1714,6 +1792,7 @@ async function getFullUserData(ctx) {
             ingestIds.push(id);
         }
 
+        const trophyLists = {};   // commId -> trophies looked up this run (for the friend-code save)
         let activeProgress = {};
         let activeHunt = existing?.activeHunt || null;
         const newlyEarned = [];
@@ -1733,6 +1812,7 @@ async function getFullUserData(ctx) {
             if (sub.earnedList.length) newlyEarned.push(...sub.earnedList);
 
             const mapKeys = Object.keys(sub.progressMap);
+            if (mapKeys.length) trophyLists[cId] = sub.progressMap;
             if (mapKeys.length) {
                 const h = crypto.createHash("sha1").update(JSON.stringify(sub.progressMap)).digest("hex").slice(0, 16);
                 if (trophyHashes[cId] !== h) {
@@ -1889,8 +1969,10 @@ async function getFullUserData(ctx) {
             recentGames: recentSlim.length ? recentSlim : (existing?.recentGames || []),
             mostRecentTrophies: recentTrophies,
             liveTrophyProgress: Object.keys(liveProgress).length ? liveProgress : null,
+            progressPulledAtMs: Date.now(),
             lastUpdated: nowEt()
         };
+        await savePsnToFriendCodes(onlineId, accountId, card, allGames, trophyLists).catch((e) => console.warn(`[FRIEND CODE] ${onlineId}: ${e.message}`));
         return { card };
     } catch (err) {
         console.error(`[PLAYER ERROR] ${gamerTag || targetId}: ${err.stack || err.message}`);
@@ -2041,8 +2123,9 @@ async function executeSyncPass() {
             const own = auths[m.key];
             const issue = own ? null : (creds.coreNpssos[m.key] ? "EXPIRED_NPSSO" : "NO_COOKIE");
             diag.members[m.key] = { tag: m.tag, ownCookie: !!own, issue, cookieUpdatedAt: creds.cookieUpdated[m.key] || null };
-            await syncOne({ auth: own || masterAuth, key: m.key, tag: m.tag, accountId: creds.coreIds[m.key] || m.id, hasOwn: !!own, issue, label: m.tag });
-            active.add(m.tag);
+            const tag = (creds.coreTags && creds.coreTags[m.key]) || m.tag;   // profile's psn_username spelling
+            await syncOne({ auth: own || masterAuth, key: m.key, tag, accountId: creds.coreIds[m.key] || m.id, hasOwn: !!own, issue, label: tag });
+            active.add(tag);
         }
 
         /* Guests */
@@ -2071,6 +2154,26 @@ async function executeSyncPass() {
         } else {
             console.warn("[PRUNE] Skipped: could not read Kevin's users this run.");
         }
+
+        /* Remove duplicate cards that only differ in upper/lower case.
+           The spelling PSN itself returned for the account this run (card.onlineId) is the real one;
+           the card written this run is never removed. */
+        try {
+            const written = new Map();
+            for (const c of Object.values(cards)) {
+                if (c && c.onlineId) written.set(String(c.onlineId).toLowerCase(), safeKey(c.onlineId));
+            }
+            const allTags = (await rtdbRef("gamertags").once("value")).val() || {};
+            for (const k of Object.keys(allTags)) {
+                const real = written.get(k.toLowerCase());
+                if (real && real !== k && allTags[real]) {
+                    console.log(`[DEDUPE] Removing duplicate card '${k}' (PSN spelling '${real}').`);
+                    await rtdbRef(`gamertags/${k}`).remove();
+                    delete usersByGamerTag[k];
+                    changed++;
+                }
+            }
+        } catch (e) { console.warn("[DEDUPE] skipped:", e.message); }
 
         await rtdbSet("usersByGamerTag", usersByGamerTag);
 
@@ -2110,6 +2213,7 @@ async function executeSyncPass() {
             apiStats: apiSummary, updatedAt: FieldValue.serverTimestamp()
         }), { merge: true });
 
+        await clearKevinPsnMirror();
         console.log(`[API STATS] ${apiStats.calls} calls, ${apiStats.failures} failed.`);
         console.log(`[SUCCESS] Engine v${ENGINE_VERSION} done. Players changed: ${changed}.`);
     } catch (err) {

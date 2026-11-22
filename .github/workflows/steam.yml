@@ -1,0 +1,35 @@
+# File: .github/workflows/steam.yml
+# Steam sync -> Kevin's Firebase RTDB (entertainment-71888) /steam_users and /steam_vanity.
+# Needs the STEAM_API_KEY repository secret. The key never goes in the code.
+name: Steam Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 */2 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/steam-sync.js'
+      - '.github/workflows/steam.yml'
+
+concurrency:
+  group: steam-sync-runner
+  cancel-in-progress: false
+
+jobs:
+  steam-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Dependencies
+        run: npm install firebase-admin
+      - name: Run Steam Sync
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
+        run: node scripts/steam-sync.js

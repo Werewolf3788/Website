@@ -1,0 +1,2471 @@
+{
+ "Server": {
+  "game": "Farming Simulator 25",
+  "version": "1.25.1.0",
+  "mapOverviewFilename": "$moddir$FS25_The_Rural_Farmlands_Of_Ohio/mapAS/overview.png",
+  "mapSize": 2048,
+  "mapName": "The Rural Farmlands Of Ohio",
+  "name": "OneLIVIDMAN and werewolf 618",
+  "dayTime": 40068730,
+  "Slots": {
+   "capacity": 6,
+   "numUsed": 0,
+   "Player": [
+    {
+     "isUsed": false
+    },
+    {
+     "isUsed": false
+    },
+    {
+     "isUsed": false
+    },
+    {
+     "isUsed": false
+    },
+    {
+     "isUsed": false
+    },
+    {
+     "isUsed": false
+    }
+   ]
+  },
+  "Mods": {
+   "Mod": [
+    {
+     "name": "FS25_precisionFarming",
+     "author": "GIANTS Software",
+     "version": "1.5.1.0",
+     "#text": "Precision Farming"
+    },
+    {
+     "name": "pdlc_strawHarvestPack",
+     "author": "Creative Mesh",
+     "version": "1.3.0.0",
+     "#text": "Straw Harvest Pack"
+    },
+    {
+     "name": "FS25_2160_Series",
+     "author": "Custom Modding",
+     "version": "1.0.0.1",
+     "#text": "Case IH 2160 Early Riser Planters Series"
+    },
+    {
+     "name": "FS25_AdditionalFilltypes",
+     "author": "w33zl",
+     "version": "1.1.2.0",
+     "#text": "Additional Filltypes"
+    },
+    {
+     "name": "FS25_All_In_One_Production",
+     "author": "Papes_Farming_Mods, InsaneSimGuy",
+     "version": "1.0.1.0",
+     "#text": "All In One Production"
+    },
+    {
+     "name": "FS25_AmericanMidwestShop",
+     "author": "ikas",
+     "version": "1.0.0.5",
+     "#text": "American Midwest Maintenance Shop"
+    },
+    {
+     "name": "FS25_AmericanMidwestTruckshop",
+     "author": "ikas",
+     "version": "1.0.0.2",
+     "#text": "American Midwest Truck Shop"
+    },
+    {
+     "name": "FS25_AmericanSimplePack",
+     "author": "ikas",
+     "version": "1.1.1.0",
+     "#text": "American Midwest Simple Shed Pack"
+    },
+    {
+     "name": "FS25_ASM_ChristmasCutouts",
+     "author": "Squigglze",
+     "version": "1.0.0.0",
+     "#text": "Christmas Cutouts"
+    },
+    {
+     "name": "FS25_AutomaticWater_Animals_Greenhouses",
+     "author": "JogaDim",
+     "version": "1.1.0.0",
+     "#text": "Automatic Water For Animals And Greenhouses"
+    },
+    {
+     "name": "FS25_baleAutoloadPack",
+     "author": "[Weekend Farmers&#93; Amarok-10",
+     "version": "1.2.0.0",
+     "#text": "Bale Autoload Pack"
+    },
+    {
+     "name": "FS25_Balers_pack",
+     "author": "DrXmL",
+     "version": "1.0.0.0",
+     "#text": "Balers Pack Works With Ai And Silage Additive"
+    },
+    {
+     "name": "FS25_BigHorn",
+     "author": "Roughneck Modding Crew",
+     "version": "1.0.0.0",
+     "#text": "BigHorn Pickup"
+    },
+    {
+     "name": "FS25_buyableBales_pack_crossplay",
+     "author": "DD ModPassion",
+     "version": "1.0.0.2",
+     "#text": "Buyable Bales Pack"
+    },
+    {
+     "name": "FS25_CaseIH_340_400TSE_FL",
+     "author": "Macktrucker921",
+     "version": "1.1.0.4",
+     "#text": "Case IH Magnum 340 - 400 Series Special Edition FL"
+    },
+    {
+     "name": "FS25_caseIHAxialFlowSeries",
+     "author": "Matt26",
+     "version": "1.0.0.0",
+     "#text": "Case IH Axial-Flow Series"
+    },
+    {
+     "name": "FS25_Christmas_Package_Decorative",
+     "author": "Frits",
+     "version": "1.1.0.0",
+     "#text": "Christmas Decorative Package"
+    },
+    {
+     "name": "FS25_colossusPack",
+     "author": "ChrisS and RileyS",
+     "version": "2.1.0.0",
+     "#text": "Lizard Colossus Pack"
+    },
+    {
+     "name": "FS25_Deck",
+     "author": "InsaneSimGuy",
+     "version": "1.0.0.0",
+     "#text": "Deck"
+    },
+    {
+     "name": "FS25_Doubleroundhall",
+     "author": "Adub Modding ABP Team",
+     "version": "1.1.0.0",
+     "#text": "Rudolf Hoermann Round Storage Hall"
+    },
+    {
+     "name": "FS25_DropdeckTrailer53Ft_Auto",
+     "author": "macktrucker921",
+     "version": "1.0.2.1",
+     "#text": "Dropdeck Trailer - Autoload Bales"
+    },
+    {
+     "name": "FS25_FlagOldBarn",
+     "author": "ikas",
+     "version": "1.0.0.0",
+     "#text": "Old Barn With Flag"
+    },
+    {
+     "name": "FS25_Flexicoil_ST820_MultiFunction",
+     "author": "Hispano",
+     "version": "1.0.0.0",
+     "#text": "Flexicoil ST820 Multifunction"
+    },
+    {
+     "name": "FS25_Grape_olive_Storage",
+     "author": "AgritruckTeam",
+     "version": "1.0.0.0",
+     "#text": "Grape/Olive Storage"
+    },
+    {
+     "name": "FS25_harvestgiant",
+     "author": "[KaiGo Modding&#93; GamingGonso",
+     "version": "1.0.0.0",
+     "#text": "Lizard HarvestGIANT"
+    },
+    {
+     "name": "FS25_JD_8R_2018_crossplay",
+     "author": "JHHG Modding",
+     "version": "1.0.0.1",
+     "#text": "John Deere 8R (2016-2018) US Series"
+    },
+    {
+     "name": "FS25_John_Deere_Workshop",
+     "author": "MA7Studio",
+     "version": "1.0.0.1",
+     "#text": "John Deere Workshop"
+    },
+    {
+     "name": "FS25_kinzeMultiFruitPlanterPack",
+     "author": "ChrisS and RileyS",
+     "version": "1.1.0.0",
+     "#text": "Kinze 4095 Multi-Fruit Planter Pack"
+    },
+    {
+     "name": "FS25_KuhnAxis402",
+     "author": "Kamilos0397",
+     "version": "1.0.0.3",
+     "#text": "Kuhn Axis 402"
+    },
+    {
+     "name": "FS25_Lizard1775NT_multiplanter",
+     "author": "MackTrucker921",
+     "version": "1.0.0.1",
+     "#text": "Lizard 1775NT Multi-planter"
+    },
+    {
+     "name": "FS25_Lizard_Silver_3500",
+     "author": "Agro Tonho",
+     "version": "1.0.0.0",
+     "#text": "Lizard Silver 3500"
+    },
+    {
+     "name": "FS25_Lizard_SM72_SM82",
+     "author": "Agro Tonho",
+     "version": "1.0.0.0",
+     "#text": "Lizard SM 72 And 82"
+    },
+    {
+     "name": "FS25_LizardComboTrailer",
+     "author": "macktrucker921",
+     "version": "1.0.0.7",
+     "#text": "Autoloading Bale/Combo Trailer"
+    },
+    {
+     "name": "FS25_lizardTardis",
+     "author": "OmaTana",
+     "version": "1.1.0.1",
+     "#text": "Lizard Tardis"
+    },
+    {
+     "name": "FS25_LowCostFarmSilos",
+     "author": "erShaba (VSR Modding Sur)",
+     "version": "1.1.0.0",
+     "#text": "Low Cost Grain Silo"
+    },
+    {
+     "name": "FS25_MidwestShouse",
+     "author": "ikas",
+     "version": "1.1.0.0",
+     "#text": "American Midwest Shouse"
+    },
+    {
+     "name": "FS25_mrhCowBarns",
+     "author": "MrHector",
+     "version": "1.1.0.0",
+     "#text": "Lizard Cow Barns"
+    },
+    {
+     "name": "FS25_MultiFarmStorage",
+     "author": "Anthicz",
+     "version": "1.1.0.1",
+     "#text": "Multi-fruit Farm Storage"
+    },
+    {
+     "name": "FS25_Multifruit_Buying_Station",
+     "author": "82Studio",
+     "version": "1.1.0.1",
+     "#text": "Multifruit Buying Station"
+    },
+    {
+     "name": "FS25_naturalWaterRiversAndPondsPack",
+     "author": "LMoonlight [MA&#93;",
+     "version": "1.0.1.1",
+     "#text": "Natural Water Rivers And Ponds Pack"
+    },
+    {
+     "name": "FS25_oldGrainSilo",
+     "author": "InsaneSimGuy",
+     "version": "1.0.0.2",
+     "#text": "Old Grain Silo Multifruit"
+    },
+    {
+     "name": "FS25_OldSkoolPack",
+     "author": "ikas",
+     "version": "1.0.0.0",
+     "#text": "Old Skool Pack"
+    },
+    {
+     "name": "FS25_oldUSshed",
+     "author": "ikas",
+     "version": "1.0.0.0",
+     "#text": "Old American Shed"
+    },
+    {
+     "name": "FS25_Pack_Autoload",
+     "author": "raulycristi1 [VSR Modding Sur&#93;",
+     "version": "1.0.1.0",
+     "#text": "Autoload Pack"
+    },
+    {
+     "name": "FS25_Pack_Halloween",
+     "author": "raulycristi1 [VSR Modding Sur&#93;",
+     "version": "1.0.0.0",
+     "#text": "Pack Halloween"
+    },
+    {
+     "name": "FS25_palletSilo",
+     "author": "ChrisS and RileyS",
+     "version": "1.3.0.0",
+     "#text": "Pallet Silo With Autoload Trailers"
+    },
+    {
+     "name": "FS25_PlaceableGasStationPump",
+     "author": "Macktrucker921",
+     "version": "1.0.0.0",
+     "#text": "Placeable Gas Station Pump"
+    },
+    {
+     "name": "FS25_potatoHallLarge",
+     "author": "[Weekend Farmers&#93; BlackTiger",
+     "version": "1.0.0.0",
+     "#text": "Large Potato Hall"
+    },
+    {
+     "name": "FS25_Production_Points_Pack",
+     "author": "Puma 145",
+     "version": "1.0.0.1",
+     "#text": "Production Points Pack"
+    },
+    {
+     "name": "FS25_R3_HarvestProfit",
+     "author": "Raster R3 Modding",
+     "version": "1.0.0.0",
+     "#text": "Harvest Profit"
+    },
+    {
+     "name": "FS25_Rangler_Unlimited_4x4",
+     "author": "Hispano",
+     "version": "1.0.0.0",
+     "#text": "Rangler Unlimited 4x4"
+    },
+    {
+     "name": "FS25_RoadKit",
+     "author": "OlaHaldor",
+     "version": "1.0.0.1",
+     "#text": "Road Kit"
+    },
+    {
+     "name": "FS25_RoadrunnerPlus",
+     "author": "Mantrid",
+     "version": "1.0.0.1",
+     "#text": "Roadrunner+"
+    },
+    {
+     "name": "FS25_sellEverything",
+     "author": "Schultz Modding",
+     "version": "1.0.0.2",
+     "#text": "Sell Everything"
+    },
+    {
+     "name": "FS25_Shed_Storage_And_Shed",
+     "author": "Granjeiro/Lostgamer/Vergamini Modding",
+     "version": "1.0.0.0",
+     "#text": "Storage Shed And Single Shed"
+    },
+    {
+     "name": "FS25_SpeedOfLight",
+     "author": "Jos",
+     "version": "1.0.1.0",
+     "#text": "Speed Of Light"
+    },
+    {
+     "name": "FS25_Superduty",
+     "author": "Roughneck Modding Crew",
+     "version": "1.3.0.0",
+     "#text": "Superduty Pickup"
+    },
+    {
+     "name": "FS25_The_Rural_Farmlands_Of_Ohio",
+     "author": "Papes_Farming_Mods",
+     "version": "1.0.1.2",
+     "#text": "The Rural Farmlands Of Ohio"
+    },
+    {
+     "name": "FS25_TigerMate255",
+     "author": "Custom Modding",
+     "version": "1.0.0.0",
+     "#text": "Case IH Tiger-Mate 255 Field Cultivator"
+    },
+    {
+     "name": "FS25_TreeBGone",
+     "author": "Mantrid",
+     "version": "1.0.0.0",
+     "#text": "Tree-B-Gone"
+    },
+    {
+     "name": "FS25_USpack1",
+     "author": "ikas",
+     "version": "1.1.0.0",
+     "#text": "American Building Pack Pt1"
+    },
+    {
+     "name": "FS25_USpack2",
+     "author": "ikas",
+     "version": "1.0.0.0",
+     "#text": "American Building Pack Pt2"
+    },
+    {
+     "name": "FS25_usWorkshopHall",
+     "author": "ikas",
+     "version": "1.0.0.3",
+     "#text": "American Workshop"
+    },
+    {
+     "name": "FS25_UtiliTrailer",
+     "author": "SleutjesModding",
+     "version": "1.0.0.0",
+     "#text": "Lizard Utili Trailer"
+    },
+    {
+     "name": "FS25_WindTurbinePack",
+     "author": "Michu77",
+     "version": "1.0.0.0",
+     "#text": "Wind Turbine Pack"
+    },
+    {
+     "name": "FS25_WindTurbinePackage",
+     "author": "Razak",
+     "version": "1.3.0.0",
+     "#text": "Wind Turbine Package"
+    },
+    {
+     "name": "FS25_Wood_autoload",
+     "author": "Lets be having moo",
+     "version": "1.1.0.0",
+     "#text": "Autoloading Wood Pack"
+    },
+    {
+     "name": "FS25_zLiftablePalletsBales",
+     "author": "Jos",
+     "version": "1.0.6.0",
+     "#text": "Liftable Pallets And Bales"
+    },
+    {
+     "name": "FS25_zzLazydistribution",
+     "author": "Lets be having moo",
+     "version": "1.1.0.3",
+     "#text": "Lazy Distribution"
+    }
+   ]
+  },
+  "Farmlands": {
+   "Farmland": [
+    {
+     "name": 1,
+     "id": 1,
+     "owner": 0,
+     "area": 1.942,
+     "price": 349560,
+     "x": -371.980072,
+     "z": -752.090942
+    },
+    {
+     "name": 2,
+     "id": 2,
+     "owner": 2,
+     "area": 3.982,
+     "price": 716760,
+     "x": -52.799297,
+     "z": 396.082672
+    },
+    {
+     "name": 3,
+     "id": 3,
+     "owner": 0,
+     "area": 1.3916,
+     "price": 83496,
+     "x": -456.255524,
+     "z": -801.635803
+    },
+    {
+     "name": 4,
+     "id": 4,
+     "owner": 0,
+     "area": 4.0016,
+     "price": 240096,
+     "x": -388.0,
+     "z": -944.0
+    },
+    {
+     "name": 5,
+     "id": 5,
+     "owner": 0,
+     "area": 3.378,
+     "price": 202680,
+     "x": -210.604019,
+     "z": -861.407349
+    },
+    {
+     "name": 6,
+     "id": 6,
+     "owner": 2,
+     "area": 2.0096,
+     "price": 361728,
+     "x": 545.673157,
+     "z": 62.175556
+    },
+    {
+     "name": 7,
+     "id": 7,
+     "owner": 0,
+     "area": 1.9824,
+     "price": 356832,
+     "x": -430.0,
+     "z": 115.0
+    },
+    {
+     "name": 8,
+     "id": 8,
+     "owner": 1,
+     "area": 1.1968,
+     "price": 215424,
+     "x": 631.687195,
+     "z": -68.141045
+    },
+    {
+     "name": 9,
+     "id": 9,
+     "owner": 1,
+     "area": 0.3036,
+     "price": 54648,
+     "x": 487.753632,
+     "z": -218.628464
+    },
+    {
+     "name": 10,
+     "id": 10,
+     "owner": 2,
+     "area": 0.3132,
+     "price": 56376,
+     "x": 633.0,
+     "z": 753.0
+    },
+    {
+     "name": 11,
+     "id": 11,
+     "owner": 0,
+     "area": 0.2088,
+     "price": 12528,
+     "x": -245.053635,
+     "z": -720.153259
+    },
+    {
+     "name": 12,
+     "id": 12,
+     "owner": 2,
+     "area": 26.826401,
+     "price": 1609584,
+     "x": -330.816986,
+     "z": -342.641907
+    },
+    {
+     "name": 13,
+     "id": 13,
+     "owner": 2,
+     "area": 20.5128,
+     "price": 1230768,
+     "x": 30.238018,
+     "z": -291.132141
+    },
+    {
+     "name": 14,
+     "id": 14,
+     "owner": 0,
+     "area": 9.4416,
+     "price": 566496,
+     "x": -45.463226,
+     "z": -822.642151
+    },
+    {
+     "name": 15,
+     "id": 15,
+     "owner": 1,
+     "area": 5.1956,
+     "price": 311736,
+     "x": 167.338135,
+     "z": -426.828613
+    },
+    {
+     "name": 16,
+     "id": 16,
+     "owner": 0,
+     "area": 8.4352,
+     "price": 506112,
+     "x": -886.569397,
+     "z": -875.125366
+    },
+    {
+     "name": 17,
+     "id": 17,
+     "owner": 0,
+     "area": 6.8272,
+     "price": 409632,
+     "x": -912.566895,
+     "z": -576.973633
+    },
+    {
+     "name": 18,
+     "id": 18,
+     "owner": 0,
+     "area": 7.4208,
+     "price": 445248,
+     "x": -629.749268,
+     "z": -869.151917
+    },
+    {
+     "name": 19,
+     "id": 19,
+     "owner": 0,
+     "area": 11.9168,
+     "price": 715008,
+     "x": -656.436157,
+     "z": -506.373383
+    },
+    {
+     "name": 20,
+     "id": 20,
+     "owner": 0,
+     "area": 8.41,
+     "price": 504600,
+     "x": -638.833801,
+     "z": -150.541687
+    },
+    {
+     "name": 21,
+     "id": 21,
+     "owner": 2,
+     "area": 7.978,
+     "price": 478680,
+     "x": -296.453308,
+     "z": 163.6185
+    },
+    {
+     "name": 22,
+     "id": 22,
+     "owner": 2,
+     "area": 3.0528,
+     "price": 183168,
+     "x": -69.986633,
+     "z": 182.259171
+    },
+    {
+     "name": 23,
+     "id": 23,
+     "owner": 2,
+     "area": 11.8148,
+     "price": 708888,
+     "x": -232.645264,
+     "z": 485.252502
+    },
+    {
+     "name": 24,
+     "id": 24,
+     "owner": 0,
+     "area": 3.0144,
+     "price": 180864,
+     "x": -433.450897,
+     "z": 666.168274
+    },
+    {
+     "name": 25,
+     "id": 25,
+     "owner": 0,
+     "area": 0.6796,
+     "price": 40776,
+     "x": -458.865814,
+     "z": 789.439087
+    },
+    {
+     "name": 26,
+     "id": 26,
+     "owner": 0,
+     "area": 3.7944,
+     "price": 227664,
+     "x": -531.342834,
+     "z": 549.218445
+    },
+    {
+     "name": 27,
+     "id": 27,
+     "owner": 0,
+     "area": 21.9764,
+     "price": 1318584,
+     "x": -758.55304,
+     "z": 474.704773
+    },
+    {
+     "name": 28,
+     "id": 28,
+     "owner": 0,
+     "area": 4.2556,
+     "price": 255336,
+     "x": -664.214783,
+     "z": 115.208855
+    },
+    {
+     "name": 29,
+     "id": 29,
+     "owner": 0,
+     "area": 11.2368,
+     "price": 674208,
+     "x": -642.13855,
+     "z": 854.4776
+    },
+    {
+     "name": 30,
+     "id": 30,
+     "owner": 0,
+     "area": 13.9,
+     "price": 834000,
+     "x": -231.534958,
+     "z": 865.054504
+    },
+    {
+     "name": 31,
+     "id": 31,
+     "owner": 0,
+     "area": 5.1352,
+     "price": 308112,
+     "x": -922.714417,
+     "z": 904.688416
+    },
+    {
+     "name": 32,
+     "id": 32,
+     "owner": 2,
+     "area": 16.5944,
+     "price": 995664,
+     "x": 118.812851,
+     "z": 745.692444
+    },
+    {
+     "name": 33,
+     "id": 33,
+     "owner": 2,
+     "area": 0.3968,
+     "price": 23808,
+     "x": 217.096741,
+     "z": 490.481354
+    },
+    {
+     "name": 34,
+     "id": 34,
+     "owner": 2,
+     "area": 0.1896,
+     "price": 11376,
+     "x": 288.131622,
+     "z": 479.155121
+    },
+    {
+     "name": 35,
+     "id": 35,
+     "owner": 2,
+     "area": 8.6264,
+     "price": 517584,
+     "x": 546.421204,
+     "z": 826.953735
+    },
+    {
+     "name": 36,
+     "id": 36,
+     "owner": 2,
+     "area": 7.1816,
+     "price": 430896,
+     "x": 358.037537,
+     "z": 796.97229
+    },
+    {
+     "name": 37,
+     "id": 37,
+     "owner": 1,
+     "area": 4.7528,
+     "price": 285168,
+     "x": 586.115662,
+     "z": 525.326355
+    },
+    {
+     "name": 38,
+     "id": 38,
+     "owner": 2,
+     "area": 22.228001,
+     "price": 1333680,
+     "x": 285.666199,
+     "z": 151.277771
+    },
+    {
+     "name": 39,
+     "id": 39,
+     "owner": 1,
+     "area": 16.83,
+     "price": 1009800,
+     "x": 852.950073,
+     "z": 785.336609
+    },
+    {
+     "name": 40,
+     "id": 40,
+     "owner": 1,
+     "area": 5.5536,
+     "price": 333216,
+     "x": 572.809448,
+     "z": 242.587296
+    },
+    {
+     "name": 41,
+     "id": 41,
+     "owner": 1,
+     "area": 0.4572,
+     "price": 54864,
+     "x": 727.492554,
+     "z": 143.175873
+    },
+    {
+     "name": 42,
+     "id": 42,
+     "owner": 1,
+     "area": 16.339199,
+     "price": 980352,
+     "x": 883.862061,
+     "z": 197.886795
+    },
+    {
+     "name": 43,
+     "id": 43,
+     "owner": 1,
+     "area": 11.038,
+     "price": 662280,
+     "x": 815.353394,
+     "z": -186.933105
+    },
+    {
+     "name": 44,
+     "id": 44,
+     "owner": 1,
+     "area": 11.4756,
+     "price": 688536,
+     "x": 739.317688,
+     "z": -377.405518
+    },
+    {
+     "name": 45,
+     "id": 45,
+     "owner": 1,
+     "area": 29.5776,
+     "price": 1774656,
+     "x": 714.466003,
+     "z": -717.07843
+    },
+    {
+     "name": 46,
+     "id": 46,
+     "owner": 0,
+     "area": 18.5336,
+     "price": 1112016,
+     "x": 330.040131,
+     "z": -814.507812
+    },
+    {
+     "name": 47,
+     "id": 47,
+     "owner": 0,
+     "area": 3.2488,
+     "price": 194928,
+     "x": -941.934998,
+     "z": 351.431549
+    },
+    {
+     "name": 48,
+     "id": 48,
+     "owner": 0,
+     "area": 2.172,
+     "price": 130320,
+     "x": -800.614258,
+     "z": 255.582626
+    },
+    {
+     "name": 49,
+     "id": 49,
+     "owner": 0,
+     "area": 3.1964,
+     "price": 191784,
+     "x": -729.676758,
+     "z": -13.773918
+    },
+    {
+     "name": 50,
+     "id": 50,
+     "owner": 0,
+     "area": 3.1412,
+     "price": 188472,
+     "x": -729.29187,
+     "z": -101.987144
+    },
+    {
+     "name": 51,
+     "id": 51,
+     "owner": 0,
+     "area": 2.3344,
+     "price": 140064,
+     "x": -952.211609,
+     "z": -358.209564
+    },
+    {
+     "name": 52,
+     "id": 52,
+     "owner": 0,
+     "area": 3.13,
+     "price": 187800,
+     "x": -899.599609,
+     "z": -434.336578
+    },
+    {
+     "name": 53,
+     "id": 53,
+     "owner": 0,
+     "area": 2.4208,
+     "price": 145248,
+     "x": -773.418457,
+     "z": 126.439285
+    },
+    {
+     "name": 54,
+     "id": 54,
+     "owner": 0,
+     "area": 1.4932,
+     "price": 89592,
+     "x": 363.247711,
+     "z": -284.344818
+    },
+    {
+     "name": 55,
+     "id": 55,
+     "owner": 2,
+     "area": 1.1928,
+     "price": 71568,
+     "x": 358.054535,
+     "z": -242.87764
+    },
+    {
+     "name": 56,
+     "id": 56,
+     "owner": 0,
+     "area": 3.5992,
+     "price": 215952,
+     "x": 76.944244,
+     "z": 27.903996
+    },
+    {
+     "name": 57,
+     "id": 57,
+     "owner": 1,
+     "area": 3.474,
+     "price": 208440,
+     "x": 611.099731,
+     "z": 322.481171
+    },
+    {
+     "name": 58,
+     "id": 58,
+     "owner": 2,
+     "area": 0.5496,
+     "price": 32976,
+     "x": 446.847046,
+     "z": 439.666931
+    },
+    {
+     "name": 59,
+     "id": 59,
+     "owner": 0,
+     "area": 0.2532,
+     "price": 15192,
+     "x": 398.996704,
+     "z": 491.76886
+    },
+    {
+     "name": 60,
+     "id": 60,
+     "owner": 0,
+     "area": 0.288,
+     "price": 17280,
+     "x": 354.915314,
+     "z": 490.208649
+    },
+    {
+     "name": 61,
+     "id": 61,
+     "owner": 2,
+     "area": 0.174,
+     "price": 10440,
+     "x": 273.760254,
+     "z": 427.914246
+    },
+    {
+     "name": 62,
+     "id": 62,
+     "owner": 0,
+     "area": 0.1616,
+     "price": 9696,
+     "x": 227.435608,
+     "z": 436.002838
+    },
+    {
+     "name": 63,
+     "id": 63,
+     "owner": 0,
+     "area": 0.2612,
+     "price": 15672,
+     "x": 276.062408,
+     "z": 527.941284
+    },
+    {
+     "name": 64,
+     "id": 64,
+     "owner": 2,
+     "area": 0.5724,
+     "price": 34344,
+     "x": 355.393433,
+     "z": 526.601501
+    },
+    {
+     "name": 65,
+     "id": 65,
+     "owner": 2,
+     "area": 0.2504,
+     "price": 15024,
+     "x": 410.45047,
+     "z": 534.891357
+    },
+    {
+     "name": 66,
+     "id": 66,
+     "owner": 1,
+     "area": 2.238,
+     "price": 134280,
+     "x": 771.092224,
+     "z": 533.99408
+    },
+    {
+     "name": 67,
+     "id": 67,
+     "owner": 0,
+     "area": 2.812,
+     "price": 168720,
+     "x": 243.939392,
+     "z": -665.282959
+    },
+    {
+     "name": 68,
+     "id": 68,
+     "owner": 2,
+     "area": 0.1588,
+     "price": 9528,
+     "x": 325.566437,
+     "z": 458.788086
+    }
+   ]
+  },
+  "Fields": {
+   "Field": [
+    {
+     "id": 3,
+     "x": -456.624298,
+     "z": -820.547791,
+     "isOwned": false
+    },
+    {
+     "id": 4,
+     "x": -378.997894,
+     "z": -929.323547,
+     "isOwned": false
+    },
+    {
+     "id": 5,
+     "x": -210.545044,
+     "z": -952.606873,
+     "isOwned": false
+    },
+    {
+     "id": 11,
+     "x": -251.488281,
+     "z": -724.753662,
+     "isOwned": false
+    },
+    {
+     "id": 14,
+     "x": -37.449203,
+     "z": -772.3526,
+     "isOwned": false
+    },
+    {
+     "id": 12,
+     "x": -321.12912,
+     "z": -161.439392,
+     "isOwned": true
+    },
+    {
+     "id": 13,
+     "x": 3.15244,
+     "z": -175.548004,
+     "isOwned": true
+    },
+    {
+     "id": 16,
+     "x": -893.199158,
+     "z": -868.721375,
+     "isOwned": false
+    },
+    {
+     "id": 17,
+     "x": -893.394714,
+     "z": -645.013184,
+     "isOwned": false
+    },
+    {
+     "id": 18,
+     "x": -587.065491,
+     "z": -830.648132,
+     "isOwned": false
+    },
+    {
+     "id": 19,
+     "x": -618.92572,
+     "z": -406.886322,
+     "isOwned": false
+    },
+    {
+     "id": 20,
+     "x": -605.320251,
+     "z": -218.618637,
+     "isOwned": false
+    },
+    {
+     "id": 21,
+     "x": -241.282669,
+     "z": 193.221756,
+     "isOwned": true
+    },
+    {
+     "id": 22,
+     "x": -65.973999,
+     "z": 220.503601,
+     "isOwned": true
+    },
+    {
+     "id": 23,
+     "x": -280.113159,
+     "z": 449.915863,
+     "isOwned": true
+    },
+    {
+     "id": 24,
+     "x": -482.53244,
+     "z": 671.811279,
+     "isOwned": false
+    },
+    {
+     "id": 25,
+     "x": -482.089935,
+     "z": 808.120728,
+     "isOwned": false
+    },
+    {
+     "id": 27,
+     "x": -640.583435,
+     "z": 369.963776,
+     "isOwned": false
+    },
+    {
+     "id": 26,
+     "x": -547.498169,
+     "z": 588.270081,
+     "isOwned": false
+    },
+    {
+     "id": 28,
+     "x": -608.750183,
+     "z": 85.279541,
+     "isOwned": false
+    },
+    {
+     "id": 30,
+     "x": -221.393814,
+     "z": 842.680542,
+     "isOwned": false
+    },
+    {
+     "id": 29,
+     "x": -663.669739,
+     "z": 843.705994,
+     "isOwned": false
+    },
+    {
+     "id": 32,
+     "x": 128.843719,
+     "z": 727.117554,
+     "isOwned": true
+    },
+    {
+     "id": 36,
+     "x": 355.82962,
+     "z": 905.999573,
+     "isOwned": true
+    },
+    {
+     "id": 35,
+     "x": 546.614075,
+     "z": 871.201233,
+     "isOwned": true
+    },
+    {
+     "id": 37,
+     "x": 592.831787,
+     "z": 543.774231,
+     "isOwned": true
+    },
+    {
+     "id": 38,
+     "x": 309.852661,
+     "z": 260.284576,
+     "isOwned": true
+    },
+    {
+     "id": 39,
+     "x": 834.009521,
+     "z": 778.613037,
+     "isOwned": true
+    },
+    {
+     "id": 42,
+     "x": 870.742249,
+     "z": 231.884369,
+     "isOwned": true
+    },
+    {
+     "id": 43,
+     "x": 804.304504,
+     "z": -166.264069,
+     "isOwned": true
+    },
+    {
+     "id": 44,
+     "x": 592.207458,
+     "z": -286.495422,
+     "isOwned": true
+    },
+    {
+     "id": 45,
+     "x": 730.713379,
+     "z": -800.518188,
+     "isOwned": true
+    },
+    {
+     "id": 8,
+     "x": 619.43158,
+     "z": -111.343559,
+     "isOwned": true
+    },
+    {
+     "id": 46,
+     "x": 380.257629,
+     "z": -812.592651,
+     "isOwned": false
+    }
+   ]
+  },
+  "Vehicles": {
+   "Vehicle": [
+    {
+     "name": "Invisible Roller",
+     "category": "ROLLERS",
+     "type": "roller",
+     "x": 384.796661,
+     "y": 33.580173,
+     "z": 673.613708
+    },
+    {
+     "name": "Seeds",
+     "category": "BIGBAGPALLETS",
+     "type": "pallet",
+     "x": 580.669983,
+     "y": 34.233509,
+     "z": 659.994995,
+     "fillTypes": "SEEDS",
+     "fillLevels": 418.276
+    },
+    {
+     "name": "Seeds",
+     "category": "BIGBAGPALLETS",
+     "type": "pallet",
+     "x": 572.830933,
+     "y": 34.12418,
+     "z": 649.534058,
+     "fillTypes": "SEEDS",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Invisible Roller",
+     "category": "ROLLERS",
+     "type": "roller",
+     "x": 693.088989,
+     "y": 28.677801,
+     "z": -45.261009
+    },
+    {
+     "name": "Seeds",
+     "category": "BIGBAGPALLETS",
+     "type": "pallet",
+     "x": 572.831909,
+     "y": 33.953224,
+     "z": 657.539917,
+     "fillTypes": "SEEDS",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Invisible Roller",
+     "category": "ROLLERS",
+     "type": "roller",
+     "x": -127.182396,
+     "y": 17.326038,
+     "z": -625.960449
+    },
+    {
+     "name": "Rangler Unlimited 4x4",
+     "category": "CARS",
+     "type": "woodTruck",
+     "x": 535.535645,
+     "y": 31.741415,
+     "z": 682.570984,
+     "fillTypes": "DIESEL",
+     "fillLevels": 80.0,
+     "isAIActive": false
+    },
+    {
+     "name": "Colossus Ultimate Pro Bale",
+     "category": "BALERSSQUARE",
+     "type": "FS25_colossusPack.balerAI",
+     "x": 513.026062,
+     "y": 22.912678,
+     "z": 928.544922,
+     "fillTypes": "STRAW BALE_TWINE",
+     "fillLevels": "263.639 18.000"
+    },
+    {
+     "name": "Colossus Ultimate Pro Bale",
+     "category": "BALERSSQUARE",
+     "type": "FS25_colossusPack.balerAI",
+     "x": 517.147888,
+     "y": 22.910986,
+     "z": 926.765198,
+     "fillTypes": "DRYGRASS_WINDROW BALE_TWINE",
+     "fillLevels": "7473.729 18.000"
+    },
+    {
+     "name": "Colossus FLM 726",
+     "category": "FERTILIZERSPREADERS",
+     "type": "spreader",
+     "x": 941.697571,
+     "y": 62.664211,
+     "z": 856.983704,
+     "fillTypes": "LIME",
+     "fillLevels": 99691.938
+    },
+    {
+     "name": "Colossus FLM 726",
+     "category": "FERTILIZERSPREADERS",
+     "type": "spreader",
+     "x": 883.299561,
+     "y": 21.018234,
+     "z": -73.892281,
+     "fillTypes": "FERTILIZER",
+     "fillLevels": 99992.375
+    },
+    {
+     "name": "Colossus FLM 726",
+     "category": "FERTILIZERSPREADERS",
+     "type": "spreader",
+     "x": 15.824159,
+     "y": 24.539053,
+     "z": -606.544922,
+     "fillTypes": "LIME",
+     "fillLevels": 85974.484
+    },
+    {
+     "name": "Colossus FLM 726",
+     "category": "FERTILIZERSPREADERS",
+     "type": "spreader",
+     "x": 469.366974,
+     "y": 32.122982,
+     "z": 655.614929,
+     "fillTypes": "FERTILIZER",
+     "fillLevels": 99974.398
+    },
+    {
+     "name": "Colossus FLM 726",
+     "category": "FERTILIZERSPREADERS",
+     "type": "spreader",
+     "x": -191.843582,
+     "y": 17.308781,
+     "z": -705.14563,
+     "fillTypes": "FERTILIZER",
+     "fillLevels": 100000.0
+    },
+    {
+     "name": "Titan Header",
+     "category": "CUTTERS",
+     "type": "cutter",
+     "x": 503.116211,
+     "y": 22.963989,
+     "z": 919.628784
+    },
+    {
+     "name": "Titan Header",
+     "category": "CUTTERS",
+     "type": "cutter",
+     "x": 740.286438,
+     "y": 34.775494,
+     "z": 477.821533
+    },
+    {
+     "name": "6R Series (230-250)",
+     "category": "TRACTORSM",
+     "type": "tractor",
+     "x": -469.060883,
+     "y": 19.718477,
+     "z": -703.110901,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "432.983 25.000 4000.000",
+     "isAIActive": false
+    },
+    {
+     "name": "6R Series (230-250)",
+     "category": "TRACTORSM",
+     "type": "tractor",
+     "x": 878.990601,
+     "y": 20.46072,
+     "z": -70.043839,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "467.999 25.000 3702.981",
+     "isAIActive": false
+    },
+    {
+     "name": "Roadrunner+",
+     "category": "TRUCKS",
+     "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
+     "x": 941.581726,
+     "y": 61.302296,
+     "z": 847.493774,
+     "fillTypes": "DIESEL AIR",
+     "fillLevels": "769.949 3076.463",
+     "isAIActive": false
+    },
+    {
+     "name": "Roadrunner+",
+     "category": "TRUCKS",
+     "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
+     "x": 493.479675,
+     "y": 21.256313,
+     "z": 842.176453,
+     "fillTypes": "DIESEL AIR",
+     "fillLevels": "797.941 4184.027",
+     "isAIActive": false
+    },
+    {
+     "name": "Roadrunner+",
+     "category": "TRUCKS",
+     "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
+     "x": 497.501007,
+     "y": 21.263432,
+     "z": 842.004456,
+     "fillTypes": "DIESEL AIR",
+     "fillLevels": "874.999 4444.485",
+     "isAIActive": false
+    },
+    {
+     "name": "53' Dropdeck Trailer Autoload Bales",
+     "category": "TRAILERS",
+     "type": "trailer",
+     "x": 775.752014,
+     "y": 34.44994,
+     "z": 453.168945,
+     "fillTypes": "UNKNOWN",
+     "fillLevels": 0.0
+    },
+    {
+     "name": "53' Dropdeck Trailer Autoload Bales",
+     "category": "TRAILERS",
+     "type": "FS25_DropdeckTrailer53Ft_Auto.manureBarrelBelts",
+     "x": 721.183044,
+     "y": 34.866871,
+     "z": 570.420166,
+     "fillTypes": "DIGESTATE",
+     "fillLevels": 84078.664
+    },
+    {
+     "name": "53' Dropdeck Trailer Autoload Bales",
+     "category": "TRAILERS",
+     "type": "FS25_DropdeckTrailer53Ft_Auto.baleAutoLoad",
+     "x": 365.008026,
+     "y": 34.446159,
+     "z": -253.52301,
+     "fillTypes": "UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN",
+     "fillLevels": "0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000"
+    },
+    {
+     "name": "Steiger Series",
+     "category": "TRACTORSL",
+     "type": "tractor",
+     "x": 761.093689,
+     "y": 24.692427,
+     "z": 183.736908,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "1863.941 322.000 2823.669",
+     "isAIActive": false
+    },
+    {
+     "name": "Steiger Series",
+     "category": "TRACTORSL",
+     "type": "tractor",
+     "x": 517.63147,
+     "y": 21.696697,
+     "z": 837.619629,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "1741.820 322.000 2372.098",
+     "isAIActive": false
+    },
+    {
+     "name": "Steiger Series",
+     "category": "TRACTORSL",
+     "type": "tractor",
+     "x": 512.822937,
+     "y": 21.442703,
+     "z": 821.42218,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "1838.868 322.000 3725.551",
+     "isAIActive": false
+    },
+    {
+     "name": "SCOUT",
+     "category": "MISC",
+     "type": "FS25_precisionFarming.soilSampler",
+     "x": 538.413147,
+     "y": 31.90406,
+     "z": 681.436523
+    },
+    {
+     "name": "Magnum Series",
+     "category": "TRACTORSL",
+     "type": "tractor",
+     "x": -76.803673,
+     "y": 25.96813,
+     "z": 710.398071,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "614.974 99.000 3000.000",
+     "isAIActive": false
+    },
+    {
+     "name": "Magnum Series",
+     "category": "TRACTORSL",
+     "type": "tractor",
+     "x": 384.785828,
+     "y": 33.355808,
+     "z": 669.428406,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "580.986 99.000 3000.000",
+     "isAIActive": false
+    },
+    {
+     "name": "Tree-B-Gone",
+     "category": "FORESTRYMISC",
+     "type": "FS25_TreeBGone.treeBGone",
+     "x": 448.82666,
+     "y": 31.717339,
+     "z": 685.706055,
+     "fillTypes": "WOODCHIPS",
+     "fillLevels": 2373812.25
+    },
+    {
+     "name": "1775NT Multi-planter",
+     "category": "PLANTERS",
+     "type": "sowingMachine",
+     "x": -468.985077,
+     "y": 20.160538,
+     "z": -695.538513,
+     "fillTypes": "SEEDS",
+     "fillLevels": 16163.885
+    },
+    {
+     "name": "1775NT Multi-planter",
+     "category": "PLANTERS",
+     "type": "sowingMachine",
+     "x": -76.455292,
+     "y": 26.407846,
+     "z": 702.164917,
+     "fillTypes": "SEEDS",
+     "fillLevels": 25000.0
+    },
+    {
+     "name": "RTV-XG850 SIDEKICK",
+     "category": "CARS",
+     "type": "carFillable",
+     "x": 537.924011,
+     "y": 31.735012,
+     "z": 679.385071,
+     "fillTypes": "UNKNOWN DIESEL",
+     "fillLevels": "0.000 33.000",
+     "isAIActive": false
+    },
+    {
+     "name": "8R Series",
+     "category": "TRACTORSL",
+     "type": "tractor",
+     "x": 15.802,
+     "y": 24.175108,
+     "z": -613.340027,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "648.963 37.000 3000.000",
+     "isAIActive": false
+    },
+    {
+     "name": "Vegetable Header",
+     "category": "VEGETABLEHARVESTERS",
+     "type": "cutter",
+     "x": 481.997192,
+     "y": 23.195299,
+     "z": 934.054749
+    },
+    {
+     "name": "Colossus 8000 Root Harvester",
+     "category": "BEETHARVESTERS",
+     "type": "combineDrivable",
+     "x": 481.099976,
+     "y": 22.536016,
+     "z": 925.878967,
+     "fillTypes": "UNKNOWN DIESEL DEF",
+     "fillLevels": "0.000 1214.850 95.000",
+     "isAIActive": false
+    },
+    {
+     "name": "SVL 97-2",
+     "category": "SKIDSTEERVEHICLES",
+     "type": "teleHandler",
+     "x": 539.882019,
+     "y": 31.769224,
+     "z": 682.776794,
+     "fillTypes": "DIESEL DEF",
+     "fillLevels": "109.000 13.000",
+     "isAIActive": false
+    },
+    {
+     "name": "Colossus Quick Mow",
+     "category": "MOWERS",
+     "type": "mower",
+     "x": 448.969604,
+     "y": 31.713772,
+     "z": 681.460938
+    },
+    {
+     "name": "Colossus 73DD3-R",
+     "category": "TEDDERS",
+     "type": "tedder",
+     "x": 520.532227,
+     "y": 22.936686,
+     "z": 921.954041
+    },
+    {
+     "name": "TOP 1403 C",
+     "category": "WINDROWERS",
+     "type": "windrower",
+     "x": 524.276123,
+     "y": 23.009623,
+     "z": 927.859131
+    },
+    {
+     "name": "Citan 15001-C",
+     "category": "SEEDERS",
+     "type": "fertilizingSowingMachine",
+     "x": 656.279846,
+     "y": 29.98694,
+     "z": 908.116638,
+     "fillTypes": "SEEDS FERTILIZER",
+     "fillLevels": "3000.000 4800.000"
+    },
+    {
+     "name": "4905 Multi-Fruit Planter",
+     "category": "PLANTERS",
+     "type": "fertilizingSowingMachine",
+     "x": 582.984436,
+     "y": 31.768219,
+     "z": -53.382271,
+     "fillTypes": "SEEDS LIQUIDFERTILIZER",
+     "fillLevels": "149989.156 74923.930"
+    },
+    {
+     "name": "40' Flatbed Autoloading Bale Trailer",
+     "category": "TRAILERS",
+     "type": "trailer",
+     "x": 493.155426,
+     "y": 21.181086,
+     "z": 831.802002,
+     "fillTypes": "UNKNOWN",
+     "fillLevels": 0.0
+    },
+    {
+     "name": "40' Flatbed Autoloading Bale Trailer",
+     "category": "TRAILERS",
+     "type": "FS25_LizardComboTrailer.baleAutoLoad",
+     "x": 497.815277,
+     "y": 21.168737,
+     "z": 829.89856,
+     "fillTypes": "UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN",
+     "fillLevels": "0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000"
+    },
+    {
+     "name": "Titan Trailer",
+     "category": "TRAILERS",
+     "type": "trailer",
+     "x": 468.763,
+     "y": 31.7787,
+     "z": 694.559998,
+     "fillTypes": "UNKNOWN",
+     "fillLevels": 0.0
+    },
+    {
+     "name": "Colossus Liqui-Trans 5508",
+     "category": "BARRELS",
+     "type": "waterTrailer",
+     "x": 489.956848,
+     "y": 21.060816,
+     "z": 834.423523,
+     "fillTypes": "UNKNOWN",
+     "fillLevels": 0.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 106.569992,
+     "y": 29.660509,
+     "z": -397.567993,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 106.57103,
+     "y": 30.605074,
+     "z": -397.569,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 107.411972,
+     "y": 29.652901,
+     "z": -396.449036,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 107.407867,
+     "y": 30.597528,
+     "z": -396.449097,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 108.251892,
+     "y": 29.649923,
+     "z": -395.319855,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 108.250237,
+     "y": 30.594467,
+     "z": -395.315643,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 109.092018,
+     "y": 29.650436,
+     "z": -394.208038,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 109.089813,
+     "y": 30.594955,
+     "z": -394.211945,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 109.932007,
+     "y": 29.651508,
+     "z": -393.091003,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 109.931938,
+     "y": 30.596043,
+     "z": -393.08902,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 110.772964,
+     "y": 29.654207,
+     "z": -391.97644,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 110.770798,
+     "y": 30.598745,
+     "z": -391.969879,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 111.612953,
+     "y": 29.655489,
+     "z": -390.851013,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 111.613953,
+     "y": 30.6,
+     "z": -390.849884,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 112.452805,
+     "y": 29.654371,
+     "z": -389.729889,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 112.453888,
+     "y": 30.598883,
+     "z": -389.733215,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 113.295013,
+     "y": 29.649639,
+     "z": -388.610992,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 113.296028,
+     "y": 30.594145,
+     "z": -388.605896,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 114.134003,
+     "y": 29.6436,
+     "z": -387.492065,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 114.128258,
+     "y": 30.588146,
+     "z": -387.491974,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 104.970009,
+     "y": 29.680513,
+     "z": -396.36792,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 104.970917,
+     "y": 30.625107,
+     "z": -396.369049,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 105.810974,
+     "y": 29.672787,
+     "z": -395.255554,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 105.810623,
+     "y": 30.617353,
+     "z": -395.25827,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 106.650978,
+     "y": 29.667749,
+     "z": -394.127991,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 106.652931,
+     "y": 30.612309,
+     "z": -394.129028,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 107.491982,
+     "y": 29.664654,
+     "z": -393.007996,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 107.491928,
+     "y": 30.609205,
+     "z": -393.010071,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 108.333,
+     "y": 29.665257,
+     "z": -391.887939,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 108.335144,
+     "y": 30.609806,
+     "z": -391.883698,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 109.17292,
+     "y": 29.664032,
+     "z": -390.770142,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 109.171463,
+     "y": 30.608553,
+     "z": -390.773834,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 110.012947,
+     "y": 29.661961,
+     "z": -389.644714,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 110.013794,
+     "y": 30.606478,
+     "z": -389.649536,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 110.853958,
+     "y": 29.661049,
+     "z": -388.529938,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 110.857124,
+     "y": 30.605562,
+     "z": -388.531158,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 111.697174,
+     "y": 29.657858,
+     "z": -387.408752,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 111.695656,
+     "y": 30.602371,
+     "z": -387.414764,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 112.534973,
+     "y": 29.654316,
+     "z": -386.292053,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Flour Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 112.535744,
+     "y": 30.598841,
+     "z": -386.29483,
+     "fillTypes": "FLOUR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Colossus 9000 Harvester",
+     "category": "HARVESTERS",
+     "type": "combineDrivable",
+     "x": 752.640137,
+     "y": 34.35141,
+     "z": 472.560028,
+     "fillTypes": "UNKNOWN DIESEL DEF",
+     "fillLevels": "0.000 1365.818 163.000",
+     "isAIActive": false
+    },
+    {
+     "name": "Colossus 9000 Harvester",
+     "category": "HARVESTERS",
+     "type": "combineDrivable",
+     "x": 497.541992,
+     "y": 22.512342,
+     "z": 933.727112,
+     "fillTypes": "UNKNOWN DIESEL DEF",
+     "fillLevels": "0.000 1460.946 163.000",
+     "isAIActive": false
+    },
+    {
+     "name": "Colossus 9000 Harvester",
+     "category": "HARVESTERS",
+     "type": "combineDrivable",
+     "x": 504.621063,
+     "y": 22.512592,
+     "z": 933.605286,
+     "fillTypes": "UNKNOWN DIESEL DEF",
+     "fillLevels": "0.000 1492.995 163.000",
+     "isAIActive": false
+    },
+    {
+     "name": "Titan Super Collect 533",
+     "category": "LOADERWAGONS",
+     "type": "forageWagon",
+     "x": 752.226074,
+     "y": 27.205841,
+     "z": 236.638016,
+     "fillTypes": "GRASS_WINDROW UNKNOWN",
+     "fillLevels": "47502.453 0.000"
+    },
+    {
+     "name": "Colossus 7000 Cotton Harvester",
+     "category": "COTTONHARVESTERS",
+     "type": "cottonHarvester",
+     "x": 475.130035,
+     "y": 22.495224,
+     "z": 933.236755,
+     "fillTypes": "UNKNOWN COTTON DIESEL DEF",
+     "fillLevels": "0.000 1590.096 1355.978 61.000",
+     "isAIActive": false
+    },
+    {
+     "name": "Garlic Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 648.64801,
+     "y": 30.885059,
+     "z": 860.381165,
+     "fillTypes": "GARLIC",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Strawberries Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 647.247986,
+     "y": 30.885059,
+     "z": 860.406982,
+     "fillTypes": "STRAWBERRY",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Tomatoes Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 645.848938,
+     "y": 30.885059,
+     "z": 860.432068,
+     "fillTypes": "TOMATO",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Lettuce Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 644.448975,
+     "y": 30.885059,
+     "z": 860.458008,
+     "fillTypes": "LETTUCE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Napa Cabbage Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 643.048889,
+     "y": 30.885059,
+     "z": 860.483093,
+     "fillTypes": "NAPACABBAGE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Spring Onion Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 641.648865,
+     "y": 30.885059,
+     "z": 860.508057,
+     "fillTypes": "SPRING_ONION",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "TRIUS",
+     "category": "MISC",
+     "type": "trailer",
+     "x": 450.679016,
+     "y": 31.6679,
+     "z": 671.955994,
+     "fillTypes": "UNKNOWN",
+     "fillLevels": 0.0
+    },
+    {
+     "name": "Sugar Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 321.029999,
+     "y": 36.732075,
+     "z": 468.563995,
+     "fillTypes": "SUGAR",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "N60-45",
+     "category": "CUTTERTRAILERS",
+     "type": "dynamicMountAttacherTrailer",
+     "x": 497.463409,
+     "y": 22.47526,
+     "z": 920.862793,
+     "fillTypes": "",
+     "fillLevels": ""
+    },
+    {
+     "name": "Titan Corn Header",
+     "category": "CORNHEADERS",
+     "type": "cutter",
+     "x": 497.488495,
+     "y": 23.416592,
+     "z": 918.831726
+    },
+    {
+     "name": "Titan Corn Header",
+     "category": "CORNHEADERS",
+     "type": "cutter",
+     "x": 813.353516,
+     "y": 34.408325,
+     "z": 466.963104
+    },
+    {
+     "name": "Puma Series",
+     "category": "TRACTORSM",
+     "type": "tractor",
+     "x": 469.176025,
+     "y": 31.654858,
+     "z": 649.683289,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "366.992 48.000 3275.228",
+     "isAIActive": false
+    },
+    {
+     "name": "Puma Series",
+     "category": "TRACTORSM",
+     "type": "tractor",
+     "x": -127.630318,
+     "y": 17.188974,
+     "z": -622.416138,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "303.946 48.000 3797.208",
+     "isAIActive": false
+    },
+    {
+     "name": "Puma Series",
+     "category": "TRACTORSM",
+     "type": "tractor",
+     "x": -186.115921,
+     "y": 16.901579,
+     "z": -703.559937,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "384.997 48.000 2674.767",
+     "isAIActive": false
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 315.800781,
+     "y": 36.774643,
+     "z": 475.987122,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 315.451904,
+     "y": 36.762939,
+     "z": 477.33783,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 315.102905,
+     "y": 36.750927,
+     "z": 478.697998,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 314.754089,
+     "y": 36.739559,
+     "z": 480.053986,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 314.403992,
+     "y": 36.729752,
+     "z": 481.409912,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 317.254028,
+     "y": 36.742893,
+     "z": 476.354401,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 316.894531,
+     "y": 36.737461,
+     "z": 477.718353,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 316.555023,
+     "y": 36.730934,
+     "z": 479.074005,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 316.202484,
+     "y": 36.724483,
+     "z": 480.42038,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "Cake Pallet",
+     "category": "PALLETS",
+     "type": "pallet",
+     "x": 315.856812,
+     "y": 36.714203,
+     "z": 481.783844,
+     "fillTypes": "CAKE",
+     "fillLevels": 1000.0
+    },
+    {
+     "name": "ST820 MultiFunction",
+     "category": "CULTIVATORS",
+     "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
+     "x": 753.457764,
+     "y": 25.156813,
+     "z": 188.986862
+    },
+    {
+     "name": "ST820 MultiFunction",
+     "category": "CULTIVATORS",
+     "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
+     "x": 512.557007,
+     "y": 21.600849,
+     "z": 812.159119
+    },
+    {
+     "name": "ST820 MultiFunction",
+     "category": "CULTIVATORS",
+     "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
+     "x": 516.70697,
+     "y": 21.667578,
+     "z": 828.370178
+    },
+    {
+     "name": "ST820 MultiFunction",
+     "category": "CULTIVATORS",
+     "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
+     "x": 734.575989,
+     "y": 26.911257,
+     "z": 166.548004
+    }
+   ]
+  }
+ }
+}

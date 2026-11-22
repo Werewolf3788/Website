@@ -808,8 +808,8 @@
         "classified_documents": [
           {
             "id": "se5_doc_m7_01",
-            "name": "Intruder Sighted",
-            "location": "Subterranean rail terminus desk."
+            "name": "Inbound Deliveries",
+            "location": "Source confirms this is Classified Document #1 for Secret Weapons; exact in-mission location not yet re-verified against a screenshot."
           },
           {
             "id": "se5_doc_m7_02",
@@ -818,18 +818,18 @@
           },
           {
             "id": "se5_doc_m7_03",
-            "name": "Prufstand XII Plans",
-            "location": "V2 wind tunnel testing room."
+            "name": "A-4B Logistical Issues",
+            "location": "Source confirms this is Classified Document #3 for Secret Weapons; exact in-mission location not yet re-verified against a screenshot."
           },
           {
             "id": "se5_doc_m7_04",
-            "name": "Pressurisation Report",
-            "location": "Liquid oxygen refuelling site."
+            "name": "Intruder Sighted",
+            "location": "Subterranean rail terminus desk."
           },
           {
             "id": "se5_doc_m7_05",
-            "name": "Kraken Fuel Issues",
-            "location": "Main facility entrance outpost desk."
+            "name": "Pressurisation Report",
+            "location": "Liquid oxygen refuelling site."
           }
         ],
         "hidden_items": [
@@ -885,7 +885,8 @@
         ]
       },
       "date": "June 12th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m07-secret-weapons.jpg"
+      "image_url": "/public/games/sniperelite5/images/missions/m07-secret-weapons.jpg",
+      "collectibles_source": "Classified documents corrected against pushsquare.com's Secret Weapons collectible list: real doc order is Inbound Deliveries, Dr Junger's Schedule, A-4B Logistical Issues, Intruder Sighted, Pressurisation Report. The file previously duplicated 'Prufstand XII Plans' as both a classified document AND a hidden item (it's correctly only a hidden item) and included a fabricated 'Kraken Fuel Issues' doc; both have been replaced with the two real missing docs (Inbound Deliveries, A-4B Logistical Issues). Locations for those two are not yet confirmed from an in-game screenshot."
     },
     "mission_8": {
       "number": 8,
@@ -896,106 +897,112 @@
         "personal_letters": [
           {
             "id": "se5_let_m8_01",
-            "name": "Your Man Charlie",
-            "location": "Ruined town house first-floor table."
+            "name": "It's Not Over Yet",
+            "location": "Hotel ground floor, southeast side room, on a table left of a wall hole."
           },
           {
             "id": "se5_let_m8_02",
-            "name": "Orders To Stand Down",
-            "location": "Hotel lobby counter."
+            "name": "Clean Out the Sewer",
+            "location": "Inside the sewers, behind boxes to the left after the cutscene."
           },
           {
             "id": "se5_let_m8_03",
-            "name": "He Is Not The One",
-            "location": "Church altar table."
+            "name": "He's Not the Sharpest",
+            "location": "Theatre balcony, in a locked box behind an armoured gun (needs a crowbar)."
           },
           {
             "id": "se5_let_m8_04",
-            "name": "Clean Exit",
-            "location": "Submarine pen dry dock walkway desk."
+            "name": "Your Man Talked",
+            "location": "Bombed building in the south-central area, on a table behind a locked door."
           },
           {
             "id": "se5_let_m8_05",
-            "name": "Final Warning",
-            "location": "Submarine pen control office."
+            "name": "Möller Is Moving",
+            "location": "Sea View Offices, ground-floor back room."
           }
         ],
         "classified_documents": [
           {
             "id": "se5_doc_m8_01",
-            "name": "Sub Pen Repairs",
-            "location": "Sub pen workshop shelf."
+            "name": "Secure Radio Lines",
+            "location": "Level start, near a restaurant with three Nazi troops, on a wooden box."
           },
           {
             "id": "se5_doc_m8_02",
-            "name": "Harbour Clearances",
-            "location": "Harbor master dispatch office safe."
+            "name": "Broken Resistance",
+            "location": "Past the boarded doorway on the sewer route, on a box ahead."
           },
           {
             "id": "se5_doc_m8_03",
-            "name": "U-Boat Manifest",
-            "location": "Dry dock submarine catwalk table."
+            "name": "Resistance Report",
+            "location": "Western bombed Interrogation Room building, basement table reached via tunnel."
           },
           {
             "id": "se5_doc_m8_04",
-            "name": "Kraken Departs",
-            "location": "Bunker command center central plotting map table."
+            "name": "Flagship Fuel Risks",
+            "location": "Hotel second-floor locked room, in a safe (code is on Personal Letter #1, \"It's Not Over Yet\")."
+          },
+          {
+            "id": "se5_doc_m8_05",
+            "name": "Priority Pick Up",
+            "location": "Metro Du Café top floor attic, on the floor after climbing through a roof gap."
           }
         ],
         "hidden_items": [
           {
             "id": "se5_item_m8_01",
-            "name": "Stolen Painting",
-            "location": "Art collector apartment wall safe."
+            "name": "Hidden Tantō",
+            "location": "Chest in the sewer pump room, behind a locked door."
           },
           {
             "id": "se5_item_m8_02",
-            "name": "Kriegsmarine Dagger",
-            "location": "U-boat officer quarters bunk."
+            "name": "I-400 V2 Hangar",
+            "location": "Second floor, north of the map."
           },
           {
             "id": "se5_item_m8_03",
-            "name": "Yoshikawa's Codebook",
-            "location": "Yoshikawa private office desk."
+            "name": "An 'Original' Adolf",
+            "location": "Church, next to a sleeping bag."
           }
         ],
         "stone_eagles": [
           {
             "id": "se5_eagle_m8_01",
             "name": "Stone Eagle 1",
-            "location": "Destroyed church pediment arch."
+            "location": "Far west of the map, visible from outside Sea View Offices."
           },
           {
             "id": "se5_eagle_m8_02",
             "name": "Stone Eagle 2",
-            "location": "Harbor entrance lighthouse stone trim."
+            "location": "Far east of the map, left of two silos, visible from the road east of the sewer entrance."
           },
           {
             "id": "se5_eagle_m8_03",
             "name": "Stone Eagle 3",
-            "location": "Submarine pen blast door roof crest."
+            "location": "Atop the large building where Yoshikawa is targeted, northwest of the map."
           }
         ],
         "workbenches": [
           {
+            "id": "se5_wb_m8_rifle",
+            "name": "Rifle Workbench",
+            "location": "Sewer armoury, in the first Nazi encounter area."
+          },
+          {
             "id": "se5_wb_m8_smg",
             "name": "SMG Workbench",
-            "location": "Town square resistance cache."
+            "location": "Northwest resistance armoury, upstairs."
           },
           {
             "id": "se5_wb_m8_pistol",
             "name": "Pistol Workbench",
-            "location": "Sub pen maintenance shop."
-          },
-          {
-            "id": "se5_wb_m8_rifle",
-            "name": "Rifle Workbench",
-            "location": "Torpedo staging room locker."
+            "location": "Church crypt area, northwest corner."
           }
         ]
       },
       "date": "June 13th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m08-rubble-and-ruin.jpg"
+      "image_url": "/public/games/sniperelite5/images/missions/m08-rubble-and-ruin.jpg",
+      "collectibles_source": "pushsquare.com (Rubble and Ruin: All Collectibles). Replaces earlier placeholder names/locations that didn't match any guide (classified_documents was also short by 1: 4 instead of the correct 5, which is why the file's classified_documents total was 38 instead of the 39 target)."
     },
     "mission_9": {
       "number": 9,
@@ -1010,7 +1017,16 @@
         "workbenches": []
       },
       "date": "June 13th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m09-loose-ends.jpg"
+      "image_url": "/public/games/sniperelite5/images/missions/m09-loose-ends.jpg",
+      "description": "Final mission of the main campaign. By design, Loose Ends has no collectibles (0 Personal Letters, Classified Documents, Hidden Items, Stone Eagles, or Workbenches) — there is nothing to find here.",
+      "collectible_totals": {
+        "personal_letters": 0,
+        "classified_documents": 0,
+        "hidden_items": 0,
+        "stone_eagles": 0,
+        "workbenches": 0,
+        "total": 0
+      }
     },
     "mission_10_dlc": {
       "number": 10,
@@ -1141,25 +1157,25 @@
         "personal_letters": [
           {
             "id": "se5_let_m11_01",
-            "name": "Island Blues",
-            "location": "Barracks bunk table."
+            "name": "Munition Ignitions",
+            "location": "Found on a map table inside the command room (per itemlevel.net's Landing Force collectible guide)."
           },
           {
             "id": "se5_let_m11_02",
-            "name": "Shore Patrol Report",
-            "location": "Pier watch office desk."
+            "name": "Heavy is the Crown",
+            "location": "Same map location as 'Munition Ignitions' — look for the indicated table (per itemlevel.net's Landing Force collectible guide)."
           }
         ],
         "classified_documents": [
           {
             "id": "se5_doc_m11_01",
-            "name": "Battery Readiness",
-            "location": "Gun battery plotting desk."
+            "name": "Security Measures",
+            "location": "Lies under a desk inside the fishing hut (per guides4gamers.com's Classified Documents index)."
           },
           {
             "id": "se5_doc_m11_02",
-            "name": "Radio Logbook",
-            "location": "Lighthouse communication room."
+            "name": "Wine-Stained Warning",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Classified Documents index)."
           }
         ],
         "hidden_items": [
@@ -1222,7 +1238,8 @@
         "stone_eagles": 3,
         "workbenches": 3,
         "total": 13
-      }
+      },
+      "collectibles_note": "Landing Force has 3 personal letters, not 2 — the file was missing one. Two of the three real names are confirmed (Munition Ignitions, Heavy is the Crown) via itemlevel.net; the third/first letter's real name is not yet confirmed from a reliable source, so it has been left out rather than invented. Previous names ('Island Blues', 'Shore Patrol Report', 'Battery Readiness', 'Radio Logbook') were fabricated placeholders and have been replaced with sourced real names."
     },
     "mission_12_dlc": {
       "number": 12,
@@ -1233,25 +1250,30 @@
         "personal_letters": [
           {
             "id": "se5_let_m12_01",
-            "name": "Surrounded",
-            "location": "Cellar hideout table."
+            "name": "An Unfinished Plea for Aid",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Personal Letters index, listed under Conqueror)."
           },
           {
             "id": "se5_let_m12_02",
-            "name": "Final Stand",
-            "location": "Castle courtyard barrack."
+            "name": "Hastily Scribbled Note",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Personal Letters index, listed under Conqueror)."
+          },
+          {
+            "id": "se5_let_m12_03",
+            "name": "Letters Between Friends",
+            "location": "Carried by a soldier; provides the Medical Supplies Safe Code (per guides4gamers.com's Personal Letters index)."
           }
         ],
         "classified_documents": [
           {
             "id": "se5_doc_m12_01",
-            "name": "Defensive Perimeter",
-            "location": "Command tent plotting table."
+            "name": "King of the Tigers",
+            "location": "On a wooden crate outside a building (per guides4gamers.com's Classified Documents index)."
           },
           {
             "id": "se5_doc_m12_02",
-            "name": "Panzer Orders",
-            "location": "Motor pool maintenance desk."
+            "name": "Operations Dossier",
+            "location": "On a table in a small, circular gazebo (per guides4gamers.com's Classified Documents index)."
           }
         ],
         "hidden_items": [
@@ -1314,7 +1336,8 @@
         "stone_eagles": 3,
         "workbenches": 3,
         "total": 13
-      }
+      },
+      "collectibles_note": "Conqueror has 3 personal letters, not 2 — the file was missing one, and all previous names ('Surrounded', 'Final Stand', 'Defensive Perimeter', 'Panzer Orders') were fabricated placeholders. Replaced with sourced real names from guides4gamers.com."
     },
     "mission_13_dlc": {
       "number": 13,
@@ -1325,25 +1348,20 @@
         "personal_letters": [
           {
             "id": "se5_let_m13_01",
-            "name": "Forest Ambush",
-            "location": "Logging camp cabin desk."
-          },
-          {
-            "id": "se5_let_m13_02",
-            "name": "Search Orders",
-            "location": "Checkpost communications desk."
+            "name": "Damaged Journal",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Rough Landing map)."
           }
         ],
         "classified_documents": [
           {
             "id": "se5_doc_m13_01",
-            "name": "Crash Coordinates",
-            "location": "Patrol command tent table."
+            "name": "Resistance Correspondence",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Classified Documents index)."
           },
           {
             "id": "se5_doc_m13_02",
-            "name": "Cargo Manifest",
-            "location": "Timber rail station office safe."
+            "name": "Scribble-Covered Map",
+            "location": "Location not yet confirmed from a screenshot (per guides4gamers.com's Classified Documents index)."
           }
         ],
         "hidden_items": [
@@ -1406,17 +1424,88 @@
         "stone_eagles": 3,
         "workbenches": 3,
         "total": 13
-      }
+      },
+      "collectibles_note": "Rough Landing has 3 personal letters, not 2 or 1 — the file was missing entries, and all previous names ('Forest Ambush', 'Search Orders', 'Crash Coordinates', 'Cargo Manifest') were fabricated placeholders. Only 1 of the 3 real personal-letter names ('Damaged Journal') could be confirmed from available sources; the other two are not yet identified and have been left out rather than invented. Classified documents (2, matching the real count) are confirmed as 'Resistance Correspondence' and 'Scribble-Covered Map'."
     },
     "mission_14_dlc": {
       "number": 14,
       "title": "Kraken Awakes",
       "collectibles": {
-        "personal_letters": [],
-        "classified_documents": [],
-        "hidden_items": [],
-        "stone_eagles": [],
-        "workbenches": []
+        "personal_letters": [
+          {
+            "id": "se5_let_m14_01",
+            "name": "Boiler Room Inspection",
+            "location": "Comms room on the top floor of a dark-marked building in the north-west."
+          },
+          {
+            "id": "se5_let_m14_02",
+            "name": "Letter to Vogel",
+            "location": "Vogel's safe on the ship; get the code from his writing desk in the safe room, or blast the safe open with a satchel charge."
+          },
+          {
+            "id": "se5_let_m14_03",
+            "name": "Missing Tools",
+            "location": "Comms room on the top floor of a rectangular building in the south-west."
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "se5_doc_m14_01",
+            "name": "Salvage Operation",
+            "location": "On a table in the easternmost building on the east side of the map."
+          },
+          {
+            "id": "se5_doc_m14_02",
+            "name": "Successful Raid",
+            "location": "Third building of the middle dock in the north, counting from the access point closest to the ship."
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "se5_item_m14_01",
+            "name": "Backpack",
+            "location": "On a crate in the corner of a small building in the south-west."
+          },
+          {
+            "id": "se5_item_m14_02",
+            "name": "Eagle Plaque",
+            "location": "Ship's lower deck, near a room with a large red spotlight."
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "se5_eagle_m14_01",
+            "name": "Stone Eagle 1",
+            "location": "Top of the ship's middle mast."
+          },
+          {
+            "id": "se5_eagle_m14_02",
+            "name": "Stone Eagle 2",
+            "location": "Edge of the dark-marked building in the north-west."
+          },
+          {
+            "id": "se5_eagle_m14_03",
+            "name": "Stone Eagle 3",
+            "location": "Base of a chimney on the southern side of the map."
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "se5_wb_m14_01",
+            "name": "Workbench 1",
+            "location": "Reached through an air vent on the upper level of a building south of the docks."
+          },
+          {
+            "id": "se5_wb_m14_02",
+            "name": "Workbench 2",
+            "location": "North-west, slightly below the dark-marked building; take the key from the Letter 1 room, go to the bottom floor, enter the side area, and unlock the first door."
+          },
+          {
+            "id": "se5_wb_m14_03",
+            "name": "Workbench 3",
+            "location": "South, behind a wall with a gap you can slide under; take down the barricade to reach it."
+          }
+        ]
       },
       "region": "Finistère, Brittany",
       "date": "September 21st 1944",
@@ -2270,5 +2359,19 @@
       "support": 8
     },
     "note": "Multiplayer: Tactics 12, Performance 12 and Support 8 are complete. \"combat\" is a placeholder name for the first category (header not captured); 11 of its ribbons recorded so far. multiplayer_unverified holds older entries not seen in game."
+  },
+  "art": {
+    "poster": "https://cdn.cloudflare.steamstatic.com/steam/apps/1029690/library_600x900_2x.jpg",
+    "wallpaper": "https://cdn.cloudflare.steamstatic.com/steam/apps/1029690/library_hero.jpg",
+    "note": "Page background: poster on phones, wallpaper on wide screens. Falls back to image_url if these fail to load."
+  },
+  "campaign_rank": {
+    "max": 50,
+    "trophyId": 52,
+    "trophyIds": [
+      50,
+      52
+    ],
+    "note": "Campaign/XP rank. Filled from the PSN trophies Climbing the Ranks (rank 40) and Sniper Veteran (rank 50)."
   }
 }

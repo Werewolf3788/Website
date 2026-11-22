@@ -10,6 +10,10 @@
  * ============================================================================ -->
 <html lang="en">
 <head>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="psn-communication-id" content="NPWR12514_00">
@@ -39,6 +43,7 @@
         'allow_google_signals': true,
         'cookie_flags': 'SameSite=None;Secure'
       });
+      gtag('config', 'G-JDNSLD3GFE');   // second Google tag
     </script>
 
     <!-- Relative Protocol External Stylesheet -->
@@ -443,6 +448,10 @@
             letter-spacing: 0.05em;
         }
     </style>
+    <link rel="stylesheet" href="assets/ww-shell.css">
+    <script src="assets/menu-sheet.js"></script>
+    <style id="ww-reserve">html:not(.ww-bar-ready) body::before{content:"";display:block;height:60px}</style>
+    <script defer src="assets/ww-shell.js"></script>
 </head>
 <body data-active-user="Werewolf">
     <!-- Google Tag Manager (noscript) -->
@@ -453,7 +462,7 @@
 
     <div class="container tracker-container">
         <!-- Section 1: Dynamic Top Navigation Bar (Sourced from /utm_links) -->
-        <header class="nav-wrapper-centered" role="banner">
+        <header data-ww-legacy-nav class="nav-wrapper-centered" role="banner">
             <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleNavFolder('dynamic-nav-links', event)" aria-label="Toggle Navigation Menu">
                 <span class="sandwich-icon">☰</span>
                 <span class="sandwich-label">Menu</span>

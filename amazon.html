@@ -1,2229 +1,1043 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entertainment &amp; Affiliate Deals Hub</title>
-
-  <!-- PWA & Mobile Web App Meta Tags -->
-  <meta name="theme-color" content="#1b2128">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Deals Hub">
-
-  <!-- Google Tag Manager (Deploying GA4: G-CTYHDF4MSD) -->
-  <!-- Accounting for Enhanced Measurement, Google Signals, 14-month data retention, and internal traffic filters -->
-  <script>
-    // Line 18: Google Tag Manager Data Layer & Tag Initialization
-    // Account: G-CTYHDF4MSD | 2026-10-03 15:10 EDT
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-CTYHDF4MSD', {
-      send_page_view: true,
-      cookie_flags: 'SameSite=None;Secure'
-    });
-
-    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','G-CTYHDF4MSD');
-  </script>
-
-  <style>
-    /* Line 37: CSS Variables - Default to Glossy Dark High-Contrast Aesthetic */
-    :root {
-      --bg-dark: #0a0d12;
-      --card-bg: #161b22;
-      --card-border: #30363d;
-      --text-main: #f0f6fc;
-      --text-muted: #8b949e;
-      --header-bg: linear-gradient(180deg, #1b2128 0%, #11151b 100%);
-      --accent: #ff9900;
-      --accent-glow: rgba(255, 153, 0, 0.45);
-      --prime-blue: #00a8e1;
-      --prime-glow: rgba(0, 168, 225, 0.4);
-      --badge-red: #ff3b30;
-      --sale-glow: 0 0 15px rgba(255, 59, 48, 0.5), 0 0 30px rgba(255, 153, 0, 0.25);
-      --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Line 54: Automatic System / OS Light Mode Integration via Media Query */
-    @media (prefers-color-scheme: light) {
-      :root:not(.dark-theme) {
-        --bg-dark: #f6f8fa;
-        --card-bg: #ffffff;
-        --card-border: #d0d7de;
-        --text-main: #1f2328;
-        --text-muted: #57606a;
-        --header-bg: linear-gradient(180deg, #ffffff 0%, #eaeef2 100%);
-        --card-shadow: 0 4px 15px rgba(140, 149, 159, 0.2);
-      }
-    }
-
-    /* Explicit Class Overrides for User Toggle Preferences */
-    body.light-theme {
-      --bg-dark: #f6f8fa;
-      --card-bg: #ffffff;
-      --card-border: #d0d7de;
-      --text-main: #1f2328;
-      --text-muted: #57606a;
-      --header-bg: linear-gradient(180deg, #ffffff 0%, #eaeef2 100%);
-      --card-shadow: 0 4px 15px rgba(140, 149, 159, 0.2);
-    }
-
-    body.dark-theme {
-      --bg-dark: #0a0d12;
-      --card-bg: #161b22;
-      --card-border: #30363d;
-      --text-main: #f0f6fc;
-      --text-muted: #8b949e;
-      --header-bg: linear-gradient(180deg, #1b2128 0%, #11151b 100%);
-      --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      overflow-x: hidden;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    /* Line 106: Header Layout */
-    header {
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--card-border);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 12px 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      transition: background 0.3s ease, border-color 0.3s ease;
-    }
-
-    .nav-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .brand-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-
-    .brand-title span {
-      color: var(--accent);
-    }
-
-    /* Line 139: Instant Search Input */
-    .search-wrapper {
-      flex: 1;
-      max-width: 380px;
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-input {
-      width: 100%;
-      background: var(--bg-dark);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      padding: 10px 16px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      outline: none;
-      transition: all 0.2s ease;
-      min-height: 44px;
-    }
-
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    .search-clear-btn {
-      position: absolute;
-      right: 12px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: none;
-      min-width: 32px;
-      min-height: 32px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    /* Line 186: PWA Install Button */
-    .pwa-install-btn {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(180deg, #ff9900 0%, #e68a00 100%);
-      color: #111;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      min-height: 44px;
-      box-shadow: 0 2px 10px var(--accent-glow);
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
-
-    .pwa-install-btn:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
-    }
-
-    /* Line 210: Google Translate Gadget */
-    #google_translate_element {
-      display: inline-block;
-    }
-
-    .goog-te-gadget-simple {
-      background-color: var(--card-bg) !important;
-      border: 1px solid var(--card-border) !important;
-      padding: 6px 10px !important;
-      border-radius: 6px !important;
-      font-size: 0.85rem !important;
-      min-height: 40px !important;
-      display: inline-flex !important;
-      align-items: center !important;
-    }
-
-    .goog-te-gadget-simple span {
-      color: var(--text-main) !important;
-    }
-
-    .goog-te-gadget-icon {
-      margin-right: 6px !important;
-    }
-
-    /* Line 233: Theme Toggle Button */
-    .theme-toggle-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.2rem;
-      transition: all 0.2s ease;
-    }
-
-    .theme-toggle-btn:hover {
-      border-color: var(--accent);
-    }
-
-    /* Line 250: Primary Navigation Tabs */
-    .tab-pills {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-btn {
-      background: transparent;
-      border: 1px solid var(--card-border);
-      color: var(--text-muted);
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      user-select: none;
-    }
-
-    .nav-btn:hover, .nav-btn.active {
-      background: var(--accent);
-      color: #111;
-      border-color: var(--accent);
-      box-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    .nav-btn[data-view="movies"].active {
-      background: var(--prime-blue);
-      border-color: var(--prime-blue);
-      box-shadow: 0 0 10px var(--prime-glow);
-      color: #fff;
-    }
-
-    /* Line 288: Subfolder Dropdown on Home */
-    .dropdown-container {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .dropdown-arrow-btn {
-      background: transparent;
-      border: none;
-      color: inherit;
-      font-size: 0.75rem;
-      margin-left: 6px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 4px;
-      height: 100%;
-    }
-
-    .category-dropdown-menu {
-      display: none;
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      min-width: 200px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-      z-index: 1100;
-      padding: 6px;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-
-    .category-dropdown-menu.show {
-      display: block;
-    }
-
-    .dropdown-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      color: var(--text-main);
-      font-size: 0.85rem;
-      font-weight: 500;
-      text-decoration: none;
-      border-radius: 8px;
-      transition: background 0.2s ease, color 0.2s ease;
-      cursor: pointer;
-      min-height: 40px;
-    }
-
-    .dropdown-item:hover, .dropdown-item.active {
-      background: rgba(255, 153, 0, 0.15);
-      color: var(--accent);
-    }
-
-    .dropdown-item-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--item-dot-color, var(--accent));
-      display: inline-block;
-      margin-right: 8px;
-    }
-
-    /* Line 352: Header Announcement Banner (Placement: header_banner) */
-    .header-placement-banner {
-      background: linear-gradient(90deg, #ff9900 0%, #ff5e00 100%);
-      color: #111;
-      padding: 10px 24px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      position: relative;
-      z-index: 997;
-    }
-
-    .header-placement-banner a {
-      background: #111;
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-size: 0.8rem;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    /* Line 379: Layout Wrappers */
-    .content-layout-wrapper {
-      max-width: 1400px;
-      margin: 0 auto;
-      width: 100%;
-      display: flex;
-      gap: 24px;
-      padding: 24px 16px;
-      flex: 1;
-    }
-
-    #catalogRoot {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 36px;
-    }
-
-    /* Line 398: Sidebar Placement Rail */
-    .sidebar-placement-rail {
-      width: 300px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .sidebar-header h3 {
-      font-size: 1rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--card-border);
-      padding-bottom: 8px;
-    }
-
-    .sidebar-card-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .sidebar-mini-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 12px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      cursor: pointer;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-      box-shadow: var(--card-shadow);
-    }
-
-    .sidebar-mini-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
-    }
-
-    .sidebar-mini-card img {
-      width: 64px;
-      height: 64px;
-      object-fit: cover;
-      border-radius: 6px;
-      background: #000;
-      flex-shrink: 0;
-    }
-
-    .sidebar-mini-details {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
-    }
-
-    .sidebar-mini-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Line 465: Catalog Section Headers & Horizontal Carousels */
-    .catalog-section {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      position: relative;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 14px;
-      border-radius: 8px;
-      background: var(--card-bg);
-      border-left: 6px solid var(--cat-color, var(--card-border));
-      box-shadow: var(--card-shadow);
-      border-top: 1px solid var(--card-border);
-      border-right: 1px solid var(--card-border);
-      border-bottom: 1px solid var(--card-border);
-    }
-
-    .section-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--cat-color, var(--text-main));
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .view-all-btn {
-      background: transparent;
-      border: none;
-      color: var(--cat-color, var(--accent));
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 4px;
-      text-decoration: none;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .view-all-btn:hover {
-      text-decoration: underline;
-    }
-
-    .carousel-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .carousel-track {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      padding: 8px 4px 16px 4px;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-
-    .carousel-track::-webkit-scrollbar {
-      display: none;
-    }
-
-    .carousel-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 10;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      font-size: 1.5rem;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
-      box-shadow: var(--card-shadow);
-      transition: all 0.2s ease;
-    }
-
-    .carousel-arrow:hover {
-      background: var(--accent);
-      color: #111;
-      border-color: var(--accent);
-    }
-
-    .carousel-arrow.left { left: -12px; }
-    .carousel-arrow.right { right: -12px; }
-
-    /* Line 562: Card Component Structure */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-top: 3px solid var(--cat-color, var(--card-border));
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      flex: 0 0 260px;
-      box-shadow: var(--card-shadow);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-      border-color: var(--cat-color, #58a6ff);
-    }
-
-    .card.prime-glow-deal {
-      border: 2px solid var(--badge-red);
-      box-shadow: var(--sale-glow);
-      animation: pulseBorder 2.5s infinite alternate;
-    }
-
-    @keyframes pulseBorder {
-      0% { box-shadow: 0 0 10px rgba(255, 59, 48, 0.4), 0 0 20px rgba(255, 153, 0, 0.2); }
-      100% { box-shadow: 0 0 20px rgba(255, 59, 48, 0.8), 0 0 35px rgba(255, 153, 0, 0.45); }
-    }
-
-    .card-media {
-      width: 100%;
-      height: 280px;
-      background: #000;
-      position: relative;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card-media img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .badge-pill {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: var(--badge-red);
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-      z-index: 2;
-    }
-
-    .badge-pill.prime {
-      background: var(--prime-blue);
-    }
-
-    .card-content {
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-
-    .meta-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-
-    .meta-badge {
-      border: 1px solid var(--card-border);
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: var(--bg-dark);
-      color: var(--text-muted);
-    }
-
-    .meta-badge.edition {
-      color: var(--accent);
-      border-color: rgba(255, 153, 0, 0.4);
-      font-weight: 600;
-    }
-
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 6px;
-      line-height: 1.3;
-      cursor: pointer;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      min-height: 2.5em;
-    }
-
-    .card-title:hover {
-      color: var(--cat-color, var(--accent));
-    }
-
-    .card-desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-      flex: 1;
-      margin-bottom: 12px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .tag-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-bottom: 12px;
-    }
-
-    .tag-pill {
-      background: var(--bg-dark);
-      color: var(--text-muted);
-      font-size: 0.68rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--card-border);
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 6px;
-      margin-top: auto;
-    }
-
-    .cta-btn {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(180deg, #ff9900 0%, #e68a00 100%);
-      color: #111;
-      font-weight: 700;
-      font-size: 0.8rem;
-      text-decoration: none;
-      padding: 8px;
-      border-radius: 6px;
-      min-height: 44px;
-      transition: opacity 0.2s ease;
-      cursor: pointer;
-      border: none;
-    }
-
-    .cta-btn.movie-btn {
-      background: linear-gradient(180deg, #00a8e1 0%, #0082af 100%);
-      color: #fff;
-    }
-
-    .cta-btn.details-btn {
-      background: var(--bg-dark);
-      color: var(--text-main);
-      border: 1px solid var(--card-border);
-      flex: 0 0 70px;
-    }
-
-    .cta-btn:hover {
-      opacity: 0.9;
-    }
-
-    /* Line 731: Grid Layout Mode */
-    .grid-view-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .grid-view-container .card {
-      flex: initial;
-      width: 100%;
-    }
-
-    /* Line 742: Lightbox Modal Structure */
-    .lightbox-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      backdrop-filter: blur(4px);
-    }
-
-    .lightbox-modal.active {
-      display: flex;
-    }
-
-    .lightbox-content {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      max-width: 760px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 24px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
-    }
-
-    .lightbox-header {
-      display: flex;
-      gap: 20px;
-    }
-
-    .lightbox-poster {
-      width: 200px;
-      height: 290px;
-      object-fit: cover;
-      border-radius: 6px;
-      flex-shrink: 0;
-      background: #000;
-    }
-
-    .lightbox-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .lightbox-field {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    .lightbox-field strong {
-      color: var(--text-main);
-    }
-
-    .lightbox-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: transparent;
-      border: none;
-      color: var(--text-main);
-      font-size: 1.8rem;
-      cursor: pointer;
-      min-width: 44px;
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Line 817: iOS PWA Installation Prompt Sheet */
-    .ios-install-banner {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--card-bg);
-      border: 1px solid var(--accent);
-      border-radius: 12px;
-      padding: 16px 20px;
-      max-width: 400px;
-      width: calc(100% - 32px);
-      z-index: 3000;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-      font-size: 0.88rem;
-      line-height: 1.5;
-      text-align: center;
-    }
-
-    .ios-install-banner.show {
-      display: block;
-    }
-
-    .ios-install-close {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    /* Line 854: Footer Persistent Details */
-    footer {
-      background: var(--header-bg);
-      border-top: 1px solid var(--card-border);
-      padding: 16px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-align: center;
-      margin-top: auto;
-    }
-
-    /* Line 864: Mobile and Tablet Responsive Architecture */
-    @media (max-width: 1024px) {
-      .content-layout-wrapper {
-        flex-direction: column;
-      }
-      .sidebar-placement-rail {
-        width: 100%;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .carousel-arrow {
-        display: none;
-      }
-      .card {
-        flex: 0 0 85%;
-      }
-      .lightbox-header {
-        flex-direction: column;
-        align-items: center;
-      }
-      .lightbox-poster {
-        width: 100%;
-        max-width: 220px;
-        height: auto;
-      }
-      .search-wrapper {
-        order: 3;
-        max-width: 100%;
-        width: 100%;
-      }
-    }
-  </style>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Werewolf Deals Hub – Amazon Picks, Deals & Movies</title>
+<meta name="description" content="Hand-picked Amazon deals, gaming gear, home finds and movies from the Werewolf entertainment hub. Updated live.">
+<meta name="theme-color" content="#0b0e13">
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-CTYHDF4MSD', { cookie_flags: 'SameSite=None;Secure' });
+</script>
+
+<link rel="preconnect" href="https://docs.google.com">
+<link rel="preconnect" href="https://smlc-fuel-monitor-default-rtdb.firebaseio.com">
+
+<style>
+:root{
+  --bg:#0b0e13; --panel:#141922; --panel2:#1b212c; --line:#2a3240; --text:#eef2f7; --muted:#97a1b2;
+  --accent:#ff9900; --accent-ink:#111; --prime:#00a8e1; --hot:#ff3b30; --ok:#2ecc71;
+  --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.45);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+a{color:inherit}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit}
+
+/* Page width: ~80vw on desktop, full width on phones */
+.wrap{width:min(1600px,80vw);margin:0 auto}
+@media (max-width:1100px){.wrap{width:calc(100% - 32px)}}
+
+/* ---------- top / hero ---------- */
+.hero{padding:22px 0 8px}
+.hero h1{font-size:clamp(24px,3vw,36px);font-weight:800;letter-spacing:.3px}
+.hero h1 span{color:var(--accent)}
+.live-dot{font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--muted);vertical-align:middle;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin-left:6px;opacity:.6}
+.live-dot.on{color:var(--ok);border-color:var(--ok);opacity:1}
+.hero p{color:var(--muted);margin-top:4px;max-width:70ch}
+.disclosure{margin-top:10px;font-size:12.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:inline-block}
+
+.spotlight{display:none;margin:14px 0 0;background:linear-gradient(90deg,#ff9900,#ff5e00);color:#111;border-radius:12px;padding:10px 14px;align-items:center;gap:12px;font-weight:700}
+.spotlight.show{display:flex}
+.spotlight .s-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spotlight a{background:#111;color:#fff;text-decoration:none;padding:9px 14px;border-radius:8px;font-size:13px;white-space:nowrap}
+
+/* ---------- toolbar ---------- */
+.toolbar{position:sticky;top:var(--ww-bar-h,0px);z-index:20;background:rgba(11,14,19,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin-top:14px}
+.toolbar-inner{display:flex;gap:10px;align-items:center;padding:10px 0;flex-wrap:wrap}
+.search{flex:1 1 280px;position:relative}
+.search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:11px 40px 11px 16px;font-size:15px;outline:none;min-height:44px}
+.search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,153,0,.2)}
+.search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);font-size:20px;width:34px;height:34px;cursor:pointer;display:none}
+.sort{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:0 14px;min-height:44px;font-size:14px}
+.chipbar{position:relative;display:flex;align-items:center;gap:6px;padding:0 0 10px}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;scroll-behavior:smooth;cursor:grab;user-select:none}
+.chips.drag{cursor:grabbing;scroll-behavior:auto}
+.chips.drag .chip{pointer-events:none}
+.chip-arrow{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center}
+.chip-arrow:hover{border-color:var(--accent);color:var(--accent)}
+.chip-arrow[hidden]{display:none}
+@media (pointer:coarse){.chip-arrow{display:none}}
+
+/* ---------- events + countdowns ---------- */
+.events{display:none;margin-top:14px}
+.events.show{display:block}
+.events h2{font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px}
+.ev-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ev{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--evc,var(--accent));border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;transition:border-color .15s,transform .15s}
+.ev:hover{transform:translateY(-2px);border-color:var(--accent)}
+.ev.live{border-left-color:var(--evc,var(--hot));box-shadow:0 0 0 1px var(--evc,var(--hot)),0 0 18px color-mix(in srgb,var(--evc,var(--hot)) 35%,transparent)}
+.ev .ev-name .ev-pill{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.ev .ev-name{font-weight:800;font-size:16px}
+.ev .ev-dates{color:var(--muted);font-size:12.5px}
+.ev .ev-cd{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--evc,var(--accent));margin-top:2px}
+.ev .ev-n{font-size:12px;color:var(--muted)}
+.ev-banner{margin-top:10px;display:flex;justify-content:center;align-items:center;background:#fff;border-radius:8px;overflow:hidden;cursor:pointer}
+.ev-banner a{display:block;line-height:0}
+.ev-banner img,.ev-banner iframe{max-width:100%;height:auto;display:block;border:0}
+.ev-banner:empty{display:none}
+.ev-shop{margin-top:10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:9px;background:linear-gradient(180deg,#ffa31a,#e68a00);color:#111;font-weight:800;font-size:13px;text-decoration:none}
+.ev-links{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.ev-links .ev-shop{margin-top:6px;width:100%}
+.ev.live .ev-shop{background:var(--evbg);color:var(--evfg);box-shadow:0 0 0 2px var(--evc)}
+.cdline{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:800;font-size:14px;margin-left:8px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:38px;display:inline-flex;align-items:center;gap:6px}
+.chip .n{opacity:.7;font-weight:500}
+.chip:hover{color:var(--text)}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.movies.on{background:var(--prime);border-color:var(--prime);color:#fff}
+.chip.hot.on{background:var(--hot);border-color:var(--hot);color:#fff}
+
+/* ---------- sections ---------- */
+main{flex:1;padding:18px 0 40px}
+.section{margin-bottom:34px}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+.section-head h2{font-size:20px;font-weight:800;display:flex;align-items:center;gap:8px}
+.section-head h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--c,var(--accent))}
+.section-head .more{background:none;border:0;color:var(--c,var(--accent));font-weight:700;cursor:pointer;font-size:14px;padding:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,240px);gap:16px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.row > *{scroll-snap-align:start}
+
+/* ---------- card ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c,var(--line));border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--c,#58a6ff)}
+.card.live{border-color:var(--live,var(--hot));box-shadow:0 0 0 1px var(--live,var(--hot)),0 0 22px color-mix(in srgb,var(--live,var(--hot)) 45%,transparent)}
+.media{aspect-ratio:1/1;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.media img{width:100%;height:100%;object-fit:contain;padding:12px}
+.card.movie .media{aspect-ratio:2/3;background:#000}
+.card.movie .media img{object-fit:cover;padding:0}
+.media .ph{color:#999;font-size:13px}
+.badge{position:absolute;top:8px;left:8px;background:var(--hot);color:#fff;font-size:11px;font-weight:800;text-transform:uppercase;padding:4px 8px;border-radius:6px;letter-spacing:.3px}
+.badge.prime{background:var(--prime)}
+.badge.feat{background:var(--accent);color:#111}
+.badge.soon{background:#1f6feb;color:#fff}
+.badge .cd-sub{display:block;font-size:10.5px;font-weight:700;text-transform:none;letter-spacing:0;margin-top:2px;opacity:.95;font-variant-numeric:tabular-nums}
+.badge .cd-sub b{font-weight:800}
+.body{padding:12px 13px 13px;display:flex;flex-direction:column;gap:6px;flex:1}
+.meta{display:flex;gap:6px;flex-wrap:wrap;font-size:11.5px}
+.pill{border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted);background:var(--bg)}
+.pill.cat{color:var(--c);border-color:var(--c);cursor:pointer}
+.title{font-size:14.5px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;min-height:2.6em}
+.title:hover{color:var(--c,var(--accent))}
+.desc{font-size:12.5px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.actions{display:flex;gap:6px;margin-top:auto;padding-top:6px}
+.btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;border-radius:9px;font-weight:800;font-size:13.5px;text-decoration:none;border:0;cursor:pointer;background:linear-gradient(180deg,#ffa31a,#e68a00);color:#111}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{flex:0 0 auto;padding:0 12px;background:var(--panel2);color:var(--text);border:1px solid var(--line);font-weight:700}
+.btn.prime{background:linear-gradient(180deg,#14b5ec,#0085b3);color:#fff}
+
+.loadmore{display:flex;justify-content:center;margin-top:18px}
+.loadmore button{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:12px 22px;font-weight:700;cursor:pointer;min-height:44px}
+.empty{color:var(--muted);text-align:center;padding:60px 0}
+.skeleton{background:linear-gradient(90deg,var(--panel) 0%,var(--panel2) 50%,var(--panel) 100%);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:var(--radius);height:360px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ---------- details modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px}
+.modal.open{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:860px;width:100%;max-height:90vh;overflow:auto;position:relative;box-shadow:var(--shadow)}
+.sheet-in{display:grid;grid-template-columns:300px 1fr;gap:22px;padding:22px}
+.sheet-img{background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;min-height:300px}
+.sheet-img img{max-height:420px;object-fit:contain;padding:10px}
+.sheet.movie .sheet-img{background:#000}
+.sheet.movie .sheet-img img{padding:0}
+.sheet h3{font-size:21px;line-height:1.25;margin-bottom:8px;padding-right:36px}
+.sheet .full{white-space:pre-line;color:#cfd6e0;font-size:14px;margin:10px 0 16px}
+.sheet .btn{display:inline-flex;min-width:220px;padding:0 22px}
+.x{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);cursor:pointer;font-size:22px;line-height:1}
+
+/* Background translator: hide Google's bar/tooltips, keep the page where it is */
+.goog-te-banner-frame,.skiptranslate>iframe,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip{display:none!important}
+body{top:0!important}
+font[style]{background:transparent!important;box-shadow:none!important}
+footer{border-top:1px solid var(--line);padding:18px 0 calc(18px + var(--safe-b));color:var(--muted);font-size:12.5px;text-align:center}
+footer a{color:var(--muted)}
+
+/* ---------- sidebar rail + carousel ---------- */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:26px;align-items:start}
+.layout.no-rail{grid-template-columns:minmax(0,1fr)}
+.rail{position:sticky;top:calc(var(--ww-bar-h,0px) + 130px);padding-top:18px}
+.rail[hidden]{display:none}
+.rail-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.rail-head h2{font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);font-weight:800}
+.rail-nav{display:flex;gap:6px}
+.rail-nav button{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:18px;line-height:1}
+.rail-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.carousel{overflow:hidden;border-radius:var(--radius);touch-action:pan-y}
+.carousel-track{display:flex;transition:transform .45s ease}
+.carousel-track > .card{flex:0 0 100%;transform:none!important}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.dots button{width:8px;height:8px;border-radius:50%;border:0;background:var(--line);cursor:pointer;padding:0}
+.dots button.on{background:var(--accent);width:20px;border-radius:999px}
+.rail .card .desc{-webkit-line-clamp:3}
+@media (max-width:1100px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;order:-1;padding-top:16px;max-width:520px;width:100%;margin:0 auto}
+}
+
+@media (max-width:767px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .row{grid-auto-columns:46%}
+  .sheet-in{grid-template-columns:1fr;padding:16px}
+  .sheet-img{min-height:220px}
+  .title{font-size:13.5px}
+  .desc{display:none}
+  .btn.ghost{display:none}
+  main{padding-bottom:calc(90px + var(--safe-b))}
+}
+</style>
+<link rel="stylesheet" href="assets/ww-shell.css">
+<script src="assets/menu-sheet.js"></script>
+<style id="ww-reserve">html:not(.ww-bar-ready) body::before{content:"";display:block;height:60px}</style>
+<script defer src="assets/ww-shell.js"></script>
 </head>
 <body>
 
-  <!-- Reunified Navigation Header with Home Dropdown, Prime Video, Deals Hub & Install PWA CTA -->
-  <header>
-    <div class="nav-container">
-      <div class="brand-title" id="brandTitle">MEDIA &amp; DEALS <span>HUB</span></div>
+<div class="wrap hero">
+  <h1>Werewolf <span>Deals Hub</span> <small class="live-dot" id="liveDot" title="Live updates">● LIVE</small></h1>
+  <p>Hand-picked Amazon finds, gaming gear, home deals and movies. Updated live from my list.</p>
+  <div class="disclosure">As an Amazon Associate I earn from qualifying purchases. Prices and availability are shown on Amazon.</div>
+  <div class="spotlight" id="spotlight"></div>
+  <div class="events" id="events"><h2>Upcoming events</h2><div class="ev-row" id="evRow"></div></div>
+</div>
 
-      <!-- Instant Search Filter -->
-      <div class="search-wrapper">
-        <input type="text" id="siteSearch" class="search-input" placeholder="Search movies, deals, tags, studio, edition...">
-        <button id="searchClear" class="search-clear-btn" aria-label="Clear Search">&times;</button>
+<div class="toolbar">
+  <div class="wrap">
+    <div class="toolbar-inner">
+      <div class="search">
+        <input id="q" type="search" placeholder="Search deals, movies, categories…" autocomplete="off" aria-label="Search">
+        <button id="qx" aria-label="Clear search">×</button>
       </div>
-
-      <div class="header-actions">
-        <!-- Google Translate Dropdown -->
-        <div id="google_translate_element"></div>
-
-        <!-- PWA Home Screen Install Button -->
-        <button id="pwaInstallBtn" class="pwa-install-btn" aria-label="Install App to Home Screen">
-          📲 Install App
-        </button>
-
-        <!-- System-Aware Light/Dark Mode Switcher -->
-        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Theme">🌓</button>
-
-        <!-- Navigation Tabs with Subfolder Dropdown on Home -->
-        <nav class="tab-pills" id="primaryNav">
-          <div class="dropdown-container" id="homeDropdownContainer">
-            <button class="nav-btn active" id="homeMainBtn" data-view="home">
-              Home <span class="dropdown-arrow-btn" id="homeMenuTrigger">▼</span>
-            </button>
-            <div class="category-dropdown-menu" id="homeCategoryMenu">
-              <a class="dropdown-item" data-cat="all">
-                <span>All Categories</span>
-              </a>
-              <!-- Subfolder category items injected dynamically -->
-              <div id="homeCategorySubfolderList"></div>
-            </div>
-          </div>
-          <button class="nav-btn" data-view="movies">Prime Video</button>
-          <button class="nav-btn" data-view="deals">Deals Hub</button>
-        </nav>
-      </div>
+      <select id="sort" class="sort" aria-label="Sort">
+        <option value="new">Newest</option>
+        <option value="az">A – Z</option>
+        <option value="cat">Category</option>
+      </select>
     </div>
-  </header>
-
-  <!-- Sticky Top Announcement Banner (placement: header_banner) -->
-  <div id="headerBannerArea" class="header-placement-banner" style="display: none;"></div>
-
-  <!-- Content Layout: Main Catalog & Featured Sidebar -->
-  <div class="content-layout-wrapper">
-    <main id="catalogRoot">
-      <!-- Initial Loading Placeholder -->
-      <div id="loadingIndicator" style="text-align: center; color: var(--text-muted); padding: 60px 0;">
-        Loading live catalog...
-      </div>
-    </main>
-
-    <!-- Sidebar Rail (placement: sidebar) -->
-    <aside id="sidebarArea" class="sidebar-placement-rail" style="display: none;">
-      <div class="sidebar-header">
-        <h3>Featured Picks</h3>
-      </div>
-      <div id="sidebarList" class="sidebar-card-list"></div>
-    </aside>
-  </div>
-
-  <!-- Detailed Lightbox Modal -->
-  <div id="lightbox" class="lightbox-modal">
-    <div class="lightbox-content">
-      <button class="lightbox-close" id="lightboxClose" aria-label="Close modal">&times;</button>
-      <div class="lightbox-header">
-        <img id="lbPoster" class="lightbox-poster" src="">
-        <div class="lightbox-info">
-          <h2 id="lbTitle" style="color: var(--text-main); font-size: 1.4rem;"></h2>
-          <div class="meta-row" id="lbMetaRow"></div>
-          <div class="tag-container" id="lbTags"></div>
-          
-          <!-- Dedicated Lightbox Fields -->
-          <div id="lbExtraFields" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px;"></div>
-          
-          <p id="lbDesc" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;"></p>
-        </div>
-      </div>
-      <a id="lbOutboundBtn" class="cta-btn" href="#" target="_blank" rel="noopener noreferrer">
-        Watch on Prime Video
-      </a>
+    <div class="chipbar">
+      <button class="chip-arrow" id="chipL" aria-label="Scroll categories left" hidden>‹</button>
+      <div class="chips" id="chips"></div>
+      <button class="chip-arrow" id="chipR" aria-label="Scroll categories right">›</button>
     </div>
   </div>
+</div>
 
-  <!-- iOS Add to Home Screen Instructions Modal -->
-  <div id="iosInstallBanner" class="ios-install-banner">
-    <button id="iosInstallClose" class="ios-install-close" aria-label="Dismiss">&times;</button>
-    <strong>Install to your Home Screen:</strong><br>
-    Tap the Share icon <span style="font-size:1.1rem;">⎋</span> below, then scroll and select <strong>"Add to Home Screen" (+)</strong> for instant access.
+<div class="wrap layout" id="layout">
+  <main id="root">
+    <div class="grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+  </main>
+  <aside class="rail" id="rail" hidden aria-label="Sidebar picks"></aside>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+</div>
+
+<footer>
+  <div class="wrap">
+    As an Amazon Associate I earn from qualifying purchases. Product details come from Amazon; check Amazon for the current price.
+    · <a href="security/privacy.html">Privacy Policy</a>
   </div>
+</footer>
 
-  <!-- Footer with Persistent 24-hr NY Timestamp & Version Number -->
-  <footer>
-    <div id="affiliateDisclosure" style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 6px;">As an Amazon Associate I earn from qualifying purchases. Amazon links on this page are affiliate links.</div>
-    <div id="footerTimestamp">Version 2.5.0 | Deployed: 2026-10-03 15:10 EDT</div>
-  </footer>
+<script>
+/* =========================================================================
+   Werewolf Deals Hub
+   Deals:  smlc-fuel-monitor RTDB /deals  (fed by the "Amazon" Google Sheet)
+   Movies: published movie-list CSV (same sheet as Movies.html), titles that
+           have an Amazon link only
+   ========================================================================= */
+const CFG = {
+  dealsUrl: 'https://smlc-fuel-monitor-default-rtdb.firebaseio.com/deals.json',
+  // Movie Guide > "Amazon" tab: the list of titles you own on Amazon (Url column = the link)
+  amazonMoviesCsv: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?gid=1523070097&single=true&output=csv',
+  // Movie Guide main list (same CSV as Movies.html): used to add posters, year, genre, description
+  moviesCsv: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?gid=1831790548&single=true&output=csv',
+  movieTag: 'moviesanywhere02-20',
+  refreshMs: 10 * 60 * 1000,
+  pageSize: 48
+};
+// Main movie-list CSV columns (same as Movies.html)
+const MCOL = { id:0, posterArt:1, name:2, amazon:3, edition:10, collection:11, dateAdded:12, poster:13, runtime:15, genre:16, type:17, rating:18, description:19 };
 
-  <!-- Google Translate Official Scripts -->
-  <script type="text/javascript">
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-      }, 'google_translate_element');
+// Amazon's official sale windows. Put the name in event_tag (O) or holiday_month (K) and the
+// site uses these exact start/end times; you don't need start/end dates for these.
+// Black Friday Week and Cyber Monday are worked out for every year automatically:
+//   Black Friday Week = the Thursday one week before Thanksgiving, 12:01 AM PT (3:01 AM ET),
+//                       through Cyber Monday (end of day PT)
+//   Cyber Monday      = the Monday after Thanksgiving, 3:00 AM ET deal drop, through end of day PT
+// Event cards appear EVENT_SHOW_DAYS before an event starts and hide once it's over.
+const EVENT_SHOW_DAYS = 45;
+function thanksgiving(year) {           // 4th Thursday of November
+  const first = new Date(Date.UTC(year, 10, 1)).getUTCDay();   // 0 = Sunday
+  return 1 + ((4 - first + 7) % 7) + 21;                        // day of month
+}
+const isoET = (y, m, d, hh, mm, ss) => {                       // late November is always EST (-05:00)
+  const dt = new Date(Date.UTC(y, m - 1, d)); const p = n => String(n).padStart(2, '0');
+  return `${dt.getUTCFullYear()}-${p(dt.getUTCMonth() + 1)}-${p(dt.getUTCDate())}T${p(hh)}:${p(mm)}:${p(ss)}-05:00`;
+};
+function holidayEvents(year) {
+  const tg = thanksgiving(year);
+  return {
+    'black-friday': { start: isoET(year, 11, tg - 7, 3, 1, 0), end: isoET(year, 11, tg + 5, 2, 59, 59), label: 'Black Friday Week' },
+    'cyber-monday': { start: isoET(year, 11, tg + 4, 3, 0, 0),  end: isoET(year, 11, tg + 5, 2, 59, 59), label: 'Cyber Monday' }
+  };
+}
+function buildSchedule() {
+  // This year's dates until they're over, then next year's
+  const now = Date.now(), y = new Date().getFullYear();
+  const pick = key => { const a = holidayEvents(y)[key]; return Date.parse(a.end) >= now ? a : holidayEvents(y + 1)[key]; };
+  return {
+    // One-off events (fill in new dates when Amazon announces them)
+    'prime-days':       { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
+    'oct. prime deal':  { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
+    'oct. prime deals': { start: '2026-10-06T03:00:00-04:00', end: '2026-10-08T02:59:59-04:00', label: 'Prime Big Deal Days' },
+    // Every year, automatically
+    'black-friday': pick('black-friday'),
+    'cyber-monday': pick('cyber-monday')
+  };
+}
+const EVENT_SCHEDULE = buildSchedule();
+
+// Official Amazon Associates banner code for an event card (Associates Central > Product Linking > Banners).
+// Paste the whole code between the backticks. Leave empty for no banner.
+const EVENT_BANNERS = {
+  'black-friday-week': `<a href="https://www.amazon.com/blackfriday?tag=blackfriday71888-20" target="_blank" rel="nofollow sponsored noopener" data-evlink="black-friday-week" aria-label="Shop Amazon Black Friday deals"><img src="https://m.media-amazon.com/images/G/01/1c51f478fb9e4d33ad52f6f827cf9a31/DBSW-545-XPL-BF26-US-IMC-6356-BF-Masonry-224x258._CB764324150_.gif" alt="Amazon Black Friday deals" width="224" height="258" loading="lazy" referrerpolicy="no-referrer"></a>`,
+  'cyber-monday': `<a href="https://www.amazon.com/cybermonday?tag=blackfriday71888-20" target="_blank" rel="nofollow sponsored noopener" data-evlink="cyber-monday" aria-label="Shop Amazon Cyber Monday deals"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr5uVKF3lD-cdS-XrnB6NhkCr96r80hllAzPQ86uHEdg&s=10" alt="Cyber Monday deals" loading="lazy" referrerpolicy="no-referrer"></a>`
+};
+// "Shop" buttons on an event card: Amazon event pages, tagged for this event
+const EVENT_LINKS = {
+  'black-friday-week': [
+    { url: 'https://www.amazon.com/blackfriday?tag=blackfriday71888-20', text: '🛒 Shop all Black Friday deals' }
+  ],
+  'cyber-monday': [
+    { url: 'https://www.amazon.com/cybermonday?tag=blackfriday71888-20', text: '🛒 Shop all Cyber Monday deals' }
+  ]
+};
+// Colors for each event's badges, card glow and countdown card
+const EVENT_THEMES = {
+  'black-friday-week':   { bg: '#000000', fg: '#ffffff', ring: '#ff9900' },   // black + orange
+  'cyber-monday':        { bg: '#6d28d9', fg: '#ffffff', ring: '#22d3ee' },   // purple + cyan
+  'prime-big-deal-days': { bg: '#00a8e1', fg: '#ffffff', ring: '#ffd814' }    // Prime blue + yellow
+};
+function evTheme(key) {
+  if (EVENT_THEMES[key]) return EVENT_THEMES[key];
+  let h = 0; for (const ch of String(key || '')) h = ch.charCodeAt(0) + ((h << 5) - h);   // custom events: own color
+  const hue = Math.abs(h % 360);
+  return { bg: `hsl(${hue},70%,38%)`, fg: '#ffffff', ring: `hsl(${hue},85%,62%)` };
+}
+const evStyle = key => { const t = evTheme(key); return `background:${t.bg};color:${t.fg};box-shadow:0 0 0 2px ${t.ring}`; };
+
+// Show an "Ends in …" countdown on live items during the last part of an event
+const ENDING_SOON_HOURS = 48;
+const MOVIES_CAT = 'Movies & TV';
+
+/* ---------------- helpers ---------------- */
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const truthy = v => v === true || v === 1 || /^(true|yes|1)$/i.test(String(v ?? '').trim());
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const normKey = s => String(s || '').trim().toLowerCase().replace(/\s+/g, '-');
+const safeUrl = u => /^https?:\/\//i.test(String(u || '').trim()) ? String(u).trim() : '';
+
+function catColor(name) {
+  if (name === MOVIES_CAT) return 'var(--prime)';
+  let h = 0; for (const ch of String(name || '')) h = ch.charCodeAt(0) + ((h << 5) - h);
+  return `hsl(${Math.abs(h % 360)},80%,62%)`;
+}
+function track(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
+function cleanDesc(d) { return String(d || '').replace(/^\s*about this item\s*/i, '').trim(); }
+
+/* ---------------- deals ---------------- */
+// Which event an item belongs to (event_tag first, then holiday_month), with its dates
+function eventOf(item) {
+  let start = item.start_date || '', end = item.end_date || '', label = '', key = '';
+  for (const raw of [item.event_tag, item.holiday_month]) {
+    const k = normKey(raw), ev = EVENT_SCHEDULE[k];
+    if (ev) { key = ev.label.toLowerCase().replace(/\s+/g, '-'); label = ev.label; start = ev.start; end = ev.end; break; }
+  }
+  if (!label && item.event_tag) {
+    key = normKey(item.event_tag);
+    // "holiday-sale" -> "Holiday Sale"
+    label = String(item.event_tag).trim().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+  if (!label && (start || end)) { label = 'Limited-time deal'; key = 'limited-time'; }
+  return label ? { key, label, start, end } : null;
+}
+function saleInfo(item) {
+  const ev = eventOf(item);
+  if (!ev || (!ev.start && !ev.end)) return null;
+  return eventStatus(ev).state === 'live' ? { label: ev.label, end: ev.end } : null;
+}
+// Countdown helpers (event days run midnight-to-midnight in the visitor's time zone)
+// A plain date (YYYY-MM-DD) = midnight local; a full date-time (with T) = that exact moment
+const hasTime = d => /T\d/.test(d);
+const dayStart = d => { if (hasTime(d)) return Date.parse(d); const [y, m, dd] = d.split('-').map(Number); return new Date(y, m - 1, dd).getTime(); };
+const dayEnd = d => hasTime(d) ? Date.parse(d) : dayStart(d) + 86400000 - 1;
+function fmtLeft(ms) {
+  if (ms < 0) ms = 0;
+  const s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+  const p = n => String(n).padStart(2, '0');
+  return d > 0 ? `${d}d ${p(h)}h ${p(m)}m ${p(sec)}s` : `${p(h)}h ${p(m)}m ${p(sec)}s`;
+}
+const fmtDay = (d, isEnd) => {
+  try {
+    const t = isEnd ? dayEnd(d) : dayStart(d), dt = new Date(t);
+    const day = dt.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    if (!hasTime(d)) return day;
+    // Ends at the very end of a day: just show the date (of the last full day)
+    if (isEnd && dt.getHours() < 4) return new Date(t - 6 * 3600000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return day + ', ' + dt.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  } catch (e) { return d; }
+};
+function eventStatus(ev, now = Date.now()) {
+  const st = ev.start ? dayStart(ev.start) : -Infinity, en = ev.end ? dayEnd(ev.end) : Infinity;
+  if (now < st) return { state: 'soon', text: 'Starts in ' + fmtLeft(st - now) };
+  if (now <= en) return { state: 'live', text: en === Infinity ? 'Live now' : 'Live now · ends in ' + fmtLeft(en - now) };
+  return { state: 'over', text: 'Ended' };
+}
+function eventList() {
+  // Every scheduled event that hasn't ended, plus custom event_tags used in the sheet
+  const map = new Map();
+  for (const ev of Object.values(EVENT_SCHEDULE)) {
+    const key = ev.label.toLowerCase().replace(/\s+/g, '-');
+    if (!map.has(key)) map.set(key, { key, label: ev.label, start: ev.start, end: ev.end, n: 0, official: true });
+  }
+  S.deals.forEach(d => {
+    const e = d.event; if (!e) return;
+    if (!map.has(e.key)) map.set(e.key, { key: e.key, label: e.label, start: e.start, end: e.end, n: 0 });
+    const m = map.get(e.key); m.n++;
+    if (m.official) return; // Amazon's own times win for built-in events
+    if (e.start && (!m.start || dayStart(e.start) < dayStart(m.start))) m.start = e.start;
+    if (e.end && (!m.end || dayEnd(e.end) > dayEnd(m.end))) m.end = e.end;
+  });
+  const soon = Date.now() + EVENT_SHOW_DAYS * 86400000;
+  return [...map.values()]
+    .filter(e => (e.start || e.end) && eventStatus(e).state !== 'over')
+    .filter(e => !e.official || !e.start || dayStart(e.start) <= soon)
+    .sort((a, b) => (a.start ? dayStart(a.start) : 0) - (b.start ? dayStart(b.start) : 0));
+}
+function parseDeals(tree) {
+  const out = [];
+  if (!tree || typeof tree !== 'object') return out;
+  // The same item can be stored under more than one category (its category changed in the
+  // sheet). Keep only its newest copy; on a tie, prefer a real category over "Uncategorized".
+  const newest = new Map();
+  for (const [catKey, group] of Object.entries(tree)) {
+    if (!group || typeof group !== 'object') continue;
+    for (const [id, it] of Object.entries(group)) {
+      if (!it || typeof it !== 'object') continue;
+      const key = String(it.id || id).trim().toUpperCase();
+      const ts = Date.parse(it.updated_at || '') || 0;
+      const uncategorized = /^uncategori[sz]ed$/i.test(String(it.category || catKey).trim());
+      const prev = newest.get(key);
+      if (!prev || ts > prev.ts || (ts === prev.ts && prev.uncategorized && !uncategorized)) newest.set(key, { catKey, id, it, ts, uncategorized });
     }
-  </script>
-  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  }
+  const dedup = {};
+  for (const { catKey, id, it } of newest.values()) { (dedup[catKey] = dedup[catKey] || {})[id] = it; }
+  for (const [catKey, group] of Object.entries(dedup)) {
+    for (const [id, it] of Object.entries(group)) {
+      if (!it || !truthy(it.is_active)) continue;
+      const url = safeUrl(it.site_url);
+      if (!url) continue;
+      const category = String(it.category || catKey.replace(/-/g, ' ')).trim() || 'General';
+      const sale = saleInfo(it), event = eventOf(it);
+      const tags = Array.isArray(it.tags) ? it.tags : String(it.tags || '').split(',').map(s => s.trim()).filter(Boolean);
+      out.push({
+        kind: 'deal', id: it.id || id, title: String(it.title || '').trim() || 'Amazon pick',
+        desc: cleanDesc(it.description), img: safeUrl(it.image_url), url,
+        category, sub: String(it.sub_category || '').trim(), tags,
+        placement: String(it.placement || 'deals_page').trim().toLowerCase(),
+        sale, event, ts: Date.parse(it.updated_at || '') || 0
+      });
+    }
+  }
+  return out;
+}
 
-  <!-- PWA Manifest & Service Worker Registration Script -->
-  <script>
-    /**
-     * Line 1008: Dynamic PWA Manifest & Service Worker Initialization
-     */
-    (function initPWA() {
-      const manifestObject = {
-        name: "Media & Deals Hub",
-        short_name: "Deals Hub",
-        start_url: window.location.href.split("#")[0],
-        display: "standalone",
-        background_color: "#0a0d12",
-        theme_color: "#1b2128",
-        icons: [
-          {
-            src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ff9900'/%3E%3Cpath d='M30 70 L50 25 L70 70 Z' fill='%23111'/%3E%3C/svg%3E",
-            sizes: "192x192 512x512",
-            type: "image/svg+xml",
-            purpose: "any maskable"
-          }
-        ]
-      };
+/* ---------------- movies (CSV) ---------------- */
+function parseCsv(text) {
+  const rows = []; let row = [], field = '', q = false, i = text.charCodeAt(0) === 0xFEFF ? 1 : 0;
+  for (const n = text.length; i < n; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; } else field += c; continue; }
+    if (c === '"') q = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+    else if (c !== '\r') field += c;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+function parseDate(ds) {
+  const s = String(ds || '').trim(); if (!s) return 0;
+  const n = Number(s); if (!isNaN(n) && n > 20000 && n < 80000) return Math.floor((n - 25569) * 86400000);
+  const p = s.split(' ')[0].split(/[\/\-.]/);
+  if (p.length === 3) { let [m, d, y] = p.map(Number); if (p[0].length === 4) [y, m, d] = p.map(Number); else if (y < 100) y += 2000; const t = new Date(y, m - 1, d).getTime(); if (t) return t; }
+  const t2 = Date.parse(s); return isNaN(t2) ? 0 : t2;
+}
+function withTag(u) {
+  u = String(u || '').trim(); if (!u) return '';
+  if (/^\/\//.test(u)) u = 'https:' + u;
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u.replace(/^\/+/, '');
+  // Full amazon.com links get your movie tag; link.amazon / amzn.to short links already carry theirs
+  if (/(^|\.)amazon\.[a-z.]+\//i.test(u.replace(/^https?:\/\//i, '')) && !/[?&]tag=/.test(u)) u += (u.includes('?') ? '&' : '?') + 'tag=' + CFG.movieTag;
+  return u;
+}
+// Same ID cleaner as Movies.html, so both sheets' IDs match
+function cleanId(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim(); let m;
+  if ((m = s.match(/thetvdb\.com\/series\/[^\/]+\/episodes\/(\d+)/i))) return 'tvdb-ep-' + m[1];
+  if ((m = s.match(/thetvdb\.com\/series\/([^\/]+)\/seasons\/(?:official\/)?(\d+)/i))) return 'tvdb-slug-' + m[1] + '-s' + m[2];
+  if ((m = s.match(/thetvdb\.com\/series\/([^\/]+)/i))) return 'tvdb-' + m[1];
+  if ((m = s.match(/\{([^}]+)\}/))) { let x = m[1].trim(); if (/^imdb-/i.test(x)) x = x.slice(5); return x.toLowerCase(); }
+  if ((m = s.match(/tmdb[-_]?\d+/i))) return m[0].toLowerCase();
+  if ((m = s.match(/(imdb-)?(tt\d+)/i))) return m[2].toLowerCase();
+  if ((m = s.match(/tvdb[-_]?season[-_]?\d+/i))) return m[0].toLowerCase();
+  if ((m = s.match(/tvdb[-_]?(ep-|season-)?\d+/i))) return m[0].toLowerCase();
+  if ((m = s.match(/Series ID\s*(\d+)/i))) return 'tvdb-' + m[1];
+  return s.toLowerCase();
+}
+const isLink = v => /^(https?:)?\/\//i.test(v) || /(amazon|amzn|link\.amazon)[.\/]/i.test(v);
+const splitYear = t => { const m = String(t).match(/^(.*\S)\s*\((\d{4})\)\s*$/); return m ? [m[1], m[2]] : [String(t), '']; };
 
-      const manifestBlob = new Blob([JSON.stringify(manifestObject)], { type: "application/manifest+json" });
-      const manifestUrl = URL.createObjectURL(manifestBlob);
-      const manifestLink = document.createElement("link");
-      manifestLink.rel = "manifest";
-      manifestLink.href = manifestUrl;
-      document.head.appendChild(manifestLink);
-
-      const appleTouchIcon = document.createElement("link");
-      appleTouchIcon.rel = "apple-touch-icon";
-      appleTouchIcon.href = manifestObject.icons[0].src;
-      document.head.appendChild(appleTouchIcon);
-
-      if ("serviceWorker" in navigator) {
-        const swScript = `
-          self.addEventListener('install', (e) => self.skipWaiting());
-          self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
-          self.addEventListener('fetch', (e) => {
-            if (e.request.url.includes('firebaseio.com') || e.request.url.includes('googleapis.com')) {
-              return;
-            }
-            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-          });
-        `;
-        const swBlob = new Blob([swScript], { type: "application/javascript" });
-        const swUrl = URL.createObjectURL(swBlob);
-        navigator.serviceWorker.register(swUrl).catch(err => {
-          console.warn("Service Worker registration notice:", err);
-        });
-      }
-    })();
-  </script>
-
-  <!-- Main Application Script (Modular Firebase SDK) -->
-  <script type="module">
-    /**
-     * -------------------------------------------------------------------------
-     * Application Core: Dual-Firebase Real-Time WebSocket Synchronization
-     * Databases: smlc-fuel-monitor-default-rtdb & entertainment-71888-default-rtdb
-     * Intelligent Home Catalog with Subfolder Dropdown on Home Button
-     * Device-First Theme Detection (prefers-color-scheme) with Live OS Sync
-     * Timestamp: 2026-10-03 15:10 EDT (New York / Eastern Time)
-     * -------------------------------------------------------------------------
-     */
-
-    // Line 1069: Import Modular Firebase SDKs via CDN with relative protocol
-    import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-    // Line 1073: Firebase Project Configurations
-    const smlcConfig = {
-      apiKey: "AIzaSyBYPbGWDhPUnCSnPWDP9wtiKe2P5WpinXg",
-      authDomain: "smlc-fuel-monitor.firebaseapp.com",
-      databaseURL: "https://smlc-fuel-monitor-default-rtdb.firebaseio.com",
-      projectId: "smlc-fuel-monitor",
-      storageBucket: "smlc-fuel-monitor.firebasestorage.app",
-      messagingSenderId: "22397440085",
-      appId: "1:22397440085:web:c00e716858ed58895bc4dc"
+// Main movie list → lookup by ID (for posters, year, genre, description)
+function buildMovieInfo(csv) {
+  const map = new Map();
+  if (!csv) return map;
+  const rows = parseCsv(csv);
+  for (let r = 1; r < rows.length; r++) {
+    const cell = i => String(rows[r][i] ?? '').trim();
+    const id = cleanId(cell(MCOL.id)); if (!id) continue;
+    const [title, year] = splitYear(cell(MCOL.name));
+    const edition = /^standard$/i.test(cell(MCOL.edition)) ? '' : cell(MCOL.edition);
+    const info = {
+      title, year, edition,
+      img: [cell(MCOL.poster), cell(MCOL.posterArt)].map(safeUrl).find(Boolean) || '',
+      desc: cell(MCOL.description), genres: cell(MCOL.genre).split(/[,/|]/).map(g => g.trim()).filter(Boolean),
+      isTV: /tv/i.test(cell(MCOL.type)) || /^tvdb/i.test(id),
+      rating: /^n\/a$/i.test(cell(MCOL.rating)) ? '' : cell(MCOL.rating),
+      runtime: cell(MCOL.runtime), collection: cell(MCOL.collection), ts: parseDate(cell(MCOL.dateAdded))
     };
-
-    const entertainmentConfig = {
-      apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-      authDomain: "entertainment-71888.firebaseapp.com",
-      databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-      projectId: "entertainment-71888",
-      storageBucket: "entertainment-71888.firebasestorage.app",
-      messagingSenderId: "660524340277",
-      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-      measurementId: "G-JDNSLD3GFE"
-    };
-
-    // Line 1097: Initialize distinct app instances with try/catch error boundaries
-    let smlcDb = null;
-    let entertainmentDb = null;
-
-    try {
-      const smlcApp = initializeApp(smlcConfig);
-      smlcDb = getDatabase(smlcApp);
-    } catch (err) {
-      console.error("Initialization failed for smlc-fuel-monitor:", err);
-    }
-
-    try {
-      const entertainmentApp = initializeApp(entertainmentConfig, "entertainment");
-      entertainmentDb = getDatabase(entertainmentApp);
-    } catch (err) {
-      console.error("Initialization failed for entertainment-71888:", err);
-    }
-
-    // Line 1114: Master Event Windows for Promotional Deals
-    const EVENT_SCHEDULE = {
-      "oct. prime deal":  { start: "2026-10-06", end: "2026-10-07" },
-      "oct. prime deals": { start: "2026-10-06", end: "2026-10-07" },
-      "prime-days":       { start: "2026-10-06", end: "2026-10-07" },
-      "black-friday":     { start: "2026-11-27", end: "2026-11-29" },
-      "cyber-monday":     { start: "2026-11-30", end: "2026-11-30" }
-    };
-
-    // Line 1123: Holiday Calendar Month Mapping (0-indexed: Jan=0, Oct=9, Nov=10, Dec=11)
-    const HOLIDAY_CALENDAR = {
-      "halloween": 9,       // October
-      "thanksgiving": 10,   // November
-      "christmas": 11,      // December
-      "holiday": 11,        // December
-      "new year": 0,        // January
-      "valentine": 1,       // February
-      "st. patrick": 2,     // March
-      "easter": 3,          // April
-      "independence": 6,    // July
-      "4th of july": 6      // July
-    };
-
-    const AppState = {
-      deals: [],
-      movies: [],
-      categories: [],
-      currentView: "home", // 'home', 'deals', 'movies', or 'category'
-      selectedCategory: "all",
-      displayMode: "grid", // 'grid' for home/category/search, 'carousel' for deals
-      searchQuery: "",
-      theme: "auto" // 'auto' (device preference), 'light', or 'dark'
-    };
-
-    /**
-     * Line 1149: Evaluates Active Theme based on System Preference & Manual Override
-     */
-    function getResolvedTheme() {
-      if (AppState.theme === "light") return "light";
-      if (AppState.theme === "dark") return "dark";
-      const systemPrefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
-      return systemPrefersLight ? "light" : "dark";
-    }
-
-    /**
-     * Line 1159: Applies Theme Classes and Updates Toggle Button Icon
-     */
-    function syncThemeDOM() {
-      const resolved = getResolvedTheme();
-      const themeBtn = document.getElementById("themeToggleBtn");
-
-      if (resolved === "light") {
-        document.body.classList.add("light-theme");
-        document.body.classList.remove("dark-theme");
-        if (themeBtn) themeBtn.textContent = "☀️️";
-      } else {
-        document.body.classList.add("dark-theme");
-        document.body.classList.remove("light-theme");
-        if (themeBtn) themeBtn.textContent = "🌙";
-      }
-    }
-
-    /**
-     * Line 1177: Checks if film belongs to a holiday active during the CURRENT calendar month
-     */
-    function isHolidayActiveThisMonth(holidayString) {
-      if (!holidayString || typeof holidayString !== "string") return false;
-      const str = holidayString.trim().toLowerCase();
-      if (str === "all" || str === "none" || str === "") return false;
-
-      const currentMonth = new Date().getMonth();
-
-      for (const [key, targetMonth] of Object.entries(HOLIDAY_CALENDAR)) {
-        if (str.includes(key) && currentMonth === targetMonth) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    /**
-     * Line 1196: Dynamic Category Color Engine (Calibrated to current resolved theme)
-     */
-    function getCategoryColor(categoryName) {
-      if (!categoryName) return "var(--accent)";
-
-      let hash = 0;
-      for (let i = 0; i < categoryName.length; i++) {
-        hash = categoryName.charCodeAt(i) + ((hash << 5) - hash);
-      }
-
-      const hue = Math.abs(hash % 360);
-      const isLight = getResolvedTheme() === "light";
-
-      const saturation = isLight ? 75 : 85;
-      const lightness = isLight ? 40 : 62;
-
-      return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    }
-
-    /**
-     * Line 1217: Outbound URL Generator with Cookie Preservation
-     */
-    function buildDynamicUtmUrl(rawUrl, campaignId, mediumType, contentElement) {
-      if (!rawUrl || rawUrl.trim() === "" || rawUrl === "#") return "#";
-
-      try {
-        const url = new URL(rawUrl, window.location.origin);
-
-        if (url.hostname !== window.location.hostname) {
-          const sourceName = window.location.hostname.replace("www.", "") || "media_hub";
-
-          url.searchParams.set("utm_source", sourceName);
-          url.searchParams.set("utm_medium", mediumType || "affiliate_link");
-          url.searchParams.set("utm_campaign", (campaignId || "catalog").toLowerCase().replace(/[^a-z0-9-_]/g, "-"));
-
-          if (contentElement) {
-            url.searchParams.set("utm_content", contentElement);
-          }
-        }
-
-        return url.toString();
-      } catch (err) {
-        console.warn("Invalid URL passed to router:", rawUrl, err);
-        return rawUrl;
-      }
-    }
-
-    /**
-     * Line 1247: Custom Google Analytics Outbound Event Logger
-     */
-    function logOutboundAffiliateClick(item, placement, finalUrl) {
-      try {
-        if (typeof window.gtag === "function") {
-          window.gtag("event", "affiliate_outbound_click", {
-            link_url: finalUrl || item.site_url,
-            item_id: item.id || item.imdb_id,
-            item_title: item.title,
-            item_category: item.category || (item.isMovie ? "Movies" : "Deals"),
-            item_type: item.isMovie ? "movie" : (item.isSaleActive ? "flash_sale" : "deal"),
-            click_placement: placement || "card_cta",
-            event_callback: function() {}
-          });
-        }
-      } catch (e) {
-        console.error("Google Analytics event dispatch failed:", e);
-      }
-    }
-
-    /**
-     * Line 1270: Promotional Deals Date Window Check
-     */
-    function isPromotionalSaleLive(item) {
-      const todayStr = new Date().toISOString().split("T")[0];
-      let startDate = item.start_date;
-      let endDate = item.end_date;
-
-      if ((!startDate || !endDate) && item.event_tag) {
-        const tag = item.event_tag.trim().toLowerCase();
-        if (EVENT_SCHEDULE[tag]) {
-          startDate = EVENT_SCHEDULE[tag].start;
-          endDate = EVENT_SCHEDULE[tag].end;
-        }
-      }
-
-      if (!startDate && !endDate) return false;
-
-      if (startDate && todayStr < startDate) return false;
-      if (endDate && todayStr > endDate) return false;
-      return true;
-    }
-
-    /**
-     * Line 1293: Lightbox Controller
-     */
-    function openLightbox(item) {
-      const modal = document.getElementById("lightbox");
-      const poster = document.getElementById("lbPoster");
-      const title = document.getElementById("lbTitle");
-      const metaRow = document.getElementById("lbMetaRow");
-      const tagsBox = document.getElementById("lbTags");
-      const extraFields = document.getElementById("lbExtraFields");
-      const desc = document.getElementById("lbDesc");
-      const outboundBtn = document.getElementById("lbOutboundBtn");
-
-      if (!modal) return;
-
-      const isMovie = (item.isMovie === true);
-
-      poster.src = item.image_url || "";
-      poster.alt = item.title ? `Detailed poster preview for ${item.title}` : "Product preview";
-      title.textContent = item.title || "";
-      desc.textContent = item.description || "No full synopsis available.";
-
-      metaRow.innerHTML = "";
-      extraFields.innerHTML = "";
-
-      if (isMovie) {
-        if (item.imdb_id) metaRow.innerHTML += `<span class="meta-badge">${item.imdb_id}</span>`;
-        if (item.year) metaRow.innerHTML += `<span class="meta-badge">${item.year}</span>`;
-        if (item.edition) metaRow.innerHTML += `<span class="meta-badge edition">${item.edition}</span>`;
-        if (item.rating) metaRow.innerHTML += `<span class="meta-badge">★ ${item.rating}</span>`;
-        if (item.runtime) metaRow.innerHTML += `<span class="meta-badge">${item.runtime}</span>`;
-        if (item.type) metaRow.innerHTML += `<span class="meta-badge" style="text-transform: capitalize;">${item.type}</span>`;
-
-        if (item.collection) {
-          extraFields.innerHTML += `<div class="lightbox-field"><strong>Collection:</strong> ${item.collection}</div>`;
-        }
-        if (item.studio) {
-          extraFields.innerHTML += `<div class="lightbox-field"><strong>Studio:</strong> ${item.studio}</div>`;
-        }
-        if (item.streaming) {
-          extraFields.innerHTML += `<div class="lightbox-field"><strong>Streaming Availability:</strong> ${item.streaming}</div>`;
-        }
-        if (item.holidays && item.holidays.toLowerCase() !== "all") {
-          extraFields.innerHTML += `<div class="lightbox-field"><strong>Holiday:</strong> ${item.holidays}</div>`;
-        }
-      } else {
-        const catColor = getCategoryColor(item.category);
-        metaRow.innerHTML += `<span class="meta-badge" style="color: ${catColor}; border-color: ${catColor};">${item.category}</span>`;
-        if (item.sub_category) metaRow.innerHTML += `<span class="meta-badge">${item.sub_category}</span>`;
-        if (item.isSaleActive) metaRow.innerHTML += `<span class="meta-badge" style="border-color: var(--badge-red); color: var(--badge-red); font-weight: 700;">⚡ ${item.event_tag || 'Prime Deal'}</span>`;
-      }
-
-      tagsBox.innerHTML = (item.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join("");
-
-      const medium = isMovie ? "prime_video_modal" : "deal_modal";
-      const finalLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "lightbox_cta");
-
-      outboundBtn.href = finalLink;
-      outboundBtn.className = `cta-btn ${isMovie ? 'movie-btn' : ''}`;
-      outboundBtn.textContent = isMovie ? "Watch on Prime Video" : "View on Amazon";
-
-      try {
-        const parsed = new URL(finalLink, window.location.origin);
-        outboundBtn.target = (parsed.hostname !== window.location.hostname) ? "_blank" : "_self";
-      } catch (e) {
-        outboundBtn.target = "_blank";
-      }
-
-      outboundBtn.onclick = () => {
-        logOutboundAffiliateClick(item, "lightbox_cta", finalLink);
-      };
-
-      modal.classList.add("active");
-    }
-
-    /**
-     * Line 1369: Real-Time WebSocket Listeners with fallback error boundaries
-     */
-    function setupLiveFirebaseListeners() {
-      if (smlcDb) {
-        try {
-          const dealsRef = ref(smlcDb, "deals");
-          onValue(dealsRef, (snapshot) => {
-            try {
-              const val = snapshot.val();
-              AppState.deals = parseDealsTree(val);
-              updateCategoriesList();
-              renderHomeCategoryDropdown();
-              renderCatalog();
-            } catch (err) {
-              console.error("Error processing deals update:", err);
-            }
-          }, (error) => {
-            console.error("Firebase deals listener failed:", error);
-          });
-        } catch (e) {
-          console.error("Failed to bind deals reference:", e);
-        }
-      }
-
-      loadMoviesFromCsv();
-    }
-
-
-    /**
-     * Movies now load from the published Movie Guide CSV (Discord tab) instead of Firebase.
-     * Only titles with an Amazon link (column D) are shown on this page.
-     */
-    const MOVIES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?gid=1831790548&single=true&output=csv";
-
-    function parseCsvText(text) {
-      const rows = [];
-      let row = [], field = "", q = false, i = text.charCodeAt(0) === 0xFEFF ? 1 : 0;
-      for (const n = text.length; i < n; i++) {
-        const c = text[i];
-        if (q) {
-          if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
-          else field += c;
-          continue;
-        }
-        if (c === '"') q = true;
-        else if (c === ",") { row.push(field); field = ""; }
-        else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
-        else if (c !== "\r") field += c;
-      }
-      if (field !== "" || row.length) { row.push(field); rows.push(row); }
-      return rows;
-    }
-
-    function parseMoviesCsv(rows) {
-      const list = [];
-      const seen = new Set();
-      for (let r = 1; r < rows.length; r++) {
-        const row = rows[r];
-        const cell = (i) => String(row[i] == null ? "" : row[i]).trim();
-
-        let title = cell(2);
-        if (!title || /^loading/i.test(title) || title[0] === "#") continue;
-
-        let amazonUrl = cell(3);
-        if (!/^https?:\/\//i.test(amazonUrl)) continue;
-
-        let year = "";
-        const ym = title.match(/^(.*\S)\s*\((\d{4})\)\s*$/);
-        if (ym) { title = ym[1]; year = ym[2]; }
-
-        const id = cell(0) || title;
-        const edition = cell(10);
-        const dedupeKey = id + "|" + edition;
-        if (seen.has(dedupeKey)) continue;
-        seen.add(dedupeKey);
-
-        const genre = cell(16);
-        const typeRaw = cell(17);
-        const isTV = /tv/i.test(typeRaw);
-        const genreList = genre ? genre.split(/[,/|]/).map(g => g.trim()).filter(Boolean) : ["Feature"];
-
-        list.push({
-          id: id,
-          imdb_id: id,
-          isMovie: true,
-          title: title,
-          year: year,
-          rating: cell(18),
-          runtime: cell(15),
-          type: isTV ? "tv show" : "movie",
-          edition: /^standard$/i.test(edition) ? "" : edition,
-          collection: cell(11),
-          genre: genre,
-          holidays: "",
-          studio: "",
-          image_url: cell(13) || cell(1),
-          site_url: amazonUrl,
-          description: cell(19),
-          streaming: cell(20),
-          category: "Movies",
-          sub_category: isTV ? "TV Show" : (year || "Feature"),
-          placement: "deals_page",
-          isSaleActive: false,
-          isHolidayActive: false,
-          tags: genreList
-        });
-      }
-      return list;
-    }
-
-    async function loadMoviesFromCsv() {
-      try {
-        const res = await fetch(MOVIES_CSV_URL + "&_cb=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        AppState.movies = parseMoviesCsv(parseCsvText(await res.text()));
-        renderCatalog();
-      } catch (err) {
-        console.error("Movie CSV load failed:", err);
-      }
-    }
-
-    /**
-     * Line 1418: Parse Deals Tree
-     */
-    function parseDealsTree(tree) {
-      if (!tree) return [];
-      const list = [];
-      Object.keys(tree).forEach(catKey => {
-        const group = tree[catKey];
-        if (typeof group === "object" && group !== null) {
-          Object.keys(group).forEach(itemKey => {
-            const item = group[itemKey];
-            if (!item) return;
-
-            const rawActive = item.is_active;
-            const isActive = (rawActive === true || rawActive === 1 || String(rawActive).trim().toLowerCase() === "true");
-
-            if (isActive) {
-              list.push({
-                ...item,
-                isMovie: false,
-                category: item.category || catKey,
-                placement: (item.placement || "deals_page").toLowerCase().trim(),
-                isSaleActive: isPromotionalSaleLive(item)
-              });
-            }
-          });
-        }
-      });
-      return list;
-    }
-
-    /**
-     * Line 1448: Parse Movies Tree
-     */
-    function parseMoviesTree(tree) {
-      if (!tree) return [];
-      const list = [];
-
-      Object.keys(tree).forEach(key => {
-        const movie = tree[key];
-        if (!movie || typeof movie !== "object") return;
-
-        const amazonUrl = movie.amazon || movie.site_url || "";
-        if (!amazonUrl || String(amazonUrl).trim() === "") return;
-
-        const imdbId = movie.id || movie.imdb_id || (key.includes("tt") ? key.substring(key.indexOf("tt")) : key);
-
-        let genreList = [];
-        if (Array.isArray(movie.genre)) {
-          genreList = movie.genre;
-        } else if (typeof movie.genre === "string" && movie.genre.trim() !== "") {
-          genreList = movie.genre.split(",").map(g => g.trim());
-        } else {
-          genreList = ["Feature"];
-        }
-
-        const isHolidayActive = isHolidayActiveThisMonth(movie.holidays);
-
-        list.push({
-          id: imdbId,
-          imdb_id: imdbId,
-          isMovie: true,
-          title: movie.title || "Untitled Film",
-          year: movie.year || "",
-          rating: movie.rating || "",
-          runtime: movie.runtime || "",
-          type: movie.type || "movie",
-          edition: movie.edition || "",
-          collection: movie.collection || "",
-          genre: movie.genre || "",
-          holidays: movie.holidays || "",
-          studio: movie.studio || "",
-          image_url: movie.poster || movie.image_url || "",
-          site_url: amazonUrl,
-          description: movie.description || movie.overview || movie.plot || "",
-          streaming: movie.streaming || "",
-          category: "Movies",
-          sub_category: movie.type || (movie.year ? String(movie.year) : "Feature"),
-          placement: (movie.placement || "deals_page").toLowerCase().trim(),
-          isSaleActive: false,
-          isHolidayActive: isHolidayActive,
-          tags: genreList
-        });
-      });
-
-      return list;
-    }
-
-    /**
-     * Line 1509: Extract Dynamic Category List
-     */
-    function updateCategoriesList() {
-      const catSet = new Set();
-      AppState.deals.forEach(item => {
-        if (item.category && item.category.trim() !== "") {
-          catSet.add(item.category.trim());
-        }
-      });
-      AppState.categories = Array.from(catSet).sort((a, b) => a.localeCompare(b));
-    }
-
-    /**
-     * Line 1521: Render Dynamic Home Subfolder Dropdown Menu
-     */
-    function renderHomeCategoryDropdown() {
-      const subfolderContainer = document.getElementById("homeCategorySubfolderList");
-      if (!subfolderContainer) return;
-
-      subfolderContainer.innerHTML = "";
-
-      AppState.categories.forEach(catName => {
-        const item = document.createElement("a");
-        item.className = "dropdown-item";
-        item.dataset.cat = catName;
-
-        const dotColor = getCategoryColor(catName);
-        item.innerHTML = `
-          <span style="display: flex; align-items: center;">
-            <span class="dropdown-item-dot" style="--item-dot-color: ${dotColor};"></span>
-            ${catName}
-          </span>
-        `;
-
-        item.addEventListener("click", (e) => {
-          e.stopPropagation();
-          document.getElementById("homeCategoryMenu").classList.remove("show");
-          window.location.hash = `#/category/${encodeURIComponent(catName)}`;
-        });
-
-        subfolderContainer.appendChild(item);
-      });
-    }
-
-    /**
-     * Line 1554: Render Placements with Refresh-Based Rotation
-     */
-    function renderPlacements(activeCatalog) {
-      const bannerEl = document.getElementById("headerBannerArea");
-      const sidebarEl = document.getElementById("sidebarArea");
-      const sidebarList = document.getElementById("sidebarList");
-
-      if (!bannerEl || !sidebarEl || !sidebarList) return;
-
-      const bannerCandidates = activeCatalog.filter(i => {
-        const p = i.placement;
-        return p === "header_banner" || p === "banner" || p === "header";
-      });
-
-      if (bannerCandidates.length > 0) {
-        const randomIndex = Math.floor(Math.random() * bannerCandidates.length);
-        const bannerItem = bannerCandidates[randomIndex];
-        const link = buildDynamicUtmUrl(bannerItem.site_url, bannerItem.id, "header_banner", "banner_cta");
-
-        bannerEl.innerHTML = `
-          <span>🔥 <strong>Spotlight:</strong> ${bannerItem.title}</span>
-          <a href="${link}" target="_blank" rel="noopener noreferrer">${bannerItem.isMovie ? 'Watch Now' : 'Check Deal'}</a>
-        `;
-
-        const bannerCta = bannerEl.querySelector("a");
-        if (bannerCta) {
-          bannerCta.addEventListener("click", () => {
-            logOutboundAffiliateClick(bannerItem, "banner_cta", link);
-          });
-        }
-        bannerEl.style.display = "flex";
-      } else {
-        bannerEl.style.display = "none";
-      }
-
-      const sidebarCandidates = activeCatalog.filter(i => i.placement === "sidebar");
-
-      if (sidebarCandidates.length > 0) {
-        sidebarList.innerHTML = "";
-
-        const shuffled = [...sidebarCandidates].sort(() => 0.5 - Math.random()).slice(0, 5);
-
-        shuffled.forEach(item => {
-          const link = buildDynamicUtmUrl(item.site_url, item.id, "sidebar_rail", "sidebar_card");
-          const miniCard = document.createElement("div");
-          miniCard.className = "sidebar-mini-card";
-          miniCard.innerHTML = `
-            <img src="${item.image_url || ''}" alt="">
-            <div class="sidebar-mini-details">
-              <div class="sidebar-mini-title">${item.title}</div>
-              <span style="font-size: 0.72rem; color: var(--text-muted);">${item.category || ''}</span>
-              <a href="${link}" target="_blank" rel="noopener noreferrer" style="color: var(--accent); font-size: 0.75rem; font-weight: 700; text-decoration: none;">View &rarr;</a>
-            </div>
-          `;
-
-          const ctaLink = miniCard.querySelector("a");
-          if (ctaLink) {
-            ctaLink.addEventListener("click", () => {
-              logOutboundAffiliateClick(item, "sidebar_card", link);
-            });
-          }
-
-          miniCard.addEventListener("click", (e) => {
-            if (e.target.tagName !== "A") openLightbox(item);
-          });
-          sidebarList.appendChild(miniCard);
-        });
-        sidebarEl.style.display = "flex";
-      } else {
-        sidebarEl.style.display = "none";
-      }
-    }
-
-    /**
-     * Line 1636: Build Single Card DOM Element
-     */
-    function createCardElement(item) {
-      const card = document.createElement("div");
-      const isMovie = (item.isMovie === true);
-      const catColor = isMovie ? "var(--prime-blue)" : getCategoryColor(item.category);
-
-      card.className = `card ${(item.isSaleActive || item.isHolidayActive) ? 'prime-glow-deal' : ''}`;
-      card.id = `item-${item.id}`;
-      card.style.setProperty("--cat-color", catColor);
-
-      const medium = isMovie ? "prime_video" : (item.isSaleActive ? "flash_sale" : "deals_catalog");
-      const outboundLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "card_cta");
-
-      let badgeHtml = "";
-      if (isMovie) {
-        if (item.isHolidayActive) {
-          badgeHtml = `<div class="badge-pill" style="background: #ff5722; box-shadow: 0 0 10px rgba(255, 87, 34, 0.6);">🎃 ${item.holidays}</div>`;
-        } else {
-          badgeHtml = `<div class="badge-pill prime">Prime Video</div>`;
-        }
-      } else if (item.isSaleActive) {
-        badgeHtml = `<div class="badge-pill">⚡ ${item.event_tag || 'Prime Deal'}</div>`;
-      }
-
-      const metaRowHtml = isMovie ? `
-        <div class="meta-row">
-          ${item.imdb_id ? `<span class="meta-badge">${item.imdb_id}</span>` : ''}
-          ${item.year ? `<span class="meta-badge">${item.year}</span>` : ''}
-          ${item.edition ? `<span class="meta-badge edition">${item.edition}</span>` : ''}
-          ${item.rating ? `<span class="meta-badge">★ ${item.rating}</span>` : ''}
-          ${item.runtime ? `<span class="meta-badge">${item.runtime}</span>` : ''}
-        </div>
-      ` : `
-        <div class="meta-row">
-          <span class="meta-badge" style="color: ${catColor}; border-color: ${catColor}; cursor: pointer;" onclick="location.hash='#/category/${encodeURIComponent(item.category)}'">${item.category}</span>
-          ${item.sub_category ? `<span class="meta-badge">${item.sub_category}</span>` : ''}
-        </div>
-      `;
-
-      const tagsHtml = (item.tags || []).slice(0, 3).map(t => `<span class="tag-pill">${t}</span>`).join("");
-
-      card.innerHTML = `
-        <div class="card-media">
-          ${badgeHtml}
-          <img src="${item.image_url || ''}" loading="lazy" alt="">
-        </div>
-        <div class="card-content">
-          ${metaRowHtml}
-          <h3 class="card-title">${item.title}</h3>
-          <p class="card-desc">${item.description}</p>
-          <div class="tag-container">${tagsHtml}</div>
-          <div class="btn-group">
-            <button class="cta-btn details-btn" type="button">Details</button>
-            <a href="${outboundLink}" class="cta-btn ${isMovie ? 'movie-btn' : ''}" target="_blank" rel="noopener noreferrer">
-              ${isMovie ? 'Watch' : (item.isSaleActive ? 'Claim Deal' : 'Buy Now')}
-            </a>
-          </div>
-        </div>
-      `;
-
-      const buyBtn = card.querySelector(".btn-group a");
-      if (buyBtn) {
-        buyBtn.addEventListener("click", () => {
-          logOutboundAffiliateClick(item, "card_cta", outboundLink);
-        });
-      }
-
-      card.querySelector(".card-media").addEventListener("click", () => openLightbox(item));
-      card.querySelector(".card-title").addEventListener("click", () => openLightbox(item));
-      card.querySelector(".details-btn").addEventListener("click", () => openLightbox(item));
-
-      return card;
-    }
-
-    /**
-     * Line 1714: Carousel Section Builder
-     */
-    function createCarouselSection(title, items, isMovie, viewAllHash, customColor) {
-      const section = document.createElement("section");
-      section.className = "catalog-section";
-
-      const catColor = customColor || (isMovie ? "var(--prime-blue)" : getCategoryColor(title));
-      section.style.setProperty("--cat-color", catColor);
-
-      section.innerHTML = `
-        <div class="section-header">
-          <h2 class="section-title">${title}</h2>
-          ${viewAllHash ? `<a href="${viewAllHash}" class="view-all-btn">View All (${items.length}) &rarr;</a>` : ''}
-        </div>
-        <div class="carousel-wrapper">
-          <button class="carousel-arrow left" aria-label="Scroll left">&#8249;</button>
-          <div class="carousel-track"></div>
-          <button class="carousel-arrow right" aria-label="Scroll right">&#8250;</button>
-        </div>
-      `;
-
-      const track = section.querySelector(".carousel-track");
-      items.forEach(item => track.appendChild(createCardElement(item)));
-
-      const leftBtn = section.querySelector(".carousel-arrow.left");
-      const rightBtn = section.querySelector(".carousel-arrow.right");
-
-      leftBtn.addEventListener("click", () => {
-        track.scrollBy({ left: -560, behavior: "smooth" });
-      });
-
-      rightBtn.addEventListener("click", () => {
-        track.scrollBy({ left: 560, behavior: "smooth" });
-      });
-
-      return section;
-    }
-
-    /**
-     * Line 1754: Intelligent Home Catalog Balancer
-     */
-    function buildBalancedHomeCatalog(dealsList, moviesList) {
-      const holidayMovies = moviesList.filter(m => m.isHolidayActive);
-      const standardMovies = moviesList.filter(m => !m.isHolidayActive);
-
-      standardMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-      const sortedDeals = [...dealsList].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-
-      let balancedBody = [];
-
-      const dealsCount = sortedDeals.length;
-      const moviesCount = standardMovies.length;
-      const ratio = moviesCount > 0 ? (dealsCount / moviesCount) : 1;
-
-      if (dealsCount > 0 && ratio < 0.75) {
-        balancedBody = [...sortedDeals, ...standardMovies];
-      } else {
-        const maxLen = Math.max(dealsCount, moviesCount);
-        for (let i = 0; i < maxLen; i++) {
-          if (i < dealsCount) balancedBody.push(sortedDeals[i]);
-          if (i < moviesCount) balancedBody.push(standardMovies[i]);
-        }
-      }
-
-      if (holidayMovies.length > 0) {
-        holidayMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-        return [...holidayMovies, ...balancedBody];
-      }
-
-      return balancedBody;
-    }
-
-    /**
-     * Line 1792: Master View Renderer
-     */
-    function renderCatalog() {
-      const root = document.getElementById("catalogRoot");
-      if (!root) return;
-      root.innerHTML = "";
-
-      let activeCatalog = [];
-
-      if (AppState.currentView === "home") {
-        activeCatalog = buildBalancedHomeCatalog(AppState.deals, AppState.movies);
-      } else if (AppState.currentView === "movies") {
-        activeCatalog = AppState.movies;
-      } else if (AppState.currentView === "deals") {
-        activeCatalog = AppState.deals;
-      } else if (AppState.currentView === "category") {
-        activeCatalog = AppState.deals.filter(i => 
-          i.category && i.category.toLowerCase() === AppState.selectedCategory.toLowerCase()
-        );
-      }
-
-      renderPlacements(activeCatalog);
-
-      const query = AppState.searchQuery.toLowerCase().trim();
-      const searchFiltered = activeCatalog.filter(item => {
-        if (!query) return true;
-        const inTitle = item.title && item.title.toLowerCase().includes(query);
-        const inDesc = item.description && item.description.toLowerCase().includes(query);
-        const inCat = item.category && item.category.toLowerCase().includes(query);
-        const inSub = item.sub_category && item.sub_category.toLowerCase().includes(query);
-        const inEdition = item.edition && item.edition.toLowerCase().includes(query);
-        const inStudio = item.studio && item.studio.toLowerCase().includes(query);
-        const inCollection = item.collection && item.collection.toLowerCase().includes(query);
-        const inTags = (item.tags || []).some(t => t.toLowerCase().includes(query));
-        return inTitle || inDesc || inCat || inSub || inEdition || inStudio || inCollection || inTags;
-      });
-
-      if (searchFiltered.length === 0) {
-        root.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 60px 0;">No active listings found.</div>`;
-        return;
-      }
-
-      if (AppState.currentView === "home" || AppState.currentView === "category" || AppState.displayMode === "grid" || query.length > 0) {
-        let headerTitle = "";
-        let catColor = "var(--accent)";
-
-        if (query) {
-          headerTitle = `Search Results for "${AppState.searchQuery}" (${searchFiltered.length})`;
-        } else if (AppState.currentView === "home") {
-          headerTitle = `Featured Hub &amp; Live Inventory (${searchFiltered.length})`;
-        } else if (AppState.currentView === "movies") {
-          headerTitle = `All Prime Movies (${searchFiltered.length})`;
-          catColor = "var(--prime-blue)";
-        } else if (AppState.currentView === "category") {
-          headerTitle = `${AppState.selectedCategory} (${searchFiltered.length})`;
-          catColor = getCategoryColor(AppState.selectedCategory);
-        } else {
-          headerTitle = `${AppState.selectedCategory} (All ${searchFiltered.length})`;
-          catColor = getCategoryColor(AppState.selectedCategory);
-        }
-
-        const gridSection = document.createElement("section");
-        gridSection.className = "catalog-section";
-        gridSection.style.setProperty("--cat-color", catColor);
-
-        gridSection.innerHTML = `
-          <div class="section-header">
-            <h2 class="section-title">${headerTitle}</h2>
-            ${(AppState.currentView !== "home" && !query) ? `<a href="#/home" class="view-all-btn">&larr; Back to All</a>` : ''}
-          </div>
-          <div class="grid-view-container"></div>
-        `;
-
-        const gridContainer = gridSection.querySelector(".grid-view-container");
-        searchFiltered.forEach(item => gridContainer.appendChild(createCardElement(item)));
-        root.appendChild(gridSection);
-        return;
-      }
-
-      if (AppState.currentView === "movies") {
-        const holidayMovies = searchFiltered.filter(m => m.isHolidayActive);
-        const standardMovies = searchFiltered.filter(m => !m.isHolidayActive);
-
-        standardMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-
-        if (holidayMovies.length > 0 && !query) {
-          holidayMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-          const holidaySection = createCarouselSection(
-            `🎃 Featured Holiday Picks (${holidayMovies[0].holidays})`, 
-            holidayMovies, 
-            true, 
-            `#/movies/all/grid`, 
-            "#ff5722"
-          );
-          root.appendChild(holidaySection);
-        }
-
-        const libraryList = query ? searchFiltered : (holidayMovies.length > 0 ? standardMovies : searchFiltered);
-        if (!query) {
-          libraryList.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-        }
-
-        const movieSection = createCarouselSection("Prime Video Library", libraryList, true, `#/movies/all/grid`, "var(--prime-blue)");
-        root.appendChild(movieSection);
-        return;
-      }
-
-      const activeDeals = searchFiltered.filter(i => i.isSaleActive);
-      if (activeDeals.length > 0) {
-        const promoSection = createCarouselSection("⚡ Live Prime & Holiday Deals", activeDeals, false, `#/deals/active-sales/grid`, "var(--badge-red)");
-        root.appendChild(promoSection);
-      }
-
-      const categoriesMap = {};
-      searchFiltered.forEach(item => {
-        if (item.placement === "sidebar") return;
-        const cat = item.category || "General";
-        if (!categoriesMap[cat]) categoriesMap[cat] = [];
-        categoriesMap[cat].push(item);
-      });
-
-      Object.keys(categoriesMap).sort().forEach(catName => {
-        const catItems = categoriesMap[catName];
-        catItems.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-        const viewAllHash = `#/category/${encodeURIComponent(catName)}`;
-        const carousel = createCarouselSection(catName, catItems, false, viewAllHash);
-        root.appendChild(carousel);
-      });
-    }
-
-    /**
-     * Line 1918: Hash Router
-     */
-    function routeFromHash() {
-      const hash = window.location.hash.replace("#/", "").replace("#", "");
-      const segments = hash.split("/").map(s => decodeURIComponent(s));
-
-      const view = segments[0] || "home";
-      const cat = segments[1] || "all";
-      const mode = segments[2] || "carousel";
-
-      if (view === "category") {
-        AppState.currentView = "category";
-        AppState.selectedCategory = cat;
-        AppState.displayMode = "grid";
-      } else if (view === "movies") {
-        AppState.currentView = "movies";
-        AppState.selectedCategory = cat;
-        AppState.displayMode = (mode === "grid") ? "grid" : "carousel";
-      } else if (view === "deals") {
-        AppState.currentView = "deals";
-        AppState.selectedCategory = cat;
-        AppState.displayMode = (mode === "grid") ? "grid" : "carousel";
-      } else {
-        AppState.currentView = "home";
-        AppState.selectedCategory = "all";
-        AppState.displayMode = "grid";
-      }
-
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        const isMatch = (btn.dataset.view === AppState.currentView) || 
-                        (btn.dataset.view === "home" && AppState.currentView === "category");
-        btn.classList.toggle("active", isMatch);
-      });
-
-      document.querySelectorAll(".dropdown-item").forEach(item => {
-        const itemCat = item.dataset.cat;
-        if (AppState.currentView === "category") {
-          item.classList.toggle("active", itemCat.toLowerCase() === AppState.selectedCategory.toLowerCase());
-        } else if (AppState.currentView === "home") {
-          item.classList.toggle("active", itemCat === "all");
-        } else {
-          item.classList.remove("active");
-        }
-      });
-
-      renderCatalog();
-    }
-
-    /**
-     * Line 1973: Setup PWA Install Prompt Listeners
-     */
-    function setupPWAInstallation() {
-      let deferredPrompt = null;
-      const installBtn = document.getElementById("pwaInstallBtn");
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-
-      window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (installBtn && !isStandalone) {
-          installBtn.style.display = "inline-flex";
-        }
-      });
-
-      if (installBtn) {
-        installBtn.addEventListener("click", async () => {
-          if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === "accepted") {
-              installBtn.style.display = "none";
-            }
-            deferredPrompt = null;
-          } else if (isIOS) {
-            const iosBanner = document.getElementById("iosInstallBanner");
-            if (iosBanner) iosBanner.classList.add("show");
-          }
-        });
-      }
-
-      if (isIOS && !isStandalone && installBtn) {
-        installBtn.style.display = "inline-flex";
-      }
-
-      const iosCloseBtn = document.getElementById("iosInstallClose");
-      if (iosCloseBtn) {
-        iosCloseBtn.addEventListener("click", () => {
-          document.getElementById("iosInstallBanner").classList.remove("show");
-        });
-      }
-
-      window.addEventListener("appinstalled", () => {
-        if (installBtn) installBtn.style.display = "none";
-        deferredPrompt = null;
-      });
-    }
-
-    /**
-     * Line 2025: Initialize DOM Bindings & Start Persistent Listeners
-     */
-    function init() {
-      // 1. Initial System Theme Calibration
-      syncThemeDOM();
-
-      // Listen dynamically if user switches their OS between Light & Dark mode live
-      if (window.matchMedia) {
-        window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
-          if (AppState.theme === "auto") {
-            syncThemeDOM();
-            renderCatalog();
-          }
-        });
-      }
-
-      const brand = document.getElementById("brandTitle");
-      if (brand) {
-        brand.addEventListener("click", () => {
-          AppState.searchQuery = "";
-          window.location.hash = "#/home";
-        });
-      }
-
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          if (e.target.id === "homeMenuTrigger") return;
-
-          const view = btn.dataset.view;
-          AppState.searchQuery = "";
-          const sInput = document.getElementById("siteSearch");
-          const sClear = document.getElementById("searchClear");
-          if (sInput) sInput.value = "";
-          if (sClear) sClear.style.display = "none";
-
-          window.location.hash = (view === "home") ? "#/home" : `#/${view}`;
-        });
-      });
-
-      const trigger = document.getElementById("homeMenuTrigger");
-      const menu = document.getElementById("homeCategoryMenu");
-
-      if (trigger && menu) {
-        trigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          menu.classList.toggle("show");
-        });
-
-        document.addEventListener("click", (e) => {
-          if (!menu.contains(e.target) && e.target !== trigger) {
-            menu.classList.remove("show");
-          }
-        });
-
-        const allOption = menu.querySelector('[data-cat="all"]');
-        if (allOption) {
-          allOption.addEventListener("click", (e) => {
-            e.stopPropagation();
-            menu.classList.remove("show");
-            window.location.hash = "#/home";
-          });
-        }
-      }
-
-      const searchInput = document.getElementById("siteSearch");
-      const searchClear = document.getElementById("searchClear");
-
-      if (searchInput && searchClear) {
-        searchInput.addEventListener("input", (e) => {
-          AppState.searchQuery = e.target.value;
-          searchClear.style.display = AppState.searchQuery ? "block" : "none";
-          renderCatalog();
-        });
-
-        searchClear.addEventListener("click", () => {
-          searchInput.value = "";
-          AppState.searchQuery = "";
-          searchClear.style.display = "none";
-          renderCatalog();
-        });
-      }
-
-      // Manual Theme Toggle: Cycles Auto (Device) -> Explicit Light -> Explicit Dark
-      const themeBtn = document.getElementById("themeToggleBtn");
-      if (themeBtn) {
-        themeBtn.addEventListener("click", () => {
-          const current = getResolvedTheme();
-          AppState.theme = (current === "light") ? "dark" : "light";
-          syncThemeDOM();
-          renderCatalog();
-        });
-      }
-
-      const closeBtn = document.getElementById("lightboxClose");
-      const modal = document.getElementById("lightbox");
-      if (closeBtn && modal) {
-        closeBtn.addEventListener("click", () => modal.classList.remove("active"));
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) modal.classList.remove("active");
-        });
-      }
-
-      setupPWAInstallation();
-      window.addEventListener("hashchange", routeFromHash);
-      routeFromHash();
-      setupLiveFirebaseListeners();
-    }
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", init);
-    } else {
-      init();
-    }
-  </script>
+    if (!map.has(id)) map.set(id, info);                 // first row = default
+    if (edition) map.set(id + '|' + edition.toLowerCase(), info);
+  }
+  return map;
+}
+
+// Movie Guide "Amazon" tab: IMDB | Url | Poster | Name | Edition | IMDb | MA | (count)
+function parseAmazonMovies(csv, info) {
+  const rows = parseCsv(csv); if (rows.length < 2) return [];
+  const head = rows[0].map(h => String(h).toLowerCase().replace(/[|()]/g, ' ').trim());
+  const col = (re, dflt) => { const i = head.findIndex(h => re.test(h)); return i >= 0 ? i : dflt; };
+  const C = { id: 0, url: col(/^url\b/, 1), poster: col(/^poster/, 2), name: col(/^name/, 3), edition: col(/^edition/, 4), ma: col(/^ma\b/, 6) };
+  const out = [], seen = new Set();
+  for (let r = 1; r < rows.length; r++) {
+    const cell = i => String(rows[r][i] ?? '').trim();
+    const link = cell(C.url);
+    if (!link || !isLink(link)) continue;                  // only rows with an Amazon link
+    const id = cleanId(cell(C.id));
+    const edition = /^standard$/i.test(cell(C.edition)) ? '' : cell(C.edition);
+    const key = (id || cell(C.name).toLowerCase()) + '|' + edition.toLowerCase();
+    if (seen.has(key)) continue; seen.add(key);
+    const m = (id && (info.get(id + '|' + edition.toLowerCase()) || info.get(id))) || {};
+    let [title, year] = splitYear(cell(C.name) || m.title || 'Untitled');
+    if (!year) year = m.year || '';
+    const isTV = !!m.isTV;
+    const ma = /^(true|yes|1|✅)/i.test(cell(C.ma));
+    out.push({
+      kind: 'movie', id: key, title, year, edition,
+      img: safeUrl(cell(C.poster)) || m.img || '',
+      url: withTag(link), desc: m.desc || '', category: MOVIES_CAT, sub: isTV ? 'TV Show' : 'Movie',
+      tags: [...(ma ? ['Movies Anywhere'] : []), ...((m.genres || []).slice(0, 3))],
+      rating: m.rating || '', runtime: m.runtime || '', collection: m.collection || '',
+      placement: 'deals_page', sale: null, ts: m.ts || 0
+    });
+  }
+  return out;
+}
+
+/* ---------------- state ---------------- */
+const S = { deals: [], movies: [], q: '', cat: 'all', sort: 'new', shown: CFG.pageSize, loaded: { deals: false, movies: false } };
+
+/* ---------------- loading (cache first, then live) ---------------- */
+/* Deals: live stream from Firebase (only changes are sent), with a cached copy shown first
+   and a 10-minute fallback poll if live streaming isn't available. */
+let dealsTree = null, dealsStream = null, streamRetry = 0, renderTimer = 0;
+function applyDeals(save) {
+  S.deals = parseDeals(dealsTree); S.loaded.deals = true;
+  if (save) lsSet('ww_deals_cache_v1', JSON.stringify(dealsTree || {}));
+  clearTimeout(renderTimer); renderTimer = setTimeout(render, 120); // batch quick bursts of updates
+}
+function setAtPath(path, data, merge) {
+  const parts = String(path || '/').split('/').filter(Boolean);
+  if (!parts.length) {
+    if (merge) { dealsTree = Object.assign({}, dealsTree || {}); for (const [k, v] of Object.entries(data || {})) { if (v === null) delete dealsTree[k]; else dealsTree[k] = v; } }
+    else dealsTree = data;
+    return;
+  }
+  if (!dealsTree || typeof dealsTree !== 'object') dealsTree = {};
+  let node = dealsTree;
+  for (let i = 0; i < parts.length - 1; i++) {
+    if (!node[parts[i]] || typeof node[parts[i]] !== 'object') node[parts[i]] = {};
+    node = node[parts[i]];
+  }
+  const last = parts[parts.length - 1];
+  if (merge) {
+    if (!node[last] || typeof node[last] !== 'object') node[last] = {};
+    for (const [k, v] of Object.entries(data || {})) { if (v === null) delete node[last][k]; else node[last][k] = v; }
+  } else if (data === null) delete node[last];
+  else node[last] = data;
+}
+async function pollDeals() {
+  try {
+    const res = await fetch(CFG.dealsUrl, { cache: 'no-store' });
+    if (!res.ok) throw new Error(res.status);
+    dealsTree = await res.json(); applyDeals(true);
+  } catch (e) { console.warn('Deals load failed', e); S.loaded.deals = true; render(); }
+}
+function openDealsStream() {
+  if (dealsStream || document.hidden) return;
+  if (!('EventSource' in window)) { pollDeals(); return; }
+  const es = new EventSource(CFG.dealsUrl);
+  dealsStream = es;
+  const onData = merge => ev => {
+    try { const m = JSON.parse(ev.data); setAtPath(m.path, m.data, merge); applyDeals(true); streamRetry = 0; setLiveDot(true); } catch (e) {}
+  };
+  es.addEventListener('put', onData(false));
+  es.addEventListener('patch', onData(true));
+  es.addEventListener('cancel', () => closeDealsStream(true));
+  es.addEventListener('auth_revoked', () => closeDealsStream(true));
+  es.onerror = () => {
+    // Browser retries by itself; after a few failures, fall back to polling for a while
+    if (++streamRetry >= 4) { closeDealsStream(true); }
+    setLiveDot(false);
+  };
+}
+function closeDealsStream(fallback) {
+  if (dealsStream) { dealsStream.close(); dealsStream = null; }
+  setLiveDot(false);
+  if (fallback) { pollDeals(); setTimeout(() => { streamRetry = 0; openDealsStream(); }, CFG.refreshMs); }
+}
+function setLiveDot(on) { const d = document.getElementById('liveDot'); if (d) d.classList.toggle('on', !!on); }
+function loadDeals() {
+  const cached = lsGet('ww_deals_cache_v1');
+  if (cached) { try { dealsTree = JSON.parse(cached); applyDeals(false); } catch (e) {} }
+  openDealsStream();
+  // If the stream hasn't answered in 6 seconds, load once the normal way
+  setTimeout(() => { if (!S.loaded.deals || !dealsTree) pollDeals(); }, 6000);
+}
+// Close the live connection while the tab is hidden (saves Firebase connections), reopen on return
+document.addEventListener('visibilitychange', () => { if (document.hidden) closeDealsStream(false); else openDealsStream(); });
+
+async function readMovieCache() {
+  // Shares the Movies page's device cache for the main list when it's there
+  try { if ('caches' in window) { const c = await caches.open('ww-cinema-data-v1'); const r = await c.match('catalog.csv'); if (r) return await r.text(); } } catch (e) {}
+  return lsGet('ww_cinema_csv_v1');
+}
+async function fetchText(url) {
+  const res = await fetch(url + '&_cb=' + Date.now(), { cache: 'no-store' });
+  if (!res.ok) throw new Error(res.status);
+  return res.text();
+}
+async function loadMovies() {
+  let infoCsv = await readMovieCache();
+  let amzCsv = lsGet('ww_amazon_movies_csv_v1');
+  const build = () => { if (amzCsv) { S.movies = parseAmazonMovies(amzCsv, buildMovieInfo(infoCsv)); S.loaded.movies = true; render(); } };
+  build();
+  const [a, i] = await Promise.allSettled([fetchText(CFG.amazonMoviesCsv), fetchText(CFG.moviesCsv)]);
+  if (a.status === 'fulfilled' && a.value) { amzCsv = a.value; if (amzCsv.length < 1500000) lsSet('ww_amazon_movies_csv_v1', amzCsv); }
+  else console.warn('Amazon movie list failed', a.reason);
+  if (i.status === 'fulfilled' && i.value) infoCsv = i.value;
+  build();
+  S.loaded.movies = true; render();
+}
+
+/* ---------------- rendering ---------------- */
+function matches(it, q) {
+  if (!q) return true;
+  return [it.title, it.desc, it.category, it.sub, it.year, it.edition, it.collection, (it.tags || []).join(' ')]
+    .join(' ').toLowerCase().includes(q);
+}
+function sortItems(list) {
+  const a = [...list];
+  if (S.sort === 'az') a.sort((x, y) => x.title.localeCompare(y.title));
+  else if (S.sort === 'cat') a.sort((x, y) => x.category.localeCompare(y.category) || x.title.localeCompare(y.title));
+  else a.sort((x, y) => (y.ts - x.ts) || x.title.localeCompare(y.title));
+  return a;
+}
+function cardHtml(it, idx) {
+  const c = catColor(it.category), isMovie = it.kind === 'movie';
+  let badge = '';
+  const ev = it.event && (it.event.start || it.event.end) ? it.event : null;
+  const now = Date.now();
+  const evStart = ev && ev.start ? dayStart(ev.start) : null;   // date only = 12:00:00 AM
+  const evEnd = ev && ev.end ? dayEnd(ev.end) : null;           // date only = 11:59:59 PM
+  if (ev && evStart && now < evStart && evStart - now <= EVENT_SHOW_DAYS * 86400000) {
+    // Coming up: countdown to the start
+    badge = `<span class="badge soon" style="${evStyle(ev.key)}">⏳ ${esc(ev.label)}<span class="cd-sub">Starts in <b data-ccd="${evStart}">${fmtLeft(evStart - now)}</b></span></span>`;
+  } else if (it.sale) {
+    // Live: event name, plus a countdown when the end is close
+    const endSoon = evEnd && evEnd - now <= ENDING_SOON_HOURS * 3600000;
+    badge = `<span class="badge" style="${ev ? evStyle(ev.key) : ''}">⚡ ${esc(it.sale.label)}${endSoon ? `<span class="cd-sub">Ends in <b data-ccd="${evEnd}">${fmtLeft(evEnd - now)}</b></span>` : ''}</span>`;
+  }
+  if (badge) {}
+  else if (isMovie) badge = `<span class="badge prime">${esc(it.sub)}</span>`;
+  else if (['feature', 'featured', 'sidebar'].includes(it.placement)) badge = `<span class="badge feat">★ Pick</span>`;
+  const meta = isMovie
+    ? [it.year, it.edition, it.rating].filter(Boolean).map(m => `<span class="pill">${esc(m)}</span>`).join('')
+    : `<span class="pill cat" data-cat="${esc(it.category)}">${esc(it.category)}</span>${it.sub ? `<span class="pill">${esc(it.sub)}</span>` : ''}`;
+  const liveRing = it.sale && it.event ? `;--live:${evTheme(it.event.key).ring}` : '';
+  return `<article class="card ${isMovie ? 'movie' : ''} ${it.sale ? 'live' : ''}" style="--c:${c}${liveRing}" data-i="${idx}">
+    <div class="media" data-open>${badge}${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.title)}" loading="lazy" referrerpolicy="no-referrer">` : '<span class="ph">No image</span>'}</div>
+    <div class="body">
+      <div class="meta">${meta}</div>
+      <h3 class="title" data-open>${esc(it.title)}</h3>
+      ${it.desc ? `<p class="desc">${esc(it.desc.split('\n')[0])}</p>` : ''}
+      <div class="actions">
+        <button class="btn ghost" data-open type="button">Details</button>
+        <a class="btn ${isMovie ? 'prime' : ''}" href="${esc(it.url)}" target="_blank" rel="nofollow sponsored noopener" data-go>${isMovie ? 'Get on Amazon' : (it.sale ? 'See the deal' : 'View on Amazon')}</a>
+      </div>
+    </div>
+  </article>`;
+}
+
+let CURRENT = []; // items currently on screen, indexed by data-i
+function section(title, items, color, opts = {}) {
+  const start = CURRENT.length; CURRENT.push(...items);
+  const cards = items.map((it, k) => cardHtml(it, start + k)).join('');
+  return `<section class="section" style="--c:${color}">
+    <div class="section-head"><h2><span class="dot"></span>${esc(title)}${opts.cd ? `<span class="cdline" data-cd="${esc(opts.cd)}"></span>` : ''}</h2>${opts.moreCat ? `<button class="more" data-cat="${esc(opts.moreCat)}">See all ${opts.total} →</button>` : ''}</div>
+    <div class="${opts.row ? 'row' : 'grid'}">${cards}</div>
+    ${opts.loadMore ? `<div class="loadmore"><button id="more" type="button">Show more (${opts.loadMore} left)</button></div>` : ''}
+  </section>`;
+}
+
+function renderChips() {
+  const counts = new Map();
+  S.deals.forEach(d => counts.set(d.category, (counts.get(d.category) || 0) + 1));
+  const live = S.deals.filter(d => d.sale).length;
+  const cats = [...counts.keys()].sort((a, b) => a.localeCompare(b));
+  const chip = (key, label, n, cls = '') => `<button class="chip ${cls} ${S.cat === key ? 'on' : ''}" data-cat="${esc(key)}">${label}${n != null ? ` <span class="n">${n}</span>` : ''}</button>`;
+  const chipsBox = $('#chips'), keepLeft = chipsBox.scrollLeft;
+  chipsBox.style.scrollBehavior = 'auto';
+  chipsBox.innerHTML =
+    chip('all', 'All') +
+    (live ? chip('live', '⚡ Live deals', live, 'hot') : '') +
+    chip('deals', '🛒 All deals', S.deals.length) +
+    (S.movies.length ? chip(MOVIES_CAT, '🎬 Movies & TV', S.movies.length, 'movies') : '') +
+    cats.map(c => chip(c, esc(c), counts.get(c))).join('');
+  chipsBox.scrollLeft = keepLeft;
+  chipsBox.style.scrollBehavior = '';
+}
+
+function renderSpotlight() {
+  const pool = S.deals.filter(d => ['header_banner', 'banner', 'header'].includes(d.placement));
+  const live = S.deals.filter(d => d.sale);
+  const pick = (pool.length ? pool : live)[Math.floor(Math.random() * (pool.length || live.length))];
+  const el = $('#spotlight');
+  if (!pick) { el.classList.remove('show'); return; }
+  el.innerHTML = `<span>🔥</span><span class="s-text">${pick.sale ? esc(pick.sale.label) + ': ' : 'Spotlight: '}${esc(pick.title)}</span><a href="${esc(pick.url)}" target="_blank" rel="nofollow sponsored noopener" data-spot>Check it out</a>`;
+  el.classList.add('show');
+  el.querySelector('[data-spot]').onclick = () => track('affiliate_outbound_click', { item_id: pick.id, item_title: pick.title, click_placement: 'spotlight', link_url: pick.url });
+}
+
+function renderEvents() {
+  const evs = eventList(), box = $('#events');
+  if (!evs.length) { box.classList.remove('show'); return; }
+  $('#evRow').innerHTML = evs.map(e => {
+    const st = eventStatus(e);
+    const dates = e.start && e.end ? `${fmtDay(e.start)} – ${fmtDay(e.end, true)}` : (e.start ? 'From ' + fmtDay(e.start) : 'Until ' + fmtDay(e.end, true));
+    const banner = (EVENT_BANNERS[e.key] || '').trim();
+    const th = evTheme(e.key);
+    return `<div class="ev ${st.state === 'live' ? 'live' : ''}" style="--evc:${th.ring};--evbg:${th.bg};--evfg:${th.fg}" data-cat="event:${esc(e.key)}" role="button" tabindex="0">
+      <span class="ev-name"><span class="ev-pill" style="background:${th.bg};box-shadow:0 0 0 2px ${th.ring}"></span>${st.state === 'live' ? '⚡ ' : '⏳ '}${esc(e.label)}</span>
+      <span class="ev-dates">${esc(dates)}</span>
+      <span class="ev-cd" data-cd="${esc(e.key)}">${esc(st.text)}</span>
+      <span class="ev-n">${e.n ? `${e.n} item${e.n > 1 ? 's' : ''} tagged` : 'No items tagged yet'}</span>
+      ${banner ? `<div class="ev-banner" data-banner>${banner.replace('<img ', '<img onerror="this.closest(\'.ev-banner\').remove()" ')}</div>` : ''}
+      ${(EVENT_LINKS[e.key] || []).length ? `<div class="ev-links">${EVENT_LINKS[e.key].map(l => `<a class="ev-shop" data-banner data-evlink="${esc(e.key)}" href="${esc(l.url)}" target="_blank" rel="nofollow sponsored noopener">${esc(l.text)}</a>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('');
+  box.classList.add('show');
+}
+// Live countdown tick (only updates the numbers)
+setInterval(() => {
+  if (document.hidden) return;
+  const evs = eventList(); let flipped = false;
+  const nowT = Date.now();
+  document.querySelectorAll('[data-ccd]').forEach(el => {
+    const left = Number(el.dataset.ccd) - nowT;
+    if (left <= 0) flipped = true; else el.textContent = fmtLeft(left);
+  });
+  // A live item just entered its last ENDING_SOON_HOURS: redraw so its "Ends in" appears
+  if (!flipped && nowT % 60000 < 1000) S.deals.forEach(d => {
+    if (d.sale && d.event && d.event.end) { const l = dayEnd(d.event.end) - nowT; if (l <= ENDING_SOON_HOURS * 3600000 && l > ENDING_SOON_HOURS * 3600000 - 61000) flipped = true; }
+  });
+  document.querySelectorAll('[data-cd]').forEach(el => {
+    const e = evs.find(x => x.key === el.dataset.cd);
+    if (!e) { flipped = true; return; }
+    const st = eventStatus(e); el.textContent = st.text;
+    const card = el.closest('.ev'); if (card && card.classList.contains('live') !== (st.state === 'live')) flipped = true;
+  });
+  if (flipped) { S.deals.forEach(d => { d.sale = d.event && (d.event.start || d.event.end) && eventStatus(d.event).state === 'live' ? { label: d.event.label, end: d.event.end } : null; }); render(); }
+}, 1000);
+
+/* Sidebar rail: items with placement "sidebar"; several rotate in a carousel */
+let railIdx = 0, railTimer = 0, railPaused = false, railCount = 0;
+function renderRail() {
+  const rail = $('#rail'), layout = $('#layout');
+  const items = sortItems(S.deals.filter(d => d.placement === 'sidebar'));
+  railCount = items.length;
+  if (!items.length) { rail.hidden = true; layout.classList.add('no-rail'); clearInterval(railTimer); railTimer = 0; return; }
+  rail.hidden = false; layout.classList.remove('no-rail');
+  if (railIdx >= items.length) railIdx = 0;
+  const start = CURRENT.length; CURRENT.push(...items);
+  const multi = items.length > 1;
+  rail.innerHTML = `<div class="rail-head"><h2>🔥 Hot picks</h2>${multi ? '<div class="rail-nav"><button type="button" data-rail="-1" aria-label="Previous">‹</button><button type="button" data-rail="1" aria-label="Next">›</button></div>' : ''}</div>
+    <div class="carousel" id="carousel"><div class="carousel-track" id="railTrack">${items.map((it, k) => cardHtml(it, start + k)).join('')}</div></div>
+    ${multi ? `<div class="dots">${items.map((_, k) => `<button type="button" data-dot="${k}" aria-label="Show pick ${k + 1}"></button>`).join('')}</div>` : ''}`;
+  showRail(railIdx, true);
+  // Keep one steady 5-second timer (re-renders from live updates don't restart it)
+  if (multi && !railTimer) railTimer = setInterval(() => { if (!railPaused && !document.hidden) showRail(railIdx + 1); }, 5000);
+  if (!multi && railTimer) { clearInterval(railTimer); railTimer = 0; }
+}
+function showRail(i, instant) {
+  if (!railCount) return;
+  railIdx = (i + railCount) % railCount;
+  const track = $('#railTrack'); if (!track) return;
+  if (instant) { track.style.transition = 'none'; requestAnimationFrame(() => { track.style.transition = ''; }); }
+  track.style.transform = `translateX(-${railIdx * 100}%)`;
+  document.querySelectorAll('#rail [data-dot]').forEach((d, k) => d.classList.toggle('on', k === railIdx));
+}
+document.addEventListener('click', e => {
+  const nav = e.target.closest('[data-rail]'); if (nav) { showRail(railIdx + Number(nav.dataset.rail)); return; }
+  const dot = e.target.closest('[data-dot]'); if (dot) showRail(Number(dot.dataset.dot));
+});
+$('#rail').addEventListener('mouseenter', () => { railPaused = true; });
+$('#rail').addEventListener('mouseleave', () => { railPaused = false; });
+// Swipe on phones
+let railTouchX = null;
+$('#rail').addEventListener('touchstart', e => { railTouchX = e.touches[0].clientX; railPaused = true; }, { passive: true });
+$('#rail').addEventListener('touchend', e => {
+  if (railTouchX !== null) { const dx = e.changedTouches[0].clientX - railTouchX; if (Math.abs(dx) > 40) showRail(railIdx + (dx < 0 ? 1 : -1)); }
+  railTouchX = null; setTimeout(() => { railPaused = false; }, 4000);
+}, { passive: true });
+
+let spotlightDone = false;
+function render() {
+  renderChips();
+  renderEvents();
+  updateChipArrows();
+  if (!spotlightDone && S.deals.length) { renderSpotlight(); spotlightDone = true; }
+  CURRENT = [];
+  renderRail();
+  const root = $('#root');
+  const q = S.q.trim().toLowerCase();
+  const all = [...S.deals, ...S.movies];
+
+  if (!S.loaded.deals && !S.loaded.movies) return;
+
+  // Search, or a single category/filter → one grid with "show more"
+  if (q || S.cat !== 'all') {
+    let list = all;
+    const evKey = S.cat.startsWith('event:') ? S.cat.slice(6) : '';
+    if (evKey) list = S.deals.filter(d => d.event && d.event.key === evKey);
+    else if (S.cat === 'live') list = S.deals.filter(d => d.sale);
+    else if (S.cat === 'deals') list = S.deals;
+    else if (S.cat !== 'all') list = all.filter(i => i.category === S.cat);
+    list = sortItems(list.filter(i => matches(i, q)));
+    const ev = evKey ? eventList().find(e => e.key === evKey) : null;
+    if (!list.length) { root.innerHTML = `<div class="empty">${ev ? `No items tagged for ${esc(ev.label)} yet. Put <b>${esc(evKey)}</b> in the event_tag column to add some.` : `Nothing found${q ? ` for “${esc(S.q)}”` : ''}.`}</div>`; return; }
+    const title = q ? `Results for “${S.q}” (${list.length})`
+      : ev ? `${ev.label} (${list.length})`
+      : S.cat === 'live' ? `⚡ Live deals (${list.length})`
+      : S.cat === 'deals' ? `All deals (${list.length})`
+      : `${S.cat} (${list.length})`;
+    const shown = list.slice(0, S.shown);
+    root.innerHTML = section(title, shown, (S.cat === 'live' || ev) ? 'var(--hot)' : catColor(S.cat === 'all' || S.cat === 'deals' ? '' : S.cat),
+      { loadMore: list.length > shown.length ? list.length - shown.length : 0, cd: ev ? ev.key : '' });
+    return;
+  }
+
+  // Home: live deals → featured → each category as a row → newest movies
+  let html = '';
+  const live = S.deals.filter(d => d.sale);
+  if (live.length) html += section('⚡ Live deals', sortItems(live), 'var(--hot)', { row: live.length > 4 });
+  const feat = S.deals.filter(d => !d.sale && ['feature', 'featured'].includes(d.placement));
+  if (feat.length) html += section('★ Featured picks', sortItems(feat), 'var(--accent)', { row: feat.length > 4 });
+
+  // All deals in one grid (newest first), so the page fills the width even with only a few items.
+  // Categories are one tap away in the chips above.
+  const rest = sortItems(S.deals.filter(d => !d.sale && !['feature', 'featured', 'sidebar'].includes(d.placement)));
+  if (rest.length) {
+    const shown = rest.slice(0, S.shown);
+    html += section(`🛒 Latest deals (${rest.length})`, shown, 'var(--accent)',
+      { loadMore: rest.length > shown.length ? rest.length - shown.length : 0 });
+  }
+
+  if (S.movies.length) {
+    const newest = [...S.movies].sort((a, b) => b.ts - a.ts).slice(0, 16);
+    html += section('🎬 Movies & TV on Amazon', newest, 'var(--prime)', { row: true, moreCat: MOVIES_CAT, total: S.movies.length });
+  }
+  if (!html) html = `<div class="empty">${S.loaded.deals ? 'No active deals right now. Check back soon!' : 'Loading…'}</div>`;
+  root.innerHTML = html;
+}
+
+/* ---------------- details modal ---------------- */
+function openDetails(it) {
+  const isMovie = it.kind === 'movie', c = catColor(it.category);
+  const facts = isMovie
+    ? [it.year, it.edition, it.rating, it.runtime, it.collection && ('Collection: ' + it.collection)].filter(Boolean)
+    : [it.category, it.sub, it.sale && ('⚡ ' + it.sale.label + (it.sale.end ? ' · ends ' + fmtDay(it.sale.end, true) : ''))].filter(Boolean);
+  $('#sheet').className = 'sheet' + (isMovie ? ' movie' : '');
+  $('#sheet').innerHTML = `<button class="x" id="x" aria-label="Close">×</button>
+    <div class="sheet-in" style="--c:${c}">
+      <div class="sheet-img">${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.title)}" referrerpolicy="no-referrer">` : ''}</div>
+      <div>
+        <h3>${esc(it.title)}</h3>
+        <div class="meta">${facts.map(f => `<span class="pill">${esc(f)}</span>`).join('')}${(it.tags || []).map(t => `<span class="pill">${esc(t)}</span>`).join('')}</div>
+        <p class="full">${esc(it.desc || 'See Amazon for full details.')}</p>
+        <a class="btn ${isMovie ? 'prime' : ''}" href="${esc(it.url)}" target="_blank" rel="nofollow sponsored noopener" id="mgo">${isMovie ? 'Get it on Amazon' : 'View on Amazon'}</a>
+      </div>
+    </div>`;
+  $('#modal').classList.add('open');
+  $('#x').onclick = closeDetails;
+  $('#mgo').onclick = () => track('affiliate_outbound_click', { item_id: it.id, item_title: it.title, item_category: it.category, click_placement: 'details', link_url: it.url });
+  track('view_item', { item_id: it.id, item_name: it.title, item_category: it.category });
+}
+function closeDetails() { $('#modal').classList.remove('open'); }
+
+/* ---------------- routing (keeps old #/category/... links working) ---------------- */
+function fromHash() {
+  const seg = location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
+  if (seg[0] === 'category' && seg[1]) S.cat = seg[1];
+  else if (seg[0] === 'movies') S.cat = MOVIES_CAT;
+  else if (seg[0] === 'deals') S.cat = seg[1] === 'active-sales' ? 'live' : 'deals';
+  else if (seg[0] === 'live') S.cat = 'live';
+  else if (seg[0] === 'event' && seg[1]) S.cat = 'event:' + seg[1];
+  else S.cat = 'all';
+  S.shown = CFG.pageSize;
+}
+function setCat(cat) {
+  const h = cat === 'all' ? '#/home' : cat === MOVIES_CAT ? '#/movies' : cat === 'deals' ? '#/deals' : cat === 'live' ? '#/live' : cat.startsWith('event:') ? '#/event/' + encodeURIComponent(cat.slice(6)) : '#/category/' + encodeURIComponent(cat);
+  if (location.hash !== h) location.hash = h; else { fromHash(); render(); }
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener('click', e => {
+  const evl = e.target.closest('[data-evlink]');
+  if (evl) track('affiliate_outbound_click', { item_id: evl.dataset.evlink, item_title: evl.textContent.trim(), click_placement: 'event_card', link_url: evl.href });
+  if (e.target.closest('[data-banner]')) return; // banner links open Amazon
+  const chip = e.target.closest('[data-cat]');
+  if (chip) { e.preventDefault(); setCat(chip.dataset.cat); return; }
+  if (e.target.id === 'more') { S.shown += CFG.pageSize; render(); return; }
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const it = CURRENT[+card.dataset.i]; if (!it) return;
+  if (e.target.closest('[data-go]')) { track('affiliate_outbound_click', { item_id: it.id, item_title: it.title, item_category: it.category, click_placement: 'card', link_url: it.url }); return; }
+  if (e.target.closest('[data-open]')) openDetails(it);
+});
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeDetails(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetails();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('ev')) { e.preventDefault(); setCat(e.target.dataset.cat); }
+});
+let qTimer;
+$('#q').addEventListener('input', e => {
+  S.q = e.target.value; $('#qx').style.display = S.q ? 'block' : 'none';
+  clearTimeout(qTimer); qTimer = setTimeout(() => { S.shown = CFG.pageSize; render(); }, 150);
+});
+$('#qx').addEventListener('click', () => { $('#q').value = ''; S.q = ''; $('#qx').style.display = 'none'; render(); });
+$('#sort').addEventListener('change', e => { S.sort = e.target.value; render(); });
+window.addEventListener('hashchange', () => { fromHash(); render(); });
+
+const chipsEl = $('#chips');
+function updateChipArrows() {
+  const max = chipsEl.scrollWidth - chipsEl.clientWidth;
+  $('#chipL').hidden = chipsEl.scrollLeft <= 4;
+  $('#chipR').hidden = chipsEl.scrollLeft >= max - 4;
+}
+$('#chipL').addEventListener('click', () => chipsEl.scrollBy({ left: -chipsEl.clientWidth * 0.7 }));
+$('#chipR').addEventListener('click', () => chipsEl.scrollBy({ left: chipsEl.clientWidth * 0.7 }));
+chipsEl.addEventListener('scroll', updateChipArrows, { passive: true });
+window.addEventListener('resize', updateChipArrows);
+// Mouse wheel scrolls the chip row sideways
+chipsEl.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && chipsEl.scrollWidth > chipsEl.clientWidth) {
+    e.preventDefault(); chipsEl.scrollLeft += e.deltaY;
+  }
+}, { passive: false });
+// Click-and-drag to slide (mouse); a drag doesn't count as a click
+let drag = null;
+chipsEl.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; drag = { x: e.clientX, left: chipsEl.scrollLeft, moved: false }; });
+window.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x;
+  if (Math.abs(dx) > 5) { drag.moved = true; chipsEl.classList.add('drag'); }
+  if (drag.moved) chipsEl.scrollLeft = drag.left - dx;
+});
+window.addEventListener('pointerup', () => {
+  if (drag && drag.moved) { const stop = ev => { ev.stopPropagation(); ev.preventDefault(); }; chipsEl.addEventListener('click', stop, { capture: true, once: true }); setTimeout(() => chipsEl.removeEventListener('click', stop, true), 0); }
+  drag = null; chipsEl.classList.remove('drag');
+});
+
+fromHash();
+loadDeals();
+loadMovies();
+
+</script>
+<script>
+/* =========================================================================
+   Background translator: reads the device/browser language and, if it isn't
+   English, quietly translates the page with Google Translate. No button.
+   English devices don't load anything extra.
+   ========================================================================= */
+(function () {
+  var langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en']);
+  var raw = String(langs[0] || 'en').toLowerCase();
+  var code = raw.split('-')[0];
+  if (code === 'zh') code = /tw|hk|mo|hant/.test(raw) ? 'zh-TW' : 'zh-CN';
+  if (code === 'he') code = 'iw';
+  var host = location.hostname;
+  function setCookie(v) {
+    var exp = v ? '' : ';expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'googtrans=' + v + ';path=/' + exp;
+    if (host.indexOf('.') > 0) document.cookie = 'googtrans=' + v + ';path=/;domain=' + host + exp;
+  }
+  if (code === 'en') { if (/googtrans=/.test(document.cookie)) setCookie(''); return; }
+  setCookie('/en/' + code);
+  document.documentElement.setAttribute('data-auto-lang', code);
+  window.googleTranslateElementInit = function () {
+    try { new google.translate.TranslateElement({ pageLanguage: 'en', autoDisplay: false }, 'gt-hidden'); } catch (e) {}
+  };
+  function load() {
+    var box = document.createElement('div'); box.id = 'gt-hidden'; box.style.display = 'none';
+    document.body.appendChild(box);
+    var s = document.createElement('script');
+    s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    s.async = true; document.body.appendChild(s);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
+})();
+</script>
 </body>
 </html>

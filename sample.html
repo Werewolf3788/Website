@@ -1,1107 +1,904 @@
 <!DOCTYPE html>
-<!-- ============================================================================
- * File: /profile.html   (Werewolf Project - Member Profile Hub)
- * Shows the profile of whoever is signed in (or ?u=<friend code | user key> for someone else).
- *   Account / menu / music  -> entertainment-71888 (users, friend_codes, utm_links)  [Firebase Auth lives here]
- *   PSN + game data          -> playstation-stats   (RTDB psn/gamertags, Firestore games/players/users)
- *   Music releases           -> published Google Sheet CSV
- * ============================================================================ -->
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Profile | Werewolf Project</title>
-<link id="fav" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ff5f1f'/%3E%3C/svg%3E">
-<link id="touch-icon" rel="apple-touch-icon" href="">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-CTYHDF4MSD',{page_type:'member_profile'});</script>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Property Monomply</title>
 <style>
-:root{
-  --bg:#070709; --card:#14141a; --card2:#1b1b23; --line:rgba(255,255,255,.10);
-  --text:#e2e8f0; --muted:#94a3b8; --accent:#ff5f1f; --green:#10b981; --red:#ef4444; --gold:#f59e0b;
-  --user-font:#e2e8f0;      /* users/{key}/primary_color   -> text colour on the profile card */
-  --user-border:#ff5f1f;    /* users/{key}/secondary_color -> border colour on the profile card */
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
-img{max-width:100%}
-a{color:inherit}
-button{font:inherit;color:inherit;cursor:pointer}
-.hidden{display:none!important}
-.wrap{width:min(1280px,100% - 32px);margin-inline:auto}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
+  button{font:inherit;border:0;border-radius:10px;padding:10px 14px;background:#334155;color:#e2e8f0;cursor:pointer}
+  button.go{background:#22c55e;color:#04210f;font-weight:700} button:disabled{opacity:.4;cursor:default}
+  #top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
+  #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
+  #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
+  
+  /* Mobile sticky controls: board stays at top and the dice/action play area pins directly beneath it */
+  @media(max-width:859px){
+    #boardWrap{position:sticky;top:0;z-index:20;background:#0f172a;padding-bottom:4px}
+    #play{position:sticky;top:calc(100vw - 20px);max-height:48vh;overflow-y:auto;z-index:19;box-shadow:0 8px 16px rgba(0,0,0,0.6);margin-top:0}
+    @media(min-width:640px){
+      #play{top:624px}
+    }
+  }
 
-/* ---------- top menu ---------- */
-.topnav{position:sticky;top:0;z-index:1000;background:rgba(10,10,14,.96);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.topnav .wrap{display:flex;align-items:center;gap:14px;min-height:56px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;text-decoration:none;white-space:nowrap}
-.brand img{width:34px;height:34px;border-radius:8px;object-fit:cover}
-.burger{margin-left:auto;display:none;background:none;border:0;font-size:22px;min-width:44px;min-height:44px}
-#nav{display:flex;align-items:center;gap:4px;flex:1;flex-wrap:wrap}
-.nav-btn,.nav-drop>button{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--muted);padding:10px 12px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;min-height:44px}
-.nav-btn:hover,.nav-drop>button:hover,.nav-drop.open>button{color:#fff;background:rgba(255,255,255,.06)}
-.nav-btn.current{color:#fff;box-shadow:inset 0 -2px 0 var(--accent)}
-.nav-thumb{width:22px;height:22px;border-radius:6px;object-fit:cover}
-.nav-drop{position:relative}
-.nav-menu{display:none;position:absolute;left:0;top:100%;min-width:230px;background:#1a1a22;border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 18px 40px rgba(0,0,0,.6)}
-.nav-drop.open .nav-menu{display:block}
-.nav-menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--text);font-size:14px;min-height:44px}
-.nav-menu a:hover{background:rgba(255,255,255,.07)}
-.nav-user{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
-.nav-user img{width:30px;height:30px;border-radius:50%;object-fit:cover}
-@media(max-width:860px){
-  .burger{display:block}
-  #nav{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;background:#0e0e13;border-bottom:1px solid var(--line);padding:8px 16px 14px;max-height:75vh;overflow:auto}
-  #nav.open{display:flex}
-  .nav-menu{position:static;box-shadow:none;border:0;background:rgba(255,255,255,.03)}
-  .nav-user span{display:none}
-}
-
-/* ---------- cards ---------- */
-main{padding:22px 0 120px;display:flex;flex-direction:column;gap:22px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
-.card h2{margin:0 0 14px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
-@media(max-width:980px){.grid2{grid-template-columns:1fr}}
-.muted{color:var(--muted)} .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-size:12px;font-weight:700}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card2);font-weight:700;text-decoration:none}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.notice{padding:12px 14px;border-radius:12px;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.35);color:#fcd34d;font-size:14px}
-
-/* ---------- profile hero (uses the member's own colours) ---------- */
-.hero{border:2px solid var(--user-border);color:var(--user-font);display:flex;gap:22px;align-items:center;flex-wrap:wrap}
-.hero .muted{color:color-mix(in srgb,var(--user-font) 65%,transparent)}
-.hero .avatar{width:132px;height:132px;border-radius:50%;object-fit:cover;border:3px solid var(--user-border);flex:none;background:#222}
-.hero h1{margin:0;font-size:clamp(26px,5vw,40px);line-height:1.1;word-break:break-word}
-.hero .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.hero .pill{border-color:var(--user-border);color:var(--user-font)}
-.hero .pill a{text-decoration:none;border-bottom:1px dotted currentColor}
-.hero .pill.scope-private{opacity:.55}
-.code{font-family:"JetBrains Mono",monospace;letter-spacing:.12em}
-
-/* ---------- friends ---------- */
-.chips{display:flex;flex-wrap:wrap;gap:10px}
-.chip{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:14px;font-weight:700;text-decoration:none}
-.chip img{width:34px;height:34px;border-radius:50%;object-fit:cover}
-.chip small{display:block;font-weight:600;color:var(--muted);font-size:11px;line-height:1.1}
-a.chip:hover{border-color:var(--accent)}
-
-/* ---------- PSN ---------- */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.stat{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px}
-.stat b{display:block;font-size:26px;font-family:"JetBrains Mono",monospace}
-.stat span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#6b7280;margin-right:6px}
-.dot.on{background:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.2)}
-.tro-row{display:flex;gap:6px;margin-top:6px;font-size:13px;font-weight:700}
-.gold{color:#fbbf24}.plat{color:#93c5fd}.silver{color:#cbd5e1}.bronze{color:#d97706}
-.hunt-art{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;background:#0b0b10}
-.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,#f97316,#fbbf24);border-radius:999px}
-.bar.green i{background:linear-gradient(90deg,#059669,#34d399)}
-.recent{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
-.recent .g{background:var(--card2);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;text-align:left;padding:0}
-.recent .g img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
-.recent .g div{padding:8px 10px;font-size:12px;font-weight:700}
-.recent .g.sel{outline:2px solid var(--accent)}
-.recent .g .sm{font-weight:600;color:var(--muted);font-size:11px}
-.trophies{display:flex;flex-direction:column}
-.t{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 4px;border-top:1px solid var(--line)}
-.t:first-child{border-top:0}
-.t img{width:56px;height:56px;border-radius:10px;object-fit:cover;background:#0b0b10}
-.t .n{font-weight:800;font-size:14px}
-.t .d{font-size:12px;color:var(--muted)}
-.t .r{text-align:right;font-size:12px;min-width:86px}
-.t.done{background:linear-gradient(90deg,rgba(16,185,129,.07),transparent)}
-.t.prog .bar{margin-top:6px;max-width:260px}
-.fr{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-.fr .f{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px 2px 2px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line)}
-.fr .f img{width:20px;height:20px;border-radius:50%;object-fit:cover}
-.fr .f.part{opacity:.85;border-style:dashed}.fr .f.lock{opacity:.55}.fr .f.done{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.1)}
-.dlc{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:8px}.dlc-i{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--card2)}.dlc-i img{width:48px;height:48px;border-radius:8px;object-fit:cover}.dlc-i b{font-size:13px;display:block}.dlc-t{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;padding:6px 0;font-size:12px;width:100%}.dlc-t img{width:36px;height:36px;border-radius:6px}.dlc-t small{color:var(--muted);display:block;font-size:11px}.dlc-t span{text-align:right;font-size:11px}.dlc-i small{color:var(--muted);font-size:11px}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.filters button{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card2);font-size:12px;font-weight:700}
-.filters button.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.scroll{max-height:760px;overflow:auto}
-.trk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-.trk{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left}
-.trk-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
-.trk-head h3{margin:0;font-size:17px}
-.trk-tabs{display:flex;gap:4px;flex-wrap:wrap}
-.trk-tab{padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:12px;font-weight:700;min-height:30px}
-.trk-tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.trk-stats{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-.trk-stats .sc{display:flex;flex-direction:column;align-items:center;min-width:68px;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.trk-stats .sc b{font-size:16px;color:var(--text);font-family:"JetBrains Mono",monospace;letter-spacing:0}
-.trk-list{margin-top:8px;border-top:1px solid var(--line);padding-top:6px}
-.trk-list summary{cursor:pointer;font-weight:700;font-size:13px;padding:6px 0;min-height:32px}
-.trk-region{margin:8px 0 2px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.trk-item{display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0;color:var(--muted)}
-.trk-item.done{color:var(--text)} .trk-item.done i{color:#34d399}
-.trk-fr{display:flex;gap:10px;align-items:center;margin:8px 0}.trk-fr img{width:30px;height:30px;border-radius:50%;object-fit:cover}
-.trk-friends{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
-.trk-friends .chips{margin-top:6px}
-
-/* ---------- floating music card ---------- */
-#music{position:fixed;left:14px;bottom:14px;z-index:900;width:min(310px,calc(100vw - 28px));background:rgba(20,20,26,.97);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.6);overflow:hidden}
-#music a.m-link{display:flex;gap:12px;align-items:center;padding:12px;text-decoration:none}
-#music img{width:64px;height:64px;border-radius:10px;object-fit:cover;flex:none}
-#music .m-label{font-size:10px;letter-spacing:.14em;font-weight:800;color:var(--accent)}
-#music .m-title{font-weight:800;font-size:14px;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-#music .m-time{font-family:"JetBrains Mono",monospace;font-size:12px;color:#34d399;margin-top:2px}
-#music .m-time.out{color:#fb923c}
-#music .m-ctl{display:flex;justify-content:space-between;align-items:center;padding:0 8px 8px;font-size:11px;color:var(--muted)}
-#music .m-ctl button{background:none;border:0;min-width:36px;min-height:32px;color:var(--muted)}
-#music .m-x{position:absolute;right:2px;top:2px;background:none;border:0;min-width:32px;min-height:32px;color:var(--muted)}
-
-/* ---------- lightbox / modal ---------- */
-#lb,#modal{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:18px}
-#lb.show,#modal.show{display:flex}
-#lb img{max-width:96vw;max-height:88vh;border-radius:12px;box-shadow:0 20px 60px #000}
-#lb .cap{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:13px;color:#cbd5e1}
-#lb .x,#modal .x{position:absolute;top:10px;right:14px;font-size:30px;background:none;border:0;color:#fff;min-width:44px;min-height:44px}
-#modal .box{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:22px;position:relative}
-img.lb-able{cursor:zoom-in}
+  /* wide screens: board + property cards on the left, dice and seats stacked on the right */
+  @media(min-width:860px){
+    #main{grid-template-columns:minmax(0,640px) 1fr;grid-template-areas:"board play" "board panel" "deeds panel";align-items:start}
+    #left{display:contents} #boardWrap{grid-area:board;position:static} #play{grid-area:play;margin-top:0;position:static;box-shadow:none} #deeds{grid-area:deeds} #panel{grid-area:panel}
+  }
+  #boardWrap{width:100%}
+  #board{display:block;width:100%;height:auto;border-radius:12px;background:#0b1220}
+  #board text{font-family:system-ui,sans-serif;pointer-events:none}
+  .tok{transition:transform .35s ease-in-out}
+  #panel,#play{background:#1e293b;border-radius:14px;padding:12px}
+  #play{margin-top:10px}
+  #turn{font-weight:700;display:flex;align-items:center;gap:8px;min-height:1.6em}
+  #dice{display:flex;align-items:center;gap:10px;margin:10px 0;min-height:58px}
+  .die{width:58px;height:58px;border-radius:13px;background:#f8fafc;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px;gap:2px;border:0;flex:none;box-shadow:0 3px 0 #94a3b8}
+  .die i{border-radius:50%;background:transparent} .die i.on{background:#0f172a}
+  .die.throw{animation:throw .55s ease-out}
+  @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-22px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}100%{transform:translateY(0) rotate(720deg)}}
+  #msg{color:#fbbf24;font-size:.9rem;line-height:1.25;max-height:58px;overflow:hidden;flex:1}
+  #acts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;min-height:44px;align-items:center}
+  #buildList button{display:block;width:100%;text-align:left;margin:4px 0}
+  .seat{display:flex;align-items:center;gap:8px;padding:7px 6px;border-radius:10px;font-size:.9rem}
+  .seat.cur{background:#0f172a;outline:2px solid #475569} .seat.out{opacity:.45;text-decoration:line-through}
+  .seat .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .seat button{padding:6px 10px;font-size:.8rem}
+  .muted{color:#94a3b8;font-size:.8rem}
+  #banner{background:#14532d;border-radius:10px;padding:10px;margin-bottom:8px;text-align:center;font-weight:700}
+  #left{width:100%;max-width:640px;margin:0 auto}
+  #deeds{margin-top:10px}
+  .deeds{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .deed{background:#1e293b;border-radius:10px;overflow:hidden;font-size:.78rem;line-height:1.35;width:calc(50% - 4px);cursor:pointer}
+  .deed.big{width:100%;cursor:default;font-size:.85rem}
+  .deed .band{padding:6px 8px;font-weight:800;color:#fff;text-shadow:0 1px 2px #000a;font-size:.85rem}
+  .deed .body{padding:6px 8px}
+  .deed table{width:100%;border-collapse:collapse;margin:4px 0} .deed td{padding:1px 0} .deed td:last-child{text-align:right}
+  .deed tr.cur{background:#14532d;font-weight:700}
+  .deed button{width:100%;margin-top:4px;padding:7px 8px;font-size:.8rem}
+  .plain{background:#1e293b;border-radius:10px;padding:10px;font-size:.85rem;line-height:1.5}
+  details#hist{margin-top:10px;background:#0f172a;border-radius:10px;padding:8px 10px} details#hist summary{cursor:pointer;font-weight:700}
+  .bankpulse{animation:pop .4s ease-out}
+  @keyframes siren{0%,100%{fill:#ef4444;opacity:.8}50%{fill:#3b82f6;opacity:.8}}
+  #siren.on{animation:siren .4s steps(1) infinite}
+  #log{margin-top:10px;font-size:.8rem;color:#94a3b8;line-height:1.5}
+  #log div:last-child{color:#e2e8f0}
+  #emotes{display:flex;gap:6px;margin-top:10px} #emotes button{flex:1;padding:8px 0;font-size:1.2rem}
+  .emo{font-size:1.3rem;animation:pop .35s ease-out}
+  .emoB{animation:pop .35s ease-out;transform-box:fill-box;transform-origin:center}
+  @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+  #gate{position:fixed;inset:0;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px;z-index:9}
 </style>
 </head>
 <body>
-
-<header class="topnav">
-  <div class="wrap">
-    <a class="brand" href="./index.html"><img id="brand-img" alt="" class="hidden"><span id="brand-name">Werewolf Project</span></a>
-    <nav id="nav" aria-label="Main menu"></nav>
-    <div class="nav-user" id="nav-user"></div>
-    <button class="burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
-  </div>
-</header>
-
-<main class="wrap">
-  <section id="gate" class="card" style="text-align:center">
-    <h1 style="margin-top:0" id="gate-title">Loading profile…</h1>
-    <div id="gate-msg" class="notice hidden"></div>
-    <script>setTimeout(function(){if(!window.__booted){var m=document.getElementById("gate-msg");m.textContent="Firebase did not load. This page has to be opened from your website (or any normal browser tab), not from an editor preview, so sign-in and the database can connect.";m.classList.remove("hidden");}},6000);</script>
-  </section>
-
-  <div id="app" class="hidden" style="display:flex;flex-direction:column;gap:22px">
-    <section class="card hero" id="hero"></section>
-
-    <section class="card hidden" id="requests-card"><h2><i class="fa-solid fa-user-clock"></i> Friend requests</h2><div id="requests" class="chips"></div></section>
-
-    <section class="card hidden" id="friends-card"><h2><i class="fa-solid fa-user-group"></i> Friends</h2><div id="friends" class="chips"></div></section>
-
-    <section id="psn" class="hidden" style="display:flex;flex-direction:column;gap:22px">
-      <div class="card">
-        <h2><i class="fa-brands fa-playstation"></i> PlayStation <span class="pill" id="sync-pill">--</span></h2>
-        <div class="stats" id="stats"></div>
-      </div>
-      <div class="grid2">
-        <section class="card" id="hunt"></section>
-        <section class="card"><h2><i class="fa-solid fa-clock-rotate-left"></i> Recent games</h2><div class="recent" id="recent"></div></section>
-      </div>
-      <section class="card">
-        <h2><i class="fa-solid fa-trophy"></i> Trophy progress <span id="tro-title" class="pill">--</span></h2>
-        <div class="filters" id="tro-filters"></div>
-        <div class="scroll"><div class="trophies" id="trophies"></div></div>
-      </section>
-    </section>
-
-    <section class="card hidden" id="tracked-card"><h2><i class="fa-solid fa-list-check"></i> Tracked game progress</h2><div id="tracked"></div></section>
-  </div>
-</main>
-
-<aside id="music" class="hidden" aria-label="Music releases">
-  <button class="m-x" id="m-x" aria-label="Close">&times;</button>
-  <a class="m-link" id="m-link" href="#" target="_blank" rel="noopener noreferrer">
-    <img id="m-img" alt="" class="lb-ignore">
-    <div style="min-width:0"><div class="m-label" id="m-label">UPCOMING</div><div class="m-title" id="m-title">--</div><div class="m-time" id="m-time">--</div></div>
-  </a>
-  <div class="m-ctl"><button id="m-prev" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button><span id="m-count"></span><button id="m-next" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button></div>
-</aside>
-
-<div id="lb" role="dialog" aria-label="Image viewer"><button class="x" aria-label="Close">&times;</button><img id="lb-img" alt=""><div class="cap" id="lb-cap"></div></div>
-<div id="modal" role="dialog"><div class="box"><button class="x" aria-label="Close" style="color:#fff">&times;</button><div id="modal-body"></div></div></div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, get, set, update, remove, onValue, query as dbQuery, orderByChild, equalTo, limitToFirst } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getFirestore, doc, getDoc, collection, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* ============================================================================
- * 1. Firebase apps
- *    E = entertainment-71888  (Auth, users, friend_codes, utm_links)  [default app = same login as the other pages]
- *    P = playstation-stats    (PSN RTDB + Firestore)
- * ============================================================================ */
-const appE = initializeApp({
-  apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc", authDomain: "entertainment-71888.firebaseapp.com",
-  databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com", projectId: "entertainment-71888",
-  storageBucket: "entertainment-71888.firebasestorage.app", messagingSenderId: "660524340277",
-  appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
-});   // default app on purpose: the saved sign-in is stored per app name, so this shares the login with settings.html / index.html
-const appP = initializeApp({
-  apiKey: "AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI", authDomain: "playstation-stats.firebaseapp.com",
-  databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com", projectId: "playstation-stats",
-  storageBucket: "playstation-stats.firebasestorage.app", messagingSenderId: "748816703249",
-  appId: "1:748816703249:web:3413fac9800148aa42b6b0"
-}, "psnstats");
-const authE = getAuth(appE), dbE = getDatabase(appE);
-const authP = getAuth(appP), dbP = getDatabase(appP), fsP = getFirestore(appP);
-const fsE = getFirestore(appE);                      // tracked progress lives here: entertainment-71888 Firestore  users/{friend_code}/platform/{ps|steam|xbox...}/progress/{game}
-
-const MUSIC_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_173WA41Z0YdMPcwnL6Uz_6Hx1jbZZDw_HTxTrwVtCqLU6W2IJLv-VIS2dbMjPaMeIuAZ8cbVawpQ/pub?output=csv";
-const PLATFORMS = ["ps", "psn", "playstation", "steam", "xbox", "pc", "switch"];   // platform ids tried under users/{code}/platform/
-const PLATFORM_LABEL = { ps: "PSN", psn: "PSN", playstation: "PSN", steam: "Steam", xbox: "Xbox", pc: "PC", switch: "Switch" };
-const isPsn = (p) => ["ps", "psn", "playstation"].includes(p);
-const prettyGame = (id) => String(id).replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([A-Za-z])(\d)/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2").replace(/\bfar ?cry\b/gi, "Far Cry").replace(/\s+/g, " ").trim().replace(/\b([a-z])/g, (m) => m.toUpperCase());
-const $ = (id) => document.getElementById(id);
-
-/* ============================================================================
- * 2. Helpers
- * ============================================================================ */
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const keyOf = (u) => (u.email ? u.email.toLowerCase().replace(/\./g, "_").replace("@", "_at_") : u.uid);   // same as settings page
-const safeKey = (s) => String(s || "").replace(/[.$#\[\]\/]/g, "_");
-const toGameKey = (n = "") => String(n).replace(/®|™|©/g, "").replace(/[:\/\\#$\[\].\-+]/g, " ").trim().replace(/\s+/g, "_") || "Unknown_Game";
-const lc = (s) => String(s || "").trim().toLowerCase();
-const num = (v, d = 999) => { const n = parseFloat(v); return Number.isFinite(n) ? n : d; };
-const NY = { timeZone: "America/New_York", hour12: false };
-const fmtNY = (v) => { if (!v) return "--"; const d = new Date(v); return isNaN(d) ? String(v) : d.toLocaleString("en-US", NY); };
-
-function secure(u) {                           // only http(s)/relative URLs, never mixed content, never javascript:
-  if (!u || typeof u !== "string") return "";
-  let s = u.trim();
-  if (s.startsWith("//")) s = "https:" + s;
-  if (/^http:\/\//i.test(s)) s = s.replace(/^http:/i, "https:");
-  if (/^https:\/\//i.test(s) || /^(\.\/|\.\.\/|\/)[^/]/.test(s) || /^[\w-]+\.html?(\?|#|$)/.test(s)) return s;
-  return "";
-}
-const img = (u, cls = "", alt = "") => { const s = secure(u); return s ? `<img src="${esc(s)}" alt="${esc(alt)}" class="lb-able ${cls}" loading="lazy" referrerpolicy="no-referrer">` : ""; };
-
-function hash(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
-const cacheGet = (k) => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch { return null; } };
-const cacheSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } };
-const okColor = (c) => /^#[0-9a-f]{6}$/i.test(String(c || ""));
-const lum = (hex) => { const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.substr(i, 2), 16) / 255); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
-
-/* Smart cache: paint from localStorage first, then always revalidate; only repaint when the signature changed. */
-function smartCache(name, fresh, signature, paint) {
-  const c = cacheGet(name);
-  if (c && c.sig) paint(c.data, true);
-  const sig = signature(fresh);
-  if (!c || c.sig !== sig) { cacheSet(name, { sig, data: fresh }); paint(fresh, false); }
-}
-
-/* ============================================================================
- * 3. Lightbox (every image on the page, except images that sit inside a link/button)
- * ============================================================================ */
-function openLightbox(src, cap) {
-  $("lb-img").src = src; $("lb-cap").textContent = cap || ""; $("lb").classList.add("show");
-}
-document.addEventListener("click", (e) => {
-  const im = e.target.closest && e.target.closest("img");
-  if (im && im.id !== "lb-img" && !im.closest("a,button,.lb-ignore") && !im.classList.contains("lb-ignore")) {
-    openLightbox(im.currentSrc || im.src, im.alt); return;
-  }
-  if (e.target.id === "lb" || e.target.closest("#lb .x")) $("lb").classList.remove("show");
-  if (e.target.id === "modal" || e.target.closest("#modal .x")) $("modal").classList.remove("show");
-  if (!e.target.closest(".nav-drop")) document.querySelectorAll(".nav-drop.open").forEach((d) => d.classList.remove("open"));
-});
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("lb").classList.remove("show"); $("modal").classList.remove("show"); } });
-const openModal = (html) => { $("modal-body").innerHTML = html; $("modal").classList.add("show"); };
-
-/* ============================================================================
- * 4. Menu from /utm_links
- *    - a node with a url is a link. name = name/title, or the folder key (Settings/0 -> "Settings")
- *    - rowNumber: lower = further LEFT in the bar, and higher up inside a drop-down
- *    - same `group` text  -> one drop-down button;   empty / null group -> its own button
- * ============================================================================ */
-const NO_GROUP = new Set(["", "null", "none", "standalone", "undefined", "-"]);
-function collectLinks(node, key, parentKey, out) {
-  if (!node || typeof node !== "object") return;
-  const url = node.url || node.link || node.href;
-  if (typeof url === "string" && url.trim()) {
-    const label = node.name || node.title || (/^\d+$/.test(key) ? parentKey : key);
-    const g = node.group == null ? "" : String(node.group).trim();
-    out.push({ name: String(label || "Link"), url: url.trim(), image: node.image || node.img || node.icon || node.thumb || "",
-               group: NO_GROUP.has(g.toLowerCase()) ? "" : g, row: num(node.rowNumber), updatedAt: node.updatedAt || "" });
-    return;
-  }
-  for (const [k, v] of Object.entries(node)) collectLinks(v, k, key, out);
-}
-function buildMenu(data) {
-  const links = []; collectLinks(data, "", "", links);
-  const items = []; const groups = new Map();
-  for (const l of links) {
-    if (!l.group) { items.push({ type: "link", row: l.row, link: l }); continue; }
-    const k = l.group.toLowerCase();
-    if (!groups.has(k)) groups.set(k, { type: "group", name: l.group, links: [] });
-    groups.get(k).links.push(l);
-  }
-  for (const g of groups.values()) {
-    g.links.sort((a, b) => a.row - b.row || a.name.localeCompare(b.name));
-    g.row = g.links[0].row; items.push(g);
-  }
-  items.sort((a, b) => a.row - b.row || (a.link?.name || a.name).localeCompare(b.link?.name || b.name));
-  return { items, links };
-}
-const samePage = (url) => { try { const u = new URL(url, location.href); return u.origin === location.origin; } catch { return false; } };
-const thumb = (u) => { const s = secure(u); return s ? `<img class="nav-thumb" src="${esc(s)}" alt="" loading="lazy">` : ""; };
-const linkA = (l, cls) => { const href = secure(l.url) || "#"; const t = samePage(href) ? "" : ' target="_blank" rel="noopener noreferrer"';
-  const cur = (() => { try { return new URL(href, location.href).pathname === location.pathname ? " current" : ""; } catch { return ""; } })();
-  return `<a class="${cls}${cur}" href="${esc(href)}"${t}>${thumb(l.image)}<span>${esc(l.name)}</span></a>`; };
-
-function renderMenu({ items, links }) {
-  $("nav").innerHTML = items.map((n, i) => n.type === "link" ? linkA(n.link, "nav-btn")
-    : `<div class="nav-drop" data-i="${i}"><button type="button" aria-haspopup="true"><i class="fa-solid fa-folder"></i><span>${esc(n.name)}</span><i class="fa-solid fa-chevron-down" style="font-size:10px"></i></button>
-       <div class="nav-menu">${n.links.map((l) => linkA(l, "")).join("")}</div></div>`).join("");
-  $("nav").querySelectorAll(".nav-drop > button").forEach((b) => b.onclick = (e) => {
-    e.stopPropagation(); const d = b.parentElement, was = d.classList.contains("open");
-    document.querySelectorAll(".nav-drop.open").forEach((x) => x.classList.remove("open")); if (!was) d.classList.add("open");
-  });
-  // header image + favicon: this page's own entry if the menu has one, otherwise Home
-  const file = location.pathname.split("/").pop().toLowerCase();
-  const byName = links.find((l) => lc(l.name) === "profile");
-  const byUrl = links.find((l) => { try { return file && new URL(l.url, location.href).pathname.toLowerCase().endsWith("/" + file) && file !== "index.html"; } catch { return false; } });
-  const home = links.find((l) => lc(l.name) === "home") || links.find((l) => /(^|\/)index\.html?$/i.test(l.url));
-  const own = [byName, byUrl].find((l) => l && l.image);              // this page's own menu entry (utm_links/Profile)
-  const pick = own || home;
-  const src = secure(pick && pick.image);
-  if (src) {
-    $("brand-img").src = src; $("brand-img").classList.remove("hidden");
-    if (!window.__profileFav) { $("fav").href = src; $("touch-icon").href = src; }   // viewed profile's avatar wins
-  }
-}
-$("burger").onclick = () => $("nav").classList.toggle("open");
-
-function startMenu() {
-  const sigOf = (d) => hash(JSON.stringify(collectAndSig(d)));
-  const collectAndSig = (d) => { const l = []; collectLinks(d, "", "", l); return l.map((x) => [x.name, x.url, x.image, x.group, x.row, x.updatedAt]); };
-  const first = cacheGet("wp_menu_v2"); if (first && first.data) renderMenu(buildMenu(first.data));
-  onValue(ref(dbE, "utm_links"), (snap) => {
-    const data = snap.val(); if (!data) return;
-    const c = cacheGet("wp_menu_v2");
-    if (!c || c.sig !== sigOf(data)) { cacheSet("wp_menu_v2", { sig: sigOf(data), data }); renderMenu(buildMenu(data)); }
-  }, (err) => console.warn("[menu]", err.message));
-}
-
-/* ============================================================================
- * 5. Floating music card (published Google Sheet CSV: Name | URL | Date | Image Url)
- * ============================================================================ */
-function parseCSV(text) {
-  const rows = []; let row = [], cell = "", q = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (q) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
-    else if (c === '"') q = true;
-    else if (c === ",") { row.push(cell); cell = ""; }
-    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
-    else cell += c;
-  }
-  if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
-  return rows.filter((r) => r.some((x) => String(x).trim() !== ""));
-}
-function parseReleaseDate(s) {
-  s = String(s || "").trim(); if (!s || /^n\/?a$/i.test(s)) return NaN;
-  let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/); if (m) return new Date(+m[1], +m[2] - 1, +m[3]).getTime();
-  m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})/); if (m) return new Date(+(m[3].length === 2 ? "20" + m[3] : m[3]), +m[1] - 1, +m[2]).getTime();
-  const t = Date.parse(s); return isNaN(t) ? NaN : t;
-}
-function releasesFromCSV(text) {
-  const out = [];
-  for (const r of parseCSV(text)) {
-    const [name, url, date, image] = r.map((x) => String(x || "").trim());
-    const t = parseReleaseDate(date); if (!name || isNaN(t)) continue;       // skips the header row too
-    out.push({ name, url: secure(url) || "#", date: t, image: secure(image) });
-  }
-  const now = Date.now(), DAY = 86400000;
-  const up = out.filter((x) => x.date > now).sort((a, b) => a.date - b.date);
-  const rel = out.filter((x) => x.date <= now && now - x.date <= 60 * DAY).sort((a, b) => b.date - a.date);
-  return [...up, ...rel];
-}
-let rel = [], relI = 0, relPaused = false;
-function paintRelease() {
-  const card = $("music");
-  if (!rel.length) { card.classList.add("hidden"); return; }
-  if (sessionStorage.getItem("wp_music_closed") === "1") return;
-  card.classList.remove("hidden");
-  relI = ((relI % rel.length) + rel.length) % rel.length;
-  const r = rel[relI];
-  const a = $("m-link"); a.href = r.url; $("m-title").textContent = r.name; $("m-count").textContent = `${relI + 1} / ${rel.length}`;
-  const im = $("m-img"); if (r.image) { im.src = r.image; im.style.visibility = "visible"; } else im.style.visibility = "hidden";
-  tickRelease();
-}
-function tickRelease() {
-  if (!rel.length) return; const r = rel[relI]; const diff = r.date - Date.now(); const t = $("m-time");
-  if (diff <= 0) { $("m-label").textContent = "OUT NOW"; t.textContent = "Out now - go listen!"; t.className = "m-time out"; return; }
-  const d = Math.floor(diff / 86400000), h = Math.floor(diff % 86400000 / 3600000), m = Math.floor(diff % 3600000 / 60000), s = Math.floor(diff % 60000 / 1000);
-  $("m-label").textContent = d === 0 ? "COMING TODAY" : `COMING IN ${d} DAY${d === 1 ? "" : "S"}`;
-  t.textContent = `${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`; t.className = "m-time";
-}
-async function loadMusic() {
-  try {
-    const r = await fetch(`${MUSIC_CSV}&_=${Math.floor(Date.now() / 300000)}`, { cache: "no-store" });
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const text = await r.text();
-    smartCache("wp_music_v1", text, hash, (t) => { rel = releasesFromCSV(t); paintRelease(); });
-  } catch (e) { console.warn("[music]", e.message); const c = cacheGet("wp_music_v1"); if (c && !rel.length) { rel = releasesFromCSV(c.data); paintRelease(); } }
-}
-function startMusic() {
-  loadMusic(); setInterval(loadMusic, 10 * 60 * 1000); setInterval(tickRelease, 1000);
-  setInterval(() => { if (!relPaused && rel.length > 1) { relI++; paintRelease(); } }, 7000);
-  const card = $("music"); card.onmouseenter = () => relPaused = true; card.onmouseleave = () => relPaused = false;
-  $("m-prev").onclick = () => { relI--; paintRelease(); }; $("m-next").onclick = () => { relI++; paintRelease(); };
-  $("m-x").onclick = () => { card.classList.add("hidden"); try { sessionStorage.setItem("wp_music_closed", "1"); } catch {} };
-}
-
-/* ============================================================================
- * 6. Who are we showing?  (signed-in member, or ?u=<friend code | user key>)
- * ============================================================================ */
-const S = { viewer: null, viewerKey: null, viewerData: null, viewerFriends: {}, targetKey: null, target: null, own: true, isFriend: false, unsubCard: null };
-const CODE_RE = /^[A-Z0-9]{8}$/i;
-// profile.html?u=CODE   (also ?code= / ?friend= / #CODE)
-function requestedProfile() {
-  const q = new URLSearchParams(location.search);
-  const v = q.get("u") || q.get("code") || q.get("friend") || decodeURIComponent((location.hash || "").replace(/^#\/?/, ""));
-  return v ? v.trim() : null;
-}
-const shareUrl = (code) => `${location.origin}${location.pathname}?u=${encodeURIComponent(code)}`;
-const SCOPE_LABEL = { public: "Public", friends: "Friends only", private: "Only you" };
-const canSee = (scope) => S.own || scope === "public" || (scope === "friends" && S.isFriend);
-
-const LOOKUP = {};                                   // path -> error text, for the "not found" explanation
-async function rtGet(db, path) { try { return (await get(ref(db, path))).val(); } catch (e) { console.warn("[rtdb]", path, e.message); LOOKUP[path] = e.message; return null; } }
-
-async function resolveTargetKey(p) {
-  if (!p) return S.viewerKey;                       // null when signed out and no ?u=
-  if (CODE_RE.test(p)) {
-    const code = p.toUpperCase();
-    const k = await rtGet(dbE, "friend_codes/" + code); if (k && typeof k === "string") return k;
-    // not in the registry: is it the signed-in member's own code?  (then register it so everyone else can find it too)
-    if (S.viewerKey && S.viewerData && S.viewerData.friend_code === code) {
-      try { await set(ref(dbE, "friend_codes/" + code), S.viewerKey); } catch (e) { console.warn("[friend_codes] could not register", e.message); }
-      return S.viewerKey;
-    }
-    // last resort: search users by friend_code (works when the rules allow reading /users)
-    try {
-      const snap = await get(dbQuery(ref(dbE, "users"), orderByChild("friend_code"), equalTo(code), limitToFirst(1)));
-      const found = snap.exists() ? Object.keys(snap.val())[0] : null; if (found) return found;
-    } catch (e) { /* no permission or no index: fall through */ }
-    S.codeMissing = code; return null;
-  }
-  return p;
-}
-function friendEntries(map) {                      // users/{key}/friends/{code}: username, avatar_url, friend_code, primary_platform...
-  return Object.entries(map || {}).map(([k, f]) => ({ code: (f && f.friend_code) || k, ...(f || {}) })).filter((f) => f.code);
-}
-
-function showGate(title, bodyHtml) {
-  $("app").classList.add("hidden"); $("gate").classList.remove("hidden");
-  $("gate").innerHTML = `<h1 style="margin-top:0">${esc(title)}</h1>${bodyHtml}`;
-}
-const gateButtons = `<p><button id="gbtn2" class="btn primary"><i class="fa-brands fa-google"></i> Sign in with Google</button> <a class="btn" href="./security/setting.html">Email sign-in / settings</a></p>`;
-const googleSignIn = () => signInWithPopup(authE, new GoogleAuthProvider()).catch((e) => alert(e.message));
-
-async function loadProfile(user) {
-  S.viewer = user || null; S.viewerKey = user ? keyOf(user) : null;
-  S.viewerData = user ? ((await rtGet(dbE, "users/" + S.viewerKey)) || {}) : {};
-  S.viewerFriends = S.viewerData.friends || {};
-  S.codeMissing = null;
-  const want = requestedProfile();
-  S.targetKey = await resolveTargetKey(want);
-  if (!S.targetKey && !S.codeMissing) {                // signed out and nobody chosen
-    showGate("Find a profile", `<p class="muted">Open a member's profile with their friend code, or sign in to see your own.</p>
-      <form id="codeform" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"><input id="codein" maxlength="8" placeholder="FRIEND CODE" style="min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--text);text-transform:uppercase;letter-spacing:.12em"><button class="btn primary">Open</button></form>${gateButtons}`);
-    $("codeform").onsubmit = (e) => { e.preventDefault(); const c = $("codein").value.trim(); if (c) location.search = "?u=" + encodeURIComponent(c.toUpperCase()); };
-    $("gbtn2").onclick = googleSignIn; return;
-  }
-  S.own = !!S.viewerKey && S.targetKey === S.viewerKey;
-  S.limited = false;
-  if (S.targetKey) S.target = S.own ? S.viewerData : ((await rtGet(dbE, "users/" + S.targetKey)) || null);
-  else S.target = null;
-  if (!S.target && S.codeMissing) {                    // code lookup failed: fall back to what the viewer's own friend list knows
-    const f = friendEntries(S.viewerFriends).find((x) => x.code === S.codeMissing);
-    if (f) { S.target = { username: f.username, avatar_url: f.avatar_url, friend_code: f.code }; S.limited = true; S.targetKey = null; }
-  }
-  if (!S.target) {
-    const why = S.codeMissing ? (LOOKUP["friend_codes/" + S.codeMissing]
-      ? `The database refused the lookup of friend code <b>${esc(S.codeMissing)}</b> (${esc(LOOKUP["friend_codes/" + S.codeMissing])}). The RTDB rules need to allow public read on <code>friend_codes/{code}</code> and <code>users/{key}</code>.`
-      : `Friend code <b>${esc(S.codeMissing)}</b> is not registered in <code>friend_codes</code>. The member has to open their settings page once so their code gets registered.`)
-      : `That member does not exist or has not set up a profile yet.`;
-    showGate("Profile not found", `<p class="muted">${why}</p><a class="btn" href="./profile.html">Back to profile</a>`); return;
-  }
-  const tcode = S.target.friend_code;
-  S.isFriend = S.own || friendEntries(S.viewerFriends).some((f) => tcode && f.code === tcode);
-  if (S.limited) S.isFriend = true;
-  $("gate").classList.add("hidden"); $("app").classList.remove("hidden");
-
-  const sig = hash(JSON.stringify([S.target.updated_at, S.target.last_profile_sync, S.target.avatar_url, S.target.username, S.target.primary_color, S.target.secondary_color]));
-  const cacheKey = "wp_profile_" + S.targetKey;
-  const c = cacheGet(cacheKey); if (c && c.sig === sig) { /* unchanged since last visit: no extra work needed, rendering below is cheap */ }
-  cacheSet(cacheKey, { sig, at: Date.now() });
-
-  if (S.own && tcode && !requestedProfile()) { try { history.replaceState(null, "", shareUrl(tcode)); } catch (e) { /* ignore */ } }
-  renderNavUser(); renderHero(); renderFriends(); refreshFriendChips();
-  watchProfile();
-  renderFriendAction(); await syncSentRequests(); await renderRequests();
-  await startPsn(); await renderTracked();
-}
-
-function renderNavUser() {
-  if (!S.viewer) { $("nav-user").innerHTML = `<button class="btn" id="signin" style="min-height:34px;padding:4px 10px"><i class="fa-brands fa-google"></i> Sign in</button>`; $("signin").onclick = googleSignIn; return; }
-  const u = S.viewerData; const a = secure(u.avatar_url || S.viewer.photoURL);
-  $("nav-user").innerHTML = `${a ? `<img src="${esc(a)}" alt="" class="lb-ignore">` : ""}<span>${esc(u.username || "Member")}</span><button class="btn" id="signout" style="min-height:34px;padding:4px 10px">Sign out</button>`;
-  $("signout").onclick = () => signOut(authE);
-}
-
-function handleRows(d) {
-  const rows = [];
-  const add = (icon, label, value, scope, href) => { if (value && canSee(scope || "private")) rows.push({ icon, label, value, scope: scope || "private", href }); };
-  add("fa-brands fa-playstation", "PSN", d.psn_username, d.psn_username_scope);
-  add("fa-brands fa-steam", "Steam friend code", d.steam_friend_code || d.steam_id, d.steam_friend_code ? d.steam_friend_code_scope : (d.steam_id_scope || d.steam_friend_code_scope));
-  add("fa-brands fa-xbox", "Xbox", d.xbox_gamertag, d.xbox_gamertag_scope);
-  const tw = String(d.twitch_username || "").replace(/^@/, "").trim();
-  add("fa-brands fa-twitch", "Twitch", tw, d.twitch_scope, /^[A-Za-z0-9_]{2,25}$/.test(tw) ? "https://twitch.tv/" + tw : null);
-  return rows;
-}
-
-function renderHero() {
-  const d = S.target;
-  if (okColor(d.primary_color) && lum(d.primary_color) > 0.12) document.documentElement.style.setProperty("--user-font", d.primary_color);
-  if (okColor(d.secondary_color)) document.documentElement.style.setProperty("--user-border", d.secondary_color);
-  const name = d.username || "Member";                                // always the username, never the real name
-  document.title = `${name} | Profile`;
-  const av = secure(d.avatar_url);
-  if (av) { window.__profileFav = av; const f = $("fav"); f.removeAttribute("type"); f.href = av; $("touch-icon").href = av; }
-  const handles = handleRows(d).map((h) => {
-    const inner = h.href ? `<a href="${esc(h.href)}" target="_blank" rel="noopener noreferrer">${esc(h.value)}</a>` : esc(h.value);
-    return `<span class="pill ${S.own && h.scope === "private" ? "scope-private" : ""}" title="${esc(h.label)}${S.own ? " - " + SCOPE_LABEL[h.scope] : ""}"><i class="${h.icon}"></i>${inner}${S.own ? `<small class="muted" style="font-weight:600">${esc(SCOPE_LABEL[h.scope] || "")}</small>` : ""}</span>`;
-  }).join("");
-  $("hero").innerHTML = `
-    ${av ? `<img class="avatar lb-able" src="${esc(av)}" alt="${esc(name)}" referrerpolicy="no-referrer">` : `<div class="avatar" style="display:grid;place-items:center;font-size:48px;font-weight:800">${esc(name[0] || "?")}</div>`}
-    <div style="min-width:0;flex:1">
-      <h1>${esc(name)}</h1>
-      <div class="meta">
-        ${d.friend_code ? `<span class="pill" title="Friend code"><i class="fa-solid fa-id-badge"></i><span class="code">${esc(d.friend_code)}</span><button type="button" id="copy" style="background:none;border:0;padding:0 2px" aria-label="Copy friend code"><i class="fa-regular fa-copy"></i></button></span>` : ""}
-        ${handles}
-        <span id="friend-action"></span>
-        ${d.friend_code ? `<button type="button" id="share" class="pill" style="background:var(--user-border);color:#000;cursor:pointer"><i class="fa-solid fa-share-nodes"></i> Share profile</button>` : ""}
-      </div>
-      <div class="muted" style="margin-top:10px;font-size:12px">${(d.last_profile_sync || d.updated_at) ? `Profile synced ${esc(fmtNY(d.last_profile_sync || d.updated_at))} ET` : ""}${S.own ? ` &middot; <a href="./security/setting.html">Edit settings</a>` : S.viewer ? ` &middot; <a href="./profile.html">My profile</a>` : ` &middot; <a href="#" id="hero-signin">Sign in</a>`}</div>
-    </div>`;
-  const sh = $("share");
-  if (sh) sh.onclick = async () => {
-    const url = shareUrl(d.friend_code), orig = sh.innerHTML;
-    try { if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) { await navigator.share({ title: `${name} | Werewolf Project`, url }); return; } } catch (e) { if (e.name === "AbortError") return; }
-    try { await navigator.clipboard.writeText(url); sh.innerHTML = '<i class="fa-solid fa-check"></i> Link copied'; } catch (e) { prompt("Copy this link:", url); }
-    setTimeout(() => { sh.innerHTML = orig; }, 2200);
-  };
-  const hs = $("hero-signin"); if (hs) hs.onclick = (e) => { e.preventDefault(); googleSignIn(); };
-  const cp = $("copy"); if (cp) cp.onclick = () => navigator.clipboard && navigator.clipboard.writeText(d.friend_code).then(() => { cp.innerHTML = '<i class="fa-solid fa-check"></i>'; });
-}
-
-/* Settings changes (colours, avatar, handles, scopes...) show up live: users/{key} is watched and any change repaints. */
-const sigOf = (d) => hash(JSON.stringify(d || {}));
-function watchProfile() {
-  if (S.unsubUser) { S.unsubUser(); S.unsubUser = null; }
-  if (!S.targetKey || S.limited) return;
-  let last = sigOf(S.target);
-  S.unsubUser = onValue(ref(dbE, "users/" + S.targetKey), (snap) => {
-    const d = snap.val(); if (!d) return;
-    const s = sigOf(d); if (s === last) return; last = s;
-    const old = S.target; S.target = d; if (S.own) { S.viewerData = d; S.viewerFriends = d.friends || {}; }
-    renderHero(); if (S.own) { renderNavUser(); renderFriends(); refreshFriendChips(); }
-    const psnChanged = old.psn_username !== d.psn_username || old.psn_username_scope !== d.psn_username_scope;
-    if (psnChanged) startPsn();
-    renderTracked();
-  }, (e) => console.warn("[profile watch]", e.message));
-}
-
-/* Friend chips follow each friend's own profile (name + avatar), not the copy stored when they were added. */
-async function refreshFriendChips() {
-  if (!S.own) return;
-  const users = await ensureFriendUsers(); let changed = false;
-  for (const f of friendEntries(S.viewerFriends)) {
-    const u = users[f.code]; if (!u) continue;
-    const slot = Object.keys(S.viewerFriends).find((k) => k === f.code || (S.viewerFriends[k] && S.viewerFriends[k].friend_code === f.code)); if (!slot) continue;
-    const cur = S.viewerFriends[slot] || {};
-    if ((u.username && u.username !== cur.username) || (u.avatar_url && u.avatar_url !== cur.avatar_url)) { S.viewerFriends[slot] = { ...cur, username: u.username || cur.username, avatar_url: u.avatar_url || cur.avatar_url }; changed = true; }
-  }
-  if (changed) renderFriends();
-}
-
-function renderFriends() {
-  const list = S.own ? friendEntries(S.viewerFriends) : [];
-  $("friends-card").classList.toggle("hidden", !list.length);
-  $("friends").innerHTML = list.map((f) => {
-    const a = secure(f.avatar_url);
-    return `<div class="chip">${a ? `<img class="lb-able" src="${esc(a)}" alt="" referrerpolicy="no-referrer">` : ""}<div><a href="./profile.html?u=${encodeURIComponent(f.code)}" style="text-decoration:none">${esc(f.username || f.code)}</a><small>${esc(f.primary_platform || "")} ${esc(f.code)}</small></div></div>`;
-  }).join("");
-}
-
-$("gbtn") && ($("gbtn").onclick = googleSignIn);
-
-/* ============================================================================
- * 6b. Friend requests
- *   friend_requests/{targetKey}/{requesterCode} = { from_key, friend_code, username, avatar_url, created_at, status }
- *   users/{requesterKey}/friend_requests_sent/{targetCode} = { target_key, created_at }
- *   target accepts -> users/{targetKey}/friends/{requesterCode}; the requester's page adds the target the next time it loads.
- * ============================================================================ */
-const myCode = () => S.viewerData && S.viewerData.friend_code;
-const profileInfo = (d, code) => ({ username: d.username || code, avatar_url: d.avatar_url || "", friend_code: code, primary_platform: d.psn_username ? "psn" : "", linked_at: Date.now() });
-
-async function renderFriendAction() {
-  const box = $("friend-action"); if (!box) return;
-  box.innerHTML = ""; if (S.own) return;
-  if (!S.viewer) { box.innerHTML = `<button type="button" class="pill" id="fa-signin" style="cursor:pointer"><i class="fa-solid fa-user-plus"></i> Sign in to add friend</button>`; $("fa-signin").onclick = googleSignIn; return; }
-  if (S.isFriend) { box.innerHTML = `<span class="pill"><i class="fa-solid fa-user-check"></i> Friends</span>`; return; }
-  const code = myCode(), tcode = S.target.friend_code;
-  if (!code) { box.innerHTML = `<a class="pill" href="./security/setting.html"><i class="fa-solid fa-user-plus"></i> Open settings once to get your friend code</a>`; return; }
-  if (!tcode || !S.targetKey) return;
-  const existing = await rtGet(dbE, `friend_requests/${S.targetKey}/${code}`);
-  if (existing && existing.status === "pending") { box.innerHTML = `<span class="pill"><i class="fa-regular fa-clock"></i> Request sent</span>`; return; }
-  if (existing && existing.status === "declined") { box.innerHTML = `<span class="pill muted"><i class="fa-solid fa-user-xmark"></i> Request declined</span>`; return; }
-  box.innerHTML = `<button type="button" class="pill" id="fa-add" style="cursor:pointer;background:var(--user-border);color:#000"><i class="fa-solid fa-user-plus"></i> Add friend</button>`;
-  $("fa-add").onclick = async () => {
-    const b = $("fa-add"); b.disabled = true;
-    try {
-      const me = S.viewerData;
-      await set(ref(dbE, `friend_requests/${S.targetKey}/${code}`), { from_key: S.viewerKey, friend_code: code, username: me.username || code, avatar_url: me.avatar_url || "", created_at: Date.now(), status: "pending" });
-      await set(ref(dbE, `users/${S.viewerKey}/friend_requests_sent/${tcode}`), { target_key: S.targetKey, created_at: Date.now() }).catch(() => {});
-      box.innerHTML = `<span class="pill"><i class="fa-regular fa-clock"></i> Request sent</span>`;
-    } catch (e) { b.disabled = false; alert("Could not send the request: " + e.message + "\n\nThe database rules need to allow friend_requests."); }
-  };
-}
-
-async function syncSentRequests() {                // requester side: did anyone accept?
-  if (!S.own || !S.viewerKey) return;
-  const sent = (await rtGet(dbE, `users/${S.viewerKey}/friend_requests_sent`)) || {}; const code = myCode(); let changed = false;
-  for (const [tcode, s] of Object.entries(sent)) {
-    if (!s || !s.target_key) continue;
-    const r = await rtGet(dbE, `friend_requests/${s.target_key}/${code}`); if (!r) continue;
-    if (r.status === "accepted") {
-      const t = (await rtGet(dbE, `users/${s.target_key}`)) || {};
-      try { const f = profileInfo(t, tcode); await set(ref(dbE, `users/${S.viewerKey}/friends/${tcode}`), f); S.viewerFriends[tcode] = f; await remove(ref(dbE, `users/${S.viewerKey}/friend_requests_sent/${tcode}`)); changed = true; } catch (e) { console.warn("[friends]", e.message); }
-    } else if (r.status === "declined") { try { await remove(ref(dbE, `users/${S.viewerKey}/friend_requests_sent/${tcode}`)); } catch (e) { /* ignore */ } }
-  }
-  if (changed) renderFriends();
-}
-
-async function renderRequests() {                  // target side: pending requests on my own profile
-  const card = $("requests-card"); if (!card) return;
-  if (!S.own || !S.viewerKey) { card.classList.add("hidden"); return; }
-  const all = (await rtGet(dbE, `friend_requests/${S.viewerKey}`)) || {};
-  const pending = Object.values(all).filter((r) => r && r.status === "pending");
-  card.classList.toggle("hidden", !pending.length); if (!pending.length) return;
-  $("requests").innerHTML = pending.map((r) => `<div class="chip">${img(r.avatar_url, "", r.username)}<div>${esc(r.username)}<small>${esc(r.friend_code)}</small></div>
-    <button class="btn" data-a="accept" data-c="${esc(r.friend_code)}" style="min-height:34px;padding:2px 10px">Accept</button><button class="btn" data-a="decline" data-c="${esc(r.friend_code)}" style="min-height:34px;padding:2px 10px">Decline</button></div>`).join("");
-  $("requests").querySelectorAll("button").forEach((b) => b.onclick = async () => {
-    const r = pending.find((x) => x.friend_code === b.dataset.c); if (!r) return; b.disabled = true;
-    try {
-      if (b.dataset.a === "accept") { const f = { username: r.username, avatar_url: r.avatar_url || "", friend_code: r.friend_code, primary_platform: "", linked_at: Date.now() };
-        await set(ref(dbE, `users/${S.viewerKey}/friends/${r.friend_code}`), f); S.viewerFriends[r.friend_code] = f; renderFriends(); }
-      await update(ref(dbE, `friend_requests/${S.viewerKey}/${r.friend_code}`), { status: b.dataset.a === "accept" ? "accepted" : "declined", answered_at: Date.now() });
-      renderRequests();
-    } catch (e) { b.disabled = false; alert("Could not update the request: " + e.message); }
-  });
-}
-
-/* ============================================================================
- * 7. PlayStation (playstation-stats RTDB card + Firestore games / players)
- * ============================================================================ */
-const P = { id: null, card: null, comm: null, filter: "all", skel: {}, gameIndex: null, usersByTag: null, friends: [], friendsLoaded: false, trackedByFriend: {} };
-const asList = (v) => (!v ? [] : Array.isArray(v) ? v.filter(Boolean) : Object.values(v));
-const tmap = (m) => { const o = {}; asList(m).forEach((t) => { if (t && t.trophyId !== undefined) o[t.trophyId] = t; }); return o; };
-
-async function findGamertag(name) {
-  P.usersByTag = (await rtGet(dbP, "psn/usersByGamerTag")) || P.usersByTag || {};
-  const want = lc(name);
-  const hit = Object.keys(P.usersByTag).find((k) => lc(k) === want);
-  if (hit) return hit;
-  for (const c of [name, safeKey(name), want]) { const v = await rtGet(dbP, "psn/gamertags/" + c + "/onlineId"); if (v) return c; }
-  return null;
-}
-
-async function startPsn() {
-  if (S.unsubCard) { S.unsubCard(); S.unsubCard = null; }
-  const name = S.target.psn_username;
-  if (!name || !canSee(S.target.psn_username_scope || "private")) { $("psn").classList.add("hidden"); return; }
-  P.id = await findGamertag(name);
-  if (!P.id) { $("psn").classList.remove("hidden"); $("stats").innerHTML = `<div class="notice" style="grid-column:1/-1">No PlayStation data for <b>${esc(name)}</b> yet. The sync only tracks accounts that have linked their PSN cookie in settings.</div>`; return; }
-  $("psn").classList.remove("hidden");
-  let firstPaint = true;
-  S.unsubCard = onValue(ref(dbP, "psn/gamertags/" + P.id), async (snap) => {
-    const c = snap.val(); if (!c) return;
-    const prev = P.card; P.card = c;
-    const live = c.liveTrophyProgress || {};
-    const switched = prev && prev.commId !== c.commId;          // player started a different game
-    if (!P.comm || switched) P.comm = (c.commId && live[c.commId]) ? c.commId : (P.comm && live[P.comm] ? P.comm : (Object.keys(live)[0] || c.commId || null));
-    renderStats(); await renderHunt(); renderRecent(); await renderTrophies();
-    if (firstPaint) { firstPaint = false; loadFriendCrossRef().then(renderTrophies); }
-  }, (e) => console.warn("[psn card]", e.message));
-}
-
-async function loadSkeleton(commId) {
-  if (!commId) return null;
-  const id = String(commId).toUpperCase(); if (P.skel[id] !== undefined) return P.skel[id];
-  let g = null;
-  try {
-    if (!P.gameIndex) P.gameIndex = ((await getDoc(doc(fsP, "meta", "gameIndex"))).data() || {}).entries || {};
-    const e = P.gameIndex[id];
-    if (e && e.key) { const s = await getDoc(doc(fsP, "games", e.key)); if (s.exists()) g = s.data(); }
-    if (!g) { const q = await getDocs(query(collection(fsP, "games"), where("commId", "==", id), limit(1))); q.forEach((d) => { g = d.data(); }); }
-  } catch (e) { console.warn("[games]", e.message); }
-  return (P.skel[id] = g);
-}
-
-function renderStats() {
-  const c = P.card, ts = c.trophySummary || {};
-  const online = !!c.online, playing = online && c.currentGame && c.currentGame !== "Dashboard";
-  $("sync-pill").textContent = "Synced " + fmtNY(c.lastUpdated) + " ET";
-  $("stats").innerHTML = `
-    <div class="stat"><span>PSN ID</span><b style="font-size:18px">${esc(c.onlineId || P.id)}</b>${c.plus ? '<span class="gold">PS Plus</span>' : ""}</div>
-    <div class="stat"><span>Status</span><b style="font-size:18px"><i class="dot ${online ? "on" : ""}"></i>${online ? "Online" : "Offline"}</b>
-      <span>${playing ? esc(c.currentGame) : online ? "On the dashboard" : "Away" + (c.lastPlayedGame ? " &middot; last played " + esc(c.lastPlayedGame) : "")}</span>${c.gameStatus ? `<div style="font-size:13px;color:${online ? "#34d399" : "#94a3b8"};margin-top:4px">${esc(c.gameStatus)}</div>` : ""}</div>
-    <div class="stat"><span>Trophy level</span><b>${esc(c.level ?? ts.trophyLevel ?? "--")}</b><span>${esc(c.region || "")} &middot; ${esc(c.psnAccountAge || "")}</span></div>
-    <div class="stat"><span>Trophies</span><b>${Number(ts.total || 0).toLocaleString()}</b>
-      <div class="tro-row"><span class="plat">${ts.platinum || 0}P</span><span class="gold">${ts.gold || 0}G</span><span class="silver">${ts.silver || 0}S</span><span class="bronze">${ts.bronze || 0}B</span></div></div>
-    <div class="stat"><span>Games played</span><b>${Number(c.gamesPlayed || 0).toLocaleString()}</b><span>${esc(c.displayPlatform || c.platform || "")}</span></div>`;
-}
-
-const proto = (u) => { u = String(u || ""); return u.startsWith("//") ? "https:" + u : u; };
-function dlcHtml(sk, ah, live) {
-  const list = asList(sk && sk.dlcs).filter((d) => d && (d.isDLC || d.groupId));
-  if (!list.length) return "";
-  const ge = {}; asList(ah && ah.groupEarnings).forEach((g) => { if (g && g.trophyGroupId !== undefined) ge[g.trophyGroupId] = g; });
-  const sum = (o) => Object.values(o || {}).reduce((a, b) => a + (Number(b) || 0), 0);
-  const mine = Object.values(live || {});
-  const items = list.map((d) => {
-    const dt = d.definedTrophies || {}, g = ge[d.groupId], total = sum(dt);
-    const got = mine.filter((t) => String(t.groupId || "default") === String(d.groupId || "default") && t.earned).sort((x, y) => (y.timestamp || 0) - (x.timestamp || 0));
-    const prog = mine.filter((t) => String(t.groupId || "default") === String(d.groupId || "default") && !t.earned && tracking(t));
-    const cnt = {}; got.forEach((t) => { const k = String(t.type || "bronze").toLowerCase(); cnt[k] = (cnt[k] || 0) + 1; });
-    const earned = got.length || (g ? sum(g.earnedTrophies) : 0);
-    const ico = ["platinum", "gold", "silver", "bronze"].filter((k) => dt[k]).map((k) => `<span class="${TCOL[k]}"><i class="fa-solid fa-trophy"></i> ${cnt[k] || 0}/${dt[k]}</span>`).join(" ");
-    const pct = total ? Math.round((earned / total) * 100) : null;
-    const row = (t, extra) => `<div class="dlc-t">${t.icon ? img(t.icon, "", t.name) : "<div></div>"}<div style="min-width:0"><b><i class="fa-solid fa-trophy ${TCOL[String(t.type || "bronze").toLowerCase()] || ""}"></i> ${esc(t.name || "Trophy")}</b><small>${esc(t.detail || t.description || "")}</small></div><span>${extra}</span></div>`;
-    const detail = got.length || prog.length ? `<details class="trk-list" style="grid-column:1/-1"><summary>Your trophies <b>${got.length}${prog.length ? " + " + prog.length + " in progress" : ""}</b></summary>${got.map((t) => row(t, `<b style="color:#34d399">Earned</b><br>${esc(String(t.earnedDate || "").split(",")[0])}`)).join("")}${prog.map((t) => { const x = tracking(t); return row(t, `<b class="mono">${x.cur}/${x.tgt}</b>`); }).join("")}</details>` : "";
-    return `<div class="dlc-i" style="flex-wrap:wrap">${d.image ? img(proto(d.image), "", d.name || d.title) : ""}<div style="min-width:0;flex:1"><b>${esc(d.name || d.title || "Add-on")}</b><small>${d.groupId === "default" ? "Base game" : "DLC"}${d.isOwned ? " &middot; Owned" : ""}${d.size && d.size !== "Unknown" ? " &middot; " + esc(d.size) : ""}</small><div style="font-size:12px;display:flex;gap:8px;flex-wrap:wrap">${ico}${total ? `<span class="muted">${earned}/${total}${pct !== null ? " &middot; " + pct + "%" : ""}</span>` : ""}</div>${total ? `<div class="bar" style="margin-top:4px"><i style="width:${pct}%"></i></div>` : ""}</div>${detail}</div>`;
-  }).join("");
-  return `<div class="muted" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:12px">Add-on / DLC packs</div><div class="dlc">${items}</div>`;
-}
-
-async function renderHunt() {
-  const c = P.card, online = !!c.online, playing = online && c.currentGame && c.currentGame !== "Dashboard";
-  const last = asList(c.recentGames)[0] || {};
-  const title = playing ? c.currentGame : (c.lastPlayedGame || last.name || "Nothing yet");
-  const comm = playing ? c.commId : (c.lastPlayedCommId || last.npCommunicationId);
-  const art = playing ? c.art : (last.art || c.art);
-  const sk = await loadSkeleton(comm);
-  const ah = (playing && c.activeHunt) || {};
-  const pct = Number(ah.progress ?? last.progress ?? 0);
-  const ratio = ah.velocity && ah.velocity.completionStatus ? ah.velocity.completionStatus : (last.earnedTotal !== undefined ? `${last.earnedTotal}/${last.definedTotal}` : "");
-  const desc = sk && sk.description ? String(sk.description).slice(0, 420) : "";
-  TRK.huntKey = normTitle(title); TRK.huntTitle = String(title).replace(/[®™©]/g, "").trim();
-  $("hunt").innerHTML = `<h2><i class="fa-solid fa-gamepad"></i> ${playing ? "Now playing" : "Last played"}</h2>
-    ${art ? img(art, "hunt-art", title) : ""}
-    <div id="hunt-tracked" style="margin-top:12px"></div>
-    <h3 style="margin:14px 0 4px;font-size:22px">${esc(title)}</h3>
-    ${playing && c.gameStatus ? `<div style="color:#34d399;font-weight:700;margin-bottom:6px">${esc(c.gameStatus)}</div>` : ""}
-    <div class="meta" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
-      ${playing && c.currentGameHours ? `<span class="pill"><i class="fa-regular fa-clock"></i>${esc(c.currentGameHours)}</span>` : ""}
-      ${comm ? `<span class="pill mono">${esc(comm)}</span>` : ""}
-      ${(c.platform && playing) ? `<span class="pill">${esc(c.platform)}</span>` : ""}
+<div id="top">
+  <span>🏙️ <b id="roomLabel">Monopoly</b> · 👥 <b id="count">1</b></span>
+  <span>💵 <b id="bank">—</b> · 🏆 <b id="wins">0</b></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
+</div>
+<div id="main">
+  <div id="left">
+    <div id="boardWrap"><svg id="board" viewBox="0 0 110 110"></svg></div>
+    <div id="play">
+      <div id="banner" style="display:none"></div>
+      <div id="turn"></div>
+      <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><div id="msg"></div></div>
+      <div id="acts"></div>
+      <div id="buildList"></div>
     </div>
-    <div class="muted" style="font-size:12px;display:flex;justify-content:space-between"><span>Completion ${ratio ? "(" + esc(ratio) + ")" : ""}</span><b>${pct}%</b></div>
-    <div class="bar"><i style="width:${Math.min(100, pct)}%"></i></div>
-    ${dlcHtml(sk, ah, tmap((c.liveTrophyProgress || {})[comm] || {}))}
-    ${desc ? `<p class="muted" style="font-size:13px">${esc(desc)}${desc.length >= 420 ? "…" : ""}</p>` : ""}
-    ${playing && c.amazonAffiliateUrl && secure(c.amazonAffiliateUrl) ? `<a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(secure(c.amazonAffiliateUrl))}"><i class="fa-brands fa-amazon"></i> Find on Amazon</a>` : ""}`;
-  paintTracked();
-}
+    <div id="deeds">
+      <div id="landed"></div>
+      <div class="muted" style="margin-top:10px">Owned properties · tap a card to find it on the board</div>
+      <div id="ownedDeeds" class="deeds"></div>
+    </div>
+  </div>
+  <div id="panel">
+    <div id="seats"></div>
+    <div id="lobbyActs" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    <div id="emotes"></div>
+    <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
+    <div id="log"></div>
+    <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on, collect rent, and build up to 4 houses and then an apartment once you own a whole colour. Doubles roll again; three doubles go to jail. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
+  </div>
+</div>
+<div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
 
-function dedupeGames(list) {                 // the same title can appear several times (PS4/PS5 sets, demos): keep the best entry
-  const best = new Map();
-  for (const g of list) {
-    const k = normTitle(g.name) || g.npCommunicationId; const cur = best.get(k);
-    const score = (x) => (String(x.npCommunicationId || "").startsWith("NPWR") ? 1e6 : 0) + (x.earnedTotal || 0) * 100 + (x.definedTotal || 0);
-    if (!cur || score(g) > score(cur)) best.set(k, g);
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>document.write('<script src="js/common.js"><\/script>');</script>
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var qs = new URLSearchParams(location.search);
+  var roomCode = (qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var COLORS = ['#ef4444', '#22c55e', '#eab308', '#3b82f6'];
+  var NAMES = ['Red', 'Green', 'Yellow', 'Blue'];
+  var PIPS = { 0: [], 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+
+  // ---------- board data
+  function P(n, c, g, p, r) { return { t: 'prop', n: n, c: c, g: g, p: p, r: r }; }
+  var BR = '#92400e', SK = '#38bdf8', PK = '#ec4899', OR = '#f97316', RD = '#dc2626', YL = '#facc15', GR = '#16a34a', BL = '#1d4ed8';
+  var SP = [
+    { t: 'go', n: 'Start (collect $200)', i: '➡️' },
+    P('Maple Lane', BR, 'brown', 60, 2), { t: 'chest', n: 'Community Fund', i: '📦' }, P('Birch Street', BR, 'brown', 60, 4),
+    { t: 'tax', n: 'Income Tax', p: 200, i: '💸' }, { t: 'rail', n: 'North Station', p: 200, i: '🚉' },
+    P('Lakeview Road', SK, 'sky', 100, 6), { t: 'chance', n: 'Surprise', i: '❓' }, P('Harbor Street', SK, 'sky', 100, 6), P('Pier Avenue', SK, 'sky', 120, 8),
+    { t: 'jail', n: 'Jail (just visiting)', i: '🔒' },
+    P('Orchard Way', PK, 'pink', 140, 10), { t: 'util', n: 'Power Company', p: 150, i: '💡' }, P('Cherry Street', PK, 'pink', 140, 10), P('Plum Avenue', PK, 'pink', 160, 12),
+    { t: 'rail', n: 'East Station', p: 200, i: '🚉' },
+    P('Sunset Boulevard', OR, 'orange', 180, 14), { t: 'chest', n: 'Community Fund', i: '📦' }, P('Dawn Drive', OR, 'orange', 180, 14), P('Amber Road', OR, 'orange', 200, 16),
+    { t: 'park', n: 'Free Parking', i: '🅿️' },
+    P('Ruby Court', RD, 'red', 220, 18), { t: 'chance', n: 'Surprise', i: '❓' }, P('Garnet Street', RD, 'red', 220, 18), P('Crimson Plaza', RD, 'red', 240, 20),
+    { t: 'rail', n: 'South Station', p: 200, i: '🚉' },
+    P('Gold Avenue', YL, 'yellow', 260, 22), P('Sunny Street', YL, 'yellow', 260, 22), { t: 'util', n: 'Water Works', p: 150, i: '🚰' }, P('Lemon Lane', YL, 'yellow', 280, 24),
+    { t: 'gotojail', n: 'Go to Jail', i: '🚔' },
+    P('Pine Boulevard', GR, 'green', 300, 26), P('Cedar Street', GR, 'green', 300, 26), { t: 'chest', n: 'Community Fund', i: '📦' }, P('Spruce Avenue', GR, 'green', 320, 28),
+    { t: 'rail', n: 'West Station', p: 200, i: '🚉' }, { t: 'chance', n: 'Surprise', i: '❓' },
+    P('Skyline Drive', BL, 'blue', 350, 35), { t: 'tax', n: 'Luxury Tax', p: 100, i: '💎' }, P('Royal Park', BL, 'blue', 400, 50)
+  ];
+  var LV = [0.25, 0.4, 0.6, 0.9, 1.25, 1.6, 2.2];
+  var RAIL_RENT = [50, 100, 150, 200];
+  var SURPRISE = [
+    { k: 'move', to: 0, x: 'Advance to Start and collect $200.' }, { k: 'move', to: 5, x: 'Take a trip to North Station.' },
+    { k: 'move', to: 39, x: 'Advance to Royal Park.' }, { k: 'gain', v: 50, x: 'The bank pays you a $50 dividend.' },
+    { k: 'back', x: 'Go back 3 spaces.' }, { k: 'jail', x: 'Go directly to jail.' },
+    { k: 'pay', v: 15, x: 'Pay a $15 speeding fine.' }, { k: 'move', to: 11, x: 'Advance to Orchard Way.' },
+    { k: 'gain', v: 150, x: 'Your investment pays $150.' }, { k: 'payall', v: 25, x: 'Pay each player $25.' },
+    { k: 'move', to: 26, x: 'Advance to Gold Avenue.' }, { k: 'pay', v: 40, x: 'Street repairs cost you $40.' }
+  ];
+  var FUND = [
+    { k: 'gain', v: 200, x: 'Bank error in your favour. Collect $200.' }, { k: 'pay', v: 50, x: 'Doctor’s fee. Pay $50.' },
+    { k: 'gain', v: 50, x: 'You sell old stock. Collect $50.' }, { k: 'collect', v: 10, x: 'Birthday! Collect $10 from every player.' },
+    { k: 'gain', v: 20, x: 'Tax refund. Collect $20.' }, { k: 'pay', v: 100, x: 'Hospital bill. Pay $100.' },
+    { k: 'gain', v: 100, x: 'You inherit $100.' }, { k: 'pay', v: 50, x: 'School fees. Pay $50.' },
+    { k: 'gain', v: 25, x: 'Second prize in a contest. Collect $25.' }, { k: 'jail', x: 'Go directly to jail.' },
+    { k: 'gain', v: 100, x: 'Holiday fund matures. Collect $100.' }, { k: 'pay', v: 30, x: 'Pay $30 for car repairs.' }
+  ];
+  function cellRC(i) { if (i <= 10) return [10 - i, 10]; if (i <= 20) return [0, 20 - i]; if (i <= 30) return [i - 20, 0]; return [10, i - 30]; }
+  function group(g) { var a = []; SP.forEach(function (s, i) { if (s.g === g) a.push(i); }); return a; }
+
+  // ---------- rules
+  function seatOf(s, i) { return (s.seats && s.seats[i]) || null; }
+  function seated(s) { var a = []; for (var i = 0; i < 4; i++) if (seatOf(s, i)) a.push(i); return a; }
+  function plOf(s, p) { return s.pl && s.pl[p]; }
+  function alive(s) { return seated(s).filter(function (p) { var q = plOf(s, p); return q && !q.bankrupt; }); }
+  function ownerOf(s, i) { var o = s.own && s.own[i]; return (o === undefined || o === null) ? -1 : +o; }
+  function housesOf(s, i) { return (s.hs && s.hs[i]) | 0; }
+  function addLog(s, m) { s.log = (s.log || []).slice(-5); s.log.push(m); s.msg = m; }
+  function norm(s) {
+    ['own', 'hs', 'pl', 'seats'].forEach(function (k) {
+      var v = s[k]; if (!v) { s[k] = {}; return; }
+      if (Array.isArray(v)) { var o = {}; v.forEach(function (x, i) { if (x !== null && x !== undefined) o[i] = x; }); s[k] = o; }
+    });
+    if (!s.log) s.log = [];
   }
-  const keep = new Set(best.values()); return list.filter((g) => keep.has(g));
-}
-function renderRecent() {
-  const live = P.card.liveTrophyProgress || {};
-  const games = dedupeGames(asList(P.card.recentGames));
-  $("recent").innerHTML = games.slice(0, 18).map((g) => {
-    const id = g.npCommunicationId, has = id && live[id];
-    return `<div class="g ${id === P.comm ? "sel" : ""}">${img(g.art, "", g.name)}<div class="txt" data-comm="${esc(id || "")}" style="${has ? "cursor:pointer" : "opacity:.7"}">${esc(g.name)}<div class="sm">${g.earnedTotal ?? 0}/${g.definedTotal ?? 0} &middot; ${esc(g.completionRatio || "")}</div></div></div>`;
-  }).join("") || `<div class="muted">No recent games.</div>`;
-  $("recent").querySelectorAll(".txt").forEach((t) => t.onclick = () => { const id = t.dataset.comm; if (id && live[id]) { P.comm = id; renderRecent(); renderTrophies(); } });
-}
-
-/* ---------- trophy tracking maths (counts like 22/100) ---------- */
-function tracking(t) {
-  const earned = !!(t.earned || t.isEarned);
-  let cur = Number(t.currentValue ?? t.trophyProgress ?? 0), tgt = Number(t.targetValue ?? t.trophyProgressTargetValue ?? 0);
-  if ((!tgt || tgt <= 1) && typeof t.subProgressRatio === "string" && t.subProgressRatio.includes("/")) { const [a, b] = t.subProgressRatio.split("/").map((x) => Number(x.trim())); if (b > 1) { cur = a; tgt = b; } }
-  if (!tgt || tgt <= 1 || isNaN(tgt)) return null;
-  if (earned) cur = tgt;
-  return { cur, tgt, pct: Math.min(100, Math.round((cur / tgt) * 100)) };
-}
-const TCOL = { platinum: "plat", gold: "gold", silver: "silver", bronze: "bronze" };
-
-async function renderTrophies() {
-  const live = tmap((P.card.liveTrophyProgress || {})[P.comm] || {});
-  const sk = await loadSkeleton(P.comm);
-  const skList = (sk && sk.trophies) || [];
-  const gname = (sk && sk.name) || (asList(P.card.recentGames).find((g) => g.npCommunicationId === P.comm) || {}).name || P.comm || "--";
-  $("tro-title").textContent = gname;
-  let rows = Object.values(live).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-  const earnedN = rows.filter((t) => t.earned).length, progN = rows.length - earnedN;
-  const lockedList = skList.filter((s) => !live[s.trophyId]);
-  const fl = [["all", `All (${rows.length})`], ["earned", `Earned (${earnedN})`], ["progress", `In progress (${progN})`]];
-  if (lockedList.length) fl.push(["locked", `Not started (${lockedList.length})`]);
-  $("tro-filters").innerHTML = fl.map(([k, l]) => `<button class="${P.filter === k ? "on" : ""}" data-f="${k}">${esc(l)}</button>`).join("");
-  $("tro-filters").querySelectorAll("button").forEach((b) => b.onclick = () => { P.filter = b.dataset.f; renderTrophies(); });
-
-  let shown = rows;
-  if (P.filter === "earned") shown = rows.filter((t) => t.earned);
-  else if (P.filter === "progress") shown = rows.filter((t) => !t.earned);
-  else if (P.filter === "locked") shown = lockedList.map((s) => ({ ...s, earned: false, _locked: true }));
-
-  $("trophies").innerHTML = shown.length ? shown.map((t) => {
-    const tr = tracking(t), icon = t.icon, type = (t.type || "bronze").toLowerCase();
-    const frs = friendChips(P.comm, t.trophyId);
-    return `<div class="t ${t.earned ? "done" : tr ? "prog" : ""}" data-id="${esc(t.trophyId)}">
-      ${icon ? img(icon, "", t.name || t.title) : "<div></div>"}
-      <div style="min-width:0"><div class="n"><i class="fa-solid fa-trophy ${TCOL[type] || ""}"></i> ${esc(t.name || t.title || "Trophy")}</div>
-        <div class="d">${esc(t.detail || t.description || "")}</div>
-        ${tr && !t.earned ? `<div class="bar"><i style="width:${tr.pct}%"></i></div>` : ""}${frs}</div>
-      <div class="r">${t.earned ? `<b style="color:#34d399">Earned</b><br>${esc(t.earnedDate ? String(t.earnedDate).split(",")[0] : "")}` : tr ? `<b class="mono">${tr.cur.toLocaleString()}/${tr.tgt.toLocaleString()}</b>` : `<span class="muted">Locked</span>`}
-        <div class="muted">${esc(t.rarity || (t.earnedRate ? t.earnedRate + "%" : ""))}</div></div></div>`;
-  }).join("") : `<div class="muted" style="padding:16px 4px">Nothing here yet.</div>`;
-  $("trophies").querySelectorAll(".t").forEach((el) => el.onclick = (e) => {
-    if (e.target.closest("img")) return;
-    const t = (P.filter === "locked" ? lockedList : Object.values(live)).find((x) => String(x.trophyId) === el.dataset.id); if (t) trophyModal(t, gname);
-  });
-}
-
-function trophyModal(t, gname) {
-  const tr = tracking(t);
-  const fr = P.friends.filter((f) => friendHas(f, P.comm)).map((f) => ({ f, st: friendState(f, P.comm, t.trophyId) }));
-  openModal(`<div style="display:flex;gap:14px;align-items:center">${t.icon ? img(t.icon, "", t.name) : ""}<div><div class="muted" style="font-size:12px">${esc(gname)}</div><h3 style="margin:0">${esc(t.name || t.title)}</h3></div></div>
-    <p>${esc(t.detail || t.description || "")}</p>
-    <div class="meta" style="display:flex;gap:8px;flex-wrap:wrap">
-      <span class="pill">${esc((t.type || "").toUpperCase())}</span>${t.rarity ? `<span class="pill">${esc(t.rarity)} earned</span>` : ""}${t.rarityTier ? `<span class="pill">${esc(t.rarityTier)}</span>` : ""}
-      ${t.earned ? `<span class="pill" style="color:#34d399">Earned ${esc(t.earnedDate || "")}</span>` : tr ? `<span class="pill mono">${tr.cur}/${tr.tgt}</span>` : ""}</div>
-    ${t.rewardName ? `<p class="muted">Reward: ${esc(t.rewardName)}</p>` : ""}
-    ${fr.length ? `<h4>Squad presence</h4><div class="chips">${fr.map(({ f, st }) => `<div class="chip">${img(f.avatar, "", f.name)}<div>${esc(f.name)}<small>${st.s === "done" ? "Done" + (st.m.earnedDate ? " &middot; " + esc(st.m.earnedDate) : "") : st.s === "part" ? esc(st.text) : "Locked (0/1)"}</small></div></div>`).join("")}</div>` : ""}`);
-}
-
-/* ---------- friends cross-reference ---------- */
-const friendHas = (f, comm) => { const c = f.card || {}; return !!((c.liveTrophyProgress || {})[comm] || asList(c.recentGames).some((g) => g && g.npCommunicationId === comm)); };
-function friendState(f, comm, trophyId) {          // earned / partial / locked for one friend and one trophy
-  const m = tmap((f.card && f.card.liveTrophyProgress || {})[comm])[trophyId];
-  if (m) { const x = tracking(m); return m.earned ? { s: "done", m, text: "Done" + (m.earnedDate ? " · " + m.earnedDate : "") } : { s: "part", m, text: x ? x.cur + "/" + x.tgt : "In progress" }; }
-  return { s: "lock", m: null, text: "0/1" };
-}
-function friendChips(comm, trophyId) {
-  const out = [];
-  for (const f of P.friends) {
-    if (!friendHas(f, comm)) continue;
-    const st = friendState(f, comm, trophyId);
-    const ic = st.s === "done" ? '<i class="fa-solid fa-circle-check" style="color:#34d399"></i>' : st.s === "lock" ? '<i class="fa-solid fa-lock" style="opacity:.6"></i>' : "";
-    out.push(`<span class="f ${st.s}" title="${esc(f.name)}">${img(f.avatar, "", f.name)}${esc(f.name)} ${ic} <span style="font-weight:600;opacity:.85">${esc(st.text)}</span></span>`);
+  function countOwned(s, p, t) { var n = 0; SP.forEach(function (sp, i) { if (sp.t === t && ownerOf(s, i) === p) n++; }); return n; }
+  function ownsSet(s, p, g) { return group(g).every(function (j) { return ownerOf(s, j) === p; }); }
+  function rentMult(s) { return 1 + 0.25 * Math.floor((s.rd | 0) / 4); }
+  function rentOf(s, i, sum) {
+    var sp = SP[i], o = ownerOf(s, i), base, h;
+    if (sp.t === 'rail') base = RAIL_RENT[Math.min(3, countOwned(s, o, 'rail') - 1)];
+    else if (sp.t === 'util') base = Math.max(Math.ceil(sp.p * 0.25), (countOwned(s, o, 'util') === 2 ? 12 : 5) * sum);
+    else { h = housesOf(s, i); base = sp.p * (h > 0 ? LV[h + 1] : (ownsSet(s, o, sp.g) ? LV[1] : LV[0])); }
+    return Math.round(base * rentMult(s));
   }
-  return out.length ? `<div class="muted" style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px">Squad presence</div><div class="fr" style="margin-top:3px">${out.join("")}</div>` : "";
-}
-
-async function loadFriendCrossRef() {
-  if (P.friendsLoaded) return; P.friendsLoaded = true;
-  const found = new Map();                                              // lower-case PSN id -> { id, name, avatar, via:Set }
-  const addFriend = (id, name, avatar, via) => { const k = lc(id); if (!id || k === lc(P.id)) return; const f = found.get(k) || { id, name: name || id, avatar: avatar || "", via: new Set() }; if (name) f.name = name; if (avatar) f.avatar = avatar; f.via.add(via); found.set(k, f); };
-  const byTag = P.usersByTag || (await rtGet(dbP, "psn/usersByGamerTag")) || {};
-
-  // (1) the target's PSN friend list (Firestore players/{id}.friendsList = account ids) matched to tracked players
-  try {
-    const mine = (await getDoc(doc(fsP, "players", safeKey(P.id)))).data() || {};
-    const ids = new Set((mine.friendsList || []).map(String));
-    for (const [tag, acc] of Object.entries(byTag)) if (ids.has(String(acc))) addFriend(tag, tag, "", "psn");
-    // ...and the other direction: tracked players whose own friend list contains this player
-    const myAcc = String(byTag[P.id] || (P.card && P.card.accountId) || "");
-    if (myAcc) await Promise.all(Object.keys(byTag).filter((t) => lc(t) !== lc(P.id)).map(async (t) => {
-      try { const d = (await getDoc(doc(fsP, "players", safeKey(t)))).data() || {}; if ((d.friendsList || []).map(String).includes(myAcc)) addFriend(t, t, "", "psn"); } catch (e) { /* no access */ }
-    }));
-  } catch (e) { console.warn("[psn friends]", e.message); }
-
-  // (2) friend-code friends (own profile only): their linked PSN username, if their privacy allows it
-  const codes = S.own ? friendEntries(S.viewerFriends).slice(0, 40) : [];
-  await Promise.all(codes.map(async (f) => {
-    const key = await rtGet(dbE, "friend_codes/" + f.code); if (!key || typeof key !== "string") return;
-    const u = await rtGet(dbE, "users/" + key); if (!u) return;
-    const nm = u.psn_username, sc = u.psn_username_scope || "private";
-    const tag = nm && (sc === "public" || sc === "friends") && Object.keys(byTag).find((k) => lc(k) === lc(nm));
-    if (tag) addFriend(tag, f.username || u.username || tag, f.avatar_url || u.avatar_url, "friend code");
-    P.trackedByFriend[tag || f.code] = { code: f.code, name: f.username || u.username || f.code, avatar: f.avatar_url || u.avatar_url };
-  }));
-
-  // fetch each friend's live trophy card (public RTDB)
-  P.friends = await Promise.all([...found.values()].slice(0, 30).map(async (f) => {
-    const card = await rtGet(dbP, "psn/gamertags/" + safeKey(f.id));
-    return { ...f, via: [...f.via], name: (S.own && P.trackedByFriend[f.id] && P.trackedByFriend[f.id].name) || f.name, avatar: f.avatar || (card && card.avatar) || "", card };
-  }));
-}
-
-/* ============================================================================
- * 8. Tracked game progress (entertainment-71888 Firestore): users/{friend_code}/platform/{platform}/progress/{game}
- *    Shown as one CARD per game (platform tabs when the game is tracked on several platforms).
- *    The card for the game on the poster sits directly under the poster; other games get cards below.
- *    Friends' progress for the same game is shown inside the card.
- * ============================================================================ */
-async function readProgress(code, platforms = PLATFORMS) {
-  const out = []; const ids = new Set(platforms);
-  try { const l = await getDocs(collection(fsE, "users", code, "platform")); l.forEach((d) => { if (platforms.includes(d.id) || !PLATFORM_LABEL[d.id]) ids.add(d.id); }); } catch (e) { if (/permission/i.test(e.message)) out.permission = true; }
-  await Promise.all([...ids].map(async (p) => {
-    try { const q = await getDocs(collection(fsE, "users", code, "platform", p, "progress")); q.forEach((d) => out.push({ platform: p, game: d.id, data: d.data() })); }
-    catch (e) { if (/permission/i.test(e.message)) out.permission = true; else console.warn("[tracked]", p, e.message); }
-  }));
-  return out;
-}
-const PLATFORM_SCOPE = (d, p) => isPsn(p) ? d.psn_username_scope : p === "steam" ? (d.steam_friend_code_scope || d.steam_id_scope) : p === "xbox" ? d.xbox_gamertag_scope : "private";
-const PLAT_ORDER = ["ps", "psn", "playstation", "steam", "xbox", "pc", "switch"];
-const normTitle = (s) => String(s || "").toLowerCase().replace(/®|™|©/g, "").replace(/[^a-z0-9]/g, "");
-const tsMs = (v) => !v ? 0 : typeof v.toMillis === "function" ? v.toMillis() : typeof v.seconds === "number" ? v.seconds * 1000 : typeof v === "number" ? v : (Date.parse(v) || 0);
-const idLabel = (k) => String(k).replace(/^walkthrough_/, "").replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\b([a-z])/g, (m) => m.toUpperCase());
-const isDoneObj = (x) => x && (x.completed === true || x.complete === true || x.done === true);
-
-function analyse(data) {                         // turn a progress document into stats + checklists (no raw JSON for humans)
-  const stats = [], lists = []; let done = 0, total = 0;
-  for (const [k, v] of Object.entries(data || {})) {
-    if (["updatedAt", "createdAt", "custom"].includes(k)) continue;
-    if (typeof v === "number") stats.push({ k, v });
-    else if (v && typeof v === "object" && typeof v.seconds !== "number") {
-      const en = Object.entries(v); if (!en.length) continue;
-      if (en.every(([, x]) => x && typeof x === "object" && ("completed" in x || "complete" in x || "done" in x))) {
-        const items = en.map(([id, x]) => ({ id, name: x.mission_name || x.name || x.title || idLabel(id), region: x.region || x.group || "", done: isDoneObj(x), synced: !!x.psnSynced }));
-        lists.push({ k, items }); done += items.filter((i) => i.done).length; total += items.length;
-      } else if (en.every(([, x]) => typeof x === "number")) en.forEach(([kk, x]) => stats.push({ k: kk, v: x }));
+  function sellHouses(s, p, target) {
+    var q = plOf(s, p);
+    while (q.cash < target) {
+      var best = -1, bh = 0;
+      SP.forEach(function (sp, i) { if (ownerOf(s, i) === p && housesOf(s, i) > bh) { bh = housesOf(s, i); best = i; } });
+      if (best < 0) return;
+      s.hs[best] = bh - 1; if (!s.hs[best]) delete s.hs[best];
+      q.cash += Math.floor(SP[best].p / 4);
     }
   }
-  let pct = total ? Math.round((done / total) * 100) : null;
-  if (pct === null) for (const k of ["percent", "percentage", "pct", "progress", "completion"]) { const n = Number(data && data[k]); if (Number.isFinite(n)) { pct = Math.round(n <= 1 && n > 0 && k !== "percent" ? n * 100 : n); break; } }
-  return { stats, lists, done, total, pct, updated: tsMs(data && data.updatedAt) };
-}
-const statLabel = (k) => ({ rp: "RP" }[k] || idLabel(k));
-
-const TRK = { groups: [], sel: {}, friends: {}, huntKey: "", huntTitle: "" };
-function groupItems(items) {
-  const m = new Map();
-  for (const it of items) {
-    const key = normTitle(prettyGame(it.game));
-    if (!m.has(key)) m.set(key, { key, name: prettyGame(it.game), entries: [] });
-    m.get(key).entries.push({ ...it, a: analyse(it.data) });
+  function checkWin(s) {
+    var a = alive(s);
+    if (a.length <= 1 && s.status === 'playing') { s.status = 'done'; s.winner = a.length ? a[0] : s.turn; addLog(s, NAMES[s.winner] + ' wins the game!'); }
   }
-  const rank = (p) => { const i = PLAT_ORDER.indexOf(p); return i < 0 ? 99 : i; };
-  const gs = [...m.values()];
-  gs.forEach((g) => g.entries.sort((a, b) => rank(a.platform) - rank(b.platform)));
-  gs.sort((a, b) => Math.max(...b.entries.map((e) => e.a.updated)) - Math.max(...a.entries.map((e) => e.a.updated)) || a.name.localeCompare(b.name));
-  return gs;
-}
-
-function checklistHtml(l) {
-  const byRegion = new Map();
-  l.items.slice().sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })).forEach((i) => { const r = i.region || "Other"; if (!byRegion.has(r)) byRegion.set(r, []); byRegion.get(r).push(i); });
-  const d = l.items.filter((i) => i.done).length;
-  return `<details class="trk-list"><summary>${esc(idLabel(l.k))} <b>${d}/${l.items.length}</b></summary>${[...byRegion].map(([r, its]) =>
-    `<div class="trk-region">${esc(r)}</div>${its.map((i) => `<div class="trk-item ${i.done ? "done" : ""}"><i class="fa-${i.done ? "solid fa-circle-check" : "regular fa-circle"}"></i><span>${esc(i.name)}</span>${i.synced ? '<span class="pill" style="font-size:10px">PSN synced</span>' : ""}</div>`).join("")}`).join("")}</details>`;
-}
-
-function friendsHtml(fr) {
-  if (!fr || !fr.length) return "";
-  const rows = fr.slice().sort((x, y) => (y.a.pct ?? -1) - (x.a.pct ?? -1)).map((f) => {
-    const a = f.a, txt = a.total ? `${a.done}/${a.total}` : a.pct !== null ? a.pct + "%" : a.stats.slice(0, 3).map((x) => `${Number(x.v).toLocaleString()} ${statLabel(x.k)}`).join(" · ") || "tracking";
-    return `<div class="trk-fr">${img(f.avatar, "", f.name)}<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;font-size:13px"><b>${esc(f.name)} <span class="muted" style="font-weight:600;font-size:11px">${esc(PLATFORM_LABEL[f.platform] || f.platform)}</span></b><span>${esc(txt)}${a.total && a.pct !== null ? ` &middot; ${a.pct}%` : ""}</span></div>${a.pct !== null ? `<div class="bar green" style="margin-top:4px"><i style="width:${Math.max(0, Math.min(100, a.pct))}%"></i></div>` : ""}</div></div>`;
-  }).join("");
-  return `<div class="trk-friends"><div class="muted" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Friends' progress</div>${rows}</div>`;
-}
-
-function trackedCard(g) {
-  const sel = TRK.sel[g.key] || g.entries[0].platform; const e = g.entries.find((x) => x.platform === sel) || g.entries[0]; const a = e.a;
-  const tabs = g.entries.length > 1 ? `<div class="trk-tabs">${g.entries.map((x) => `<button type="button" class="trk-tab ${x === e ? "on" : ""}" data-g="${esc(g.key)}" data-p="${esc(x.platform)}">${esc(PLATFORM_LABEL[x.platform] || x.platform)}</button>`).join("")}</div>` : `<span class="pill">${esc(PLATFORM_LABEL[e.platform] || e.platform)}</span>`;
-  const fr = (TRK.friends[g.key] || []);
-  return `<div class="trk"><div class="trk-head"><h3>${esc(g.name)}</h3>${tabs}</div>
-    ${a.pct !== null ? `<div class="muted" style="font-size:12px;display:flex;justify-content:space-between"><span>${a.total ? `${a.done}/${a.total} complete` : "Progress"}</span><b>${a.pct}%</b></div><div class="bar green"><i style="width:${Math.max(0, Math.min(100, a.pct))}%"></i></div>` : ""}
-    ${a.stats.length ? `<div class="trk-stats">${a.stats.map((s) => `<span class="sc"><b>${Number(s.v).toLocaleString()}</b>${esc(statLabel(s.k))}</span>`).join("")}</div>` : ""}
-    ${a.lists.map(checklistHtml).join("")}
-    ${a.updated ? `<div class="muted" style="font-size:11px;margin-top:8px">Updated ${esc(fmtNY(a.updated))} ET</div>` : ""}
-    ${friendsHtml(fr)}</div>`;
-}
-
-function paintTracked() {
-  const slot = $("hunt-tracked"), mine = TRK.groups.find((g) => g.key === TRK.huntKey);
-  if (slot) {
-    const fr = TRK.friends[TRK.huntKey] || [];
-    if (mine) slot.innerHTML = trackedCard(mine);
-    else if (S.own && TRK.huntKey && TRK.huntTitle && TRK.huntTitle !== "Nothing yet") slot.innerHTML = `<div class="trk"><div class="trk-head"><h3>Game tracking</h3></div><div class="muted" style="font-size:13px">You haven't tracked progress for this game yet.</div>${friendsHtml(fr)}</div>`;
-    else slot.innerHTML = "";
+  function pay(s, from, to, amt) {
+    var f = plOf(s, from);
+    if (f.cash < amt) sellHouses(s, from, amt);
+    if (f.cash >= amt) { f.cash -= amt; if (to >= 0) plOf(s, to).cash += amt; else s.pot = (s.pot | 0) + amt; return true; }
+    if (to >= 0) plOf(s, to).cash += f.cash; else s.pot = (s.pot | 0) + f.cash;
+    f.cash = 0; f.bankrupt = true;
+    SP.forEach(function (sp, i) {
+      if (ownerOf(s, i) === from) { if (to >= 0) s.own[i] = to; else delete s.own[i]; delete s.hs[i]; }
+    });
+    addLog(s, NAMES[from] + ' is bankrupt!');
+    checkWin(s);
+    return false;
   }
-  const rest = TRK.groups.filter((g) => !(slot && g.key === TRK.huntKey));
-  $("tracked-card").classList.toggle("hidden", !rest.length);
-  $("tracked").innerHTML = rest.length ? `<div class="trk-grid">${rest.map(trackedCard).join("")}</div>` : "";
-}
-document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest(".trk-tab"); if (b) { TRK.sel[b.dataset.g] = b.dataset.p; paintTracked(); } });
+  function advance(s) {
+    var old = s.turn;
+    for (var k = 1; k <= 4; k++) { var n = (s.turn + k) % 4; var q = plOf(s, n); if (seatOf(s, n) && q && !q.bankrupt) { s.turn = n; break; } }
+    if (s.turn <= old) s.rd = (s.rd | 0) + 1;
+    s.phase = 'roll'; s.dc = 0; s.again = false; s.pend = -1;
+  }
+  function fin(s) {
+    if (s.status === 'done') return;
+    var q = plOf(s, s.turn);
+    if (q.bankrupt) { advance(s); return; }
+    s.pend = -1; s.phase = (s.again && q.jail === 0) ? 'roll' : 'end';
+  }
+  function toJail(s, p) { var q = plOf(s, p); q.pos = 10; q.jail = 1; s.again = false; addLog(s, NAMES[p] + ' goes to jail.'); }
+  function moveBy(s, p, sum, cr) {
+    var q = plOf(s, p), np = (q.pos + sum) % 40;
+    if (np < q.pos) { q.cash += 200; addLog(s, NAMES[p] + ' passes Start: +$200'); }
+    q.pos = np; land(s, p, sum, cr, false);
+  }
+  function land(s, p, sum, cr, nocard) {
+    var q = plOf(s, p), sp = SP[q.pos], nm = NAMES[p];
+    if (sp.t === 'prop' || sp.t === 'rail' || sp.t === 'util') {
+      var o = ownerOf(s, q.pos);
+      if (o < 0) {
+        if (q.cash >= sp.p) { s.phase = 'buy'; s.pend = q.pos; addLog(s, nm + ' landed on ' + sp.n + ' ($' + sp.p + ').'); }
+        else addLog(s, nm + ' landed on ' + sp.n + ' but cannot afford it.');
+      } else if (o !== p) { var r = rentOf(s, q.pos, sum); addLog(s, nm + ' pays $' + r + ' rent to ' + NAMES[o] + ' (' + sp.n + ').'); pay(s, p, o, r); }
+      else addLog(s, nm + ' is at home on ' + sp.n + '.');
+    } else if (sp.t === 'tax') { addLog(s, nm + ' pays $' + sp.p + ' ' + sp.n + '.'); pay(s, p, -1, sp.p); }
+    else if (sp.t === 'gotojail') toJail(s, p);
+    else if (sp.t === 'park') {
+      var pot = s.pot | 0;
+      if (pot > 0) { q.cash += pot; s.pot = 0; addLog(s, nm + ' lands on Free Parking and collects the $' + pot + ' pot!'); }
+      else addLog(s, nm + ' lands on Free Parking. The pot is empty.');
+    }
+    else if ((sp.t === 'chance' || sp.t === 'chest') && !nocard) {
+      var deck = sp.t === 'chance' ? SURPRISE : FUND, c = deck[cr % 12];
+      addLog(s, nm + ' - ' + (sp.t === 'chance' ? 'Surprise: ' : 'Community Fund: ') + c.x);
+      if (c.k === 'gain') q.cash += c.v;
+      else if (c.k === 'pay') pay(s, p, -1, c.v);
+      else if (c.k === 'jail') toJail(s, p);
+      else if (c.k === 'move') { if (c.to < q.pos) { q.cash += 200; } q.pos = c.to; land(s, p, 7, cr, true); }
+      else if (c.k === 'back') { q.pos = (q.pos + 37) % 40; land(s, p, 7, cr, true); }
+      else if (c.k === 'collect') alive(s).forEach(function (o2) { if (o2 !== p) { var amt = Math.min(c.v, plOf(s, o2).cash); plOf(s, o2).cash -= amt; q.cash += amt; } });
+      else if (c.k === 'payall') alive(s).forEach(function (o2) { if (o2 !== p && !q.bankrupt) pay(s, p, o2, c.v); });
+    }
+  }
+  function doRoll(s, r1, r2, cr) {
+    var p = s.turn, q = plOf(s, p), dbl = r1 === r2, sum = r1 + r2;
+    s.dice = [r1, r2]; s.again = false;
+    if (q.jail > 0) {
+      if (dbl) { q.jail = 0; addLog(s, NAMES[p] + ' rolled doubles and leaves jail.'); }
+      else {
+        q.jail++;
+        if (q.jail > 3) { q.jail = 0; addLog(s, NAMES[p] + ' pays $50 to leave jail.'); if (!pay(s, p, -1, 50)) { fin(s); return true; } }
+        else { addLog(s, NAMES[p] + ' rolled ' + sum + ' and stays in jail.'); s.phase = 'end'; return true; }
+      }
+    } else if (dbl) {
+      s.dc = (s.dc | 0) + 1;
+      if (s.dc >= 3) { s.dc = 0; addLog(s, NAMES[p] + ' rolled three doubles!'); toJail(s, p); s.phase = 'end'; return true; }
+      s.again = true;
+    } else s.dc = 0;
+    moveBy(s, p, sum, cr);
+    if (s.status === 'done') return true;
+    if (s.phase !== 'buy') fin(s);
+    return true;
+  }
+  function doBuy(s) {
+    var p = s.turn, q = plOf(s, p), sp = SP[s.pend];
+    if (s.phase !== 'buy' || !sp || q.cash < sp.p) return false;
+    q.cash -= sp.p; s.own[s.pend] = p; addLog(s, NAMES[p] + ' bought ' + sp.n + ' for $' + sp.p + '.'); fin(s); return true;
+  }
+  function doPass(s) { if (s.phase !== 'buy') return false; addLog(s, NAMES[s.turn] + ' passed on ' + SP[s.pend].n + '.'); fin(s); return true; }
+  function doEnd(s) { if (s.phase !== 'end') return false; advance(s); return true; }
+  function doBail(s) {
+    var q = plOf(s, s.turn); if (s.phase !== 'roll' || q.jail < 1 || q.cash < 50) return false;
+    q.cash -= 50; s.pot = (s.pot | 0) + 50; q.jail = 0; addLog(s, NAMES[s.turn] + ' pays $50 bail.'); return true;
+  }
+  function canBuild(s, p, i) {
+    var sp = SP[i], q = plOf(s, p); if (sp.t !== 'prop' || ownerOf(s, i) !== p || !ownsSet(s, p, sp.g)) return false;
+    var h = housesOf(s, i); if (h >= 5) return false;
+    var mn = Math.min.apply(null, group(sp.g).map(function (j) { return housesOf(s, j); }));
+    return h <= mn && q.cash >= Math.floor(sp.p / 2);
+  }
+  function buildable(s, p) { var a = []; for (var i = 0; i < 40; i++) if (canBuild(s, p, i)) a.push(i); return a; }
+  function doBuild(s, i) {
+    var p = s.turn; if ((s.phase !== 'roll' && s.phase !== 'end') || !canBuild(s, p, i)) return false;
+    var c = Math.floor(SP[i].p / 2); plOf(s, p).cash -= c; s.hs[i] = housesOf(s, i) + 1; addLog(s, NAMES[p] + (s.hs[i] >= 5 ? ' built an apartment on ' : ' added a house to ') + SP[i].n + ' ($' + c + ').'); return true;
+  }
+  function botAct(s) {
+    var p = s.turn, q = plOf(s, p), b;
+    if (s.phase === 'buy') { var sp = SP[s.pend]; return { k: (q.cash - sp.p >= 50) ? 'buy' : 'pass' }; }
+    b = buildable(s, p).filter(function (i) { return q.cash - Math.floor(SP[i].p / 2) >= 250; });
+    if (s.phase === 'roll') {
+      if (q.jail > 0 && q.cash >= 400) return { k: 'bail' };
+      if (b.length) return { k: 'build', i: b[0] };
+      return { k: 'roll' };
+    }
+    if (b.length) return { k: 'build', i: b[0] };
+    return { k: 'end' };
+  }
+  function startState(s) {
+    s.pl = {}; s.own = {}; s.hs = {};
+    seated(s).forEach(function (p) { s.pl[p] = { pos: 0, cash: 1500, jail: 0, bankrupt: false }; });
+    s.status = 'playing'; s.turn = seated(s)[0]; s.phase = 'roll'; s.dice = [0, 0]; s.dc = 0; s.again = false; s.pend = -1; s.winner = -1; s.rd = 0; s.pot = 0;
+    s.gid = (s.gid | 0) + 1; s.log = []; addLog(s, 'Game on! ' + NAMES[s.turn] + ' goes first.');
+  }
 
-async function ensureFriendUsers() {
-  if (S.friendUser) return S.friendUser; S.friendUser = {};
-  await Promise.all(friendEntries(S.viewerFriends).slice(0, 40).map(async (f) => {
-    const key = await rtGet(dbE, "friend_codes/" + f.code); if (!key || typeof key !== "string") return;
-    const u = await rtGet(dbE, "users/" + key); if (u) S.friendUser[f.code] = { key, ...u };
-  }));
-  return S.friendUser;
-}
+  // ---------- session & custom username resolution
+  var me = null, myName = 'Player', cloudCode = null, stateRef = null, presenceRef = null, roomRefG = null;
+  var beat = null;
+  var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0, sel = -1, showBuild = false, lastSelKey = '', pubTimer = null;
+  var emotes = {}, emoSeen = {}, lastEmo = 0, ac = null, shakeOn = false, lastShake = 0;
+  var EMOS = ['👍', '😂', '😮', '😡', '🎉'];
 
-async function loadFriendTracked() {                  // friends' progress for any game (own profile only), matched by game title
-  if (!S.own) return;
-  const users = await ensureFriendUsers(); const friends = friendEntries(S.viewerFriends).slice(0, 25);
-  TRK.friends = {};
-  await Promise.all(friends.map(async (f) => {
-    const u = users[f.code]; if (!u) return;
-    const name = u.username || f.username || f.code, avatar = u.avatar_url || f.avatar_url;
-    await Promise.all(["ps", "steam", "xbox", "pc"].map(async (p) => {
-      const sc = PLATFORM_SCOPE(u, p) || "private"; if (sc !== "public" && sc !== "friends") return;
-      try { (await getDocs(collection(fsE, "users", f.code, "platform", p, "progress"))).forEach((d) => {
-        const k = normTitle(prettyGame(d.id)); (TRK.friends[k] = TRK.friends[k] || []).push({ name, avatar, platform: p, code: f.code, a: analyse(d.data()) }); }); }
-      catch (e) { if (!/permission/i.test(e.message)) console.warn("[friend progress]", f.code, p, e.message); }
-    }));
-  }));
-  paintTracked();
-}
+  function sanitizeKey(k) {
+    return (k || '').replace(/@/g, '_at_').replace(/[.#$\[\]\/]/g, '_');
+  }
 
-async function renderTracked() {
-  const code = S.target.friend_code; const card = $("tracked-card");
-  TRK.groups = []; const slot = $("hunt-tracked"); if (slot) slot.innerHTML = "";
-  loadFriendTracked();
-  if (!code) { card.classList.add("hidden"); return; }
-  // a platform's tracked progress follows that platform's scope (public = anyone, friends = friends, private = owner)
-  const readable = PLATFORMS.filter((p) => canSee(PLATFORM_SCOPE(S.target, p) || "private"));
-  if (!readable.length) { card.classList.add("hidden"); return; }
-  let items = await readProgress(code, readable);
-  items = items.filter((it) => PLATFORM_LABEL[it.platform] ? readable.includes(it.platform) : S.own);   // unknown platform ids: owner only
-  if (!items.length) { card.classList.toggle("hidden", !items.permission || !S.own); if (items.permission && S.own) $("tracked").innerHTML = `<div class="notice">Tracked progress could not be read. Add a Firestore rule allowing reads of <code>users/{code}/platform/**</code> in the entertainment-71888 project.</div>`; return; }
-  TRK.groups = groupItems(items); paintTracked();
-}
+  async function resolveCustomUsername(user) {
+    if (!user) return 'Player';
+    var defaultFallback = (user.displayName || 'Player').split(' ')[0].slice(0, 14);
+    if (user.email) {
+      try {
+        var sk = sanitizeKey(user.email);
+        var snap = await firebase.database().ref('/users/' + sk + '/username').once('value');
+        var val = snap.val();
+        if (val && typeof val === 'string' && val.trim().length > 0) return val.trim();
+      } catch (err) {
+        console.warn('Could not retrieve custom handle from /users:', err);
+      }
+    }
+    return defaultFallback;
+  }
 
-/* ============================================================================
- * 9. Boot
- * ============================================================================ */
-startMenu(); startMusic();
-signInAnonymously(authP).catch((e) => console.warn("[psn anon auth]", e.message));
-onAuthStateChanged(authE, async (u) => {
-  window.__booted = true;
-  try { if (!authP.currentUser) await signInAnonymously(authP); } catch (e) { /* rules may allow public reads */ }
-  try { await loadProfile(u); }
-  catch (e) { console.error(e); showGate("Could not load the profile", `<div class="notice">${esc(e.message)}</div>`); }
-});
+  function say(t) { $('msg').textContent = t || ''; }
+  function gate(text, showBtn) { $('gateText').textContent = text; $('gateBtn').style.display = showBtn ? '' : 'none'; $('gate').style.display = 'flex'; }
+  WW.onError = function (m) { say(m); gate(m, true); };
+  $('gateBtn').onclick = function () { WW.signIn(); };
+  $('soloBtn').onclick = function () { location.href = 'tycoon.html'; };
+
+  function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
+  function isHost() { return !!S && !!me && S.hostUid === me.uid; }
+  
+  var lastAct = Date.now(), wasPaused = false;
+  function iAmActive() { return !document.hidden && Date.now() - lastAct < 120000; }
+  function onActivity() {
+    var wasIdle = !iAmActive(); lastAct = Date.now();
+    if (wasIdle && typeof beat === 'function') beat();
+    if (S && wasPaused && !isPaused(S)) { wasPaused = false; render(); tick(); }
+  }
+
+  var pressing = false, renderPending = false, pressTimer = null;
+  document.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('#panel, #play, #deeds, #board')) { pressing = true; clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressing = false; }, 3000); }
+  }, true);
+  function endPress() { if (!pressing) return; setTimeout(function () { pressing = false; if (renderPending) { renderPending = false; render(); } }, 80); }
+  document.addEventListener('pointerup', endPress, true); document.addEventListener('pointercancel', endPress, true);
+  ['pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(function (ev) { document.addEventListener(ev, onActivity, { passive: true }); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) onActivity(); else if (typeof beat === 'function') beat(); });
+  
+  function activeIds() {
+    var ids = [];
+    Object.keys(players).forEach(function (u) { var e = players[u]; if (me && u === me.uid) return; if (e && e.a && WW.now() - (e.t || 0) < 90000) ids.push(u); });
+    if (me && iAmActive()) ids.push(me.uid);
+    return ids.sort();
+  }
+  function isPaused(s) {
+    if (!s || s.status !== 'playing') return false;
+    if (WW.mode !== 'cloud') return !iAmActive();
+    var act = activeIds();
+    return !seated(s).some(function (p) { var st = seatOf(s, p); return st && !st.bot && act.indexOf(st.uid) > -1; });
+  }
+  function isDriver() {
+    if (WW.mode !== 'cloud') return true;
+    if (!S) return false;
+    var ids = activeIds(); if (!ids.length) return false;
+    if (ids.indexOf(S.hostUid) > -1) return S.hostUid === me.uid;
+    return ids[0] === me.uid;
+  }
+  function mutate(fn) {
+    stateRef.transaction(function (cur) {
+      if (!cur) return cur;
+      var s = JSON.parse(JSON.stringify(cur)); norm(s);
+      if (fn(s) === false) return;
+      s.rid = (s.rid | 0) + 1; s.t = firebase.database.ServerValue.TIMESTAMP;
+      return s;
+    });
+  }
+  function actorOk(s) { var st = seatOf(s, s.turn); if (!st) return false; return (!st.bot && st.uid === me.uid) || isDriver(); }
+  function turnAct(fn) { mutate(function (s) { if (s.status !== 'playing' || !actorOk(s)) return false; return fn(s); }); }
+  function actRoll(r1, r2, cr) { turnAct(function (s) { if (s.phase !== 'roll') return false; return doRoll(s, r1, r2, cr); }); }
+  function actBuy() { turnAct(doBuy); } function actPass() { turnAct(doPass); } function actEnd() { turnAct(doEnd); }
+  function actBail() { turnAct(doBail); } function actBuild(i) { turnAct(function (s) { return doBuild(s, i); }); }
+
+  // ---------- dice, sound & haptic vibration
+  function drawDie(el, v) { var h = '', on = PIPS[v] || []; for (var i = 0; i < 9; i++) h += '<i' + (on.indexOf(i) > -1 ? ' class="on"' : '') + '></i>'; el.innerHTML = h; }
+  function spinThen(cb) {
+    if (rolling) return; rolling = true; var n = 0;
+    ['d1', 'd2'].forEach(function (id) { var e = $(id); e.classList.remove('throw'); void e.offsetWidth; e.classList.add('throw'); });
+    var iv = setInterval(function () {
+      drawDie($('d1'), 1 + Math.floor(Math.random() * 6)); drawDie($('d2'), 1 + Math.floor(Math.random() * 6));
+      if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 1200)); }
+    }, 70);
+  }
+  function tryRoll() {
+    if (!S || S.status !== 'playing' || S.phase !== 'roll' || rolling) return;
+    var st = seatOf(S, S.turn); if (!st || st.bot || st.uid !== me.uid) return;
+    spinThen(actRoll);
+  }
+  $('d1').onclick = $('d2').onclick = tryRoll;
+  document.addEventListener('keydown', function (e) { if (!e.repeat && (e.key === ' ' || e.key === 'Enter') && e.target.tagName !== 'BUTTON') { e.preventDefault(); tryRoll(); } });
+  
+  function buzz(p) {
+    if (!muted && navigator.vibrate) {
+      try { navigator.vibrate(p); } catch (e) {}
+    }
+  }
+
+  // Prime haptics and audio on first tap
+  document.addEventListener('pointerup', function () {
+    buzz(10);
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac && ac.state === 'suspended') ac.resume();
+    } catch(e) {}
+  }, { once: true });
+
+  function enableShake() {
+    if (shakeOn) return; shakeOn = true;
+    function attach() { window.addEventListener('devicemotion', function (e) { var a = e.accelerationIncludingGravity; if (!a) return; var m = Math.abs(a.x || 0) + Math.abs(a.y || 0) + Math.abs(a.z || 0); if (m > 38 && Date.now() - lastShake > 1500) { lastShake = Date.now(); tryRoll(); } }); }
+    if (window.DeviceMotionEvent && DeviceMotionEvent.requestPermission) DeviceMotionEvent.requestPermission().then(function (r) { if (r === 'granted') attach(); }).catch(function () {});
+    else if (window.DeviceMotionEvent) attach();
+  }
+  document.addEventListener('pointerup', enableShake, { once: true });
+  var muted = false; try { muted = localStorage.getItem('wh_mute') === '1'; } catch (e) {}
+  $('snd').textContent = muted ? '🔇' : '🔊';
+  $('snd').onclick = function () { muted = !muted; try { localStorage.setItem('wh_mute', muted ? '1' : '0'); } catch (e) {} $('snd').textContent = muted ? '🔇' : '🔊'; };
+  function tone(f, d, t0, type, vol) {
+    if (muted) return;
+    try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + (t0 || 0);
+      o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(vol || .12, t); g.gain.exponentialRampToValueAtTime(.001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d); } catch (e) {}
+  }
+  function sfx(k) {
+    if (k === 'roll') for (var i = 0; i < 5; i++) tone(300 + Math.random() * 300, .05, i * .06, 'square', .05);
+    else if (k === 'coin') { tone(880, .08); tone(1175, .12, .08); }
+    else if (k === 'pay') { tone(220, .15, 0, 'sawtooth', .1); tone(160, .2, .1, 'sawtooth', .1); }
+    else if (k === 'win') [523, 659, 784, 1047].forEach(function (f, j) { tone(f, .2, j * .12, 'triangle', .15); });
+    else if (k === 'pop') tone(880, .07, 0, 'sine', .1);
+    else if (k === 'turn') tone(660, .06, 0, 'sine', .08);
+  }
+  var sirenTimer = null;
+  function siren(name) {
+    var r = $('siren'), t = $('sirenTxt'); if (!r) return;
+    r.classList.add('on'); t.textContent = '🚔 ' + name.toUpperCase() + ' GOES TO JAIL!'; t.setAttribute('opacity', '1');
+    for (var i = 0; i < 8; i++) tone(i % 2 ? 900 : 640, .2, i * .22, 'square', .06);
+    buzz([120, 80, 120, 80, 120]);
+    clearTimeout(sirenTimer); sirenTimer = setTimeout(function () { r.classList.remove('on'); t.setAttribute('opacity', '0'); }, 3000);
+  }
+
+  function events(a, b) {
+    if (b.status === 'done' && a.status !== 'done') { sfx('win'); buzz([80, 60, 80]); return; }
+    if (a.phase === 'roll' && b.phase !== 'roll' && b.dice && (a.dice || [])[0] !== b.dice[0]) sfx('roll');
+    if (a.pl && b.pl) for (var jp = 0; jp < 4; jp++) if (a.pl[jp] && b.pl[jp] && !a.pl[jp].jail && b.pl[jp].jail) siren(NAMES[jp]);
+    var ms = mySeat();
+    if (ms >= 0 && a.pl && b.pl && a.pl[ms] && b.pl[ms]) {
+      var d = b.pl[ms].cash - a.pl[ms].cash; if (d <= -20) { sfx('pay'); buzz(80); } else if (d >= 20) sfx('coin');
+    }
+    // High-priority mobile vibration and chime on player's turn
+    if (ms >= 0 && b.status === 'playing' && b.turn === ms && b.phase === 'roll' && (a.turn !== ms || a.phase !== 'roll')) {
+      sfx('turn');
+      buzz([180, 90, 180]);
+    }
+  }
+
+  // ---------- bots, away players, auto-end
+  function perform(a) {
+    if (a.k === 'roll') spinThen(actRoll); else if (a.k === 'buy') actBuy(); else if (a.k === 'pass') actPass();
+    else if (a.k === 'end') actEnd(); else if (a.k === 'bail') actBail(); else if (a.k === 'build') actBuild(a.i);
+  }
+  function tick() {
+    var s = S; if (!s || s.status !== 'playing' || rolling) return;
+    if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
+    var st = seatOf(s, s.turn); if (!st) return;
+    var mine = !st.bot && st.uid === me.uid, auto = false;
+    if (!mine) {
+      if (!isDriver()) return;
+      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid], idle = WW.now() - (s.t || 0) > 90000;
+      auto = st.bot || away || idle; if (!auto) return;
+    }
+    var key = s.rid + ':' + s.turn + ':' + s.phase, now = Date.now();
+    if (acted.k === key && now - acted.t < 4000) return;
+    function mark() { acted = { k: key, t: now }; }
+    if (mine) { if (s.phase === 'end' && !buildable(s, s.turn).length) { mark(); setTimeout(actEnd, 1400); } return; }
+    var a = botAct(s); mark(); setTimeout(function () { perform(a); }, a.k === 'roll' ? 800 : 1000);
+  }
+  setInterval(tick, 2000);
+
+  // ---------- lobby actions
+  function otherHumansPresent() {
+    if (WW.mode !== 'cloud' || !S) return false;
+    return seated(S).some(function (p) { var st = seatOf(S, p); return st && !st.bot && st.uid !== me.uid && !!players[st.uid]; });
+  }
+  function toBot(s, slot) { s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }
+  function humanCount(s) { return seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length; }
+  function markStarted(s) { seated(s).forEach(function (p) { var st = seatOf(s, p); if (st && !st.bot) st.f = s.gid; }); }
+  function sit(slot) {
+    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent();
+    mutate(function (s) {
+      var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
+      for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
+      if (!s.seats) s.seats = {};
+      var others = seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length;
+      s.seats[slot] = { uid: me.uid, name: myName, bot: false, avatar: WW.avatar || '', f: 0 };
+      if (!others) s.hostUid = me.uid;
+      if (restart && s.status !== 'lobby') {
+        for (var j = 0; j < 4; j++) { var oo = seatOf(s, j); if (oo && !oo.bot && oo.uid !== me.uid) toBot(s, j); }
+        s.hostUid = me.uid; beginGame(s);
+      }
+    });
+  }
+  function leave(slot) {
+    autoSeatTried = true;
+    mutate(function (s) {
+      var cur = seatOf(s, slot); if (!cur || cur.bot || cur.uid !== me.uid) return false;
+      if (s.status === 'lobby') delete s.seats[slot]; else toBot(s, slot);
+      if (!humanCount(s)) { if (s.status !== 'lobby') resetToLobby(s); s.seats = {}; }
+    });
+  }
+  var reaping = false;
+  function reapAbsent() {
+    var s = S; if (!s || WW.mode !== 'cloud' || s.status === 'lobby' || reaping || !me || !isDriver()) return;
+    var act = null;
+    for (var i = 0; i < 4 && !act; i++) {
+      var st = seatOf(s, i); if (!st || st.bot || st.uid === me.uid) continue;
+      var here = !!players[st.uid];
+      if (here && st.gone) act = { k: 'back', i: i };
+      else if (!here && !st.gone) act = { k: 'gone', i: i };
+      else if (!here && st.gone && WW.now() - st.gone > 180000) act = { k: 'bot', i: i };
+    }
+    if (!act) return;
+    reaping = true; setTimeout(function () { reaping = false; }, 4000);
+    mutate(function (s2) {
+      var st2 = seatOf(s2, act.i); if (!st2 || st2.bot) return false;
+      if (act.k === 'back') delete st2.gone; else if (act.k === 'gone') st2.gone = WW.now(); else toBot(s2, act.i);
+    });
+  }
+  setInterval(reapAbsent, 10000);
+  var staleChecked = false;
+  function checkStale() {
+    if (staleChecked || !S) return; staleChecked = true;
+    setTimeout(function () {
+      if (WW.mode !== 'cloud' || !S || S.status !== 'playing' || mySeat() < 0 || WW.now() - (S.t || 0) < 600000 || otherHumansPresent()) return;
+      mutate(function (s) {
+        if (s.status !== 'playing') return false;
+        for (var j = 0; j < 4; j++) { var o = seatOf(s, j); if (o && !o.bot && o.uid !== me.uid) toBot(s, j); }
+        resetToLobby(s); s.msg = 'The last game ended while everyone was away.';
+      });
+    }, 4000);
+  }
+  function addBot(slot) { mutate(function (s) { if (s.status !== 'lobby' || seatOf(s, slot) || s.hostUid !== me.uid) return false; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
+  function fillBots() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid) return false; for (var i = 0; i < 4; i++) if (!seatOf(s, i)) s.seats[i] = { uid: 'bot' + i, name: NAMES[i] + ' Bot', bot: true }; }); }
+  function removeBot(slot) { mutate(function (s) { var c = seatOf(s, slot); if (s.status !== 'lobby' || !c || !c.bot || s.hostUid !== me.uid) return false; delete s.seats[slot]; }); }
+  function resetToLobby(s) { s.status = 'lobby'; s.pl = {}; s.own = {}; s.hs = {}; s.winner = -1; s.log = []; s.msg = ''; s.pot = 0; s.phase = 'roll'; s.dice = [0, 0]; s.pend = -1; }
+  function beginGame(s) { startState(s); markStarted(s); }
+  function startGame() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false; beginGame(s); }); }
+  function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; resetToLobby(s); }); }
+
+  // ---------- drawing
+  var tokEls = [];
+  function cellStatic(i) {
+    var sp = SP[i], rc = cellRC(i), x = rc[0] * 10, y = rc[1] * 10, corner = (i % 10 === 0);
+    var fill = '#f1f5f9'; if (i === 0) fill = '#bbf7d0'; else if (i === 10) fill = '#fed7aa'; else if (i === 20) fill = '#fef08a'; else if (i === 30) fill = '#fecaca';
+    var h = '<g data-c="' + i + '" style="cursor:pointer"><rect x="' + x + '" y="' + y + '" width="10" height="10" fill="' + fill + '" stroke="#475569" stroke-width=".25"/>';
+    if (sp.t === 'prop') {
+      var bx = x, by = y, bw = 10, bh = 2.8;
+      if (rc[1] === 10) { by = y; } else if (rc[1] === 0) { by = y + 7.2; } else if (rc[0] === 0) { bx = x + 7.2; bw = 2.8; bh = 10; by = y; } else { bw = 2.8; bh = 10; }
+      h += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" fill="' + sp.c + '" stroke="#0f172a" stroke-width=".15"/>';
+    }
+    if (sp.i) h += '<text x="' + (x + 5) + '" y="' + (y + (corner ? 6.6 : 5.4)) + '" text-anchor="middle" font-size="' + (corner ? 5.5 : 3.8) + '">' + sp.i + '</text>';
+    if (sp.p) h += '<text x="' + (x + 5) + '" y="' + (y + (sp.t === 'prop' ? 7 : 9)) + '" text-anchor="middle" font-size="2.4" font-weight="700" fill="#0f172a">$' + sp.p + '</text>';
+    return h + '</g>';
+  }
+  function buildBoard() {
+    var h = '<rect width="110" height="110" fill="#0b1220"/><rect x="10" y="10" width="90" height="90" fill="#134e4a"/>';
+    for (var i = 0; i < 40; i++) h += cellStatic(i);
+    h += '<text x="55" y="48" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">PROPERTY</text><text x="55" y="58" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">TYCOON</text>';
+    h += '<rect id="siren" x="10" y="10" width="90" height="90" fill="#ef4444" opacity="0" pointer-events="none"/><text id="sirenTxt" x="55" y="84" text-anchor="middle" font-size="6" font-weight="800" fill="#fff" stroke="#000" stroke-width=".3" opacity="0"></text>';
+    h += '<g id="dyn"></g><g id="toks"></g><g id="emoLayer"></g><g id="selLayer"></g>';
+    $('board').innerHTML = h;
+    var NS = 'http://www.w3.org/2000/svg';
+    for (var p = 0; p < 4; p++) {
+      var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'tok');
+      g.innerHTML = WW.shape(p, 2.1, COLORS[p], '#fff', .5) + '<text y="' + (p === 1 ? 1.3 : .85) + '" text-anchor="middle" font-size="2.4" font-weight="800" fill="#fff" stroke="#0007" stroke-width=".1">' + (p + 1) + '</text>';
+      g.style.display = 'none'; $('toks').appendChild(g); tokEls[p] = g;
+    }
+    $('board').addEventListener('click', function (e) {
+      var c = e.target.closest ? e.target.closest('[data-c]') : null; if (!c) return;
+      sel = +c.dataset.c; renderInfo();
+    });
+  }
+  var OFF = [[-2.3, -2.3], [2.3, -2.3], [-2.3, 2.3], [2.3, 2.3]];
+  function dyn(s) {
+    var h = '', i, k;
+    for (i = 0; i < 40; i++) {
+      var sp = SP[i]; if (!sp.p) continue;
+      var o = ownerOf(s, i), rc = cellRC(i), x = rc[0] * 10, y = rc[1] * 10;
+      if (o < 0) continue;
+      var sx = x, sy = y, sw = 10, sh = 1.5;
+      if (rc[1] === 10) sy = y + 8.5; else if (rc[1] === 0) sy = y; else if (rc[0] === 0) { sx = x; sw = 1.5; sh = 10; } else { sx = x + 8.5; sw = 1.5; sh = 10; }
+      h += '<rect x="' + sx + '" y="' + sy + '" width="' + sw + '" height="' + sh + '" fill="' + COLORS[o] + '"/>';
+      var n = housesOf(s, i);
+      if (n >= 5) {
+        var ax, ay, aw, ah;
+        if (rc[1] === 10) { ax = x + 2.2; ay = y + .4; aw = 5.6; ah = 2; } else if (rc[1] === 0) { ax = x + 2.2; ay = y + 7.6; aw = 5.6; ah = 2; } else if (rc[0] === 0) { ax = x + 7.6; ay = y + 2.2; aw = 2; ah = 5.6; } else { ax = x + .4; ay = y + 2.2; aw = 2; ah = 5.6; }
+        h += '<rect x="' + ax + '" y="' + ay + '" width="' + aw + '" height="' + ah + '" rx=".4" fill="#facc15" stroke="#7c2d12" stroke-width=".25"/>';
+      } else for (k = 0; k < n; k++) {
+        var hx, hy;
+        if (rc[1] === 10) { hx = x + .8 + k * 2.2; hy = y + .5; } else if (rc[1] === 0) { hx = x + .8 + k * 2.2; hy = y + 7.7; } else if (rc[0] === 0) { hx = x + 7.5; hy = y + .8 + k * 2.2; } else { hx = x + .7; hy = y + .8 + k * 2.2; }
+        h += '<rect x="' + hx + '" y="' + hy + '" width="1.8" height="1.8" rx=".3" fill="#f8fafc" stroke="#0f172a" stroke-width=".15"/>';
+      }
+    }
+    if (s.pot) h += '<text x="5" y="9.5" text-anchor="middle" font-size="2.3" font-weight="800" fill="#92400e">$' + s.pot + '</text>';
+    return h;
+  }
+  function dot(p) { return WW.shapeIcon(p, 16, COLORS[p]); }
+  function emoOf(p) { var e = emotes && emotes[p]; return (e && WW.now() - (e.t || 0) < 4000) ? ' <span class="emo">' + e.e + '</span>' : ''; }
+  function money(n) { return '$' + n; }
+
+  function lvlLabel(n) { return n >= 5 ? '🏢 Apartment' : (n ? '🏠 ' + n + (n === 1 ? ' house' : ' houses') : 'No houses yet'); }
+  function deedHtml(s, i, big) {
+    var sp = SP[i], o = ownerOf(s, i), lvl = housesOf(s, i), m = rentMult(s), ms = mySeat(), rows, k;
+    var col = sp.c || (sp.t === 'rail' ? '#475569' : sp.t === 'util' ? '#0e7490' : '#475569');
+    var h = '<div class="deed' + (big ? ' big' : '') + '" data-c="' + i + '"><div class="band" style="background:' + col + '">' + (sp.i ? sp.i + ' ' : '') + sp.n + '</div><div class="body">';
+    var who = o >= 0 ? WW.shapeIcon(o, 14, COLORS[o]) + ' ' + ((s.seats && s.seats[o]) ? s.seats[o].name : NAMES[o]) + ' owns this' : 'For sale · $' + sp.p;
+    if (sp.t === 'prop') {
+      h += who + (o >= 0 ? ' · ' + lvlLabel(lvl) : '');
+      rows = [['Rent (no houses)', sp.p * LV[0]], ['Full colour set', sp.p * LV[1]], ['1 house', sp.p * LV[2]], ['2 houses', sp.p * LV[3]], ['3 houses', sp.p * LV[4]], ['4 houses', sp.p * LV[5]], ['Apartment', sp.p * LV[6]]];
+      var cur = lvl > 0 ? lvl + 1 : (o >= 0 && ownsSet(s, o, sp.g) ? 1 : 0);
+      h += '<table>'; rows.forEach(function (r, j) { h += '<tr' + (o >= 0 && j === cur ? ' class="cur"' : '') + '><td>' + r[0] + '</td><td>$' + Math.round(r[1] * m) + '</td></tr>'; }); h += '</table>';
+      h += 'Price $' + sp.p + '. Each house or apartment costs $' + Math.floor(sp.p / 2) + '.';
+      if (m > 1) h += '<div class="muted">Rents are x' + m + ' right now.</div>';
+      if (o >= 0 && o === ms && s.status === 'playing' && ms === s.turn && (s.phase === 'roll' || s.phase === 'end') && canBuild(s, ms, i))
+        h += '<button class="go" data-a="build" data-i="' + i + '">' + (lvl >= 4 ? '🏢 Build apartment' : '🏠 Add house ' + (lvl + 1)) + ' · $' + Math.floor(sp.p / 2) + '</button>';
+    } else if (sp.t === 'rail') {
+      h += who + '<table>'; RAIL_RENT.forEach(function (r, j) { h += '<tr><td>' + (j + 1) + ' station' + (j ? 's' : '') + '</td><td>$' + Math.round(r * m) + '</td></tr>'; }); h += '</table>Price $200.';
+    } else if (sp.t === 'util') {
+      h += who + '<br>Rent is 5x the dice roll (at least $38), or 12x if the owner has both utilities. Price $150.';
+    } else if (sp.t === 'tax') h += 'Pay $' + sp.p + '. It goes into the Free Parking pot.';
+    else if (sp.t === 'go') h += 'Collect $200 every time you pass or land here.';
+    else if (sp.t === 'jail') h += 'Just visiting, unless you were sent here. In jail: roll doubles, pay $50 bail, or wait 3 turns.';
+    else if (sp.t === 'gotojail') h += 'Go directly to jail. Do not pass Start.';
+    else if (sp.t === 'park') h += 'Free Parking pot: <b>$' + (s.pot | 0) + '</b>. Taxes, fines and bail pile up here. Land on this space to collect it all!';
+    else h += 'Draw a card.';
+    return h + '</div></div>';
+  }
+  function renderInfo() {
+    var s = S; if (!s) return;
+    if (sel < 0) { $('landed').innerHTML = '<div class="plain muted">Tap any space on the board to see its card.</div>'; }
+    else {
+      var q = s.status === 'playing' ? plOf(s, s.turn) : null, here = q && q.pos === sel;
+      var curName = (s.seats && s.seats[s.turn]) ? s.seats[s.turn].name : NAMES[s.turn];
+      $('landed').innerHTML = '<div class="muted" style="margin-bottom:4px">' + (here ? '📍 ' + curName + ' is on this space' : 'Selected space') + '</div>' + deedHtml(s, sel, true);
+      var rc = cellRC(sel);
+      $('selLayer').innerHTML = '<rect x="' + (rc[0] * 10 + .2) + '" y="' + (rc[1] * 10 + .2) + '" width="9.6" height="9.6" fill="none" stroke="#fff" stroke-width=".6" stroke-dasharray="1.2 .8"/>';
+    }
+    var a = []; for (var i = 0; i < 40; i++) if (SP[i].p && ownerOf(s, i) >= 0) a.push(i);
+    a.sort(function (x, y) { return ownerOf(s, x) - ownerOf(s, y) || x - y; });
+    $('ownedDeeds').innerHTML = a.length ? a.map(function (i) { return deedHtml(s, i, false); }).join('') : '<div class="muted">Nothing bought yet.</div>';
+  }
+
+  function render() {
+    var s = S; if (!s) return;
+    if (pressing) { renderPending = true; return; }
+    var ms = mySeat(), playing = s.status === 'playing', myTurn = playing && ms === s.turn, p, i;
+    for (p = 0; p < 4; p++) {
+      var q = plOf(s, p), g = tokEls[p];
+      if (!playing && s.status !== 'done' || !q || q.bankrupt || !seatOf(s, p)) { g.style.display = 'none'; continue; }
+      g.style.display = ''; var rc = cellRC(q.pos);
+      g.style.transform = 'translate(' + (rc[0] * 10 + 5 + OFF[p][0]) + 'px,' + (rc[1] * 10 + 5 + OFF[p][1]) + 'px)';
+    }
+    $('dyn').innerHTML = s.pl ? dyn(s) : '';
+    var eo = '', best = null;
+    for (p = 0; p < 4; p++) { var em = emotes && emotes[p]; if (em && seatOf(s, p) && WW.now() - (em.t || 0) < 4000 && (!best || em.t > best.t)) best = { e: em.e, t: em.t, p: p }; }
+    if (best) eo = '<circle cx="42" cy="67" r="2.2" fill="' + COLORS[best.p] + '" stroke="#fff" stroke-width=".5"/><text class="emoB" x="55" y="69" text-anchor="middle" dominant-baseline="central" font-size="11">' + best.e + '</text>';
+    $('emoLayer').innerHTML = eo;
+    if (!rolling) { drawDie($('d1'), s.dice ? s.dice[0] : 0); drawDie($('d2'), s.dice ? s.dice[1] : 0); }
+    var q0 = playing ? plOf(s, s.turn) : null, cs = seatOf(s, s.turn);
+    var mq = (ms >= 0 && s.pl) ? plOf(s, ms) : null, bk = $('bank'), bt = mq ? '$' + mq.cash : '—';
+    if (bk.textContent !== bt) { bk.textContent = bt; bk.classList.remove('bankpulse'); void bk.offsetWidth; bk.classList.add('bankpulse'); }
+    if (q0) { var sk = s.turn + ':' + q0.pos; if (sk !== lastSelKey) { lastSelKey = sk; sel = q0.pos; } }
+    if (playing) { $('turn').innerHTML = dot(s.turn) + (myTurn ? 'Your turn' : (cs ? cs.name : NAMES[s.turn]) + '’s turn'); say(s.msg || ''); }
+    else if (s.status === 'lobby') { $('turn').textContent = 'Get ready'; say('Pick your seat, add bots or invite friends, then start.'); }
+    else { $('turn').innerHTML = dot(s.winner) + ((s.seats && s.seats[s.winner]) ? s.seats[s.winner].name : NAMES[s.winner]) + ' won'; say(s.msg || ''); }
+    var ban = $('banner');
+    if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else ban.style.display = 'none';
+    
+    // actions
+    var a = '', bl = '';
+    if (myTurn) {
+      var can = buildable(s, s.turn);
+      if (s.phase === 'roll') { a += '<button class="go" data-a="roll">🎲 Roll dice</button>'; if (q0.jail > 0 && q0.cash >= 50) a += '<button data-a="bail">Pay $50 bail</button>'; }
+      else if (s.phase === 'buy') { var sp = SP[s.pend]; a += '<button class="go" data-a="buy">Buy ' + sp.n + ' · $' + sp.p + '</button><button data-a="pass">Pass</button>'; }
+      else if (s.phase === 'end') a += '<button class="go" data-a="end">End turn</button>';
+      if (can.length && (s.phase === 'roll' || s.phase === 'end')) a += '<button data-a="togglebuild">🏠 Build (' + can.length + ')</button>';
+      if (showBuild && can.length && (s.phase === 'roll' || s.phase === 'end')) can.forEach(function (j) { bl += '<button data-a="build" data-i="' + j + '">' + (housesOf(s, j) >= 4 ? '🏢 Apartment' : '🏠 House ' + (housesOf(s, j) + 1)) + ' · ' + SP[j].n + ' · $' + Math.floor(SP[j].p / 2) + '</button>'; });
+    } else if (playing) a = '<span class="muted">Waiting for ' + (cs ? cs.name : NAMES[s.turn]) + '…</span>';
+    $('acts').innerHTML = a; $('buildList').innerHTML = bl;
+    
+    // seats
+    var h = '';
+    for (p = 0; p < 4; p++) {
+      var st = seatOf(s, p), btn = '', pq = plOf(s, p);
+      if (!st) {
+        if (ms < 0) btn += '<button data-a="sit" data-p="' + p + '">Sit here</button>';
+        if (s.status === 'lobby' && isHost()) btn += ' <button data-a="bot" data-p="' + p + '">+ Bot</button>';
+        h += '<div class="seat">' + dot(p) + '<span class="nm muted">' + NAMES[p] + ' - empty</span>' + btn + '</div>';
+      } else {
+        var tag = st.bot ? ' 🤖' : (st.uid === me.uid ? ' (you)' : '');
+        if (!st.bot && st.uid === me.uid && s.status === 'playing' && (st.f | 0) !== (s.gid | 0)) tag += ' · joined late, not counted';
+        if (st.bot && ms < 0) btn += '<button data-a="sit" data-p="' + p + '">' + (s.status === 'lobby' ? 'Take seat' : 'Jump in') + '</button>';
+        if (st.bot && s.status === 'lobby' && isHost()) btn += ' <button data-a="rm" data-p="' + p + '">Remove</button>';
+        if (!st.bot && st.uid === me.uid) btn += '<button data-a="leave" data-p="' + p + '">Leave</button>';
+        var info = '';
+        if (s.status !== 'lobby' && pq) { var np = 0; for (i = 0; i < 40; i++) if (ownerOf(s, i) === p) np++; info = pq.bankrupt ? ' · out' : ' · ' + money(pq.cash) + ' · 🏠' + np + (pq.jail ? ' · 🔒' : ''); }
+        h += '<div class="seat' + (playing && s.turn === p ? ' cur' : '') + (pq && pq.bankrupt ? ' out' : '') + '">' + dot(p) + (st.bot ? '' : WW.avatarHtml(st.avatar, st.name, 22)) + '<span class="nm">' + st.name + tag + info + '</span>' + emoOf(p) + btn + '</div>';
+      }
+    }
+    $('seats').innerHTML = h;
+    var la = '';
+    if (s.status === 'lobby' && isHost()) la += '<button class="go" data-a="start"' + (seated(s).length < 2 ? ' disabled' : '') + '>Start game</button> <button data-a="fill">Fill with bots</button>';
+    if (s.status === 'lobby' && !isHost()) la += '<span class="muted">Waiting for the host to start.</span>';
+    if (s.status === 'done' && isHost()) la += '<button class="go" data-a="again">Play again</button>';
+    if (s.status === 'done' && !isHost()) la += '<span class="muted">Waiting for the host to set up the next game.</span>';
+    $('lobbyActs').innerHTML = la;
+    var eh = ''; if (ms >= 0) EMOS.forEach(function (x) { eh += '<button data-e="' + x + '">' + x + '</button>'; });
+    if ($('emotes').dataset.on !== String(ms >= 0)) { $('emotes').innerHTML = eh; $('emotes').dataset.on = String(ms >= 0); }
+    $('log').innerHTML = (s.log || []).map(function (m) { return '<div>' + m + '</div>'; }).join('');
+    $('count').textContent = (WW.mode === 'cloud' ? Object.keys(players).length : 1) || 1;
+    renderInfo();
+  }
+
+  $('main').addEventListener('click', function (e) {
+    var dc = e.target.closest ? e.target.closest('.deed[data-c]') : null;
+    if (dc && !(e.target.closest('button'))) { sel = +dc.dataset.c; renderInfo(); return; }
+    var eb = e.target.closest ? e.target.closest('button[data-e]') : null;
+    if (eb) {
+      var ms = mySeat(); if (ms < 0 || !roomRefG || Date.now() - lastEmo < 800) return;
+      lastEmo = Date.now(); emotes = emotes || {}; emotes[ms] = { e: eb.dataset.e, t: WW.now() }; render(); setTimeout(render, 4200);
+      roomRefG.child('emotes/' + ms).set({ e: eb.dataset.e, t: firebase.database.ServerValue.TIMESTAMP }).catch(function (err) { say('Reaction could not be sent: ' + ((err && err.message) || err)); });
+      return;
+    }
+    var b = e.target.closest ? e.target.closest('button[data-a]') : null; if (!b || b.disabled) return;
+    var a = b.dataset.a, p = +b.dataset.p;
+    if (a === 'sit') sit(p); else if (a === 'bot') addBot(p); else if (a === 'rm') removeBot(p); else if (a === 'leave') { if (!S || S.status !== 'playing' || confirm('Leave this game? If you are the last player the game ends, and this game will not count toward your record.')) leave(p); }
+    else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
+    else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail();
+    else if (a === 'togglebuild') { showBuild = !showBuild; render(); } else if (a === 'build') actBuild(+b.dataset.i);
+  });
+  $('shareBtn').onclick = function () {
+    if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
+    var url = location.origin + location.pathname + '?room=' + cloudCode;
+    if (navigator.share) navigator.share({ title: 'Join my Monopoly game', text: 'Table ' + cloudCode, url: url }).catch(function () {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); });
+    else say('Share this code: ' + cloudCode);
+  };
+
+  function seatCounts(s) {
+    var humans = 0, bots = 0, open = 0;
+    for (var i = 0; i < 4; i++) { var st = seatOf(s, i); if (!st) open++; else if (st.bot) { bots++; open++; } else humans++; }
+    return { humans: humans, bots: bots, open: open };
+  }
+  function statusText(s) {
+    var c = seatCounts(s), ms = mySeat();
+    var people = c.humans + ' player' + (c.humans === 1 ? '' : 's') + (c.bots ? ' + ' + c.bots + ' bot' + (c.bots === 1 ? '' : 's') : '');
+    var tail = c.open ? ' · ' + c.open + ' open seat' + (c.open === 1 ? '' : 's') : ' · table full';
+    if (s.status === 'playing' && ms >= 0) {
+      var np = 0, hs = 0, ap = 0;
+      for (var i = 0; i < 40; i++) if (SP[i].p && ownerOf(s, i) === ms) { np++; var l = housesOf(s, i); if (l >= 5) ap++; else hs += l; }
+      return np + ' propert' + (np === 1 ? 'y' : 'ies') + ' · ' + hs + ' house' + (hs === 1 ? '' : 's') + ' · ' + ap + ' apartment' + (ap === 1 ? '' : 's') + ' · ' + people + tail;
+    }
+    return (s.status === 'done' ? 'Game over' : 'Lobby') + ' · ' + people + tail;
+  }
+  function publish() {
+    if (!S || mySeat() < 0 || WW.mode !== 'cloud') return;
+    WW.publishPlaying({ game: 'tycoon', title: 'Monopoly', room: cloudCode, status: statusText(S), open: seatCounts(S).open });
+  }
+  function publishSoon() { clearTimeout(pubTimer); pubTimer = setTimeout(publish, 1500); }
+  setInterval(publish, 30000);
+
+  function refreshHistory() {
+    if (!$('hist').open) return;
+    WW.loadHistory().then(function (l) { $('histBody').innerHTML = WW.historyHtml(l, 'tycoon'); });
+  }
+  $('hist').addEventListener('toggle', refreshHistory);
+  async function recordStats(s) {
+    var ms = mySeat();
+    if (s.status !== 'done' || ms < 0) return;
+    var mst = seatOf(s, ms); if (!mst || mst.bot || mst.uid !== me.uid || mst.f !== s.gid) return;
+    var key = 'tycoon_' + (cloudCode || 'solo') + '_' + s.gid; if (statKey === key) return; statKey = key;
+    var opp = [], win = null;
+    seated(s).forEach(function (p) { var st = seatOf(s, p), o = { n: st.name, b: !!st.bot }; if (!st.bot) o.u = st.uid; if (p === s.winner) win = o; if (p !== ms) opp.push(o); });
+    var added = await WW.recordResult(key, { game: 'tycoon', title: 'Monopoly', room: cloudCode || 'solo', result: s.winner === ms ? 'win' : 'loss', opp: opp, winner: win });
+    if (!added) return;
+    var sv = (await WW.loadSave('tycoon')) || {};
+    sv.played = (sv.played | 0) + 1; if (s.winner === ms) sv.wins = (sv.wins | 0) + 1;
+    wins = sv.wins | 0; $('wins').textContent = wins; WW.writeSave('tycoon', sv);
+    refreshHistory();
+  }
+
+  async function begin(user, code) {
+    var roomId = roomCode || (user ? code : null), ref = null;
+    if (user && roomId) {
+      try {
+        ref = WW.roomRef('tycoon', roomId);
+        var meta = (await ref.child('meta').once('value')).val();
+        if (!meta) {
+          if (roomId === code) await ref.child('meta').set({ host: myName, created: firebase.database.ServerValue.TIMESTAMP });
+          else { gate('Table ' + roomId + ' not found. Ask your friend to open Monopoly once first.', false); return; }
+        }
+        me = user; cloudCode = roomId; WW.mode = 'cloud';
+        $('roomLabel').textContent = (roomId === code ? 'My table' : 'Friend’s table') + ' · ' + roomId;
+      } catch (e) {
+        if (roomCode && roomCode !== code) { gate('Could not reach that table online yet (the game database rules still need to be added). Try solo for now.', false); return; }
+        console.warn(e); user = null; ref = null; say('Online tables are not switched on yet, so you are playing solo on this device.');
+      }
+    } else if (roomCode) { gate('Sign in to join a friend’s table.', true); return; }
+    if (!ref || WW.mode !== 'cloud') { WW.useLocal(); ref = WW.roomRef('tycoon', 'solo'); me = { uid: 'local' }; $('roomLabel').textContent = 'Solo · this device'; }
+    $('gate').style.display = 'none';
+
+    // Retrieve username from Firebase /users/{email}/username
+    myName = await resolveCustomUsername(user);
+
+    var sv = await WW.loadSave('tycoon'); if (sv) { wins = sv.wins | 0; $('wins').textContent = wins; }
+    buildBoard();
+    stateRef = ref.child('state'); roomRefG = ref;
+    var isOwner = WW.mode !== 'cloud' || roomId === code;
+    if (isOwner) {
+      await stateRef.transaction(function (cur) {
+        if (cur) return cur;
+        var o = {}; o[0] = { uid: me.uid, name: myName, bot: false, avatar: WW.avatar || '' };
+        return { status: 'lobby', hostUid: me.uid, seats: o, turn: 0, phase: 'roll', winner: -1, rid: 1, gid: 0, msg: '', t: firebase.database.ServerValue.TIMESTAMP };
+      });
+    }
+    if (WW.mode === 'cloud') {
+      ref.child('players').on('value', function (snap) { players = snap.val() || {}; render(); });
+      presenceRef = ref.child('players/' + me.uid); presenceRef.onDisconnect().remove();
+      beat = function () { presenceRef.set({ n: myName, a: iAmActive() ? 1 : 0, t: firebase.database.ServerValue.TIMESTAMP }); };
+      beat(); setInterval(beat, 20000);
+    }
+    ref.child('emotes').on('value', function (snap) {
+      emotes = snap.val() || {};
+      Object.keys(emotes).forEach(function (k) { var e = emotes[k]; if (e && emoSeen[k] !== e.t) { if (emoSeen[k] !== undefined) sfx('pop'); emoSeen[k] = e.t; } });
+      render(); setTimeout(render, 4200);
+    });
+    stateRef.on('value', function (snap) {
+      var prev = S; S = snap.val();
+      if (S && prev && prev.rid !== S.rid) events(prev, S);
+      if (!S) { gate('This table is not open yet. Ask the host to open it first.', false); return; }
+      $('gate').style.display = 'none';
+      if (!autoSeatTried && mySeat() < 0 && S.status === 'lobby') {
+        autoSeatTried = true;
+        for (var i = 0; i < 4; i++) { if (!seatOf(S, i)) { sit(i); break; } }
+      }
+      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
+      autoSeatTried = true; checkStale(); render(); tick(); recordStats(S); publishSoon();
+    });
+  }
+
+  var started = false, startedAsUser = false;
+  WW.onReady(function (user, code) {
+    if (started) { if (!!user !== startedAsUser) location.reload(); return; }
+    started = true; startedAsUser = !!user;
+    $('gateBtn').style.display = 'none';
+    begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), false); });
+  });
+})();
 </script>
 </body>
 </html>

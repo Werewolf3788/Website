@@ -1,0 +1,4627 @@
+{
+  "game": "Watch Dogs: Legion",
+  "gameId": "WatchDogsLegion",
+  "commId": "NPWR21033_00",
+  "image_url": "",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR21033_00"
+    },
+    "steam": {
+      "appId": "",
+      "url": ""
+    },
+    "xbox": {
+      "productId": "",
+      "url": ""
+    }
+  },
+  "lastUpdated": "",
+  "overallProgress": 0,
+  "activeMission": "In Progress",
+  "boroughs": [
+    "Camden",
+    "City of London",
+    "City of Westminster",
+    "Islington & Hackney",
+    "Lambeth",
+    "Nine Elms",
+    "Southwark",
+    "Tower Hamlets"
+  ],
+  "borough_liberation": {
+    "description": "Each borough starts Oppressed under DedSec control by Albion/Zero-Day. Completing all of its listed Oppression Defiance objectives unlocks that borough's liberation mission; finishing the mission liberates the borough and grants the listed Skilled Operative recruit type plus Tech Points.",
+    "boroughs": [
+      {
+        "name": "City of Westminster",
+        "objectives": [
+          "Disrupt Propaganda",
+          "Rescue Freedom Fighter"
+        ],
+        "unlock_mission": "Like Clockwork",
+        "reward_operative": "Spy+"
+      },
+      {
+        "name": "City of London",
+        "objectives": [
+          "Sabotage",
+          "Photograph Evidence",
+          "Hack CtOS Hub"
+        ],
+        "unlock_mission": "Mind Games",
+        "reward_operative": "Beekeeper+"
+      },
+      {
+        "name": "Camden",
+        "objectives": [
+          "Collect Evidence",
+          "Disrupt Propaganda"
+        ],
+        "unlock_mission": "Clarion Call",
+        "reward_operative": "Hacker+"
+      },
+      {
+        "name": "Lambeth",
+        "objectives": [
+          "Digital Deface",
+          "Photograph Evidence",
+          "Disrupt Propaganda"
+        ],
+        "unlock_mission": "Wheels in Motion",
+        "reward_operative": "Drone Expert+"
+      },
+      {
+        "name": "Southwark",
+        "objectives": [
+          "Photograph Evidence",
+          "Sabotage",
+          "Digital Deface",
+          "Hack CtOS Hub"
+        ],
+        "unlock_mission": "Information Overload",
+        "reward_operative": "Anarchist+"
+      },
+      {
+        "name": "Islington & Hackney",
+        "objectives": [
+          "Sabotage",
+          "Neutralise VIP",
+          "Collect Evidence"
+        ],
+        "unlock_mission": "Fight or Flight Plan",
+        "reward_operative": "Football Hooligan+"
+      },
+      {
+        "name": "Nine Elms",
+        "objectives": [
+          "Sabotage",
+          "Neutralise VIP",
+          "Photograph Evidence"
+        ],
+        "unlock_mission": "The Black Hole of Battersea",
+        "reward_operative": "Professional Hitman+"
+      },
+      {
+        "name": "Tower Hamlets",
+        "objectives": [
+          "Neutralise VIP",
+          "Collect Evidence",
+          "Rescue Freedom Fighter"
+        ],
+        "unlock_mission": "Driven to Distraction",
+        "reward_operative": "Getaway Driver+"
+      }
+    ]
+  },
+  "metrics": [
+    {
+      "id": "metric_1",
+      "icon": "💎",
+      "label": "Tech Points",
+      "current": 0,
+      "total": 130,
+      "step": 1
+    },
+    {
+      "id": "metric_2",
+      "icon": "🏺",
+      "label": "Relics",
+      "current": 0,
+      "total": 50,
+      "step": 1
+    },
+    {
+      "id": "metric_3",
+      "icon": "🎭",
+      "label": "Mask Boxes",
+      "current": 0,
+      "total": 38,
+      "step": 1
+    },
+    {
+      "id": "metric_4",
+      "icon": "🎧",
+      "label": "Audio Logs",
+      "current": 0,
+      "total": 53,
+      "step": 1
+    },
+    {
+      "id": "metric_5",
+      "icon": "📄",
+      "label": "Text Files / Data Points",
+      "current": 0,
+      "total": 194,
+      "step": 1
+    },
+    {
+      "id": "metric_6",
+      "icon": "🎨",
+      "label": "Paste-Ups",
+      "current": 0,
+      "total": 47,
+      "step": 1
+    },
+    {
+      "id": "metric_7",
+      "icon": "🍺",
+      "label": "Pub / Drink Locations",
+      "current": 0,
+      "total": 26,
+      "step": 1
+    },
+    {
+      "id": "metric_8",
+      "icon": "🎯",
+      "label": "Darts Locations",
+      "current": 0,
+      "total": 21,
+      "step": 1
+    },
+    {
+      "id": "metric_9",
+      "icon": "⚽",
+      "label": "Kick-Up Locations",
+      "current": 0,
+      "total": 21,
+      "step": 1
+    },
+    {
+      "id": "metric_10",
+      "icon": "🥊",
+      "label": "Bare Knuckle Arenas",
+      "current": 0,
+      "total": 5,
+      "step": 1
+    },
+    {
+      "id": "metric_11",
+      "icon": "📷",
+      "label": "Bagley Memories",
+      "current": 0,
+      "total": 9,
+      "step": 1
+    },
+    {
+      "id": "metric_12",
+      "icon": "🏚️",
+      "label": "Royal Treatment Mansions",
+      "current": 0,
+      "total": 3,
+      "step": 1
+    },
+    {
+      "id": "metric_13",
+      "icon": "🛠️",
+      "label": "Tech Upgrades Unlocked",
+      "current": 0,
+      "total": 24,
+      "step": 1
+    }
+  ],
+  "categories": {},
+  "trophies": [
+    {
+      "trophyId": 0,
+      "name": "Completionist",
+      "title": "Completionist",
+      "description": "Earn all other trophies.",
+      "detail": "Earn all other trophies.",
+      "rank": "PLATINUM",
+      "type": "platinum",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 1,
+      "name": "Brave New World",
+      "title": "Brave New World",
+      "description": "Complete \"Operation Westminster.\"",
+      "detail": "Complete \"Operation Westminster.\"",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 2,
+      "name": "The Future Is Bright",
+      "title": "The Future Is Bright",
+      "description": "Complete the 404 Storyline.",
+      "detail": "Complete the 404 Storyline.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 3,
+      "name": "Long Live the Queen",
+      "title": "Long Live the Queen",
+      "description": "Complete the Kelley Storyline.",
+      "detail": "Complete the Kelley Storyline.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 4,
+      "name": "Hacker, Tailor, Soldier, Spy",
+      "title": "Hacker, Tailor, Soldier, Spy",
+      "description": "Complete the SIRS Storyline.",
+      "detail": "Complete the SIRS Storyline.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 5,
+      "name": "When Good Men Do Nothing",
+      "title": "When Good Men Do Nothing",
+      "description": "Complete the Albion Storyline.",
+      "detail": "Complete the Albion Storyline.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 6,
+      "name": "Divided We Fall",
+      "title": "Divided We Fall",
+      "description": "Complete the DedSec Storyline.",
+      "detail": "Complete the DedSec Storyline.",
+      "rank": "GOLD",
+      "type": "gold",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 7,
+      "name": "The One That Got Away",
+      "title": "The One That Got Away",
+      "description": "Complete \"Finding Bagley.\"",
+      "detail": "Complete \"Finding Bagley.\"",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 8,
+      "name": "In the Nick of Time",
+      "title": "In the Nick of Time",
+      "description": "Complete \"Change of Heart.\"",
+      "detail": "Complete \"Change of Heart.\"",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 9,
+      "name": "A Roof Over Your Head",
+      "title": "A Roof Over Your Head",
+      "description": "Complete \"Royal Treatment.\"",
+      "detail": "Complete \"Royal Treatment.\"",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 10,
+      "name": "England for Everyone",
+      "title": "England for Everyone",
+      "description": "Complete \"Parks and Reclamation.\"",
+      "detail": "Complete \"Parks and Reclamation.\"",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 11,
+      "name": "A Dish Best Served Cold",
+      "title": "A Dish Best Served Cold",
+      "description": "Complete a revenge mission after an operative is kidnapped.",
+      "detail": "Complete a revenge mission after an operative is kidnapped.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 12,
+      "name": "Making Friends",
+      "title": "Making Friends",
+      "description": "Recruit an operative after completing \"Reporting For Duty.\"",
+      "detail": "Recruit an operative after completing \"Reporting For Duty.\"",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 13,
+      "name": "Rise Up",
+      "title": "Rise Up",
+      "description": "Turn one Borough Defiant.",
+      "detail": "Turn one Borough Defiant.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 14,
+      "name": "Take Back London",
+      "title": "Take Back London",
+      "description": "Turn all Boroughs Defiant.",
+      "detail": "Turn all Boroughs Defiant.",
+      "rank": "GOLD",
+      "type": "gold",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 15,
+      "name": "And Stay Down",
+      "title": "And Stay Down",
+      "description": "Defeat a DedSec Adversary.",
+      "detail": "Defeat a DedSec Adversary.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 16,
+      "name": "Every Walk of Life",
+      "title": "Every Walk of Life",
+      "description": "Have a team of 20 Operatives with different Occupations.",
+      "detail": "Have a team of 20 Operatives with different Occupations.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 17,
+      "name": "Meta-Gaming",
+      "title": "Meta-Gaming",
+      "description": "Recruit a Video Game Designer.",
+      "detail": "Recruit a Video Game Designer.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 18,
+      "name": "Down to the Wire",
+      "title": "Down to the Wire",
+      "description": "Perform 5 Stealth Takedowns with a Professional Hitman.",
+      "detail": "Perform 5 Stealth Takedowns with a Professional Hitman.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 19,
+      "name": "Death From Above",
+      "title": "Death From Above",
+      "description": "Kill 5 Albion guards using Dive Bomb.",
+      "detail": "Kill 5 Albion guards using Dive Bomb.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 20,
+      "name": "NO NOT THE BEES",
+      "title": "NO NOT THE BEES",
+      "description": "Neutralize 10 Albion guards using Bee Swarms.",
+      "detail": "Neutralize 10 Albion guards using Bee Swarms.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 21,
+      "name": "Hack the Planet",
+      "title": "Hack the Planet",
+      "description": "Propagate a hack across 8 targets at once.",
+      "detail": "Propagate a hack across 8 targets at once.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 22,
+      "name": "Shaken Not Stirred",
+      "title": "Shaken Not Stirred",
+      "description": "Disable the weapons of 5 Albion guards at once with the Spy Watch.",
+      "detail": "Disable the weapons of 5 Albion guards at once with the Spy Watch.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 23,
+      "name": "Power to the People",
+      "title": "Power to the People",
+      "description": "Have your followers neutralize 3 Albion guards in total.",
+      "detail": "Have your followers neutralize 3 Albion guards in total.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 24,
+      "name": "Paint Me Like One of Your...",
+      "title": "Paint Me Like One of Your...",
+      "description": "Stun 5 Clan Kelley members with paintball gun headshots.",
+      "detail": "Stun 5 Clan Kelley members with paintball gun headshots.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 25,
+      "name": "Throw the Book at Them",
+      "title": "Throw the Book at Them",
+      "description": "Perform 5 Arrest Takedowns.",
+      "detail": "Perform 5 Arrest Takedowns.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 26,
+      "name": "The Royal Tour",
+      "title": "The Royal Tour",
+      "description": "Enter Buckingham Palace's restricted area disguised as a Royal Guard.",
+      "detail": "Enter Buckingham Palace's restricted area disguised as a Royal Guard.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 27,
+      "name": "You Don't See Me!",
+      "title": "You Don't See Me!",
+      "description": "Escape a Pursuit Level 5 using a Statue emote.",
+      "detail": "Escape a Pursuit Level 5 using a Statue emote.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 28,
+      "name": "Could've Made National",
+      "title": "Could've Made National",
+      "description": "Complete Kick-Up challenge Intermediate 1.",
+      "detail": "Complete Kick-Up challenge Intermediate 1.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 29,
+      "name": "Bullseye",
+      "title": "Bullseye",
+      "description": "Complete a Darts game at every Darts location.",
+      "detail": "Complete a Darts game at every Darts location.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 30,
+      "name": "Piece de Resistance",
+      "title": "Piece de Resistance",
+      "description": "Complete a Paste Up at every Paste Up location.",
+      "detail": "Complete a Paste Up at every Paste Up location.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 31,
+      "name": "Bottom's Up",
+      "title": "Bottom's Up",
+      "description": "Drink at least once at every Drink location.",
+      "detail": "Drink at least once at every Drink location.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 32,
+      "name": "DedSec Delivery",
+      "title": "DedSec Delivery",
+      "description": "Complete 20 Parcel Fox Delivery Missions.",
+      "detail": "Complete 20 Parcel Fox Delivery Missions.",
+      "rank": "BRONZE",
+      "type": "bronze",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 33,
+      "name": "All About Aesthetic",
+      "title": "All About Aesthetic",
+      "description": "Buy a Weapon Skin.",
+      "detail": "Buy a Weapon Skin.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 34,
+      "name": "Re-Wrap My Whip",
+      "title": "Re-Wrap My Whip",
+      "description": "Buy a vehicle paint job.",
+      "detail": "Buy a vehicle paint job.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 35,
+      "name": "Fresh Threads",
+      "title": "Fresh Threads",
+      "description": "Spend 100,000 ETO on clothes in shops.",
+      "detail": "Spend 100,000 ETO on clothes in shops.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 36,
+      "name": "Fully Kitted",
+      "title": "Fully Kitted",
+      "description": "Unlock all upgrades.",
+      "detail": "Unlock all upgrades.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 37,
+      "name": "Locked and Loaded",
+      "title": "Locked and Loaded",
+      "description": "Purchase all upgrades for every weapon.",
+      "detail": "Purchase all upgrades for every weapon.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 38,
+      "name": "Oral History",
+      "title": "Oral History",
+      "description": "Collect 50 Audio Logs.",
+      "detail": "Collect 50 Audio Logs.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    },
+    {
+      "trophyId": 39,
+      "name": "Magpie",
+      "title": "Magpie",
+      "description": "Collect 15 Relics.",
+      "detail": "Collect 15 Relics.",
+      "rank": "SILVER",
+      "type": "silver",
+      "icon": "",
+      "hidden": false,
+      "groupId": "default",
+      "targetValue": 0
+    }
+  ],
+  "collectibles": {
+    "tech_points": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 130,
+      "region": "London-wide",
+      "description": "Used to upgrade DedSec gadgets, weapons, and hacks. Appear as small diamond-shaped icons on the map.",
+      "items": [
+        {
+          "id": "techpoint_camden_01",
+          "name": "The British Museum",
+          "region": "Camden",
+          "location": "The British Museum",
+          "guide": "In a tent at the front of the building. Use the entrance with two gates and jump the fence section there to avoid alerting guards."
+        },
+        {
+          "id": "techpoint_camden_02",
+          "name": "ETO Bank Construction Site",
+          "region": "Camden",
+          "location": "ETO Bank Construction Site",
+          "guide": "At the top of the tower overlooking the site. Reach it by cargo drone."
+        },
+        {
+          "id": "techpoint_camden_03",
+          "name": "Argyle Inn",
+          "region": "Camden",
+          "location": "Argyle Inn",
+          "guide": "On the roof of the smaller building. Fly a cargo drone to the roof, then send a Spiderbot into the ventilation shaft."
+        },
+        {
+          "id": "techpoint_camden_04",
+          "name": "Royal Courts of Justice",
+          "region": "Camden",
+          "location": "Royal Courts of Justice",
+          "guide": "On the roof of the smaller building, outside any restricted area. A cargo drone gets you there."
+        },
+        {
+          "id": "techpoint_camden_05",
+          "name": "Leather Lane",
+          "region": "Camden",
+          "location": "Leather Lane",
+          "guide": "In an evidence room. Enter the garage, send a Spiderbot through the vent, and follow it to the end."
+        },
+        {
+          "id": "techpoint_camden_06",
+          "name": "Albion Station Camden",
+          "region": "Camden",
+          "location": "Albion Station Camden",
+          "guide": "In an evidence room. Climb the drainpipe at the back of the building, incapacitate the guard, and use a Spiderbot through a hole in the wall."
+        },
+        {
+          "id": "techpoint_camden_07",
+          "name": "Furzton Tower Block",
+          "region": "Camden",
+          "location": "Furzton Tower Block",
+          "guide": "On a small shelf beside the patio on the first floor. A guard is nearby, so a cargo drone is the safest approach."
+        },
+        {
+          "id": "techpoint_camden_08",
+          "name": "University College London",
+          "region": "Camden",
+          "location": "University College London",
+          "guide": "On the roof of a small shed in the courtyard. Fly a cargo drone to the roof, then use a Spiderbot in the ventilation."
+        },
+        {
+          "id": "techpoint_camden_09",
+          "name": "United Souls Search",
+          "region": "Camden",
+          "location": "United Souls Search",
+          "guide": "On the roof of the building. Reach it by cargo drone."
+        },
+        {
+          "id": "techpoint_camden_10",
+          "name": "GBB House",
+          "region": "Camden",
+          "location": "GBB House",
+          "guide": "On the roof of the building, near United Souls Search so you can collect both together."
+        },
+        {
+          "id": "techpoint_camden_11",
+          "name": "Crescent Park",
+          "region": "Camden",
+          "location": "Crescent Park",
+          "guide": "On scaffolding next to the fence, with a construction worker nearby. Use a drone or sneak through the main gate."
+        },
+        {
+          "id": "techpoint_camden_12",
+          "name": "Albion Internment Centre",
+          "region": "Camden",
+          "location": "Albion Internment Centre",
+          "guide": "In a prison cell. Fly a cargo drone over the fence to the grass patch right of the main entrance, then use a Spiderbot through the ventilation shaft."
+        },
+        {
+          "id": "techpoint_camden_13",
+          "name": "Blume Complex",
+          "region": "Camden",
+          "location": "Blume Complex",
+          "guide": "On the roof of the building. Reach it by cargo drone."
+        },
+        {
+          "id": "techpoint_camden_14",
+          "name": "Cruciform Hospital",
+          "region": "Camden",
+          "location": "Cruciform Hospital",
+          "guide": "In the courtyard. The gate is locked from inside, so use a cargo drone."
+        },
+        {
+          "id": "techpoint_camden_15",
+          "name": "Carcani Medical",
+          "region": "Camden",
+          "location": "Carcani Medical",
+          "guide": "In the ventilation shaft beneath the ground-floor laboratories. Open the gate, send in a Spiderbot, and move it through the complex."
+        },
+        {
+          "id": "techpoint_camden_16",
+          "name": "Camden Market",
+          "region": "Camden",
+          "location": "Camden Market",
+          "guide": "At one of the fair booths."
+        },
+        {
+          "id": "techpoint_camden_17",
+          "name": "St. Pancras International",
+          "region": "Camden",
+          "location": "St. Pancras International",
+          "guide": "In a cell on the terminal floor. Open it using the terminal across the corridor. A Spiderbot is the safest way inside."
+        },
+        {
+          "id": "techpoint_camden_18",
+          "name": "Ministry of Civic Management",
+          "region": "Camden",
+          "location": "Ministry of Civic Management",
+          "guide": "On a table in the ministry's yard. Use a Spiderbot to get it."
+        },
+        {
+          "id": "techpoint_camden_19",
+          "name": "Camden High Street",
+          "region": "Camden",
+          "location": "Camden High Street",
+          "guide": "On a table. Take the lift in the alley next to Camden Town station, then climb the drainpipe."
+        },
+        {
+          "id": "techpoint_nine_elms_01",
+          "name": "Solar Garden",
+          "region": "Nine Elms",
+          "location": "Solar Garden",
+          "guide": "On the circular top floor. Fly in with a cargo drone, find a grate, and throw a Spiderbot through it."
+        },
+        {
+          "id": "techpoint_nine_elms_02",
+          "name": "US Embassy",
+          "region": "Nine Elms",
+          "location": "US Embassy",
+          "guide": "In a restricted area on the lower level. Reach it quietly with a Spiderbot, or use a transport drone at the risk of being detected."
+        },
+        {
+          "id": "techpoint_nine_elms_03",
+          "name": "Nine Elms Walkway",
+          "region": "Nine Elms",
+          "location": "Nine Elms Walkway",
+          "guide": "In a restricted area. Use an Albion employee or builder outfit. On the right side of the bridge, shoot the barrel beside the X-marked wooden door to blow it open, then enter."
+        },
+        {
+          "id": "techpoint_nine_elms_04",
+          "name": "Vauxhall Tower",
+          "region": "Nine Elms",
+          "location": "Vauxhall Tower",
+          "guide": "Behind a locked door. Use a transport drone to hook explosives, fly to the roof, and drop them near the terminal."
+        },
+        {
+          "id": "techpoint_nine_elms_05",
+          "name": "Albion Station Nine Elms",
+          "region": "Nine Elms",
+          "location": "Albion Station Nine Elms",
+          "guide": "On the top floor. Call a transport drone, drop explosives on the X-marked wooden door, and enter the room."
+        },
+        {
+          "id": "techpoint_nine_elms_06",
+          "name": "Parcel Fox Distribution Centre",
+          "region": "Nine Elms",
+          "location": "Parcel Fox Distribution Centre",
+          "guide": "In a restricted area. Place a Spiderbot in the air duct and descend; raise the grate while hovering above it."
+        },
+        {
+          "id": "techpoint_nine_elms_07",
+          "name": "The Battersea",
+          "region": "Nine Elms",
+          "location": "The Battersea",
+          "guide": "In a restricted lower level. Use a jet ski to enter, or use a Spiderbot through the grate to unlock the door."
+        },
+        {
+          "id": "techpoint_nine_elms_08",
+          "name": "Nine Elms Docks",
+          "region": "Nine Elms",
+          "location": "Nine Elms Docks",
+          "guide": "Heavily guarded. Use a Spiderbot in the ventilation shaft near the point, then jump on the pipes and head to the end of the area."
+        },
+        {
+          "id": "techpoint_tower_hamlets_01",
+          "name": "Helmsman's Tracks",
+          "region": "Tower Hamlets",
+          "location": "Helmsman's Tracks",
+          "guide": "In a restricted area, break two identical plywood walls (marked with a red X), one behind the other."
+        },
+        {
+          "id": "techpoint_tower_hamlets_02",
+          "name": "Albion Bethnal Green Station",
+          "region": "Tower Hamlets",
+          "location": "Albion Bethnal Green Station",
+          "guide": "Climb the unfinished staircase in the building to reach the room with the Tech Point."
+        },
+        {
+          "id": "techpoint_tower_hamlets_03",
+          "name": "Cemetery Park",
+          "region": "Tower Hamlets",
+          "location": "Cemetery Park",
+          "guide": "In a small building in the park's corner. Use a Spiderbot to get inside."
+        },
+        {
+          "id": "techpoint_tower_hamlets_04",
+          "name": "Wapping Albion Station",
+          "region": "Tower Hamlets",
+          "location": "Wapping Albion Station",
+          "guide": "On the building's roof. Use a drone to reach it."
+        },
+        {
+          "id": "techpoint_tower_hamlets_05",
+          "name": "Thames Landing",
+          "region": "Tower Hamlets",
+          "location": "Thames Landing",
+          "guide": "In a room under a landing that can't be entered from either side. Use the Spiderbot located inside."
+        },
+        {
+          "id": "techpoint_tower_hamlets_06",
+          "name": "Royal London Hospital",
+          "region": "Tower Hamlets",
+          "location": "Royal London Hospital",
+          "guide": "Where part of the hospital overhangs the street, on a small roof with scaffolding. The Tech Point is inside."
+        },
+        {
+          "id": "techpoint_tower_hamlets_07",
+          "name": "Albion Drone Factory",
+          "region": "Tower Hamlets",
+          "location": "Albion Drone Factory",
+          "guide": "Inside the building, past a door protected by an alarm (unless you wear an Albion costume). A guard is nearby."
+        },
+        {
+          "id": "techpoint_tower_hamlets_08",
+          "name": "Whitechapel Terminus",
+          "region": "Tower Hamlets",
+          "location": "Whitechapel Terminus",
+          "guide": "On the lower level of the complex. Drop down near the restricted zone border and throw a Spiderbot over the fence."
+        },
+        {
+          "id": "techpoint_tower_hamlets_09",
+          "name": "Brick Lane",
+          "region": "Tower Hamlets",
+          "location": "Brick Lane",
+          "guide": "On a building's roof. Fly a drone over to collect it."
+        },
+        {
+          "id": "techpoint_tower_hamlets_10",
+          "name": "Old Spitalfields Market",
+          "region": "Tower Hamlets",
+          "location": "Old Spitalfields Market",
+          "guide": "Inside a building at the entrance, reached by stairs. The area is guarded, so you'll need to defeat at least one enemy."
+        },
+        {
+          "id": "techpoint_tower_hamlets_11",
+          "name": "Tower of London",
+          "region": "Tower Hamlets",
+          "location": "Tower of London",
+          "guide": "Inside a small cage in the courtyard. The area is guarded, so fly a drone up and drop a Spiderbot in."
+        },
+        {
+          "id": "techpoint_tower_hamlets_12",
+          "name": "Tower Bridge",
+          "region": "Tower Hamlets",
+          "location": "Tower Bridge",
+          "guide": "At the top of the bridge. Enter through a window on one of the towers, climb to the top, step outside above the street, and throw a Spiderbot to the upper floor to retrieve it."
+        },
+        {
+          "id": "techpoint_islington_hackney_01",
+          "name": "Stafford Auto Garage",
+          "region": "Islington & Hackney",
+          "location": "Stafford Auto Garage",
+          "guide": "On the top floor, on the desk beside the computer. Climb the container to reach the floor with two cars, fight through the guards, then go up the stairs on the far side and turn left."
+        },
+        {
+          "id": "techpoint_islington_hackney_02",
+          "name": "Old Canal Warehouse",
+          "region": "Islington & Hackney",
+          "location": "Old Canal Warehouse",
+          "guide": "On a box on the warehouse roof. Call a nearby cargo drone and fly up to it instead of fighting the heavy guards."
+        },
+        {
+          "id": "techpoint_islington_hackney_03",
+          "name": "Cargo Collective",
+          "region": "Islington & Hackney",
+          "location": "Cargo Collective",
+          "guide": "On the floor of a locked room. Fly a cargo drone one floor up to grab the access key, then open the door."
+        },
+        {
+          "id": "techpoint_islington_hackney_04",
+          "name": "World of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World of Tomorrow",
+          "guide": "Inside the club, next to the slot machines on the lower floor."
+        },
+        {
+          "id": "techpoint_islington_hackney_05",
+          "name": "Hackney Baths",
+          "region": "Islington & Hackney",
+          "location": "Hackney Baths",
+          "guide": "On the desk beside the computer in a room with doors on both sides. Eliminate the guards one by one, then go forward and up."
+        },
+        {
+          "id": "techpoint_islington_hackney_06",
+          "name": "Fusilli Tower",
+          "region": "Islington & Hackney",
+          "location": "Fusilli Tower",
+          "guide": "At the top of the public tower. Use the nearest cargo drone and fly as high as it goes."
+        },
+        {
+          "id": "techpoint_islington_hackney_07",
+          "name": "Inspire Towers",
+          "region": "Islington & Hackney",
+          "location": "Inspire Towers",
+          "guide": "On a metal box on the balcony beside the Inspire tower. Reach it with a cargo drone."
+        },
+        {
+          "id": "techpoint_islington_hackney_08",
+          "name": "NeoGate",
+          "region": "Islington & Hackney",
+          "location": "NeoGate",
+          "guide": "At the far end of a ventilation duct. Take the stairs to the basement, use a Spiderbot through the vent shafts, and follow the duct on the right, below the ceiling."
+        },
+        {
+          "id": "techpoint_islington_hackney_09",
+          "name": "Finsbury New Project",
+          "region": "Islington & Hackney",
+          "location": "Finsbury New Project",
+          "guide": "At the end of a route on the platforms to the right. Throw a Spiderbot through the open grate on the lowest floor, and keep it away from water."
+        },
+        {
+          "id": "techpoint_islington_hackney_10",
+          "name": "Battlebridge Basin",
+          "region": "Islington & Hackney",
+          "location": "Battlebridge Basin",
+          "guide": "On the large balcony by a table. Fly a cargo drone to the marked spot, then jump down."
+        },
+        {
+          "id": "techpoint_islington_hackney_11",
+          "name": "The Sandstone Residence",
+          "region": "Islington & Hackney",
+          "location": "The Sandstone Residence",
+          "guide": "At the end of an air duct on the left. Get the access key from the garden with a cargo drone, enter the building, go up a floor, and send a Spiderbot through the vent."
+        },
+        {
+          "id": "techpoint_islington_hackney_12",
+          "name": "Seam Nightclub",
+          "region": "Islington & Hackney",
+          "location": "Seam Nightclub",
+          "guide": "On the scaffolding. Fly a cargo drone to the marked spot, then jump down to collect it."
+        },
+        {
+          "id": "techpoint_city_of_westminster_01",
+          "name": "Vauxhall Bridge",
+          "region": "City of Westminster",
+          "location": "Vauxhall Bridge",
+          "guide": "Under the bridge, in a room behind a cage. Enter through a hole with a Spiderbot, then destroy the barrel blocking the way."
+        },
+        {
+          "id": "techpoint_city_of_westminster_02",
+          "name": "Perry Harris Redevelopment",
+          "region": "City of Westminster",
+          "location": "Perry Harris Redevelopment",
+          "guide": "On the barrels at the lowest level of the construction site. A Spiderbot can sneak you in."
+        },
+        {
+          "id": "techpoint_city_of_westminster_03",
+          "name": "Lambeth Bridge",
+          "region": "City of Westminster",
+          "location": "Lambeth Bridge",
+          "guide": "In a room below the bridge that is locked from the inside. Use a Spiderbot to get in."
+        },
+        {
+          "id": "techpoint_city_of_westminster_04",
+          "name": "Wellington Arch",
+          "region": "City of Westminster",
+          "location": "Wellington Arch",
+          "guide": "On the tower's roof, under the floor. Go through the collapsed floor and into a ventilation shaft with the Spiderbot."
+        },
+        {
+          "id": "techpoint_city_of_westminster_05",
+          "name": "Buckingham Palace",
+          "region": "City of Westminster",
+          "location": "Buckingham Palace",
+          "guide": "On a table across from the guard room near the main entrance. Distract the patrolling guard."
+        },
+        {
+          "id": "techpoint_city_of_westminster_06",
+          "name": "Broco Tech",
+          "region": "City of Westminster",
+          "location": "Broco Tech",
+          "guide": "In a ventilation shaft beside the main entrance. Use a Spiderbot."
+        },
+        {
+          "id": "techpoint_city_of_westminster_07",
+          "name": "Westminster Abbey",
+          "region": "City of Westminster",
+          "location": "Westminster Abbey",
+          "guide": "In a pot on the roof of the building next to the courtyard. A cargo drone is needed."
+        },
+        {
+          "id": "techpoint_city_of_westminster_08",
+          "name": "Downing Street",
+          "region": "City of Westminster",
+          "location": "Downing Street",
+          "guide": "On a table in the central courtyard, next to an alarm camera. A drone can fly in directly."
+        },
+        {
+          "id": "techpoint_city_of_westminster_09",
+          "name": "Admiralty Arch",
+          "region": "City of Westminster",
+          "location": "Admiralty Arch",
+          "guide": "At the junction between the complex's two buildings. Reach it with a cargo drone."
+        },
+        {
+          "id": "techpoint_city_of_westminster_10",
+          "name": "London Carriage Service",
+          "region": "City of Westminster",
+          "location": "London Carriage Service",
+          "guide": "In the underground part of the complex, reached through a small office by the round tower. Disable the alarm gates, subdue the guard, then throw the Spiderbot to the ventilation shaft."
+        },
+        {
+          "id": "techpoint_city_of_westminster_11",
+          "name": "Canadian High Commission",
+          "region": "City of Westminster",
+          "location": "Canadian High Commission",
+          "guide": "On the roof, under the stairs. Fly in with a cargo drone, then use a Spiderbot."
+        },
+        {
+          "id": "techpoint_city_of_westminster_12",
+          "name": "Regalia Theatre",
+          "region": "City of Westminster",
+          "location": "Regalia Theatre",
+          "guide": "At the connector between buildings. Use a cargo drone or the lift after lowering the road posts."
+        },
+        {
+          "id": "techpoint_city_of_westminster_13",
+          "name": "Palace of Westminster",
+          "region": "City of Westminster",
+          "location": "Palace of Westminster",
+          "guide": "On the building's balcony. A drone can reach it."
+        },
+        {
+          "id": "techpoint_city_of_westminster_14",
+          "name": "Chinatown",
+          "region": "City of Westminster",
+          "location": "Chinatown",
+          "guide": "In a netted storage room in the courtyard of a restricted area. Enter through a hole in the fence with a Spiderbot."
+        },
+        {
+          "id": "techpoint_city_of_westminster_15",
+          "name": "New Scotland Yard",
+          "region": "City of Westminster",
+          "location": "New Scotland Yard",
+          "guide": "On a table on the floor with the guard room."
+        },
+        {
+          "id": "techpoint_city_of_westminster_16",
+          "name": "Buckingham Royal Mews",
+          "region": "City of Westminster",
+          "location": "Buckingham Royal Mews",
+          "guide": "Inside the building, in the room next to the garage door."
+        },
+        {
+          "id": "techpoint_city_of_westminster_17",
+          "name": "SIRS HQ",
+          "region": "City of Westminster",
+          "location": "SIRS HQ",
+          "guide": "In a locked upstairs storage room. The terminal that unlocks the door is in the next room."
+        },
+        {
+          "id": "techpoint_city_of_westminster_18",
+          "name": "Covent Garden Piazza",
+          "region": "City of Westminster",
+          "location": "Covent Garden Piazza",
+          "guide": "Behind a wooden wall with a hole, near the marketplace at the south entrance of a restricted area. Deploy a Spiderbot through the hole."
+        },
+        {
+          "id": "techpoint_city_of_westminster_19",
+          "name": "Buckingham Palace Gardens",
+          "region": "City of Westminster",
+          "location": "Buckingham Palace Gardens",
+          "guide": "On one of the tables on the terrace at the back of the palace."
+        },
+        {
+          "id": "techpoint_city_of_westminster_20",
+          "name": "Throne's Felts",
+          "region": "City of Westminster",
+          "location": "Throne's Felts",
+          "guide": "Inside the building, on the lowest level under the stairs. A Spiderbot is the easiest way in."
+        },
+        {
+          "id": "techpoint_city_of_westminster_21",
+          "name": "Somerset House",
+          "region": "City of Westminster",
+          "location": "Somerset House",
+          "guide": "Under the floor. Take the Spiderbot behind the stage to a broken grate under the stairs and go through it."
+        },
+        {
+          "id": "techpoint_city_of_london_01",
+          "name": "Toan Attack Site",
+          "region": "City of London",
+          "location": "Toan Attack Site",
+          "guide": "Under rubble. You'll need the Spiderbot to reach it."
+        },
+        {
+          "id": "techpoint_city_of_london_02",
+          "name": "The Cheesegrater",
+          "region": "City of London",
+          "location": "The Cheesegrater",
+          "guide": "Near the main entrance, past a damaged fan. Deploy the Spiderbot and follow the corridor inside."
+        },
+        {
+          "id": "techpoint_city_of_london_03",
+          "name": "Carousel Plaza",
+          "region": "City of London",
+          "location": "Carousel Plaza",
+          "guide": "On the top tier of the curved section, beside the antenna. Use a drone."
+        },
+        {
+          "id": "techpoint_city_of_london_04",
+          "name": "Walkie Talkie",
+          "region": "City of London",
+          "location": "Walkie Talkie",
+          "guide": "In a locked room behind an elevator. Unlock a network node using the cameras in the room."
+        },
+        {
+          "id": "techpoint_city_of_london_05",
+          "name": "St. Dunstan-in-the-East",
+          "region": "City of London",
+          "location": "St. Dunstan-in-the-East",
+          "guide": "In the tower, at a broken window. Use a drone."
+        },
+        {
+          "id": "techpoint_city_of_london_06",
+          "name": "Bank of England",
+          "region": "City of London",
+          "location": "Bank of England",
+          "guide": "Inside a ventilation shaft whose entrance is in a control room. Only the Spiderbot can reach it."
+        },
+        {
+          "id": "techpoint_city_of_london_07",
+          "name": "The Spine",
+          "region": "City of London",
+          "location": "The Spine",
+          "guide": "Climb the scaffolding and building facade to a small room. Send the Spiderbot through a hole in the wall, then continue along the scaffold."
+        },
+        {
+          "id": "techpoint_city_of_london_08",
+          "name": "Horizon Multinational",
+          "region": "City of London",
+          "location": "Horizon Multinational",
+          "guide": "On the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_city_of_london_09",
+          "name": "Finsbury Circus Gardens",
+          "region": "City of London",
+          "location": "Finsbury Circus Gardens",
+          "guide": "Under a small building near the complex entrance."
+        },
+        {
+          "id": "techpoint_city_of_london_10",
+          "name": "Barbican Centre",
+          "region": "City of London",
+          "location": "Barbican Centre",
+          "guide": "At the bottom of the complex, on a table below the stairs. An Albion employee disguise helps here."
+        },
+        {
+          "id": "techpoint_city_of_london_11",
+          "name": "Old Bailey",
+          "region": "City of London",
+          "location": "Old Bailey",
+          "guide": "On a balcony. A cargo drone is the quickest way to reach it."
+        },
+        {
+          "id": "techpoint_city_of_london_12",
+          "name": "Great Fire Monument",
+          "region": "City of London",
+          "location": "Great Fire Monument",
+          "guide": "On a balcony on the building's highest level. Use a drone."
+        },
+        {
+          "id": "techpoint_lambeth_01",
+          "name": "County Hall",
+          "region": "Lambeth",
+          "location": "County Hall",
+          "guide": "On the bottom of a hole with a ladder, above the building. Reach it with the Spiderbot."
+        },
+        {
+          "id": "techpoint_lambeth_02",
+          "name": "Millennium Wheel",
+          "region": "Lambeth",
+          "location": "Millennium Wheel",
+          "guide": "In a closed room. Unlock a node by using a cargo drone to move boxes and clear the signal path."
+        },
+        {
+          "id": "techpoint_lambeth_03",
+          "name": "Southbank Atrium",
+          "region": "Lambeth",
+          "location": "Southbank Atrium",
+          "guide": "On the lowest level, in a room inside a fenced hall guarded by Clan Kelley."
+        },
+        {
+          "id": "techpoint_lambeth_04",
+          "name": "British Theatre",
+          "region": "Lambeth",
+          "location": "British Theatre",
+          "guide": "On the roof. Fly there with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_05",
+          "name": "Waterloo Plaza",
+          "region": "Lambeth",
+          "location": "Waterloo Plaza",
+          "guide": "On the roof. Fly there with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_06",
+          "name": "London Lens",
+          "region": "Lambeth",
+          "location": "London Lens",
+          "guide": "In the tunnels at the base of the round building. Enter through the tunnel entrance, defeat the guard, climb the scaffolding, and throw the Spiderbot onto the shelf above."
+        },
+        {
+          "id": "techpoint_lambeth_07",
+          "name": "London Necropolis",
+          "region": "Lambeth",
+          "location": "London Necropolis",
+          "guide": "On the roof of the complex. Reach it with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_08",
+          "name": "Oasis Church",
+          "region": "Lambeth",
+          "location": "Oasis Church",
+          "guide": "In a roof ventilation shaft. Open the hatch beside it and deploy the Spiderbot. Watch for traps."
+        },
+        {
+          "id": "techpoint_lambeth_09",
+          "name": "Lambeth Tower",
+          "region": "Lambeth",
+          "location": "Lambeth Tower",
+          "guide": "On a balcony. A cargo drone is the easiest way up."
+        },
+        {
+          "id": "techpoint_lambeth_10",
+          "name": "Kennington Albion Station",
+          "region": "Lambeth",
+          "location": "Kennington Albion Station",
+          "guide": "In a locked ground-floor room. Get the digital key from a computer on the first floor."
+        },
+        {
+          "id": "techpoint_lambeth_11",
+          "name": "Lambeth Palace",
+          "region": "Lambeth",
+          "location": "Lambeth Palace",
+          "guide": "In a ventilation shaft in the courtyard. Deploy the Spiderbot and follow the vent."
+        },
+        {
+          "id": "techpoint_lambeth_12",
+          "name": "The Ascent",
+          "region": "Lambeth",
+          "location": "The Ascent",
+          "guide": "In a café on the roof. Reach it with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_13",
+          "name": "FLVR Restaurant",
+          "region": "Lambeth",
+          "location": "FLVR Restaurant",
+          "guide": "On the roof, inside a locked cage. Complete the circuit on the clock tower to open it."
+        },
+        {
+          "id": "techpoint_lambeth_14",
+          "name": "Michael Faraday Memorial",
+          "region": "Lambeth",
+          "location": "Michael Faraday Memorial",
+          "guide": "On a roof. Find the ventilation hatch and deploy the Spiderbot inside. Protesters may be nearby in the afternoon."
+        },
+        {
+          "id": "techpoint_lambeth_15",
+          "name": "UK Fibrecomm Centre",
+          "region": "Lambeth",
+          "location": "UK Fibrecomm Centre",
+          "guide": "On a column next to a wall. Fly to the roof with the drone and deploy the Spiderbot to collect it."
+        },
+        {
+          "id": "techpoint_lambeth_16",
+          "name": "Kennington Park",
+          "region": "Lambeth",
+          "location": "Kennington Park",
+          "guide": "Under a parked car. Move the car to collect it."
+        },
+        {
+          "id": "techpoint_lambeth_17",
+          "name": "Brixton Recreation Centre",
+          "region": "Lambeth",
+          "location": "Brixton Recreation Centre",
+          "guide": "At the top of a skyscraper. Reach it by drone, or use the elevator to the lower level and climb the gutter."
+        },
+        {
+          "id": "techpoint_lambeth_18",
+          "name": "Brixton Barrier Block",
+          "region": "Lambeth",
+          "location": "Brixton Barrier Block",
+          "guide": "On the roof. Reach it with the drone."
+        },
+        {
+          "id": "techpoint_lambeth_19",
+          "name": "Kennington Gas Tank",
+          "region": "Lambeth",
+          "location": "Kennington Gas Tank",
+          "guide": "On the roof. The drone is the easiest option."
+        },
+        {
+          "id": "techpoint_lambeth_20",
+          "name": "Dorrel Hand Car Wash",
+          "region": "Lambeth",
+          "location": "Dorrel Hand Car Wash",
+          "guide": "Inside the complex. Break the wooden wall marked with a red X near the main gate, or enter from another side."
+        },
+        {
+          "id": "techpoint_lambeth_21",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "In a restricted-area room. Use the drone to find the entrance."
+        },
+        {
+          "id": "techpoint_lambeth_22",
+          "name": "MI6 Building",
+          "region": "Lambeth",
+          "location": "MI6 Building",
+          "guide": "On the roof. Fly up with the drone and deploy the Spiderbot to collect it."
+        },
+        {
+          "id": "techpoint_lambeth_23",
+          "name": "E-TREE",
+          "region": "Lambeth",
+          "location": "E-TREE",
+          "guide": "At the bottom of the building, in a ventilation shaft. Reach the roof by drone, enter through an open window with the Spiderbot, and use a second vent to the left to get past the grate."
+        },
+        {
+          "id": "techpoint_lambeth_24",
+          "name": "Green Estate",
+          "region": "Lambeth",
+          "location": "Green Estate",
+          "guide": "On the roof, by the table next to the camera."
+        },
+        {
+          "id": "techpoint_lambeth_25",
+          "name": "Lambeth Town Hall",
+          "region": "Lambeth",
+          "location": "Lambeth Town Hall",
+          "guide": "On the roof. Fly there with the drone and check the ventilation shaft near the northern edge."
+        },
+        {
+          "id": "techpoint_lambeth_26",
+          "name": "St. Thomas' Hospital",
+          "region": "Lambeth",
+          "location": "St. Thomas' Hospital",
+          "guide": "In a ventilation shaft near the northern edge of the roof. Deploy the Spiderbot and watch for traps. The area is heavily guarded."
+        },
+        {
+          "id": "techpoint_southwark_01",
+          "name": "HMS Belfast",
+          "region": "Southwark",
+          "location": "HMS Belfast",
+          "guide": "On the highest deck of the ship. Use a drone to reach it."
+        },
+        {
+          "id": "techpoint_southwark_02",
+          "name": "AYW Imports",
+          "region": "Southwark",
+          "location": "AYW Imports",
+          "guide": "On the building's roof. Drop a Spiderbot or fly a drone."
+        },
+        {
+          "id": "techpoint_southwark_03",
+          "name": "Queen's Walk",
+          "region": "Southwark",
+          "location": "Queen's Walk",
+          "guide": "In a vent shaft by the river. Unlock the locked hatch with the circuit using the nearby drones, then enter with a Spiderbot."
+        },
+        {
+          "id": "techpoint_southwark_04",
+          "name": "Shad Thames Plaza",
+          "region": "Southwark",
+          "location": "Shad Thames Plaza",
+          "guide": "On the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_05",
+          "name": "Rotherhithe Docks",
+          "region": "Southwark",
+          "location": "Rotherhithe Docks",
+          "guide": "On the roof. A drone is the easiest way up."
+        },
+        {
+          "id": "techpoint_southwark_06",
+          "name": "Southwark River Gate",
+          "region": "Southwark",
+          "location": "Southwark River Gate",
+          "guide": "On the roof, under the grid. Use a Spiderbot, then jump through the hole on the far side of the roof."
+        },
+        {
+          "id": "techpoint_southwark_07",
+          "name": "Tidis",
+          "region": "Southwark",
+          "location": "Tidis",
+          "guide": "Outside the complex, next to the terminal that opens the gates. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_08",
+          "name": "Tidis Park",
+          "region": "Southwark",
+          "location": "Tidis Park",
+          "guide": "In a roof vent shaft. Fly a drone up, then drop a Spiderbot into the shaft."
+        },
+        {
+          "id": "techpoint_southwark_09",
+          "name": "Southwark Incinerator",
+          "region": "Southwark",
+          "location": "Southwark Incinerator",
+          "guide": "On the rooftop, next to the silos. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_10",
+          "name": "Southwark Auto Conversions",
+          "region": "Southwark",
+          "location": "Southwark Auto Conversions",
+          "guide": "On the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_11",
+          "name": "Around LDN Bus Depot",
+          "region": "Southwark",
+          "location": "Around LDN Bus Depot",
+          "guide": "On the canopy next to the building. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_12",
+          "name": "Southwark Residential",
+          "region": "Southwark",
+          "location": "Southwark Residential",
+          "guide": "In the construction zone, on the tower."
+        },
+        {
+          "id": "techpoint_southwark_13",
+          "name": "St. George Church",
+          "region": "Southwark",
+          "location": "St. George Church",
+          "guide": "In a vent shaft on the church roof. Unlock the hatch by solving the circuit on the tower, then enter with a Spiderbot."
+        },
+        {
+          "id": "techpoint_southwark_14",
+          "name": "Civil Aviation Traffic Office",
+          "region": "Southwark",
+          "location": "Civil Aviation Traffic Office",
+          "guide": "On the rooftop. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_15",
+          "name": "Tidis Advanced Technologies",
+          "region": "Southwark",
+          "location": "Tidis Advanced Technologies",
+          "guide": "On the platform next to the building. Reach it by drone, or from inside the building by going to the top and using the movable fan."
+        },
+        {
+          "id": "techpoint_southwark_16",
+          "name": "City Hall",
+          "region": "Southwark",
+          "location": "City Hall",
+          "guide": "In a locked room inside the building. Open it from the inside with a Spiderbot."
+        },
+        {
+          "id": "techpoint_southwark_17",
+          "name": "King's Head Yard",
+          "region": "Southwark",
+          "location": "King's Head Yard",
+          "guide": "On the pipes on the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_18",
+          "name": "Guy's Hospital",
+          "region": "Southwark",
+          "location": "Guy's Hospital",
+          "guide": "On the roof. Use a drone."
+        },
+        {
+          "id": "techpoint_southwark_19",
+          "name": "Nexus Tower",
+          "region": "Southwark",
+          "location": "Nexus Tower",
+          "guide": "Inside the complex, at the very top. Place a Spiderbot on the upper shelf and send it into the vent shaft."
+        },
+        {
+          "id": "techpoint_southwark_20",
+          "name": "The Mix",
+          "region": "Southwark",
+          "location": "The Mix",
+          "guide": "In a roof vent shaft."
+        }
+      ]
+    },
+    "relics": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 51,
+      "region": "London-wide",
+      "description": "Historical or pop-culture artifacts hidden around the city. Collecting 15 unlocks the 'Magpie' trophy/achievement. Many are also tied to story progress.",
+      "items": [
+        {
+          "id": "relic_camden_01",
+          "name": "17th Century Medical Saw (fragment)",
+          "region": "Camden",
+          "location": "The British Museum",
+          "guide": "On a shelf directly from the main entrance. Sneak in through the open balcony at the side entrance, or fly a cargo drone in (gets you detected)."
+        },
+        {
+          "id": "relic_camden_02",
+          "name": "Egyptian Artifact",
+          "region": "Camden",
+          "location": "St. Pancras International",
+          "guide": "In a warehouse on the terminal's lower level. Take the key from the guard patrolling the upper level, then download it using surveillance cameras."
+        },
+        {
+          "id": "relic_camden_03",
+          "name": "Scooter Headlamp (fragment)",
+          "region": "Camden",
+          "location": "Camden Market",
+          "guide": "In a guarded part of the market, in the medical room near the storage room, on a shelf against the wall. Use a Spiderbot."
+        },
+        {
+          "id": "relic_camden_04",
+          "name": "Bartmann Jug (fragment)",
+          "region": "Camden",
+          "location": "ETO Bank Construction Site",
+          "guide": "Go to the penultimate construction level and use the lifter to reach a small shelf. A Spiderbot is the safest way to get it."
+        },
+        {
+          "id": "relic_camden_05",
+          "name": "17th Century Medical Saw (fragment, 2nd)",
+          "region": "Camden",
+          "location": "Ministry of Civic Management",
+          "guide": "Use the air duct in the side corridor (guard patrols it) and send the Spiderbot in to a small storage room."
+        },
+        {
+          "id": "relic_camden_06",
+          "name": "Prototype (Optik 0.1) (fragment)",
+          "region": "Camden",
+          "location": "Senate House Library",
+          "guide": "Behind a locked door. Move the parked vehicles, then set the nodes so the blue line connects to the node behind the gate to open the lock."
+        },
+        {
+          "id": "relic_camden_07",
+          "name": "1984 (fragment)",
+          "region": "Camden",
+          "location": "British Library",
+          "guide": "Under a bench in the central gardens. Use a cargo drone to reach it."
+        },
+        {
+          "id": "relic_lambeth_01",
+          "name": "17th-Century Medical Saw (fragment)",
+          "region": "Lambeth",
+          "location": "Kennington Park",
+          "guide": "On scaffolding in a restricted area of the park. Reach it by drone and drop a spiderbot onto the relic."
+        },
+        {
+          "id": "relic_lambeth_02",
+          "name": "Masquerade Ball Prop (fragment)",
+          "region": "Lambeth",
+          "location": "British Theatre",
+          "guide": "On the building's roof. Use the cargo drone to reach it."
+        },
+        {
+          "id": "relic_lambeth_03",
+          "name": "Scooter Headlamp (fragment)",
+          "region": "Lambeth",
+          "location": "Dorrel Hand Car Wash",
+          "guide": "In a container in the central part of the building. Only a spiderbot can access the container."
+        },
+        {
+          "id": "relic_lambeth_04",
+          "name": "Mobile Phone (fragment)",
+          "region": "Lambeth",
+          "location": "Kennington Gas Tank",
+          "guide": "On a fenced balcony of a small building next to the structure."
+        },
+        {
+          "id": "relic_lambeth_05",
+          "name": "DedSec Bracelet (fragment)",
+          "region": "Lambeth",
+          "location": "E-TREE",
+          "guide": "On the building's roof. Fly there with a drone."
+        },
+        {
+          "id": "relic_lambeth_06",
+          "name": "Radio Londres Microphone (fragment)",
+          "region": "Lambeth",
+          "location": "Lambeth Palace",
+          "guide": "In the tower, under the floor. Deploy a spiderbot and enter the hole in the corner."
+        },
+        {
+          "id": "relic_lambeth_07",
+          "name": "Bartmann Jug (fragment)",
+          "region": "Lambeth",
+          "location": "UK Fibrecomm Centre",
+          "guide": "In a closed tunnel. Deploy a spiderbot, climb the side shelf, and double-jump to reach it."
+        },
+        {
+          "id": "relic_lambeth_08",
+          "name": "1984 (fragment)",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Reach the complex gardens and enter the ventilation shaft. It leads to a locked room with another vent — follow it to the relic."
+        },
+        {
+          "id": "relic_lambeth_09",
+          "name": "Platform Shoe (fragment)",
+          "region": "Lambeth",
+          "location": "The Stage",
+          "guide": "In a locked room on the building's roof. Access the nearby terminal to unlock the room."
+        },
+        {
+          "id": "relic_lambeth_10",
+          "name": "British Abolition Medallion (fragment)",
+          "region": "Lambeth",
+          "location": "Waterloo Bridge",
+          "guide": "Underneath the renovated bridge support. Deploy a spiderbot at the top of the scaffolding."
+        },
+        {
+          "id": "relic_lambeth_11",
+          "name": "Bartmann Jug (fragment, 2nd)",
+          "region": "Lambeth",
+          "location": "Golden Jubilee Bridge",
+          "guide": "On the outside of the railway bridge. Walk there and jump the fence, or use a drone."
+        },
+        {
+          "id": "relic_islington_hackney_01",
+          "name": "Platform Shoe (fragment)",
+          "region": "Islington & Hackney",
+          "location": "Seam Nightclub",
+          "guide": "Use the cargo drone to reach the building's roof, then jump up and collect the relic."
+        },
+        {
+          "id": "relic_islington_hackney_02",
+          "name": "Scooter Headlamp (fragment)",
+          "region": "Islington & Hackney",
+          "location": "Saint John's Gate",
+          "guide": "Use the cargo drone to reach the roof."
+        },
+        {
+          "id": "relic_islington_hackney_03",
+          "name": "Radio Londres Microphone (fragment)",
+          "region": "Islington & Hackney",
+          "location": "Orchestra hall, Old Street",
+          "guide": "Use the cargo drone to reach the roof, then jump up and collect the relic."
+        },
+        {
+          "id": "relic_islington_hackney_04",
+          "name": "Bartmann Jug (fragment)",
+          "region": "Islington & Hackney",
+          "location": "The Hackney Baths",
+          "guide": "Guarded restricted area. Enter the small building to the right of the entrance, throw a Spiderbot through the hole at the top, collect the relic, then leave the restricted area."
+        },
+        {
+          "id": "relic_city_of_westminster_01",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "Regalia Theatre",
+          "guide": "On the roof above the main entrance, hidden behind the sign. Reach it with a drone or by using a lift at the building's corner."
+        },
+        {
+          "id": "relic_city_of_westminster_02",
+          "name": "Platform Shoe (fragment)",
+          "region": "City of Westminster",
+          "location": "Vauxhall Bridge",
+          "guide": "Under the bridge, beside one of the supporting columns."
+        },
+        {
+          "id": "relic_city_of_westminster_03",
+          "name": "Mobile Phone (fragment)",
+          "region": "City of Westminster",
+          "location": "Lambeth Bridge",
+          "guide": "Under the bridge, next to a closed room with Tech Points. Requires the spiderbot."
+        },
+        {
+          "id": "relic_city_of_westminster_04",
+          "name": "Floppy Disk",
+          "region": "City of Westminster",
+          "location": "Safe house",
+          "guide": "In a safe house you unlock right after the prologue."
+        },
+        {
+          "id": "relic_city_of_westminster_05",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "St. James's Square",
+          "guide": "In the bushes by one of the facility's gates."
+        },
+        {
+          "id": "relic_city_of_westminster_06",
+          "name": "DedSec Bracelet (fragment)",
+          "region": "City of Westminster",
+          "location": "Horse Guards Parade",
+          "guide": "On the roof, under the surface. Use the spiderbot to enter a nearby ventilation shaft."
+        },
+        {
+          "id": "relic_city_of_westminster_07",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "National Gallery",
+          "guide": "On the roof. Fly a drone there."
+        },
+        {
+          "id": "relic_city_of_westminster_08",
+          "name": "Fake DedSec Business Card",
+          "region": "City of Westminster",
+          "location": "Stanford Theatre",
+          "guide": "In a side street, in a fence with banners. Jump over the fence to find it (restricted area)."
+        },
+        {
+          "id": "relic_city_of_westminster_09",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "Throne's Felts",
+          "guide": "On the roof of a small outhouse. Fly a drone up and drop the spiderbot (restricted area)."
+        },
+        {
+          "id": "relic_city_of_westminster_10",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "Duck Island Cottage",
+          "guide": "Behind the cottage, past a barbed-wire fence. Use a drone or the spiderbot."
+        },
+        {
+          "id": "relic_city_of_london_01",
+          "name": "DedSec Bracelet (fragment)",
+          "region": "City of London",
+          "location": "Bank of England",
+          "guide": "On the first floor, inside a closed room. You need the spiderbot, and the ventilation shaft has traps."
+        },
+        {
+          "id": "relic_city_of_london_02",
+          "name": "Prototype (Optik 0.1) (fragment)",
+          "region": "City of London",
+          "location": "Finsbury Circus Gardens",
+          "guide": "Beneath the stage. You need the spiderbot to reach it."
+        },
+        {
+          "id": "relic_city_of_london_03",
+          "name": "TOAN Conference Pass",
+          "region": "City of London",
+          "location": "Toan Attack Site",
+          "guide": "Deploy the spiderbot, go through the hole to the underground car park, and break through a hole in its southern wall. The pass is in the room beyond."
+        },
+        {
+          "id": "relic_city_of_london_04",
+          "name": "Mobile Phone (fragment)",
+          "region": "City of London",
+          "location": "London Wall",
+          "guide": "Inside the hedges around an oval structure in the park. Reaching it requires the spiderbot."
+        },
+        {
+          "id": "relic_city_of_london_05",
+          "name": "Mobile Phone (fragment, 2nd)",
+          "region": "City of London",
+          "location": "Guildhall",
+          "guide": "In a rooftop room. Find a hole in the floor and use the spiderbot to get through."
+        },
+        {
+          "id": "relic_city_of_london_06",
+          "name": "DedSec Bracelet (fragment, 2nd)",
+          "region": "City of London",
+          "location": "Holborn Viaduct",
+          "guide": "On scaffolding under the overpass. Deploy the spiderbot to reach it."
+        },
+        {
+          "id": "relic_tower_hamlets_01",
+          "name": "Prototype (Optik 0.1) (fragment)",
+          "region": "Tower Hamlets",
+          "location": "Albion Drone Facility",
+          "guide": "Under the stairs. Hack the forklift to break the wall."
+        },
+        {
+          "id": "relic_tower_hamlets_02",
+          "name": "Bartmann Jug (fragment)",
+          "region": "Tower Hamlets",
+          "location": "Albion Station Wapping",
+          "guide": "On the roof of the complex."
+        },
+        {
+          "id": "relic_tower_hamlets_03",
+          "name": "Masquerade Ball Prop (fragment)",
+          "region": "Tower Hamlets",
+          "location": "East London Mosque",
+          "guide": "On the rooftop."
+        },
+        {
+          "id": "relic_tower_hamlets_04",
+          "name": "Scooter Headlamp (fragment)",
+          "region": "Tower Hamlets",
+          "location": "Fenchurch Place",
+          "guide": "In the alcove between the front and main part of the building. Reach it with a drone."
+        },
+        {
+          "id": "relic_tower_hamlets_05",
+          "name": "Radio Londres Microphone (fragment)",
+          "region": "Tower Hamlets",
+          "location": "Tower of London",
+          "guide": "On the roof, next to the drone summoning point."
+        },
+        {
+          "id": "relic_nine_elms_01",
+          "name": "Cocaine Vial",
+          "region": "Nine Elms",
+          "location": "Nine Elms docks",
+          "guide": "Heavily guarded area — hide your character and switch to a spiderbot. Move forward along the left side; behind one of the objects is a ventilation duct. Open the vent and crawl to the end, where a suitcase holds the vial."
+        },
+        {
+          "id": "relic_southwark_01",
+          "name": "Masquerade Ball Prop (fragment)",
+          "region": "Southwark",
+          "location": "Bankside Playhouse",
+          "guide": "On the rooftop. Reach it by drone."
+        },
+        {
+          "id": "relic_southwark_02",
+          "name": "17th Century Medical Saw (fragment)",
+          "region": "Southwark",
+          "location": "Southwark Cathedral",
+          "guide": "In the courtyard. A hole in the wall lets you bring in the Spiderbot to collect it."
+        },
+        {
+          "id": "relic_southwark_03",
+          "name": "1984 (fragment)",
+          "region": "Southwark",
+          "location": "Tidis Advanced Technologies",
+          "guide": "In a locked room on the upper floor. Get the key from the adjoining room."
+        },
+        {
+          "id": "relic_southwark_04",
+          "name": "Masquerade Ball Prop (fragment, 2nd)",
+          "region": "Southwark",
+          "location": "Queen's Walk",
+          "guide": "In the bushes right by the river."
+        },
+        {
+          "id": "relic_southwark_05",
+          "name": "Radio Londres Microphone (fragment)",
+          "region": "Southwark",
+          "location": "Civil Aviation Traffic Office",
+          "guide": "On the roof. Reach it by drone."
+        },
+        {
+          "id": "relic_damaged_spiderbot",
+          "name": "Damaged Spiderbot",
+          "region": "City of Westminster",
+          "guide": "Obtained automatically during the story mission \"Digging Up the Past\" (DedSec Chapter) at New Scotland Yard."
+        },
+        {
+          "id": "relic_damaged_spiderbot_leg",
+          "name": "Damaged Spiderbot Leg",
+          "region": "City of Westminster",
+          "guide": "Obtained automatically during the story mission \"Digging Up the Past\" (DedSec Chapter) at the TOAN Attack Site underground carpark."
+        }
+      ]
+    },
+    "mask_boxes": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 38,
+      "region": "London-wide",
+      "description": "Found in small blue mask boxes scattered across London; wearing masks is cosmetic. 33 of the 38 total have confirmed named locations below; the remaining 5 are unnamed/undetailed in available guides.",
+      "items": [
+        {
+          "id": "mask_01",
+          "name": "Albion Internment Centre",
+          "region": "Camden",
+          "location": "Albion Internment Centre",
+          "guide": "In the control room."
+        },
+        {
+          "id": "mask_02",
+          "name": "St. Pancras International",
+          "region": "Camden",
+          "location": "St. Pancras International",
+          "guide": "On a computer desk."
+        },
+        {
+          "id": "mask_03",
+          "name": "Camden Market",
+          "region": "Camden",
+          "location": "Camden Market",
+          "guide": "On the roof."
+        },
+        {
+          "id": "mask_04",
+          "name": "DedSec Safehouse",
+          "region": "Lambeth",
+          "location": "DedSec Safehouse",
+          "guide": "On the staircase leading to the first floor."
+        },
+        {
+          "id": "mask_05",
+          "name": "Downing Street",
+          "region": "City of Westminster",
+          "location": "Downing Street",
+          "guide": "On top of a crate."
+        },
+        {
+          "id": "mask_06",
+          "name": "Broco Tech",
+          "region": "City of Westminster",
+          "location": "Broco Tech",
+          "guide": "Next to a pile of barrels."
+        },
+        {
+          "id": "mask_07",
+          "name": "Buckingham Palace Gardens",
+          "region": "City of Westminster",
+          "location": "Buckingham Palace Gardens",
+          "guide": "At the entrance."
+        },
+        {
+          "id": "mask_08",
+          "name": "London Carriage Service",
+          "region": "City of Westminster",
+          "location": "London Carriage Service",
+          "guide": "On a computer desk."
+        },
+        {
+          "id": "mask_09",
+          "name": "New Scotland Yard",
+          "region": "City of Westminster",
+          "location": "New Scotland Yard",
+          "guide": "On a side table beside a computer desk."
+        },
+        {
+          "id": "mask_10",
+          "name": "Somerset House",
+          "region": "City of Westminster",
+          "location": "Somerset House",
+          "guide": "On a wooden table."
+        },
+        {
+          "id": "mask_11",
+          "name": "Thorne's Felts",
+          "region": "City of Westminster",
+          "location": "Thorne's Felts",
+          "guide": "On a wooden table, reached through the pipeline."
+        },
+        {
+          "id": "mask_12",
+          "name": "Perry Harris Redevelopment",
+          "region": "City of Westminster",
+          "location": "Perry Harris Redevelopment",
+          "guide": "On a ledge."
+        },
+        {
+          "id": "mask_13",
+          "name": "The Sandstone Residence",
+          "region": "Islington & Hackney",
+          "location": "The Sandstone Residence",
+          "guide": "On a computer desk on the third floor."
+        },
+        {
+          "id": "mask_14",
+          "name": "FoodTown",
+          "region": "Islington & Hackney",
+          "location": "FoodTown",
+          "guide": "In a room with a glass door entrance."
+        },
+        {
+          "id": "mask_15",
+          "name": "World of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World of Tomorrow",
+          "guide": "On the second-highest ledge inside the club."
+        },
+        {
+          "id": "mask_16",
+          "name": "Museum of the Home",
+          "region": "Islington & Hackney",
+          "location": "Museum of the Home",
+          "guide": "Near some sacks."
+        },
+        {
+          "id": "mask_17",
+          "name": "Cemetery Park",
+          "region": "Tower Hamlets",
+          "location": "Cemetery Park",
+          "guide": "On a table on the first floor, guarded by an enemy."
+        },
+        {
+          "id": "mask_18",
+          "name": "Limehouse Garden",
+          "region": "Tower Hamlets",
+          "location": "Limehouse Garden",
+          "guide": "On a balcony."
+        },
+        {
+          "id": "mask_19",
+          "name": "St. Paul's Cathedral",
+          "region": "City of London",
+          "location": "St. Paul's Cathedral",
+          "guide": "Among the pillars."
+        },
+        {
+          "id": "mask_20",
+          "name": "Walkie Talkie",
+          "region": "City of London",
+          "location": "Walkie Talkie",
+          "guide": "In the TV room, visited during the \"Initiate Sequence\" mission."
+        },
+        {
+          "id": "mask_21",
+          "name": "The Roberts & Scott Hall",
+          "region": "City of London",
+          "location": "The Roberts & Scott Hall",
+          "guide": "In a rathole to the right of the entrance."
+        },
+        {
+          "id": "mask_22",
+          "name": "London Bridge",
+          "region": "City of London",
+          "location": "London Bridge",
+          "guide": "Near the bridge; public access."
+        },
+        {
+          "id": "mask_23",
+          "name": "London Bridge (Secret)",
+          "region": "City of London",
+          "location": "London Bridge (Secret)",
+          "guide": "Reached by a secret passage west of the bridge, which opens at 2:00 AM."
+        },
+        {
+          "id": "mask_24",
+          "name": "Rotherhithe Docks",
+          "region": "Southwark",
+          "location": "Rotherhithe Docks",
+          "guide": "On top of a crate; easiest reached from the water."
+        },
+        {
+          "id": "mask_25",
+          "name": "Southwark Incinerator",
+          "region": "Southwark",
+          "location": "Southwark Incinerator",
+          "guide": "Restricted (Clan Kelley)."
+        },
+        {
+          "id": "mask_26",
+          "name": "The Martlet's Nest",
+          "region": "Southwark",
+          "location": "The Martlet's Nest",
+          "guide": "On the roof."
+        },
+        {
+          "id": "mask_27",
+          "name": "The Xcess",
+          "region": "Southwark",
+          "location": "The Xcess",
+          "guide": "On the roof."
+        },
+        {
+          "id": "mask_28",
+          "name": "Embassy Garden",
+          "region": "Nine Elms",
+          "location": "Embassy Garden",
+          "guide": "Public access, topmost ledge."
+        },
+        {
+          "id": "mask_29",
+          "name": "The Battersea",
+          "region": "Nine Elms",
+          "location": "The Battersea",
+          "guide": "On a ledge to the left of the entrance."
+        },
+        {
+          "id": "mask_30",
+          "name": "Brixton Barrier Block",
+          "region": "Lambeth",
+          "location": "Brixton Barrier Block",
+          "guide": "On the top."
+        },
+        {
+          "id": "mask_31",
+          "name": "Brixton Recreation Centre",
+          "region": "Lambeth",
+          "location": "Brixton Recreation Centre",
+          "guide": "On the roof."
+        },
+        {
+          "id": "mask_32",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Over the generators on the roof, reached from the garden side."
+        },
+        {
+          "id": "mask_33",
+          "name": "MI-6 Building",
+          "region": "Lambeth",
+          "location": "MI-6 Building",
+          "guide": "On the topmost ledge."
+        }
+      ]
+    },
+    "audio_logs": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 64,
+      "region": "London-wide",
+      "description": "Recorded messages and lore fragments that expand the story of London and its residents.",
+      "items": [
+        {
+          "id": "audio_log_01",
+          "name": "Audio Log (Unmarked) #1",
+          "region": "Varies by borough",
+          "location": "Audio Log (Unmarked) #1",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_02",
+          "name": "Audio Log (Unmarked) #2",
+          "region": "Varies by borough",
+          "location": "Audio Log (Unmarked) #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_03",
+          "name": "Barbican Centre",
+          "region": "Varies by borough",
+          "location": "Barbican Centre",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_04",
+          "name": "Bethnal Green Police",
+          "region": "Varies by borough",
+          "location": "Bethnal Green Police",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_05",
+          "name": "Brick Lane",
+          "region": "Varies by borough",
+          "location": "Brick Lane",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_06",
+          "name": "Broken Studio",
+          "region": "Varies by borough",
+          "location": "Broken Studio",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_07",
+          "name": "BuccanEar: Big Brother Meets Big Data",
+          "region": "Varies by borough",
+          "location": "BuccanEar: Big Brother Meets Big Data",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_08",
+          "name": "BuccanEar: Human Commodities",
+          "region": "Varies by borough",
+          "location": "BuccanEar: Human Commodities",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_09",
+          "name": "Carousel Plaza",
+          "region": "Varies by borough",
+          "location": "Carousel Plaza",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_10",
+          "name": "CATO",
+          "region": "Varies by borough",
+          "location": "CATO",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_11",
+          "name": "Cemetery Park",
+          "region": "Varies by borough",
+          "location": "Cemetery Park",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_12",
+          "name": "Finsbury Circus #1",
+          "region": "Varies by borough",
+          "location": "Finsbury Circus #1",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_13",
+          "name": "Finsbury Circus #3",
+          "region": "Varies by borough",
+          "location": "Finsbury Circus #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_14",
+          "name": "Finsbury Circus #4",
+          "region": "Varies by borough",
+          "location": "Finsbury Circus #4",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_15",
+          "name": "Finsbury New Project",
+          "region": "Varies by borough",
+          "location": "Finsbury New Project",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_16",
+          "name": "Hackney Baths",
+          "region": "Varies by borough",
+          "location": "Hackney Baths",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_17",
+          "name": "Horizon Multinational #2",
+          "region": "Varies by borough",
+          "location": "Horizon Multinational #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_18",
+          "name": "London Carriage #3",
+          "region": "Varies by borough",
+          "location": "London Carriage #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_19",
+          "name": "Museum of the Home",
+          "region": "Varies by borough",
+          "location": "Museum of the Home",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_20",
+          "name": "Neogate #2",
+          "region": "Varies by borough",
+          "location": "Neogate #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_21",
+          "name": "Neogate #3",
+          "region": "Varies by borough",
+          "location": "Neogate #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_22",
+          "name": "New River Head",
+          "region": "Varies by borough",
+          "location": "New River Head",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_23",
+          "name": "Old Canal Warehouse",
+          "region": "Varies by borough",
+          "location": "Old Canal Warehouse",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_24",
+          "name": "Overheard Rumors",
+          "region": "Varies by borough",
+          "location": "Overheard Rumors",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_25",
+          "name": "PR: Come to the You-K",
+          "region": "Varies by borough",
+          "location": "PR: Come to the You-K",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_26",
+          "name": "PR: Droning On",
+          "region": "Varies by borough",
+          "location": "PR: Droning On",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_27",
+          "name": "PR: Mind the Machine",
+          "region": "Varies by borough",
+          "location": "PR: Mind the Machine",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_28",
+          "name": "PR: Mother Mary",
+          "region": "Varies by borough",
+          "location": "PR: Mother Mary",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_29",
+          "name": "PR: Policing the Police",
+          "region": "Varies by borough",
+          "location": "PR: Policing the Police",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_30",
+          "name": "PR: Puppet Masters",
+          "region": "Varies by borough",
+          "location": "PR: Puppet Masters",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_31",
+          "name": "PR: Skye's the Limit",
+          "region": "Varies by borough",
+          "location": "PR: Skye's the Limit",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_32",
+          "name": "PR: Tot-ally 1984",
+          "region": "Varies by borough",
+          "location": "PR: Tot-ally 1984",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_33",
+          "name": "Presentation Rehearsal",
+          "region": "Varies by borough",
+          "location": "Presentation Rehearsal",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_34",
+          "name": "Priest's Speech",
+          "region": "Varies by borough",
+          "location": "Priest's Speech",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_35",
+          "name": "Robert & Scott Hall",
+          "region": "Varies by borough",
+          "location": "Robert & Scott Hall",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_36",
+          "name": "Rotherhithe Docks #2",
+          "region": "Varies by borough",
+          "location": "Rotherhithe Docks #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_37",
+          "name": "Saint Lukes LSO",
+          "region": "Varies by borough",
+          "location": "Saint Lukes LSO",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_38",
+          "name": "Southwark Incinerator #2",
+          "region": "Varies by borough",
+          "location": "Southwark Incinerator #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_39",
+          "name": "The Bug: Albion, Shmalbion",
+          "region": "Varies by borough",
+          "location": "The Bug: Albion, Shmalbion",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_40",
+          "name": "The Nexus Tower #2",
+          "region": "Varies by borough",
+          "location": "The Nexus Tower #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_41",
+          "name": "The Spine",
+          "region": "Varies by borough",
+          "location": "The Spine",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_42",
+          "name": "The Upload: Bagley",
+          "region": "Varies by borough",
+          "location": "The Upload: Bagley",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_43",
+          "name": "The Upload: cTOS 3.NO",
+          "region": "Varies by borough",
+          "location": "The Upload: cTOS 3.NO",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_44",
+          "name": "The Upload: Eyes on the Skye",
+          "region": "Varies by borough",
+          "location": "The Upload: Eye on the Skye",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_45",
+          "name": "The Upload: Opting out of Optik",
+          "region": "Varies by borough",
+          "location": "The Upload: Opting out of Optik",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_46",
+          "name": "Tidis #2",
+          "region": "Varies by borough",
+          "location": "Tidis #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_47",
+          "name": "TOAN Attack Site #2",
+          "region": "Varies by borough",
+          "location": "TOAn Attack Site #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_48",
+          "name": "Tower Bridge #3",
+          "region": "Varies by borough",
+          "location": "Tower Bridge #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_49",
+          "name": "Tower of London #1",
+          "region": "Varies by borough",
+          "location": "Tower of London #1",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_50",
+          "name": "Tower of London #3",
+          "region": "Varies by borough",
+          "location": "Tower of London #3",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_51",
+          "name": "Whitechapel Terminus #2",
+          "region": "Varies by borough",
+          "location": "Whitechapel Terminus #2",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_52",
+          "name": "World of Tomorrow",
+          "region": "Varies by borough",
+          "location": "World of Tomorrow",
+          "guide": "Audio Log data points appear on the map automatically once their borough reaches Defiant State (fully liberated). 52 exist across London; 50 are needed for the 'Oral History' trophy."
+        },
+        {
+          "id": "audio_log_kaitlin_laus_log_01",
+          "name": "Kaitlin Lau's Log #1",
+          "region": "City of Westminster",
+          "guide": "Obtained automatically during the story mission \"Digging Up the Past\" (DedSec Chapter) by hacking the tablet at the TOAN Attack Site."
+        },
+        {
+          "id": "the_bug_bitter_medicine",
+          "name": "The Bug: Bitter Medicine",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice discuss alternative medicine amid shortages, the novelty of breakfast, and the 'glory days.'"
+        },
+        {
+          "id": "the_bug_diy_fake_news",
+          "name": "The Bug: DIY Fake News",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice pick apart 'official polls' and discuss media drones, new cameras, and made-up headlines."
+        },
+        {
+          "id": "the_bug_immigration_jokes",
+          "name": "The Bug: Immigration Jokes",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice discuss news of 4000 deportations, disappearances at the Immigration Processing Centre, and terrible spies."
+        },
+        {
+          "id": "the_bug_new_tech_new_lies",
+          "name": "The Bug: New Tech, New Lies",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice ponder the tech-industry job boom and debate whether the country even has a Prime Minister."
+        },
+        {
+          "id": "the_bug_sirs_and_sports",
+          "name": "The Bug: SIRS and Sports",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice heap praise on London's new CCTV cameras and discuss the city's popular new 'sport': rioting."
+        },
+        {
+          "id": "the_bug_see_something_say_something",
+          "name": "The Bug: See Something, Say Something",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice report each other to SIRS for 'criminal' behaviour, then reminisce about Europe."
+        },
+        {
+          "id": "the_bug_the_resistance",
+          "name": "The Bug: The Resistance?",
+          "region": "City-wide (car radio)",
+          "guide": "Andy and Alice question news that DedSec is no longer a threat, discuss the light at the end of the tunnel, and wrap with another 'BUG OFF.'"
+        },
+        {
+          "id": "epc_exit_interview",
+          "name": "EPC Exit Interview",
+          "region": "Lambeth",
+          "guide": "File #5478B4: exit-interview recording of applicant Ángel López at the European Processing Centre, sent for a bogus second medical exam under false suspicion of drug use."
+        },
+        {
+          "id": "buccanear_fake_news",
+          "name": "BuccanEar: Fake News",
+          "region": "City-wide (car radio)",
+          "guide": "Tash exposes the GBB and speaks with media experts about how authoritarian leaders exploit the spread of disinformation."
+        },
+        {
+          "id": "claire_waters_podcast",
+          "name": "Claire Waters Podcast",
+          "region": "City-wide (car radio)",
+          "guide": "Pirate radio broadcast hosted by Claire Waters, discussing public opinion on DedSec and seeking the truth beyond the headlines."
+        },
+        {
+          "id": "the_upload_cash_to_crypto",
+          "name": "The Upload: From Cash to Crypto",
+          "region": "City-wide (car radio)",
+          "guide": "Matt and Vicky dissect the history of cryptocurrency and its spread throughout the UK, getting nostalgic about cold, hard cash."
+        }
+      ]
+    },
+    "text_files": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 200,
+      "region": "London-wide",
+      "description": "Written documents and data points / lore items found in various locations.",
+      "items": [
+        {
+          "id": "text_file_epc_01",
+          "name": "EPC #1",
+          "region": "Lambeth",
+          "guide": "Found at the European Processing Centre (EPC), an Albion immigration detention site in Lambeth tied to the Mary Kelley storyline."
+        },
+        {
+          "id": "text_file_epc_02",
+          "name": "EPC #2",
+          "region": "Lambeth",
+          "guide": "Found at the European Processing Centre (EPC) in Lambeth, alongside EPC #1 and #3."
+        },
+        {
+          "id": "text_file_epc_03",
+          "name": "EPC #3",
+          "region": "Lambeth",
+          "guide": "Found at the European Processing Centre (EPC) in Lambeth, alongside EPC #1 and #2."
+        },
+        {
+          "id": "text_file_parcel_fox_centre_01",
+          "name": "Parcel Fox Centre #1",
+          "region": "Nine Elms",
+          "guide": "Found at the Parcel Fox Distribution Centre, an Albion-restricted delivery hub in Nine Elms."
+        },
+        {
+          "id": "text_file_profile_dalton_wolf",
+          "name": "Profile: Dalton Wolfe",
+          "region": "City of Westminster",
+          "guide": "Found near the Houses of Parliament, tied to prologue operative Dalton Wolfe."
+        },
+        {
+          "id": "text_file_inspector_laus_file",
+          "name": "Inspector Lau's File",
+          "region": "Southwark",
+          "guide": "Obtained automatically during the story mission \"Clan Kelley's New Export\" (Kelley Chapter) when retrieving Inspector Kaitlin Lau's files at Southwark Incinerator."
+        },
+        {
+          "id": "text_file_southwark_incinerator_01",
+          "name": "Southwark Incinerator #1",
+          "region": "Southwark",
+          "guide": "Found at Southwark Incinerator."
+        },
+        {
+          "id": "text_file_royal_courts_02",
+          "name": "Royal Courts #2",
+          "region": "Camden",
+          "guide": "Found at the Royal Courts of Justice in Camden."
+        },
+        {
+          "id": "text_file_new_scotland_yard_02",
+          "name": "New Scotland Yard #2",
+          "region": "City of Westminster",
+          "guide": "Found at New Scotland Yard."
+        },
+        {
+          "id": "text_file_new_scotland_yard_03",
+          "name": "New Scotland Yard #3",
+          "region": "City of Westminster",
+          "guide": "Found at New Scotland Yard."
+        },
+        {
+          "id": "text_file_southwark_auto",
+          "name": "Southwark Auto",
+          "region": "Southwark",
+          "guide": "Found at Southwark Auto Conversions."
+        },
+        {
+          "id": "text_file_st_thomas_hospital_02",
+          "name": "St. Thomas Hospital #2",
+          "region": "Lambeth",
+          "guide": "Found at St. Thomas' Hospital."
+        },
+        {
+          "id": "text_file_parliament_square_01",
+          "name": "Parliament Square #1",
+          "region": "City of Westminster",
+          "guide": "Found at Parliament Square Gardens."
+        },
+        {
+          "id": "text_file_parliament_square_02",
+          "name": "Parliament Square #2",
+          "region": "City of Westminster",
+          "guide": "Found at Parliament Square Gardens."
+        },
+        {
+          "id": "ayw_imports",
+          "name": "AYW Imports",
+          "region": "Unknown (London)",
+          "guide": "A text document found on the Data tab; exact in-world location not yet pinpointed."
+        },
+        {
+          "id": "county_hall",
+          "name": "County Hall",
+          "region": "Lambeth",
+          "guide": "Letter at County Hall (South Bank, Lambeth) from Commander Langton to Councillor J. Smalls, threatening blackmail over compromising photos."
+        },
+        {
+          "id": "london_carriage_1",
+          "name": "London Carriage #1",
+          "region": "City of Westminster",
+          "guide": "Letter from cab-company tech W. Downey to boss L. Barwell, reporting diminished memory bandwidth on fare-regulating chipsets causing overpriced fares."
+        },
+        {
+          "id": "bricklayers_arms",
+          "name": "Bricklayers Arms",
+          "region": "Southwark",
+          "guide": "SMS thread tied to the Clan Kelley storyline: Leo threatens Callie over an unpaid debt to the Kelleys; Callie protests the inflated 'interest rate.'"
+        },
+        {
+          "id": "text_estrom",
+          "name": "E-STROM",
+          "region": "Southwark/Lambeth border",
+          "guide": "Found inside the E-Strom corporate building, a restricted area near the Lambeth/Southwark border (uniformed access for Construction Workers or Albion). Letter from A. Lemoureux to G. Castorille about an employee (Robert Hastings) illegally living in a utility closet."
+        }
+      ]
+    },
+    "paste_ups": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 47,
+      "region": "London-wide",
+      "description": "Street art locations where you paint DedSec art to complete regional activities.",
+      "items": [
+        {
+          "id": "paste_up_city_of_westminster_01",
+          "name": "Horseferry Road area",
+          "region": "City of Westminster",
+          "location": "Horseferry Road area",
+          "guide": "South: right of Horseferry Road Underground Station, at Perry Harris Development. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_02",
+          "name": "Horse Guards Parade",
+          "region": "City of Westminster",
+          "location": "Horse Guards Parade",
+          "guide": "Central: Horse Guards Parade. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_03",
+          "name": "Charing Cross Station",
+          "region": "City of Westminster",
+          "location": "Charing Cross Station",
+          "guide": "Central: left of Embankment Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_04",
+          "name": "National Gallery",
+          "region": "City of Westminster",
+          "location": "National Gallery",
+          "guide": "North: above Trafalgar Square. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_05",
+          "name": "The Sanford Theatre",
+          "region": "City of Westminster",
+          "location": "The Sanford Theatre",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_06",
+          "name": "Brewer Street area",
+          "region": "City of Westminster",
+          "location": "Brewer Street area",
+          "guide": "North: right next to Brewer Street Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_07",
+          "name": "Chinatown",
+          "region": "City of Westminster",
+          "location": "Chinatown",
+          "guide": "North, on the Camden border: a hostile area in Chinatown. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_08",
+          "name": "Covent Garden Piazza",
+          "region": "City of Westminster",
+          "location": "Covent Garden Piazza",
+          "guide": "North: behind a breakable wall. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_westminster_09",
+          "name": "Thorne's Felts",
+          "region": "City of Westminster",
+          "location": "Thorne's Felts",
+          "guide": "East, on the Camden border. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_01",
+          "name": "University College London",
+          "region": "Camden",
+          "location": "University College London",
+          "guide": "West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_02",
+          "name": "Camden Market",
+          "region": "Camden",
+          "location": "Camden Market",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_03",
+          "name": "Camden High Street",
+          "region": "Camden",
+          "location": "Camden High Street",
+          "guide": "North: south-east of the Camden Market paste up. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_04",
+          "name": "Furzton Tower Block",
+          "region": "Camden",
+          "location": "Furzton Tower Block",
+          "guide": "North: south of the Camden High Street paste up. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_05",
+          "name": "Euston Station",
+          "region": "Camden",
+          "location": "Euston Station",
+          "guide": "Central. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_06",
+          "name": "British Library",
+          "region": "Camden",
+          "location": "British Library",
+          "guide": "Central-East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_07",
+          "name": "Leather Lane",
+          "region": "Camden",
+          "location": "Leather Lane",
+          "guide": "East, near the Islington & Hackney border. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_camden_08",
+          "name": "Border with Westminster",
+          "region": "Camden",
+          "location": "Border with Westminster",
+          "guide": "South-East, on the Westminster border. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_london_01",
+          "name": "Old Bailey",
+          "region": "City of London",
+          "location": "Old Bailey",
+          "guide": "West: next to St. Paul's Cathedral. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_london_02",
+          "name": "The Spine",
+          "region": "City of London",
+          "location": "The Spine",
+          "guide": "East: at the top; fly as high as the drone allows, then climb. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_city_of_london_03",
+          "name": "Horizon Multinational",
+          "region": "City of London",
+          "location": "Horizon Multinational",
+          "guide": "East: north of The Spine. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_islington_and_hackney_01",
+          "name": "Seam Nightclub",
+          "region": "Islington & Hackney",
+          "location": "Seam Nightclub",
+          "guide": "South-West, on the City of London border. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_islington_and_hackney_02",
+          "name": "World of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World of Tomorrow",
+          "guide": "Central: right of Old Street Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_islington_and_hackney_03",
+          "name": "FoodTown",
+          "region": "Islington & Hackney",
+          "location": "FoodTown",
+          "guide": "South. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_islington_and_hackney_04",
+          "name": "Old Canal Warehouse",
+          "region": "Islington & Hackney",
+          "location": "Old Canal Warehouse",
+          "guide": "East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_01",
+          "name": "Freight 1",
+          "region": "Tower Hamlets",
+          "location": "Freight 1",
+          "guide": "North-West: next to Shoreditch High Street Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_02",
+          "name": "Brick Lane",
+          "region": "Tower Hamlets",
+          "location": "Brick Lane",
+          "guide": "North-West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_03",
+          "name": "Royal London Hospital",
+          "region": "Tower Hamlets",
+          "location": "Royal London Hospital",
+          "guide": "East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_04",
+          "name": "Fenchurch Place",
+          "region": "Tower Hamlets",
+          "location": "Fenchurch Place",
+          "guide": "West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_tower_hamlets_05",
+          "name": "The Drowning Post",
+          "region": "Tower Hamlets",
+          "location": "The Drowning Post",
+          "guide": "South: next to Wapping Underground Station. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_01",
+          "name": "Shad Thames Plaza",
+          "region": "Southwark",
+          "location": "Shad Thames Plaza",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_02",
+          "name": "St. Thomas Museum",
+          "region": "Southwark",
+          "location": "St. Thomas Museum",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_03",
+          "name": "Southwark Residential",
+          "region": "Southwark",
+          "location": "Southwark Residential",
+          "guide": "West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_04",
+          "name": "The Martlet's Nest",
+          "region": "Southwark",
+          "location": "The Martlet's Nest",
+          "guide": "West: immediately south. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_05",
+          "name": "Southwark Auto Conversions",
+          "region": "Southwark",
+          "location": "Southwark Auto Conversions",
+          "guide": "Central. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_06",
+          "name": "Southwark Incinerator",
+          "region": "Southwark",
+          "location": "Southwark Incinerator",
+          "guide": "South-West. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_southwark_07",
+          "name": "Tidis Park",
+          "region": "Southwark",
+          "location": "Tidis Park",
+          "guide": "South-East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_01",
+          "name": "Blackfriars Bridge",
+          "region": "Lambeth",
+          "location": "Blackfriars Bridge",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_02",
+          "name": "Thames Promenade",
+          "region": "Lambeth",
+          "location": "Thames Promenade",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_03",
+          "name": "British Theatre",
+          "region": "Lambeth",
+          "location": "British Theatre",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_04",
+          "name": "Southbank Atrium",
+          "region": "Lambeth",
+          "location": "Southbank Atrium",
+          "guide": "North. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_05",
+          "name": "London Necropolis",
+          "region": "Lambeth",
+          "location": "London Necropolis",
+          "guide": "North-Central. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_06",
+          "name": "Wind Tower",
+          "region": "Lambeth",
+          "location": "Wind Tower",
+          "guide": "East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_07",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Central. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_08",
+          "name": "Albion Station Kennington",
+          "region": "Lambeth",
+          "location": "Albion Station Kennington",
+          "guide": "Central: left of the European Processing Centre. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_09",
+          "name": "Brixton Recreation Centre",
+          "region": "Lambeth",
+          "location": "Brixton Recreation Centre",
+          "guide": "South-East. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_10",
+          "name": "Lambeth Town Hall",
+          "region": "Lambeth",
+          "location": "Lambeth Town Hall",
+          "guide": "South. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        },
+        {
+          "id": "paste_up_lambeth_11",
+          "name": "The Stage",
+          "region": "Lambeth",
+          "location": "The Stage",
+          "guide": "South. Part of the 47 locations needed for the 'Piece de Resistance' trophy."
+        }
+      ]
+    },
+    "pubs": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 26,
+      "region": "London-wide",
+      "description": "Local pubs where you can take part in the 'Get Pissed' drinking activity. 21 of the 26 are the same pubs that also have Darts (listed below); the other 5 are drink-only spots not yet logged here — add them as you find them.",
+      "items": [
+        {
+          "id": "pub_city_of_westminster_01",
+          "name": "The Earl's Fortune",
+          "region": "City of Westminster",
+          "location": "The Earl's Fortune",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_02",
+          "name": "The Martlet's Nest",
+          "region": "City of Westminster",
+          "location": "The Martlet's Nest",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_03",
+          "name": "The Winter Lion Pub",
+          "region": "City of Westminster",
+          "location": "The Winter Lion Pub",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_04",
+          "name": "The Golden Rivet",
+          "region": "City of Westminster",
+          "location": "The Golden Rivet",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_05",
+          "name": "Seven Dials",
+          "region": "City of Westminster",
+          "location": "Seven Dials",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_06",
+          "name": "Of Songs & Barley",
+          "region": "City of Westminster",
+          "location": "Of Songs & Barley",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_camden_01",
+          "name": "The Earl's Fortune",
+          "region": "Camden",
+          "location": "The Earl's Fortune",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_london_01",
+          "name": "The Earl's Fortune",
+          "region": "City of London",
+          "location": "The Earl's Fortune",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_islington_hackney_01",
+          "name": "FoodTown",
+          "region": "Islington & Hackney",
+          "location": "FoodTown",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_islington_hackney_02",
+          "name": "World Of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World Of Tomorrow",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_islington_hackney_03",
+          "name": "The Golden Rivet",
+          "region": "Islington & Hackney",
+          "location": "The Golden Rivet",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_tower_hamlets_01",
+          "name": "The Drowning Post",
+          "region": "Tower Hamlets",
+          "location": "The Drowning Post",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_southwark_01",
+          "name": "The Earl's Fortune",
+          "region": "Southwark",
+          "location": "The Earl's Fortune",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_southwark_02",
+          "name": "The Three Hawker Boys",
+          "region": "Southwark",
+          "location": "The Three Hawker Boys",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_southwark_03",
+          "name": "The Martlet's Nest",
+          "region": "Southwark",
+          "location": "The Martlet's Nest",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_01",
+          "name": "The Xcess",
+          "region": "Lambeth",
+          "location": "The Xcess",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_02",
+          "name": "The Golden Rivet",
+          "region": "Lambeth",
+          "location": "The Golden Rivet",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_03",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_04",
+          "name": "Boxtown",
+          "region": "Lambeth",
+          "location": "Boxtown",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_05",
+          "name": "The Golden Rivet (2nd location)",
+          "region": "Lambeth",
+          "location": "The Golden Rivet (2nd location)",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_nine_elms_01",
+          "name": "The Martlet's Nest",
+          "region": "Nine Elms",
+          "location": "The Martlet's Nest",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_07",
+          "name": "Safehouse",
+          "region": "City of Westminster",
+          "location": "DedSec Safehouse",
+          "guide": "Drink-only location (no darts) -- available right in your own safehouse. One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        },
+        {
+          "id": "pub_camden_02",
+          "name": "Crosier & Cherry Tree",
+          "region": "Camden",
+          "location": "South-east Camden, near the City of London border, close to the Viaduct fast travel point (down a side alley, not on the main street)",
+          "guide": "Drink-only location (no darts). One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        },
+        {
+          "id": "pub_tower_hamlets_02",
+          "name": "The Concubine's Wail",
+          "region": "Tower Hamlets",
+          "location": "Central Tower Hamlets, north of Aldgate Station",
+          "guide": "Drink-only location (no darts). One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        },
+        {
+          "id": "pub_southwark_04",
+          "name": "The Mix Bar",
+          "region": "Southwark",
+          "location": "South-west Southwark, on the border with Lambeth",
+          "guide": "Drink-only location (no darts, no dartboard here). One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        },
+        {
+          "id": "pub_city_of_london_02",
+          "name": "Walkie Talkie Bar",
+          "region": "City of London",
+          "location": "Sky Garden, inside the Walkie Talkie building near Bank Station -- take the elevator to the top floor",
+          "guide": "Drink-only location (no darts). One of the 5 extra 'Get Pissed' spots needed for 'Bottom's Up' beyond the 21 Darts bars."
+        }
+      ]
+    },
+    "darts": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 21,
+      "region": "London-wide",
+      "description": "Pubs featuring a playable game of darts.",
+      "items": [
+        {
+          "id": "darts_city_of_westminster_01",
+          "name": "The Earl's Fortune",
+          "region": "City of Westminster",
+          "location": "The Earl's Fortune",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_02",
+          "name": "The Martlet's Nest",
+          "region": "City of Westminster",
+          "location": "The Martlet's Nest",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_03",
+          "name": "The Winter Lion Pub",
+          "region": "City of Westminster",
+          "location": "The Winter Lion Pub",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_04",
+          "name": "The Golden Rivet",
+          "region": "City of Westminster",
+          "location": "The Golden Rivet",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_05",
+          "name": "Seven Dials",
+          "region": "City of Westminster",
+          "location": "Seven Dials",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_06",
+          "name": "Of Songs & Barley",
+          "region": "City of Westminster",
+          "location": "Of Songs & Barley",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_camden_01",
+          "name": "The Earl's Fortune",
+          "region": "Camden",
+          "location": "The Earl's Fortune",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_london_01",
+          "name": "The Earl's Fortune",
+          "region": "City of London",
+          "location": "The Earl's Fortune",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_islington_hackney_01",
+          "name": "FoodTown",
+          "region": "Islington & Hackney",
+          "location": "FoodTown",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_islington_hackney_02",
+          "name": "World Of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World Of Tomorrow",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_islington_hackney_03",
+          "name": "The Golden Rivet",
+          "region": "Islington & Hackney",
+          "location": "The Golden Rivet",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_tower_hamlets_01",
+          "name": "The Drowning Post",
+          "region": "Tower Hamlets",
+          "location": "The Drowning Post",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_southwark_01",
+          "name": "The Earl's Fortune",
+          "region": "Southwark",
+          "location": "The Earl's Fortune",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_southwark_02",
+          "name": "The Three Hawker Boys",
+          "region": "Southwark",
+          "location": "The Three Hawker Boys",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_southwark_03",
+          "name": "The Martlet's Nest",
+          "region": "Southwark",
+          "location": "The Martlet's Nest",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_01",
+          "name": "The Xcess",
+          "region": "Lambeth",
+          "location": "The Xcess",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_02",
+          "name": "The Golden Rivet",
+          "region": "Lambeth",
+          "location": "The Golden Rivet",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_03",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_04",
+          "name": "Boxtown",
+          "region": "Lambeth",
+          "location": "Boxtown",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_05",
+          "name": "The Golden Rivet (2nd location)",
+          "region": "Lambeth",
+          "location": "The Golden Rivet (2nd location)",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_nine_elms_01",
+          "name": "The Martlet's Nest",
+          "region": "Nine Elms",
+          "location": "The Martlet's Nest",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        }
+      ]
+    },
+    "kick_up": {
+      "quest_name": "",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 21,
+      "region": "London-wide",
+      "description": "Street football / soccer kick-up mini-game spots.",
+      "items": [
+        {
+          "id": "kickup_01",
+          "name": "Bricklayers Arms",
+          "region": "",
+          "location": "Bricklayers Arms",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_02",
+          "name": "Broken Studio",
+          "region": "",
+          "location": "Broken Studio",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_03",
+          "name": "County Hall",
+          "region": "",
+          "location": "County Hall",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_04",
+          "name": "Duck Island Cottage",
+          "region": "",
+          "location": "Duck Island Cottage",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_05",
+          "name": "European Processing Centre",
+          "region": "",
+          "location": "European Processing Centre",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_06",
+          "name": "Furzton Tower Block",
+          "region": "",
+          "location": "Furzton Tower Block",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_07",
+          "name": "Guildhall",
+          "region": "",
+          "location": "Guildhall",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_08",
+          "name": "Inspire Towers",
+          "region": "",
+          "location": "Inspire Towers",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_09",
+          "name": "Kennington Park",
+          "region": "",
+          "location": "Kennington Park",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_10",
+          "name": "Lambeth Palace",
+          "region": "",
+          "location": "Lambeth Palace",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_11",
+          "name": "Leicester Square",
+          "region": "",
+          "location": "Leicester Square",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_12",
+          "name": "Limehouse Garden",
+          "region": "",
+          "location": "Limehouse Garden",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_13",
+          "name": "London Bridge",
+          "region": "",
+          "location": "London Bridge",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_14",
+          "name": "Parliament Square Gardens",
+          "region": "",
+          "location": "Parliament Square Gardens",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_15",
+          "name": "Potters Fields Park",
+          "region": "",
+          "location": "Potters Fields Park",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_16",
+          "name": "Russell Square",
+          "region": "",
+          "location": "Russell Square",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_17",
+          "name": "St Paul's Cathedral",
+          "region": "",
+          "location": "St Paul's Cathedral",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_18",
+          "name": "The Battersea",
+          "region": "",
+          "location": "The Battersea",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_19",
+          "name": "Tidis Park",
+          "region": "",
+          "location": "Tidis Park",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_20",
+          "name": "Victoria Embankment Gardens",
+          "region": "",
+          "location": "Victoria Embankment Gardens",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_21",
+          "name": "Wellington Arch",
+          "region": "",
+          "location": "Wellington Arch",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        }
+      ]
+    },
+    "bare_knuckle_arenas": {
+      "quest_name": "Bare Knuckle League",
+      "quest_giver": "Tag (graffiti near Parliament Square Gardens)",
+      "quest_giver_location": "Parliament Square Gardens, City of Westminster",
+      "total_count": 5,
+      "region": "London-wide",
+      "description": "Illegal fight-club arenas streamed by Clan Kelley. Win a title fight in each of the 5 arenas to complete the 'Bare Knuckle League' side mission (reward: 875 ETO, Gold Handwear); each arena then unlocks repeatable Exhibition tournaments with recruitable fighters. No PSN trophy is tied to this one.",
+      "items": [
+        {
+          "id": "bk_01",
+          "name": "The Garden Arena",
+          "region": "",
+          "location": "The Garden Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        },
+        {
+          "id": "bk_02",
+          "name": "The Garage Arena",
+          "region": "",
+          "location": "The Garage Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        },
+        {
+          "id": "bk_03",
+          "name": "The Cellar Arena",
+          "region": "",
+          "location": "The Cellar Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        },
+        {
+          "id": "bk_04",
+          "name": "The Slaughterhouse Arena",
+          "region": "",
+          "location": "The Slaughterhouse Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        },
+        {
+          "id": "bk_05",
+          "name": "The Stage Arena",
+          "region": "",
+          "location": "The Stage Arena",
+          "guide": "Interact with the arena marker and win the title fight (3 Amateurs + 1 special Fighter) to complete it."
+        }
+      ]
+    },
+    "bagley_memories": {
+      "quest_name": "Finding Bagley",
+      "quest_giver": "Bagley (at the Safehouse)",
+      "quest_giver_location": "DedSec Safehouse",
+      "total_count": 9,
+      "region": "London-wide",
+      "description": "Post-game side quest unlocked after finishing the main story. Photograph all 9 of Bagley's corrupted memory locations to complete it and unlock 'The One That Got Away' trophy. The 9th only appears after the first 8 are found (listed in-game as '4.5').",
+      "items": [
+        {
+          "id": "bagley_01",
+          "name": "National Gallery",
+          "region": "City of Westminster",
+          "location": "National Gallery",
+          "guide": "North side of Trafalgar Square."
+        },
+        {
+          "id": "bagley_02",
+          "name": "Millennium Wheel (London Eye)",
+          "region": "Lambeth",
+          "location": "Millennium Wheel (London Eye)",
+          "guide": "Western bank of the Thames; take the photo from the southern side."
+        },
+        {
+          "id": "bagley_03",
+          "name": "World of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World of Tomorrow",
+          "guide": "Southeast of the district; take the picture from the beer garden near it."
+        },
+        {
+          "id": "bagley_04",
+          "name": "Brixton Recreation Centre",
+          "region": "Lambeth",
+          "location": "Brixton Recreation Centre",
+          "guide": "Southeast Lambeth, south of Kennington Park; exit Brixton station southeast and head to the blue market-style buildings."
+        },
+        {
+          "id": "bagley_05",
+          "name": "Crosier & Cherry",
+          "region": "Lambeth",
+          "location": "Crosier & Cherry",
+          "guide": "Pub in east Lambeth, south of the Sandstone Residence; go inside to take the photo."
+        },
+        {
+          "id": "bagley_06",
+          "name": "Duck Island Cottage",
+          "region": "City of Westminster",
+          "location": "Duck Island Cottage",
+          "guide": "In the park just north of the DedSec safehouse."
+        },
+        {
+          "id": "bagley_07",
+          "name": "Wellington Arch",
+          "region": "City of Westminster",
+          "location": "Wellington Arch",
+          "guide": "Westernmost side of the borough, west of Buckingham Palace."
+        },
+        {
+          "id": "bagley_08",
+          "name": "Guy's Hospital",
+          "region": "Southwark",
+          "location": "Guy's Hospital",
+          "guide": "Just south of the Shard."
+        },
+        {
+          "id": "bagley_09",
+          "name": "Sky Garden (final memory, listed as 4.5)",
+          "region": "City of London",
+          "location": "Sky Garden (final memory, listed as 4.5)",
+          "guide": "Walkie Talkie building, southeast City of London; take the elevator up to the Sky Garden bar and photograph the city. Unlocks only after the first 8 are found."
+        }
+      ]
+    },
+    "royal_treatment_mansions": {
+      "quest_name": "Royal Treatment",
+      "quest_giver": "Nowt",
+      "quest_giver_location": "DedSec Safehouse (6th and final quest in Nowt's questline, triggers after 'Nobody Home')",
+      "total_count": 3,
+      "region": "London-wide",
+      "description": "Find all 3 Abandoned Mansions (not marked on the map), access the ctOS panel at each, and photograph it to complete the quest and unlock 'A Roof Over Your Head' trophy.",
+      "items": [
+        {
+          "id": "mansion_01",
+          "name": "St. Andrew's Court",
+          "region": "Camden",
+          "location": "St. Andrew's Court",
+          "guide": "First Abandoned Mansion. Interact with a ctOS panel near it (marked yellow when close), then photograph it (must say 'Target in View')."
+        },
+        {
+          "id": "mansion_02",
+          "name": "Waxbey House",
+          "region": "City of Westminster",
+          "location": "Waxbey House",
+          "guide": "Second Abandoned Mansion, close to Strathearn House."
+        },
+        {
+          "id": "mansion_03",
+          "name": "Strathearn House",
+          "region": "City of Westminster",
+          "location": "Strathearn House",
+          "guide": "Third Abandoned Mansion, south-west of Westminster, very close to Waxbey House."
+        }
+      ]
+    },
+    "tech_upgrades": {
+      "quest_name": "DedSec Tech",
+      "quest_giver": "",
+      "quest_giver_location": "",
+      "total_count": 24,
+      "region": "London-wide",
+      "description": "Spend Tech Points in the Tech menu to unlock all Gadgets, Upgrades, Weapons, and Hacks. Required for the Fully Kitted trophy.",
+      "wallet_label": "Tech Points",
+      "priority_order": [
+        "Spiderbot Level 2 (Infiltrator or Combat) — the single most useful early upgrade; lets your drone fight back or dive into vents solo.",
+        "Deep Profiler — tags every nearby NPC's items/skills through walls, which makes recruiting and casing targets much faster.",
+        "AR Shroud — hides your wanted/suspicious icon from casual NPCs so you can move around hot zones without being reported.",
+        "Gun Jam — remotely jams an enemy's weapon; great panic button against guards and snipers.",
+        "Chase Drone Hacks (all 3 tiers) and Turret Hacks (all 3 tiers) — turn the game's own pursuit drones and turrets into tools that fight for you instead of against you.",
+        "The three Deactivation upgrades (Chase Drone, Turret, Combat Drone) only unlock once you've turned boroughs Defiant (2 / 4 / 6 boroughs) — Chase Drone Deactivation also costs 10 TP once unlocked, the other two are free once unlocked.",
+        "All three DedSec weapon upgrades (MP9 SMG, LTL SG, DedSec Grenade Launcher) are locked behind turning just 1 borough Defiant — only the starting LTL 68P Pistol is available with no Defiance requirement."
+      ],
+      "build_guides": [
+        {
+          "name": "Stealth / Infiltrator build",
+          "focus": "Ghost through missions without raising alarms.",
+          "items": [
+            "AR Cloak",
+            "Attract Hack",
+            "Disrupt Hack",
+            "Electro-Shock Trap",
+            "Infiltrator Spiderbot"
+          ],
+          "note": "AR Cloak breaks line-of-sight detection, Attract and Disrupt Hacks pull/distract guards away from your path, and the Electro-Shock Trap handles anyone who finds you anyway."
+        },
+        {
+          "name": "Aggressive / Combat build",
+          "focus": "Fight through resistance instead of avoiding it.",
+          "items": [
+            "Combat Spiderbot",
+            "Missile Drone",
+            "DedSec Grenade Launcher",
+            "Gun Jam"
+          ],
+          "note": "Combat Spiderbot and Missile Drone give you ranged firepower that doesn't cost you health, and Gun Jam plus the Grenade Launcher clear out armored or grouped enemies fast."
+        },
+        {
+          "name": "Hacker / Drone-control build",
+          "focus": "Turn the city's own security against itself.",
+          "items": [
+            "Chase Drone Hacks",
+            "Turret Hacks",
+            "Riot Drone Hacks",
+            "Parcel Fox Drone Hacks"
+          ],
+          "note": "Once hacked, these let you ride or command drones/turrets that were previously chasing you — strongest once you've unlocked several hack tiers."
+        }
+      ],
+      "items": [
+        {
+          "id": "gadget_infiltrator_spiderbot",
+          "name": "Infiltrator Spiderbot",
+          "category": "Gadget",
+          "levels": 3,
+          "cost": 10,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "Stealth-focused Spiderbot: non-lethal takedowns, double jump/sprint and a manual cloak at higher levels.",
+          "level_costs": [
+            10,
+            20,
+            25
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_infiltrator_spiderbot.jpg",
+          "tier_notes": [
+            "A stealth-based spiderbot capable of performing non-lethal takedowns.",
+            "Adds double jump and sprint capabilities.",
+            "Adds a Cloak that can be manually activated."
+          ]
+        },
+        {
+          "id": "gadget_ar_cloak",
+          "name": "AR Cloak",
+          "category": "Gadget",
+          "levels": 3,
+          "cost": 10,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "Projects a short-range visual camouflage field that hides you from nearby guards.",
+          "level_costs": [
+            10,
+            20,
+            25
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_ar_cloak.jpg",
+          "tier_notes": [
+            "AR camouflage that renders the wearer invisible and breaks line of sight.",
+            "Cloak lasts longer when standing still or walking slowly.",
+            "Allows taking down an enemy from a greater distance while cloaked."
+          ]
+        },
+        {
+          "id": "gadget_electro_fist",
+          "name": "Electro-Fist",
+          "category": "Gadget",
+          "levels": 3,
+          "cost": 10,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "A melee shock weapon built into the glove for fast non-lethal takedowns.",
+          "level_costs": [
+            10,
+            20,
+            25
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_electro_fist.jpg",
+          "tier_notes": [
+            "A melee shock weapon that can knock out an opponent with a single punch.",
+            "Arcs electricity to nearby enemies with each hit.",
+            "Emits a shockwave on impact that disorients nearby enemies."
+          ]
+        },
+        {
+          "id": "gadget_electro_shock_trap",
+          "name": "Electro-Shock Trap",
+          "category": "Gadget",
+          "levels": 3,
+          "cost": 15,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "A throwable trap that stuns anyone who walks through it.",
+          "level_costs": [
+            15,
+            20,
+            35
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_electro_shock_trap.jpg",
+          "tier_notes": [
+            "A throwable sticky mine that shocks enemies and damages vehicles and drones.",
+            "Adds an EMP effect that disables drones and disrupts enemies caught in the blast.",
+            "Upgrades the EMP so it also jams enemy weapons."
+          ]
+        },
+        {
+          "id": "gadget_combat_spiderbot",
+          "name": "Combat Spiderbot",
+          "category": "Gadget",
+          "levels": 3,
+          "cost": 20,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "A more aggressive Spiderbot variant that can fight back in combat.",
+          "level_costs": [
+            20,
+            25,
+            35
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_combat_spiderbot.jpg",
+          "tier_notes": [
+            "A short-range non-lethal spiderbot with an automated turret and built-in armor.",
+            "Increases the automated turret's rate of fire.",
+            "Lets you take manual control of the turret for direct fire."
+          ]
+        },
+        {
+          "id": "gadget_missile_drone",
+          "name": "Missile Drone",
+          "category": "Gadget",
+          "levels": 3,
+          "cost": 25,
+          "region": "Gadget",
+          "location": "Gadget",
+          "guide": "A cargo drone upgrade that can fire a guided missile.",
+          "level_costs": [
+            25,
+            30,
+            40
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/gadget_missile_drone.jpg",
+          "tier_notes": [
+            "A small drone that flies straight at enemies and explodes on impact.",
+            "Hold the gadget button to give it target-seeking guidance.",
+            "Deploys mini cluster missiles that seek out nearby enemies."
+          ]
+        },
+        {
+          "id": "upgrade_ar_shroud",
+          "name": "AR Shroud",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": 35,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Lets you hide the bodies of anyone you've taken down in plain sight.",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_ar_shroud.jpg"
+        },
+        {
+          "id": "upgrade_skin_mesh",
+          "name": "Skin Mesh",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": 45,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Reduces incoming damage taken by all DedSec operatives.",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_skin_mesh.jpg"
+        },
+        {
+          "id": "upgrade_deep_profiler",
+          "name": "Deep Profiler",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": 25,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Reveals schedule and contact info for recruits who have a negative opinion of DedSec, letting you recruit them anyway.",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_deep_profiler.jpg"
+        },
+        {
+          "id": "upgrade_chase_drone_deactivation",
+          "name": "Chase Drone Deactivation",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": 10,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Permanently disables nearby chase drones.",
+          "unlock_requirement": "Unlock: turn 2 boroughs Defiant (removes DedSec Chase Drones from that borough once done citywide)",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_chase_drone_deactivation.jpg"
+        },
+        {
+          "id": "upgrade_turret_deactivation",
+          "name": "Turret Deactivation",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": null,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Permanently disables nearby turrets. Unlocks after a borough turns Defiant (no Tech Point cost).",
+          "unlock_requirement": "Unlock: turn 4 boroughs Defiant (disables hostile turrets in cleared boroughs)",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_turret_deactivation.jpg"
+        },
+        {
+          "id": "upgrade_combat_drone_deactivation",
+          "name": "Combat Drone Deactivation",
+          "category": "Upgrade",
+          "levels": 0,
+          "cost": null,
+          "region": "Upgrade",
+          "location": "Upgrade",
+          "guide": "Permanently disables nearby combat drones. Unlocks after a borough turns Defiant (no Tech Point cost).",
+          "unlock_requirement": "Unlock: turn 6 boroughs Defiant (disables Combat Drones in cleared boroughs)",
+          "image_url": "/public/games/wdlegion/images/tech/upgrade_combat_drone_deactivation.jpg"
+        },
+        {
+          "id": "weapon_ltl_68p_pistol",
+          "name": "LTL 68P DedSec Pistol",
+          "category": "Weapon",
+          "levels": 2,
+          "cost": null,
+          "region": "Weapon",
+          "location": "Weapon",
+          "guide": "Non-lethal silenced sidearm, available from the start (no Tech Point cost).",
+          "level_costs": [
+            15,
+            30
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/weapon_ltl_68p_pistol.jpg",
+          "tier_notes": [
+            "Short-range, non-lethal sidearm available to every operative from the start.",
+            "Increases magazine capacity and adds a silencer for stealthy takedowns."
+          ]
+        },
+        {
+          "id": "weapon_mp9_smg",
+          "name": "MP9 DedSec SMG",
+          "category": "Weapon",
+          "levels": 3,
+          "cost": 20,
+          "region": "Weapon",
+          "location": "Weapon",
+          "guide": "Non-lethal SMG unlocked with Tech Points.",
+          "level_costs": [
+            20,
+            25,
+            30
+          ],
+          "unlock_requirement": "Unlock: turn 1 borough Defiant",
+          "image_url": "/public/games/wdlegion/images/tech/weapon_mp9_smg.jpg",
+          "tier_notes": [
+            "Fully-automatic, non-lethal submachine gun with a quick fire rate.",
+            "Increases magazine capacity for longer sustained fire.",
+            "Increases reload speed for faster follow-up engagements."
+          ]
+        },
+        {
+          "id": "weapon_ltl_sg",
+          "name": "LTL SG",
+          "category": "Weapon",
+          "levels": 3,
+          "cost": 20,
+          "region": "Weapon",
+          "location": "Weapon",
+          "guide": "Non-lethal shotgun unlocked with Tech Points.",
+          "level_costs": [
+            20,
+            25,
+            35
+          ],
+          "unlock_requirement": "Unlock: turn 1 borough Defiant",
+          "image_url": "/public/games/wdlegion/images/tech/weapon_ltl_sg.jpg",
+          "tier_notes": [
+            "Non-lethal shotgun designed for short-range takedowns.",
+            "Increases magazine capacity to hold more shells.",
+            "Increases reload speed between shots."
+          ]
+        },
+        {
+          "id": "weapon_dedsec_grenade_launcher",
+          "name": "DedSec Grenade Launcher",
+          "category": "Weapon",
+          "levels": 3,
+          "cost": 30,
+          "region": "Weapon",
+          "location": "Weapon",
+          "guide": "Launcher firing non-lethal grenade rounds.",
+          "level_costs": [
+            30,
+            35,
+            45
+          ],
+          "unlock_requirement": "Unlock: turn 1 borough Defiant",
+          "image_url": "/public/games/wdlegion/images/tech/weapon_dedsec_grenade_launcher.jpg",
+          "tier_notes": [
+            "Slow-firing, anti-drone weapon that launches shock rounds with a wide area of effect.",
+            "Increases magazine capacity to hold more rounds.",
+            "Increases the maximum number of grenade rounds you can carry."
+          ]
+        },
+        {
+          "id": "hack_disrupt",
+          "name": "Disrupt Hack",
+          "category": "Hack",
+          "levels": 0,
+          "cost": 15,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Temporarily disrupts an enemy's balance/aim at range.",
+          "image_url": "/public/games/wdlegion/images/tech/hack_disrupt.jpg"
+        },
+        {
+          "id": "hack_attract",
+          "name": "Attract Hack",
+          "category": "Hack",
+          "levels": 0,
+          "cost": 15,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Makes a device or object emit noise to lure guards.",
+          "image_url": "/public/games/wdlegion/images/tech/hack_attract.jpg"
+        },
+        {
+          "id": "hack_chase_drone",
+          "name": "Chase Drone Hacks",
+          "category": "Hack",
+          "levels": 3,
+          "cost": 10,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable chase drones. 3 tiers: 10 / 15 / 25 Tech Points.",
+          "level_costs": [
+            10,
+            15,
+            25
+          ],
+          "tier_notes": [
+            "Hack Chase Drones to disable them for a short period of time.",
+            "Hijack a disabled Chase Drone and control it directly.",
+            "Hack a Chase Drone to turn it against its allies."
+          ]
+        },
+        {
+          "id": "hack_gun_jam",
+          "name": "Gun Jam",
+          "category": "Hack",
+          "levels": 0,
+          "cost": 35,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Jams an enemy's weapon at range.",
+          "image_url": "/public/games/wdlegion/images/tech/hack_gun_jam.jpg"
+        },
+        {
+          "id": "hack_turret",
+          "name": "Turret Hacks",
+          "category": "Hack",
+          "levels": 3,
+          "cost": 25,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable turrets. 3 tiers: 25 / 30 / 40 Tech Points.",
+          "level_costs": [
+            25,
+            30,
+            40
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/hack_turret.jpg",
+          "tier_notes": [
+            "Hack turrets to disable them for a short period of time.",
+            "Hijack a disabled turret and operate it directly, automatically targeting enemies.",
+            "Hack a turret to turn it against its allies."
+          ]
+        },
+        {
+          "id": "hack_parcel_fox_drone",
+          "name": "Parcel Fox Drone Hacks",
+          "category": "Hack",
+          "levels": 0,
+          "cost": 15,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable Parcel Fox delivery drones.",
+          "image_url": "/public/games/wdlegion/images/tech/hack_parcel_fox_drone.jpg"
+        },
+        {
+          "id": "hack_ct_drone",
+          "name": "CT Drone Hacks",
+          "category": "Hack",
+          "levels": 3,
+          "cost": 40,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable Counter-Terrorism drones. 3 tiers: 40 / 45 / 60 Tech Points.",
+          "level_costs": [
+            40,
+            45,
+            60
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/hack_ct_drone.jpg",
+          "tier_notes": [
+            "Hack Counter-Terrorism Drones to disable them for a short period of time.",
+            "Hijack a disabled CT Drone and control it directly.",
+            "Hack a CT Drone to turn it against its allies."
+          ]
+        },
+        {
+          "id": "hack_riot_drone",
+          "name": "Riot Drone Hacks",
+          "category": "Hack",
+          "levels": 3,
+          "cost": 25,
+          "region": "Hack",
+          "location": "Hack",
+          "guide": "Hijack/disable Riot drones. 3 tiers: 20 / 30 / 45 Tech Points.",
+          "level_costs": [
+            25,
+            30,
+            45
+          ],
+          "image_url": "/public/games/wdlegion/images/tech/hack_riot_drone.jpg",
+          "tier_notes": [
+            "Hack Riot Drones to disable them for a short period of time.",
+            "Hijack a disabled Riot Drone and control it directly.",
+            "Hack a Riot Drone to turn it against its allies."
+          ]
+        }
+      ]
+    }
+  },
+  "tips": [
+    "Liberate boroughs first — completing borough uprisings reveals tech points and key activities directly on the map, making them much easier to track down.",
+    "Use an operative with a Cargo Drone (or Wrench) for tech points and text files on high rooftops or hard-to-reach ledges — saves a lot of time versus climbing.",
+    "Community interactive maps (MapGenie's Watch Dogs Legion map, Guides for Gamers' Watch Dogs Legion interactive maps) can be used alongside this tracker to visually cross-check progress."
+  ],
+  "recruitable_operatives": [
+    {
+      "id": "op_yi_mok",
+      "name": "Yi Mok",
+      "occupation": "Investor",
+      "bio": "Has a private phone line to the Police Commissioner",
+      "perks": [
+        {
+          "name": "Police Contact",
+          "effect": "Shorter Team Arrest Time"
+        },
+        {
+          "name": "Signing Bonuses",
+          "effect": "ETO Gain on Recruit"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_rachel_ng",
+      "name": "Rachel Ng",
+      "occupation": "Social Media Influencer",
+      "bio": "Recently purchased a £200,535 sports car",
+      "perks": [
+        {
+          "name": "Oscuro Ultra 8",
+          "effect": "Personal Sports Vehicle"
+        },
+        {
+          "name": "Anti-Chase",
+          "effect": "Chase Drone Immunity"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Brass Knuckles"
+    },
+    {
+      "id": "op_elijah_butterfield",
+      "name": "Elijah Butterfield",
+      "occupation": "Esports Competitor",
+      "bio": "Approached by Albion after hacking MMO servers",
+      "perks": [
+        {
+          "name": "ctOS Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "Fast Hacking",
+          "effect": "Short Hack Cooldowns"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_maryam_go",
+      "name": "Maryam Go",
+      "occupation": "Construction Worker",
+      "bio": "Posed for 'Sexy Workers Calendar'",
+      "perks": [
+        {
+          "name": "Uniformed Access",
+          "effect": "Construction Sites"
+        },
+        {
+          "name": "Cargo Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "Wrench",
+          "effect": "Heavy Melee Weapon"
+        },
+        {
+          "name": "Nail Gun",
+          "effect": "Unique Weapon"
+        }
+      ],
+      "weapons": [
+        "Nail Gun",
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_adina_nicoara",
+      "name": "Adina Nicoara",
+      "occupation": "Curator",
+      "bio": "Chased off Clan Kelley racketeers",
+      "perks": [
+        {
+          "name": "Tough Drunk",
+          "effect": "Take Less Damage"
+        }
+      ],
+      "weapons": [
+        "M590 Semi-Auto Shotgun",
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_bhairavi_mehta",
+      "name": "Bhairavi Mehta",
+      "occupation": "Construction Worker",
+      "bio": "Regularly publishes videos reviewing custom tools",
+      "perks": [
+        {
+          "name": "Uniformed Access",
+          "effect": "Construction Sites"
+        },
+        {
+          "name": "Cargo Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "Wrench",
+          "effect": "Heavy Melee Weapon"
+        },
+        {
+          "name": "Nail Gun",
+          "effect": "Unique Weapon"
+        }
+      ],
+      "weapons": [
+        "Nail Gun",
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_minh_vu",
+      "name": "Minh Vu",
+      "occupation": "Cameraman",
+      "bio": "Runs a forum for DIY electricians",
+      "perks": [
+        {
+          "name": "News Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "Albion Vendetta",
+          "effect": "Extra Faction Damage"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Brass Knuckles"
+    },
+    {
+      "id": "op_siraj_imam",
+      "name": "Siraj Imam",
+      "occupation": "Digital Privacy Advocate",
+      "bio": "Broke through CIA firewalls",
+      "perks": [
+        {
+          "name": "Key Steal",
+          "effect": "Unlimited Range"
+        },
+        {
+          "name": "Fast Hacking",
+          "effect": "Short Hack Cooldowns"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_katie_petrescu",
+      "name": "Katie Petrescu",
+      "occupation": "DJ",
+      "bio": "Profits from online gambling",
+      "perks": [
+        {
+          "name": "Killer Beat",
+          "effect": "Short Cooldowns and More Damage"
+        },
+        {
+          "name": "Feedback Loop",
+          "effect": "Stun Nearby Enemies"
+        },
+        {
+          "name": "Gambling Addict",
+          "effect": "Randomly Gambles ETO"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_siobhan_clancy",
+      "name": "Siobhan Clancy",
+      "occupation": "War Correspondent",
+      "bio": "Arrested by Leah Campbell (dynamic status, shown as Arrested with release timer at time of capture)",
+      "perks": [
+        {
+          "name": "News Drone",
+          "effect": "Drone Summon"
+        },
+        {
+          "name": "LTL MP7",
+          "effect": "Burst-Fire Shock SMG"
+        },
+        {
+          "name": "Physically Fit",
+          "effect": "Take Less Damage"
+        }
+      ],
+      "weapons": [
+        "LTL MP7",
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_sienna_watson",
+      "name": "Sienna Watson",
+      "occupation": "Living Statue",
+      "bio": "Applied for permit to perform at Finsbury Circus",
+      "perks": [
+        {
+          "name": "Statue Pose",
+          "effect": "Hide From Pursuit"
+        },
+        {
+          "name": "Sticky Fingers",
+          "effect": "Ammo Drops Give ETO"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_edmond_dare",
+      "name": "Edmond Dare",
+      "occupation": "Hacker",
+      "bio": "Recruited Operative Zachary Wong into DedSec",
+      "perks": [
+        {
+          "name": "Viral Hacking",
+          "effect": "Hacks Propagate"
+        },
+        {
+          "name": "Shock Hack",
+          "effect": "Electrify Enemies"
+        },
+        {
+          "name": "Key Steal",
+          "effect": "Unlimited Range"
+        },
+        {
+          "name": "Gambling Addict",
+          "effect": "Randomly Gambles ETO"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_zsofia_juhasz",
+      "name": "Zsofia Juhasz",
+      "occupation": "Actor",
+      "bio": "Has multiple fake credit cards",
+      "perks": [
+        {
+          "name": "Famous",
+          "effect": "Noticed in Public"
+        },
+        {
+          "name": "Shopaholic",
+          "effect": "Randomly Buys Clothes"
+        },
+        {
+          "name": "Berserker",
+          "effect": "Defeat Enemies to Heal"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    },
+    {
+      "id": "op_zachary_wong",
+      "name": "Zachary Wong",
+      "occupation": "Neurologist",
+      "bio": "Recruited by Operative Edmond Dare",
+      "perks": [
+        {
+          "name": "Uniformed Access",
+          "effect": "Medical Facilities"
+        },
+        {
+          "name": "Triage",
+          "effect": "Team Injury Release"
+        },
+        {
+          "name": "Flatulent",
+          "effect": "Alert Nearby Enemies"
+        }
+      ],
+      "weapons": [
+        "Pistol"
+      ],
+      "gadget": "Spiderbot"
+    }
+  ]
+}

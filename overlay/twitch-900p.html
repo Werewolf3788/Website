@@ -1,0 +1,377 @@
+<!-- Line 1: Document Type Declaration -->
+<!DOCTYPE html>
+<!-- Line 2: Root HTML Element -->
+<html lang="en">
+<!-- Line 3: Document Head Configuration -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werewolf3788 Stream Overlay (900p)</title>
+    
+    <!-- Line 10: Google Analytics GA4 (G-CTYHDF4MSD) - Protocol Agnostic for HTTP & HTTPS -->
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <script>
+      // Line 13: GA4 DataLayer Initialization
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CTYHDF4MSD');
+    </script>
+    
+    <!-- Line 20: Libraries - Protocol Agnostic CDN Links -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js?v=6.0.0"></script>
+
+    <!-- Line 24: Primary CSS Stylesheet (Calibrated for 900p / 1600x900 Canvas) -->
+    <style>
+        /* Section 1: Base Canvas & Viewport Setup */
+        @import url(//fonts.googleapis.com/css?family=Roboto:700,900);
+        
+        * { box-sizing: border-box; }
+        
+        html, body { 
+            height: 100%; 
+            width: 100%; 
+            margin: 0; 
+            padding: 0; 
+            background: transparent !important; 
+            overflow: hidden; 
+        } 
+
+        #wp-custom-wrapper {
+            height: 100vh; 
+            width: 100vw; 
+            max-width: 1600px;
+            max-height: 900px;
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            background: transparent !important; 
+            font-family: 'Roboto', sans-serif; 
+            position: relative; 
+            color: white; 
+            transition: background 0.8s ease;
+        }
+        
+        :root { 
+            --accent: #9333ea; 
+            --glow-color: rgba(147, 51, 234, 0.8); 
+            --url-accent: #d8b4fe; 
+        }
+
+        /* Section 2: Lower Left Dock (Twitch Profile Image) */
+        #left-widget-panel { 
+            position: absolute; 
+            bottom: 16px; 
+            left: 16px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 5px; 
+            z-index: 900; 
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.9); 
+        }
+
+        .profile-img { 
+            height: 71px; 
+            width: 71px; 
+            border-radius: 50%; 
+            border: 3px solid var(--accent); 
+            object-fit: cover; 
+            box-shadow: 0 0 24px var(--glow-color); 
+            transition: border-color 0.5s ease; 
+            flex-shrink: 0; 
+            display: none; 
+        }
+
+        /* Section 3: Lower Right Dock (Twitch Game Name & Box Art) */
+        #right-branding-panel {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            gap: 13px;
+            z-index: 900;
+            pointer-events: none;
+            width: max-content;
+            max-width: 80vw;
+        }
+
+        .branding-meta-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-end;
+            gap: 4px;
+            flex: 0 0 auto;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.9);
+        }
+
+        #current-activity { 
+            font-size: clamp(12px, 1.4vw, 18px); 
+            font-weight: 900; 
+            color: white; 
+            text-transform: uppercase; 
+            font-style: italic; 
+            letter-spacing: -0.2px; 
+            text-shadow: 0 0 12px var(--glow-color); 
+            text-align: right; 
+            white-space: normal; 
+            line-height: 1.15;
+            word-break: break-word;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Section 3b: PlayStation Game Status (under the game name, or top centre) */
+        #game-status {
+            font-size: clamp(10px, 1.1vw, 14px);
+            font-weight: 700;
+            color: var(--url-accent);
+            text-align: right;
+            line-height: 1.2;
+            max-width: 520px;
+            word-break: break-word;
+            margin: 0;
+            padding: 0;
+        }
+        #game-status:empty { display: none; }
+        #game-status.top-center {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 70vw;
+            font-size: clamp(13px, 1.5vw, 20px);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            text-align: center;
+            color: white;
+            z-index: 900;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.95), 0 0 12px var(--glow-color);
+        }
+
+        .boxart-img { 
+            height: 129px; 
+            width: 92px; 
+            border-radius: 7px; 
+            border: 2.5px solid var(--accent); 
+            box-shadow: 0 0 20px var(--glow-color); 
+            display: block !important; 
+            flex-shrink: 0; 
+            object-fit: cover;
+            background: #0b0f19; 
+            transition: border-color 0.5s ease;
+        }
+
+        /* Section 4: Version Stamp */
+        .system-version-stamp { 
+            position: absolute; 
+            bottom: 3px; 
+            right: 8px; 
+            font-size: 8px; 
+            font-weight: 700; 
+            color: rgba(255, 255, 255, 0.35); 
+            letter-spacing: 0.4px; 
+            pointer-events: none; 
+            z-index: 9999; 
+            font-family: monospace; 
+        }
+    </style>
+</head>
+<body id="dynamic-body">
+
+<div id="wp-custom-wrapper">
+    <!-- Section 5: DOM Targets -->
+    <!-- Lower Left Corner: Dynamic Twitch Profile Picture -->
+    <div id="left-widget-panel">
+        <img src="" class="profile-img" id="user-pfp" alt="Werewolf3788">
+    </div>
+
+    <!-- Lower Right Corner: Flush Dock (Twitch Game Title & Poster) -->
+    <div id="right-branding-panel">
+        <div class="branding-meta-stack">
+            <div id="current-activity">SCANNING...</div>
+            <div id="game-status"></div>
+        </div>
+        <img id="game-boxart" class="boxart-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='92' height='129' viewBox='0 0 92 129'><rect width='100%' height='100%' fill='%230f172a'/><text x='50%' y='50%' fill='%2394a3b8' font-family='sans-serif' font-size='9' font-weight='bold' text-anchor='middle'>LOADING GAME ART</text></svg>" alt="Game Art" referrerpolicy="no-referrer">
+    </div>
+
+    <!-- Active Version HTML Footer Stamp (24hr NY Time: 2026-11-17 00:20 EST) -->
+    <div class="system-version-stamp">v6.1_900p_20261117 00:20 EST</div>
+</div>
+
+<!-- Main Overlay Engine Script -->
+<script>
+    // Section 6: Runtime Configuration (Lines 172-180)
+    const APP_CONFIG = {
+        twitchUser: "werewolf3788",
+        psnUser: "wildhorse_spirit",
+        psnDb: "https://playstation-stats-default-rtdb.firebaseio.com/psn/gamertags/",
+        statusPosition: "right",   // "right" = under the game name, "top" = top centre of the screen
+        timezone: "America/New_York",
+        fallbackArtSvg: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='92' height='129' viewBox='0 0 92 129'><rect width='100%' height='100%' fill='%230f172a'/><text x='50%' y='50%' fill='%2394a3b8' font-family='sans-serif' font-size='9' font-weight='bold' text-anchor='middle'>NO GAME ART</text></svg>"
+    };
+
+    window.lastGlobalUpdateStamp = Date.now();
+    window.psnPlaying = false;   // true while PlayStation says a game is running
+
+    // Section 7: Protocol Helper (Lines 184-192)
+    function formatAssetUrl(url) {
+        if (!url || typeof url !== 'string') return null;
+        const clean = url.trim();
+        if (clean.startsWith('//')) return `https:${clean}`;
+        if (clean.startsWith('http://')) return clean.replace('http://', 'https://');
+        if (clean.startsWith('https://') || clean.startsWith('data:image')) return clean;
+        return null;
+    }
+
+    function isApiErrorResponse(text) {
+        if (!text) return true;
+        const lower = text.toLowerCase().trim();
+        return lower.includes('an error occurred') || 
+               lower.includes('user not found') || 
+               lower.includes('could not') || 
+               lower.includes('rate limit') || 
+               lower.includes('404') || 
+               lower.includes('500') || 
+               lower.startsWith('error');
+    }
+
+    // Section 8: Twitch Data Sync Engine (Lines 207-270)
+    async function syncTwitchOverlay() {
+        const cacheBust = Date.now();
+
+        // 1. Fetch Twitch Avatar
+        try {
+            const pfpEl = document.getElementById('user-pfp');
+            if (pfpEl) {
+                const pfpRes = await fetch(`https://decapi.me/twitch/avatar/${APP_CONFIG.twitchUser}?v=${cacheBust}`);
+                if (pfpRes.ok) {
+                    const pfpRaw = await pfpRes.text();
+                    const pfpUrl = formatAssetUrl(pfpRaw);
+                    if (pfpUrl && !isApiErrorResponse(pfpUrl)) {
+                        if (pfpEl.src !== pfpUrl) {
+                            pfpEl.src = pfpUrl;
+                        }
+                        pfpEl.style.display = 'block';
+                    }
+                }
+            }
+        } catch (errPfp) {
+            console.warn("Avatar fetch error:", errPfp);
+        }
+
+        // 2. Fetch Twitch Game Title & Build Box Art
+        try {
+            const gameRes = await fetch(`https://decapi.me/twitch/game/${APP_CONFIG.twitchUser}?v=${cacheBust}`);
+            const gameRaw = (await gameRes.text()).trim();
+            const activityEl = document.getElementById('current-activity');
+            const boxArt = document.getElementById('game-boxart');
+
+            if (window.psnPlaying) {
+                // PlayStation is supplying the game name, poster art and status
+            } else if (!isApiErrorResponse(gameRaw) && gameRaw !== "") {
+                if (activityEl) {
+                    activityEl.innerText = gameRaw.toUpperCase();
+                }
+
+                if (boxArt) {
+                    // Pull standard vertical box art directly from Twitch CDN
+                    const twitchArtUrl = `https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(gameRaw)}-285x380.jpg`;
+                    
+                    boxArt.onerror = () => {
+                        boxArt.src = APP_CONFIG.fallbackArtSvg;
+                    };
+
+                    if (boxArt.src !== twitchArtUrl) {
+                        boxArt.dataset.wanted = '';
+                        boxArt.src = twitchArtUrl;
+                    }
+                }
+            } else {
+                if (activityEl) {
+                    activityEl.innerText = "WEREWOLF3788";
+                }
+                if (boxArt && (!boxArt.src || boxArt.src.includes('data:image'))) {
+                    boxArt.src = APP_CONFIG.fallbackArtSvg;
+                }
+            }
+        } catch (errGame) {
+            console.warn("Twitch game fetch error:", errGame);
+        }
+    }
+
+    // Section 8b: PlayStation Data Sync (poster art, game name, game status)
+    async function syncPsnOverlay() {
+        const activityEl = document.getElementById('current-activity');
+        const statusEl = document.getElementById('game-status');
+        const boxArt = document.getElementById('game-boxart');
+        let card = null;
+        const keys = [...new Set([APP_CONFIG.psnUser, APP_CONFIG.psnUser.toLowerCase()])];
+        for (const key of keys) {
+            try {
+                const res = await fetch(`${APP_CONFIG.psnDb}${encodeURIComponent(key)}.json?v=${Date.now()}`, { cache: 'no-store' });
+                if (!res.ok) continue;
+                const data = await res.json();
+                if (data && typeof data === 'object') { card = data; break; }
+            } catch (errPsn) {
+                console.warn("PSN fetch error:", errPsn);
+            }
+        }
+
+        const hunt = (card && card.activeHunt) || {};
+        const game = card ? String(card.currentGame || '').trim() : '';
+        const wasPlaying = window.psnPlaying;
+        window.psnPlaying = !!(card && card.online && game && !/dashboard/i.test(game));
+
+        if (!window.psnPlaying) {
+            if (statusEl) statusEl.innerText = '';
+            if (wasPlaying) syncTwitchOverlay();   // hand the dock back to Twitch
+            return;
+        }
+
+        if (activityEl) activityEl.innerText = game.toUpperCase();
+        if (statusEl) statusEl.innerText = String(card.gameStatus || hunt.gameStatus || '').trim();
+
+        if (boxArt) {
+            const twitchArtUrl = `https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(game)}-285x380.jpg`;
+            const psnArt = formatAssetUrl(card.currentGameArt || card.posterArt || card.art || card.image || hunt.art || hunt.posterArt);
+            const wanted = psnArt || twitchArtUrl;
+            boxArt.onerror = () => {
+                boxArt.onerror = () => { boxArt.src = APP_CONFIG.fallbackArtSvg; };
+                boxArt.src = (wanted !== twitchArtUrl) ? twitchArtUrl : APP_CONFIG.fallbackArtSvg;
+            };
+            if (boxArt.dataset.wanted !== wanted) {
+                boxArt.dataset.wanted = wanted;
+                boxArt.src = wanted;
+            }
+        }
+    }
+
+    // Section 9: DOM Ready & Loop Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        const statusEl = document.getElementById('game-status');
+        if (statusEl && APP_CONFIG.statusPosition === 'top') {
+            statusEl.classList.add('top-center');
+            document.getElementById('wp-custom-wrapper').appendChild(statusEl);
+        }
+
+        syncPsnOverlay();
+        setInterval(syncPsnOverlay, 15000);
+
+        syncTwitchOverlay();
+
+        // Staggered initial checks to handle browser paint timing
+        setTimeout(syncTwitchOverlay, 1500);
+        setTimeout(syncTwitchOverlay, 4000);
+
+        // Keep polling Twitch every 15 seconds
+        setInterval(syncTwitchOverlay, 15000);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+ * Social Profile  -  /Claude-Test/profile.html
+ * Shows the SIGNED-IN user's own profile.  ?u=<username | friend code | emailKey>
+ * opens a friend's profile instead.  Nothing here is tied to one person.
+ *
+ * Needs:  ww-social.js (same folder)  -  shared sign-in + site-wide messenger
+ *
+ * Privacy reuses Settings (psn/xbox/steam scopes, tracking_scope, close friends);
+ * trophy lists + online status get their own Everyone/Friends/Close friends/Only me setting.
+ * ========================================================================== -->
+<html lang="en">
+<head>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#070709">
+<title>Profile | Pack Hub</title>
+<script src="//cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../assets/ww-shell.css">
+<script src="ww-social.js"></script>
+<style id="ww-reserve">@media (min-width:768px) and (pointer:fine){[data-ww-nav-slot]:empty{min-height:44px}}</style>
+    <script defer src="../assets/ww-shell.js"></script>
+<style>
+  @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
+  :root{
+    --bg:#070709; --panel:rgba(22,22,30,.74); --panel-solid:#16161e; --line:rgba(255,255,255,.12);
+    --text:#e8ecf3; --mute:#9aa4b2; --accent:#ff5f1f; --ok:#10b981; --warn:#f59e0b;
+    --ps:#3b82f6; --xb:#22c55e; --st:#66c0f4; --dim:.55; --bg-img:none;
+  }
+  @media (prefers-color-scheme: light){
+    body:not(.has-bg){ --bg:#eef1f6; --panel:rgba(255,255,255,.82); --panel-solid:#fff; --line:rgba(0,0,0,.1); --text:#12151c; --mute:#566070; }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;
+       padding-bottom:calc(90px + env(safe-area-inset-bottom));overflow-x:hidden}
+  .bg-layer{position:fixed;inset:0;z-index:-2;background:var(--bg-img) center/cover no-repeat;}
+  .bg-dim{position:fixed;inset:0;z-index:-1;background:rgba(0,0,0,var(--dim));display:none}
+  body.has-bg .bg-dim{display:block}
+  .wrap{width:calc(100% - 1.5rem);margin:0 auto}
+  @media(min-width:1024px){.wrap{width:80%;max-width:1850px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:1.25rem;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  h1,h2,h3{margin:0;font-weight:900}
+  .h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:900;display:flex;align-items:center;gap:.5rem}
+  .mute{color:var(--mute)}
+  .mono{font-family:'JetBrains Mono',monospace}
+  button,select,input,textarea{font:inherit;color:inherit}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:.55rem 1rem;border-radius:.8rem;border:1px solid var(--line);background:rgba(127,127,127,.14);font-weight:800;font-size:.8rem;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.danger{color:#ef4444}
+  .chip{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem;border-radius:999px;border:1px solid var(--line);background:rgba(127,127,127,.14);font-size:.72rem;font-weight:800;text-transform:uppercase}
+  .chip.live{color:var(--ok);border-color:rgba(16,185,129,.5)}
+  .tabs{display:flex;gap:.5rem;overflow-x:auto;padding:.25rem 0;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none;min-height:44px;padding:.5rem 1.1rem;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:900;font-size:.78rem;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:.5rem}
+  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .stat{padding:1rem;text-align:center}
+  .stat .v{font-size:1.7rem;font-weight:900}
+  .stat .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:800}
+  .bar{height:8px;border-radius:99px;background:rgba(127,127,127,.25);overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ef4444,#f59e0b,#84cc16,#10b981);background-size:400% 100%}
+  .games{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+  @media(min-width:640px){.games{grid-template-columns:repeat(3,1fr)}}
+  @media(min-width:1024px){.games{grid-template-columns:repeat(4,1fr)}}
+  @media(min-width:1400px){.games{grid-template-columns:repeat(6,1fr)}}
+  .game{position:relative;aspect-ratio:2/3;border-radius:1rem;overflow:hidden;background:#1a1a22;border:1px solid var(--line);cursor:pointer;transition:transform .2s}
+  .game:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .game img{width:100%;height:100%;object-fit:cover;display:block}
+  .game .ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.2) 55%,transparent);display:flex;flex-direction:column;justify-content:flex-end;padding:.65rem;color:#fff;gap:.25rem}
+  .game .ttl{font-weight:900;font-size:.78rem;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .pf{position:absolute;top:.5rem;left:.5rem;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:#fff}
+  .pf.psn{background:var(--ps)}.pf.xbox{background:var(--xb)}.pf.steam{background:#1b2838}
+  .st{position:absolute;top:.5rem;right:.5rem;padding:.1rem .5rem;border-radius:99px;font-size:.62rem;font-weight:900;text-transform:uppercase;background:rgba(0,0,0,.7);color:#fff}
+  .st.live{background:var(--ok)}.st.done{background:#a855f7}.st.prog{background:var(--warn);color:#000}
+  .row{display:flex;align-items:center;gap:.75rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
+  .row img{width:48px;height:48px;border-radius:.6rem;object-fit:cover;flex:none}
+  .avatar{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--accent);background:#1e1e24;flex:none}
+  @media(min-width:768px){.avatar{width:160px;height:160px}}
+  /* modal + drawer */
+  .modal{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(10px)}
+  .modal.open{display:flex}
+  .modal .box{width:100%;max-width:760px;max-height:90vh;overflow:auto;background:var(--panel-solid);border:1px solid var(--line);border-radius:1.25rem}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);z-index:5001;background:var(--panel-solid);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;padding:calc(1rem + env(safe-area-inset-top)) 1rem calc(6rem + env(safe-area-inset-bottom))}
+  .drawer.open{transform:none}
+  .fld{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.9rem}
+  .fld label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--mute)}
+  .fld input[type=text],.fld input[type=url],.fld textarea,.fld select{background:rgba(127,127,127,.14);border:1px solid var(--line);border-radius:.7rem;padding:.65rem .8rem;font-size:16px;width:100%}
+  .fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--accent)}
+  .priv{display:grid;grid-template-columns:1fr 150px;gap:.5rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--line);font-size:.85rem;font-weight:700}
+  .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--panel-solid);border:1px solid var(--accent);padding:.7rem 1.2rem;border-radius:999px;font-weight:800;z-index:6000;font-size:.85rem}
+  .sticky-save{position:sticky;bottom:0;padding-top:.75rem;background:linear-gradient(to top,var(--panel-solid) 70%,transparent)}
+  [hidden]{display:none!important}
+  .nowrap-trunc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body class="">
+<div class="bg-layer" id="bg-layer"></div><div class="bg-dim" id="bg-dim"></div>
+
+<!-- top bar -->
+<header class="wrap" style="padding-top:calc(.75rem + env(safe-area-inset-top))">
+  <div class="card" style="padding:.5rem .75rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+    <a class="btn" href="../index.html"><i class="fab fa-playstation" style="color:var(--accent)"></i> Pack Hub</a>
+    <div data-ww-nav-slot style="flex:1 1 auto;min-width:0;display:flex;justify-content:flex-end;align-items:center"></div>
+    <span id="top-actions" style="display:flex;gap:.5rem;flex-wrap:wrap"></span>
+  </div>
+</header>
+
+<main class="wrap" style="margin-top:1rem;display:flex;flex-direction:column;gap:1rem">
+  <div id="state-msg" class="card" style="padding:2rem;text-align:center"><i class="fas fa-spinner fa-spin"></i> Loading profile&hellip;</div>
+  <div id="profile-root" hidden style="display:flex;flex-direction:column;gap:1rem"></div>
+</main>
+
+<!-- game / trophy modal -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="box"><div id="modal-body"></div></div>
+</div>
+
+<!-- edit drawer (owner only) -->
+<aside class="drawer" id="drawer" aria-label="Edit profile"></aside>
+
+<script>
+(async function () {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const W = window.WW;
+const esc = (s) => W.esc(s);
+
+const LEVELS = [['public','Everyone'],['friends','Friends'],['close','Close friends'],['private','Only me']];
+const LV_RANK = { public:0, friends:1, close:2, private:3 };
+const REL_LABEL = ['Public view','Friend view','Close-friend view'];
+const PLATS = { psn:{name:'PlayStation',icon:'fab fa-playstation'}, xbox:{name:'Xbox',icon:'fab fa-xbox'}, steam:{name:'Steam',icon:'fab fa-steam'} };
+// Game Companion saves: Firestore  user/{key}/platform/{ps|xbox|steam|pc}/game/{gameName}
+const TRACK_PLATS = { ps:'psn', xbox:'xbox', steam:'steam', pc:'steam' };
+
+const S = { ownerKey:null, isOwner:false, rel:0, viewAs:null, U:{}, profile:{}, media:{}, plat:{},
+            tab:'all', tracking:null, presence:null, myFriends:{}, edit:null };
+
+/* ---------- helpers ---------- */
+const DB = () => W.config.firebase.databaseURL.replace(/\/$/, '');
+const arr = (d) => !d ? [] : Array.isArray(d) ? d.filter(Boolean) : typeof d === 'object' ? Object.values(d) : [];
+const secure = (u) => (typeof u === 'string' ? u.trim().replace(/^http:\/\//i, 'https://') : '');
+const num = (n, d = 0) => { n = Number(n); return isNaN(n) ? d : n; };
+function ago(ts) {
+  const t = typeof ts === 'number' ? ts : new Date(ts).getTime(); if (!t || isNaN(t)) return '';
+  const s = Math.max(0, (Date.now() - t) / 1000);
+  if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago'; if (s < 2592000) return Math.floor(s / 86400) + 'd ago';
+  return Math.floor(s / 2592000) + 'mo ago';
+}
+const fmtDate = (ts) => { const d = new Date(ts); return isNaN(d) ? '' : d.toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }); };
+function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+const ph = (w, h, t) => `//via.placeholder.com/${w}x${h}/1e1e24/ff5f1f?text=${encodeURIComponent(t || '')}`;
+
+/* ---------- privacy ----------
+ * PlayStation / Xbox / Steam / Game tracking use the settings you already have in Settings
+ * (psn_username_scope, xbox_gamertag_scope, steam_id_scope, tracking_scope).
+ * Trophy lists & online status are new and live in profiles/{key}/privacy. */
+const viewRank = () => S.isOwner ? (S.viewAs === null ? 3 : S.viewAs) : S.rel;
+const SCOPE_FIELD = { psn:'psn_username_scope', xbox:'xbox_gamertag_scope', steam:'steam_id_scope', tracking:'tracking_scope' };
+const levelOf = (sec) => SCOPE_FIELD[sec]
+  ? (S.U[SCOPE_FIELD[sec]] || (sec === 'tracking' ? 'friends' : 'private'))
+  : ((S.profile.privacy || {})[sec] || 'friends');
+const canSee = (sec) => viewRank() >= (LV_RANK[levelOf(sec)] ?? 3);
+const platId = (p) => String(S.U[{ psn:'psn_username', xbox:'xbox_gamertag', steam:'steam_id' }[p]] || '').trim();
+const visiblePlats = () => Object.keys(PLATS).filter(p => platId(p) && canSee(p) && S.plat[p]);
+const displayName = () => S.profile.displayName || S.U.username || S.U.display_name || 'Player';
+const avatarOf = () => S.U.avatar_url || '';
+
+/* ---------- boot ---------- */
+window.addEventListener('hashchange', () => location.reload());
+async function boot() {
+  try { await W.ready; } catch (e) { return fail('Could not start Firebase. Reload and try again.'); }
+  const q = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim() || new URLSearchParams(location.search).get('u');   // profile.html#FRIENDCODE (or ?u=)
+  if (!W.me) return q ? bootPublic(q) : signInView();
+  S.ownerKey = q ? await resolveUser(q) : W.me.key;
+  if (!S.ownerKey) return fail('That profile could not be found.');
+  S.isOwner = S.ownerKey === W.me.key;
+  await loadProfile();
+  if (!Object.keys(S.U).length) return fail('That profile could not be found.');
+  // not on their friends list: public view (only what the owner set to "Everyone")
+  if (S.isOwner && !location.hash && W.me.friendCode) { try { history.replaceState(null, '', location.pathname + location.search + '#' + W.me.friendCode); } catch (e) {} }
+  await loadPlatforms();
+  if (!S.isOwner && S.rel < 1 && !anyVisible()) return fail(privateMsg());
+  document.title = displayName() + ' | Pack Hub';
+  setTabIcon(avatarOf() || (S.isOwner && W.me.photoURL) || Object.values(S.plat).map(x => x && x.avatar).find(Boolean) || '');
+  $('#state-msg').hidden = true; $('#profile-root').hidden = false;
+  if (S.profile.defaultTab) S.tab = S.profile.defaultTab;
+  render();
+  watchPresence();
+  if (S.isOwner) (S.trackP || Promise.resolve()).finally(publishPublic);
+}
+
+/* ---------- public copy (public_profiles/{friendCode}) ----------
+ * Signed-out visitors can't read users/ or profiles/, so the owner's page keeps a small public copy
+ * with ONLY the parts set to "Everyone". No email, friends list or keys ever go in it.
+ * It refreshes whenever the owner opens or saves their profile; if nothing is public it is removed. */
+const isPub = (sec) => levelOf(sec) === 'public';
+function anyVisible() { return visiblePlats().length > 0 || (canSee('tracking') && S.tracking && S.tracking.length) || canSee('activity') || canSee('trophies'); }
+function privateMsg() {
+  return `<div class="h2" style="justify-content:center;margin-bottom:.5rem"><i class="fas fa-user-lock"></i> This profile isn\u2019t shared publicly</div>
+    <div class="mute">Only its owner\u2019s friends can see it.</div>`;
+}
+async function steamId64(raw) {
+  let id = String(raw || '').trim().replace(/\/+$/, '').split('/').pop();
+  if (!id || /^7656119\d{10}$/.test(id)) return id;
+  try { const v = (await W.db.ref('platforms/steam_vanity/' + id.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); return typeof v === 'string' ? v : ''; } catch (e) { return ''; }
+}
+async function publishPublic() {
+  try {
+    const code = String(S.U.friend_code || '').trim(); if (!code || !S.isOwner) return;
+    const ref = W.db.ref('accounts/public_profiles/' + code);
+    const any = ['psn', 'xbox', 'steam'].some(x => isPub(x) && platId(x)) || isPub('tracking') || isPub('activity') || isPub('trophies');
+    if (!any) { await ref.remove(); return; }
+    const p = S.profile, out = {
+      code, username:S.U.username || '', avatar:S.U.avatar_url || '', displayName:p.displayName || '', bio:p.bio || '',
+      accent:p.accent || S.U.primary_color || '', bgDim:p.bgDim != null ? p.bgDim : null, defaultTab:p.defaultTab || 'all', bg:S.media.bg || '',
+      privacy:{ trophies:isPub('trophies') ? 'public' : 'friends', activity:isPub('activity') ? 'public' : 'friends' },
+      tracking_scope:isPub('tracking') ? 'public' : 'friends'
+    };
+    if (isPub('psn') && platId('psn')) out.psn = platId('psn');
+    if (isPub('xbox') && platId('xbox')) out.xbox = platId('xbox');
+    if (isPub('steam') && platId('steam')) { const sid = await steamId64(platId('steam')); if (sid) out.steam = sid; }
+    if (isPub('tracking')) {
+      if (Array.isArray(S.tracking)) out.tracking = S.tracking.slice(0, 40).map(t => ({ title:t.title, platform:t.platform || '', status:t.status || '', progress:t.progress, note:t.note || '', updated:t.updated || 0, wl:t.wl || null }));
+      if (S.mobileProg && Object.keys(S.mobileProg).length) out.mobile_progress = S.mobileProg;
+    }
+    const cur = (await ref.once('value').catch(() => null));
+    const old = cur && cur.val(); if (old) delete old.updatedAt;
+    if (JSON.stringify(old) === JSON.stringify(JSON.parse(JSON.stringify(out)))) return;   // unchanged: no write
+    out.updatedAt = W.firebase.database.ServerValue.TIMESTAMP;
+    await ref.set(out);
+  } catch (e) { console.warn('[profile] public copy', e && (e.code || e.message)); }
+}
+
+/* signed-out visitor opening profile.html#CODE */
+async function bootPublic(q) {
+  let snap = null;
+  for (const c of [...new Set([q, q.toUpperCase()])]) {
+    try { snap = (await W.db.ref('accounts/public_profiles/' + c.replace(/[.$#\[\]\/]/g, '')).once('value')).val(); } catch (e) {}
+    if (snap) break;
+  }
+  if (!snap) { signInView(true); return; }
+  S.isOwner = false; S.rel = 0; S.myFriends = {}; S.ownerKey = null;
+  S.U = { friend_code:snap.code, username:snap.username || '', avatar_url:snap.avatar || '', tracking_scope:snap.tracking_scope || 'friends' };
+  S.mobileProg = snap.mobile_progress || {};
+  if (snap.psn) { S.U.psn_username = snap.psn; S.U.psn_username_scope = 'public'; }
+  if (snap.xbox) { S.U.xbox_gamertag = snap.xbox; S.U.xbox_gamertag_scope = 'public'; }
+  if (snap.steam) { S.U.steam_id = snap.steam; S.U.steam_id_scope = 'public'; }
+  S.profile = { displayName:snap.displayName || '', bio:snap.bio || '', accent:snap.accent || '', bgDim:snap.bgDim, defaultTab:snap.defaultTab || 'all', privacy:snap.privacy || {} };
+  S.media = { bg:snap.bg || '' };
+  S.tracking = Array.isArray(snap.tracking) ? snap.tracking : null;
+  applyTheme();
+  await loadPlatforms();
+  document.title = displayName() + ' | Pack Hub';
+  setTabIcon(avatarOf() || Object.values(S.plat).map(x => x && x.avatar).find(Boolean) || '');
+  $('#state-msg').hidden = true; $('#profile-root').hidden = false;
+  if (S.profile.defaultTab) S.tab = S.profile.defaultTab;
+  render();
+}
+
+/* browser-tab icon = this profile's avatar (round); falls back to the plain image if the host blocks canvas use */
+function setTabIcon(url) {
+  if (!url) return;
+  const apply = (href) => {
+    document.querySelectorAll('link[rel~="icon"],link[rel="shortcut icon"]').forEach(l => l.remove());
+    const l = document.createElement('link'); l.rel = 'icon'; l.href = href; document.head.appendChild(l);
+  };
+  const img = new Image(); img.crossOrigin = 'anonymous'; img.referrerPolicy = 'no-referrer';
+  img.onload = () => {
+    try {
+      const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+      x.beginPath(); x.arc(32, 32, 32, 0, Math.PI * 2); x.clip();
+      const m = Math.min(img.naturalWidth, img.naturalHeight);
+      x.drawImage(img, (img.naturalWidth - m) / 2, (img.naturalHeight - m) / 2, m, m, 0, 0, 64, 64);
+      apply(c.toDataURL('image/png'));
+    } catch (e) { apply(url); }
+  };
+  img.onerror = () => apply(url);
+  img.src = url;
+}
+
+function fail(html) { $('#state-msg').innerHTML = html; }
+function signInView(forOther) {
+  $('#state-msg').innerHTML = (forOther ? privateMsg() + '<div class="mute" style="margin:.4rem 0 .9rem">Friends can sign in to see it.</div>' : '') + `<div class="h2" style="justify-content:center;margin-bottom:.75rem;${forOther ? 'display:none' : ''}"><i class="fas fa-user-lock"></i> Sign in to see your profile</div>
+    <button class="btn primary" id="signin-btn"><i class="fab fa-google"></i> Sign in with Google</button>
+    ${W.config.discordAuthUrl ? '<button class="btn" id="signin-discord" style="margin-left:.5rem"><i class="fab fa-discord"></i> Sign in with Discord</button>' : ''}
+    <div class="mute" style="margin-top:.8rem;font-size:.8rem">Other sign-in methods are in the menu at the top.</div>`;
+  const dc = $('#signin-discord'); if (dc) dc.onclick = () => W.signInDiscord();
+  $('#signin-btn').onclick = async () => {
+    if (W.config.loginUrl) { location.href = W.config.loginUrl + (W.config.loginUrl.includes('?') ? '&' : '?') + 'next=' + encodeURIComponent(location.href); return; }
+    try { await W.auth.signInWithPopup(new W.firebase.auth.GoogleAuthProvider()); location.reload(); }
+    catch (e) { toast('Sign-in failed: ' + (e.code || e.message)); }
+  };
+}
+
+// ?u= accepts a friend code or an account key
+async function resolveUser(t) {
+  t = String(t).trim();
+  if (/_at_/.test(t)) return t.toLowerCase();
+  return await W.ownerKeyOfCode(t);
+}
+
+/* ---------- load profile, relation, media ---------- */
+async function loadProfile() {
+  const key = S.ownerKey, db = W.db;
+  const [uSnap, pSnap, mSnap, meSnap] = await Promise.all([
+    db.ref('users/' + key).once('value').catch(() => null),
+    db.ref('accounts/profiles/' + key).once('value').catch(() => null),
+    db.ref('accounts/profileMedia/' + key).once('value').catch(() => null),
+    S.isOwner ? null : db.ref('users/' + W.me.key + '/friends').once('value').catch(() => null)
+  ]);
+  S.U = (uSnap && uSnap.val()) || {};
+  S.profile = (pSnap && pSnap.val()) || {};
+  S.media = (mSnap && mSnap.val()) || {};
+  S.myFriends = S.isOwner ? (S.U.friends || {}) : ((meSnap && meSnap.val()) || {});
+  if (!S.isOwner) {
+    // relation comes from the owner's own friends list (Settings): friend entry, plus the close_friend tick
+    const mine = W.me.friendCode, f = mine && S.U.friends && S.U.friends[mine];
+    S.rel = f ? (f.close_friend === true ? 2 : 1) : 0;
+  }
+  applyTheme();
+  if (canSee('tracking')) S.trackP = loadTracking(); else S.tracking = null;
+  loadMobile();
+}
+
+/* mobile games progress: Firestore user/{friendCode}/platform/mobile/game/{game}.progress (written by the games in /Mobilegames) */
+async function loadMobile() {
+  S.mobileProg = {};
+  const code = ownerCode(); if (!code) return;
+  try {
+    const fs = await W.loadFirestore(), snap = await fs.collection('user').doc(code).collection('platform').doc('mobile').collection('game').get();
+    snap.forEach(d => { const v = d.data() || {}; if (v.progress) S.mobileProg[d.id] = v.progress; });
+  } catch (e) { console.warn('[profile] mobile', e && (e.code || e.message)); }
+  if (!$('#profile-root').hidden) render();
+}
+
+function applyTheme() {
+  const p = S.profile, b = document.body;
+  b.style.setProperty('--accent', p.accent || S.U.primary_color || '#ff5f1f');
+  b.style.setProperty('--dim', String(p.bgDim != null ? p.bgDim : .55));
+  const bg = S.media.bg || '';
+  const ok = /^(data:image\/|https:\/\/)/.test(bg);
+  $('#bg-layer').style.setProperty('--bg-img', ok ? `url("${bg.replace(/"/g, '%22')}")` : 'none');
+  b.classList.toggle('has-bg', ok);
+}
+
+/* ---------- one card per game: the same title (PS4/PS5 editions, repeated syncs, different save docs) collapses to the furthest-along entry ---------- */
+const normTitle = (t) => String(t || '').toLowerCase().replace(/[\u2122\u00ae\u00a9]/g, '').replace(/[^a-z0-9]+/g, ' ').replace(/\b(ps4|ps5|xbox one|xbox series x s|xbox series x|windows edition|pc|playstation (4|5)|director s cut|game of the year|goty|edition|digital|standard)\b/g, '').replace(/\s+/g, ' ').trim();
+function dedupeGames(list, keyOf, better) {
+  const seen = new Map();
+  for (const g of list) {
+    const k = keyOf(g); if (!k) { seen.set(Symbol(), g); continue; }
+    const cur = seen.get(k);
+    if (!cur || better(g, cur)) seen.set(k, g);
+  }
+  return [...seen.values()];
+}
+const furtherAlong = (a, b) => (a.playing && !b.playing) || (!(b.playing && !a.playing) && (num(a.progress) > num(b.progress) || (num(a.progress) === num(b.progress) && num(a.updated || a.lastPlayed) > num(b.updated || b.lastPlayed))));
+
+/* ---------- platform loaders: everything from ONE place, Firestore user/{friendCode}/platform/{ps|xbox|steam} ----------
+   Written by the PlayStation, Xbox and Steam sync jobs (Claude-Test/sync/friend-games.js). One summary doc per platform,
+   so a profile costs a handful of reads; each game's full trophy list is on user/{code}/platform/{p}/game/{gameId}.sync */
+const FS_PLAT = { psn:'ps', xbox:'xbox', steam:'steam' };
+const ownerCode = () => String(S.U.friend_code || '').toUpperCase();
+async function loadPlatforms() {
+  S.plat = {};
+  const code = ownerCode(); if (!code) return;
+  let fs = null; try { fs = await W.loadFirestore(); } catch (e) {} if (!fs) return;
+  await Promise.all(Object.keys(PLATS).map(async (p) => {
+    if (!platId(p)) return;
+    if (!S.isOwner && !canSee(p)) return;                // never even fetch what the viewer may not see
+    let d = null;
+    try { const doc = await fs.collection('user').doc(code).collection('platform').doc(FS_PLAT[p]).get(); if (doc.exists) d = fromSummary(p, doc.data() || {}, code); }
+    catch (e) { console.warn('[profile]', p, e); }
+    if (d && Array.isArray(d.games)) d.games = dedupeGames(d.games, g => normTitle(g.title), furtherAlong);
+    // a platform with nothing synced yet stays hidden; it shows up as soon as it has data
+    if (d) S.plat[p] = d; else delete S.plat[p];
+  }));
+}
+function fromSummary(p, v, code) {
+  const pr = v.profile || {}, st = pr.stats || {};
+  const games = Object.entries(v.games || {}).map(([id, g]) => ({
+    platform:p, id, code, title:g.t || id, poster:secure(g.art || ''), progress: g.p == null ? 0 : num(g.p),
+    earned: g.e == null ? undefined : g.e, total: g.n == null ? undefined : g.n,
+    hours: g.h ? g.h + ' hrs' : '', lastPlayed: g.l || '', playing: !!g.now, achievements:[] }))
+    .sort((a, b) => (b.playing - a.playing) || (num(b.lastPlayed) - num(a.lastPlayed)) || (parseFloat(b.hours) || 0) - (parseFloat(a.hours) || 0));
+  const base = { platform:p, name:pr.name || platId(p), avatar:secure(pr.avatar || ''), online:!!pr.online, currentGame:pr.currentGame || '', activity:'', games, recent:[] };
+  if (p === 'psn') return { ...base,
+    stats:[['Level', st.level || '--'], ['Trophies', num(st.trophies).toLocaleString()], ['Games', st.games || games.length]],
+    breakdown:{ platinum:num(st.platinum), gold:num(st.gold), silver:num(st.silver), bronze:num(st.bronze) },
+    recent: arr(pr.recent).map(t => ({ name:t.n, icon:t.i, gameTitle:t.g, timestamp:t.t })) };
+  if (p === 'xbox') return { ...base,
+    stats:[['Gamerscore', num(st.gamerscore).toLocaleString()], ['Recent games', games.length], ['Achievements', num(st.achievements).toLocaleString()]] };
+  return { ...base, stats:[['Games', st.games || games.length], ['Achievements', num(st.achievements).toLocaleString()], ['Perfect games', num(st.perfect)]] };
+}
+
+/* Game Companion saves (Firestore user/{key}/platform/{p}/game/{name}) */
+// Game Companion saves under the friend code (fallback: account key). Returns rows for one person.
+// Ghost Recon Wildlands "Ghost profile" card (values typed in the Game Companion; same layout as the in-game screen)
+const WL_GROUPS = [
+  ['Playstyle', [['role','Mode',''],['avgkill','Average kill distance',' m'],['tactical','Tactical','%'],['stealth','Stealth kills','%']]],
+  ['Combat', [['lifetime','Lifetime',''],['longshot','Longest shot',' m'],['precision','Precision','%'],['favweapon','Favorite weapon',''],['favweapon2','2nd favorite weapon','']]],
+  ['Support', [['revived','Teammates revived',''],['c4kills','C4 / mine kills',' kills'],['drone','Drone used','']]],
+  ['Travel', [['air','Air',''],['ground','Ground',''],['parachute','Parachute',' jumps'],['mapdisc','Map discovered','%']]]];
+function wlHas(w) { return !!w && (num(w.level) > 1 || WL_GROUPS.some(g => g[1].some(f => w['pf_' + f[0]]))); }
+function wlCard(w) {
+  const val = (k, u) => { const v = String(w['pf_' + k] || '').trim(); return v ? esc(v) + (/^\d+(\.\d+)?$/.test(v) ? esc(u) : '') : '<span class="mute">&mdash;</span>'; };
+  return `<div style="margin:.2rem 0 .9rem;padding:.8rem;border-radius:.8rem;background:rgba(127,127,127,.1)">
+    <div style="display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.5rem"><div style="font-weight:800"><i class="fas fa-crosshairs"></i> Wildlands profile</div><div class="mono" style="font-weight:800;color:#67e8f9">Level ${num(w.level) || 1}</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.7rem">
+    ${WL_GROUPS.map(g => `<div><div class="mute" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">${g[0]}</div>${g[1].map(f => `<div style="display:flex;justify-content:space-between;gap:.6rem;font-size:.82rem;padding:.12rem 0"><span class="mute">${f[1]}</span><b>${val(f[0], f[2])}</b></div>`).join('')}</div>`).join('')}
+    </div></div>`;
+}
+async function readTracking(fs, ids) {
+  const out = [], seen = new Set();
+  for (const id of ids) for (const p of Object.keys(TRACK_PLATS)) {
+    let snap; try { snap = await fs.collection('user').doc(id).collection('platform').doc(p).collection('game').where('updatedAt', '>', new Date(0)).get(); } catch (e) { continue; }
+    snap.forEach(doc => {
+      const sk = p + '|' + doc.id; if (seen.has(sk)) return; seen.add(sk);
+      const d = doc.data() || {};
+      const sets = [d.trophies, d.medals, d.missions].filter(Boolean).map(o => Object.values(o));
+      const total = sets.reduce((n, a) => n + a.length, 0);
+      const done = sets.reduce((n, a) => n + a.filter(x => x && (x.earned || x.completed)).length, 0)
+                 + Object.values(d.collectibles || {}).reduce((n, c) => n + Object.values((c && c.items) || {}).filter(i => i && i.collected).length, 0);
+      out.push({ title: /^wildlands$/i.test(doc.id) ? 'Ghost Recon Wildlands' : doc.id, platform:({ ps:'PlayStation', xbox:'Xbox', steam:'Steam', pc:'PC' })[p], status: total && done >= total ? 'Completed' : (done ? 'In progress' : 'Started'),
+        progress: total ? Math.round(Math.min(done, total) / total * 100) : null, poster:'', note: total ? `${Math.min(done, total)}/${total} tracked` : '', updated:d.updatedAt || 0, wl: /wildlands/i.test(doc.id) && wlHas(d.wallet) ? d.wallet : null, empty: /wildlands/i.test(doc.id) && !wlHas(d.wallet) });
+    });
+  }
+  out.sort((a, b) => num(b.updated) - num(a.updated));
+  // same game saved twice (or on two platforms with identical progress): show it once
+  return dedupeGames(dedupeGames(out, t => normTitle(t.title) + '|' + t.platform, furtherAlong), t => normTitle(t.title) + '|' + (t.progress == null ? 'x' : t.progress), furtherAlong);
+}
+const idsFor = (code) => [String(code || '').toUpperCase()].filter(Boolean);   // everything is saved under the friend code
+
+async function loadTracking() {
+  try {
+    const fs = await W.loadFirestore();
+    S.tracking = await readTracking(fs, idsFor(S.U.friend_code));
+  } catch (e) { console.warn('[tracking]', e); S.tracking = { error:true }; }
+  if (!$('#profile-root').hidden) render();
+  loadFriendProgress();
+}
+
+/* Friends' progress: each friend's tracked games, honouring THEIR tracking_scope (same rule as the Game Companion) */
+async function loadFriendProgress() {
+  if (!S.isOwner || !canSee('tracking')) { S.friendsProg = null; return; }
+  try {
+    const fs = await W.loadFirestore(), friends = S.U.friends || {};
+    S.friendsProg = await Promise.all(Object.entries(friends).map(async ([fk, fo]) => {
+      fo = fo || {}; const code = String(fo.friend_code || fk).toUpperCase();
+      const key = await W.ownerKeyOfCode(code);
+      let prof = {}; if (key) { try { prof = (await W.db.ref('users/' + key).once('value')).val() || {}; } catch (e) {} }
+      const name = prof.username || prof.display_name || fo.username || code, scope = prof.tracking_scope || 'friends';
+      let ok = scope !== 'private';
+      if (scope === 'close') ok = !!(prof.friends && prof.friends[S.U.friend_code] && prof.friends[S.U.friend_code].close_friend === true);
+      if (!ok) return { code, name, hidden:true, games:[] };
+      return { code, name, games:(await readTracking(fs, idsFor(code))).slice(0, 4) };
+    }));
+  } catch (e) { console.warn('[friends progress]', e); S.friendsProg = null; }
+  if (!$('#profile-root').hidden) render();
+}
+
+/* friends' tracking lives inside the same Game tracking card as yours (same rows, same colours) */
+function friendsInner() {
+  if (!S.friendsProg) return '';
+  const head = `<div class="h2" style="margin:1rem 0 .5rem"><i class="fas fa-user-group"></i> Friends</div>`;
+  if (!S.friendsProg.length) return head + '<div class="mute" style="font-size:.85rem">No friends added yet.</div>';
+  return head + S.friendsProg.map(f => `<div style="margin-bottom:.8rem"><div style="font-weight:800;margin-bottom:.3rem"><a href="profile.html#${encodeURIComponent(f.code)}" onclick="setTimeout(()=>location.reload(),0)" style="color:inherit;text-decoration:none" title="Open ${esc(f.name)}'s profile">${esc(f.name)} <i class="fas fa-chevron-right" style="font-size:.7em;opacity:.6"></i></a></div>` +
+    (f.hidden ? '<div class="mute" style="font-size:.8rem">Keeps their tracking private.</div>' : f.games.length ? trackingRows(f.games) : '<div class="mute" style="font-size:.8rem">No tracked games yet.</div>') + '</div>').join('');
+}
+
+/* progress colour: 0% red -> yellow -> green -> blue -> diamond blue at 100%, blended smoothly in between */
+const PCT_STOPS = [[0, [239, 68, 68]], [25, [250, 204, 21]], [50, [34, 197, 94]], [75, [59, 130, 246]], [100, [103, 232, 249]]];
+function pctColor(p) {
+  p = Math.max(0, Math.min(100, +p || 0));
+  for (let i = 1; i < PCT_STOPS.length; i++) {
+    const a = PCT_STOPS[i - 1], b = PCT_STOPS[i]; if (p <= b[0]) { const f = (p - a[0]) / (b[0] - a[0]); return 'rgb(' + a[1].map((v, k) => Math.round(v + (b[1][k] - v) * f)).join(',') + ')'; }
+  }
+  return 'rgb(103,232,249)';
+}
+const pctBar = (p) => { const c = pctColor(p), d = p >= 100; return `<div class="bar" style="margin-top:.35rem"><i style="width:${Math.min(100, p)}%;background:${d ? 'linear-gradient(90deg,#67e8f9,#e0faff,#67e8f9)' : c};${d ? 'box-shadow:0 0 8px #67e8f9;' : ''}"></i></div>`; };
+
+function watchPresence() {
+  if (!W.me || !S.ownerKey) return;
+  W.db.ref('accounts/presence/' + S.ownerKey).on('value', s => { S.presence = s.val(); renderHeroStatus(); });
+  // mobile-games status (game_rooms/presence/{friendCode}, refreshed by the games every ~minute)
+  const code = String(S.U.friend_code || '').toUpperCase();
+  if (code) { const poll = () => W.db.ref('mobilegames/rooms/presence/' + code).once('value').then(s => { const v = s.val(); S.mobile = v && v.t && Date.now() - v.t < 150000 ? v : null; renderHeroStatus(); }).catch(() => {}); poll(); setInterval(poll, 30000); }
+}
+
+/* ---------- render ---------- */
+function status(g) {
+  if (g.playing) return { t:'Playing now', c:'live' };
+  if (g.progress >= 100) return { t:'Completed', c:'done' };
+  if (g.progress > 0) return { t:'In progress', c:'prog' };
+  return { t:'Started', c:'' };
+}
+
+function render() {
+  const p = S.profile, vp = visiblePlats();
+  if (S.tab !== 'all' && S.tab !== 'tracking' && !vp.includes(S.tab)) S.tab = 'all';
+  const root = $('#profile-root');
+  const canTrack = canSee('tracking');
+  const avatar = avatarOf() || (vp.map(x => S.plat[x].avatar).find(Boolean)) || (S.isOwner && W.me.photoURL) || ph(250, 250, displayName()[0]);
+  const code = String(S.U.friend_code || '').toUpperCase();
+
+  // top actions
+  const ta = $('#top-actions'); ta.innerHTML = '';
+  if (S.isOwner) {
+    ta.insertAdjacentHTML('beforeend', `<select class="btn" id="viewas" title="Preview how others see your profile"><option value="">Viewing as: Me</option>${REL_LABEL.map((l, i) => `<option value="${i}" ${S.viewAs === i ? 'selected' : ''}>Preview: ${l}</option>`).join('')}</select><button class="btn primary" id="edit-btn"><i class="fas fa-pen"></i> Edit</button>`);
+    $('#viewas').onchange = (e) => { S.viewAs = e.target.value === '' ? null : Number(e.target.value); applyTheme(); render(); };
+    $('#edit-btn').onclick = openEdit;
+  } else {
+    ta.insertAdjacentHTML('beforeend', W.me ? `<a class="btn" href="profile.html"><i class="fas fa-user"></i> My profile</a>` : `<a class="btn" href="profile.html"><i class="fas fa-right-to-bracket"></i> Sign in</a>`);
+  }
+
+  const canMsg = !S.isOwner && (S.rel >= 1 || Object.keys(S.myFriends).some(k => String(k).toUpperCase() === code || String((S.myFriends[k] || {}).friend_code || '').toUpperCase() === code));
+  const tabsHtml = [`<button class="tab ${S.tab === 'all' ? 'active' : ''}" data-tab="all"><i class="fas fa-layer-group"></i> All</button>`]
+    .concat(vp.map(x => `<button class="tab ${S.tab === x ? 'active' : ''}" data-tab="${x}"><i class="${PLATS[x].icon}"></i> ${PLATS[x].name}</button>`))
+    .concat(canTrack && S.tracking ? [`<button class="tab ${S.tab === 'tracking' ? 'active' : ''}" data-tab="tracking"><i class="fas fa-bullseye"></i> Game Tracking</button>`] : []).join('');
+
+  root.innerHTML = `
+    <section class="card" style="padding:1.25rem;display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap">
+      <img class="avatar" src="${esc(avatar)}" alt="" onerror="this.src='${ph(250, 250, '?')}'">
+      <div style="flex:1;min-width:230px">
+        <h1 style="font-size:clamp(1.6rem,4vw,2.6rem);text-transform:uppercase;letter-spacing:-.03em;color:var(--accent)">${esc(displayName())}</h1>
+        <div class="mute" style="font-weight:700">${S.U.username ? '@' + esc(S.U.username) : ''}</div>
+        ${p.bio ? `<p style="margin:.6rem 0;max-width:60ch;white-space:pre-wrap">${esc(p.bio)}</p>` : ''}
+        <div id="hero-status" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem"></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem">
+          ${canMsg ? `<button class="btn primary" id="msg-btn"><i class="fas fa-comment-dots"></i> Message</button>` : ''}
+          ${S.isOwner && code ? `<button class="btn" id="code-btn"><i class="fas fa-copy"></i> Friend code ${esc(code)}</button>` : ''}
+        </div>
+      </div>
+    </section>
+
+    ${vp.length || canTrack ? `<nav class="tabs" id="tabs">${tabsHtml}</nav>` : ''}
+    <div id="tab-body" style="display:flex;flex-direction:column;gap:1rem"></div>
+    ${emptyHint(vp)}
+  `;
+  renderHeroStatus();
+  root.querySelectorAll('.tab').forEach(t => t.onclick = () => { S.tab = t.dataset.tab; render(); });
+  const mb = $('#msg-btn'); if (mb) mb.onclick = () => W.openChat(S.ownerKey, displayName());
+  const cb = $('#code-btn'); if (cb) cb.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(code); toast('Friend code copied'); };
+  renderTab(vp);
+}
+
+function emptyHint(vp) {
+  if (vp.length || (canSee('tracking') && S.tracking)) return '';
+  return `<div class="card mute" style="padding:1.5rem;text-align:center">${S.isOwner ? 'Nothing is showing yet. Click <b>Edit</b> to add your PlayStation, Xbox or Steam IDs and choose who can see them.' : 'Nothing has been shared with you yet.'}</div>`;
+}
+
+function renderHeroStatus() {
+  const box = $('#hero-status'); if (!box) return;
+  const vp = visiblePlats(); let h = '';
+  if (canSee('activity')) {
+    const online = (S.presence && S.presence.online) || !!S.mobile || vp.some(x => S.plat[x].online);
+    const now = vp.map(x => S.plat[x]).find(x => x.online && x.currentGame);
+    h += `<span class="chip ${online ? 'live' : ''}"><i class="fas fa-circle" style="font-size:.5rem"></i> ${online ? 'Online' : (S.presence && S.presence.ts ? 'Seen ' + ago(S.presence.ts) : 'Offline')}</span>`;
+    if (now) h += `<span class="chip live"><i class="fas fa-gamepad"></i> ${esc(now.currentGame)}${now.activity ? ' &bull; ' + esc(now.activity) : ''}</span>`;
+    if (S.mobile && S.mobile.title) h += `<span class="chip live"><i class="fas fa-dice"></i> ${esc(S.mobile.title)}${S.mobile.status ? ' &bull; ' + esc(S.mobile.status) : ''}</span>`;
+  }
+  if (S.isOwner) h += `<span class="chip">${S.viewAs === null ? 'This is you' : REL_LABEL[S.viewAs]}</span>`;
+  else h += `<span class="chip">${['Public','Friend','Close friend'][S.rel]}</span>`;
+  box.innerHTML = h;
+}
+
+function statsHtml(vp, tab) {
+  const list = tab === 'all' ? vp : [tab];
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(${tab === 'all' ? 260 : 150}px,1fr));gap:.75rem">` + list.map(x => {
+    const d = S.plat[x]; if (!d) return '';
+    const bd = d.breakdown;
+    return `<div class="card" style="padding:1rem">
+      <div class="h2" style="margin-bottom:.6rem"><i class="${PLATS[x].icon}"></i> ${esc(PLATS[x].name)} <span class="mute" style="text-transform:none;letter-spacing:0">&bull; ${esc(d.name)}</span></div>
+      <div style="display:grid;grid-template-columns:repeat(${d.stats.length},1fr);gap:.5rem;text-align:center">
+        ${d.stats.map(([k, v]) => `<div><div class="mono" style="font-size:1.35rem;font-weight:800">${esc(v)}</div><div class="stat k" style="padding:0">${esc(k)}</div></div>`).join('')}
+      </div>
+      ${bd && canSee('trophies') ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.25rem;margin-top:.8rem;padding-top:.7rem;border-top:1px solid var(--line);text-align:center;font-weight:800" class="mono">
+        <div><i class="fas fa-trophy" style="color:#93c5fd"></i><br>${bd.platinum}</div><div><i class="fas fa-trophy" style="color:#fbbf24"></i><br>${bd.gold}</div>
+        <div><i class="fas fa-trophy" style="color:#94a3b8"></i><br>${bd.silver}</div><div><i class="fas fa-trophy" style="color:#b45309"></i><br>${bd.bronze}</div></div>` : ''}
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function gameCard(g, idx) {
+  const st = status(g), has = g.total != null && g.earned != null;
+  return `<div class="game" data-g="${idx}" tabindex="0">
+    <img loading="lazy" src="${esc(g.poster || ph(300, 450, g.title))}" alt="" onerror="this.src='${ph(300, 450, 'GAME')}'">
+    <span class="pf ${g.platform}"><i class="${PLATS[g.platform].icon}"></i></span>
+    <span class="st ${st.c}">${st.t}</span>
+    <div class="ov"><div class="ttl">${esc(g.title)}</div>
+      <div class="bar"><i style="width:${Math.min(100, g.progress)}%"></i></div>
+      <div class="mono" style="font-size:.68rem;display:flex;justify-content:space-between"><span>${g.progress}%</span><span>${has ? esc(g.earned) + '/' + esc(g.total) : esc(g.hours)}</span></div>
+    </div></div>`;
+}
+
+let shownGames = [];
+function renderTab(vp) {
+  const body = $('#tab-body'); if (!body) return;
+  if (S.tab === 'tracking') { body.innerHTML = trackingHtml(); return; }
+  const tab = S.tab, plats = tab === 'all' ? vp : [tab];
+  let html = vp.length ? statsHtml(vp, tab) : '';
+  shownGames = [];
+  const sections = plats.map(x => {
+    const d = S.plat[x]; if (!d) return ''; if (d.empty) return `<section class="card mute" style="padding:1rem"><i class="${PLATS[x].icon}"></i> No synced ${esc(PLATS[x].name)} data found for <b>${esc(d.name)}</b> yet. Check the ID in Settings is exact.</section>`; if (!d.games.length) return '';
+    const gs = d.games.slice(0, tab === 'all' ? 6 : 300);
+    const start = shownGames.length; shownGames.push(...gs);
+    const cur = gs.find(g => g.playing);
+    return `<section class="card" style="padding:1rem">
+      <div class="h2" style="margin-bottom:.8rem"><i class="${PLATS[x].icon}"></i> ${tab === 'all' ? esc(PLATS[x].name) + ' &mdash; ' : ''}${cur ? 'Current &amp; recent games' : 'Recent games'}</div>
+      <div class="games">${gs.map((g, i) => gameCard(g, start + i)).join('')}</div></section>`;
+  }).join('');
+  html += sections;
+  if (tab === 'all' && (viewRank() >= 1 || canSee('tracking'))) html += mobileHtml();
+
+  // latest trophy unlocks (PSN)
+  if (canSee('trophies') && plats.includes('psn') && S.plat.psn && S.plat.psn.recent.length) {
+    html += `<section class="card" style="padding:1rem"><div class="h2"><i class="fas fa-trophy"></i> Latest trophy unlocks</div>` +
+      S.plat.psn.recent.slice(0, 5).map(t => `<div class="row">
+        <img src="${esc(secure(t.icon || ''))}" alt="" onerror="this.src='${ph(64, 64, '🏆')}'">
+        <div style="min-width:0;flex:1"><div style="font-weight:800" class="nowrap-trunc">${esc(t.name || 'Trophy')}</div>
+        <div class="mute nowrap-trunc" style="font-size:.78rem">${esc(t.gameTitle || t.game || '')}</div></div>
+        <div class="mute" style="font-size:.75rem;text-align:right">${esc(ago(t.earnedDate || t.timestamp))}</div></div>`).join('') + '</section>';
+  }
+  if (canSee('tracking') && S.tracking && !S.tracking.error && S.tracking.length) {   // tracking is per platform but shown on every tab
+    html += `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${trackingRows(S.tracking.slice(0, 5))}
+      <button class="btn" style="margin-top:.7rem" data-tab="tracking" id="more-track">See all</button>${friendsInner()}</section>`;
+  }
+  body.innerHTML = html;
+  body.querySelectorAll('.game').forEach(c => { c.onclick = () => openGame(shownGames[c.dataset.g]); c.onkeydown = (e) => { if (e.key === 'Enter') c.click(); }; });
+  const mt = $('#more-track'); if (mt) mt.onclick = () => { S.tab = 'tracking'; render(); };
+}
+
+/* ---------- mobile games progress (S.mobileProg, loaded from the friend code by loadMobile) ---------- */
+const MG = { farm: ['🌾', 'Neighborly Acre'], farm_mp: ['🌾', 'Neighborly Acre (multiplayer)'], survive: ['🏚️', 'Tile Survival'], wahoo: ['🎲', 'Wahoo'], tycoon: ['🏙️', 'Monopoly'],
+  frogger: ['🐸', 'Frogger'], race: ['🏎️', 'Werewolf Racing'], battleship: ['🚢', 'Battleship'], mahjong: ['🀄', 'Tile Match'] };
+function mobileHtml() {
+  const mp = S.mobileProg || {}, keys = Object.keys(mp).filter(k => mp[k]).sort((a, b) => (mp[b].t || 0) - (mp[a].t || 0));
+  if (!keys.length) return `<section class="card mute" style="padding:1rem"><div class="h2"><i class="fas fa-mobile-screen"></i> Mobile games</div>No mobile game progress yet.${S.isOwner ? ' Play Neighborly Acre, Tile Survival or the board games and it shows up here.' : ''}</section>`;
+  const n = v => Number(v || 0).toLocaleString();
+  const rows = keys.map(k => {
+    const d = mp[k], m = MG[k] || ['🎮', k], when = d.t ? ago(d.t) : '';
+    let line = '', bar = '';
+    if (k === 'farm' || k === 'farm_mp') { line = `Level <b>${n(d.level)}</b> · $${n(d.coins)} · ${n(d.fields)} field${d.fields == 1 ? '' : 's'} · ${n(d.animals)} animals · ${n(d.harvested)} crops harvested`; if (d.achTotal) { const p = Math.round((d.ach || 0) / d.achTotal * 100); line += ` · 🏆 ${n(d.ach)}/${n(d.achTotal)} achievements`; bar = pctBar(p); } }
+    else if (k === 'survive') { line = `🔌 Power Plant Lv<b>${n(d.pp)}</b> · ${n(d.zones)}/25 areas · ${n(d.buildings)} building levels · ${n(d.kills)} infected defeated · mission ${n(d.mission)}${d.heroes ? ' · ' + esc(d.heroes) : ''}${d.raids ? ' · ⚔️ ' + n(d.raids) + ' raided' : ''}`; bar = pctBar(Math.round((d.zones || 0) / 25 * 100)); }
+    else if (d.kind === 'record') { const w = (d.w || 0) + (d.bw || 0), l = (d.l || 0) + (d.bl || 0); line = `vs friends <b>${n(d.w)}–${n(d.l)}</b> · vs bots ${n(d.bw)}–${n(d.bl)}`; bar = w + l ? pctBar(Math.round(w / (w + l) * 100)) : ''; }
+    else line = esc(JSON.stringify(d)).slice(0, 120);
+    return `<div class="row"><div style="width:48px;height:48px;border-radius:.6rem;background:rgba(127,127,127,.18);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex:none">${m[0]}</div>
+      <div style="min-width:0;flex:1"><div style="font-weight:800">${esc(m[1])} <span class="mute" style="font-weight:500;font-size:.75rem">${esc(when)}</span></div><div class="mute" style="font-size:.78rem">${line}</div>${bar}</div></div>`;
+  }).join('');
+  return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-mobile-screen"></i> Mobile games</div>${rows}</section>`;
+}
+function trackingRows(items) {
+  return items.map(t => `<div class="row">
+    ${t.poster ? `<img src="${esc(t.poster)}" alt="" onerror="this.style.display='none'">` : '<div style="width:48px;height:48px;border-radius:.6rem;background:rgba(127,127,127,.2);display:flex;align-items:center;justify-content:center;flex:none"><i class="fas fa-gamepad mute"></i></div>'}
+    <div style="min-width:0;flex:1"><div style="font-weight:800" class="nowrap-trunc">${esc(t.title)}</div>
+      <div class="mute" style="font-size:.75rem">${[t.platform, t.status].filter(Boolean).map(esc).join(' &bull; ')}${t.note ? ' &mdash; ' + esc(t.note) : ''}</div>
+      ${t.progress != null ? pctBar(t.progress) : ''}</div>
+    ${t.progress != null ? `<div class="mono" style="font-weight:800;color:${t.progress >= 100 ? '#67e8f9' : pctColor(t.progress)}">${t.progress}%</div>` : ''}</div>${t.wl ? wlCard(t.wl) : (t.empty && S.isOwner ? wlCard({}) + `<div class="mute" style="font-size:.75rem;margin:-.5rem 0 .8rem">Fill in My Wildlands profile in the Game Companion and this card updates.</div>` : '')}`).join('');
+}
+function trackingHtml() {
+  if (!S.tracking || S.tracking.error) return `<div class="card mute" style="padding:1.5rem;text-align:center">Game tracking isn't available right now.</div>`;
+  return `<section class="card" style="padding:1rem"><div class="h2" style="margin-bottom:.6rem"><i class="fas fa-bullseye"></i> Game tracking</div>${S.tracking.length ? trackingRows(S.tracking) : '<div class="mute" style="font-size:.85rem">No tracked games found yet.</div>'}${friendsInner()}</section>`;
+}
+
+/* ---------- a game's full trophy / achievement list: user/{code}/platform/{ps|xbox|steam}/game/{gameId}.sync.list ---------- */
+async function syncedList(code, p, gameId) {
+  if (!code || !gameId) return null;
+  try {
+    const fs = await W.loadFirestore();
+    const d = await fs.collection('user').doc(String(code).toUpperCase()).collection('platform').doc(FS_PLAT[p]).collection('game').doc(gameId).get();
+    return d.exists ? (((d.data() || {}).sync || {}).list || null) : null;
+  } catch (e) { return null; }
+}
+/** Friends who share their PlayStation name (their own privacy setting), with their trophies for this game, from their friend code */
+async function friendTrophyMaps(gameId) {
+  if (!W.me) return [];
+  const friends = S.isOwner ? (S.U.friends || {}) : (S.myFriends || {}), out = [];
+  await Promise.all(Object.entries(friends).map(async ([fk, fo]) => {
+    try {
+      fo = fo || {}; const code = String(fo.friend_code || fk).toUpperCase(), key = await W.ownerKeyOfCode(code); if (!key) return;
+      const prof = (await W.db.ref('users/' + key).once('value')).val() || {}, tag = String(prof.psn_username || '').trim(), sc = prof.psn_username_scope || 'private';
+      if (!tag || sc === 'private') return;
+      if (sc === 'close' && !(prof.friends && prof.friends[S.viewerCode || W.me.friendCode] && prof.friends[S.viewerCode || W.me.friendCode].close_friend === true)) return;
+      const list = await syncedList(code, 'psn', gameId); if (!list) return;
+      const map = {}; list.forEach(t => { map[String(t.id)] = { earned: !!t.e, timestamp: t.t }; });
+      out.push({ code, name: prof.username || prof.display_name || tag, map });
+    } catch (e) {}
+  }));
+  return out;
+}
+
+/* ---------- game modal ---------- */
+window.closeModal = () => $('#modal').classList.remove('open');
+async function openGame(g) {
+  if (!g) return;
+  const st = status(g), m = $('#modal-body');
+  m.innerHTML = `<div style="display:flex;gap:1rem;padding:1rem;align-items:center;border-bottom:1px solid var(--line)">
+      <img src="${esc(g.poster || ph(300, 450, g.title))}" style="width:84px;border-radius:.7rem;aspect-ratio:2/3;object-fit:cover" alt="">
+      <div style="flex:1;min-width:0"><div class="h2"><i class="${PLATS[g.platform].icon}"></i> ${esc(PLATS[g.platform].name)} &bull; ${st.t}</div>
+        <h2 style="font-size:1.3rem;margin:.25rem 0">${esc(g.title)}</h2>
+        <div class="bar"><i style="width:${Math.min(100, g.progress)}%"></i></div>
+        <div class="mono mute" style="font-size:.78rem;margin-top:.3rem">${g.progress}%${g.earned != null && g.total != null ? ` &bull; ${esc(g.earned)}/${esc(g.total)}` : ''}${g.hours ? ' &bull; ' + esc(g.hours) : ''}${g.lastPlayed ? ' &bull; ' + esc(ago(g.lastPlayed)) : ''}</div></div>
+      <button class="btn" onclick="closeModal()" aria-label="Close"><i class="fas fa-times"></i></button></div>
+    <div id="trophy-list" style="padding:1rem" class="mute">${canSee('trophies') ? 'Loading trophies&hellip;' : 'Trophy list is private.'}</div>`;
+  $('#modal').classList.add('open');
+  if (!canSee('trophies')) return;
+
+  let items = [], friendsMaps = [], note = '';
+  if (FS_PLAT[g.platform]) {
+    const [mine, fr] = await Promise.all([syncedList(g.code || ownerCode(), g.platform, g.id), g.platform === 'psn' ? friendTrophyMaps(g.id) : []]);
+    friendsMaps = fr.filter(f => String(f.code).toUpperCase() !== ownerCode());
+    items = arr(mine).map(t => ({ id:String(t.id), name:t.n || 'Trophy', desc:t.d || (t.h ? 'Hidden' : ''), icon:secure(t.i || ''), earned:!!t.e,
+      at:t.t || '', rarity: t.rare != null ? t.rare + '%' : '', rank:t.r || '', prog:t.pr || '' }));
+    if (!items.length) note = 'The trophy list for this game has not been synced yet.';
+  } else {
+    items = g.achievements.map(a => ({ name:a.name || a.title, desc:a.description || a.desc, icon:secure(a.icon || a.image || ''), earned:!!(a.earned ?? a.achieved ?? a.unlocked), at:a.earnedAt || a.unlockTime || '' }));
+  }
+  const box = $('#trophy-list');
+  if (!items.length) { box.textContent = note || 'No trophy/achievement list available for this game yet.'; return; }
+  items.sort((a, b) => ((b.earned ? 1 : 0) - (a.earned ? 1 : 0)) || ((Number(b.at) || 0) - (Number(a.at) || 0)));
+  box.classList.remove('mute');
+  const earnedN = items.filter(t => t.earned).length;
+  const frEarned = (f) => items.filter(t => f.map[t.id] && f.map[t.id].earned).length;
+  let head = (note ? `<div class="mute" style="font-size:.78rem;margin-bottom:.5rem">${esc(note)}</div>` : '') + `<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem"><span class="chip live">${esc(S.U.username || 'Them')}: ${earnedN}/${items.length} earned</span>` +
+    friendsMaps.map(f => `<span class="chip">${esc(f.name)}: ${frEarned(f)}/${items.length}</span>`).join('') + '</div>';
+  box.innerHTML = head + items.map(t => {
+    const who = friendsMaps.filter(f => t.id && f.map[t.id] && f.map[t.id].earned);
+    return `<div class="row" style="${t.earned ? '' : 'opacity:.6'}">
+      <img src="${esc(t.icon)}" alt="" onerror="this.src='${ph(64, 64, '🏆')}'">
+      <div style="min-width:0;flex:1"><div style="font-weight:800">${esc(t.name)}${t.rank ? ` <span class="mute" style="font-size:.7rem;font-weight:600">${esc(String(t.rank).toUpperCase())}${t.rarity ? ' &bull; ' + esc(t.rarity) : ''}</span>` : ''}</div><div class="mute" style="font-size:.78rem">${esc(t.desc || '')}</div>
+      ${t.earned && t.at ? `<div style="font-size:.72rem;color:var(--ok)">${esc(fmtDate(t.at))}</div>` : ''}${t.prog ? `<div class="mono mute" style="font-size:.72rem">Progress ${esc(t.prog)}</div>` : ''}
+      ${who.length ? `<div style="font-size:.72rem;margin-top:.2rem">Friends earned: ${who.map(f => esc(f.name)).join(', ')}</div>` : ''}</div>
+      <span class="chip ${t.earned ? 'live' : ''}">${t.earned ? 'Earned' : 'Locked'}</span></div>`;
+  }).join('');
+}
+
+function compressImage(file, maxW, quality, maxBytes) {
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      let w = Math.min(maxW, img.width), h = Math.round(img.height * (w / img.width)), q = quality, out;
+      const c = document.createElement('canvas');
+      for (let i = 0; i < 6; i++) {
+        c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h);
+        out = c.toDataURL('image/jpeg', q);
+        if (out.length * 0.75 <= maxBytes) break;
+        q = Math.max(.4, q - .1); w = Math.round(w * .85); h = Math.round(h * .85);
+      }
+      URL.revokeObjectURL(url);
+      out.length * 0.75 <= maxBytes ? resolve(out) : reject(new Error('Image is too large even after compression'));
+    };
+    img.onerror = () => reject(new Error('Could not read that image'));
+    img.src = url;
+  });
+}
+
+
+function openEdit() {
+  const p = S.profile, pv = p.privacy || {};
+  S.edit = { bg: S.media.bg || '' };
+  const d = $('#drawer');
+  const row = (k, label, icon, val) => `<div class="priv"><span><i class="${icon}" style="width:1.4rem"></i>${label}</span>
+      <select class="fld-sel" data-sec="${k}" style="background:rgba(127,127,127,.14);border:1px solid var(--line);border-radius:.6rem;padding:.5rem">${LEVELS.map(([v, l]) => `<option value="${v}" ${val === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>`;
+  const scopeLabel = (s) => (LEVELS.find(l => l[0] === s) || [0, 'Only me'])[1];
+  d.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:1.2rem;text-transform:uppercase">Edit profile</h2>
+      <button class="btn" id="ed-close" aria-label="Close"><i class="fas fa-times"></i></button></div>
+
+    <div class="h2" style="margin:.5rem 0">About you</div>
+    <div class="fld"><label>Display name (blank = your username)</label><input type="text" id="ed-name" maxlength="40" value="${esc(p.displayName || '')}" placeholder="${esc(S.U.username || '')}"></div>
+    <div class="fld"><label>Bio</label><textarea id="ed-bio" rows="3" maxlength="280">${esc(p.bio)}</textarea></div>
+
+    <div class="h2" style="margin:1.2rem 0 .5rem">Look</div>
+    <div class="fld"><label>Background image</label>
+      <input type="file" id="ed-bg-file" accept="image/*">
+      <input type="url" id="ed-bg-url" placeholder="&hellip;or paste an https:// image link" style="margin-top:.4rem">
+      <button class="btn danger" id="ed-bg-clear" type="button" style="margin-top:.4rem">Remove background</button></div>
+    <div class="fld"><label>Background darkness</label><input type="range" id="ed-dim" min="0" max="90" value="${Math.round((p.bgDim != null ? p.bgDim : .55) * 100)}"></div>
+    <div class="fld"><label>Accent color</label><input type="color" id="ed-accent" value="${esc(p.accent || S.U.primary_color || '#ff5f1f')}" style="height:44px;width:100%;border-radius:.7rem;border:1px solid var(--line);background:transparent"></div>
+
+    <div class="h2" style="margin:1.2rem 0 .3rem">Who can see what</div>
+    ${row('trophies', 'Trophy lists & latest unlocks', 'fas fa-trophy', pv.trophies || 'friends')}
+    ${row('activity', 'Online status & now playing', 'fas fa-signal', pv.activity || 'friends')}
+    ${row('tracking', 'Game tracking', 'fas fa-bullseye', S.U.tracking_scope || 'friends')}
+    <div class="mute" style="font-size:.8rem;margin:.8rem 0">
+      Your accounts use the privacy you already set in <a href="../security/setting.html" style="color:var(--accent)"><b>Settings</b></a>:
+      PlayStation &ndash; ${scopeLabel(S.U.psn_username_scope || 'private')}, Xbox &ndash; ${scopeLabel(S.U.xbox_gamertag_scope || 'private')}, Steam &ndash; ${scopeLabel(S.U.steam_id_scope || 'private')}.
+      Usernames, avatar, friends and close friends are managed there too.
+      Anything set to <b>Everyone</b> can be seen by people who aren't signed in, using your friend-code link.</div>
+    <div class="fld"><label>Default tab when someone opens your profile</label>
+      <select id="ed-tab"><option value="all">All platforms</option><option value="psn" ${p.defaultTab === 'psn' ? 'selected' : ''}>PlayStation</option><option value="xbox" ${p.defaultTab === 'xbox' ? 'selected' : ''}>Xbox</option><option value="steam" ${p.defaultTab === 'steam' ? 'selected' : ''}>Steam</option></select></div>
+
+    <div class="sticky-save"><button class="btn primary" id="ed-save" style="width:100%;justify-content:center"><i class="fas fa-floppy-disk"></i> Save profile</button></div>`;
+  d.classList.add('open');
+
+  $('#ed-close').onclick = () => d.classList.remove('open');
+  const preview = () => { S.media.bg = S.edit.bg; S.profile.bgDim = $('#ed-dim').value / 100; S.profile.accent = $('#ed-accent').value; applyTheme(); };
+  $('#ed-dim').oninput = preview; $('#ed-accent').oninput = preview;
+  $('#ed-bg-file').onchange = async (e) => { const f = e.target.files[0]; if (!f) return;
+    try { S.edit.bg = await compressImage(f, 1600, .78, 380000); preview(); } catch (err) { toast(err.message); } };
+  $('#ed-bg-url').onchange = (e) => { const v = e.target.value.trim(); if (v && !/^https:\/\//.test(v)) return toast('Use an https:// link'); S.edit.bg = v; preview(); };
+  $('#ed-bg-clear').onclick = () => { S.edit.bg = ''; preview(); };
+  $('#ed-save').onclick = saveProfile;
+}
+
+async function saveProfile() {
+  const btn = $('#ed-save'); btn.disabled = true;
+  try {
+    const me = W.me, db = W.db, SV = W.firebase.database.ServerValue;
+    const sec = {}; document.querySelectorAll('.fld-sel').forEach(s => sec[s.dataset.sec] = s.value);
+    const prof = { displayName:$('#ed-name').value.trim().slice(0, 40), bio:$('#ed-bio').value.trim().slice(0, 280),
+                   accent:$('#ed-accent').value, bgDim:Number($('#ed-dim').value) / 100, defaultTab:$('#ed-tab').value,
+                   privacy:{ trophies:sec.trophies, activity:sec.activity }, updatedAt:SV.TIMESTAMP };
+    await db.ref('accounts/profiles/' + me.key).update(prof);
+    await db.ref('accounts/profileMedia/' + me.key).set({ bg:S.edit.bg || null });
+    if (sec.tracking !== (S.U.tracking_scope || 'friends')) {          // same field Settings uses
+      await db.ref('users/' + me.key + '/tracking_scope').set(sec.tracking); S.U.tracking_scope = sec.tracking;
+    }
+    Object.assign(S.profile, prof); S.media = { bg:S.edit.bg };
+    me.name = displayName();
+    $('#drawer').classList.remove('open');
+    toast('Profile saved');
+    applyTheme();
+    if (canSee('tracking')) await loadTracking();
+    render();
+    publishPublic();
+  } catch (e) { console.error(e); toast('Save failed: ' + (e.code || e.message)); }
+  btn.disabled = false;
+}
+
+/* ---------- go ---------- */
+await boot();
+})();
+</script>
+</body>
+</html>

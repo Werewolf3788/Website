@@ -1,0 +1,21 @@
+# One-time tidy-up of the Realtime Database into a few groups. Manual: Actions -> "Database Regroup" -> Run workflow.
+# copy = copy old folders to the new groups (old ones kept as backup); check = counts only; cleanup = delete the old folders + pranks.
+name: Database Regroup
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'copy, check or cleanup'
+        default: check
+permissions:
+  contents: read
+jobs:
+  regroup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet google-auth requests
+      - run: python scripts/rtdb-regroup.py
+        env:
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          MODE: ${{ github.event.inputs.mode }}

@@ -1,0 +1,464 @@
+{
+ "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
+ "entries": [
+  {
+   "id": 49,
+   "date": "Nov 20",
+   "game": "recon",
+   "items": [
+    "🚨 Camp alarms: every camp has a siren. When a camp spots you, one guard runs for it. Take him down before he gets there and nobody else comes. If the alarm goes off, the nearest camps send reinforcements",
+    "Enemies now stay in their own camp: gunfire only stirs the camp it happens at, and guards only chase you to the edge of their camp (unless the alarm brought them)",
+    "🎚️ Difficulty: 🟢 Beginner, 🔵 Easy, 🟡 Normal or 🔴 Hard, on the start screen and in the pause menu. Beginner enemies hit softly, spot you slowly, go down fast and take a long time to sound the alarm"
+   ]
+  },
+  {
+   "id": 48,
+   "date": "Nov 20",
+   "game": "calm",
+   "items": [
+    "🌿 New: Calm Space, for rough days. Light a lantern with slow breathing, find the fireflies to ground yourself, stack a cairn to cool off when you're angry, and gentle memory games",
+    "🫙 A reasons jar and your own plan for hard moments, plus one-tap texts to the people you trust and help lines that are always one button away",
+    "🔒 Everything you put in Calm Space stays on your device only, with an optional PIN and a backup file"
+   ]
+  },
+  {
+   "id": 47,
+   "date": "Nov 20",
+   "game": "recon",
+   "items": [
+    "👥 Co-op: up to 4 friends in one squad. Host from the games hub (or ⏸ → 👥 Host co-op); friends tap Join on your name or type your friend code. Each friend takes an AI squadmate's place",
+    "Everyone fights the same guards, shares marks for sync shots, and can revive each other. Your XP, pickups and skills stay your own",
+    "⚡ Fast travel to a friend from the map when you're not in a firefight",
+    "💀 When your bleed-out timer runs out you choose: ⛑️ revive where you fell or ⟲ reset at the rally point. The AI squad can be switched off in the pause menu"
+   ]
+  },
+  {
+   "id": 46,
+   "date": "Nov 20",
+   "game": "recon",
+   "items": [
+    "🛡️ Every Skill Point, accessory case and medal is now guarded by its own small guard post: clear it (or sneak past) to grab what it protects",
+    "🔫 Shots you can see: muzzle flashes, bright tracers, hit puffs and enemies flinching. Recoil kicks your aim up but settles back to where you were aiming",
+    "🎖️ Your squad fights back: they open fire on anyone shooting at you, call out contacts, can get downed, and revive each other",
+    "⛑️ When you go down you're not out: a squadmate runs over and revives you before you bleed out. Revive downed squadmates yourself with E / hold □",
+    "🚙 Trucks sit on all four wheels, lean the right way on slopes and bounce over bumps; hills slow you down or speed you up",
+    "🗺️ The map shows a big YOU arrow and your squad"
+   ]
+  },
+  {
+   "id": 45,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "⚒️ New building: the Coal Mine, out in the quarry next to the coal cave (needs that area unlocked and Power Plant level 4). Its ⚒️ coal miners climb down into the cave, break the ⚫ coal seams and carry the coal up to its pile",
+    "The Coal Mine is optional: the Power Plant never waits for it to catch up"
+   ]
+  },
+  {
+   "id": 44,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "🛒 More in the Shop: 🎒 Starter Pack $1.99, 📦 Survivor Supply Crate now $4.99, 🏗️ Builder's Vault $9.99 (6,000 of each + 25 💎), 💎 Gem Pouch $2.99, ⚫ Coal Cart $1.99 and 🔥 Overdrive $8 (+50% production for 8 hours of play time, only counts down while you play)",
+    "🤝 werewolf's allies never pay more than $5 for anything"
+   ]
+  },
+  {
+   "id": 43,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "✅ After a purchase, a receipt now stays on screen: \"Payment approved by PayPal\", what you got and the PayPal order number",
+    "🧾 The 🛒 Shop lists your past purchases"
+   ]
+  },
+  {
+   "id": 42,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "⛏️ Your Smelter's miners now also break iron veins, wrecked cars and 💎 crystals, and bring back everything they give (gems and the wreck's wood too)",
+    "🏹 Farm hunters also pick berry bushes, mushrooms and beehives, and 🌳 lumberjacks chop the giant oaks",
+    "Crews walk further for the good stuff (crystals most of all), so unlocking more areas pays off even while you're busy"
+   ]
+  },
+  {
+   "id": 41,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "🕳️ A coal cave! Unlock the ⛰️ quarry east of town and walk into the cave mouth to climb down. Break the ⚫ coal seams inside, then walk onto ⬆ Exit",
+    "⚫ Coal is needed for Power Plant upgrades from level 4, and you can burn it at the Power Plant: 20 coal = +50% production from every building for 10 minutes (stacks up to 2 hours)",
+    "🛡️ Your heroes now help gather: when there's nothing to fight, each one breaks a tree, rock, find or coal seam near you and the haul is yours"
+   ]
+  },
+  {
+   "id": 40,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "🛒 New Shop button: the Survivor Supply Crate gives 2,000 wood, 2,000 food and 2,000 metal for $9.99, paid through PayPal (opens once the shop is switched on)",
+    "Purchases are tied to your account, so they show up on every device you play on"
+   ]
+  },
+  {
+   "id": 39,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "🤝 On a computer, a see-through Ally progress panel on the left shows each ally's Power Plant level, areas, supplies and upgrade timers. Click its title to hide it",
+    "⚡ When your Power Plant levels up, your allies hear about it: a note in their game, plus a phone/desktop notification if they turned on 🔔 notifications on the site"
+   ]
+  },
+  {
+   "id": 38,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "🔄 Too much metal? Open the 🏭 Smelter and trade it: 3 🔩 for 1 wood, or 2 🔩 for 1 🍖 (buttons for small and big batches, or half of all your metal)",
+    "⚡ Upgrade timers can now be finished with metal too (15 🔩 per minute left), not just gems"
+   ]
+  },
+  {
+   "id": 37,
+   "date": "Nov 20",
+   "game": "survive",
+   "items": [
+    "📐 Move your buildings: open any building and tap 📐 Move, walk to the new spot (it floats in front of you) and tap 📍 Place here. Aim it at another building and the two swap places. ↩️ Original spot puts it back",
+    "🔩 Metal from rocks now goes into your buildings: every upgrade from level 2 on takes metal, and the Smelter, Hero Hall, Workshop and the 2nd and 3rd Houses need some to build. New areas cost a little metal from your 2nd unlock on",
+    "Allies see your town the way you've laid it out"
+   ]
+  },
+  {
+   "id": 36,
+   "date": "Nov 20",
+   "game": "all",
+   "items": [
+    "🎯 New game: Werewolf Recon, a 3D open-world squad shooter. First province: Itacua",
+    "Skill Points, weapon cases, accessory cases and bonus medals sit where they are on the Wildlands tracker map, and the skill trees use the same ranks and costs",
+    "Drone and binoculars to mark enemies, squad sync shot, trucks, night vision, and thermal vision once you unlock it. Plays with keyboard and mouse, a PS5/Xbox controller or touch"
+   ]
+  },
+  {
+   "id": 35,
+   "date": "Nov 20",
+   "game": "all",
+   "items": [
+    "🎨 Pick your own color: tap 🎨 in Frogger, or ☰ Games → My color in any game",
+    "Your frog uses it straight away and friends in your Frogger room see it too. Your race car and farm tractor use it the next time you load those games",
+    "Signed in? Your color follows you to your other devices"
+   ]
+  },
+  {
+   "id": 34,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Your allies now live next door: their settlements stand just past the edge of your map with a road to each, and allies who are playing show up walking around their town. Tap a neighbour's town to visit",
+    "👹 Lair bosses come back 25% tougher (and hit harder, with better loot) every time you beat them. Their level shows over their head",
+    "📣 Call allies: when a lair boss is too much, tap 🤝 Allies → Call allies and it becomes a team fight your allies can join"
+   ]
+  },
+  {
+   "id": 33,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "New things to harvest out in the areas you unlock: 🍓 berry bushes and 🍄 mushrooms (food), giant oaks (lots of wood), iron veins (metal), wild beehives (food), wrecked cars (metal), 📦 supply crates (a bit of everything) and rare 💎 crystals",
+    "Each kind of area has its own finds, and the outer areas have more and richer ones"
+   ]
+  },
+  {
+   "id": 32,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "💎 Gems are rarer now: bosses give 5 (was 25), camps only sometimes drop 1 (was 3 every time), mission gem rewards are about a third of what they were, team boss and duel gems are lower too",
+    "⚡ Finishing an upgrade early now costs 1 💎 per 10 minutes left (at least 2) instead of always 5"
+   ]
+  },
+  {
+   "id": 31,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Fixed helping an ally's build getting stuck on 1 and slowly draining your resources. It now finishes and shows ✅ Paid",
+    "Help you gave an ally now shows on their pads on your next visit, even if they haven't played since",
+    "A build that's been paid in full (by allies or by your crews) now starts by itself, without you standing on the pad"
+   ]
+  },
+  {
+   "id": 30,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "New battle: 👹 Team boss. Start one from 🤝 Allies, your allies get a call to join, and everyone hits the same Horde King together (10 minutes, everyone who lands a hit gets the loot)",
+    "New battle: 🥊 Duel. Challenge an ally who's playing right now to a live 1-on-1 in the arena. The loser drops 5% of their wood, food and metal (up to 150 each) to the winner, plus 5 gems for the win",
+    "⚔️ Raids are still there: the Allies screen now has a Battles section with all three"
+   ]
+  },
+  {
+   "id": 29,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Visiting an ally now shows their lumberjacks, miners, hunters and infected hunters out working on their map"
+   ]
+  },
+  {
+   "id": 28,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Fixed the red 'Cannot read properties of undefined (reading x)' error after finishing a raid or visiting an ally"
+   ]
+  },
+  {
+   "id": 27,
+   "date": "Nov 18",
+   "game": "all",
+   "items": [
+    "Play with no signal: games you've opened before still start offline, an orange bar shows you're offline, and your progress syncs to your account when you're back online"
+   ]
+  },
+  {
+   "id": 26,
+   "date": "Nov 18",
+   "game": "frogger",
+   "items": [
+    "Bigger arrow buttons on phones, spread out in a + shape with gaps so you don't hit two at once"
+   ]
+  },
+  {
+   "id": 25,
+   "date": "Nov 18",
+   "game": "race",
+   "items": [
+    "Fixed the minimap being mirrored: a right turn on the track is now a right turn on the map"
+   ]
+  },
+  {
+   "id": 24,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Fixed: opening Tile Survival on a new device could start a fresh game and replace your saved progress. Your account now keeps whichever save has the most progress, and a new device never overwrites it"
+   ]
+  },
+  {
+   "id": 23,
+   "date": "Nov 18",
+   "game": "all",
+   "items": [
+    "Your profile page now shows your mobile game progress: Neighborly Acre (level, coins, fields, achievements), Tile Survival (Power Plant, areas, heroes, raids) and your board-game records"
+   ]
+  },
+  {
+   "id": 22,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Welcome-back card: how long you were away and when you last played, who last updated your settlement, raids on you, what allies did for you, upgrades that finished and what your crews built"
+   ]
+  },
+  {
+   "id": 21,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "While you're offline only your crews keep the map going (at 1% speed, into your builds and piles). Sharing with allies only happens while you're playing"
+   ]
+  },
+  {
+   "id": 20,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "The game no longer freezes if something goes wrong: it keeps running and shows a red error box you can screenshot"
+   ]
+  },
+  {
+   "id": 19,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Bigger crews: one more worker than the building's level while you play (level 4 = 5, up to 8); 2 per building keep working while you're away",
+    "Infected hunters help out when there are no infected around: they chop trees, break rocks and hunt deer, and bring it to the right building",
+    "Day and night follow your device's clock, like the farm"
+   ]
+  },
+  {
+   "id": 18,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "⚔️ Raids: attack an ally's settlement from 🤝 Allies. Their heroes and hunters defend it; beat them all to take 10% of their stockpile. One raid per ally every 8 hours, and whoever gets raided gets a ⚔️ Revenge raid right away",
+    "Your own heroes and weapon come with you when you visit or raid",
+    "Time away now runs at 1% speed"
+   ]
+  },
+  {
+   "id": 17,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Away from your map (game closed or visiting), your town keeps going at 1% speed with no time limit: crews put their haul into your builds first, a little goes to allies, the rest to the piles",
+    "Online and standing in town: what your buildings and crews make goes straight into your stockpile. Out exploring: it piles up at the buildings"
+   ]
+  },
+  {
+   "id": 16,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Zoom: mouse wheel or two-finger pinch, and a 🗺️ Map button that shows your whole map (what you've discovered, the fog, and anyone else here with a 🤝 pin)"
+   ]
+  },
+  {
+   "id": 15,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Infected hunters: the Hero Hall sends out a squad (1 per level, up to 4) that hunts down the infected on your map and heads back to the hall to heal. You get the loot"
+   ]
+  },
+  {
+   "id": 14,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Your town builds itself little by little: 3% of what the Lumberyard, Farm and Smelter make goes to every building that still needs it, and once they're all caught up, 5% goes to the Power Plant. The rest is yours to open up the map",
+    "Production piles fill all the way again; a full pile's extra goes to the builds"
+   ]
+  },
+  {
+   "id": 13,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Nothing gets left behind: the Power Plant only levels up once every building it has unlocked has caught up to its level (tap the Power Plant to see which ones)"
+   ]
+  },
+  {
+   "id": 12,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Lumberyard, Farm and Smelter piles stop at 99% full; everything past that is shared out to your other buildings' build and upgrade pads, so nothing goes to waste"
+   ]
+  },
+  {
+   "id": 11,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "See your allies walking around live: when you visit them (or they visit you) you can see each other, with a 🤝 name tag"
+   ]
+  },
+  {
+   "id": 10,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "New crews: the Smelter sends miners to break rocks and the Farm sends hunters after deer (1 per level, up to 4), like the Lumberyard's lumberjacks. They fill the building's pile for you to pick up",
+    "Playing on your own map shares a little of what you gather with your allies: 5% each with one ally, down to 1% each with five or more"
+   ]
+  },
+  {
+   "id": 9,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Work on your ally's settlement: build on their pads and gather there. Everything is split 50/50: half for their settlement, half for yours (pads you fill there also fill the same build at home)",
+    "Your ally's half arrives in their game automatically"
+   ]
+  },
+  {
+   "id": 8,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Wood now shows as a real log picture everywhere (no more empty boxes)",
+    "Visiting an ally pays: a daily visit bonus for each friend, and anything you gather there comes home with you"
+   ]
+  },
+  {
+   "id": 7,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Visit really takes you to your friend's settlement: walk around it, help their timers, then 🏠 Go home",
+    "Lumberjacks: the Lumberyard sends out workers (1 per level, up to 4) who chop trees and bring the logs to its pile",
+    "Tap any building to see what it does now and what its next level adds (and what it costs)",
+    "Fixed the little boxes where some icons didn't show on Windows"
+   ]
+  },
+  {
+   "id": 6,
+   "date": "Nov 18",
+   "game": "survive",
+   "items": [
+    "Allies: your friends list shows up automatically with who needs help — no more typing friend codes"
+   ]
+  },
+  {
+   "id": 5,
+   "date": "Nov 18",
+   "game": "farm",
+   "items": [
+    "Achievements show every farmer's progress on your multiplayer farm, in their colour"
+   ]
+  },
+  {
+   "id": 4,
+   "date": "Nov 18",
+   "game": "farm",
+   "items": [
+    "A sign over each of your fields shows the countdown, ✅ READY TO HARVEST, or 💧 needs water"
+   ]
+  },
+  {
+   "id": 3,
+   "date": "Nov 18",
+   "game": "farm",
+   "items": [
+    "Minimap: growing crops go from dark to light green as they grow, gold when ready",
+    "Minimap: each of your fields shows a countdown until it's ready to harvest (💧 if some still need water)"
+   ]
+  },
+  {
+   "id": 2,
+   "date": "Nov 18",
+   "game": "all",
+   "items": [
+    "After every update, this card shows what changed"
+   ]
+  },
+  {
+   "id": 1,
+   "date": "Nov 18",
+   "game": "farm",
+   "items": [
+    "Fields split into strips by the seeds you select again (1 = whole field, 2 = halves, 3 = thirds)",
+    "Switch vehicles with Tab, the 🔄 Switch button or Triangle on a controller",
+    "Combine tank holds one field (240) and unloads into the trailer by itself when full",
+    "The truck and trailer park beside the field you're harvesting",
+    "Daily missions grow with your farm, and a New missions button appears once they're all done",
+    "Shared multiplayer XP stops at level 20; after that everyone levels on their own",
+    "The farmhouse opens: kitchen, missions, achievements and your farm record",
+    "Grain elevator moved away from the shop; drive the combine there to unload it directly",
+    "Extra-wide implements: 7 tiles at once (level 20)",
+    "Level-up card lists everything you unlocked and what's next",
+    "Tractor and combine drive back to their parking spots when you get out",
+    "Fields show their number in the owner's colour",
+    "Achievements show progress bars",
+    "Fertilizer is sold at the barn again and shared on multiplayer farms",
+    "Fertilized soil turns olive-green so you can see what's covered",
+    "Pigs, compost tower and the fertilizer seeder upgrade",
+    "Kitchen: Make all button",
+    "Tractor and combine engine sounds (🔊 button to mute)",
+    "Rain no longer freezes the game"
+   ]
+  }
+ ]
+}

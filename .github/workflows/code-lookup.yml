@@ -1,0 +1,20 @@
+# Manual, read-only: shows where a friend code points and which user records carry it.
+name: Friend Code Lookup
+on:
+  workflow_dispatch:
+    inputs:
+      code:
+        description: 'Friend code, e.g. GQGI0SWY'
+        required: true
+permissions:
+  contents: read
+jobs:
+  lookup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet google-auth requests
+      - run: python scripts/code-lookup.py
+        env:
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          CODE: ${{ github.event.inputs.code }}

@@ -1,0 +1,5 @@
+{
+  "_about": "Filled by the 'Game genres' GitHub Action (scripts/game-genres.js). Keys are lower-case Twitch game names. genres/themes come from IGDB; box is the Twitch box art template. Safe to edit by hand.",
+  "updated": null,
+  "games": {}
+}

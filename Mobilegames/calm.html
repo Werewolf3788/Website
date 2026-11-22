@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- Google tag (G-JDNSLD3GFE). Only counts page visits: nothing typed or saved in Calm Space is ever sent. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1f24">
+<title>Calm Space</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{--bg:#0b1f24;--card:#12313a;--card2:#0e2930;--line:#1f4a55;--ink:#e6f4f1;--mut:#9cc3bd;--acc:#5eead4;--acc2:#2dd4bf;--warm:#fbbf24;--rose:#fda4af}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+  body{min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
+  a{color:var(--acc)}
+  button,input,textarea,select{font:inherit;color:inherit}
+  button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;background:#1f4a55;color:var(--ink);font-weight:600}
+  button.go{background:var(--acc);color:#05302a}
+  button.warm{background:var(--warm);color:#3b2600}
+  button.ghost{background:transparent;border:1px solid var(--line)}
+  button:disabled{opacity:.45;cursor:default}
+  input,textarea,select{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+  textarea{min-height:80px;resize:vertical}
+  .muted{color:var(--mut);font-size:.9rem}
+  .small{font-size:.8rem}
+  /* header */
+  header{position:sticky;top:0;z-index:30;background:rgba(11,31,36,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 14px calc(10px) 14px;padding-top:calc(10px + env(safe-area-inset-top))}
+  .hbar{display:flex;align-items:center;gap:8px;max-width:100%}
+  .hbar h1{font-size:1.15rem;margin:0;flex:1;white-space:nowrap}
+  .hbar button{padding:9px 12px}
+  #reachBtn{background:var(--rose);color:#4a0d18}
+  nav{display:flex;gap:6px;overflow-x:auto;padding:10px 2px 2px;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);padding:8px 12px;font-size:.9rem;border-radius:999px}
+  nav button.on{background:var(--acc);color:#05302a;border-color:var(--acc)}
+  main{padding:12px 14px 40px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 0 14px}
+  .card h2{margin:0 0 6px;font-size:1.15rem}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .row>*{flex:0 0 auto}
+  .grow{flex:1 1 auto!important}
+  .view{display:none}
+  .view.on{display:block}
+  .cols{display:block}
+  canvas{display:block;width:100%;border-radius:14px;background:#081a1e;touch-action:none}
+  /* desktop: about 80% of the screen, side menu + columns; phones keep one stacked column */
+  @media (min-width:900px){
+    header,main{width:80vw;margin:0 auto}
+    header{border-radius:0 0 16px 16px}
+    .shell{width:80vw;margin:0 auto;display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:start}
+    .shell nav{flex-direction:column;position:sticky;top:76px;overflow:visible;padding:12px 0}
+    .shell nav button{text-align:left;border-radius:12px;padding:10px 14px}
+    .shell main{width:auto;padding:12px 0 40px}
+    header nav.mobileNav{display:none}
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+    .cols.c3{grid-template-columns:1fr 1fr 1fr}
+  }
+  @media (max-width:899px){ .shell nav.sideNav{display:none} }
+  @media (max-width:480px){ .wide{display:none} .hbar h1{font-size:1.02rem} .hbar button{padding:8px 10px} }
+  /* garden */
+  #plant{width:100%;max-width:360px;display:block;margin:0 auto}
+  .moods{display:flex;gap:6px;justify-content:space-between}
+  .moods button{flex:1;font-size:1.6rem;padding:8px 0;background:var(--card2);border:2px solid transparent}
+  .moods button.on{border-color:var(--acc)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chips button{background:var(--card2);border:1px solid var(--line);padding:6px 11px;border-radius:999px;font-size:.88rem;font-weight:500}
+  .chips button.on{background:#134e4a;border-color:var(--acc)}
+  .week{display:flex;gap:6px;margin-top:8px}
+  .week span{flex:1;text-align:center;font-size:1.1rem;background:var(--card2);border-radius:8px;padding:4px 0}
+  .week small{display:block;font-size:.65rem;color:var(--mut)}
+  .sugg button{display:block;width:100%;text-align:left;margin:6px 0;background:var(--card2);border:1px solid var(--line)}
+  /* ground */
+  .flies{display:flex;gap:10px;justify-content:center;margin:12px 0;font-size:1.8rem}
+  .flies span{filter:grayscale(1) brightness(.4);transition:filter .4s,transform .4s}
+  .flies span.lit{filter:none;transform:scale(1.15)}
+  /* memory cards */
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:420px;margin:10px auto}
+  .mc{aspect-ratio:1;font-size:2rem;display:flex;align-items:center;justify-content:center;background:#1f4a55;border-radius:12px;padding:0;transition:transform .25s,background .25s}
+  .mc.up{background:#e6f4f1;transform:rotateY(180deg)}
+  .mc .f{display:none;transform:rotateY(180deg)} .mc.up .f{display:block}
+  .mc.done{background:#134e4a;opacity:.75}
+  .jars{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:340px;margin:12px auto}
+  .jar{aspect-ratio:1.2;border-radius:18px;font-size:2rem;opacity:.45;transition:opacity .15s,transform .15s}
+  .jar.lit{opacity:1;transform:scale(1.05);box-shadow:0 0 24px currentColor}
+  /* reasons jar */
+  #jarBox{position:relative;height:300px;max-width:360px;margin:0 auto}
+  #jarBox svg{position:absolute;inset:0;width:100%;height:100%}
+  .scrap{position:absolute;padding:3px 7px;border-radius:6px;font-size:.72rem;color:#1b1b1b;max-width:92px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 6px #0006;pointer-events:none}
+  .rlist{list-style:none;margin:0;padding:0}
+  .rlist li{display:flex;gap:10px;align-items:center;padding:8px;border-bottom:1px solid var(--line)}
+  .rlist li img{width:48px;height:48px;object-fit:cover;border-radius:8px}
+  .rlist li .t{flex:1}
+  .rlist li button{padding:6px 10px;font-size:.8rem}
+  /* people */
+  .person{display:flex;gap:8px;align-items:center;padding:10px;background:var(--card2);border-radius:12px;margin:6px 0}
+  .person b{flex:1}
+  .person a,.line a{display:inline-block;text-decoration:none;background:var(--acc);color:#05302a;font-weight:700;border-radius:10px;padding:8px 12px;font-size:.9rem}
+  .person a.alt,.line a.alt{background:#1f4a55;color:var(--ink)}
+  .line{padding:10px;background:var(--card2);border-radius:12px;margin:6px 0}
+  .line .row{margin-top:6px}
+  label{display:block;font-weight:600;margin:12px 0 4px}
+  /* overlays */
+  .ov{position:fixed;inset:0;z-index:50;background:rgba(3,12,14,.78);display:none;align-items:center;justify-content:center;padding:14px}
+  .ov.on{display:flex}
+  .ovbox{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;width:min(94vw,520px);max-height:88vh;overflow:auto}
+  #toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(120px);background:#134e4a;border:1px solid var(--acc);color:var(--ink);padding:10px 16px;border-radius:999px;z-index:60;transition:transform .35s;font-weight:600;white-space:nowrap}
+  #toast.on{transform:translateX(-50%) translateY(0)}
+  #openNote{font-size:1.25rem;text-align:center;padding:18px 6px}
+  #openNote img{max-width:100%;max-height:300px;border-radius:12px;display:block;margin:0 auto 10px}
+  .lockmask{text-align:center;padding:30px 10px}
+  .pinrow{display:flex;gap:8px;justify-content:center;margin-top:10px}
+  .pinrow input{width:150px;text-align:center;letter-spacing:6px;font-size:1.3rem}
+</style>
+</head>
+<body>
+<header>
+  <div class="hbar">
+    <h1>🌿 Calm Space</h1>
+    <button id="muteBtn" class="ghost" title="Sound">🔔</button>
+    <button id="gamesBtn" class="ghost">☰<span class="wide"> Games</span></button>
+    <button id="reachBtn">💬 Reach<span class="wide"> someone</span></button>
+  </div>
+  <nav class="mobileNav" id="navM"></nav>
+</header>
+
+<div class="shell">
+<nav class="sideNav" id="navD"></nav>
+<main>
+
+<!-- HOME -->
+<section class="view" id="v-home">
+  <div class="cols">
+    <div class="card">
+      <h2>Your plant</h2>
+      <svg id="plant" viewBox="0 0 300 320"></svg>
+      <p class="muted" id="plantNote" style="text-align:center;margin:6px 0 0"></p>
+    </div>
+    <div>
+      <div class="card">
+        <h2>How are you right now?</h2>
+        <div class="moods" id="moods"></div>
+        <div class="muted" style="margin:10px 0 6px">Anything else going on? (pick any)</div>
+        <div class="chips" id="feels"></div>
+        <div class="week" id="week"></div>
+      </div>
+      <div class="card sugg" id="sugg" style="display:none"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>🔒 Private by design</h2>
+    <p class="muted" style="margin:0 0 10px">Everything you put in Calm Space (check-ins, your reasons, your plan, your people) is saved <b>only on this device</b>. It is never uploaded, never shown to friends, and not tied to your account. Clearing your browser data erases it, so make a backup file now and then.</p>
+    <div class="row">
+      <button id="lockBtn">🔐 Set a PIN</button>
+      <button id="backupBtn">⬇️ Back up to a file</button>
+      <button id="restoreBtn">⬆️ Restore a backup</button>
+      <button id="wipeBtn" class="ghost">🗑️ Erase everything</button>
+      <input type="file" id="restoreFile" accept="application/json,.json" style="display:none">
+    </div>
+    <p class="muted small" id="lockNote" style="margin:8px 0 0"></p>
+  </div>
+</section>
+
+<!-- BREATHE -->
+<section class="view" id="v-breathe">
+  <div class="cols">
+    <div class="card">
+      <h2>🏮 Breathe: light the lantern</h2>
+      <p class="muted" style="margin:0 0 10px">Follow the circle. Breathe in while it grows and out, slowly, while it shrinks. A longer breath out tells your body it's safe to settle down. Six slow breaths light the lantern.</p>
+      <canvas id="bCv" height="360"></canvas>
+      <div class="row" style="margin-top:10px">
+        <button class="go" id="bStart">▶ Start</button>
+        <select id="bPat" class="grow" style="width:auto">
+          <option value="calm">Calm: in 4, out 6</option>
+          <option value="box">Box: in 4, hold 4, out 4, hold 4</option>
+          <option value="slow">Slow: in 5, out 7</option>
+        </select>
+      </div>
+      <label style="font-weight:500;display:flex;gap:8px;align-items:center"><input type="checkbox" id="bHold" style="width:auto"> Game mode: hold the screen (or Space / controller ✕) while breathing in, let go while breathing out</label>
+    </div>
+    <div class="card">
+      <h2>When it helps</h2>
+      <p class="muted" style="margin:0">Use this when your heart is racing, your chest is tight, you're about to snap at someone, or you can't sleep. Two minutes is enough to notice a change. If you feel lightheaded, slow down and breathe normally for a moment.</p>
+      <p class="muted" id="bStats" style="margin:10px 0 0"></p>
+    </div>
+  </div>
+</section>
+
+<!-- GROUND -->
+<section class="view" id="v-ground">
+  <div class="cols">
+    <div class="card">
+      <h2>✨ Ground: find the fireflies</h2>
+      <p class="muted" style="margin:0 0 8px">When your mind is spinning, pull it back into the room you're in. For each step, look around and tap <b>Found one</b> each time you notice something. You can type it if that helps (nothing you type is saved).</p>
+      <div id="gStep" style="font-size:1.25rem;font-weight:700;text-align:center;margin-top:10px"></div>
+      <div class="flies" id="gFlies"></div>
+      <div class="row"><input id="gText" class="grow" placeholder="(optional) what did you notice?" autocomplete="off"><button class="go" id="gFound">Found one</button></div>
+      <div class="row" style="margin-top:8px"><button class="ghost" id="gRestart">Start over</button></div>
+    </div>
+    <div class="card">
+      <h2>Why it works</h2>
+      <p class="muted" style="margin:0">Panic, flashbacks and spiralling thoughts live in the past or the future. Naming what your senses pick up right now (5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste) gives your brain something real and present to hold on to.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COOL DOWN -->
+<section class="view" id="v-cool">
+  <div class="cols">
+    <div class="card">
+      <h2>🪨 Cool down: stack the cairn</h2>
+      <p class="muted" style="margin:0 0 8px">Tap (or Space / controller ✕) to drop each stone. It stays as long as its middle lands on the stone below. Every stone you place slows the next one down. Twelve stones finish the cairn.</p>
+      <canvas id="cCv" height="420"></canvas>
+      <div class="row" style="margin-top:10px"><button class="go" id="cStart">▶ Start</button><span class="muted" id="cInfo"></span></div>
+    </div>
+    <div class="card">
+      <h2>How heated are you?</h2>
+      <p class="muted" style="margin:0 0 6px">Before: <b id="heatBeforeV">5</b> / 10</p>
+      <input type="range" id="heatBefore" min="1" max="10" value="5">
+      <div id="heatAfterBox" style="display:none">
+        <p class="muted" style="margin:12px 0 6px">After: <b id="heatAfterV">5</b> / 10</p>
+        <input type="range" id="heatAfter" min="1" max="10" value="5">
+        <p id="heatMsg" style="margin:8px 0 0"></p>
+      </div>
+      <p class="muted" style="margin:14px 0 0">Smashing or punching things tends to keep anger going rather than draining it. Something absorbing that slowly gets calmer gives your body time to come down. If you're still hot after the cairn, try a round of <a href="#breathe">Breathe</a>, or go for a walk.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MEMORY -->
+<section class="view" id="v-memory">
+  <div class="cols">
+    <div class="card">
+      <h2>🃏 Match the pairs</h2>
+      <p class="muted" style="margin:0">Flip two cards at a time and find all eight pairs. No timer, no rush.</p>
+      <div class="grid4" id="mGrid"></div>
+      <div class="row"><button class="ghost" id="mNew">New board</button><span class="muted" id="mInfo"></span></div>
+    </div>
+    <div class="card">
+      <h2>🎶 Firefly song</h2>
+      <p class="muted" style="margin:0">Watch which jars light up, then tap them back in the same order. The song gets one note longer each round.</p>
+      <div class="jars" id="sJars"></div>
+      <div class="row"><button class="go" id="sStart">▶ Play</button><span class="muted" id="sInfo"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- REASONS JAR -->
+<section class="view" id="v-jar">
+  <div id="jarLocked" class="card lockmask" style="display:none">
+    <div style="font-size:2rem">🔒</div><p>Your jar is locked.</p>
+    <div class="pinrow"><input type="password" inputmode="numeric" maxlength="8" id="unlockPin1" placeholder="PIN"><button class="go" data-unlock="unlockPin1">Open</button></div>
+  </div>
+  <div id="jarBody" class="cols">
+    <div class="card">
+      <h2>🫙 Reasons jar</h2>
+      <p class="muted" style="margin:0 0 8px">On good days, add things worth sticking around for: a person, a pet, a song, a place you want to see, something you're proud of, a photo. On bad days, open the jar.</p>
+      <div id="jarBox"></div>
+      <div class="row" style="justify-content:center;margin-top:8px"><button class="warm" id="openJar">✨ Open the jar</button></div>
+    </div>
+    <div class="card">
+      <h2>Add a reason</h2>
+      <div class="chips" id="jarIdeas" style="margin-bottom:8px"></div>
+      <textarea id="jarText" placeholder="Write it in your own words…" maxlength="400"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button id="jarPhotoBtn">📷 Add a photo</button><span class="muted small" id="jarPhotoName"></span>
+        <input type="file" id="jarPhoto" accept="image/*" style="display:none">
+        <span class="grow"></span><button class="go" id="jarAdd">Add to jar</button>
+      </div>
+      <ul class="rlist" id="jarList" style="margin-top:12px"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- MY PLAN -->
+<section class="view" id="v-plan">
+  <div id="planLocked" class="card lockmask" style="display:none">
+    <div style="font-size:2rem">🔒</div><p>Your plan is locked.</p>
+    <div class="pinrow"><input type="password" inputmode="numeric" maxlength="8" id="unlockPin2" placeholder="PIN"><button class="go" data-unlock="unlockPin2">Open</button></div>
+  </div>
+  <div id="planBody">
+    <div class="card">
+      <h2>🧭 My plan for hard moments</h2>
+      <p class="muted" style="margin:0">Fill this in on a calmer day, in your own words. When things get bad it's hard to think straight, and having it already written down means you don't have to. It saves as you type.</p>
+    </div>
+    <div class="cols" id="planFields"></div>
+  </div>
+</section>
+
+<!-- MY PEOPLE -->
+<section class="view" id="v-people">
+  <div class="cols">
+    <div class="card">
+      <h2>👥 My people</h2>
+      <p class="muted" style="margin:0 0 8px">Two or three people you could text when it's rough. Talking to someone who already knows you is often easier than calling a stranger. One tap opens a text with the message below already written.</p>
+      <div id="peopleList"></div>
+      <div class="row" style="margin-top:8px">
+        <input id="pName" class="grow" placeholder="Name" style="width:auto;flex:1 1 120px">
+        <input id="pPhone" class="grow" placeholder="Phone number" inputmode="tel" style="width:auto;flex:1 1 140px">
+        <button class="go" id="pAdd">Add</button>
+      </div>
+      <label for="pMsg">The text it sends</label>
+      <textarea id="pMsg"></textarea>
+    </div>
+    <div class="card">
+      <h2>Other people to talk to</h2>
+      <div id="linesBox"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- Reach someone -->
+<div class="ov" id="reachOv"><div class="ovbox">
+  <h2 style="margin:0 0 4px">💬 Reach someone</h2>
+  <p class="muted" style="margin:0 0 8px">You don't have to be in a full crisis to reach out. If you are in danger right now, call <a href="tel:911">911</a>.</p>
+  <div id="reachPeople"></div>
+  <div id="reachLines"></div>
+  <div class="row" style="margin-top:12px"><button class="go grow" id="reachClose">Close</button></div>
+</div></div>
+
+<!-- Open the jar -->
+<div class="ov" id="noteOv"><div class="ovbox">
+  <div id="openNote"></div>
+  <div class="row"><button class="warm grow" id="noteNext">Another one</button><button class="go grow" id="noteClose">Close</button></div>
+</div></div>
+
+<!-- PIN setup -->
+<div class="ov" id="pinOv"><div class="ovbox">
+  <h2 style="margin:0 0 4px">🔐 PIN for your jar and plan</h2>
+  <p class="muted" style="margin:0">Keeps casual eyes out of your reasons jar and your plan if someone else picks up this device. My people and the help lines always stay open, so you're never locked out of reaching someone. If you forget the PIN, you can erase everything and start fresh.</p>
+  <label>New PIN (4 to 8 digits), or leave empty to remove the PIN</label>
+  <div class="pinrow" style="justify-content:flex-start"><input type="password" inputmode="numeric" maxlength="8" id="newPin"></div>
+  <div class="row" style="margin-top:12px"><button class="go grow" id="pinSave">Save</button><button class="ghost grow" id="pinCancel">Cancel</button></div>
+</div></div>
+
+<div id="toast"></div>
+
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+
+  // ---------- private storage: this device only (localStorage). Nothing here is ever sent anywhere. ----------
+  var KEY = 'calm_space_v1', PKEY = 'calm_space_photos_v1';
+  var DEF = { growth: 0, done: {}, checkins: [], reasons: [], plan: {}, people: [], msg: "Hey, I'm having a rough time. Could you call or text me when you get a chance?", best: {}, pinHash: '', muted: false };
+  var S = load(KEY, DEF), PH = load(PKEY, {});
+  Object.keys(DEF).forEach(function (k) { if (S[k] === undefined) S[k] = JSON.parse(JSON.stringify(DEF[k])); });
+  function load(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v && typeof v === 'object' ? v : JSON.parse(JSON.stringify(d)); } catch (e) { return JSON.parse(JSON.stringify(d)); } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); return true; } catch (e) { toast('⚠️ This device is out of space'); return false; } }
+  function savePhotos() { try { localStorage.setItem(PKEY, JSON.stringify(PH)); return true; } catch (e) { toast('⚠️ Not enough space for that photo'); return false; } }
+  function today(d) { d = d || new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+
+  var tT; function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tT); tT = setTimeout(function () { t.classList.remove('on'); }, 2600); }
+
+  // ---------- sound: soft chimes ----------
+  var AC = null;
+  function chime(f, d, v) {
+    if (S.muted) return;
+    try {
+      AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+      var o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime; d = d || .6;
+      o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v || .12, t + .03); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+      o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + .05);
+    } catch (e) {}
+  }
+  function muteUi() { $('muteBtn').textContent = S.muted ? '🔕' : '🔔'; }
+  $('muteBtn').onclick = function () { S.muted = !S.muted; save(); muteUi(); };
+
+  // ---------- garden: grows every time you use a tool. It never wilts if you miss days. ----------
+  function award(kind) {
+    S.growth = (S.growth | 0) + 1; S.done[kind] = (S.done[kind] | 0) + 1; save(); drawPlant();
+    toast('🌱 Your plant grew'); chime(784, .5); setTimeout(function () { chime(1046, .7); }, 140);
+  }
+  function drawPlant() {
+    var g = S.growth | 0, st = Math.min(g, 48), h = 30 + Math.min(st, 30) * 7.2, base = 262, top = base - h, svg = '';
+    svg += '<defs><radialGradient id="glow" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#5eead4" stop-opacity=".18"/><stop offset="1" stop-color="#5eead4" stop-opacity="0"/></radialGradient></defs>';
+    svg += '<rect x="0" y="0" width="300" height="320" fill="url(#glow)"/>';
+    // stem with a gentle curve
+    svg += '<path d="M150 ' + base + ' C 140 ' + (base - h * .35) + ', 162 ' + (base - h * .7) + ', 150 ' + top + '" stroke="#4ade80" stroke-width="' + (4 + Math.min(st, 20) * .15) + '" fill="none" stroke-linecap="round"/>';
+    var leaves = Math.min(Math.floor(st / 1.5), 18);
+    for (var i = 0; i < leaves; i++) {
+      var y = base - 18 - i * (h - 26) / Math.max(leaves, 1), side = i % 2 ? 1 : -1, len = 18 + Math.min(st, 24) * .6 - i * .4, x = 150 + Math.sin((base - y) / h * 3) * 6;
+      svg += '<path d="M' + x + ' ' + y + ' q ' + (side * len * .55) + ' ' + (-len * .55) + ' ' + (side * len) + ' ' + (-len * .15) + ' q ' + (-side * len * .45) + ' ' + (len * .4) + ' ' + (-side * len) + ' ' + (len * .15) + 'z" fill="' + (i % 3 ? '#22c55e' : '#16a34a') + '"/>';
+    }
+    var flowers = st >= 10 ? Math.min(1 + Math.floor((st - 10) / 4), 8) : 0, cols = ['#fda4af', '#fbbf24', '#c4b5fd', '#f9a8d4', '#fde68a', '#93c5fd', '#fca5a5', '#a7f3d0'];
+    for (var f = 0; f < flowers; f++) {
+      var fx = f === 0 ? 150 : 150 + (f % 2 ? 1 : -1) * (18 + (f >> 1) * 14), fy = f === 0 ? top - 6 : top + 22 + (f >> 1) * 26, c = cols[f % cols.length];
+      for (var p = 0; p < 5; p++) { var a = p / 5 * Math.PI * 2; svg += '<circle cx="' + (fx + Math.cos(a) * 7) + '" cy="' + (fy + Math.sin(a) * 7) + '" r="6" fill="' + c + '"/>'; }
+      svg += '<circle cx="' + fx + '" cy="' + fy + '" r="4.5" fill="#fef3c7"/>';
+    }
+    if (g >= 20) for (var k = 0; k < Math.min(Math.floor((g - 16) / 4), 10); k++) { var ang = k * 2.4, r = 70 + (k * 37) % 60; svg += '<circle class="fly" cx="' + (150 + Math.cos(ang) * r) + '" cy="' + (150 + Math.sin(ang) * r * .7) + '" r="2.5" fill="#fde68a"><animate attributeName="opacity" values=".2;1;.2" dur="' + (2 + k % 3) + 's" repeatCount="indefinite"/></circle>'; }
+    // pot
+    svg += '<path d="M104 258 h92 l-10 52 h-72z" fill="#b45309"/><rect x="98" y="250" width="104" height="14" rx="5" fill="#d97706"/>';
+    $('plant').innerHTML = svg;
+    var note = g === 0 ? 'Use any of the tools and your plant grows. It never wilts if you miss a day.' : g < 10 ? 'Growing. Flowers start to open after 10.' : g < 20 ? 'In bloom. 🌸' : 'Fireflies found it. ✨';
+    $('plantNote').textContent = note + ' (' + g + ' ' + (g === 1 ? 'time' : 'times') + ' cared for)';
+  }
+
+  // ---------- views ----------
+  var VIEWS = [['home', '🌱 Home'], ['breathe', '🏮 Breathe'], ['ground', '✨ Ground'], ['cool', '🪨 Cool down'], ['memory', '🃏 Memory'], ['jar', '🫙 Reasons jar'], ['plan', '🧭 My plan'], ['people', '👥 My people']];
+  ['navM', 'navD'].forEach(function (id) {
+    $(id).innerHTML = VIEWS.map(function (v) { return '<button data-v="' + v[0] + '">' + v[1] + '</button>'; }).join('');
+    $(id).addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) location.hash = b.dataset.v; });
+  });
+  function show() {
+    var v = (location.hash || '#home').slice(1); if (!$('v-' + v)) v = 'home';
+    document.querySelectorAll('.view').forEach(function (s) { s.classList.toggle('on', s.id === 'v-' + v); });
+    document.querySelectorAll('nav button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === v); });
+    if (v !== 'breathe') stopBreathe();
+    if (v !== 'cool') stopCool();
+    if (v === 'breathe') { sizeCanvas($('bCv')); if (!B.on) drawBreathe(null); }
+    if (v === 'cool') { sizeCanvas($('cCv')); drawCool(); }
+    if (v === 'jar' || v === 'plan') lockUi();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', show);
+  function sizeCanvas(cv) { var r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); if (!r.width) return; cv.width = r.width * d; cv.height = (+cv.getAttribute('height')) * d; cv.style.height = cv.getAttribute('height') + 'px'; cv._d = d; }
+
+  // ---------- home: check-in ----------
+  var MOODS = [['😣', 'Awful'], ['😟', 'Low'], ['😐', 'Okay'], ['🙂', 'Good'], ['😄', 'Great']];
+  var FEELS = ['angry', 'anxious', 'sad', 'numb', 'foggy / forgetful', "can't sleep", 'lonely'];
+  var curMood = null, curFeels = [];
+  (function () {
+    var t = S.checkins.filter(function (c) { return c.d === today(); }).pop();
+    if (t) { curMood = t.m; curFeels = t.f || []; }
+  })();
+  function homeUi() {
+    $('moods').innerHTML = MOODS.map(function (m, i) { return '<button title="' + m[1] + '" data-m="' + i + '" class="' + (curMood === i ? 'on' : '') + '">' + m[0] + '</button>'; }).join('');
+    $('feels').innerHTML = FEELS.map(function (f) { return '<button data-f="' + esc(f) + '" class="' + (curFeels.indexOf(f) >= 0 ? 'on' : '') + '">' + esc(f) + '</button>'; }).join('');
+    var days = '', d = new Date();
+    for (var i = 6; i >= 0; i--) {
+      var dd = new Date(d.getFullYear(), d.getMonth(), d.getDate() - i), k = today(dd), c = S.checkins.filter(function (x) { return x.d === k; }).pop();
+      days += '<span>' + (c ? MOODS[c.m][0] : '·') + '<small>' + 'SMTWTFS'[dd.getDay()] + '</small></span>';
+    }
+    $('week').innerHTML = days;
+    suggest();
+  }
+  function recordCheckin() {
+    if (curMood === null) return;
+    S.checkins = S.checkins.filter(function (c) { return c.d !== today(); });
+    S.checkins.push({ d: today(), m: curMood, f: curFeels.slice() });
+    S.checkins = S.checkins.slice(-90); save(); homeUi();
+  }
+  $('moods').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; curMood = +b.dataset.m; chime(523 + curMood * 60, .4, .07); recordCheckin(); };
+  $('feels').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; var f = b.dataset.f, i = curFeels.indexOf(f); if (i >= 0) curFeels.splice(i, 1); else curFeels.push(f); if (curMood === null) { homeUi(); return; } recordCheckin(); };
+  function suggest() {
+    var box = $('sugg'), out = [], has = function (f) { return curFeels.indexOf(f) >= 0; };
+    if (curMood === null && !curFeels.length) { box.style.display = 'none'; return; }
+    if (curMood === 0) out.push(['people', '💬 Text one of your people', 'You don’t have to explain everything. Just let someone know.']);
+    if (has('angry')) out.push(['cool', '🪨 Stack the cairn', 'Something absorbing that slowly calms down.']);
+    if (has('anxious') || has("can't sleep")) out.push(['breathe', '🏮 Light the lantern', 'Six slow breaths with a long breath out.']);
+    if (has('anxious')) out.push(['ground', '✨ Find the fireflies', 'Bring your mind back to the room you’re in.']);
+    if (has('sad') || has('numb') || curMood <= 1) out.push(['jar', '🫙 Open your reasons jar', 'Things you said are worth sticking around for.']);
+    if (has('lonely')) out.push(['people', '👥 Reach one of your people', 'Even a short text counts.']);
+    if (has('foggy / forgetful')) out.push(['memory', '🃏 A gentle memory game', 'Match pairs or follow the firefly song.']);
+    if (!out.length) out.push(curMood >= 3 ? ['jar', '🫙 Add something to your jar', 'Good days are the best time to fill it.'] : ['breathe', '🏮 Light the lantern', 'A two-minute reset.']);
+    var seen = {}; out = out.filter(function (o) { if (seen[o[1]]) return false; seen[o[1]] = 1; return true; }).slice(0, 4);
+    box.innerHTML = '<h2>Might help right now</h2>' + out.map(function (o) { return '<button data-go="' + o[0] + '"><b>' + o[1] + '</b><br><span class="muted">' + o[2] + '</span></button>'; }).join('') +
+      (curMood === 0 ? '<p class="muted small" style="margin:8px 0 0">If you’re thinking about ending your life or you’re not safe, tap <b>💬 Reach someone</b> at the top. Texting is fine too.</p>' : '');
+    box.style.display = '';
+  }
+  $('sugg').onclick = function (e) { var b = e.target.closest('button'); if (b) location.hash = b.dataset.go; };
+
+  // ---------- breathe ----------
+  var PATS = { calm: [['in', 4], ['out', 6]], box: [['in', 4], ['hold', 4], ['out', 4], ['rest', 4]], slow: [['in', 5], ['out', 7]] };
+  var WORD = { in: 'Breathe in', hold: 'Hold', out: 'Breathe out', rest: 'Hold' };
+  var B = { on: false, t0: 0, cycles: 0, lastCycle: 0, pressed: false, good: 0, total: 0, awarded: false, raf: 0 };
+  function bPhase(el) {
+    var p = PATS[$('bPat').value], len = p.reduce(function (s, x) { return s + x[1]; }, 0), c = Math.floor(el / len), t = el - c * len;
+    for (var i = 0; i < p.length; i++) { if (t < p[i][1]) return { name: p[i][0], f: t / p[i][1], left: p[i][1] - t, cycle: c }; t -= p[i][1]; }
+    return { name: 'in', f: 0, left: 0, cycle: c };
+  }
+  function drawBreathe(ph) {
+    var cv = $('bCv'), x = cv.getContext('2d'), d = cv._d || 1, W = cv.width / d, H = cv.height / d;
+    x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
+    var lit = Math.min(B.cycles / 6, 1), cx = W / 2, cy = H / 2 - 10, rMin = Math.min(W, H) * .14, rMax = Math.min(W, H) * .36, r = rMin;
+    if (ph) { var e = .5 - Math.cos(ph.f * Math.PI) / 2; r = ph.name === 'in' ? rMin + (rMax - rMin) * e : ph.name === 'out' ? rMax - (rMax - rMin) * e : ph.name === 'hold' ? rMax : rMin; }
+    // lantern glow fills up as you breathe
+    var gl = x.createRadialGradient(cx, cy, 0, cx, cy, rMax * 1.6); gl.addColorStop(0, 'rgba(251,191,36,' + (.08 + lit * .45) + ')'); gl.addColorStop(1, 'rgba(251,191,36,0)');
+    x.fillStyle = gl; x.fillRect(0, 0, W, H);
+    x.beginPath(); x.arc(cx, cy, rMax, 0, Math.PI * 2); x.strokeStyle = 'rgba(94,234,212,.18)'; x.lineWidth = 2; x.stroke();
+    x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2);
+    var match = !$('bHold').checked || !ph || ((ph.name === 'in' || ph.name === 'hold') === B.pressed);
+    x.fillStyle = match ? 'rgba(94,234,212,.35)' : 'rgba(253,164,175,.3)'; x.fill(); x.strokeStyle = match ? '#5eead4' : '#fda4af'; x.lineWidth = 3; x.stroke();
+    // lantern in the middle
+    x.save(); x.translate(cx, cy); x.fillStyle = '#7c2d12'; x.fillRect(-14, -30, 28, 6); x.fillRect(-14, 24, 28, 6);
+    x.fillStyle = 'rgba(251,191,36,' + (.25 + lit * .75) + ')'; x.beginPath(); x.ellipse(0, 0, 18, 26, 0, 0, Math.PI * 2); x.fill(); x.restore();
+    x.fillStyle = '#e6f4f1'; x.textAlign = 'center'; x.font = '700 22px system-ui';
+    x.fillText(ph ? WORD[ph.name] : (B.cycles >= 6 ? '🏮 Lantern lit' : 'Press Start when ready'), cx, H - 40);
+    x.font = '14px system-ui'; x.fillStyle = '#9cc3bd';
+    if (ph) x.fillText(Math.ceil(ph.left) + '   ·   breath ' + Math.min(B.cycles + 1, 99) + ' of 6' + ($('bHold').checked && B.total > 30 ? '   ·   in sync ' + Math.round(B.good / B.total * 100) + '%' : ''), cx, H - 16);
+  }
+  function loopBreathe() {
+    if (!B.on) return;
+    pollPad();
+    var ph = bPhase((performance.now() - B.t0) / 1000);
+    if (ph.cycle !== B.lastCycle) { B.lastCycle = ph.cycle; B.cycles++; chime(B.cycles >= 6 ? 880 : 660, .9, .08);
+      if (B.cycles === 6 && !B.awarded) { B.awarded = true; award('breathe'); S.best.breathe = (S.best.breathe | 0) + 1; save(); bStats(); } }
+    if ($('bHold').checked) { B.total++; if ((ph.name === 'in' || ph.name === 'hold') === B.pressed) B.good++; }
+    drawBreathe(ph); B.raf = requestAnimationFrame(loopBreathe);
+  }
+  function stopBreathe() { if (!B.on) return; B.on = false; cancelAnimationFrame(B.raf); $('bStart').textContent = '▶ Start'; drawBreathe(null); }
+  $('bStart').onclick = function () {
+    if (B.on) { stopBreathe(); return; }
+    sizeCanvas($('bCv')); B.on = true; B.t0 = performance.now(); B.cycles = 0; B.lastCycle = 0; B.good = 0; B.total = 0; B.awarded = false;
+    $('bStart').textContent = '■ Stop'; $('bStart').blur(); chime(523, .8, .08); loopBreathe();
+  };
+  function bStats() { var n = S.best.breathe | 0; $('bStats').textContent = n ? 'You’ve lit the lantern ' + n + ' time' + (n === 1 ? '' : 's') + '.' : ''; }
+  var bCv = $('bCv');
+  bCv.addEventListener('pointerdown', function (e) { B.pressed = true; e.preventDefault(); });
+  window.addEventListener('pointerup', function () { B.pressed = false; });
+  bCv.addEventListener('pointerleave', function () { B.pressed = false; });
+
+  // ---------- keyboard + controller ✕ (button 0) for breathe and cairn ----------
+  var padWas = false;
+  function pollPad() {
+    var pads = navigator.getGamepads ? navigator.getGamepads() : [], down = false;
+    for (var i = 0; i < pads.length; i++) if (pads[i] && pads[i].buttons[0] && pads[i].buttons[0].pressed) down = true;
+    if (B.on) B.pressed = down || keyDown;
+    if (down && !padWas && C.on) dropStone();
+    padWas = down;
+  }
+  var keyDown = false;
+  window.addEventListener('keydown', function (e) {
+    if (e.code !== 'Space' || /INPUT|TEXTAREA|SELECT|BUTTON/.test((e.target || {}).tagName)) return;
+    e.preventDefault(); if (e.repeat) return; keyDown = true; if (B.on) B.pressed = true; if (C.on) dropStone();
+  });
+  window.addEventListener('keyup', function (e) { if (e.code === 'Space') { keyDown = false; if (B.on) B.pressed = false; } });
+
+  // ---------- ground ----------
+  var GSTEPS = [[5, 'things you can see', '👀'], [4, 'things you can touch', '✋'], [3, 'things you can hear', '👂'], [2, 'things you can smell', '👃'], [1, 'thing you can taste', '👅']];
+  var G = { s: 0, n: 0 };
+  function groundUi() {
+    if (G.s >= GSTEPS.length) {
+      $('gStep').textContent = '✨ All 15 fireflies found. You’re here, right now.';
+      $('gFlies').innerHTML = '<span class="lit">✨</span><span class="lit">🌿</span><span class="lit">✨</span>';
+      $('gFound').disabled = true; $('gText').disabled = true; return;
+    }
+    var st = GSTEPS[G.s]; $('gFound').disabled = false; $('gText').disabled = false;
+    $('gStep').textContent = st[2] + ' Notice ' + st[0] + ' ' + st[1];
+    var h = ''; for (var i = 0; i < st[0]; i++) h += '<span class="' + (i < G.n ? 'lit' : '') + '">✨</span>'; $('gFlies').innerHTML = h;
+  }
+  $('gFound').onclick = function () {
+    if (G.s >= GSTEPS.length) return;
+    G.n++; $('gText').value = ''; chime(600 + G.s * 80 + G.n * 30, .5, .08);
+    if (G.n >= GSTEPS[G.s][0]) { G.s++; G.n = 0; if (G.s >= GSTEPS.length) award('ground'); }
+    groundUi(); $('gText').focus({ preventScroll: true });
+  };
+  $('gText').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('gFound').click(); } });
+  $('gRestart').onclick = function () { G.s = 0; G.n = 0; groundUi(); };
+
+  // ---------- cool down: cairn ----------
+  var SH = 24, C = { on: false, stones: [], cur: null, falls: [], placed: 0, speed: 0, last: 0, raf: 0, cam: 0, msg: '' };
+  var STONE_COLS = ['#94a3b8', '#a8a29e', '#78716c', '#9ca3af', '#a1a1aa', '#d6d3d1', '#8b8f96'];
+  function cDims() { var cv = $('cCv'), d = cv._d || 1; return { W: cv.width / d, H: cv.height / d, d: d }; }
+  function newStone() {
+    var D = cDims(), w = D.W * (.2 + Math.random() * .16), left = C.stones.length % 2 === 0;   // natural stones, different sizes
+    C.cur = { x: left ? 0 : D.W - w, w: w, dir: left ? 1 : -1, c: STONE_COLS[(C.stones.length) % STONE_COLS.length] };
+  }
+  function startCool() {
+    sizeCanvas($('cCv')); var D = cDims();
+    C.stones = [{ x: D.W * .3, w: D.W * .4, c: '#57534e' }]; C.falls = []; C.placed = 0; C.speed = D.W * .8; C.cam = 0; C.msg = ''; C.on = true; C.last = performance.now();
+    newStone(); $('cStart').textContent = '↺ Restart'; $('heatAfterBox').style.display = 'none'; $('cInfo').textContent = '0 / 12';
+    cancelAnimationFrame(C.raf); loopCool();
+  }
+  function stopCool() { C.on = false; cancelAnimationFrame(C.raf); }
+  // a stone stays if its middle lands on the stone below (it can lean, nothing gets cut off). Near the centre it settles in perfectly.
+  function dropStone() {
+    if (!C.on || !C.cur) return;
+    var D = cDims(), top = C.stones[C.stones.length - 1], mid = C.cur.x + C.cur.w / 2, tmid = top.x + top.w / 2;
+    if (mid < top.x || mid > top.x + top.w) { C.falls.push({ x: C.cur.x, w: C.cur.w, y: C.stones.length, vy: 0, c: C.cur.c }); C.msg = 'That one rolled off. Take your time.'; chime(330, .4, .06); var px = C.cur.x, pd = C.cur.dir; newStone(); C.cur.x = Math.max(0, Math.min(D.W - C.cur.w, px)); C.cur.dir = pd; return; }
+    var perfect = Math.abs(mid - tmid) < Math.max(8, top.w * .08), x = perfect ? tmid - C.cur.w / 2 : C.cur.x;
+    C.stones.push({ x: Math.max(0, Math.min(D.W - C.cur.w, x)), w: C.cur.w, c: C.cur.c }); C.placed++; C.msg = perfect ? 'Perfectly balanced ✨' : '';
+    C.speed = Math.max(D.W * .16, C.speed * .86);   // every stone slows the next
+    chime(392 + C.placed * 22, .6, .09); if (perfect) setTimeout(function () { chime(988, .5, .06); }, 120); $('cInfo').textContent = C.placed + ' / 12';
+    if (C.placed >= 12) { C.cur = null; finishCool(); } else newStone();
+  }
+  function finishCool() {
+    C.msg = 'Cairn finished. Take one slow breath. 🌿'; chime(523, 1); setTimeout(function () { chime(659, 1); }, 220); setTimeout(function () { chime(784, 1.2); }, 440);
+    award('cool'); $('heatAfter').value = $('heatBefore').value; $('heatAfterV').textContent = $('heatBefore').value; $('heatMsg').textContent = ''; $('heatAfterBox').style.display = '';
+    setTimeout(function () { C.on = false; }, 1800);
+  }
+  function loopCool() {
+    var now = performance.now(), dt = Math.min(.05, (now - C.last) / 1000); C.last = now; pollPad();
+    var D = cDims();
+    if (C.cur) { C.cur.x += C.cur.dir * C.speed * dt; if (C.cur.x < 0) { C.cur.x = 0; C.cur.dir = 1; } if (C.cur.x + C.cur.w > D.W) { C.cur.x = D.W - C.cur.w; C.cur.dir = -1; } }
+    C.falls.forEach(function (f) { f.vy += 900 * dt; f.y -= f.vy * dt / SH; }); C.falls = C.falls.filter(function (f) { return f.y > -40; });
+    var want = Math.max(0, (C.stones.length + 2) * SH - D.H * .62); C.cam += (want - C.cam) * Math.min(1, dt * 4);
+    drawCool(); if (C.on || C.falls.length) C.raf = requestAnimationFrame(loopCool);
+  }
+  function drawCool() {
+    var cv = $('cCv'), D = cDims(), x = cv.getContext('2d'); if (!cv.width) return;
+    x.setTransform(D.d, 0, 0, D.d, 0, 0);
+    var sky = x.createLinearGradient(0, 0, 0, D.H); sky.addColorStop(0, '#0b2a33'); sky.addColorStop(1, '#123c3a'); x.fillStyle = sky; x.fillRect(0, 0, D.W, D.H);
+    var ground = D.H - 30 + C.cam; x.fillStyle = '#1f3d2b'; x.fillRect(0, ground, D.W, D.H);
+    function stone(s, yi) { var y = ground - (yi + 1) * SH; x.fillStyle = s.c; x.beginPath(); if (x.roundRect) x.roundRect(s.x, y + 2, s.w, SH - 3, 9); else x.rect(s.x, y + 2, s.w, SH - 3); x.fill(); x.fillStyle = 'rgba(255,255,255,.12)'; x.fillRect(s.x + 6, y + 5, Math.max(0, s.w - 12), 3); }
+    C.stones.forEach(function (s, i) { stone(s, i); });
+    C.falls.forEach(function (f) { stone(f, f.y); });
+    if (C.cur) stone(C.cur, C.stones.length + 1.4);
+    x.fillStyle = '#e6f4f1'; x.textAlign = 'center'; x.font = '600 15px system-ui';
+    x.fillText(C.msg || (C.on ? '' : (C.placed >= 12 ? 'Cairn finished. 🌿' : 'Press Start')), D.W / 2, 28);
+  }
+  $('cStart').onclick = function () { this.blur(); startCool(); };
+  $('cCv').addEventListener('pointerdown', function (e) { e.preventDefault(); if (!C.on && !C.placed) { startCool(); return; } dropStone(); });
+  $('heatBefore').oninput = function () { $('heatBeforeV').textContent = this.value; };
+  $('heatAfter').oninput = function () {
+    $('heatAfterV').textContent = this.value; var d = $('heatBefore').value - this.value;
+    $('heatMsg').textContent = d > 0 ? 'Down ' + d + ' point' + (d === 1 ? '' : 's') + '. Your body did that. 💚' : d === 0 ? 'Same as before. That’s okay: try Breathe next, or step outside for a few minutes.' : 'Still climbing. Step away from whatever set it off if you can, and try Breathe or a walk.';
+  };
+
+  // ---------- memory: match pairs ----------
+  var FACES = ['🌿', '🌙', '🐢', '🦋', '🌻', '🐚', '🍄', '⭐', '🐝', '🌊', '🍃', '🦉', '🌸', '🐟', '🍂', '☁️'];
+  var M = { cards: [], open: [], moves: 0, found: 0, lock: false };
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function newMatch() {
+    var f = shuffle(FACES.slice()).slice(0, 8); M.cards = shuffle(f.concat(f)).map(function (e) { return { e: e, up: false, done: false }; }); M.open = []; M.moves = 0; M.found = 0; M.lock = false; matchUi();
+  }
+  function matchUi() {
+    $('mGrid').innerHTML = M.cards.map(function (c, i) { return '<button class="mc' + (c.up || c.done ? ' up' : '') + (c.done ? ' done' : '') + '" data-i="' + i + '" aria-label="card"><span class="f">' + c.e + '</span></button>'; }).join('');
+    var best = S.best.match; $('mInfo').textContent = M.moves + ' flips' + (best ? ' · best ' + best : '');
+  }
+  $('mGrid').onclick = function (e) {
+    var b = e.target.closest('.mc'); if (!b || M.lock) return; var c = M.cards[+b.dataset.i]; if (c.up || c.done) return;
+    c.up = true; M.open.push(c); chime(700, .25, .05);
+    if (M.open.length === 2) {
+      M.moves++; var a = M.open[0], d = M.open[1];
+      if (a.e === d.e) { a.done = d.done = true; M.open = []; M.found++; chime(880, .5, .08);
+        if (M.found === 8) { if (!S.best.match || M.moves < S.best.match) S.best.match = M.moves; save(); award('memory'); setTimeout(function () { toast('🃏 All pairs in ' + M.moves + ' flips'); }, 900); } }
+      else { M.lock = true; setTimeout(function () { a.up = d.up = false; M.open = []; M.lock = false; matchUi(); }, 850); }
+    }
+    matchUi();
+  };
+  $('mNew').onclick = newMatch;
+
+  // ---------- memory: firefly song ----------
+  var JARS = [['#5eead4', 330], ['#fbbf24', 392], ['#fda4af', 494], ['#c4b5fd', 587]];
+  var SG = { seq: [], pos: 0, playing: false, on: false, gotAward: false };
+  $('sJars').innerHTML = JARS.map(function (j, i) { return '<button class="jar" data-j="' + i + '" style="background:' + j[0] + ';color:' + j[0] + '">🫙</button>'; }).join('');
+  function flash(i, ms) { var el = document.querySelector('.jar[data-j="' + i + '"]'); el.classList.add('lit'); chime(JARS[i][1], ms / 1000 + .2, .1); setTimeout(function () { el.classList.remove('lit'); }, ms); }
+  function playSeq() {
+    SG.playing = true; SG.pos = 0; var gap = Math.max(380, 700 - SG.seq.length * 25), i = 0;
+    $('sInfo').textContent = 'Watch…';
+    (function next() { if (i >= SG.seq.length) { SG.playing = false; $('sInfo').textContent = 'Your turn (' + SG.seq.length + ' notes)'; return; } flash(SG.seq[i], gap * .7); i++; setTimeout(next, gap); })();
+  }
+  $('sStart').onclick = function () { SG.seq = [Math.floor(Math.random() * 4)]; SG.on = true; SG.gotAward = false; setTimeout(playSeq, 400); };
+  $('sJars').onclick = function (e) {
+    var b = e.target.closest('.jar'); if (!b || !SG.on || SG.playing) return; var j = +b.dataset.j; flash(j, 260);
+    if (j !== SG.seq[SG.pos]) {
+      var got = SG.seq.length - 1; SG.on = false; if (got > (S.best.song | 0)) { S.best.song = got; save(); }
+      $('sInfo').textContent = 'Nice try: you remembered ' + got + ' note' + (got === 1 ? '' : 's') + '. Best: ' + (S.best.song | 0) + '. Press Play to go again.'; return;
+    }
+    SG.pos++;
+    if (SG.pos >= SG.seq.length) {
+      if (SG.seq.length >= 5 && !SG.gotAward) { SG.gotAward = true; award('memory'); }
+      SG.seq.push(Math.floor(Math.random() * 4)); $('sInfo').textContent = 'Got it ✨'; setTimeout(playSeq, 900);
+    }
+  };
+
+  // ---------- PIN lock (jar + plan only; people and help lines never lock) ----------
+  var unlocked = false;
+  function hash(s) {
+    if (window.crypto && crypto.subtle && window.TextEncoder) return crypto.subtle.digest('SHA-256', new TextEncoder().encode('calm:' + s)).then(function (b) { return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join(''); });
+    var h = 0; s = 'calm:' + s; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Promise.resolve('h' + h);
+  }
+  function lockUi() {
+    var locked = !!S.pinHash && !unlocked;
+    $('jarLocked').style.display = locked ? '' : 'none'; $('jarBody').style.display = locked ? 'none' : '';
+    $('planLocked').style.display = locked ? '' : 'none'; $('planBody').style.display = locked ? 'none' : '';
+    $('lockBtn').textContent = S.pinHash ? '🔐 Change or remove PIN' : '🔐 Set a PIN';
+    $('lockNote').textContent = S.pinHash ? 'Your reasons jar and plan are behind a PIN.' : '';
+  }
+  document.querySelectorAll('[data-unlock]').forEach(function (b) {
+    var inp = $(b.dataset.unlock);
+    function go() { hash(inp.value).then(function (h) { if (h === S.pinHash) { unlocked = true; inp.value = ''; lockUi(); jarUi(); } else { toast('That PIN didn’t match'); inp.select(); } }); }
+    b.onclick = go; inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+  });
+  $('lockBtn').onclick = function () {
+    if (S.pinHash && !unlocked) { toast('Open your jar with your current PIN first'); location.hash = 'jar'; return; }
+    $('newPin').value = ''; $('pinOv').classList.add('on'); setTimeout(function () { $('newPin').focus(); }, 50);
+  };
+  $('pinCancel').onclick = function () { $('pinOv').classList.remove('on'); };
+  $('pinSave').onclick = function () {
+    var v = $('newPin').value.trim();
+    if (!v) { S.pinHash = ''; save(); $('pinOv').classList.remove('on'); lockUi(); toast('PIN removed'); return; }
+    if (!/^\d{4,8}$/.test(v)) { toast('Use 4 to 8 digits'); return; }
+    hash(v).then(function (h) { S.pinHash = h; unlocked = true; save(); $('pinOv').classList.remove('on'); lockUi(); toast('🔐 PIN set'); });
+  };
+
+  // ---------- reasons jar ----------
+  var IDEAS = ['A person who’d miss me', 'A pet', 'A song that gets me', 'Somewhere I want to go', 'Something I want to see happen', 'Something I’m proud of', 'A game I’m not done with', 'A food I love'];
+  $('jarIdeas').innerHTML = IDEAS.map(function (t) { return '<button>' + esc(t) + '</button>'; }).join('');
+  $('jarIdeas').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; var ta = $('jarText'); ta.value = (ta.value ? ta.value + '\n' : '') + b.textContent + ': '; ta.focus(); };
+  var pendingPhoto = null;
+  $('jarPhotoBtn').onclick = function () { $('jarPhoto').click(); };
+  $('jarPhoto').onchange = function () {
+    var f = this.files && this.files[0]; if (!f) return; this.value = '';
+    var img = new Image(), url = URL.createObjectURL(f);
+    img.onload = function () {
+      var max = 520, sc = Math.min(1, max / Math.max(img.width, img.height)), cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc); cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      pendingPhoto = cv.toDataURL('image/jpeg', .72); URL.revokeObjectURL(url); $('jarPhotoName').textContent = '📷 photo ready';
+    };
+    img.onerror = function () { toast('Couldn’t read that image'); }; img.src = url;
+  };
+  $('jarAdd').onclick = function () {
+    var t = $('jarText').value.trim(); if (!t && !pendingPhoto) { toast('Write something or add a photo'); return; }
+    var id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), r = { id: id, t: t, ts: Date.now() };
+    if (pendingPhoto) { PH[id] = pendingPhoto; if (!savePhotos()) { delete PH[id]; return; } r.p = 1; }
+    S.reasons.push(r); if (!save()) return;
+    $('jarText').value = ''; pendingPhoto = null; $('jarPhotoName').textContent = ''; jarUi(); chime(880, .6, .08);
+    if (S.reasons.length <= 3 || S.reasons.length % 5 === 0) award('jar'); else toast('🫙 Added to your jar');
+  };
+  function jarUi() {
+    var cols = ['#fef3c7', '#fde68a', '#fbcfe8', '#ccfbf1', '#ddd6fe', '#fecaca', '#d9f99d'], h = '';
+    h += '<svg viewBox="0 0 300 300"><path d="M95 40 h110 v18 q30 18 30 60 v130 q0 34 -34 34 h-102 q-34 0 -34 -34 v-130 q0 -42 30 -60z" fill="rgba(204,251,241,.08)" stroke="#5eead4" stroke-width="3"/><rect x="90" y="26" width="120" height="18" rx="6" fill="#b45309"/></svg>';
+    var list = S.reasons.slice(-18);
+    list.forEach(function (r, i) {
+      var row = Math.floor(i / 3), col = i % 3, x = 27 + col * 15 + ((row * 7) % 6), y = 78 - row * 10 + ((i * 13) % 5), rot = ((i * 37) % 30) - 15;
+      h += '<div class="scrap" style="left:' + x + '%;top:' + Math.max(22, y) + '%;background:' + cols[i % cols.length] + ';transform:rotate(' + rot + 'deg)">' + (r.p ? '📷 ' : '') + esc(r.t || 'photo') + '</div>';
+    });
+    if (!S.reasons.length) h += '<div class="muted" style="position:absolute;left:0;right:0;top:48%;text-align:center">Empty for now</div>';
+    $('jarBox').innerHTML = h;
+    $('jarList').innerHTML = S.reasons.slice().reverse().map(function (r) {
+      return '<li>' + (r.p && PH[r.id] ? '<img src="' + PH[r.id] + '" alt="">' : '') + '<span class="t">' + esc(r.t) + '</span><button class="ghost" data-del="' + r.id + '">Remove</button></li>';
+    }).join('');
+    $('openJar').disabled = !S.reasons.length;
+  }
+  $('jarList').onclick = function (e) {
+    var b = e.target.closest('[data-del]'); if (!b) return;
+    if (!confirm('Take this out of your jar?')) return;
+    var id = b.dataset.del; S.reasons = S.reasons.filter(function (r) { return r.id !== id; }); delete PH[id]; save(); savePhotos(); jarUi();
+  };
+  var lastNote = -1;
+  function openNote() {
+    if (!S.reasons.length) return; var i; do { i = Math.floor(Math.random() * S.reasons.length); } while (S.reasons.length > 1 && i === lastNote); lastNote = i;
+    var r = S.reasons[i]; $('openNote').innerHTML = (r.p && PH[r.id] ? '<img src="' + PH[r.id] + '" alt="">' : '') + esc(r.t).replace(/\n/g, '<br>');
+    $('noteOv').classList.add('on'); chime(659, .9, .08);
+  }
+  $('openJar').onclick = openNote; $('noteNext').onclick = openNote; $('noteClose').onclick = function () { $('noteOv').classList.remove('on'); };
+
+  // ---------- my plan (safety-plan style) ----------
+  var PLAN = [
+    ['signs', '⚠️ My warning signs', 'Thoughts, moods or situations that tell me a hard time is starting (e.g. not sleeping, pulling away from people, snapping at everyone).'],
+    ['self', '🧰 Things I can do on my own', 'What helps me calm down or get through it (e.g. a bike ride, a hot shower, a game, music, Breathe).'],
+    ['places', '📍 People and places that take my mind off it', 'Somewhere I can go or someone I can just hang out with, without having to talk about it.'],
+    ['ask', '🤝 People I can ask for help', 'Who I can actually tell what’s going on. (Add their numbers in My people.)'],
+    ['pros', '🩺 Professionals I can contact', 'Doctor, counselor, clinic, or a crisis line I’m okay with.'],
+    ['safe', '🏠 Making my space safer', 'Things I can put away, hand to someone, or keep somewhere else when I’m in a bad place.'],
+    ['why', '💚 The thing most worth staying for', 'One line. Your reasons jar holds the rest.']
+  ];
+  $('planFields').innerHTML = PLAN.map(function (p) { return '<div class="card"><h2>' + p[1] + '</h2><p class="muted small" style="margin:0 0 6px">' + p[2] + '</p><textarea data-plan="' + p[0] + '"></textarea></div>'; }).join('');
+  var planT;
+  document.querySelectorAll('[data-plan]').forEach(function (ta) {
+    ta.value = S.plan[ta.dataset.plan] || '';
+    ta.addEventListener('input', function () { S.plan[ta.dataset.plan] = ta.value; clearTimeout(planT); planT = setTimeout(function () { save(); }, 400); });
+  });
+  var planAwarded = false;
+  $('planFields').addEventListener('focusout', function () { var n = PLAN.filter(function (p) { return (S.plan[p[0]] || '').trim(); }).length; if (n >= 4 && !planAwarded && !S.done.plan) { planAwarded = true; award('plan'); } });
+
+  // ---------- my people + help lines ----------
+  var LINES = [
+    ['988 Suicide & Crisis Lifeline', 'Free, 24/7, US. Call, text or chat. You don’t have to be suicidal to use it: any kind of distress counts. Spanish: press 2 or text AYUDA.', [['tel:988', 'Call 988'], ['sms:988', 'Text 988', 1], ['https://988lifeline.org/chat/', 'Chat online', 1]]],
+    ['Crisis Text Line', 'Free, 24/7, by text only. Good if talking out loud feels like too much.', [['sms:741741?&body=HOME', 'Text HOME to 741741']]],
+    ['Warmlines (peer support, not a crisis line)', 'For when you’re struggling but not in an emergency. You talk to someone who has been through it themselves, and they just listen.', [['https://www.warmline.org/directory', 'Find a warmline']]],
+    ['Veterans Crisis Line', 'Veterans, service members and their families.', [['tel:988', 'Call 988, press 1'], ['sms:838255', 'Text 838255', 1]]],
+    ['The Trevor Project', 'LGBTQ+ young people, 24/7.', [['tel:18664887386', 'Call 1-866-488-7386'], ['sms:678678?&body=START', 'Text START to 678-678', 1]]],
+    ['Outside the US', 'Free helplines in your country.', [['https://findahelpline.com', 'Find a helpline']]]
+  ];
+  function linesHtml() {
+    return LINES.map(function (l) {
+      return '<div class="line"><b>' + esc(l[0]) + '</b><div class="muted small">' + esc(l[1]) + '</div><div class="row">' +
+        l[2].map(function (a) { var ext = /^https/.test(a[0]); return '<a ' + (a[2] ? 'class="alt" ' : '') + 'href="' + esc(a[0]) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + esc(a[1]) + '</a>'; }).join('') + '</div></div>';
+    }).join('');
+  }
+  function smsLink(p) { return 'sms:' + p.replace(/[^\d+]/g, '') + '?&body=' + encodeURIComponent(S.msg || ''); }
+  function personHtml(p, i, removable) {
+    return '<div class="person"><b>' + esc(p.n) + '</b><a href="' + esc(smsLink(p.p)) + '">💬 Text</a><a class="alt" href="tel:' + esc(p.p.replace(/[^\d+]/g, '')) + '">📞 Call</a>' + (removable ? '<button class="ghost" data-pdel="' + i + '" style="padding:6px 10px;font-size:.8rem">✕</button>' : '') + '</div>';
+  }
+  function peopleUi() {
+    $('peopleList').innerHTML = S.people.length ? S.people.map(function (p, i) { return personHtml(p, i, true); }).join('') : '<p class="muted" style="margin:0">No one added yet.</p>';
+    $('reachPeople').innerHTML = S.people.length ? '<h3 style="margin:10px 0 4px;font-size:1rem">My people</h3>' + S.people.map(function (p, i) { return personHtml(p, i, false); }).join('') :
+      '<p class="muted small">Tip: add 2 or 3 people you trust in <a href="#people" data-close>My people</a> and they’ll show up here, one tap away.</p>';
+    $('pMsg').value = S.msg || '';
+  }
+  $('linesBox').innerHTML = linesHtml(); $('reachLines').innerHTML = '<h3 style="margin:12px 0 4px;font-size:1rem">Talk to someone now</h3>' + linesHtml();
+  $('pAdd').onclick = function () {
+    var n = $('pName').value.trim(), p = $('pPhone').value.trim();
+    if (!n || p.replace(/\D/g, '').length < 3) { toast('Add a name and a phone number'); return; }
+    S.people.push({ n: n, p: p }); save(); $('pName').value = ''; $('pPhone').value = ''; peopleUi();
+    if (S.people.length === 1) award('people'); else toast('👥 Added');
+  };
+  $('peopleList').onclick = function (e) { var b = e.target.closest('[data-pdel]'); if (!b) return; if (!confirm('Remove ' + S.people[+b.dataset.pdel].n + '?')) return; S.people.splice(+b.dataset.pdel, 1); save(); peopleUi(); };
+  var msgT; $('pMsg').addEventListener('input', function () { S.msg = this.value; clearTimeout(msgT); msgT = setTimeout(function () { save(); peopleUi(); }, 500); });
+  $('reachBtn').onclick = function () { peopleUi(); $('reachOv').classList.add('on'); };
+  $('reachClose').onclick = function () { $('reachOv').classList.remove('on'); };
+  $('reachOv').addEventListener('click', function (e) { if (e.target === this || e.target.hasAttribute('data-close')) this.classList.remove('on'); });
+  ['noteOv', 'pinOv'].forEach(function (id) { $(id).addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); }); });
+  window.addEventListener('keydown', function (e) { if (e.key === 'Escape') document.querySelectorAll('.ov.on').forEach(function (o) { o.classList.remove('on'); }); });
+
+  // ---------- backup / restore / erase (all files stay with the person) ----------
+  $('backupBtn').onclick = function () {
+    if (S.pinHash && !unlocked) { toast('Open your jar with your PIN first'); location.hash = 'jar'; return; }
+    var blob = new Blob([JSON.stringify({ app: 'calm-space', v: 1, data: S, photos: PH })], { type: 'application/json' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'calm-space-backup-' + today() + '.json'; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    toast('⬇️ Backup saved to your device');
+  };
+  $('restoreBtn').onclick = function () { $('restoreFile').click(); };
+  $('restoreFile').onchange = function () {
+    var f = this.files && this.files[0]; if (!f) return; this.value = '';
+    f.text().then(function (t) {
+      var j = JSON.parse(t); if (!j || j.app !== 'calm-space' || !j.data) throw 0;
+      if (!confirm('Replace what’s on this device with the backup?')) return;
+      S = j.data; PH = j.photos || {}; Object.keys(DEF).forEach(function (k) { if (S[k] === undefined) S[k] = JSON.parse(JSON.stringify(DEF[k])); });
+      save(); savePhotos(); unlocked = !S.pinHash; refreshAll(); toast('⬆️ Backup restored');
+    }).catch(function () { toast('That isn’t a Calm Space backup file'); });
+  };
+  $('wipeBtn').onclick = function () {
+    if (!confirm('Erase everything in Calm Space on this device? Your plant, check-ins, jar, plan and people will be gone.')) return;
+    if (!confirm('Last check: this can’t be undone unless you have a backup file. Erase?')) return;
+    try { localStorage.removeItem(KEY); localStorage.removeItem(PKEY); } catch (e) {}
+    S = JSON.parse(JSON.stringify(DEF)); PH = {}; unlocked = false; curMood = null; curFeels = []; refreshAll(); toast('Erased');
+  };
+
+  function refreshAll() {
+    muteUi(); drawPlant(); homeUi(); bStats(); groundUi(); newMatch(); peopleUi(); jarUi(); lockUi();
+    document.querySelectorAll('[data-plan]').forEach(function (ta) { ta.value = S.plan[ta.dataset.plan] || ''; });
+    $('sInfo').textContent = S.best.song ? 'Best: ' + S.best.song + ' notes' : '';
+  }
+  window.addEventListener('resize', function () { if ($('v-breathe').classList.contains('on')) { sizeCanvas($('bCv')); if (!B.on) drawBreathe(null); } if ($('v-cool').classList.contains('on')) { sizeCanvas($('cCv')); drawCool(); } });
+  refreshAll(); show();
+  setTimeout(function () { if ($('v-breathe').classList.contains('on')) drawBreathe(null); }, 50);
+})();
+</script>
+</body>
+</html>
