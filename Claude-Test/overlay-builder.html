@@ -247,9 +247,10 @@
         <div class="pv-top"><b><i class="fa-solid fa-crown" style="color:#ffd700"></i> Remove the watermark</b><span id="proStatus"></span></div>
         <p class="hint" style="margin:0 0 10px">Free overlays show a small “Overlay made at …” banner once an hour. A pass hides it for your Twitch channel — all of your overlay links, right away.</p>
         <div class="plans">
-          <button class="plan on" data-plan="month"><b>$5</b><small>per month</small></button>
-          <button class="plan" data-plan="year"><b>$50</b><small>per year · 2 months free</small></button>
+          <button class="plan on" data-plan="month"><b id="pMonth">$5</b><small>per month</small></button>
+          <button class="plan" data-plan="year"><b id="pYear">$50</b><small>per year · 2 months free</small></button>
         </div>
+        <p class="hint" id="tierNote" style="margin:8px 0 0">Twitch Affiliates and Partners: $8/month or $80/year.</p>
         <div id="paypalBox" style="margin-top:12px;min-height:46px"></div>
         <p class="hint" style="margin:6px 0 0">Pay once per month or year (it doesn't auto-renew). Buying again while active adds the time on.</p>
       </div>
@@ -545,8 +546,24 @@
 
   /* ---------- remove watermark (PayPal via ww-discord-auth) ---------- */
   var plan = 'month', ppLoaded = false;
+  // prices depend on the channel: Twitch Affiliates/Partners pay a bit more (server checks with Twitch)
+  var priceInfo = null;
+  function money(v) { v = parseFloat(v); return '$' + (v % 1 ? v.toFixed(2) : v); }
+  function updatePrices() {
+    var c = chan(), q = /^[a-z0-9_]{3,25}$/.test(c) ? '?channel=' + encodeURIComponent(c) : '';
+    return fetch(AUTH + '/overlay/plans' + q).then(function (r) { return r.json(); }).then(function (j) {
+      priceInfo = j; if (!j.plans || !j.plans.month) return j;
+      $('#pMonth').textContent = money(j.plans.month.price); $('#pYear').textContent = money(j.plans.year.price);
+      var e = j.prices && j.prices.earner, st = j.prices && j.prices.standard;
+      $('#tierNote').innerHTML = !q ? 'Twitch Affiliates and Partners: ' + money(e.month) + '/month or ' + money(e.year) + '/year.'
+        : j.tier === 'earner' ? '<span class="tag" style="background:#a855f7;color:#fff">Twitch ' + (j.broadcasterType === 'partner' ? 'Partner' : 'Affiliate') + '</span> Affiliate &amp; Partner pricing for twitch.tv/' + esc(c) + '.'
+        : 'Regular streamer pricing for twitch.tv/' + esc(c) + '. (Affiliates and Partners: ' + money(e.month) + '/month.)';
+      return j;
+    }).catch(function () { return null; });
+  }
   function checkPro() {
     var c = chan(), st = $('#proStatus');
+    updatePrices();
     if (!/^[a-z0-9_]{3,25}$/.test(c)) { st.innerHTML = ''; return; }
     fetch(AUTH + '/overlay/pro/' + encodeURIComponent(c)).then(function (r) { return r.json(); }).then(function (j) {
       st.innerHTML = j.pro ? '<span class="tag">No watermark until ' + new Date(j.until).toLocaleDateString() + '</span>' : '<span class="hint">Free version</span>';
@@ -560,7 +577,8 @@
     if (ppLoaded) return; ppLoaded = true;
     var box = $('#paypalBox');
     box.innerHTML = '<span class="hint">Loading checkout… (can take a few seconds the first time)</span>';
-    fetch(AUTH + '/overlay/plans').then(function (r) { return r.json(); }).then(function (cfgP) {
+    updatePrices().then(function (cfgP) {
+      if (!cfgP) throw 0;
       if (!cfgP.clientId) { box.innerHTML = '<span class="hint">Payments aren\'t switched on yet — check back soon.</span>'; return; }
       var s = document.createElement('script');
       s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(cfgP.clientId) + '&currency=USD&intent=capture';

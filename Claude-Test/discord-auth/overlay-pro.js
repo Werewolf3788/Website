@@ -10,16 +10,24 @@
  *                    purchases/{orderId}     ledger row (create() fails on reuse = no double credit)
  *        Buying again while still paid adds the time on to the end.
  *
- * Passes are paid up front (not auto-renewing): month = 31 days for $5, year = 365 days for $50.
+ * Passes are paid up front (not auto-renewing): month = 31 days, year = 365 days.
+ * Price depends on the channel: Twitch Affiliates/Partners pay the 'earner' price (checked with Twitch by the server,
+ * using twitch_client_id / twitch_client_secret from the Key Vault). See PRICES below.
  * No sign-in needed - the pass belongs to the Twitch channel typed in the Overlay Studio.
  * Uses the same PayPal keys as the game shop (Key Vault: paypal_client_id, paypal_secret, paypal_mode).
  * ========================================================================== */
 'use strict';
 
-const PLANS = {
-  month: { name: 'Overlay Studio - 1 month, no watermark', price: '5.00', days: 31 },
-  year:  { name: 'Overlay Studio - 1 year, no watermark',  price: '50.00', days: 365 }
+// ---- PRICES (change them here) ----
+//   standard = regular streamers;  earner = Twitch Affiliates and Partners (they're making money from streaming)
+const PRICES = {
+  standard: { month: '5.00', year: '50.00' },
+  earner:   { month: '8.00', year: '80.00' }
 };
+const PLAN_DAYS = { month: 31, year: 365 };
+const PLAN_NAME = { month: 'Overlay Studio - 1 month, no watermark', year: 'Overlay Studio - 1 year, no watermark' };
+function plan(tier, id) { const p = (PRICES[tier] || {})[id]; return p ? { name: PLAN_NAME[id], price: p, days: PLAN_DAYS[id] } : null; }
+const PLANS = PRICES;   // kept for anything that imported it
 const CURRENCY = 'USD';
 const DAY = 86400000;
 const money = v => (Math.round(parseFloat(v) * 100) / 100).toFixed(2);
@@ -37,6 +45,33 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
   };
   const proCache = new Map();   // channel -> { at, body }   keeps Firestore reads tiny
 
+  // ---- Is this channel a Twitch Affiliate / Partner? (Twitch app login, keys from the Key Vault) ----
+  let tw = { token: '', exp: 0 }; const tierCache = new Map();
+  async function vault(name) {
+    const owner = process.env.DISCORD_APP_OWNER_KEY; if (!owner) return '';
+    try { return String((await admin.database().ref('user_secrets/' + owner + '/' + name).once('value')).val() || '').trim(); } catch (e) { return ''; }
+  }
+  async function twitchToken() {
+    if (tw.token && Date.now() < tw.exp) return tw;
+    const id = process.env.TWITCH_CLIENT_ID || await vault('twitch_client_id'), secret = process.env.TWITCH_CLIENT_SECRET || await vault('twitch_client_secret');
+    if (!id || !secret) throw new Error('twitch keys missing from Key Vault');
+    const r = await fetchFn('https://id.twitch.tv/oauth2/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ client_id: id, client_secret: secret, grant_type: 'client_credentials' }).toString() });
+    const j = await r.json(); if (!j.access_token) throw new Error('twitch token failed (' + r.status + ')');
+    tw = { token: j.access_token, id, exp: Date.now() + Math.max(60, (j.expires_in || 3600) - 300) * 1000 }; return tw;
+  }
+  // -> { tier: 'standard'|'earner', type: ''|'affiliate'|'partner', found }
+  async function channelTier(ch) {
+    const hit = tierCache.get(ch); if (hit && Date.now() - hit.at < 3600000) return hit.v;
+    const t = await twitchToken();
+    const r = await fetchFn('https://api.twitch.tv/helix/users?login=' + encodeURIComponent(ch), { headers: { 'Client-Id': t.id, Authorization: 'Bearer ' + t.token } });
+    if (r.status === 401) { tw.exp = 0; throw new Error('twitch auth expired'); }
+    const j = await r.json(), u = (j.data || [])[0];
+    const type = u ? String(u.broadcaster_type || '') : '';
+    const v = { tier: type === 'affiliate' || type === 'partner' ? 'earner' : 'standard', type, found: !!u };
+    tierCache.set(ch, { at: Date.now(), v }); return v;
+  }
+
   app.get('/overlay/pro/:channel', async (req, res) => {
     cors(req, res);
     const ch = cleanChan(req.params.channel); if (!okChan(ch)) return res.json({ pro: false });
@@ -49,21 +84,27 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
     } catch (e) { console.error('[overlay pro]', e && e.message); res.json({ pro: false }); }
   });
 
+  // /overlay/plans?channel=name  -> prices for that channel (Affiliates/Partners see the earner price)
   app.get('/overlay/plans', async (req, res) => {
     cors(req, res); const k = await paypal.keys();
-    const plans = {}; Object.keys(PLANS).forEach(id => { plans[id] = { name: PLANS[id].name, price: PLANS[id].price, days: PLANS[id].days }; });
-    res.json({ clientId: k.id && k.secret ? k.id : '', currency: CURRENCY, mode: k.mode, plans });
+    const ch = cleanChan(req.query.channel); let info = { tier: 'standard', type: '', found: false };
+    if (okChan(ch)) { try { info = await channelTier(ch); } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check that channel with Twitch. Try again.' }); } }
+    const plans = {}; Object.keys(PLAN_DAYS).forEach(id => { plans[id] = plan(info.tier, id); });
+    res.json({ clientId: k.id && k.secret ? k.id : '', currency: CURRENCY, mode: k.mode, tier: info.tier, broadcasterType: info.type, found: info.found, plans, prices: PRICES });
   });
 
   app.post('/overlay/create', async (req, res) => {
     cors(req, res);
     try {
-      const ch = cleanChan(req.body && req.body.channel), planId = String((req.body && req.body.plan) || ''), P = PLANS[planId];
+      const ch = cleanChan(req.body && req.body.channel), planId = String((req.body && req.body.plan) || '');
       if (!okChan(ch)) return res.status(400).json({ error: 'Type your Twitch username first.' });
-      if (!P) return res.status(400).json({ error: 'Pick monthly or yearly.' });
+      if (!PLAN_DAYS[planId]) return res.status(400).json({ error: 'Pick monthly or yearly.' });
+      let info; try { info = await channelTier(ch); } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check your channel with Twitch. Try again.' }); }
+      if (!info.found) return res.status(400).json({ error: 'Couldn’t find twitch.tv/' + ch + ' - check the spelling.' });
+      const P = plan(info.tier, planId);
       const k = await paypal.keys(); if (!k.id || !k.secret) return res.status(503).json({ error: 'Payments aren’t set up yet.' });
       const r = await paypal.papi(k, '/v2/checkout/orders', { intent: 'CAPTURE',
-        purchase_units: [{ reference_id: 'overlay_' + planId, custom_id: 'overlay|' + ch + '|' + planId + '|' + P.price, description: (P.name + ' for twitch.tv/' + ch).slice(0, 127), amount: { currency_code: CURRENCY, value: P.price } }],
+        purchase_units: [{ reference_id: 'overlay_' + planId, custom_id: 'overlay|' + ch + '|' + planId + '|' + P.price + '|' + info.tier, description: (P.name + ' for twitch.tv/' + ch).slice(0, 127), amount: { currency_code: CURRENCY, value: P.price } }],
         application_context: { brand_name: 'Werewolf Overlay Studio', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW' } });
       if (r.status >= 300 || !r.json || !r.json.id) { console.error('[overlay create]', r.status, JSON.stringify(r.json)); return res.status(502).json({ error: 'PayPal could not start the order.' }); }
       res.json({ id: r.json.id });
@@ -83,12 +124,12 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
       if (r.status === 422 && r.json && JSON.stringify(r.json).indexOf('ORDER_ALREADY_CAPTURED') >= 0)
         r = { status: 200, json: await fetchFn(k.api + '/v2/checkout/orders/' + orderId, { headers: { Authorization: 'Bearer ' + await paypal.token(k) } }).then(x => x.json()) };
       const o = r.json || {}, pu = (o.purchase_units || [])[0] || {}, cap = (((pu.payments || {}).captures) || [])[0] || {};
-      const [tag, ch, planId, want] = String(pu.custom_id || cap.custom_id || '').split('|'), P = PLANS[planId], amt = cap.amount || pu.amount || {};
+      const [tag, ch, planId, want, tierRaw] = String(pu.custom_id || cap.custom_id || '').split('|'), tier = tierRaw || 'standard', P = plan(tier, planId), amt = cap.amount || pu.amount || {};
       if (o.status !== 'COMPLETED' || cap.status !== 'COMPLETED') return res.status(402).json({ error: 'PayPal hasn’t completed this payment (' + (cap.status || o.status || r.status) + ').' });
       if (tag !== 'overlay' || !P || !okChan(ch)) return res.status(400).json({ error: 'That isn’t an overlay order.' });
       if (amt.currency_code !== CURRENCY || money(amt.value) !== money(P.price) || want !== P.price) return res.status(402).json({ error: 'Payment amount doesn’t match.' });
 
-      const row = { kind: 'overlay', channel: ch, plan: planId, price: money(amt.value), currency: CURRENCY, capture: cap.id || '', payer: ((o.payer || {}).email_address) || '', mode: k.mode, at: Date.now() };
+      const row = { kind: 'overlay', channel: ch, plan: planId, tier, price: money(amt.value), currency: CURRENCY, capture: cap.id || '', payer: ((o.payer || {}).email_address) || '', mode: k.mode, at: Date.now() };
       try { await ledger.create(row); } catch (e) { return res.json({ ok: true, already: true }); }   // recorded already: credit once only
 
       const ref = fs().collection('overlay_pro').doc(ch);
@@ -96,7 +137,7 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
         const cur = await t.get(ref), d = cur.exists ? cur.data() : {};
         const start = Math.max(Date.now(), Number(d.until || 0));
         const next = start + P.days * DAY;
-        t.set(ref, { channel: ch, until: next, plan: planId, payer: row.payer, updated: Date.now(), orders: (d.orders || []).concat(orderId).slice(-50) }, { merge: true });
+        t.set(ref, { channel: ch, until: next, plan: planId, tier, payer: row.payer, updated: Date.now(), orders: (d.orders || []).concat(orderId).slice(-50) }, { merge: true });
         return next;
       });
       proCache.delete(ch);

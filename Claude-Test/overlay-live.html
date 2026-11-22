@@ -551,7 +551,7 @@
   function showWatermark() {
     var old = stage.querySelector('.wm'); if (old) old.remove();
     var w = el('div', 'wm', '<i class="fa-solid fa-wand-magic-sparkles"></i><div>Overlay made at ' +
-      esc(STUDIO_URL.replace(/^https?:\/\//, '')) + '<small>Make your own free • remove this for $5/month or $50/year</small></div>');
+      esc(STUDIO_URL.replace(/^https?:\/\//, '')) + '<small>Make your own free • remove this from $5/month</small></div>');
     stage.appendChild(w);
     setTimeout(function () { w.classList.add('leave'); setTimeout(function () { w.remove(); }, 550); }, 12000);
   }
