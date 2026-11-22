@@ -13,15 +13,102 @@
       "**/*.md",
       "database.rules.json",
       "**/__pycache__/**",
-      "Claude-Test/sync/**",
-      "overlay/saves/**"
+      "overlay/saves/**",
+      "server/**/*.js",
+      "server/**/*.json",
+      "server/**/*.yaml",
+      "server/**/*.gs",
+      "server/**/test/**",
+      "server/**/lib/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
+    "redirects": [
+      {
+        "source": "/game/:rest*",
+        "destination": "/games/:rest*",
+        "type": 301
+      },
+      {
+        "source": "/Mobilegames",
+        "destination": "/games/mobile",
+        "type": 301
+      },
+      {
+        "source": "/Mobilegames/:rest*",
+        "destination": "/games/mobile/:rest*",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/profile",
+        "destination": "/profile",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/music",
+        "destination": "/music",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/amazon",
+        "destination": "/amazon",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/farm",
+        "destination": "/games/mobile/farm",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/overlay-live",
+        "destination": "/overlay/live",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/overlay-builder",
+        "destination": "/overlay-studio",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/stream-sync/:rest*",
+        "destination": "/server/stream-sync/:rest*",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/ww-msg-toast.js",
+        "destination": "/assets/ww-msg-toast.js",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/ww-ach-toast.js",
+        "destination": "/assets/ww-ach-toast.js",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/ww-social.js",
+        "destination": "/assets/ww-social.js",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/ww-auth.js",
+        "destination": "/assets/ww-auth.js",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test",
+        "destination": "/games/mobile",
+        "type": 301
+      },
+      {
+        "source": "/Claude-Test/",
+        "destination": "/games/mobile",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "/fc5",
-        "destination": "/game/index.html"
+        "destination": "/games/all.html"
       },
       {
         "source": "/fs25",
@@ -39,7 +126,7 @@
         ]
       },
       {
-        "source": "/game/**",
+        "source": "/games/**",
         "headers": [
           {
             "key": "Cache-Control",

@@ -12,7 +12,7 @@ on:
         description: 'Message'
         required: true
       url:
-        description: 'Page to open when tapped (e.g. ./Movies.html or ./game/all.html)'
+        description: 'Page to open when tapped (e.g. ./Movies.html or ./games/all.html)'
         required: false
         default: './'
       image:
