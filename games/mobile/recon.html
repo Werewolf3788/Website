@@ -39,6 +39,7 @@
   #hp i{background:#f8fafc}#st i{background:#facc15}#bat i{background:#38bdf8}
   #det{left:0;right:0;top:calc(70px + env(safe-area-inset-top));text-align:center;font-weight:800;letter-spacing:.1em;pointer-events:none;text-shadow:0 1px 4px #000}
   #toast{left:0;right:0;top:calc(96px + env(safe-area-inset-top));text-align:center;color:#fde68a;font-weight:700;text-shadow:0 1px 3px #000;pointer-events:none;padding:0 12px;min-height:1.3em}
+  #syncT{left:0;right:0;top:calc(122px + env(safe-area-inset-top));text-align:center;font-weight:800;font-variant-numeric:tabular-nums;color:#fca5a5;text-shadow:0 1px 3px #000;pointer-events:none}#syncT.is-ready{color:#86efac}
   #center{left:0;right:0;top:36%;text-align:center;font-size:2.2rem;font-weight:900;text-shadow:0 3px 10px #000;pointer-events:none}
   #hurt{position:fixed;inset:0;z-index:4;pointer-events:none;box-shadow:inset 0 0 120px #dc2626;opacity:0;transition:opacity .3s}
   #hint{left:12px;bottom:calc(14px + env(safe-area-inset-bottom));font-size:.72rem;color:#cbd5e1;text-shadow:0 1px 3px #000;pointer-events:none;max-width:34vw;line-height:1.4}
@@ -78,6 +79,7 @@
 <div id="hurt"></div>
 <div id="top" class="hud"><span>🎯 <b>Werewolf Recon</b> · <span id="prov">Itacua</span> · Lv <b id="lvl">1</b> <span id="xpbar"><i></i></span></span><span><button id="muteBtn" title="Sound">🔊</button> <button id="mapBtn">🗺️ Map</button> <button id="skBtn">⬆️ Skills</button> · <button id="gamesBtn">☰ Games</button></span></div>
 <div id="res" class="hud"></div>
+<div id="syncT" class="hud"></div>
 <canvas id="mini" class="hud" width="260" height="260"></canvas>
 <div id="cross" class="hud"></div>
 <div id="det" class="hud"></div>

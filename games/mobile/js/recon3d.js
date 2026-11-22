@@ -756,13 +756,14 @@ function spotMarking(dt, origin, dir, maxD, state, speed) {
   else state.markT = 0;
 }
 function syncShot() {
-  if (MP.client) { const l = enemies.filter(e => e.marked && !e.dead).map(e => enemies.indexOf(e)); if (!l.length) { say('Mark targets first'); return; } netHost({ k: 'sync', l }); big('SYNC SHOT', 1200); return; }
+  if (syncPending) return;   // already counting down
+  if (MP.client) { const l = enemies.filter(e => e.marked && !e.dead).map(e => enemies.indexOf(e)); if (!l.length) { say('Mark targets first'); return; } if (syncCool > 0) { say('Sync shot ready in ' + Math.ceil(syncCool) + 's'); return; } netHost({ k: 'sync', l }); syncPending = { list: [], t: 3, n: 0, view: true }; syncCool = 40 * (1 - eff('born_leader')) + 3; return; }
   if (S.squadOff || !squad.some(b => !b.inactive && !b.down)) { say(MP.on ? 'Sync shot needs an AI squadmate (they fill empty co-op slots)' : 'Sync shot needs your AI squad: turn it on in the pause menu'); return; }
   const max = 3 + (rank('extra_sync_shot') ? effNum('extra_sync_shot') : 0);
   const list = enemies.filter(e => e.marked && !e.dead && e.pos.distanceTo(P.pos) < 180).sort((a, b) => a.pos.distanceTo(P.pos) - b.pos.distanceTo(P.pos)).slice(0, max);
   if (!list.length) { say('Mark targets first (R1 tap / middle mouse / drone / binoculars)'); return; }
   if (syncCool > 0) { say('Sync shot ready in ' + Math.ceil(syncCool) + 's'); return; }
-  syncPending = { list, t: 1.6 }; big('SYNC SHOT ' + list.length, 1500); say('Squad: "On your mark… 3, 2, 1"');
+  syncPending = { list, t: 3, n: 0 }; say('🎯 Sync shot on ' + list.length + ' target' + (list.length === 1 ? '' : 's') + ': on your mark…');
 }
 
 // ------------------------------------------------------------------ vehicles
@@ -888,7 +889,11 @@ function update(dt, pad) {
   P.shotAgo = (P.shotAgo || 0) + dt; if (P.shotAgo > .16) { const k = Math.exp(-dt * 9); P.recoil = (P.recoil || 0) * k; P.recoilYaw = (P.recoilYaw || 0) * k; }   // the kick settles back to where you were aiming
   if (D.cool > 0 && P.mode !== 'drone') D.cool -= dt;
   if (syncCool > 0) syncCool -= dt;
-  if (syncPending) { syncPending.t -= dt; if (syncPending.t <= 0) { const L = syncPending.list; syncPending = null; L.forEach((e, i) => { if (e.dead) return; const b = squad[i % squad.length]; tracer(eye(b.pos, 1.4), eye(e.pos, 1.7), 0xbbf7d0); damageEnemy(e, 999, true, 'sync'); }); SFX.shot(true, 'sr'); syncCool = 40 * (1 - eff('born_leader')); say('Sync shot: ' + L.length + ' down'); } }
+  if (syncPending) { syncPending.t -= dt;
+    // Live 3 · 2 · 1 on screen while the squad lines up
+    const n = Math.ceil(syncPending.t); if (n > 0 && n !== syncPending.n) { syncPending.n = n; big('🎯 ' + n, 1100); SFX.click(); }
+    if (syncPending.t <= 0 && syncPending.view) { syncPending = null; big('🎯 FIRE', 900); }
+    else if (syncPending.t <= 0) { const L = syncPending.list; syncPending = null; big('🎯 FIRE', 900); L.forEach((e, i) => { if (e.dead) return; const b = squad[i % squad.length]; tracer(eye(b.pos, 1.4), eye(e.pos, 1.7), 0xbbf7d0); damageEnemy(e, 999, true, 'sync'); }); SFX.shot(true, 'sr'); syncCool = 40 * (1 - eff('born_leader')); say('Sync shot: ' + L.length + ' down'); } }
 
   enemiesTick(dt); squadTick(dt);
   // grenades
@@ -1289,6 +1294,12 @@ function fastTravel(uid) {
 
 // ------------------------------------------------------------------ HUD drawing
 function hudNow() {
+  // Sync shot timer: counts down live every HUD tick, shows ready when it can fire again
+  const sy = $('syncT'); if (sy) {
+    const can = MP.client || (!S.squadOff && squad.some(b => !b.inactive && !b.down));
+    sy.textContent = syncPending ? '🎯 Sync shot firing…' : syncCool > 0 ? '🎯 Sync shot in ' + Math.ceil(syncCool) + 's' : can ? '🎯 Sync shot ready' : '';
+    sy.classList.toggle('is-ready', !syncPending && syncCool <= 0);
+  }
   $('lvl').textContent = S.level; $('xpbar').firstChild.style.width = Math.round(S.xp / xpNeed() * 100) + '%';
   $('res').innerHTML = '⬆️ <b>' + S.sp + '</b> SP · ' + RES.map(r => r[1] + ' ' + (S.res[r[0]] | 0)).join(' · ') + (S.squadOff ? '' : '<br>🎖️ ' + squad.filter(b => !b.inactive).map(b => (b.down ? '⛑️' : b.hp < botMaxHP() * .5 ? '🟠' : '🟢') + b.name).join(' ')) + (MP.on ? '<br>👥 ' + Object.values(MP.remotes).filter(r => !r.stale).map(r => (r.mode === 'down' ? '⛑️' : '🔵') + esc(r.name)).join(' ') : '') + (countMarked() ? '<br>🔺 ' + countMarked() + ' marked' + (syncCool > 0 ? ' · sync ' + Math.ceil(syncCool) + 's' : ' · sync ready') : '');
   const n = curGun();

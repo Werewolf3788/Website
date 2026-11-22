@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 51,
+   "date": "Nov 22",
+   "game": "recon",
+   "items": [
+    "🎯 Sync shots now count down live on screen: 3 · 2 · 1 · FIRE",
+    "A sync shot timer under the top bar ticks down the cooldown every second and turns green when it's ready again (it stays up even after your marked targets are gone)"
+   ]
+  },
+  {
    "id": 50,
    "date": "Nov 22",
    "game": "battleship",
