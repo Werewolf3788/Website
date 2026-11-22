@@ -23,11 +23,11 @@
       "copies": 2,
       "accent": "#e2382c",
       "notes": "Two copies with different box art - note the sky and skyline on each.",
-      "image": "images/monopoly/deluxe-a.webp",
-      "thumb": "images/monopoly/deluxe-a-thumb.webp",
+      "image": "../Images/monopoly/deluxe-a.webp",
+      "thumb": "../Images/monopoly/deluxe-a-thumb.webp",
       "variants": [
-        { "label": "Box A", "image": "images/monopoly/deluxe-a.webp", "thumb": "images/monopoly/deluxe-a-thumb.webp" },
-        { "label": "Box B", "image": "images/monopoly/deluxe-b.webp", "thumb": "images/monopoly/deluxe-b-thumb.webp" }
+        { "label": "Box A", "image": "../Images/monopoly/deluxe-a.webp", "thumb": "../Images/monopoly/deluxe-a-thumb.webp" },
+        { "label": "Box B", "image": "../Images/monopoly/deluxe-b.webp", "thumb": "../Images/monopoly/deluxe-b-thumb.webp" }
       ],
       "added": "2026-11-13"
     },
@@ -39,8 +39,8 @@
       "publisher": "Parker Brothers",
       "accent": "#2f7be5",
       "notes": "A modern makeover for today's would-be billionaires.",
-      "image": "images/monopoly/here-and-now.webp",
-      "thumb": "images/monopoly/here-and-now-thumb.webp",
+      "image": "../Images/monopoly/here-and-now.webp",
+      "thumb": "../Images/monopoly/here-and-now-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -51,8 +51,8 @@
       "publisher": "Hasbro Gaming",
       "accent": "#18b3d6",
       "notes": "Electronic banking unit with bank cards; property values rise and fall.",
-      "image": "images/monopoly/ultimate-banking.webp",
-      "thumb": "images/monopoly/ultimate-banking-thumb.webp",
+      "image": "../Images/monopoly/ultimate-banking.webp",
+      "thumb": "../Images/monopoly/ultimate-banking-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -62,8 +62,8 @@
       "category": "Modern Twists",
       "publisher": "Hasbro Gaming",
       "accent": "#e0553a",
-      "image": "images/monopoly/millionaire.webp",
-      "thumb": "images/monopoly/millionaire-thumb.webp",
+      "image": "../Images/monopoly/millionaire.webp",
+      "thumb": "../Images/monopoly/millionaire-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -73,8 +73,8 @@
       "category": "Modern Twists",
       "accent": "#2f9bff",
       "notes": "2 to 8 players.",
-      "image": "images/monopoly/mega.webp",
-      "thumb": "images/monopoly/mega-thumb.webp",
+      "image": "../Images/monopoly/mega.webp",
+      "thumb": "../Images/monopoly/mega-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -84,8 +84,8 @@
       "category": "Modern Twists",
       "publisher": "Hasbro Gaming",
       "accent": "#f2b705",
-      "image": "images/monopoly/city.webp",
-      "thumb": "images/monopoly/city-thumb.webp",
+      "image": "../Images/monopoly/city.webp",
+      "thumb": "../Images/monopoly/city-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -96,8 +96,8 @@
       "publisher": "Hasbro Gaming",
       "accent": "#f5c400",
       "notes": "Includes a trophy.",
-      "image": "images/monopoly/championship.webp",
-      "thumb": "images/monopoly/championship-thumb.webp",
+      "image": "../Images/monopoly/championship.webp",
+      "thumb": "../Images/monopoly/championship-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -106,8 +106,8 @@
       "subtitle": "Collector's Edition",
       "category": "Video Games",
       "accent": "#e4302b",
-      "image": "images/monopoly/nintendo.webp",
-      "thumb": "images/monopoly/nintendo-thumb.webp",
+      "image": "../Images/monopoly/nintendo.webp",
+      "thumb": "../Images/monopoly/nintendo-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -117,8 +117,8 @@
       "category": "Video Games",
       "condition": "Factory Sealed",
       "accent": "#d8b640",
-      "image": "images/monopoly/zelda.webp",
-      "thumb": "images/monopoly/zelda-thumb.webp",
+      "image": "../Images/monopoly/zelda.webp",
+      "thumb": "../Images/monopoly/zelda-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -129,8 +129,8 @@
       "publisher": "Hasbro Gaming",
       "accent": "#7a4dff",
       "notes": "Ages 13+.",
-      "image": "images/monopoly/fortnite.webp",
-      "thumb": "images/monopoly/fortnite-thumb.webp",
+      "image": "../Images/monopoly/fortnite.webp",
+      "thumb": "../Images/monopoly/fortnite-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -140,8 +140,8 @@
       "publisher": "Hasbro Gaming",
       "accent": "#ff7a1a",
       "notes": "Has a 'Try Me!' sound button on the box.",
-      "image": "images/monopoly/jurassic.webp",
-      "thumb": "images/monopoly/jurassic-thumb.webp",
+      "image": "../Images/monopoly/jurassic.webp",
+      "thumb": "../Images/monopoly/jurassic-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -151,8 +151,8 @@
       "category": "Movies & Icons",
       "accent": "#e08a2e",
       "notes": "Comes with 6 custom pewter pieces.",
-      "image": "images/monopoly/john-wayne.webp",
-      "thumb": "images/monopoly/john-wayne-thumb.webp",
+      "image": "../Images/monopoly/john-wayne.webp",
+      "thumb": "../Images/monopoly/john-wayne-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -163,8 +163,8 @@
       "publisher": "The National WWII Museum, New Orleans",
       "condition": "Factory Sealed",
       "accent": "#d6342b",
-      "image": "images/monopoly/wwii.webp",
-      "thumb": "images/monopoly/wwii-thumb.webp",
+      "image": "../Images/monopoly/wwii.webp",
+      "thumb": "../Images/monopoly/wwii-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -174,8 +174,8 @@
       "category": "Places & History",
       "condition": "Factory Sealed",
       "accent": "#1fa3e0",
-      "image": "images/monopoly/seaworld.webp",
-      "thumb": "images/monopoly/seaworld-thumb.webp",
+      "image": "../Images/monopoly/seaworld.webp",
+      "thumb": "../Images/monopoly/seaworld-thumb.webp",
       "added": "2026-11-13"
     },
     {
@@ -186,8 +186,8 @@
       "publisher": "University Games",
       "accent": "#d83a3a",
       "notes": "The classic rival game, 'Since 1977'.",
-      "image": "images/monopoly/anti-monopoly.webp",
-      "thumb": "images/monopoly/anti-monopoly-thumb.webp",
+      "image": "../Images/monopoly/anti-monopoly.webp",
+      "thumb": "../Images/monopoly/anti-monopoly-thumb.webp",
       "added": "2026-11-13"
     }
   ],

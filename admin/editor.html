@@ -204,11 +204,11 @@ function suggestImagePath(path){
   const fname = slug(itemId || itemName || ('img_'+Date.now())) + '.' + ext;
   if (missionKey){
     const short = missionShortFromKey(missionKey);
-    if (inMedals) return GAMES_DIR+'/'+GAME_KEY+'/images/medals/'+fname;
-    return GAMES_DIR+'/'+GAME_KEY+'/images/locations/'+short+'/'+fname;
+    if (inMedals) return 'Images/'+GAME_KEY+'/medals/'+fname;
+    return 'Images/'+GAME_KEY+'/locations/'+short+'/'+fname;
   }
-  if (inMedals) return GAMES_DIR+'/'+GAME_KEY+'/images/medals/'+fname;
-  return GAMES_DIR+'/'+GAME_KEY+'/images/misc/'+fname;
+  if (inMedals) return 'Images/'+GAME_KEY+'/medals/'+fname;
+  return 'Images/'+GAME_KEY+'/misc/'+fname;
 }
 
 // --------------------------------------------------------------- rendering

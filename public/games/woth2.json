@@ -32,7 +32,7 @@
       "id": "kilimaya_reserve",
       "name": "Kilimaya Reserve",
       "region": "Africa",
-      "map_image_url": "/public/games/woth2/images/maps/kilimaya_reserve.jpg",
+      "map_image_url": "/Images/woth2/maps/kilimaya_reserve.jpg",
       "areas": [
         "Kaggen Karoo",
         "Mamlambo Heath",
@@ -63,7 +63,7 @@
       "id": "new_laurentia",
       "name": "New Laurentia",
       "region": "North America",
-      "map_image_url": "/public/games/woth2/images/maps/new_laurentia.jpg",
+      "map_image_url": "/Images/woth2/maps/new_laurentia.jpg",
       "areas": [
         "Jackalope Cordillera",
         "Kermode Plateau",
@@ -163,7 +163,7 @@
     {
       "id": "hearth_and_hunt_estate",
       "name": "Hearth & Hunt Headquarters",
-      "map_image_url": "/public/games/woth2/images/maps/hearth_and_hunt_estate.jpg",
+      "map_image_url": "/Images/woth2/maps/hearth_and_hunt_estate.jpg",
       "note": "Home base (Hearth & Hunt Estate).",
       "area_sq_km": 16,
       "description": "Hub with an expandable lodge, a cross-reserve trophy display and a smaller hunting area (not a full reserve)."
@@ -1165,7 +1165,7 @@
       "name": "Southern Warthog",
       "scientific_name": "Phacochoerus africanus sundevallii",
       "class": 5,
-      "image_url": "/public/games/woth2/images/animals/southern_warthog.jpg",
+      "image_url": "/Images/woth2/animals/southern_warthog.jpg",
       "trophy": {
         "type": "Tusks",
         "score_fields": [
@@ -1181,8 +1181,8 @@
       "name": "Southern Lion",
       "scientific_name": "Panthera leo melanochaita",
       "class": 6,
-      "image_url": "/public/games/woth2/images/animals/southern_lion_male.jpg",
-      "image_female_url": "/public/games/woth2/images/animals/southern_lion_female.jpg",
+      "image_url": "/Images/woth2/animals/southern_lion_male.jpg",
+      "image_female_url": "/Images/woth2/animals/southern_lion_female.jpg",
       "trophy": {
         "type": "Skull",
         "score_fields": [
@@ -2090,7 +2090,7 @@
       "impact": "High",
       "reserve": "Kilimaya Reserve",
       "area": "Popobawa Vlei",
-      "image_url": "/public/games/woth2/images/hazards/dry_lake.jpg",
+      "image_url": "/Images/woth2/hazards/dry_lake.jpg",
       "description": "A pan dried out by drought and over-extraction of water. Cleaning up the water, soil and surroundings improves local animal populations.",
       "affects": [
         "Southern yellow-billed duck",

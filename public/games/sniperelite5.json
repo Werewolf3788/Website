@@ -165,7 +165,7 @@
         ]
       },
       "date": "May 28th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m01-the-atlantic-wall.jpg",
+      "image_url": "/Images/sniperelite5/missions/m01-the-atlantic-wall.jpg",
       "description": "Karl Fairburne and a squad of US Rangers infiltrate the Nazi-occupied seaside town of Colline-Sur-Mer, under cover of an Allied aerial assault. Karl's orders are to take out a Radar Tower before rendezvousing with his Resistance contact, Blue Viper.",
       "optional_objectives": [
         "Destroy the Gun Battery",
@@ -296,7 +296,7 @@
         ]
       },
       "date": "May 29th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m02-occupied-residence.jpg",
+      "image_url": "/Images/sniperelite5/missions/m02-occupied-residence.jpg",
       "description": "Trapped behind enemy lines, Karl prepares to strike back at Obergruppenführer Abelard Möller, the Nazi responsible for ongoing atrocities and attacks on the French Resistance. Möller's operations are shrouded in secrecy, but the Resistance believe the Nazi stronghold of Chateau de Berengar holds the key.",
       "optional_objectives": [
         "Recover the Stolen Antiques"
@@ -425,7 +425,7 @@
         ]
       },
       "date": "May 30th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m03-spy-academy.jpg"
+      "image_url": "/Images/sniperelite5/missions/m03-spy-academy.jpg"
     },
     "mission_4": {
       "number": 4,
@@ -540,7 +540,7 @@
         ]
       },
       "date": "May 31st 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m04-war-factory.jpg"
+      "image_url": "/Images/sniperelite5/missions/m04-war-factory.jpg"
     },
     "mission_5": {
       "number": 5,
@@ -655,7 +655,7 @@
         ]
       },
       "date": "June 1st 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m05-festung-guernsey.jpg"
+      "image_url": "/Images/sniperelite5/missions/m05-festung-guernsey.jpg"
     },
     "mission_6": {
       "number": 6,
@@ -770,7 +770,7 @@
         ]
       },
       "date": "June 11th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m06-liberation.jpg"
+      "image_url": "/Images/sniperelite5/missions/m06-liberation.jpg"
     },
     "mission_7": {
       "number": 7,
@@ -885,7 +885,7 @@
         ]
       },
       "date": "June 12th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m07-secret-weapons.jpg",
+      "image_url": "/Images/sniperelite5/missions/m07-secret-weapons.jpg",
       "collectibles_source": "Classified documents corrected against pushsquare.com's Secret Weapons collectible list: real doc order is Inbound Deliveries, Dr Junger's Schedule, A-4B Logistical Issues, Intruder Sighted, Pressurisation Report. The file previously duplicated 'Prufstand XII Plans' as both a classified document AND a hidden item (it's correctly only a hidden item) and included a fabricated 'Kraken Fuel Issues' doc; both have been replaced with the two real missing docs (Inbound Deliveries, A-4B Logistical Issues). Locations for those two are not yet confirmed from an in-game screenshot."
     },
     "mission_8": {
@@ -1001,7 +1001,7 @@
         ]
       },
       "date": "June 13th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m08-rubble-and-ruin.jpg",
+      "image_url": "/Images/sniperelite5/missions/m08-rubble-and-ruin.jpg",
       "collectibles_source": "pushsquare.com (Rubble and Ruin: All Collectibles). Replaces earlier placeholder names/locations that didn't match any guide (classified_documents was also short by 1: 4 instead of the correct 5, which is why the file's classified_documents total was 38 instead of the 39 target)."
     },
     "mission_9": {
@@ -1017,7 +1017,7 @@
         "workbenches": []
       },
       "date": "June 13th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/m09-loose-ends.jpg",
+      "image_url": "/Images/sniperelite5/missions/m09-loose-ends.jpg",
       "description": "Final mission of the main campaign. By design, Loose Ends has no collectibles (0 Personal Letters, Classified Documents, Hidden Items, Stone Eagles, or Workbenches) — there is nothing to find here.",
       "collectible_totals": {
         "personal_letters": 0,
@@ -1141,7 +1141,7 @@
         ]
       },
       "date": "July 13th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/dlc-wolf-mountain.jpg",
+      "image_url": "/Images/sniperelite5/missions/dlc-wolf-mountain.jpg",
       "dlc": true,
       "dlc_pack": "Target Führer: Wolf Mountain",
       "collectible_totals": {
@@ -1226,7 +1226,7 @@
         ]
       },
       "date": "August 15th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/dlc-landing-force.jpg",
+      "image_url": "/Images/sniperelite5/missions/dlc-landing-force.jpg",
       "dlc": true,
       "description": "After the successful Normandy landing to the north, Operation Dragoon prepares to apply pressure on the Nazis from the south and force them out of France.",
       "kill_target": "Hermann Kraus",
@@ -1324,7 +1324,7 @@
         ]
       },
       "date": "August 21st 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/dlc-conqueror.jpg",
+      "image_url": "/Images/sniperelite5/missions/dlc-conqueror.jpg",
       "dlc": true,
       "description": "The Nazis have been driven back to Falaise Castle, where they are making a desperate last stand. Karl has orders to secure the town, breach the castle walls, eliminate General Konig, and force a German surrender.",
       "kill_target": "Kristian Hoffmann",
@@ -1412,7 +1412,7 @@
         ]
       },
       "date": "August 28th 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/dlc-rough-landing.jpg",
+      "image_url": "/Images/sniperelite5/missions/dlc-rough-landing.jpg",
       "dlc": true,
       "description": "Allied aircraft have been shot down over Fréteval Forest, with the pilots holding intel that we cannot allow the Nazis to apprehend.",
       "kill_target": "Luc Masson",
@@ -1509,7 +1509,7 @@
       },
       "region": "Finistère, Brittany",
       "date": "September 21st 1944",
-      "image_url": "/public/games/sniperelite5/images/missions/dlc-kraken-awakes.jpg",
+      "image_url": "/Images/sniperelite5/missions/dlc-kraken-awakes.jpg",
       "dlc": true,
       "description": "Resistance scouts have traced the Nazi's Kraken convoys to a Drydock base. Further intel also confirms that Vogel, previous assistant to Möller is now leading Project Kraken. Infiltrate the Nazi base, eliminate Vogel and disrupt whatever the Nazis are up to.",
       "kill_target": "Erich Windolf",
@@ -1711,67 +1711,67 @@
           "id": "se5_mprib_name_taker",
           "name": "Name Taker",
           "requirement": "Kill every opposing player in the match once",
-          "image_url": "/public/games/sniperelite5/images/ribbons/name-taker.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/name-taker.jpg"
         },
         {
           "id": "se5_mprib_punishment",
           "name": "Punishment",
           "requirement": "Score 3 Punisher Kills",
-          "image_url": "/public/games/sniperelite5/images/ribbons/punishment.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/punishment.jpg"
         },
         {
           "id": "se5_mprib_kill_streak_ultra",
           "name": "Kill Streak Ultra",
           "requirement": "Achieve a 15 Kill Streak",
-          "image_url": "/public/games/sniperelite5/images/ribbons/kill-streak-ultra.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/kill-streak-ultra.jpg"
         },
         {
           "id": "se5_mprib_melee_master",
           "name": "Melee Master",
           "requirement": "Score 5 Melee Kills",
-          "image_url": "/public/games/sniperelite5/images/ribbons/melee-master.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/melee-master.jpg"
         },
         {
           "id": "se5_mprib_kill_streak_assassin",
           "name": "Kill Streak Assassin",
           "requirement": "Achieve a 5 Kill Streak",
-          "image_url": "/public/games/sniperelite5/images/ribbons/kill-streak-assassin.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/kill-streak-assassin.jpg"
         },
         {
           "id": "se5_mprib_pistol_virtuoso",
           "name": "Pistol Virtuoso",
           "requirement": "Score 5 Pistol Kills",
-          "image_url": "/public/games/sniperelite5/images/ribbons/pistol-virtuoso.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/pistol-virtuoso.jpg"
         },
         {
           "id": "se5_mprib_secondary_weapon_champion",
           "name": "Secondary Weapon Champion",
           "requirement": "Score 5 Secondary Weapon Kills",
-          "image_url": "/public/games/sniperelite5/images/ribbons/secondary-weapon-champion.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/secondary-weapon-champion.jpg"
         },
         {
           "id": "se5_mprib_rival_rouser",
           "name": "Rival Rouser",
           "requirement": "Initiate 3 Rivalries in a single match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/rival-rouser.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/rival-rouser.jpg"
         },
         {
           "id": "se5_mprib_grenadier",
           "name": "Grenadier",
           "requirement": "Score 3 Grenade Kills",
-          "image_url": "/public/games/sniperelite5/images/ribbons/grenadier.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/grenadier.jpg"
         },
         {
           "id": "se5_mprib_kill_streak_warrior",
           "name": "Kill Streak Warrior",
           "requirement": "Achieve a 10 Kill Streak",
-          "image_url": "/public/games/sniperelite5/images/ribbons/kill-streak-warrior.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/kill-streak-warrior.jpg"
         },
         {
           "id": "se5_mprib_rapid_action_repeater",
           "name": "Rapid Action Repeater",
           "requirement": "Score 3 rifle kills in quick succession",
-          "image_url": "/public/games/sniperelite5/images/ribbons/rapid-action-repeater.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/rapid-action-repeater.jpg"
         }
       ],
       "tactics": [
@@ -1779,73 +1779,73 @@
           "id": "se5_mprib_battle_tour",
           "name": "Battle Tour",
           "requirement": "Relocate 3 times during a match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/battle-tour.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/battle-tour.jpg"
         },
         {
           "id": "se5_mprib_assassin_prime",
           "name": "Assassin Prime",
           "requirement": "Score the first kill in a match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/assassin-prime.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/assassin-prime.jpg"
         },
         {
           "id": "se5_mprib_disarmament_demon",
           "name": "Disarmament Demon",
           "requirement": "Disarm 3 Traps",
-          "image_url": "/public/games/sniperelite5/images/ribbons/disarmament-demon.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/disarmament-demon.jpg"
         },
         {
           "id": "se5_mprib_demolitions_expert",
           "name": "Demolitions Expert",
           "requirement": "Kill an enemy by shooting an explosive or trap",
-          "image_url": "/public/games/sniperelite5/images/ribbons/demolitions-expert.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/demolitions-expert.jpg"
         },
         {
           "id": "se5_mprib_hidden_and_dangerous",
           "name": "Hidden and Dangerous",
           "requirement": "Score 5 Kills From Within Foliage",
-          "image_url": "/public/games/sniperelite5/images/ribbons/hidden-and-dangerous.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/hidden-and-dangerous.jpg"
         },
         {
           "id": "se5_mprib_tag_hunter",
           "name": "Tag Hunter",
           "requirement": "Kill 5 tagged enemies",
-          "image_url": "/public/games/sniperelite5/images/ribbons/tag-hunter.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/tag-hunter.jpg"
         },
         {
           "id": "se5_mprib_shared_punishment",
           "name": "Shared Punishment",
           "requirement": "Score a punisher kill on 3 different players in a match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/shared-punishment.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/shared-punishment.jpg"
         },
         {
           "id": "se5_mprib_triple_toppler",
           "name": "Triple Toppler",
           "requirement": "Get 3 kills against any 1st placed enemy",
-          "image_url": "/public/games/sniperelite5/images/ribbons/triple-toppler.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/triple-toppler.jpg"
         },
         {
           "id": "se5_mprib_steady_shooter",
           "name": "Steady Shooter",
           "requirement": "Score 8 Empty Lung Kills",
-          "image_url": "/public/games/sniperelite5/images/ribbons/steady-shooter.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/steady-shooter.jpg"
         },
         {
           "id": "se5_mprib_full_tour",
           "name": "Full Tour",
           "requirement": "Relocate 5 Times in a row",
-          "image_url": "/public/games/sniperelite5/images/ribbons/full-tour.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/full-tour.jpg"
         },
         {
           "id": "se5_mprib_trapper",
           "name": "Trapper",
           "requirement": "Score 3 Trap Kills",
-          "image_url": "/public/games/sniperelite5/images/ribbons/trapper.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/trapper.jpg"
         },
         {
           "id": "se5_mprib_perfect_trap_technician",
           "name": "Perfect Trap Technician",
           "requirement": "Kill 3 opponents with a single explosive",
-          "image_url": "/public/games/sniperelite5/images/ribbons/perfect-trap-technician.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/perfect-trap-technician.jpg"
         }
       ],
       "performance": [
@@ -1853,73 +1853,73 @@
           "id": "se5_mprib_team_match_win",
           "name": "Team Match Win",
           "requirement": "Win a Team Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/team-match-win.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/team-match-win.jpg"
         },
         {
           "id": "se5_mprib_squad_match_win",
           "name": "Squad Match Win",
           "requirement": "Win a Squad Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/squad-match-win.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/squad-match-win.jpg"
         },
         {
           "id": "se5_mprib_distance_king",
           "name": "Distance King",
           "requirement": "Achieve the highest cumulative kill distance in a distance-based match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/distance-king.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/distance-king.jpg"
         },
         {
           "id": "se5_mprib_longest_shot",
           "name": "Longest Shot",
           "requirement": "Score the longest shot in the match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/longest-shot.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/longest-shot.jpg"
         },
         {
           "id": "se5_mprib_deciding_shot",
           "name": "Deciding Shot",
           "requirement": "Get the match winning shot",
-          "image_url": "/public/games/sniperelite5/images/ribbons/deciding-shot.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/deciding-shot.jpg"
         },
         {
           "id": "se5_mprib_top_kills",
           "name": "Top Kills",
           "requirement": "Achieve the highest kills in a kill-based match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/top-kills.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/top-kills.jpg"
         },
         {
           "id": "se5_mprib_mvp",
           "name": "MVP",
           "requirement": "Have the most kills and fewest deaths at the end of the match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/mvp.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/mvp.jpg"
         },
         {
           "id": "se5_mprib_squad_mvp",
           "name": "Squad MVP",
           "requirement": "Have the highest kills, fewest deaths, and longest shot on your team in a Squad Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/squad-mvp.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/squad-mvp.jpg"
         },
         {
           "id": "se5_mprib_commendable_performance",
           "name": "Commendable Performance",
           "requirement": "Earn 3 Accolades in a match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/commendable-performance.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/commendable-performance.jpg"
         },
         {
           "id": "se5_mprib_free_for_all_win",
           "name": "Free-For-All Win",
           "requirement": "Win a Free-For-All Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/free-for-all-win.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/free-for-all-win.jpg"
         },
         {
           "id": "se5_mprib_high_score",
           "name": "High Score",
           "requirement": "Achieve the highest Performance Score in a score-based match.",
-          "image_url": "/public/games/sniperelite5/images/ribbons/high-score.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/high-score.jpg"
         },
         {
           "id": "se5_mprib_no_cross_win",
           "name": "No Cross Win",
           "requirement": "Win a No Cross Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/no-cross-win.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/no-cross-win.jpg"
         }
       ],
       "support": [
@@ -1927,49 +1927,49 @@
           "id": "se5_mprib_team_triage",
           "name": "Team Triage",
           "requirement": "Revive every member of your team once in a Squad Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/team-triage.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/team-triage.jpg"
         },
         {
           "id": "se5_mprib_spotter",
           "name": "Spotter",
           "requirement": "Score 3 Tag Assists for the same ally",
-          "image_url": "/public/games/sniperelite5/images/ribbons/spotter.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/spotter.jpg"
         },
         {
           "id": "se5_mprib_assist_assassin",
           "name": "Assist Assassin",
           "requirement": "Earn 5 Kill Assists in a Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/assist-assassin.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/assist-assassin.jpg"
         },
         {
           "id": "se5_mprib_eyes_and_ears",
           "name": "Eyes and Ears",
           "requirement": "Score a tag assist for every member of your team in a Squad Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/eyes-and-ears.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/eyes-and-ears.jpg"
         },
         {
           "id": "se5_mprib_tagger",
           "name": "Tagger",
           "requirement": "Earn 5 Tag Assists in a Match",
-          "image_url": "/public/games/sniperelite5/images/ribbons/tagger.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/tagger.jpg"
         },
         {
           "id": "se5_mprib_intervention_technician",
           "name": "Intervention Technician",
           "requirement": "Score 3 Kills against targets who are performing Melee Kills",
-          "image_url": "/public/games/sniperelite5/images/ribbons/intervention-technician.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/intervention-technician.jpg"
         },
         {
           "id": "se5_mprib_superior_squad",
           "name": "Superior Squad",
           "requirement": "As a team, eliminate all players on all 3 opposing teams once in a Squad Match without dying",
-          "image_url": "/public/games/sniperelite5/images/ribbons/superior-squad.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/superior-squad.jpg"
         },
         {
           "id": "se5_mprib_combat_medic",
           "name": "Combat Medic",
           "requirement": "Revive a team mate 5 times",
-          "image_url": "/public/games/sniperelite5/images/ribbons/combat-medic.jpg"
+          "image_url": "/Images/sniperelite5/ribbons/combat-medic.jpg"
         }
       ]
     },

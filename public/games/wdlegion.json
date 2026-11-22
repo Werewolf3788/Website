@@ -3901,7 +3901,7 @@
             20,
             25
           ],
-          "image_url": "/public/games/wdlegion/images/tech/gadget_infiltrator_spiderbot.jpg",
+          "image_url": "/Images/wdlegion/tech/gadget_infiltrator_spiderbot.jpg",
           "tier_notes": [
             "A stealth-based spiderbot capable of performing non-lethal takedowns.",
             "Adds double jump and sprint capabilities.",
@@ -3922,7 +3922,7 @@
             20,
             25
           ],
-          "image_url": "/public/games/wdlegion/images/tech/gadget_ar_cloak.jpg",
+          "image_url": "/Images/wdlegion/tech/gadget_ar_cloak.jpg",
           "tier_notes": [
             "AR camouflage that renders the wearer invisible and breaks line of sight.",
             "Cloak lasts longer when standing still or walking slowly.",
@@ -3943,7 +3943,7 @@
             20,
             25
           ],
-          "image_url": "/public/games/wdlegion/images/tech/gadget_electro_fist.jpg",
+          "image_url": "/Images/wdlegion/tech/gadget_electro_fist.jpg",
           "tier_notes": [
             "A melee shock weapon that can knock out an opponent with a single punch.",
             "Arcs electricity to nearby enemies with each hit.",
@@ -3964,7 +3964,7 @@
             20,
             35
           ],
-          "image_url": "/public/games/wdlegion/images/tech/gadget_electro_shock_trap.jpg",
+          "image_url": "/Images/wdlegion/tech/gadget_electro_shock_trap.jpg",
           "tier_notes": [
             "A throwable sticky mine that shocks enemies and damages vehicles and drones.",
             "Adds an EMP effect that disables drones and disrupts enemies caught in the blast.",
@@ -3985,7 +3985,7 @@
             25,
             35
           ],
-          "image_url": "/public/games/wdlegion/images/tech/gadget_combat_spiderbot.jpg",
+          "image_url": "/Images/wdlegion/tech/gadget_combat_spiderbot.jpg",
           "tier_notes": [
             "A short-range non-lethal spiderbot with an automated turret and built-in armor.",
             "Increases the automated turret's rate of fire.",
@@ -4006,7 +4006,7 @@
             30,
             40
           ],
-          "image_url": "/public/games/wdlegion/images/tech/gadget_missile_drone.jpg",
+          "image_url": "/Images/wdlegion/tech/gadget_missile_drone.jpg",
           "tier_notes": [
             "A small drone that flies straight at enemies and explodes on impact.",
             "Hold the gadget button to give it target-seeking guidance.",
@@ -4022,7 +4022,7 @@
           "region": "Upgrade",
           "location": "Upgrade",
           "guide": "Lets you hide the bodies of anyone you've taken down in plain sight.",
-          "image_url": "/public/games/wdlegion/images/tech/upgrade_ar_shroud.jpg"
+          "image_url": "/Images/wdlegion/tech/upgrade_ar_shroud.jpg"
         },
         {
           "id": "upgrade_skin_mesh",
@@ -4033,7 +4033,7 @@
           "region": "Upgrade",
           "location": "Upgrade",
           "guide": "Reduces incoming damage taken by all DedSec operatives.",
-          "image_url": "/public/games/wdlegion/images/tech/upgrade_skin_mesh.jpg"
+          "image_url": "/Images/wdlegion/tech/upgrade_skin_mesh.jpg"
         },
         {
           "id": "upgrade_deep_profiler",
@@ -4044,7 +4044,7 @@
           "region": "Upgrade",
           "location": "Upgrade",
           "guide": "Reveals schedule and contact info for recruits who have a negative opinion of DedSec, letting you recruit them anyway.",
-          "image_url": "/public/games/wdlegion/images/tech/upgrade_deep_profiler.jpg"
+          "image_url": "/Images/wdlegion/tech/upgrade_deep_profiler.jpg"
         },
         {
           "id": "upgrade_chase_drone_deactivation",
@@ -4056,7 +4056,7 @@
           "location": "Upgrade",
           "guide": "Permanently disables nearby chase drones.",
           "unlock_requirement": "Unlock: turn 2 boroughs Defiant (removes DedSec Chase Drones from that borough once done citywide)",
-          "image_url": "/public/games/wdlegion/images/tech/upgrade_chase_drone_deactivation.jpg"
+          "image_url": "/Images/wdlegion/tech/upgrade_chase_drone_deactivation.jpg"
         },
         {
           "id": "upgrade_turret_deactivation",
@@ -4068,7 +4068,7 @@
           "location": "Upgrade",
           "guide": "Permanently disables nearby turrets. Unlocks after a borough turns Defiant (no Tech Point cost).",
           "unlock_requirement": "Unlock: turn 4 boroughs Defiant (disables hostile turrets in cleared boroughs)",
-          "image_url": "/public/games/wdlegion/images/tech/upgrade_turret_deactivation.jpg"
+          "image_url": "/Images/wdlegion/tech/upgrade_turret_deactivation.jpg"
         },
         {
           "id": "upgrade_combat_drone_deactivation",
@@ -4080,7 +4080,7 @@
           "location": "Upgrade",
           "guide": "Permanently disables nearby combat drones. Unlocks after a borough turns Defiant (no Tech Point cost).",
           "unlock_requirement": "Unlock: turn 6 boroughs Defiant (disables Combat Drones in cleared boroughs)",
-          "image_url": "/public/games/wdlegion/images/tech/upgrade_combat_drone_deactivation.jpg"
+          "image_url": "/Images/wdlegion/tech/upgrade_combat_drone_deactivation.jpg"
         },
         {
           "id": "weapon_ltl_68p_pistol",
@@ -4095,7 +4095,7 @@
             15,
             30
           ],
-          "image_url": "/public/games/wdlegion/images/tech/weapon_ltl_68p_pistol.jpg",
+          "image_url": "/Images/wdlegion/tech/weapon_ltl_68p_pistol.jpg",
           "tier_notes": [
             "Short-range, non-lethal sidearm available to every operative from the start.",
             "Increases magazine capacity and adds a silencer for stealthy takedowns."
@@ -4116,7 +4116,7 @@
             30
           ],
           "unlock_requirement": "Unlock: turn 1 borough Defiant",
-          "image_url": "/public/games/wdlegion/images/tech/weapon_mp9_smg.jpg",
+          "image_url": "/Images/wdlegion/tech/weapon_mp9_smg.jpg",
           "tier_notes": [
             "Fully-automatic, non-lethal submachine gun with a quick fire rate.",
             "Increases magazine capacity for longer sustained fire.",
@@ -4138,7 +4138,7 @@
             35
           ],
           "unlock_requirement": "Unlock: turn 1 borough Defiant",
-          "image_url": "/public/games/wdlegion/images/tech/weapon_ltl_sg.jpg",
+          "image_url": "/Images/wdlegion/tech/weapon_ltl_sg.jpg",
           "tier_notes": [
             "Non-lethal shotgun designed for short-range takedowns.",
             "Increases magazine capacity to hold more shells.",
@@ -4160,7 +4160,7 @@
             45
           ],
           "unlock_requirement": "Unlock: turn 1 borough Defiant",
-          "image_url": "/public/games/wdlegion/images/tech/weapon_dedsec_grenade_launcher.jpg",
+          "image_url": "/Images/wdlegion/tech/weapon_dedsec_grenade_launcher.jpg",
           "tier_notes": [
             "Slow-firing, anti-drone weapon that launches shock rounds with a wide area of effect.",
             "Increases magazine capacity to hold more rounds.",
@@ -4176,7 +4176,7 @@
           "region": "Hack",
           "location": "Hack",
           "guide": "Temporarily disrupts an enemy's balance/aim at range.",
-          "image_url": "/public/games/wdlegion/images/tech/hack_disrupt.jpg"
+          "image_url": "/Images/wdlegion/tech/hack_disrupt.jpg"
         },
         {
           "id": "hack_attract",
@@ -4187,7 +4187,7 @@
           "region": "Hack",
           "location": "Hack",
           "guide": "Makes a device or object emit noise to lure guards.",
-          "image_url": "/public/games/wdlegion/images/tech/hack_attract.jpg"
+          "image_url": "/Images/wdlegion/tech/hack_attract.jpg"
         },
         {
           "id": "hack_chase_drone",
@@ -4218,7 +4218,7 @@
           "region": "Hack",
           "location": "Hack",
           "guide": "Jams an enemy's weapon at range.",
-          "image_url": "/public/games/wdlegion/images/tech/hack_gun_jam.jpg"
+          "image_url": "/Images/wdlegion/tech/hack_gun_jam.jpg"
         },
         {
           "id": "hack_turret",
@@ -4234,7 +4234,7 @@
             30,
             40
           ],
-          "image_url": "/public/games/wdlegion/images/tech/hack_turret.jpg",
+          "image_url": "/Images/wdlegion/tech/hack_turret.jpg",
           "tier_notes": [
             "Hack turrets to disable them for a short period of time.",
             "Hijack a disabled turret and operate it directly, automatically targeting enemies.",
@@ -4250,7 +4250,7 @@
           "region": "Hack",
           "location": "Hack",
           "guide": "Hijack/disable Parcel Fox delivery drones.",
-          "image_url": "/public/games/wdlegion/images/tech/hack_parcel_fox_drone.jpg"
+          "image_url": "/Images/wdlegion/tech/hack_parcel_fox_drone.jpg"
         },
         {
           "id": "hack_ct_drone",
@@ -4266,7 +4266,7 @@
             45,
             60
           ],
-          "image_url": "/public/games/wdlegion/images/tech/hack_ct_drone.jpg",
+          "image_url": "/Images/wdlegion/tech/hack_ct_drone.jpg",
           "tier_notes": [
             "Hack Counter-Terrorism Drones to disable them for a short period of time.",
             "Hijack a disabled CT Drone and control it directly.",
@@ -4287,7 +4287,7 @@
             30,
             45
           ],
-          "image_url": "/public/games/wdlegion/images/tech/hack_riot_drone.jpg",
+          "image_url": "/Images/wdlegion/tech/hack_riot_drone.jpg",
           "tier_notes": [
             "Hack Riot Drones to disable them for a short period of time.",
             "Hijack a disabled Riot Drone and control it directly.",
