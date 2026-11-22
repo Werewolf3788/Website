@@ -224,6 +224,17 @@
           <div class="link"><input type="text" readonly id="editLink"><button class="btn sm" data-copy="editLink"><i class="fa-regular fa-copy"></i></button></div>
         </div>
         <p class="hint" style="margin:12px 0 0"><b>How to add it:</b> in OBS or Streamlabs add a <b>Browser Source</b>, paste the link, set Width <b>1920</b> and Height <b>1080</b>. Tick “Refresh browser when scene becomes active” so the Starting Soon countdown restarts. Change something here later? Copy the new link and paste it over the old one.</p>
+        <details style="margin-top:10px" id="seBox"><summary class="hint" style="cursor:pointer;color:#ffb38f"><b>Using StreamElements?</b> Get the code to paste</summary>
+          <p class="hint" style="margin:8px 0">In your StreamElements overlay (1920×1080): <b>+ → Static / Custom → Custom widget</b> → <b>Open editor</b>. Paste each box below into the matching tab (HTML, CSS, JS), click <b>Done</b>, then stretch the widget to fill the whole screen and save. Follows and tips will pop up too.</p>
+          <div class="link" style="margin-bottom:6px"><span>Screen</span><select id="seScene"><option value="live">Live overlay</option><option value="starting">Starting soon</option><option value="brb">Be right back</option><option value="ending">Ending</option></select></div>
+          <div class="hint" style="margin:6px 0 4px"><b>HTML</b></div>
+          <div class="link"><textarea readonly id="seHtml" style="min-height:70px;font:500 12px ui-monospace,monospace"></textarea><button class="btn sm main" data-copy="seHtml">Copy</button></div>
+          <div class="hint" style="margin:6px 0 4px"><b>CSS</b></div>
+          <div class="link"><textarea readonly id="seCss" style="min-height:70px;font:500 12px ui-monospace,monospace"></textarea><button class="btn sm main" data-copy="seCss">Copy</button></div>
+          <div class="hint" style="margin:6px 0 4px"><b>JS</b></div>
+          <div class="link"><textarea readonly id="seJs" style="min-height:90px;font:500 12px ui-monospace,monospace"></textarea><button class="btn sm main" data-copy="seJs">Copy</button></div>
+          <p class="hint" style="margin:6px 0 0">Saved your overlay? Then this code never needs changing — just press Save here after edits. Not saved yet? Copy the code again after changes.</p>
+        </details>
         <details style="margin-top:10px"><summary class="hint" style="cursor:pointer">Edit an overlay you made before</summary>
           <div class="link" style="margin-top:8px"><input type="text" id="loadLink" placeholder="Paste any of your overlay links"><button class="btn sm" id="loadBtn">Load</button></div>
         </details>
@@ -276,9 +287,9 @@
       ['range', 'chat.fade', 'Hide messages after (seconds, 0 = never)', 0, 120], ['toggle', 'chat.badges', 'Show mod / VIP / sub icons'],
       ['text', 'chat.hide', 'Hide these names (bots), comma separated']] },
     { k: 'alerts', icon: 'fa-solid fa-bell', name: 'Alerts (subs, gifts, raids, bits)', fields: [
-      ['toggle', 'alerts.subs', 'Subs & resubs'], ['toggle', 'alerts.gifts', 'Gifted subs'], ['toggle', 'alerts.raids', 'Raids'], ['toggle', 'alerts.bits', 'Bits / cheers'],
+      ['toggle', 'alerts.follows', 'New followers (StreamElements only)'], ['toggle', 'alerts.tips', 'Tips (StreamElements only)'], ['toggle', 'alerts.subs', 'Subs & resubs'], ['toggle', 'alerts.gifts', 'Gifted subs'], ['toggle', 'alerts.raids', 'Raids'], ['toggle', 'alerts.bits', 'Bits / cheers'],
       ['url', 'alerts.img', 'Alert picture or GIF (optional)'], ['url', 'alerts.sound', 'Alert sound link, .mp3 (optional)'], ['range', 'alerts.secs', 'Seconds on screen', 3, 20],
-      ['note', 'New followers can\'t be shown without a Twitch login — everything else works from your username.']] },
+      ['note', 'In OBS/Streamlabs, alerts come from your Twitch chat (subs, gifts, raids, bits). Inside StreamElements you also get new followers and tips.']] },
     { k: 'clock', icon: 'fa-regular fa-clock', name: 'Clock & uptime', fields: [
       ['tz', 'clock.tz', 'Time zone'], ['text', 'clock.label', 'Label after the time (e.g. EST)'], ['toggle', 'clock.h24', '24-hour time']] },
     { k: 'game', icon: 'fa-solid fa-gamepad', name: 'Game you\'re playing', fields: [['text', 'game.prefix', 'Small text above (e.g. "Now playing")']] },
@@ -481,6 +492,25 @@
   }
 
   var SCN = [['live', 'Live overlay'], ['starting', 'Starting soon'], ['brb', 'Be right back'], ['ending', 'Ending']];
+  /* ---------- StreamElements custom widget code ---------- */
+  var lastCodes = null;
+  function makeSE(codes) {
+    lastCodes = codes || lastCodes; if (!lastCodes) return;
+    var sc = $('#seScene').value, i = SCN.map(function (x) { return x[0]; }).indexOf(sc);
+    var url = saved ? LIVE + '?src=se&s=' + saved.id + (sc === 'live' ? '' : '&scene=' + sc) : LIVE + '?src=se#c=' + lastCodes[i];
+    $('#seHtml').value = '<iframe id="ws-overlay" src="' + url + '" allow="autoplay"></iframe>';
+    $('#seCss').value = 'html,body{margin:0;padding:0;background:transparent;overflow:hidden}\n#ws-overlay{position:fixed;inset:0;width:100%;height:100%;border:0;background:transparent}';
+    $('#seJs').value = [
+      '// Overlay Studio - sends StreamElements alerts (follows, subs, tips, bits, raids) into the overlay',
+      "window.addEventListener('onEventReceived', function (obj) {",
+      '  var d = obj.detail || {}, e = d.event || {};',
+      "  var f = document.getElementById('ws-overlay'); if (!f || !f.contentWindow) return;",
+      "  f.contentWindow.postMessage({ type: 'se-event', listener: d.listener, name: e.name, amount: e.amount,",
+      "    message: e.message, gifted: e.gifted, bulkGifted: e.bulkGifted, sender: e.sender }, '*');",
+      '});'
+    ].join('\n');
+  }
+  document.addEventListener('change', function (e) { if (e.target.id === 'seScene') makeSE(); });
   function makeLinks() {
     stateLine();
     Promise.all(SCN.map(function (s) { return C.encode(withScene(s[0])); })).then(function (codes) {
@@ -490,6 +520,7 @@
           '<button class="btn sm main" data-copy="lk' + i + '"><i class="fa-regular fa-copy"></i> Copy</button>' +
           '<a class="btn sm" href="' + esc(url) + '" target="_blank" rel="noopener" title="Open"><i class="fa-solid fa-up-right-from-square"></i></a></div>';
       }).join('') + (chan() ? '' : '<div class="hint" style="color:#fbbf24">Add your Twitch username in step 1 so chat and alerts work.</div>');
+      makeSE(codes);
     });
   }
 

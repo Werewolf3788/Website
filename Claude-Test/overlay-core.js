@@ -65,7 +65,7 @@
 
     brand:   { on: true,  pos: 'br', logo: '', name: '', tag: '', round: true },
     chat:    { on: true,  pos: 'bl', style: 'classic', width: 380, max: 8, fade: 0, hide: 'nightbot,streamelements,streamlabs', badges: true, size: 100 },
-    alerts:  { on: true,  pos: 'tc', img: '', sound: '', secs: 7, subs: true, gifts: true, raids: true, bits: true },
+    alerts:  { on: true,  pos: 'tc', img: '', sound: '', secs: 7, subs: true, gifts: true, raids: true, bits: true, follows: true, tips: true },
     clock:   { on: true,  pos: 'tr', tz: '', h24: false, label: '' },
     game:    { on: true,  pos: 'br', prefix: 'Now playing' },
     title:   { on: false, pos: 'tl' },

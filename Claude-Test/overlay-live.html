@@ -154,6 +154,7 @@
   var stage = document.getElementById('stage');
   var params = new URLSearchParams(location.search);
   var DEMO = params.get('demo') === '1';
+  var SE = params.get('src') === 'se';   // inside a StreamElements custom widget: alerts come from SE events instead of chat
   var cfg = C.clone(C.DEFAULTS);
   var timers = [];
   var chatBox = null, alertBox = null, alertQueue = [], alertBusy = false;
@@ -429,9 +430,9 @@
   function handle(m) {
     var t = m.tags, name = t['display-name'] || (m.prefix.split('!')[0]);
     if (m.cmd === 'PRIVMSG') {
-      if (t.bits && cfg.alerts.bits) alert('bits', name, t.bits + ' bits', stripAction(m.text));
+      if (t.bits && cfg.alerts.bits && !SE) alert('bits', name, t.bits + ' bits', stripAction(m.text));
       addChat({ id: t.id, user: name, login: m.prefix.split('!')[0], color: t.color, text: m.text, emotes: t.emotes, badges: t.badges || '' });
-    } else if (m.cmd === 'USERNOTICE') {
+    } else if (m.cmd === 'USERNOTICE' && !SE) {
       var id = t['msg-id'];
       if ((id === 'sub' || id === 'resub') && cfg.alerts.subs) {
         var mo = t['msg-param-cumulative-months'];
@@ -497,7 +498,7 @@
   }
 
   /* ---------------- alerts ---------------- */
-  var ALERT_IC = { sub: 'fa-solid fa-star', gift: 'fa-solid fa-gift', raid: 'fa-solid fa-people-group', bits: 'fa-solid fa-gem', follow: 'fa-solid fa-heart' };
+  var ALERT_IC = { sub: 'fa-solid fa-star', gift: 'fa-solid fa-gift', raid: 'fa-solid fa-people-group', bits: 'fa-solid fa-gem', follow: 'fa-solid fa-heart', tip: 'fa-solid fa-sack-dollar' };
   function alert(kind, who, what, note) {
     if (!cfg.alerts.on) return;
     alertQueue.push({ kind: kind, who: who, what: what, note: note });
@@ -571,7 +572,24 @@
   }
 
   // Live updates from the builder preview
+  // Events forwarded by the StreamElements custom widget (follows, subs, tips, bits, raids).
+  // Only ever turned into an alert card - nothing else can be changed this way.
+  function seEvent(d) {
+    var who = String(d.name || 'Someone').slice(0, 40), n = Math.max(0, parseFloat(d.amount) || 0), msg = String(d.message || '').slice(0, 200);
+    switch (String(d.listener)) {
+      case 'follower-latest': if (cfg.alerts.follows !== false) alert('follow', who, 'just followed!', ''); break;
+      case 'subscriber-latest':
+        if (d.bulkGifted) { if (cfg.alerts.gifts) alert('gift', who, 'gifted ' + n + ' subs!', ''); }
+        else if (d.gifted) { if (cfg.alerts.gifts) alert('gift', String(d.sender || who).slice(0, 40), 'gifted a sub to ' + who, ''); }
+        else if (cfg.alerts.subs) alert('sub', who, n > 1 ? 'subscribed for ' + n + ' months' : 'just subscribed', msg);
+        break;
+      case 'tip-latest': if (cfg.alerts.tips !== false) alert('tip', who, 'tipped $' + n.toFixed(2), msg); break;
+      case 'cheer-latest': if (cfg.alerts.bits) alert('bits', who, n + ' bits', msg); break;
+      case 'raid-latest': if (cfg.alerts.raids) alert('raid', who, 'is raiding with ' + n + ' viewers!', ''); break;
+    }
+  }
   addEventListener('message', function (e) {
+    if (SE && e.data && e.data.type === 'se-event' && e.source === parent) { seEvent(e.data); return; }
     if (e.origin !== location.origin || !e.data) return;
     if (e.data.type === 'overlay-cfg') apply(e.data.cfg);
     if (e.data.type === 'overlay-alert') testAlert(e.data.kind);
