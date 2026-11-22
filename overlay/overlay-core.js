@@ -45,6 +45,7 @@
   // Every setting the overlay understands. Anything missing from a link falls back to these.
   var DEFAULTS = {
     v: 1,
+    platform: 'twitch',            // twitch | youtube | kick  (the pass + watermark are tied to platform + username)
     channel: '',
     scene: 'live',                 // live | starting | brb | ending
     preset: 'werewolf',
@@ -81,6 +82,23 @@
       ending:   { title: 'Thanks for Watching', sub: 'See you next stream', mins: 0, chat: false }
     }
   };
+
+  // Streaming accounts: the username on each platform is the "account" (no sign-up needed)
+  var PLATFORMS = {
+    twitch:  { label: 'Twitch',  host: 'twitch.tv/',    icon: 'fa-brands fa-twitch',  re: /^[a-z0-9_]{3,25}$/ },
+    youtube: { label: 'YouTube', host: 'youtube.com/@', icon: 'fa-brands fa-youtube', re: /^[a-z0-9_.-]{3,30}$/ },
+    kick:    { label: 'Kick',    host: 'kick.com/',     icon: 'fa-solid fa-k',        re: /^[a-z0-9_-]{3,25}$/ }
+  };
+  // "twitch.tv/name", "youtube.com/@name", "kick.com/name", "@name" or just "name" -> { platform, name }
+  function parseAccount(text, platform) {
+    var t = String(text || '').trim(), m;
+    if ((m = t.match(/twitch\.tv\/([^\/?#\s]+)/i))) return { platform: 'twitch', name: m[1].toLowerCase() };
+    if ((m = t.match(/youtube\.com\/(?:channel\/|c\/|user\/)?@?([^\/?#\s]+)/i))) return { platform: 'youtube', name: m[1].toLowerCase() };
+    if ((m = t.match(/kick\.com\/([^\/?#\s]+)/i))) return { platform: 'kick', name: m[1].toLowerCase() };
+    return { platform: PLATFORMS[platform] ? platform : 'twitch', name: t.replace(/^@/, '').split(/[\/?#\s]/)[0].toLowerCase() };
+  }
+  function accountOk(a) { return !!(a && PLATFORMS[a.platform] && PLATFORMS[a.platform].re.test(a.name)); }
+  function accountLabel(a) { return (PLATFORMS[a.platform] || PLATFORMS.twitch).host + a.name; }
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
@@ -170,6 +188,7 @@
   }
 
   root.OverlayCore = {
+    PLATFORMS: PLATFORMS, parseAccount: parseAccount, accountOk: accountOk, accountLabel: accountLabel,
     POSITIONS: POSITIONS, PRESETS: PRESETS, FONTS: FONTS, SOCIALS: SOCIALS, DEFAULTS: DEFAULTS,
     clone: clone, merge: merge, encode: encode, decode: decode, fromLink: fromLink, fixImg: fixImg
   };

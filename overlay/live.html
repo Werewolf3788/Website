@@ -176,7 +176,8 @@
     return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')';
   }
   function every(fn, ms) { fn(); timers.push(setInterval(fn, ms)); }
-  function chan() { return String(cfg.channel || '').trim().toLowerCase().replace(/^@/, '').replace(/^https?:\/\/(www\.)?twitch\.tv\//, '').split(/[/?#]/)[0]; }
+  function acct() { return C.parseAccount(cfg.channel, cfg.platform); }          // { platform, name }
+  function chan() { var a = acct(); return a.platform === 'twitch' ? a.name : ''; } // Twitch-only features (chat, game, title...)
   function logoSrc() { return C.fixImg(cfg.brand.logo) || tw.avatar || ''; }
 
   /* ---------------- theme ---------------- */
@@ -241,8 +242,8 @@
 
     if (cfg.frameImg) { var f = el('img', 'frame'); f.src = C.fixImg(cfg.frameImg); stage.appendChild(f); }
 
-    if (!chan() && !DEMO) {
-      stage.appendChild(el('div', 'hint', 'Add your Twitch username in the Overlay Studio<br>to get chat, alerts and game info.'));
+    if (!acct().name && !DEMO) {
+      stage.appendChild(el('div', 'hint', 'Add your username in the Overlay Studio<br>to get chat, alerts and game info.'));
     }
     fillTwitch();
   }
@@ -250,7 +251,7 @@
   function buildBrand() {
     var b = el('div', 'brand'), src = logoSrc();
     if (src) { var i = el('img', cfg.brand.round ? 'round' : 'sq'); i.src = src; i.dataset.logo = '1'; b.appendChild(i); }
-    var name = cfg.brand.name || chan();
+    var name = cfg.brand.name || acct().name;
     if (name || cfg.brand.tag) {
       var t = el('div', 'txt');
       if (name) t.appendChild(el('div', 'name', esc(name)));
@@ -564,8 +565,8 @@
   var STUDIO_URL = location.origin + location.pathname.replace(/overlay\/live(\.html)?$/, 'overlay-studio');
   var isPro = false, proChecked = '', monthPrice = '5';
   function checkPro() {
-    var c = chan(); if (!c || DEMO) { isPro = false; return Promise.resolve(); }
-    return fetch(PRO_API + encodeURIComponent(c)).then(function (r) { return r.json(); })
+    var a = acct(), c = a.platform + ':' + a.name; if (!C.accountOk(a) || DEMO) { isPro = false; return Promise.resolve(); }
+    return fetch(PRO_API + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); })
       .then(function (j) { isPro = !!(j && j.pro); proChecked = c; if (j && j.month) monthPrice = String(parseFloat(j.month)); }).catch(function () { /* keep last answer */ });
   }
   function showWatermark() {
@@ -606,6 +607,8 @@
       case 'tip-latest': if (cfg.alerts.tips !== false) alert('tip', who, 'tipped $' + n.toFixed(2), msg); break;
       case 'cheer-latest': if (cfg.alerts.bits) alert('bits', who, n + ' bits', msg); break;
       case 'raid-latest': if (cfg.alerts.raids) alert('raid', who, 'is raiding with ' + n + ' viewers!', ''); break;
+      case 'sponsor-latest': if (cfg.alerts.subs) alert('sub', who, n > 1 ? 'has been a member for ' + n + ' months' : 'just became a member!', msg); break;   // YouTube members
+      case 'superchat-latest': if (cfg.alerts.tips !== false) alert('tip', who, 'sent a Super Chat of $' + n.toFixed(2), msg); break;          // YouTube Super Chat
     }
   }
   addEventListener('message', function (e) {

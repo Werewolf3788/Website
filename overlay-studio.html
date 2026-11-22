@@ -108,6 +108,14 @@
     .more-hint{display:flex}
   }
   .more-hint{display:none;align-items:center;justify-content:center;gap:.5rem;padding:1rem 0 2rem;color:var(--mute);font-weight:700;font-size:.85rem}
+  .paypill{display:inline-flex;align-items:center;gap:.5rem;margin:.75rem 0 0;padding:.55rem 1rem;border-radius:99px;border:1px solid rgba(255,215,0,.5);
+    background:linear-gradient(90deg,rgba(255,95,31,.18),rgba(255,215,0,.12));color:var(--text);font:700 .875rem Inter,sans-serif;cursor:pointer}
+  .paypill:hover{border-color:#ffd700} .paypill .fa-crown{color:#ffd700}
+  .modal{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:1rem}
+  .modal[hidden]{display:none}
+  .mbox{position:relative;width:min(34rem,100%);max-height:92vh;overflow:auto;background:var(--panel);border:1px solid rgba(255,95,31,.5);border-radius:1rem;padding:1.25rem}
+  .mbox h2{margin:0;font-size:1.35rem}
+  .mclose{position:absolute;top:.75rem;right:.75rem}
   .toast{position:fixed;left:50%;bottom:5.625rem;transform:translateX(-50%);background:#111;border:1px solid var(--accent);padding:0.625rem 1rem;border-radius:0.625rem;font-weight:700;z-index:99999;display:none}
 </style>
 </head>
@@ -115,6 +123,7 @@
 <div data-ww-nav-slot></div>
 <div class="wrap">
   <h1><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent)"></i> Overlay <span>Studio</span></h1>
+  <button class="paypill" id="payPill" type="button"><i class="fa-solid fa-crown"></i> Already have an overlay? <b>Pay or renew</b> <i class="fa-solid fa-arrow-right"></i></button>
   <p class="sub">Design your own stream overlay — no code. Pick colors, add your pictures, turn on what you want, then copy your link into OBS or Streamlabs.</p>
 
   <div class="grid">
@@ -122,13 +131,16 @@
     <div class="left">
 
       <details class="card" open>
-        <summary><span class="ic"><i class="fa-brands fa-twitch"></i></span><span class="sp">1. Your Twitch channel</span><i class="fa-solid fa-chevron-down chev"></i></summary>
+        <summary><span class="ic"><i class="fa-solid fa-tower-broadcast"></i></span><span class="sp">1. Your channel</span><i class="fa-solid fa-chevron-down chev"></i></summary>
         <div class="body">
-          <label class="f">Twitch username
+          <label class="f">Where do you stream?
+            <div class="seg" data-seg="platform"><button data-v="twitch"><i class="fa-brands fa-twitch"></i> Twitch</button><button data-v="youtube"><i class="fa-brands fa-youtube"></i> YouTube</button><button data-v="kick"><i class="fa-solid fa-k"></i> Kick</button></div>
+          </label>
+          <label class="f"><span id="userLabel">Twitch username</span> (or paste your channel link)
             <input type="text" data-k="channel" placeholder="e.g. your_channel" autocomplete="off" autocapitalize="off" spellcheck="false">
           </label>
           <div class="twcard" id="twcard" style="display:none"></div>
-          <div class="hint">Your overlay pulls from this channel: live chat, subs / gifted subs / raids / bits alerts, the game you're playing, your stream title, follower count, profile picture and uptime. No password or key needed.</div>
+          <div class="hint" id="platHint">Your overlay pulls from this channel: live chat, subs / gifted subs / raids / bits alerts, the game you're playing, your stream title, follower count, profile picture and uptime. No password or key needed.</div>
         </div>
       </details>
 
@@ -275,6 +287,27 @@
   </div>
 </div>
 <div class="toast" id="toast"></div>
+<div class="modal" id="payModal" hidden>
+  <div class="mbox" role="dialog" aria-labelledby="payTitle">
+    <button class="btn sm mclose" id="payClose" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <h2 id="payTitle"><i class="fa-solid fa-crown" style="color:#ffd700"></i> Pay or renew</h2>
+    <p class="hint" style="margin:.25rem 0 1rem">No account needed — your pass is tied to your streaming username. Every overlay you made with that username stops showing the watermark right away.</p>
+    <label class="f">Where do you stream?
+      <div class="seg" id="payPlat"><button data-v="twitch" class="on"><i class="fa-brands fa-twitch"></i> Twitch</button><button data-v="youtube"><i class="fa-brands fa-youtube"></i> YouTube</button><button data-v="kick"><i class="fa-solid fa-k"></i> Kick</button></div>
+    </label>
+    <label class="f" style="margin-top:.75rem">Your username or channel link
+      <input type="text" id="payUser" placeholder="e.g. twitch.tv/your_channel" autocomplete="off" autocapitalize="off" spellcheck="false">
+    </label>
+    <div id="payStatus" class="twcard" style="margin-top:.75rem;display:none"></div>
+    <div class="plans" style="margin-top:.75rem">
+      <button class="plan on" data-pplan="month" type="button"><b id="ppMonth">$5</b><small>per month</small></button>
+      <button class="plan" data-pplan="year" type="button"><b id="ppYear">$50</b><small>per year · 2 months free</small></button>
+    </div>
+    <p class="hint" id="payNote" style="margin:.5rem 0 0">Twitch Affiliates and Partners: $8/month or $80/year.</p>
+    <div id="payPaypal" style="margin-top:.75rem;min-height:2.875rem"></div>
+    <p class="hint" style="margin:.5rem 0 0">Pay once per month or year (it doesn't auto-renew). Paying while still active adds the time on to the end.</p>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -291,7 +324,8 @@
   function toast(t) { var e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(function () { e.style.display = 'none'; }, 2200); }
   function getK(path) { return path.split('.').reduce(function (o, k) { return o == null ? undefined : o[k]; }, cfg); }
   function setK(path, v) { var ks = path.split('.'), o = cfg; ks.slice(0, -1).forEach(function (k) { o = o[k] = o[k] || {}; }); o[ks[ks.length - 1]] = v; }
-  function chan() { return String(cfg.channel || '').trim().toLowerCase().replace(/^@/, '').replace(/^https?:\/\/(www\.)?twitch\.tv\//, '').split(/[/?#]/)[0]; }
+  function acct() { return C.parseAccount(cfg.channel, cfg.platform); }   // { platform, name } of the overlay being built
+  function chan() { return acct().name; }
 
   /* ---------- the element cards (built from this list) ---------- */
   var POSN = { tl: 'Top left', tc: 'Top middle', tr: 'Top right', ml: 'Middle left', mc: 'Center', mr: 'Middle right', bl: 'Bottom left', bc: 'Bottom middle', br: 'Bottom right' };
@@ -392,7 +426,11 @@
       setK(t.dataset.k, v);
       if (['accent', 'accent2', 'panel', 'text', 'font'].indexOf(t.dataset.k) > -1) { cfg.preset = 'custom'; $$('.preset').forEach(function (b) { b.classList.remove('on'); }); }
       var sh = $('[data-show="' + t.dataset.k + '"]'); if (sh) sh.textContent = v;
-      if (t.dataset.k === 'channel') lookupTwitch();
+      if (t.dataset.k === 'channel') {
+        var pa = C.parseAccount(t.value, cfg.platform);
+        if (/(twitch\.tv|youtube\.com|kick\.com)\//i.test(t.value) && pa.platform !== cfg.platform) { cfg.platform = pa.platform; fill(); }
+        lookupTwitch();
+      }
       changed();
     }
     if (t.dataset.sv != null) { cfg.socials.list[+t.dataset.sv].v = t.value; changed(); }
@@ -405,7 +443,7 @@
   document.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     var seg = b.closest('[data-seg]'), pos = b.closest('[data-pos]');
-    if (seg) { setK(seg.dataset.seg, b.hasAttribute('data-json') ? JSON.parse(b.dataset.v) : b.dataset.v); fill(); changed(); return; }
+    if (seg) { setK(seg.dataset.seg, b.hasAttribute('data-json') ? JSON.parse(b.dataset.v) : b.dataset.v); fill(); changed(); if (seg.dataset.seg === 'platform') lookupTwitch(); return; }
     if (pos) { setK(pos.dataset.pos, b.dataset.v); fill(); changed(); return; }
     if (b.dataset.preset) {
       var p = C.PRESETS[b.dataset.preset];
@@ -559,9 +597,22 @@
 
   /* ---------- Twitch lookup (decapi.me, no key) ---------- */
   var lt = null;
+  var PLAT_HINT = {
+    twitch: $('#platHint') ? $('#platHint').innerHTML : '',
+    youtube: 'YouTube and Kick: your colors, pictures, screens, clock, socials and scrolling text all work. For chat and alerts, choose <b>StreamElements</b> under “Get your overlay” — it brings in your follows, subs, members and Super Chats.',
+    kick: 'YouTube and Kick: your colors, pictures, screens, clock, socials and scrolling text all work. For chat and alerts, choose <b>StreamElements</b> under “Get your overlay” — it brings in your follows and subs.'
+  };
   function lookupTwitch() {
     clearTimeout(lt);
-    var c = chan(), card = $('#twcard');
+    var a = acct(), c = a.name, card = $('#twcard'), P = C.PLATFORMS[a.platform];
+    $('#userLabel').textContent = P.label + ' username';
+    $('[data-k="channel"]').placeholder = 'e.g. ' + P.host + 'your_channel';
+    if ($('#platHint')) $('#platHint').innerHTML = PLAT_HINT[a.platform];
+    if (a.platform !== 'twitch') {
+      card.style.display = C.accountOk(a) ? 'flex' : 'none';
+      if (C.accountOk(a)) card.innerHTML = '<i class="' + P.icon + '" style="font-size:1.6rem;color:var(--accent)"></i><div><b>' + esc(C.accountLabel(a)) + '</b><br><span class="hint">Double-check the spelling — your no-watermark pass is tied to this name.</span></div>';
+      checkPro(); return;
+    }
     if (!/^[a-z0-9_]{3,25}$/.test(c)) { card.style.display = 'none'; checkPro(); return; }
     lt = setTimeout(function () {
       var g = function (p) { return fetch('https://decapi.me/twitch/' + p + '/' + c).then(function (r) { return r.text(); }).catch(function () { return ''; }); };
@@ -582,22 +633,22 @@
   var priceInfo = null;
   function money(v) { v = parseFloat(v); return '$' + (v % 1 ? v.toFixed(2) : v); }
   function updatePrices() {
-    var c = chan(), q = /^[a-z0-9_]{3,25}$/.test(c) ? '?channel=' + encodeURIComponent(c) : '';
+    var a = acct(), c = a.name, q = C.accountOk(a) ? '?channel=' + encodeURIComponent(c) + '&platform=' + a.platform : '';
     return fetch(AUTH + '/overlay/plans' + q).then(function (r) { return r.json(); }).then(function (j) {
       priceInfo = j; if (!j.plans || !j.plans.month) return j;
       $('#pMonth').textContent = money(j.plans.month.price); $('#pYear').textContent = money(j.plans.year.price);
       var e = j.prices && j.prices.earner, st = j.prices && j.prices.standard;
       $('#tierNote').innerHTML = !q ? 'Twitch Affiliates and Partners: ' + money(e.month) + '/month or ' + money(e.year) + '/year.'
         : j.tier === 'earner' ? '<span class="tag" style="background:#a855f7;color:#fff">Twitch ' + (j.broadcasterType === 'partner' ? 'Partner' : 'Affiliate') + '</span> Affiliate &amp; Partner pricing for twitch.tv/' + esc(c) + '.'
-        : 'Regular streamer pricing for twitch.tv/' + esc(c) + '. (Affiliates and Partners: ' + money(e.month) + '/month.)';
+        : 'Price for ' + esc(C.accountLabel(a)) + '.' + (a.platform === 'twitch' ? ' (Twitch Affiliates and Partners: ' + money(e.month) + '/month.)' : '');
       return j;
     }).catch(function () { return null; });
   }
   function checkPro() {
-    var c = chan(), st = $('#proStatus');
+    var a = acct(), st = $('#proStatus');
     updatePrices();
-    if (!/^[a-z0-9_]{3,25}$/.test(c)) { st.innerHTML = ''; return; }
-    fetch(AUTH + '/overlay/pro/' + encodeURIComponent(c)).then(function (r) { return r.json(); }).then(function (j) {
+    if (!C.accountOk(a)) { st.innerHTML = ''; return; }
+    fetch(AUTH + '/overlay/pro/' + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); }).then(function (j) {
       st.innerHTML = j.pro ? '<span class="tag">No watermark until ' + new Date(j.until).toLocaleDateString() + '</span>' : '<span class="hint">Free version</span>';
     }).catch(function () { st.innerHTML = ''; });
   }
@@ -605,36 +656,99 @@
     return fetch(AUTH + path, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(data) })
       .then(function (r) { return r.json(); });
   }
+  // PayPal SDK is loaded once; buttons can be drawn in several places (right panel + Pay or renew window)
+  var sdkPromise = null;
+  function paypalSDK() {
+    if (sdkPromise) return sdkPromise;
+    sdkPromise = fetch(AUTH + '/overlay/plans').then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.clientId) throw { off: true };
+      return new Promise(function (ok, bad) {
+        var sc = document.createElement('script');
+        sc.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(j.clientId) + '&currency=USD&intent=capture';
+        sc.onload = function () { ok(window.paypal); }; sc.onerror = function () { bad({}); };
+        document.head.appendChild(sc);
+      });
+    });
+    sdkPromise.catch(function () { sdkPromise = null; });
+    return sdkPromise;
+  }
+  // getAcct() -> { platform, name } to pay for, getPlan() -> 'month' | 'year', done() after a successful payment
+  function payButtons(sel, getAcct, getPlan, done) {
+    var box = $(sel);
+    box.innerHTML = '<span class="hint">Loading checkout… (can take a few seconds the first time)</span>';
+    return paypalSDK().then(function (pp) {
+      box.innerHTML = '';
+      pp.Buttons({
+        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
+        createOrder: function () {
+          var a = getAcct();
+          if (!C.accountOk(a)) { toast('Type your streaming username first'); return Promise.reject(new Error('no channel')); }
+          return post('/overlay/create', { channel: a.name, platform: a.platform, plan: getPlan() }).then(function (j) { if (!j.id) { toast(j.error || 'Could not start'); throw new Error(j.error || 'Could not start'); } return j.id; });
+        },
+        onApprove: function (d) {
+          return post('/overlay/capture', { orderId: d.orderID }).then(function (j) {
+            if (j.ok) { toast('Thank you! Paid until ' + new Date(j.until).toLocaleDateString() + '.'); done && done(j); } else toast(j.error || 'Payment not confirmed');
+          });
+        },
+        onError: function (err) { if (String(err && err.message) !== 'no channel') toast('PayPal had a problem — try again'); }
+      }).render(sel);
+    }).catch(function (e) {
+      box.innerHTML = '<span class="hint">' + (e && e.off ? 'Payments aren\'t switched on yet — check back soon.' : 'Checkout is waking up — try again in a minute.') + '</span>';
+    });
+  }
   function loadPayPal() {
     if (ppLoaded) return; ppLoaded = true;
-    var box = $('#paypalBox');
-    box.innerHTML = '<span class="hint">Loading checkout… (can take a few seconds the first time)</span>';
-    updatePrices().then(function (cfgP) {
-      if (!cfgP) throw 0;
-      if (!cfgP.clientId) { box.innerHTML = '<span class="hint">Payments aren\'t switched on yet — check back soon.</span>'; return; }
-      var s = document.createElement('script');
-      s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(cfgP.clientId) + '&currency=USD&intent=capture';
-      s.onload = function () {
-        box.innerHTML = '';
-        paypal.Buttons({
-          style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
-          createOrder: function () {
-            var c = chan();
-            if (!/^[a-z0-9_]{3,25}$/.test(c)) { toast('Type your Twitch username in step 1 first'); return Promise.reject(new Error('no channel')); }
-            return post('/overlay/create', { channel: c, plan: plan }).then(function (j) { if (!j.id) throw new Error(j.error || 'Could not start'); return j.id; });
-          },
-          onApprove: function (d) {
-            return post('/overlay/capture', { orderId: d.orderID }).then(function (j) {
-              if (j.ok) { toast('Thank you! Watermark removed.'); checkPro(); } else toast(j.error || 'Payment not confirmed');
-            });
-          },
-          onError: function (err) { if (String(err && err.message) !== 'no channel') toast('PayPal had a problem — try again'); }
-        }).render('#paypalBox');
-      };
-      s.onerror = function () { box.innerHTML = '<span class="hint">Couldn\'t load PayPal.</span>'; ppLoaded = false; };
-      document.head.appendChild(s);
-    }).catch(function () { box.innerHTML = '<span class="hint">Checkout is waking up — try again in a minute.</span>'; ppLoaded = false; });
+    payButtons('#paypalBox', acct, function () { return plan; }, function () { checkPro(); });
   }
+
+  /* ---------- "Already have an overlay? Pay or renew" window ---------- */
+  var payPlat = 'twitch', payPlan = 'month', payT = null;
+  function payAcct() { return C.parseAccount($('#payUser').value, payPlat); }
+  function payRefresh() {
+    var a = payAcct(), st = $('#payStatus'), P = C.PLATFORMS[a.platform];
+    if (a.platform !== payPlat) { payPlat = a.platform; $$('#payPlat button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === payPlat); }); }
+    $('#payUser').placeholder = 'e.g. ' + P.host + 'your_channel';
+    if (!C.accountOk(a)) { st.style.display = 'none'; return; }
+    st.style.display = 'flex'; st.innerHTML = '<span class="hint">Checking ' + esc(C.accountLabel(a)) + '…</span>';
+    var q = '?channel=' + encodeURIComponent(a.name) + '&platform=' + a.platform;
+    Promise.all([
+      fetch(AUTH + '/overlay/plans' + q).then(function (r) { return r.json(); }),
+      fetch(AUTH + '/overlay/pro/' + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); })
+    ]).then(function (r) {
+      var pl = r[0], pro = r[1];
+      if (pl.plans && pl.plans.month) { $('#ppMonth').textContent = money(pl.plans.month.price); $('#ppYear').textContent = money(pl.plans.year.price); }
+      if (a.platform === 'twitch' && pl.found === false) { st.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> Couldn\'t find ' + esc(C.accountLabel(a)) + ' — check the spelling.'; return; }
+      $('#payNote').innerHTML = pl.tier === 'earner' ? '<span class="tag" style="background:#a855f7;color:#fff">Twitch ' + (pl.broadcasterType === 'partner' ? 'Partner' : 'Affiliate') + '</span> Affiliate &amp; Partner pricing.'
+        : a.platform === 'twitch' && pl.prices ? 'Twitch Affiliates and Partners: ' + money(pl.prices.earner.month) + '/month or ' + money(pl.prices.earner.year) + '/year.' : 'Same price for every ' + P.label + ' channel.';
+      st.innerHTML = '<i class="' + P.icon + '" style="font-size:1.6rem;color:var(--accent)"></i><div><b>' + esc(C.accountLabel(a)) + '</b><br>' +
+        (pro.pro ? '<span class="tag">Paid until ' + new Date(pro.until).toLocaleDateString() + '</span> <span class="hint">Paying now adds the time on.</span>'
+                 : '<span class="hint">' + (pro.until ? 'Pass ended ' + new Date(pro.until).toLocaleDateString() + ' — watermark is showing.' : 'Not paid yet — watermark shows once an hour.') + '</span>') + '</div>';
+    }).catch(function () { st.innerHTML = '<span class="hint">The payment server is waking up — give it a few seconds.</span>'; setTimeout(payRefresh, 8000); });
+  }
+  function openPay() {
+    var a = acct();
+    if (!$('#payUser').value && C.accountOk(a)) { $('#payUser').value = C.accountLabel(a); payPlat = a.platform; }
+    $$('#payPlat button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === payPlat); });
+    $('#payModal').hidden = false; payRefresh();
+    if (!$('#payPaypal').children.length) payButtons('#payPaypal', payAcct, function () { return payPlan; }, function () { payRefresh(); checkPro(); });
+  }
+  $('#payPill').addEventListener('click', openPay);
+  $('#payClose').addEventListener('click', function () { $('#payModal').hidden = true; });
+  $('#payModal').addEventListener('click', function (e) { if (e.target.id === 'payModal') $('#payModal').hidden = true; });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape') $('#payModal').hidden = true; });
+  $('#payUser').addEventListener('input', function () { clearTimeout(payT); payT = setTimeout(payRefresh, 500); });
+  $('#payPlat').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    payPlat = b.dataset.v; $$('#payPlat button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    var a = payAcct(); if (a.name) $('#payUser').value = C.PLATFORMS[payPlat].host + a.name;
+    payRefresh();
+  });
+  $('#payModal').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pplan]'); if (!b) return;
+    payPlan = b.dataset.pplan; $$('[data-pplan]').forEach(function (x) { x.classList.toggle('on', x === b); });
+  });
+  if (/[#&]pay\b/.test(location.hash)) setTimeout(openPay, 300);   // link straight to it: /overlay-studio#pay
+
   // load PayPal only when the box is visible (keeps the page fast)
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (en, ob) { if (en[0].isIntersecting) { loadPayPal(); ob.disconnect(); } }).observe($('#proBox'));
