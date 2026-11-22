@@ -132,6 +132,14 @@
       return !fleet.some(function (o) { return o.id !== skipId && cellsOf(o).some(function (q) { return q[0] === rc[0] && q[1] === rc[1]; }); });
     });
   }
+  // First spot (direction h) where ship s covers square r,c and fits; null if none
+  function spotCovering(s, r, c, h) {
+    for (var k = 0; k < s.len; k++) {
+      var t = { id: s.id, len: s.len, h: h, r: h ? r : r - k, c: h ? c - k : c };
+      if (fits(draft, t, s.id)) return t;
+    }
+    return null;
+  }
   function randomFleet() {
     var fleet = [];
     SHIPS.forEach(function (d) { for (var t = 0; t < 500; t++) { var s = { id: d.id, len: d.len, h: Math.random() < .5 ? 1 : 0, r: Math.floor(Math.random() * N), c: Math.floor(Math.random() * N) }; if (fits(fleet, s)) { fleet.push(s); return; } } });
@@ -297,16 +305,18 @@
     if (s && sel === s.id) { turnShip(); return; }
     if (s) { sel = s.id; sfx('place'); render(); return; }
     if (!sel) { say('Tap a ship first, then the square to move it to.'); return; }
-    var cur = draft.filter(function (x) { return x.id === sel; })[0], tryS = { id: cur.id, len: cur.len, h: cur.h, r: r, c: c };
-    if (!fits(draft, tryS, cur.id)) { tryS.r = Math.min(r, N - (cur.h ? 1 : cur.len)); tryS.c = Math.min(c, N - (cur.h ? cur.len : 1)); }
-    if (fits(draft, tryS, cur.id)) { cur.r = tryS.r; cur.c = tryS.c; sfx('place'); say(''); } else say('That ship does not fit there.');
+    var cur = draft.filter(function (x) { return x.id === sel; })[0];
+    // Any position where the ship covers the tapped square counts: keep its direction first, then try turning it
+    var tryS = spotCovering(cur, r, c, cur.h) || spotCovering(cur, r, c, cur.h ? 0 : 1);
+    if (tryS) { cur.h = tryS.h; cur.r = tryS.r; cur.c = tryS.c; sfx('place'); say(''); } else say('That ship does not fit there.');
     render();
   });
   function turnShip() {
     if (!sel) { say('Tap a ship first.'); return; }
-    var cur = draft.filter(function (x) { return x.id === sel; })[0], t = { id: cur.id, len: cur.len, h: cur.h ? 0 : 1, r: cur.r, c: cur.c };
-    if (!fits(draft, t, cur.id)) { t.r = Math.min(t.r, N - (t.h ? 1 : t.len)); t.c = Math.min(t.c, N - (t.h ? t.len : 1)); }
-    if (fits(draft, t, cur.id)) { cur.h = t.h; cur.r = t.r; cur.c = t.c; sfx('place'); say(''); } else say('No room to turn that ship here.');
+    var cur = draft.filter(function (x) { return x.id === sel; })[0], t = null;
+    // Turn around any square the ship sits on (front first), so it turns wherever there is room
+    cellsOf(cur).some(function (rc) { t = spotCovering(cur, rc[0], rc[1], cur.h ? 0 : 1); return !!t; });
+    if (t) { cur.h = t.h; cur.r = t.r; cur.c = t.c; sfx('place'); say(''); } else say('No room to turn that ship here.');
     render();
   }
   $('rotate').onclick = turnShip;

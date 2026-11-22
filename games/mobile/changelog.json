@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 50,
+   "date": "Nov 22",
+   "game": "battleship",
+   "items": [
+    "Placing ships is easier: tap any open square and the ship slides to fit around it instead of saying it doesn't fit",
+    "Rotate now turns the ship wherever there's room around it"
+   ]
+  },
+  {
    "id": 49,
    "date": "Nov 20",
    "game": "recon",

@@ -132,7 +132,7 @@
 .ww-acct-pop a.ww-acct-prof{display:flex;align-items:center;justify-content:center;width:100%;min-height:40px;margin-bottom:6px;border-radius:10px;border:1px solid var(--ww-border,rgba(148,163,184,.3));background:var(--ww-accent,#ff5f1f);color:#fff;font:700 .85rem var(--ww-font,system-ui,sans-serif);text-decoration:none}
 .ww-acct-pop button{width:100%;min-height:40px;border-radius:10px;border:1px solid var(--ww-border,rgba(148,163,184,.3));background:var(--ww-bg-2,#1e293b);color:inherit;font:700 .85rem var(--ww-font,system-ui,sans-serif);cursor:pointer}
 .ww-acct-row{display:flex;align-items:center;gap:10px;padding:10px 4px 12px;border-bottom:1px solid var(--ww-border,rgba(148,163,184,.2));margin-bottom:6px}
-.ww-acct-row{flex-wrap:wrap}.ww-acct-row .ww-acct{flex:1 1 auto}
+.ww-acct-row{flex-wrap:wrap}.ww-acct-row .ww-acct{flex:1 1 100%;display:block;width:100%}
 .ww-fr-btn{font-family:ui-monospace,Consolas,monospace;letter-spacing:.03em;white-space:nowrap}.ww-fr-btn:hover{border-color:#ff5f1f}
 .ww-fr-wide{width:100%;justify-content:center}
 @media(max-width:480px){.ww-fr-btn:not(.ww-fr-wide) span{display:none}}
@@ -145,6 +145,15 @@
         try { const sc = document.querySelector('script[src*="ww-auth.js"]'); return new URL('../profile.html', sc ? sc.src : location.origin + '/assets/ww-auth.js').href; }
         catch (e) { return '/profile.html'; }
     })();
+    // "My profile" uses the member's theme colour; pick dark or white text so it stays readable (e.g. yellow themes)
+    function fixProfileTextColor() {
+        document.querySelectorAll('.ww-acct-prof').forEach(a => {
+            const m = getComputedStyle(a).backgroundColor.match(/\d+(\.\d+)?/g);
+            if (!m) return;
+            const [r, g, b] = m.map(Number);
+            a.style.color = (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#111' : '#fff';
+        });
+    }
     const profileLink = () => `<a class="ww-acct-prof" href="${esc(PROFILE_URL)}">My profile</a>`;
 
     function chipHtml(inRow) {
@@ -181,6 +190,7 @@
             const first = box.querySelector('.ww-sheet-title, .ww-drawer-head');
             if (first) first.insertAdjacentElement('afterend', row); else box.insertBefore(row, box.firstChild);
         });
+        fixProfileTextColor();
         document.dispatchEvent(new Event('ww-acct-mounted'));
     }
 
