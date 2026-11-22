@@ -9,12 +9,14 @@
   Built to look like a full stream overlay (name banner, avatar, game poster, QR code, ticker, friend cards)
   so every theme and effect can be checked before it goes on a real stream.
 
-  Links:
-    game-themes-test.html                         -> control panel + "center stays clear" guide
-    ?game=Phasmophobia                            -> start on that game
-    ?theme=police                                 -> force one theme
-    ?channel=phoenix_darkfire                     -> follow that channel's real Twitch game (checks every minute)
-    ?clean=1                                      -> no control panel / guide (for an OBS Browser Source, 1920x1080)
+  Normal use (OBS Browser Source, 1920x1080) - NO buttons, nothing to click:
+    game-themes-test.html?channel=phoenix_darkfire
+      -> reads that channel's current game from Twitch (DecAPI) every minute and picks the colors/effects
+         from game-themes.json on its own. No channel given = werewolf3788.
+  Testing only (never on stream):
+    ?controls=1                                   -> shows the tester panel + the "center stays clear" guide
+    ?controls=1&game=Phasmophobia                 -> tester starting on that game
+    ?controls=1&theme=police                      -> tester forcing one theme
 -->
 <style>
   :root{--gt-primary:#0055ff;--gt-accent:#00d4ff;--gt-border:#0055ff;--gt-panel:#001a33;--gt-text:#fff}
@@ -59,7 +61,7 @@
   .friend b{display:block;font-size:12px;text-transform:uppercase}
   .friend small{font:bold 10px Arial,sans-serif;color:var(--gt-accent);text-transform:uppercase}
 
-  /* "center stays clear" guide (hidden with ?clean=1) */
+  /* "center stays clear" guide (only shown with ?controls=1) */
   .center{position:absolute;left:520px;right:520px;top:220px;bottom:270px;border:2px dashed rgba(255,255,255,.28);border-radius:18px;display:flex;align-items:center;justify-content:center;
     font:700 22px Arial,sans-serif;color:rgba(255,255,255,.45);letter-spacing:3px;text-transform:uppercase;text-align:center}
 
@@ -126,7 +128,7 @@
   <div class="row"><input id="chan" placeholder="twitch username"><button id="follow">Follow</button></div>
   <label>Background</label>
   <div class="row"><button data-bg="bg-game" class="on">Fake game</button><button data-bg="bg-check">See-through</button><button data-bg="bg-dark">Dark</button></div>
-  <div class="hint">Effects only sit on the edges of the banner, avatar, poster, QR box, ticker and cards. The dashed box is the middle of the screen and nothing should ever show up inside it.<br><br>For OBS: add <b>?clean=1</b> to this link (Browser Source, 1920 × 1080).</div>
+  <div class="hint">Effects only sit on the edges of the banner, avatar, poster, QR box, ticker and cards. The dashed box is the middle of the screen and nothing should ever show up inside it.<br><br>On stream, leave off <b>controls=1</b>: the overlay then follows the channel's real Twitch game by itself, no buttons.</div>
 </div>
 
 <script>
@@ -135,7 +137,9 @@
   var P = new URLSearchParams(location.search);
   var $ = function (id) { return document.getElementById(id); };
   var stage = $('stage');
-  if (P.get('clean') === '1') document.body.classList.add('clean', 'bg-none'), document.body.classList.remove('bg-game');
+  // The overlay runs by itself. The tester panel only appears with ?controls=1 (just for you, never on stream).
+  var CONTROLS = P.get('controls') === '1';
+  if (!CONTROLS) document.body.classList.add('clean', 'bg-none'), document.body.classList.remove('bg-game');
 
   function fit() { var s = Math.min(innerWidth / 1920, innerHeight / 1080) || 1; stage.style.transform = 'scale(' + s + ')'; }
   addEventListener('resize', fit); fit();
@@ -191,6 +195,11 @@
     $('themes').innerHTML = GameThemes.themes.map(function (t) {
       return '<button data-t="' + t.id + '"><i style="background:linear-gradient(135deg,' + t.colors.border + ' 50%,' + t.colors.accent + ' 50%)"></i>' + t.name.replace(/\s*\(.*\)/, '') + '</button>';
     }).join('');
+    if (!CONTROLS) {
+      // on stream: always follow the channel's real Twitch game, colors come from game-themes.json
+      follow(P.get('channel') || 'werewolf3788');
+      return;
+    }
     forced = P.get('theme') || '';
     if (P.get('channel')) { $('chan').value = P.get('channel'); follow(P.get('channel')); }
     else setGame(P.get('game') || 'Phasmophobia');
