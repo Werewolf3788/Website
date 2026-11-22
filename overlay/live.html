@@ -326,11 +326,11 @@
   }
 
   // One sentence crosses the whole bar; the next one enters on the right just as the last one reaches the left edge.
-  // (If the text is wider than the screen, the next copy follows a short gap behind its end.)
+  // (If the text is wider than the screen, the next copy comes in when the last 2-3 words are left on the left side.)
   function buildTicker() {
     var t = el('div', 'ticker ' + cfg.ticker.edge);
     stage.appendChild(t);
-    var html = esc(cfg.ticker.text), W = 1920, GAP = 120;
+    var html = esc(cfg.ticker.text), W = 1920;
     var pxPerSec = 40 + cfg.ticker.speed * 3;            // speed slider 1-100 -> about 43-340 px a second
     function launch() {
       if (!t.isConnected) return;
@@ -339,7 +339,15 @@
       var anim = r.animate([{ transform: 'translate(' + W + 'px,-50%)' }, { transform: 'translate(' + (-tw) + 'px,-50%)' }],
         { duration: (W + tw) / pxPerSec * 1000, easing: 'linear' });
       anim.onfinish = function () { r.remove(); };
-      var spacing = Math.max(W, tw + GAP);               // next copy starts when this one's front reaches the left edge
+      // short text: next copy starts when this one's front reaches the left edge
+      // long text (wider than the screen): next copy starts when only the last ~3 words are left on the left side
+      var spacing = W;
+      if (tw > W) {
+        var words = String(cfg.ticker.text).trim().split(/\s+/), probe = el('span', '', esc(words.slice(-3).join(' ')));
+        probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap'; t.appendChild(probe);
+        var tail = Math.min(probe.offsetWidth || 200, W / 2); probe.remove();
+        spacing = W + tw - tail;
+      }
       timers.push(setTimeout(launch, spacing / pxPerSec * 1000));
     }
     launch();
