@@ -69,12 +69,14 @@
     alerts:  { on: true,  pos: 'tc', img: '', sound: '', secs: 7, subs: true, gifts: true, raids: true, bits: true, follows: true, tips: true },
     clock:   { on: true,  pos: 'tr', tz: '', h24: false, label: '' },
     game:    { on: true,  pos: 'br', prefix: 'Now playing' },
+    poster:  { on: false, pos: 'br', size: 100 },                 // game box art from Twitch (hides when offline)
     title:   { on: false, pos: 'tl' },
     goal:    { on: false, pos: 'tr', label: 'Follower goal', target: 100 },
     socials: { on: true,  pos: 'tr', rotate: true, list: [] },   // list: [{k:'twitch', v:'name'}]
     qr:      { on: false, pos: 'tr', url: '', label: 'Scan me' },
     ticker:  { on: false, edge: 'bottom', text: 'Welcome to the stream! • Drop a follow • Be kind in chat', speed: 60 },
     cam:     { on: false, x: 1440, y: 40, w: 440, h: 248, shape: 'rounded', border: 4, label: '' },
+    gameTheme: { on: false, test: '' },                              // "Match my game": colors + edge effects from game-themes.json; test = game shown in the Studio preview
 
     scenes: {
       starting: { title: 'Starting Soon', sub: 'Grab a snack, the stream starts in', mins: 5, chat: true },

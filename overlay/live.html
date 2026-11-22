@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link id="font-link" rel="stylesheet" href="">
 <script src="overlay-core.js"></script>
+<script src="game-themes.js"></script>
 <style>
   *{box-sizing:border-box}
   :root{color-scheme:normal}
@@ -52,6 +53,14 @@
   .brand .tag{font-size:.85em;color:var(--accent2);font-weight:700}
   .brand img{width:120px;height:120px;object-fit:cover;border:4px solid var(--accent);background:#000;filter:var(--logo-glow)}
   .brand img.round{border-radius:50%} .brand img.sq{border-radius:var(--r)}
+
+  .brand .logo{position:relative;display:inline-flex;flex:none}
+  .brand .logo.round{border-radius:50%} .brand .logo.sq{border-radius:var(--r)}
+
+  /* game poster (Twitch box art) */
+  .poster{position:relative;padding:6px;line-height:0}
+  .poster img{width:calc(114px * var(--psz,1));height:calc(152px * var(--psz,1));object-fit:cover;border-radius:calc(var(--r) * .6);display:block}
+  .poster.none{display:none}
 
   /* game / title */
   .game{display:flex;flex-direction:column;gap:2px}
@@ -211,6 +220,7 @@
   function render() {
     timers.forEach(clearInterval); timers = [];
     stage.innerHTML = '';
+    posterFor = null;
     applyTheme();
     var anchors = {};
     C.POSITIONS.forEach(function (p) { anchors[p] = el('div', 'anc ' + p); stage.appendChild(anchors[p]); });
@@ -228,6 +238,7 @@
     if (live && cfg.cam.on) buildCam();
     if (live && cfg.brand.on) anchors[cfg.brand.pos].appendChild(buildBrand());
     if (live && cfg.game.on) anchors[cfg.game.pos].appendChild(buildGame());
+    if (live && cfg.poster && cfg.poster.on) anchors[cfg.poster.pos].appendChild(buildPoster());
     if (live && cfg.title.on) anchors[cfg.title.pos].appendChild(buildTitle());
     if (cfg.clock.on) anchors[cfg.clock.pos].appendChild(buildClock());
     if (cfg.goal.on) anchors[cfg.goal.pos].appendChild(buildGoal());
@@ -246,11 +257,12 @@
       stage.appendChild(el('div', 'hint', 'Add your username in the Overlay Studio<br>to get chat, alerts and game info.'));
     }
     fillTwitch();
+    gameTheme(true);
   }
 
   function buildBrand() {
     var b = el('div', 'brand'), src = logoSrc();
-    if (src) { var i = el('img', cfg.brand.round ? 'round' : 'sq'); i.src = src; i.dataset.logo = '1'; b.appendChild(i); }
+    if (src) { var lw = el('span', 'logo ' + (cfg.brand.round ? 'round' : 'sq')), i = el('img', cfg.brand.round ? 'round' : 'sq'); i.src = src; i.dataset.logo = '1'; lw.appendChild(i); b.appendChild(lw); }
     var name = cfg.brand.name || acct().name;
     if (name || cfg.brand.tag) {
       var t = el('div', 'txt');
@@ -271,6 +283,60 @@
     t.innerHTML = '<i class="fa-solid fa-signal"></i><span data-tw="title">' + esc(tw.title || '…') + '</span>';
     return t;
   }
+  function buildPoster() {
+    var p = el('div', 'panel poster none');
+    p.style.setProperty('--psz', ((cfg.poster.size || 100) / 100).toFixed(2));
+    p.innerHTML = '<img data-tw="poster" alt="">';
+    return p;
+  }
+  function shownGame() { return tw.game || (DEMO ? (cfg.gameTheme && cfg.gameTheme.test) || '' : ''); }
+  function boxArt(g) { return window.GameThemes ? GameThemes.boxArt(g) : 'https://static-cdn.jtvnw.net/ttv-boxart/' + encodeURIComponent(g) + '-285x380.jpg'; }
+  var posterFor = null;
+  function fillPoster() {
+    var g = shownGame(), imgs = stage.querySelectorAll('[data-tw="poster"]');
+    if (!imgs.length || g === posterFor) return;
+    posterFor = g;
+    function show(ok, url) {
+      imgs.forEach(function (i) { if (ok) i.src = url; i.parentNode.classList.toggle('none', !ok); });
+      gameTheme(true);   // the poster changed size/visibility, so redraw its frame effect
+    }
+    if (!g || /offline/i.test(g)) return show(false);
+    var url = boxArt(g);
+    // Twitch sends a grey "404" picture for unknown games, so check where the link lands first
+    fetch(url, { method: 'HEAD' }).then(function (r) { show(r.ok && !/404_boxart/.test(r.url), url); }).catch(function () { show(true, url); });
+  }
+
+  /* ---------------- Match my game (shared game-themes.json) ---------------- */
+  var themedFor = null;
+  function lum(hex) { var h = String(hex || '#000').replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); var n = parseInt(h, 16) || 0; return ((n >> 16 & 255) * .299 + (n >> 8 & 255) * .587 + (n & 255) * .114) / 255; }
+  function gameTheme(force) {
+    if (!cfg.gameTheme || !cfg.gameTheme.on || !window.GameThemes || cfg.scene !== 'live') return;
+    var g = shownGame() || 'offline';
+    if (!force && g === themedFor) return;
+    themedFor = g;
+    GameThemes.load().then(function () {
+      // only the boxes around the edges get effects - never chat, alerts, the ticker, or anything placed in the middle
+      // In a corner with several boxes stacked, only the last box gets drips/particles (the rest get the
+      // frame + glow) so nothing hangs over the box underneath it. QR codes are "safe": nothing over the code.
+      var targets = [].slice.call(stage.querySelectorAll('.anc:not(.mc) .panel, .anc:not(.mc) .brand .logo'))
+        .filter(function (n) { return !n.closest('.chat') && !n.closest('.alerts') && !n.classList.contains('none'); })
+        .map(function (n) {
+          var item = n.closest('.anc > *'), anc = n.closest('.anc'), kids = [].slice.call(anc.children).filter(function (k) { return k.offsetHeight > 0 && !k.classList.contains('alerts'); });
+          return { el: n, safe: n.classList.contains('qr'), light: kids[kids.length - 1] !== item };
+        });
+      GameThemes.apply({ game: g, root: stage, targets: targets, onTheme: function (t) {
+        var c = t.colors, s = stage.style, a = cfg.panelOpacity / 100;
+        s.setProperty('--accent', c.accent);
+        s.setProperty('--accent2', lum(c.primary) > .3 ? c.primary : c.accent);
+        s.setProperty('--text', c.text || '#fff');
+        s.setProperty('--panel-bg', cfg.panelStyle === 'outline' ? hexA(c.panel, a * .35) : hexA(c.panel, a));
+        s.setProperty('--pborder', cfg.panelStyle === 'outline' ? '2px solid ' + c.border : '1px solid ' + hexA(c.border, .5));
+        s.setProperty('--shadow', cfg.glow ? '0 0 18px ' + hexA(c.primary, .5) : '0 4px 14px rgba(0,0,0,.4)');
+        s.setProperty('--logo-glow', cfg.glow ? 'drop-shadow(0 0 12px ' + c.primary + ')' : 'none');
+      } });
+    });
+  }
+
   function sideCls(pos) { return /r$/.test(pos) ? 'accent-r' : 'accent-l'; }
 
   function buildClock() {
@@ -385,7 +451,8 @@
   /* ---------------- Twitch info (decapi.me, no key) ---------------- */
   var lastInfoChan = '', infoTimer = null;
   function fillTwitch() {
-    stage.querySelectorAll('[data-tw="game"]').forEach(function (n) { n.textContent = tw.game || (DEMO ? 'Your Game Here' : '…'); });
+    stage.querySelectorAll('[data-tw="game"]').forEach(function (n) { n.textContent = tw.game || (DEMO ? shownGame() || 'Your Game Here' : '…'); });
+    fillPoster(); gameTheme(false);
     stage.querySelectorAll('[data-tw="title"]').forEach(function (n) { n.textContent = tw.title || (DEMO ? 'Your stream title shows here' : '…'); });
     setGoal();
   }

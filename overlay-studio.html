@@ -345,6 +345,12 @@
     { k: 'clock', icon: 'fa-regular fa-clock', name: 'Clock & uptime', fields: [
       ['tz', 'clock.tz', 'Time zone'], ['text', 'clock.label', 'Label after the time (e.g. EST)'], ['toggle', 'clock.h24', '24-hour time']] },
     { k: 'game', icon: 'fa-solid fa-gamepad', name: 'Game you\'re playing', fields: [['text', 'game.prefix', 'Small text above (e.g. "Now playing")']] },
+    { k: 'poster', icon: 'fa-solid fa-image-portrait', name: 'Game poster (box art)', fields: [
+      ['range', 'poster.size', 'Size (%)', 60, 200],
+      ['note', 'Shows the box art of the game you\'re streaming, straight from Twitch. It hides itself when you\'re offline or Twitch has no art for the game.']] },
+    { k: 'gameTheme', icon: 'fa-solid fa-wand-magic-sparkles', name: 'Match my game (auto colors & effects)', nopos: true, fields: [
+      ['text', 'gameTheme.test', 'Try a game in the preview (e.g. Phasmophobia, Ready or Not, Farming Simulator 25)'],
+      ['note', 'Your colors and effects change with the game you\'re streaming: dripping blood for horror, red & blue police lights for cop games, camo for hunting, a mud-to-harvest crop cycle for farming, and more. Effects only sit on the edges of your boxes, so the middle of the screen stays clear. While this is on it replaces the colors you picked above.']] },
     { k: 'title', icon: 'fa-solid fa-heading', name: 'Stream title', fields: [] },
     { k: 'goal', icon: 'fa-solid fa-bullseye', name: 'Follower goal bar', fields: [['text', 'goal.label', 'Label'], ['number', 'goal.target', 'Goal']] },
     { k: 'socials', icon: 'fa-solid fa-share-nodes', name: 'Social handles', fields: [['socials'], ['toggle', 'socials.rotate', 'Show one at a time (rotates)']] },

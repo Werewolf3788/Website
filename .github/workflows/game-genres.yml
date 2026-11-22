@@ -1,0 +1,58 @@
+# File: .github/workflows/game-genres.yml
+# Game genres for the stream overlay themes -> overlay/game-genres.json (read by overlay/game-themes.js)
+#
+# Every 30 minutes: checks what the watched Twitch channels are playing and looks up any NEW game's
+# genres on IGDB (once per game, ever). Commits only when a new game was added, so most runs change nothing.
+# Keys: twitch_client_id / twitch_client_secret from the Key Vault (user_secrets). No key is stored in code.
+name: Game genres (overlay themes)
+
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+    inputs:
+      games:
+        description: 'Look up these games now (separate with ; e.g. "Ready or Not; theHunter: Call of the Wild")'
+        required: false
+        default: ''
+      refresh:
+        description: 'Look up games again even if already saved'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: game-genres
+  cancel-in-progress: false
+
+jobs:
+  genres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Dependencies
+        run: npm install --no-save firebase-admin
+      - name: Look up genres
+        env:
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          EXTRA_GAMES: ${{ github.event.inputs.games }}
+          REFRESH: ${{ github.event.inputs.refresh }}
+        run: node scripts/game-genres.js
+      - name: Commit if a new game was added
+        run: |
+          if git diff --quiet -- overlay/game-genres.json; then echo "No new games."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add overlay/game-genres.json
+          git commit -m "Game genres: new games for overlay themes"
+          git pull --rebase --autostash
+          git push
