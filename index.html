@@ -5,7 +5,7 @@
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
                Home Link Favicon Auto-Binding, Real-time Firebase RTDB /music_releases Dynamic Carousel,
                Live PSN Presence with /users Avatar Resolution & utm_links Fallback,
-               Google-Sheet Cinema Carousel & Lightbox, playstation-stats Presence, and 80vw 2-Column Side-by-Side Dedicated FS25 Telemetry Cards (6-Item Scroll Windows).
+               Google-Sheet Cinema Carousel & Lightbox, playstation-stats Presence, and an 80vw Games slideshow (mobile games + game trackers).
   Build Version: 3.6.1 (Moonlit Den redesign)
   Last Modified: Monday, November 2, 2026 - 23:45:00 EST (America/New_York)
 -->
@@ -87,8 +87,6 @@
             --color-marc: #10B981;
             --color-marc-glow: rgba(16, 185, 129, 0.45);
 
-            /* FS25 Farm Green Accent */
-            --color-fs25: #22C55E;
 
             /* Moonlit Den */
             --bg: #0C0A14;
@@ -97,7 +95,6 @@
             --gold: #F4C95D;
             --ember: #F2683C;
             --bone: #F3EFE6;
-            --color-fs25-glow: rgba(34, 197, 94, 0.45);
         }
 
         html, body {
@@ -351,23 +348,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Custom 6-Item Scroll Windows */
-        .fs-scroll-window {
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #334155 #0f172a;
-        }
-        .fs-scroll-window::-webkit-scrollbar {
-            width: 6px;
-        }
-        .fs-scroll-window::-webkit-scrollbar-track {
-            background: #0f172a;
-            border-radius: 4px;
-        }
-        .fs-scroll-window::-webkit-scrollbar-thumb {
-            background-color: #334155;
-            border-radius: 4px;
-        }
 
         /* Floating Dynamic Music Release Carousel Badge */
         #album-countdown-badge {
@@ -468,11 +448,29 @@
             border-radius: 1.25rem; padding: 14px 18px;
         }
 
-        /* FS25: collapsible */
-        details.fs25-details > summary { list-style: none; cursor: pointer; }
-        details.fs25-details > summary::-webkit-details-marker { display: none; }
-        details.fs25-details[open] .fs-chevron { transform: rotate(180deg); }
-        .fs-chevron { transition: transform .25s ease; }
+        /* Games slideshow: mobile games + game trackers */
+        .gs-track { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 4px 2px 10px; -ms-overflow-style: none; scrollbar-width: none; }
+        .gs-track::-webkit-scrollbar { display: none; }
+        .gs-slide { flex: 0 0 calc((100% - 14px) / 1.6); scroll-snap-align: start; position: relative; aspect-ratio: 2 / 3; border-radius: 1.1rem; overflow: hidden; text-decoration: none; color: #fff; border: 1px solid rgba(255,255,255,.1); background: #17121F; box-shadow: 0 14px 30px -12px rgba(0,0,0,.7); transition: transform .25s ease, border-color .25s ease; }
+        @media (min-width: 640px)  { .gs-slide { flex-basis: calc((100% - 28px) / 3); } }
+        @media (min-width: 1024px) { .gs-slide { flex-basis: calc((100% - 56px) / 5); } }
+        .gs-slide:hover, .gs-slide:focus-visible { transform: translateY(-4px); border-color: rgba(34,197,94,.7); outline: none; }
+        .gs-art { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: clamp(64px, 9vw, 96px); }
+        .gs-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .5s ease; }
+        .gs-art img.ld { opacity: 1; }
+        .gs-shade { position: absolute; inset: auto 0 0 0; height: 55%; background: linear-gradient(to top, rgba(8,6,14,.95), rgba(8,6,14,0)); }
+        .gs-info { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px; }
+        .gs-tag { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: rgba(34,197,94,.9); color: #04210f; }
+        .gs-tag.trk { background: rgba(56,189,248,.92); color: #04202d; }
+        .gs-title { display: block; margin-top: 6px; font-weight: 900; font-size: 15px; line-height: 1.2; font-family: 'Sora', sans-serif; }
+        .gs-go { display: block; margin-top: 4px; font-size: 11px; color: #cbd5e1; }
+        .gs-filter { font-size: 12px; font-weight: 800; padding: 7px 14px; border-radius: 999px; border: 1px solid #334155; background: #0f172a; color: #cbd5e1; cursor: pointer; min-height: 36px; }
+        .gs-filter.on { background: #22c55e; border-color: #22c55e; color: #04210f; }
+        .gs-arrow { width: 40px; height: 40px; border-radius: 999px; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+        .gs-arrow:hover { background: #334155; }
+        .gs-dots { display: flex; gap: 6px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
+        .gs-dots button { width: 8px; height: 8px; border-radius: 999px; background: #334155; border: 0; padding: 0; cursor: pointer; }
+        .gs-dots button.on { background: #22c55e; width: 22px; }
 
         /* Shell (bottom tab bar / top bar) picks up the new palette */
         html:root { --ww-bg: #17121F; --ww-bg-2: #261F33; --ww-accent: #F4C95D; --ww-border: rgba(244,201,93,.18); }
@@ -558,7 +556,7 @@
                 <div class="mt-4 flex flex-wrap items-center gap-3">
                     <span id="online-summary" class="live-chip" style="display:none"><span class="live-dot"></span><span id="online-summary-text">Checking PlayStation...</span></span>
                     <a href="#cinema" class="live-chip" style="text-decoration:none"><i class="fa-solid fa-film text-orange-400"></i> Cinema</a>
-                    <a href="#fs25-server-section" class="live-chip" style="text-decoration:none"><i class="fa-solid fa-tractor text-green-400"></i> Farm</a>
+                    <a href="#games" class="live-chip" style="text-decoration:none"><i class="fa-solid fa-gamepad text-green-400"></i> Games</a>
                 </div>
             </div>
         </div>
@@ -807,220 +805,156 @@
     </section>
 
     <!-- =========================================================================
-         Farming Simulator 25 Dedicated Server Modular Telemetry Cards (At 80vw)
-         Side-by-Side 2-Column Pairs on Desktop, Stacked on Mobile, 6-Item Scroll Windows
+         Games slideshow: every mobile game (Mobilegames/) and every game tracker
+         (game/all.html?game=KEY). Tap a slide to open that game.
+         Tracker list follows /platforms/games_catalog (tiny index), so a new
+         tracker file in public/games shows up here on its own.
          ========================================================================= -->
-    <section id="fs25-server-section" class="py-6 sm:py-12">
-        <div class="w-[92vw] md:w-[80vw] mx-auto space-y-6">
-            
-            <!-- Server Header Status Row (Line 424) -->
-            <div class="custom-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style="border-color: rgba(34,197,94,.35)">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-tractor text-green-500 text-2xl"></i>
-                        <h2 class="text-green-400 font-black tracking-tight" id="fs25-server-name">OneLIVIDMAN and werewolf 618</h2>
+    <section id="games" class="py-6 sm:py-12">
+        <div class="w-[92vw] md:w-[80vw] mx-auto">
+            <div class="custom-card p-5 sm:p-8" style="border-color: rgba(34,197,94,.35)">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
+                    <div>
+                        <span class="eyebrow" style="color:#22c55e">Play &amp; Track</span>
+                        <h2 class="text-green-400" style="font-size: clamp(26px, 4.5vw, 40px);">Werewolf Games</h2>
+                        <p class="text-slate-300 text-sm mt-1">Our mobile games and the game trackers. Tap any game to open it.</p>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-400 mt-1" id="fs25-map-title">The Rural Farmlands Of Ohio • v1.25.0.0</p>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button type="button" class="gs-filter on" data-f="all">All</button>
+                        <button type="button" class="gs-filter" data-f="mobile">Mobile games</button>
+                        <button type="button" class="gs-filter" data-f="tracker">Game trackers</button>
+                        <button type="button" class="gs-arrow" id="gs-prev" aria-label="Previous games"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button type="button" class="gs-arrow" id="gs-next" aria-label="Next games"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span id="fs25-status-badge" class="px-3 py-1.5 rounded-full text-xs font-black tracking-wide uppercase bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-slate-500"></span> Offline
-                    </span>
-                    <span id="fs25-clock-badge" class="px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-slate-900 border border-slate-800 text-sky-400 flex items-center gap-1.5">
-                        <i class="fa-regular fa-clock"></i> <span id="fs25-clock-time">--:--</span>
-                    </span>
-                </div>
+                <div id="gs-track" class="gs-track" aria-roledescription="carousel" aria-label="Games"></div>
+                <div id="gs-dots" class="gs-dots"></div>
             </div>
-
-            <details id="fs25-details" class="fs25-details" open>
-            <summary class="live-chip mb-6 select-none">
-                <i class="fa-solid fa-chart-simple text-green-400"></i> Server details
-                <i class="fa-solid fa-chevron-down fs-chevron text-slate-400 text-xs"></i>
-            </summary>
-            <div class="space-y-6">
-            <!-- Server Reboot Alert Banner -->
-            <div id="fs25-reboot-banner" class="hidden bg-amber-950/60 border border-amber-500/60 p-3.5 rounded-xl flex items-center justify-between text-amber-300 text-xs font-bold animate-pulse">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-400 text-base"></i>
-                    <span>Automatic Server Restart Detected! The dedicated instance has rebooted.</span>
-                </div>
-                <span class="font-mono text-[10px] text-amber-400/80" id="fs25-reboot-uptime">Uptime reset</span>
-            </div>
-
-            <!-- 2-COLUMN SIDE-BY-SIDE GRID PAIR 1: SERVER OVERVIEW & ECONOMY WITH GREAT DEMAND -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-                
-                <!-- CARD 1: SERVER TELEMETRY & STATS (Line 454) -->
-                <div class="custom-card p-6 border border-slate-800 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <span class="text-sm font-black uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                            <i class="fa-solid fa-server text-green-400"></i> Server Telemetry & Overview
-                        </span>
-                        <span class="text-[11px] font-mono text-slate-400" id="fs25-last-update">Connecting...</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
-                            <span class="text-[10px] uppercase font-black tracking-widest text-slate-400 block mb-1">Players Online</span>
-                            <div class="text-xl font-black text-white flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-users text-sky-400 text-sm"></i>
-                                <span id="fs25-players-ratio">0 / 6</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
-                            <span class="text-[10px] uppercase font-black tracking-widest text-slate-400 block mb-1">Farm Balance</span>
-                            <div class="text-xl font-black text-emerald-400 font-mono truncate" id="fs25-money">$0</div>
-                        </div>
-
-                        <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
-                            <span class="text-[10px] uppercase font-black tracking-widest text-slate-400 block mb-1">Farmlands</span>
-                            <div class="text-xl font-black text-white" id="fs25-farmland-count">0</div>
-                        </div>
-
-                        <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
-                            <span class="text-[10px] uppercase font-black tracking-widest text-slate-400 block mb-1">Owned Fields</span>
-                            <div class="text-xl font-black text-white" id="fs25-fields-count">0</div>
-                        </div>
-
-                        <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
-                            <span class="text-[10px] uppercase font-black tracking-widest text-slate-400 block mb-1">Slot Usage</span>
-                            <div class="text-xl font-black text-amber-400" id="fs25-slots-count">0</div>
-                        </div>
-
-                        <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
-                            <span class="text-[10px] uppercase font-black tracking-widest text-slate-400 block mb-1">Play Time</span>
-                            <div class="text-xl font-black text-sky-400 font-mono" id="fs25-playtime">0h</div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900/60 border border-slate-800 p-3 rounded-lg flex items-center justify-between text-xs font-mono text-slate-400">
-                        <span>Economic Difficulty: <strong id="fs25-difficulty" class="text-slate-200">NORMAL</strong></span>
-                        <span id="fs25-season-date">Save Date: 2026-10-26</span>
-                    </div>
-                </div>
-
-                <!-- CARD 2: ECONOMY & PRICE HISTORY WITH GREAT DEMAND CALCULATION (Line 505) -->
-                <div class="custom-card p-6 border border-orange-500/40 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <span class="text-sm font-black uppercase tracking-wider text-orange-400 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-line text-orange-400"></i> Economy & Commodity Prices
-                        </span>
-                        <span class="text-xs font-mono text-orange-300" id="fs25-demand-tag">Surge Active</span>
-                    </div>
-
-                    <!-- Live Great Demand Calculation Box (Base x Multiplier = Surge Price) -->
-                    <div id="fs25-great-demand-banner" class="bg-gradient-to-r from-orange-950/80 to-slate-900 border border-orange-500/60 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-orange-400 block">Surge Payout Calculation</span>
-                            <div class="text-sm font-black text-white flex items-center gap-2 mt-0.5">
-                                <span id="gd-crop-name" class="text-orange-300">STRAW PELLETS</span>
-                                <span class="text-xs text-slate-400 font-mono" id="gd-math-breakdown">($191 x 1.4)</span>
-                            </div>
-                            <span class="text-[11px] font-mono text-slate-400" id="gd-duration">Duration: 18h remaining</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Surge Price</span>
-                            <span class="text-xl font-black text-emerald-400 font-mono" id="gd-surge-price">$267 / 1kL</span>
-                        </div>
-                    </div>
-
-                    <!-- 6-Item Scrollable Commodity Price Catalog -->
-                    <div class="fs-scroll-window max-h-[220px] divide-y divide-slate-800/80 pr-1 text-xs" id="fs25-prices-container">
-                        <div class="p-6 text-center text-slate-500 italic">Loading commodity price history...</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 2-COLUMN SIDE-BY-SIDE GRID PAIR 2: FARM 1 FLEET & FARM 2 FLEET (Line 545) -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-                
-                <!-- CARD 3: FARM #1 MACHINERY & EQUIPMENT -->
-                <div class="custom-card p-6 border-2 border-blue-600/60 shadow-[0_0_20px_rgba(37,99,235,0.2)] space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-blue-600 text-white font-black px-2.5 py-1 rounded text-xs uppercase tracking-wider">Farm #1 Fleet</span>
-                            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Tractors, Implements & Harvesters</span>
-                        </div>
-                        <span class="text-xs font-mono text-blue-400 font-bold" id="fs25-farm1-summary">0 Units</span>
-                    </div>
-                    <!-- 6-Item Scrollable Viewport -->
-                    <div id="fs25-farm1-grid" class="fs-scroll-window max-h-[430px] space-y-3 pr-1">
-                        <div class="p-8 text-center text-slate-500 text-xs italic">Loading Farm #1 equipment...</div>
-                    </div>
-                </div>
-
-                <!-- CARD 4: FARM #2 MACHINERY & EQUIPMENT -->
-                <div class="custom-card p-6 border-2 border-emerald-500/60 shadow-[0_0_20px_rgba(34,197,94,0.2)] space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-emerald-600 text-white font-black px-2.5 py-1 rounded text-xs uppercase tracking-wider">Farm #2 Fleet</span>
-                            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Tractors, Implements & Harvesters</span>
-                        </div>
-                        <span class="text-xs font-mono text-emerald-400 font-bold" id="fs25-farm2-summary">0 Units</span>
-                    </div>
-                    <!-- 6-Item Scrollable Viewport -->
-                    <div id="fs25-farm2-grid" class="fs-scroll-window max-h-[430px] space-y-3 pr-1">
-                        <div class="p-8 text-center text-slate-500 text-xs italic">Loading Farm #2 equipment...</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 2-COLUMN SIDE-BY-SIDE GRID PAIR 3: PALLETS & FARMLANDS DIRECTORY (Line 585) -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-                
-                <!-- CARD 5: PALLETS & WAREHOUSE STORAGE -->
-                <div class="custom-card p-6 border border-amber-500/40 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-amber-500 text-slate-950 font-black px-2.5 py-1 rounded text-xs uppercase tracking-wider">Storage Goods</span>
-                            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Seeds, Big Bags, Flour & Cake Pallets</span>
-                        </div>
-                        <span class="text-xs font-mono text-amber-400 font-bold" id="fs25-pallets-summary">0 Pallets</span>
-                    </div>
-                    <!-- 6-Item Scrollable Viewport (2 Columns within card) -->
-                    <div id="fs25-pallets-grid" class="fs-scroll-window max-h-[360px] grid grid-cols-1 sm:grid-cols-2 gap-3 pr-1">
-                        <div class="p-8 text-center text-slate-500 text-xs italic col-span-full">Loading stored pallets...</div>
-                    </div>
-                </div>
-
-                <!-- CARD 6: FARMLANDS & FIELDS DIRECTORY -->
-                <div class="custom-card p-6 border border-slate-800 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <span class="text-sm font-black uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                            <i class="fa-solid fa-map-marked-alt text-green-400"></i> Owned Farmlands & Territory
-                        </span>
-                        <span class="text-xs font-mono text-slate-400" id="fs25-farmland-summary">68 Total Parcels</span>
-                    </div>
-                    <!-- 6-Item Scrollable Viewport (2 Columns within card) -->
-                    <div id="fs25-farmlands-grid" class="fs-scroll-window max-h-[360px] grid grid-cols-1 sm:grid-cols-2 gap-3 pr-1">
-                        <div class="p-8 text-center text-slate-500 text-xs italic col-span-full">Loading parcel data...</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- SINGLE WIDE CARD: INSTALLED MODS DIRECTORY (Line 625) -->
-            <div class="custom-card p-6 border border-purple-500/40 space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                    <div class="flex items-center gap-2">
-                        <span class="bg-purple-600 text-white font-black px-2.5 py-1 rounded text-xs uppercase tracking-wider">Installed Mods Catalog</span>
-                        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Active Dedicated Extensions</span>
-                    </div>
-                    <span class="text-xs font-mono text-purple-400 font-bold" id="fs25-mods-summary">0 Active Mods</span>
-                </div>
-                <!-- 6-Item Scrollable Viewport across 3 Columns -->
-                <div id="fs25-mods-grid" class="fs-scroll-window max-h-[340px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pr-1">
-                    <div class="p-8 text-center text-slate-500 text-xs italic col-span-full">Loading mods catalog...</div>
-                </div>
-            </div>
-
-            </div>
-            </details>
         </div>
     </section>
+    <script>
+    (function () {
+        var MOBILE = [
+            { t: 'Neighborly Acre', e: '🌾', u: 'Mobilegames/farm.html', g: ['#14532d', '#84cc16'], s: '3D co-op farm' },
+            { t: 'Tile Survival', e: '🏚️', u: 'Mobilegames/survive.html', g: ['#1c1917', '#b45309'], s: '3D survival settlement' },
+            { t: 'Werewolf Recon', e: '🎯', u: 'Mobilegames/recon.html', g: ['#1f2937', '#4d7c0f'], s: 'Open-world squad shooter' },
+            { t: 'Werewolf Racing', e: '🏎️', u: 'Mobilegames/race.html', g: ['#450a0a', '#ef4444'], s: '3D car racing' },
+            { t: 'Monopoly', e: '🏙️', u: 'Mobilegames/tycoon.html', g: ['#064e3b', '#10b981'], s: 'Board game, 2-4 players' },
+            { t: 'Wahoo', e: '🎲', u: 'Mobilegames/wahoo.html', g: ['#3b0764', '#a855f7'], s: 'Board game, 2-4 players' },
+            { t: 'Battleship', e: '🚢', u: 'Mobilegames/battleship.html', g: ['#0c4a6e', '#0ea5e9'], s: 'Classic naval battle' },
+            { t: 'Frogger', e: '🐸', u: 'Mobilegames/frogger.html', g: ['#14532d', '#22d3ee'], s: 'Race up to 8 friends' },
+            { t: 'Tile Match', e: '🀄', u: 'Mobilegames/mahjong.html', g: ['#7c2d12', '#f59e0b'], s: 'Mahjong-style tiles' },
+            { t: 'Calm Space', e: '🌿', u: 'Mobilegames/calm.html', g: ['#134e4a', '#2dd4bf'], s: 'For rough days' }
+        ];
+        // Known trackers: Steam app ids give clean 2:3 cover art. Keys match public/games/{key}.json
+        var TRACKERS = {
+            cotw: { t: 'theHunter: Call of the Wild', app: 518790 },
+            woth2: { t: 'Way of the Hunter 2', app: 2543830 },
+            farcry5: { t: 'Far Cry 5', app: 552520 },
+            ghostoftsushima: { t: 'Ghost of Tsushima', app: 2215430 },
+            sniperelite4: { t: 'Sniper Elite 4', app: 312660 },
+            sniperelite5: { t: 'Sniper Elite 5', app: 1029690 },
+            snresistance: { t: 'Sniper Elite: Resistance', app: 2169200 },
+            wdlegion: { t: 'Watch Dogs: Legion', app: 2239550 },
+            wildlands: { t: "Ghost Recon Wildlands", app: 460930 }
+        };
+        var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+        var secure = function (u) { u = String(u || '').trim(); if (!u) return ''; if (u.indexOf('//') === 0) return 'https:' + u; return u.replace(/^http:\/\//i, 'https://'); };
+        var steamArt = function (app) {
+            if (!app) return [];
+            return ['https://cdn.cloudflare.steamstatic.com/steam/apps/' + app + '/library_600x900_2x.jpg',
+                    'https://cdn.cloudflare.steamstatic.com/steam/apps/' + app + '/library_600x900.jpg',
+                    'https://cdn.cloudflare.steamstatic.com/steam/apps/' + app + '/header.jpg'];
+        };
+        function trackerSlide(key, title, extra) {
+            var k = TRACKERS[key] || {};
+            var art = (extra && extra.art) || {};
+            var imgs = [art.poster].concat(steamArt(k.app), [extra && extra.image_url, art.wallpaper]).map(secure).filter(Boolean);
+            return { kind: 'tracker', t: k.t || title || key, e: '🎮', u: 'game/all.html?game=' + encodeURIComponent(key), g: ['#0f172a', '#1d4ed8'], s: 'Game tracker', imgs: imgs };
+        }
+        var trackers = Object.keys(TRACKERS).map(function (k) { return trackerSlide(k); });
+        var filter = 'all', timer = null, paused = false, resumeT = null;
+        var track = document.getElementById('gs-track'), dots = document.getElementById('gs-dots');
+
+        function slideHtml(x) {
+            var bg = 'background:linear-gradient(160deg,' + x.g[0] + ',' + x.g[1] + ')';
+            return '<a class="gs-slide" href="' + esc(x.u) + '" data-kind="' + x.kind + '" aria-label="' + esc(x.t) + ' (' + esc(x.s) + ')">' +
+                '<div class="gs-art" style="' + bg + '"><span aria-hidden="true">' + x.e + '</span>' +
+                (x.imgs && x.imgs.length ? '<img alt="" loading="lazy" decoding="async" data-i="0" data-imgs="' + esc(JSON.stringify(x.imgs)) + '" src="' + esc(x.imgs[0]) + '">' : '') +
+                '</div><div class="gs-shade"></div><div class="gs-info"><span class="gs-tag' + (x.kind === 'tracker' ? ' trk' : '') + '">' + (x.kind === 'tracker' ? 'Tracker' : 'Mobile game') + '</span>' +
+                '<span class="gs-title">' + esc(x.t) + '</span><span class="gs-go">' + esc(x.s) + ' &rsaquo;</span></div></a>';
+        }
+        function wireImages() {
+            track.querySelectorAll('img[data-imgs]').forEach(function (img) {
+                img.onload = function () { img.classList.add('ld'); };
+                img.onerror = function () {
+                    var list = []; try { list = JSON.parse(img.getAttribute('data-imgs')); } catch (e) {}
+                    var i = +img.getAttribute('data-i') + 1;
+                    if (i < list.length) { img.setAttribute('data-i', i); img.src = list[i]; } else img.remove();
+                };
+            });
+        }
+        function render() {
+            var mobile = MOBILE.map(function (m) { return Object.assign({ kind: 'mobile' }, m); });
+            var list = filter === 'mobile' ? mobile : filter === 'tracker' ? trackers : interleave(mobile, trackers);
+            track.innerHTML = list.map(slideHtml).join('');
+            wireImages();
+            track.scrollLeft = 0;
+            drawDots();
+        }
+        function interleave(a, b) { var out = [], n = Math.max(a.length, b.length); for (var i = 0; i < n; i++) { if (a[i]) out.push(a[i]); if (b[i]) out.push(b[i]); } return out; }
+        function step() { var s = track.querySelector('.gs-slide'); return s ? s.getBoundingClientRect().width + 14 : 200; }
+        function pageCount() { var n = track.children.length, per = Math.max(1, Math.round(track.clientWidth / step())); return Math.max(1, n - per + 1); }
+        function current() { return Math.round(track.scrollLeft / step()); }
+        function drawDots() {
+            var n = pageCount(), c = Math.min(current(), n - 1), h = '';
+            for (var i = 0; i < n; i++) h += '<button type="button" aria-label="Go to game ' + (i + 1) + '"' + (i === c ? ' class="on"' : '') + ' data-i="' + i + '"></button>';
+            dots.innerHTML = h;
+        }
+        function go(i) { var n = pageCount(); if (i >= n) i = 0; if (i < 0) i = n - 1; track.scrollTo({ left: i * step(), behavior: 'smooth' }); }
+        function next() { go(current() + 1); }
+        function start() {
+            if (timer || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            timer = setInterval(function () { if (!paused && !document.hidden) next(); }, 4500);
+        }
+        function hold(ms) { paused = true; clearTimeout(resumeT); if (ms) resumeT = setTimeout(function () { paused = false; }, ms); }
+
+        document.getElementById('gs-prev').onclick = function () { hold(10000); go(current() - 1); };
+        document.getElementById('gs-next').onclick = function () { hold(10000); next(); };
+        dots.onclick = function (e) { var b = e.target.closest('button'); if (b) { hold(10000); go(+b.getAttribute('data-i')); } };
+        document.querySelectorAll('.gs-filter').forEach(function (b) {
+            b.onclick = function () {
+                filter = b.getAttribute('data-f');
+                document.querySelectorAll('.gs-filter').forEach(function (x) { x.classList.toggle('on', x === b); });
+                render();
+            };
+        });
+        var dotT = null;
+        track.addEventListener('scroll', function () { clearTimeout(dotT); dotT = setTimeout(drawDots, 120); }, { passive: true });
+        track.addEventListener('pointerenter', function () { hold(); });
+        track.addEventListener('pointerleave', function () { paused = false; });
+        track.addEventListener('touchstart', function () { hold(); }, { passive: true });
+        track.addEventListener('touchend', function () { hold(8000); }, { passive: true });
+        track.addEventListener('focusin', function () { hold(); });
+        track.addEventListener('focusout', function () { paused = false; });
+        window.addEventListener('resize', function () { clearTimeout(dotT); dotT = setTimeout(drawDots, 150); });
+
+        render();
+        start();
+
+        // Follow the live tracker list (tiny index, read once) so added/removed trackers stay in sync
+        fetch('https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games_catalog.json')
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (cat) {
+                if (!cat || typeof cat !== 'object' || !Object.keys(cat).length) return;
+                var known = Object.keys(TRACKERS), keys = Object.keys(cat);
+                keys.sort(function (a, b) { var ia = known.indexOf(a), ib = known.indexOf(b); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
+                trackers = keys.map(function (k) { var c = cat[k] || {}; return trackerSlide(k, c.title, c); });
+                render();
+            })
+            .catch(function () {});
+    })();
+    </script>
 
     <!-- Cinema Movie Lightbox Modal with Full Action / Play / Buy Buttons -->
     <div id="cinema-lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
@@ -1103,7 +1037,7 @@
                 &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
             </p>
             <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                Werewolf Project Engine • v3.6.1 • Build: 2026-11-02 23:45:00 EST
+                Werewolf Project Engine • v3.7.0 • Build: 2026-11-21 23:55:00 EST
             </div>
         </div>
         
@@ -1117,8 +1051,8 @@
         import { initializeApp } from "//www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const BUILD_VERSION = "3.6.1";
-        const CODE_BUILD_DATE = "2026-11-02 23:45:00 EST";
+        const BUILD_VERSION = "3.7.0";
+        const CODE_BUILD_DATE = "2026-11-21 23:55:00 EST";
 
         /* Firebase App 1: Entertainment & Profile Store (Line 753) */
         const entertainmentConfig = {
@@ -1134,7 +1068,7 @@
         const appEntertainment = initializeApp(entertainmentConfig);
         const rtdbEntertainment = getDatabase(appEntertainment);
 
-        /* Firebase App 2: PlayStation & FS25 Server Store (Line 769) */
+        /* Firebase App 2: PlayStation presence store */
         const playstationConfig = {
             apiKey: "AIzaSyB3V7SUlOOfZyv3xbMWt_Ok5CuLVNAc3wA",
             authDomain: "playstation-be936.firebaseapp.com",
@@ -1916,407 +1850,12 @@
             if (badge) badge.classList.add('minimized');
         };
 
-        /* -------------------------------------------------------------
-           5. Dedicated Modular FS25 Telemetry Cards (/fs25_server)
-           ------------------------------------------------------------- */
-        function listenToFs25Server() {
-            try {
-                const fsRef = ref(rtdbPlaystation, 'fs25_server');
-                onValue(fsRef, (snapshot) => {
-                    if (!snapshot.exists()) {
-                        renderFs25Offline();
-                        return;
-                    }
-                    const data = snapshot.val();
-                    renderFs25ModularCards(data);
-                }, (error) => {
-                    console.error("Firebase FS25 Server Error:", error);
-                    renderFs25Offline();
-                });
-            } catch (err) {
-                console.error("listenToFs25Server Exception:", err);
-                renderFs25Offline();
-            }
-        }
-
-        function renderFs25Offline() {
-            const statusBadge = document.getElementById('fs25-status-badge');
-            if (statusBadge) {
-                statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-black tracking-wide uppercase bg-red-950/40 text-red-400 border border-red-800/60 flex items-center gap-2";
-                statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span> Offline`;
-            }
-            const nameEl = document.getElementById('fs25-server-name');
-            if (nameEl) nameEl.textContent = "Server Offline";
-        }
-
-        /* Color resolver for fill levels: <=25% red, 26-75% yellow, 76-100% green */
-        function getFillLevelColorClass(pct) {
-            if (pct <= 25) return { text: 'text-red-400', bg: 'bg-red-500', border: 'border-red-500/50' };
-            if (pct <= 75) return { text: 'text-yellow-400', bg: 'bg-yellow-500', border: 'border-yellow-500/50' };
-            return { text: 'text-emerald-400', bg: 'bg-emerald-500', border: 'border-emerald-500/50' };
-        }
-
-        /* Wear Meter: 0 wear = bright green, blends to yellow and red as damage/wear accumulates */
-        function getWearColor(wearPct) {
-            if (wearPct <= 15) return { text: 'text-emerald-400', bar: 'bg-emerald-500' };
-            if (wearPct <= 50) return { text: 'text-yellow-400', bar: 'bg-yellow-500' };
-            if (wearPct <= 75) return { text: 'text-orange-400', bar: 'bg-orange-500' };
-            return { text: 'text-red-500', bar: 'bg-red-500' };
-        }
-
-        function renderFs25ModularCards(data) {
-            // Header & Status
-            const nameEl = document.getElementById('fs25-server-name');
-            const mapEl = document.getElementById('fs25-map-title');
-            const statusBadge = document.getElementById('fs25-status-badge');
-            const clockEl = document.getElementById('fs25-clock-time');
-            const rebootBanner = document.getElementById('fs25-reboot-banner');
-            const rebootUptime = document.getElementById('fs25-reboot-uptime');
-
-            if (nameEl && data.serverName) nameEl.textContent = data.serverName;
-            if (mapEl) mapEl.textContent = `${data.mapTitle || 'The Rural Farmlands Of Ohio'} • Engine: ${data.gameVersion || '1.25.0.0'}`;
-            if (clockEl) clockEl.textContent = data.inGameClock || '--:--';
-
-            if (statusBadge) {
-                if (data.online) {
-                    statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-black tracking-wide uppercase bg-emerald-950/60 text-emerald-400 border border-emerald-500/60 flex items-center gap-2 shadow-[0_0_12px_rgba(16,185,129,0.3)]";
-                    statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 status-pulse"></span> Online (${data.uptimeMinutes || 0}m)`;
-                } else {
-                    statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-black tracking-wide uppercase bg-red-950/40 text-red-400 border border-red-800/60 flex items-center gap-2";
-                    statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span> Offline`;
-                }
-            }
-
-            if (rebootBanner) {
-                if (data.restartDetected) {
-                    rebootBanner.classList.remove('hidden');
-                    if (rebootUptime) rebootUptime.textContent = `Uptime: ${data.uptimeMinutes || 0}m`;
-                } else {
-                    rebootBanner.classList.add('hidden');
-                }
-            }
-
-            // Overview Card Metrics (Strict onlineCount / capacity)
-            const playersRatio = document.getElementById('fs25-players-ratio');
-            const moneyEl = document.getElementById('fs25-money');
-            const farmlandCount = document.getElementById('fs25-farmland-count');
-            const fieldsCount = document.getElementById('fs25-fields-count');
-            const slotsCount = document.getElementById('fs25-slots-count');
-            const playTimeEl = document.getElementById('fs25-playtime');
-            const seasonDate = document.getElementById('fs25-season-date');
-            const lastUpdate = document.getElementById('fs25-last-update');
-            const diffEl = document.getElementById('fs25-difficulty');
-
-            if (playersRatio && data.players) {
-                const onlineCount = data.players.onlineCount || 0;
-                const capacity = data.players.capacity || 6;
-                playersRatio.textContent = `${onlineCount} / ${capacity}`;
-            }
-
-            if (moneyEl && data.finances) {
-                const bal = parseFloat(data.finances.money || 0);
-                moneyEl.textContent = `$${bal.toLocaleString('en-US')}`;
-            }
-
-            if (farmlandCount) farmlandCount.textContent = (data.farmlands ? data.farmlands.length : 0);
-            if (fieldsCount) fieldsCount.textContent = (data.fields ? data.fields.filter(f => f.isOwned).length : 0);
-            if (slotsCount && data.finances) slotsCount.textContent = data.finances.slotUsage || 'N/A';
-            if (playTimeEl && data.finances) playTimeEl.textContent = `${data.finances.playTimeHours || 0}h`;
-            if (diffEl && data.finances) diffEl.textContent = data.finances.economicDifficulty || 'NORMAL';
-            if (seasonDate && data.finances) seasonDate.textContent = `Save Date: ${data.finances.saveDate || '2026-10-26'}`;
-            if (lastUpdate && data.updatedAt) lastUpdate.textContent = `Sync: ${data.updatedAt}`;
-
-            // -------------------------------------------------------------
-            // Section 5.1: Economy & Great Demand Surge Math (Line 1205)
-            // -------------------------------------------------------------
-            const priceHistoryMap = (data.economy && data.economy.priceHistory) ? data.economy.priceHistory : {};
-            const greatDemandsList = (data.economy && data.economy.greatDemands) ? data.economy.greatDemands : [];
-            const pricesContainer = document.getElementById('fs25-prices-container');
-            const demandTag = document.getElementById('fs25-demand-tag');
-            const gdCropName = document.getElementById('gd-crop-name');
-            const gdMathBreakdown = document.getElementById('gd-math-breakdown');
-            const gdDuration = document.getElementById('gd-duration');
-            const gdSurgePrice = document.getElementById('gd-surge-price');
-
-            let activeDemandCrop = null;
-
-            if (greatDemandsList.length > 0) {
-                const activeDemand = greatDemandsList[0];
-                activeDemandCrop = (activeDemand.fillType || '').toUpperCase();
-                const multiplier = parseFloat(activeDemand.multiplier || 1.4);
-                const duration = activeDemand.durationHours || 18;
-
-                // Lookup base price in priceHistory across default season (e.g. EARLY_SPRING)
-                let basePrice = 191; // Fallback to live known base
-                if (priceHistoryMap[activeDemandCrop]) {
-                    const seasons = priceHistoryMap[activeDemandCrop];
-                    const firstSeason = Object.keys(seasons)[0];
-                    if (firstSeason && seasons[firstSeason]) {
-                        basePrice = parseInt(seasons[firstSeason], 10);
-                    }
-                }
-
-                const finalSurge = Math.round(basePrice * multiplier);
-
-                if (gdCropName) gdCropName.textContent = activeDemandCrop.replace(/_/g, ' ');
-                if (gdMathBreakdown) gdMathBreakdown.textContent = `($${basePrice} x ${multiplier})`;
-                if (gdDuration) gdDuration.textContent = `Demand Active • ${duration}h duration`;
-                if (gdSurgePrice) gdSurgePrice.textContent = `$${finalSurge} / 1kL`;
-                if (demandTag) demandTag.textContent = `Surge Active: x${multiplier}`;
-            } else {
-                if (gdCropName) gdCropName.textContent = "STANDARD MARKET";
-                if (gdMathBreakdown) gdMathBreakdown.textContent = "No active price surges";
-                if (gdDuration) gdDuration.textContent = "Regular period pricing";
-                if (gdSurgePrice) gdSurgePrice.textContent = "--";
-                if (demandTag) demandTag.textContent = "Stable";
-            }
-
-            // Render Price Catalog (6-Item Scroll Window)
-            if (pricesContainer) {
-                const crops = Object.keys(priceHistoryMap);
-                if (crops.length === 0) {
-                    // Populate with standard live crops if array is empty
-                    const defaultCrops = [
-                        { name: "STRAW PELLETS", price: 191, surge: true },
-                        { name: "WHEAT", price: 540, surge: false },
-                        { name: "BARLEY", price: 512, surge: false },
-                        { name: "OAT", price: 780, surge: false },
-                        { name: "CANOLA", price: 920, surge: false },
-                        { name: "CORN", price: 610, surge: false }
-                    ];
-                    let defHtml = '';
-                    defaultCrops.forEach(c => {
-                        defHtml += `
-                            <div class="py-2.5 flex items-center justify-between ${c.surge ? 'bg-orange-950/40 px-2 rounded-lg border border-orange-500/30' : ''}">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-slate-200">${c.name}</span>
-                                    ${c.surge ? '<span class="bg-orange-500 text-slate-950 font-black px-1.5 py-0.2 rounded text-[10px] font-mono">GREAT DEMAND</span>' : ''}
-                                </div>
-                                <span class="font-mono font-bold ${c.surge ? 'text-orange-400' : 'text-emerald-400'}">$${c.price} / 1kL</span>
-                            </div>
-                        `;
-                    });
-                    pricesContainer.innerHTML = defHtml;
-                } else {
-                    let pHtml = '';
-                    crops.forEach(cropName => {
-                        const isSurge = activeDemandCrop && cropName.toUpperCase() === activeDemandCrop;
-                        const seasons = priceHistoryMap[cropName];
-                        const firstPeriod = Object.keys(seasons)[0] || 'EARLY_SPRING';
-                        const priceVal = seasons[firstPeriod] || 0;
-
-                        pHtml += `
-                            <div class="py-2.5 flex items-center justify-between ${isSurge ? 'bg-orange-950/40 px-2 rounded-lg border border-orange-500/30' : ''}">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-slate-200">${cropName.replace(/_/g, ' ')}</span>
-                                    ${isSurge ? '<span class="bg-orange-500 text-slate-950 font-black px-1.5 py-0.2 rounded text-[10px] font-mono">GREAT DEMAND</span>' : ''}
-                                </div>
-                                <div class="text-right font-mono">
-                                    <span class="text-[10px] text-slate-500 uppercase mr-1">${firstPeriod.replace(/_/g, ' ')}:</span>
-                                    <span class="font-bold ${isSurge ? 'text-orange-400' : 'text-emerald-400'}">$${priceVal} / 1kL</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    pricesContainer.innerHTML = pHtml;
-                }
-            }
-
-            // Distribute Vehicles into: Farm 1, Farm 2, and Pallets
-            const allVehicles = data.vehicles || [];
-            const farm1Vehicles = [];
-            const farm2Vehicles = [];
-            const palletVehicles = [];
-
-            allVehicles.forEach(veh => {
-                const fn = (veh.filename || '').toLowerCase();
-                if (fn.includes('pallet') || fn.includes('bigbag') || fn.includes('boxpallet')) {
-                    palletVehicles.push(veh);
-                } else if (veh.farmId === 1) {
-                    farm1Vehicles.push(veh);
-                } else {
-                    farm2Vehicles.push(veh);
-                }
-            });
-
-            // Card 3: Render Farm #1 Fleet
-            const farm1Summary = document.getElementById('fs25-farm1-summary');
-            const farm1Grid = document.getElementById('fs25-farm1-grid');
-            if (farm1Summary) farm1Summary.textContent = `${farm1Vehicles.length} Units`;
-            if (farm1Grid) {
-                farm1Grid.innerHTML = renderVehicleList(farm1Vehicles, 'blue');
-            }
-
-            // Card 4: Render Farm #2 Fleet
-            const farm2Summary = document.getElementById('fs25-farm2-summary');
-            const farm2Grid = document.getElementById('fs25-farm2-grid');
-            if (farm2Summary) farm2Summary.textContent = `${farm2Vehicles.length} Units`;
-            if (farm2Grid) {
-                farm2Grid.innerHTML = renderVehicleList(farm2Vehicles, 'emerald');
-            }
-
-            // Card 5: Render Pallets (6-Item Scroll Window)
-            const palletsSummary = document.getElementById('fs25-pallets-summary');
-            const palletsGrid = document.getElementById('fs25-pallets-grid');
-            if (palletsSummary) palletsSummary.textContent = `${palletVehicles.length} Pallets`;
-            if (palletsGrid) {
-                if (palletVehicles.length === 0) {
-                    palletsGrid.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs italic col-span-full">No storage pallets on map.</div>`;
-                } else {
-                    let pHtml = '';
-                    palletVehicles.forEach((pal, idx) => {
-                        const rawType = (pal.filename || '').split('/').pop().replace('.xml', '').replace(/_/g, ' ').toUpperCase() || `Pallet #${idx + 1}`;
-                        let fillTypeName = "GOODS";
-                        let fillLevel = 1000;
-                        if (pal.fills && pal.fills.length > 0) {
-                            fillTypeName = pal.fills[0].type || "PRODUCT";
-                            fillLevel = pal.fills[0].level || 1000;
-                        }
-
-                        // Percentage logic: <=25% red, 26-75% yellow, 76-100% green
-                        const fillPercent = Math.min(100, Math.round((fillLevel / 1000) * 100));
-                        const colorSet = getFillLevelColorClass(fillPercent);
-
-                        pHtml += `
-                            <div class="custom-card p-3 border border-slate-800 hover:border-slate-700 flex flex-col justify-between">
-                                <div class="flex items-center justify-between pb-1.5 border-b border-slate-800/80">
-                                    <span class="text-xs font-bold text-slate-200 truncate pr-2">${rawType}</span>
-                                    <span class="text-[10px] px-1.5 py-0.5 rounded font-mono ${pal.farmId === 1 ? 'bg-blue-950 text-blue-300' : 'bg-emerald-950 text-emerald-300'}">F#${pal.farmId || 1}</span>
-                                </div>
-                                <div class="my-2 flex items-center justify-between">
-                                    <span class="text-[11px] font-mono text-slate-400 uppercase tracking-tight">${fillTypeName}</span>
-                                    <span class="text-xs font-mono font-bold ${colorSet.text}">${fillLevel.toLocaleString()} L (${fillPercent}%)</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                                    <div class="h-full ${colorSet.bg}" style="width: ${fillPercent}%"></div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    palletsGrid.innerHTML = pHtml;
-                }
-            }
-
-            // Card 6: Render Farmlands (6-Item Scroll Window)
-            const farmlandsSummary = document.getElementById('fs25-farmland-summary');
-            const farmlandsGrid = document.getElementById('fs25-farmlands-grid');
-            if (farmlandsSummary) farmlandsSummary.textContent = `${data.farmlands ? data.farmlands.length : 0} Parcels Registered`;
-            if (farmlandsGrid && data.farmlands) {
-                if (data.farmlands.length === 0) {
-                    farmlandsGrid.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs italic col-span-full">No farmlands recorded.</div>`;
-                } else {
-                    let flHtml = '';
-                    data.farmlands.forEach(fl => {
-                        const ownerBadge = fl.owner === 1 ? '<span class="bg-blue-900/80 text-blue-300 px-1.5 py-0.5 rounded text-[10px] font-bold">Farm #1</span>' : (fl.owner === 2 ? '<span class="bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded text-[10px] font-bold">Farm #2</span>' : '<span class="text-slate-500 font-mono text-[10px]">Unowned</span>');
-                        flHtml += `
-                            <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg flex items-center justify-between">
-                                <div>
-                                    <span class="text-xs font-bold text-slate-200 block">Plot #${fl.id}</span>
-                                    <span class="text-[10px] text-slate-400 font-mono">${parseFloat(fl.area || 0).toFixed(2)} Ha</span>
-                                </div>
-                                <div class="text-right">
-                                    <div class="mb-1">${ownerBadge}</div>
-                                    <span class="text-[11px] font-mono text-emerald-400 font-bold">$${Number(fl.price || 0).toLocaleString()}</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    farmlandsGrid.innerHTML = flHtml;
-                }
-            }
-
-            // Card 7: Render Mods (6-Item Scroll Window)
-            const modsSummary = document.getElementById('fs25-mods-summary');
-            const modsGrid = document.getElementById('fs25-mods-grid');
-            if (modsSummary) modsSummary.textContent = `${data.mods ? data.mods.length : 0} Installed Mods`;
-            if (modsGrid && data.mods) {
-                if (data.mods.length === 0) {
-                    modsGrid.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs italic col-span-full">No active mods loaded.</div>`;
-                } else {
-                    let mHtml = '';
-                    data.mods.forEach(mod => {
-                        mHtml += `
-                            <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg flex flex-col justify-between">
-                                <div>
-                                    <span class="text-xs font-bold text-white block truncate mb-0.5">${mod.title || mod.name}</span>
-                                    <span class="text-[10px] font-mono text-slate-400 block truncate">${mod.name}</span>
-                                </div>
-                                <div class="flex items-center justify-between pt-2 mt-2 border-t border-slate-800 text-[10px] text-slate-400 font-mono">
-                                    <span class="truncate max-w-[120px]">By: ${mod.author || 'GIANTS'}</span>
-                                    <span class="text-purple-400 font-bold">v${mod.version || '1.0.0'}</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    modsGrid.innerHTML = mHtml;
-                }
-            }
-        }
-
-        /* Helper to render vehicle cards with wear meters and percentage fill gauges (Line 1445) */
-        function renderVehicleList(vehicles, colorTheme) {
-            if (vehicles.length === 0) {
-                return `<div class="p-6 text-center text-slate-500 text-xs italic col-span-full">No vehicles in this farm group.</div>`;
-            }
-
-            let html = '';
-            vehicles.forEach((veh, idx) => {
-                const cleanName = (veh.filename || '').split('/').pop().replace('.xml', '').replace(/_/g, ' ').toUpperCase() || `Machine #${idx + 1}`;
-                const plate = veh.licensePlate ? `<span class="bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded text-[10px] font-mono tracking-tight">${veh.licensePlate}</span>` : '';
-                const hours = parseFloat(veh.operatingHours || 0).toFixed(1);
-                const wearVal = Math.round((veh.wear || 0) * 100);
-                const dmgVal = Math.round((veh.damage || 0) * 100);
-                const wearColors = getWearColor(wearVal);
-
-                let fillsHtml = '';
-                if (veh.fills && veh.fills.length > 0) {
-                    fillsHtml = veh.fills.map(f => {
-                        const level = Number(f.level || 0);
-                        const isFull = level >= 1000;
-                        const isHalf = level >= 250 && level < 1000;
-                        const fillPillColor = isFull ? 'bg-emerald-950 text-emerald-300 border-emerald-500/50' : (isHalf ? 'bg-yellow-950 text-yellow-300 border-yellow-500/50' : 'bg-red-950 text-red-300 border-red-500/50');
-                        return `<span class="text-[10px] font-mono border px-1.5 py-0.5 rounded ${fillPillColor}">${f.type}: ${level.toLocaleString()}</span>`;
-                    }).join(' ');
-                }
-
-                html += `
-                    <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl flex flex-col justify-between gap-3">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="min-w-0">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-xs font-bold text-slate-100 truncate">${cleanName}</span>
-                                    ${plate}
-                                </div>
-                                <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono mt-0.5">
-                                    <span>Operated: ${hours}h</span>
-                                    <span>•</span>
-                                    <span>Value: $${Number(veh.price || 0).toLocaleString()}</span>
-                                </div>
-                            </div>
-                            ${dmgVal > 0 ? `<span class="text-[10px] font-mono text-red-400 font-bold bg-red-950/70 border border-red-800/60 px-1.5 py-0.5 rounded flex-shrink-0">Dmg: ${dmgVal}%</span>` : ''}
-                        </div>
-
-                        ${fillsHtml ? `<div class="flex flex-wrap gap-1">${fillsHtml}</div>` : ''}
-
-                        <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono">
-                            <span class="${wearColors.text}">Condition: ${100 - wearVal}%</span>
-                            <div class="w-28 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                                <div class="h-full ${wearColors.bar}" style="width: ${Math.max(5, 100 - wearVal)}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            return html;
-        }
-
         // Initialize all Firebase listeners on DOM load
         document.addEventListener('DOMContentLoaded', () => {
             listenToUtmLinks();
             listenToUsers();
             listenToPsnPresence();
             listenToMusicReleases();
-            listenToFs25Server();
         });
     </script>
 
@@ -2388,6 +1927,61 @@
         const cinIsUrl = (s) => /^(https?:)?\/\//i.test(String(s || '').trim()) || /(apple|amazon|amzn|google|fandango|vudu|youtu|justwatch|moviesanywhere)\./i.test(String(s || ''));
         const cinNormUrl = (s) => { s = String(s || '').trim(); return /^(https?:)?\/\//i.test(s) ? s : 'https://' + s; };
 
+        /* Poster URLs from the sheet: some were http:// (blocked as mixed content on the https site),
+           some were full-size TMDb "original" files (several MB, still loading when the slide changed),
+           some were Google Drive share links or =IMAGE("...") formulas. Clean them all up and keep every
+           usable one so a dead link falls back to the next. */
+        function cinPosterUrl(raw) {
+            let u = String(raw || '').trim();
+            const f = u.match(/^=?\s*image\(\s*["']([^"']+)["']/i); if (f) u = f[1];
+            u = u.replace(/^["']|["']$/g, '').trim();
+            if (!u || /^n\/?a$/i.test(u)) return '';
+            u = u.replace(/\s/g, '%20');
+            if (u.startsWith('//')) u = 'https:' + u;
+            else if (/^http:\/\//i.test(u)) u = 'https://' + u.slice(7);
+            else if (!/^https:\/\//i.test(u)) { if (/^(www\.|[\w-]+\.[\w.-]+\/)/i.test(u)) u = 'https://' + u; else return ''; }
+            const drive = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/i);
+            if (drive) return 'https://drive.google.com/thumbnail?id=' + drive[1] + '&sz=w800';
+            u = u.replace(/(image\.tmdb\.org\/t\/p\/)original\//i, '$1w780/');
+            return u;
+        }
+        function cinPosterCandidates(list) {
+            const out = [];
+            list.forEach(v => { const u = cinPosterUrl(v); if (u && !out.includes(u)) out.push(u); });
+            return out;
+        }
+        /* Load a slide's poster before showing it. Resolves true once one of its URLs loads
+           (slide.url is set to that one), false if none of them load. Result is remembered. */
+        function cinPreload(slide) {
+            if (!slide) return Promise.resolve(false);
+            if (slide._ok !== undefined) return Promise.resolve(slide._ok);
+            if (slide._p) return slide._p;
+            const list = slide.posters && slide.posters.length ? slide.posters : [slide.url];
+            slide._p = new Promise(done => {
+                const tryAt = (i) => {
+                    if (i >= list.length) { slide._ok = false; return done(false); }
+                    const img = new Image();
+                    let settled = false;
+                    const t = setTimeout(() => { if (!settled) { settled = true; tryAt(i + 1); } }, 12000);
+                    img.onload = () => { if (settled) return; settled = true; clearTimeout(t); if (!img.naturalWidth || img.naturalWidth < 20) return tryAt(i + 1); slide.url = list[i]; slide._ok = true; done(true); };
+                    img.onerror = () => { if (settled) return; settled = true; clearTimeout(t); tryAt(i + 1); };
+                    img.referrerPolicy = 'no-referrer';
+                    img.src = list[i];
+                };
+                tryAt(0);
+            });
+            return slide._p;
+        }
+        /* Next slide (after index `from`) whose poster actually loads; skips broken ones */
+        async function cinNextGood(from) {
+            const n = cinemaImages.length;
+            for (let k = 1; k <= n; k++) {
+                const i = (from + k) % n;
+                if (await cinPreload(cinemaImages[i])) return i;
+            }
+            return -1;
+        }
+
         function headerImdbTotal(header) {
   // The sheet header carries the IMDb total next to the "IMDB-ID (C) [manual update]" label
   const num = v => { v = String(v == null ? '' : v).replace(/\(\s*c\s*\)|\[[^\]]*\]/gi, ' ').replace(/[,\s]/g, ''); const m = v.match(/(\d+)$/); return m && /^\d+$/.test(String(v).replace(/^.*?(\d+)$/, '$1')) ? +m[1] : null; };
@@ -2447,9 +2041,9 @@ function buildCinemaFromCsv(text) {
                 if (isTv) tvTally++;
                 const imdbM = cell(CIN.id).match(/tt\d+/i); if (imdbM) imdbIds.add(imdbM[0].toLowerCase());
 
-                // Poster Image Url (N) first, then Poster Art (B) if that holds a plain URL
-                const poster = [cell(CIN.poster), cell(CIN.posterArt)].find(u => /^(https?:)?\/\//i.test(u) && u !== 'N/A') || '';
-                if (!poster) continue; // slideshow is poster-driven
+                // Poster Image Url (N) first, then Poster Art (B); every usable URL is kept as a fallback
+                const posters = cinPosterCandidates([cell(CIN.poster), cell(CIN.posterArt)]);
+                if (!posters.length) continue; // slideshow is poster-driven
 
                 let rating = cell(CIN.rating);
                 if (/^n\/a$/i.test(rating)) rating = '';
@@ -2457,7 +2051,8 @@ function buildCinemaFromCsv(text) {
                 const streamingRaw = cell(CIN.streaming);
 
                 slides.push({
-                    url: poster,
+                    url: posters[0],
+                    posters: posters,
                     title: title,
                     description: desc && !/^n\/a$/i.test(desc) ? desc : 'No description available for this title.',
                     year: year,
@@ -2529,47 +2124,54 @@ function buildCinemaFromCsv(text) {
             const captionTitle = document.getElementById('cinema-caption-title');
             
             const setSlideImage = (layer, slideObj) => {
-                layer.querySelectorAll('div').forEach(el => {
-                    el.style.backgroundImage = `url('${slideObj.url}')`;
-                });
+                const css = `url("${String(slideObj.url).replace(/"/g, '%22')}")`;
+                layer.querySelectorAll('div').forEach(el => { el.style.backgroundImage = css; });
             };
+            const token = {};
+            cinemaInterval = token;
 
             /* Resume on the slide that is actually current (it used to jump back to the first poster,
-               so the lightbox opened a different title than the one on screen) */
+               so the lightbox opened a different title than the one on screen). Only show posters
+               that have finished loading, and skip any whose links are dead. */
             if (currentSlideIndex >= cinemaImages.length) currentSlideIndex = 0;
-            const resumeSlide = cinemaImages[currentSlideIndex];
-            setSlideImage(layer1, resumeSlide);
-            if (captionTitle) captionTitle.textContent = resumeSlide.title;
+            (async () => {
+                let first = currentSlideIndex;
+                if (!(await cinPreload(cinemaImages[first]))) first = await cinNextGood(first);
+                if (cinemaInterval !== token) return;
+                if (first < 0) { if (captionTitle) captionTitle.textContent = 'Posters unavailable'; return; }
+                currentSlideIndex = first;
+                const resumeSlide = cinemaImages[currentSlideIndex];
+                setSlideImage(layer1, resumeSlide);
+                if (captionTitle) captionTitle.textContent = resumeSlide.title;
+                activeBgId = 1;
+                layer1.style.opacity = 1;
+                layer2.style.opacity = 0;
 
-            activeBgId = 1;
-            layer1.style.opacity = 1;
-            layer2.style.opacity = 0;
-
-            cinemaInterval = setInterval(() => {
-                currentSlideIndex = (currentSlideIndex + 1) % cinemaImages.length;
-                const nextSlide = cinemaImages[currentSlideIndex];
-
-                if (captionTitle) captionTitle.textContent = nextSlide.title;
-
-                if (activeBgId === 1) {
-                    setSlideImage(layer2, nextSlide);
-                    layer2.style.opacity = 1;
-                    layer1.style.opacity = 0;
-                    activeBgId = 2;
-                } else {
-                    setSlideImage(layer1, nextSlide);
-                    layer1.style.opacity = 1;
-                    layer2.style.opacity = 0;
-                    activeBgId = 1;
+                while (cinemaInterval === token) {
+                    // load the next good poster while the current one is on screen
+                    const [nextIdx] = await Promise.all([cinNextGood(currentSlideIndex), new Promise(r => setTimeout(r, 6000))]);
+                    if (cinemaInterval !== token || nextIdx < 0) return;
+                    if (nextIdx === currentSlideIndex) continue;
+                    currentSlideIndex = nextIdx;
+                    const nextSlide = cinemaImages[currentSlideIndex];
+                    if (captionTitle) captionTitle.textContent = nextSlide.title;
+                    if (activeBgId === 1) {
+                        setSlideImage(layer2, nextSlide);
+                        layer2.style.opacity = 1;
+                        layer1.style.opacity = 0;
+                        activeBgId = 2;
+                    } else {
+                        setSlideImage(layer1, nextSlide);
+                        layer1.style.opacity = 1;
+                        layer2.style.opacity = 0;
+                        activeBgId = 1;
+                    }
                 }
-            }, 6000);
+            })();
         }
 
         function pauseCinemaSlideshow() {
-            if (cinemaInterval) {
-                clearInterval(cinemaInterval);
-                cinemaInterval = null;
-            }
+            cinemaInterval = null; // the slideshow loop stops on its next step
         }
 
         window.openCinemaLightbox = function() {
@@ -2590,6 +2192,7 @@ function buildCinemaFromCsv(text) {
 
             const yearText = currentItem.year ? ` (${currentItem.year})` : '';
             titleEl.textContent = `${currentItem.title}${yearText}`;
+            imgEl.onerror = () => { imgEl.onerror = null; imgEl.src = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/Images/werewolf_movie_anywhere.jpg'; };
             imgEl.src = currentItem.url;
             imgEl.alt = currentItem.title;
             descEl.textContent = currentItem.description;
@@ -2778,10 +2381,6 @@ function buildCinemaFromCsv(text) {
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Phones: start with the long FS25 telemetry collapsed, app-style
-            if (window.matchMedia('(max-width: 767px)').matches) {
-                document.getElementById('fs25-details')?.removeAttribute('open');
-            }
             refreshData();
             setInterval(refreshData, 300000);
         });
