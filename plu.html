@@ -185,21 +185,23 @@ function grade(ok){
 const synth=window.speechSynthesis;let enVoice=null;
 const pickVoice=()=>{try{const v=synth.getVoices();enVoice=v.find(x=>/^en[-_]US/i.test(x.lang)&&/natural|samantha|google|enhanced/i.test(x.name))||v.find(x=>/^en[-_]US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}};
 if(synth){pickVoice();synth.onvoiceschanged=pickVoice}
-let curU=null,hintT=0;
+let hintT=0;
 function hint(t){let h=document.getElementById('sayhint');if(!h){h=document.createElement('div');h.id='sayhint';h.setAttribute('role','status');document.body.appendChild(h)}h.textContent=t;h.classList.add('show');clearTimeout(hintT);hintT=setTimeout(()=>h.classList.remove('show'),4500)}
-function say(d,w,btn){if(!synth){hint('This browser can\'t read aloud. Try opening the page in Safari or Chrome.');return}
-  if(synth.speaking||synth.pending)synth.cancel();try{synth.resume()}catch(e){}
-  if(!enVoice)pickVoice();
-  const name=d.n.replace(/\(2nd\)/,'').replace(/\//g,' or ');
-  const parts=[];if(w!=='code')parts.push(name);if(d.c&&w!=='name')parts.push('code '+d.c.split('').join(' '));
-  const u=new SpeechSynthesisUtterance(parts.join('. '));u.lang='en-US';u.rate=.9;u.volume=1;if(enVoice)u.voice=enVoice;
-  curU=u;let started=false;
-  document.querySelectorAll('.say.talking').forEach(x=>x.classList.remove('talking'));
-  u.onstart=()=>{started=true;btn&&btn.classList.add('talking')};
-  u.onend=()=>{btn&&btn.classList.remove('talking')};
-  u.onerror=()=>{btn&&btn.classList.remove('talking');if(!started)hint('No sound? Turn the volume up and switch off Silent mode, then tap again.')};
-  synth.speak(u);
-  setTimeout(()=>{if(!started&&curU===u)hint('No sound? Turn the volume up and switch off Silent mode, then tap again.')},2000)}
+/* Recorded clips play like a video, so they work even when the phone is on Silent.
+   Name clip, then "Code", then one clip per digit. Falls back to the phone's built-in voice if a clip can't load. */
+const slug=x=>x.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+const player=new Audio();player.preload='auto';let queue=[],talkBtn=null,talkItem=null,talkWhat='';
+const stopTalk=()=>{talkBtn&&talkBtn.classList.remove('talking');talkBtn=null};
+function playNext(){if(!queue.length){stopTalk();return}player.src='assets/audio/'+queue.shift()+'.mp3';
+  const p=player.play();if(p&&p.catch)p.catch(()=>{stopTalk();hint('No sound? Turn the volume up and tap again.')})}
+player.addEventListener('ended',playNext);
+player.addEventListener('error',()=>{queue=[];stopTalk();if(talkItem)speakTTS(talkItem,talkWhat)});
+function speakTTS(d,w){if(!synth)return;if(synth.speaking||synth.pending)synth.cancel();try{synth.resume()}catch(e){}if(!enVoice)pickVoice();
+  const parts=[];if(w!=='code')parts.push(d.n.replace(/\(2nd\)/,'').replace(/\//g,' or '));if(d.c&&w!=='name')parts.push('code '+d.c.split('').join(' '));
+  const u=new SpeechSynthesisUtterance(parts.join('. '));u.lang='en-US';u.rate=.9;if(enVoice)u.voice=enVoice;window.__u=u;synth.speak(u)}
+function say(d,w,btn){try{player.pause()}catch(e){}stopTalk();
+  queue=[];if(w!=='code')queue.push('plu-'+slug(d.n));if(d.c&&w!=='name'){queue.push('plu-word-code');for(const ch of d.c)queue.push('plu-digit-'+ch)}
+  if(!queue.length)return;talkItem=d;talkWhat=w;talkBtn=btn||null;btn&&btn.classList.add('talking');playNext()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(!b)return;e.preventDefault();e.stopPropagation();say(D[+b.dataset.say],b.dataset.what,b)},true);
 
 draw();
