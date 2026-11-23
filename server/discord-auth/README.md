@@ -12,6 +12,13 @@ Env vars (Render > Environment):
 Discord app: OAuth2 > Redirects must contain  https://ww-discord-auth.onrender.com/callback
 Firebase console: Authentication > Settings > Authorized domains is NOT needed (custom token, no popup).
 
+## SMLC (Home Inventory)
+
+`/login?app=smlc&next=<page>` signs people into the **SMLC** Firebase (smlc-fuel-monitor) instead, for the
+Home Inventory app in the SMLC repo (`inventory/`). Same Discord app; matched by verified Discord e-mail.
+Needs the SMLC service-account JSON in the Key Vault row `firebase_smlc_service_account`
+(or env `SMLC_FIREBASE_SERVICE_ACCOUNT`). SMLC page origins are always allowed.
+
 ## Linking Discord to an existing account
 
 Settings > Sign-in methods shows Google, Email & password and Discord as Connected or Link.
