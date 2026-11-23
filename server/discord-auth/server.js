@@ -24,7 +24,9 @@ const crypto = require('crypto');
 const express = require('express');
 
 const PUBLIC_URL = (process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || '').trim().replace(/\/$/, '');
-const ALLOWED = (process.env.ALLOWED_ORIGINS || 'https://werewolf3788.github.io').split(',').map(s => s.trim().replace(/\/$/, '')).filter(Boolean);
+const ALLOWED = (process.env.ALLOWED_ORIGINS || 'https://werewolf3788.github.io').split(',').map(s => s.trim().replace(/\/$/, '')).filter(Boolean)
+  .concat(['https://werewolf3788.github.io', 'https://supportmylocalcommunity.com', 'https://www.supportmylocalcommunity.com'])   // SMLC pages (Home Inventory)
+  .filter((o, i, a) => a.indexOf(o) === i);
 const STATE_SECRET = process.env.STATE_SECRET || '';
 const REDIRECT_URI = PUBLIC_URL + '/callback';
 
@@ -38,6 +40,23 @@ async function getClientId(admin) {
   const v = (await admin.database().ref('users/' + key + '/discord_signin_id').once('value')).val();
   idCache = { v: /^\d{17,20}$/.test(String(v || '')) ? String(v) : '', at: Date.now() };
   return idCache.v;
+}
+
+/* ---------- SMLC (second Firebase project, smlc-fuel-monitor) ----------
+ * /login?app=smlc  signs people into the SMLC Firebase instead (Home Inventory, smlc repo inventory/).
+ * Same Discord app and Application ID. The SMLC service-account JSON comes from the Key Vault:
+ *   user_secrets/{DISCORD_APP_OWNER_KEY}/firebase_smlc_service_account   (env SMLC_FIREBASE_SERVICE_ACCOUNT overrides)
+ */
+let smlcApp = null;
+async function getSmlc(admin) {
+  if (smlcApp) return smlcApp;
+  let json = process.env.SMLC_FIREBASE_SERVICE_ACCOUNT || '';
+  const key = process.env.DISCORD_APP_OWNER_KEY;
+  if (!json && key) json = (await admin.database().ref('user_secrets/' + key + '/firebase_smlc_service_account').once('value')).val() || '';
+  if (!json) return null;
+  const cred = typeof json === 'string' ? JSON.parse(json) : json;
+  smlcApp = admin.apps.find(a => a && a.name === 'smlc') || admin.initializeApp({ credential: admin.credential.cert(cred) }, 'smlc');
+  return smlcApp;
 }
 
 /* ---------- signed state (CSRF + remembers where to send the user back) ---------- */
@@ -108,7 +127,7 @@ function createApp(deps) {
   app.get('/login', async (req, res) => {
     const next = safeNext(req.query.next);
     if (!next) return res.status(400).send('Bad or missing "next" address.');
-    toDiscord(res, next, {}, 'identify email');
+    toDiscord(res, next, req.query.app === 'smlc' ? { app: 'smlc' } : {}, 'identify email');
   });
 
   // Link Discord to the account that is signed in right now (the page POSTs its Firebase ID token).
@@ -168,6 +187,24 @@ function createApp(deps) {
       const me = await (await fetchFn('https://discord.com/api/users/@me', { headers: { Authorization: 'Bearer ' + tok.access_token } })).json();
       const id = String(me.id || '');
       if (!id) return backWithError(res, st.next, 'Discord did not return an account.');
+
+      // ---- SMLC sign-in: same verified e-mail = same SMLC account as Google / e-mail sign-in ----
+      if (st.app === 'smlc') {
+        let sm = null;
+        try { sm = await getSmlc(admin); } catch (e) { console.error('[smlc]', e && e.message); }
+        if (!sm) return backWithError(res, st.next, 'Discord sign-in is not set up for SMLC yet (SMLC service account missing from the Key Vault).');
+        const email = String(me.email || '').toLowerCase();
+        if (!email || me.verified !== true) return backWithError(res, st.next, 'Your Discord email is missing or not verified. Verify it in Discord, then try again.');
+        let su;
+        try { su = await sm.auth().getUserByEmail(email); }
+        catch (e) {
+          if (e.code !== 'auth/user-not-found') throw e;
+          const avatar = me.avatar ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=256` : undefined;
+          su = await sm.auth().createUser({ email, emailVerified: true, displayName: me.global_name || me.username, photoURL: avatar });
+        }
+        const stoken = await sm.auth().createCustomToken(su.uid, { discord_id: id });
+        return res.redirect(st.next + '#ww_discord_token=' + encodeURIComponent(stoken));
+      }
 
       // ---- linking Discord to the account that is signed in ----
       if (st.mode === 'link') {
