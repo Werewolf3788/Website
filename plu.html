@@ -68,6 +68,8 @@ main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
 .say{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--field);display:grid;place-items:center;cursor:pointer;padding:0}.say svg{width:22px;height:22px}.say:active{background:var(--acc);color:#fff}
 .item{grid-template-columns:96px 1fr auto!important}
 .nosay .say{display:none}
+.say.talking{background:var(--acc);color:#fff;border-color:var(--acc)}
+#sayhint{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);max-width:min(92vw,420px);background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;font-size:15px;opacity:0;pointer-events:none;transition:.2s;z-index:50;text-align:center}#sayhint.show{opacity:1;transform:translate(-50%,0)}
 .qrow{display:flex;align-items:center;justify-content:center;gap:10px}
 /* hide Google Translate's banner/tooltips so the page looks the same in any language */
 .goog-te-banner-frame,.skiptranslate>iframe,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip{display:none!important}body{top:0!important}
@@ -183,11 +185,23 @@ function grade(ok){
 const synth=window.speechSynthesis;let enVoice=null;
 const pickVoice=()=>{try{const v=synth.getVoices();enVoice=v.find(x=>/^en[-_]US/i.test(x.lang)&&/natural|samantha|google|enhanced/i.test(x.name))||v.find(x=>/^en[-_]US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}};
 if(synth){pickVoice();synth.onvoiceschanged=pickVoice}
-function say(d,w){if(!synth)return;synth.cancel();const name=d.n.replace(/\(2nd\)/,'').replace(/\//g,' or ');
+let curU=null,hintT=0;
+function hint(t){let h=document.getElementById('sayhint');if(!h){h=document.createElement('div');h.id='sayhint';h.setAttribute('role','status');document.body.appendChild(h)}h.textContent=t;h.classList.add('show');clearTimeout(hintT);hintT=setTimeout(()=>h.classList.remove('show'),4500)}
+function say(d,w,btn){if(!synth){hint('This browser can\'t read aloud. Try opening the page in Safari or Chrome.');return}
+  if(synth.speaking||synth.pending)synth.cancel();try{synth.resume()}catch(e){}
+  if(!enVoice)pickVoice();
+  const name=d.n.replace(/\(2nd\)/,'').replace(/\//g,' or ');
   const parts=[];if(w!=='code')parts.push(name);if(d.c&&w!=='name')parts.push('code '+d.c.split('').join(' '));
-  const u=new SpeechSynthesisUtterance(parts.join('. '));u.lang='en-US';u.rate=.85;if(enVoice)u.voice=enVoice;synth.speak(u)}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(!b)return;e.preventDefault();e.stopPropagation();say(D[+b.dataset.say],b.dataset.what)},true);
-if(!synth)document.documentElement.classList.add('nosay');
+  const u=new SpeechSynthesisUtterance(parts.join('. '));u.lang='en-US';u.rate=.9;u.volume=1;if(enVoice)u.voice=enVoice;
+  curU=u;let started=false;
+  document.querySelectorAll('.say.talking').forEach(x=>x.classList.remove('talking'));
+  u.onstart=()=>{started=true;btn&&btn.classList.add('talking')};
+  u.onend=()=>{btn&&btn.classList.remove('talking')};
+  u.onerror=()=>{btn&&btn.classList.remove('talking');if(!started)hint('No sound? Turn the volume up and switch off Silent mode, then tap again.')};
+  synth.speak(u);
+  setTimeout(()=>{if(!started&&curU===u)hint('No sound? Turn the volume up and switch off Silent mode, then tap again.')},2000)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(!b)return;e.preventDefault();e.stopPropagation();say(D[+b.dataset.say],b.dataset.what,b)},true);
+
 draw();
 }
 </script>
