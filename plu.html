@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Produce PLU Codes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: quick, practical, back-of-house cheat sheet you can use mid-shift
+   IDEA: the laminated PLU sheet by the register, turned into a scale-label lookup
+   PICTURE: the live search list itself with big scale-style codes; flashcard in practice
+   COLOUR and TYPE: produce-crate green field, paper white cards, tomato-red accent; Barlow Condensed codes
+   LAYOUT: sticky search + tabs on top, results grid below; phone stacks to one column */
+:root{color-scheme:light dark;--bg:light-dark(#f4f7f1,#0f1a12);--field:light-dark(#1f5c34,#163f25);--card:light-dark(#fff,#18261b);--ink:light-dark(#14201a,#e9f1ea);--mute:light-dark(#5b6b60,#9fb2a4);--line:light-dark(#dbe4d8,#2a3b2e);--acc:#e2452b;--good:light-dark(#1f7a3e,#5fd08a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip}
+header{background:var(--field);color:#fff;padding:18px max(4vw,14px) 14px;position:sticky;top:0;z-index:5;box-shadow:0 2px 10px #0003}
+h1{font:700 30px/1.05 "Barlow Condensed",sans-serif;margin:0 0 10px;text-wrap:balance}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.modes button{flex:1;min-height:44px;border:2px solid #ffffff55;background:transparent;color:#fff;font:600 16px Barlow;border-radius:10px;cursor:pointer}
+.modes button[aria-pressed=true]{background:#fff;color:var(--field);border-color:#fff}
+input[type=search],#ans{width:100%;font:500 18px Barlow;min-height:48px;padding:8px 14px;border-radius:10px;border:2px solid transparent;background:#fff;color:#14201a}
+input:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips button{flex:none;min-height:36px;padding:0 12px;border-radius:99px;border:1px solid #ffffff66;background:transparent;color:#fff;font:500 14px Barlow;cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--acc);border-color:var(--acc)}
+main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
+.count{color:var(--mute);font-size:14px;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:auto 1fr;gap:2px 14px;align-items:center}
+.code{font:700 34px/1 "Barlow Condensed",sans-serif;color:var(--acc);grid-row:span 2;min-width:3.2ch;white-space:nowrap}
+.code.none{color:var(--mute);font-size:22px}
+.name{font-weight:600;font-size:17px;line-height:1.2}
+.note{color:var(--mute);font-size:13px;line-height:1.3}
+.empty{padding:40px 0;text-align:center;color:var(--mute)}
+.card{max-width:560px;margin:10px auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;text-align:center;box-shadow:0 6px 24px #0001}
+.cat{color:var(--mute);font-size:14px}
+.q{font:700 clamp(34px,8vw,52px)/1.05 "Barlow Condensed",sans-serif;margin:8px 0 18px;text-wrap:balance}
+.q.big{color:var(--acc);font-size:clamp(56px,16vw,88px)}
+#ans{border-color:var(--line);text-align:center;font-size:28px;letter-spacing:.05em}
+.btn{min-height:48px;padding:0 20px;border-radius:10px;border:0;background:var(--field);color:#fff;font:600 17px Barlow;cursor:pointer;flex:1}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.choices{display:grid;gap:8px}
+.choices button{min-height:52px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:600 17px Barlow;cursor:pointer}
+.choices .right{border-color:var(--good);background:color-mix(in srgb,var(--good) 18%,var(--card))}
+.choices .wrong{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 15%,var(--card))}
+.fb{min-height:28px;margin:14px 0 6px;font-weight:600}.fb.ok{color:var(--good)}.fb.no{color:var(--acc)}
+.stats{display:flex;justify-content:center;gap:22px;color:var(--mute);font-size:14px;margin-top:14px;flex-wrap:wrap}
+.stats b{color:var(--ink);font-size:18px}
+.sub{display:flex;gap:8px;max-width:560px;margin:0 auto 4px}
+.sub button{flex:1;min-height:40px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px Barlow;cursor:pointer}
+.sub button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.foot{color:var(--mute);font-size:13px;text-align:center;margin-top:24px}
+@media(max-width:600px){h1{font-size:24px}.code{font-size:30px}}
+@media(prefers-reduced-motion:no-preference){.card{animation:pop .18s ease-out}@keyframes pop{from{transform:scale(.97);opacity:.6}}}
+</style></head><body>
+<header>
+  <h1>Produce PLU codes</h1>
+  <div class="row modes"><button id="mLook" aria-pressed="true">Look up</button><button id="mPrac" aria-pressed="false">Practice</button></div>
+  <div id="lookBar" style="margin-top:10px"><input type="search" id="q" placeholder="Type a name or a code…" autocomplete="off"></div>
+  <div class="chips" id="chips"></div>
+</header>
+<main>
+  <section id="look"><p class="count" id="count"></p><div class="grid" id="grid"></div></section>
+  <section id="prac" hidden>
+    <div class="sub"><button id="sType" aria-pressed="true">Name → type code</button><button id="sPick" aria-pressed="false">Code → pick name</button></div>
+    <div class="card" id="card"></div>
+    <div class="stats"><span>Streak <b id="sStreak">0</b></span><span>Right <b id="sRight">0</b></span><span>Missed <b id="sMiss">0</b></span></div>
+    <p class="foot">Ones you miss come back more often. Pick a section above to practice just that sheet.</p>
+  </section>
+  <p class="foot">Copied from the 8 store sheets, handwritten codes included. "—" means the sheet has no code for that item.</p>
+</main>
+<script>
+{
+const S=['Onion · Pepper · Tomato','Roots · Potato','Greens · Squash','Herbs · Corn · Eggplant','Apple · Pear · Tropical','Berry · Grape · Exotic','Banana · Mango · Plum','Melon · Citrus'];
+const D=[
+[0,'1100','Shallot'],[0,'1101','Onion red'],[0,'1102','Onion white'],[0,'1103','Onion yellow'],[0,'','Onion sweet','No code on sheet'],[0,'1118','Scallion'],[0,'2220','Chive, Korean'],
+[0,'1056','Bell pepper orange'],[0,'1057','Bell pepper red'],[0,'1051','Bell pepper yellow'],[0,'1058','Bell pepper green'],[0,'1048','Pepper Anaheim'],
+[0,'1066','Tomato round'],[0,'1068','Tomato Roma'],[0,'1067','Tomato plum'],[0,'4664','Tomato on vine'],[0,'4801','Tomatillo'],[0,'4793','Tomatillo peeled'],[0,'4792','Tree tomato'],
+[0,'3423','Tomato heirloom'],[0,'1065','Tomato cherry','Handwritten fix (printed 1094) \u00b7 same as grape'],[0,'1065','Tomato grape','Same code as cherry tomato'],
+[1,'1052','Galangal'],[1,'1059','Turmeric'],[1,'1061','Ginger, young'],[1,'1062','Ginger'],[1,'1069','Carrot'],[1,'1079','Yuca'],[1,'1084','Radish green'],[1,'1109','Radish red'],[1,'1186','Radish watermelon'],
+[1,'1189','Radish Korean'],[1,'1108','Daikon'],[1,'1098','Potato russet'],[1,'1050','Potato red'],[1,'4727','Small yellow potatoes'],[1,'1096','Potato yellow'],[1,'1176','Purple potato'],[1,'1182','Potato sweet'],
+[1,'1180','Potato purple sweet'],[1,'1175','Potato Japanese sweet'],[1,'','Murasaki sweet potato','Code starts 32… — cut off in the photo'],[1,'1089','Eddoes'],[1,'1153','Malanga lila'],[1,'1154','Taro big'],[1,'1191','Taro peeled'],[1,'4796','Taro stem'],
+[1,'1099','Beets'],[1,'1146','Jicama'],[1,'1188','Kohlrabi'],[1,'1086','Lotus root'],[1,'1185','Turnip'],[1,'1160','Arrowhead'],[1,'1184','Sweet potato leaves'],
+[2,'1014','Cabbage red'],[2,'1016','Cabbage American'],[2,'1017','Cabbage Napa'],[2,'1019','Cabbage Chinese'],[2,'1165','Lettuce iceberg'],[2,'1137','Watercress'],[2,'1029','Cauliflower Chinese'],
+[2,'4079','Cauliflower American'],[2,'1031','Broccoli crown'],[2,'1025','Celery'],[2,'1026','Chinese celery'],[2,'1011','Taiwan spinach'],[2,'1028','Asparagus'],[2,'1054','Bamboo shoots'],[2,'1187','Artichoke'],
+[2,'1074','Bitter melon'],[2,'1075','Bitter melon Indian'],[2,'1078','Bitter melon white'],[2,'1042','Luffa gourd'],[2,'1043','Luffa Taiwan'],[2,'1063','Winter melon'],[2,'1169','Pumpkin Japanese'],
+[2,'4768','Pumpkin Beibei'],[2,'1064','Pumpkin'],[2,'1190','Shark fin melon'],[2,'4759','Butternut squash'],[2,'1095','Zucchini'],[2,'1087','Squash fuzzy'],[2,'1088','Squash long'],[2,'1090','Squash yellow'],
+[2,'1134','Chayote'],[2,'1091','Cucumber'],[2,'1092','Cucumber Tianjin'],[2,'1094','Cucumber Indian'],[2,'4593','Cucumber European'],[2,'4597','Cucumber Chinese'],
+[3,'','Mushroom enoki','Scan it — 2 different kinds'],[3,'1171','Pandan leaves'],[3,'1119','Cilantro, no root'],[3,'1120','Cilantro, root on'],[3,'1125','Culantro'],[3,'1618','Parsley'],[3,'1130','Diep ca'],[3,'4530','Montoi'],
+[3,'1077','Corn'],[3,'1085','Corn white'],[3,'','Corn yellow','No code on sheet'],[3,'','Corn tri-color','No code on sheet'],[3,'1106','Water chestnut'],[3,'4814','Chestnut bag'],[3,'4927','Chestnut'],
+[3,'4928','Water caltrop'],[3,'3064','Aloe vera'],[3,'1104','Peanut'],[3,'1404','Fresh peanut'],[3,'4943','Walnut'],[3,'4970','Sugar cane'],
+[3,'1073','Eggplant Thai (green)'],[3,'1178','Eggplant Indian (purple)'],[3,'1071','Eggplant American'],[3,'','Eggplant Chinese/Japanese','No code on sheet'],
+[4,'1277','Apple Honeycrisp'],[4,'1278','Apple green'],[4,'1289','Apple yellow'],[4,'','Apple Pink Lady','No code on sheet'],[4,'3284','Apple red'],[4,'4016','Apple Red Delicious'],[4,'4017','Apple Granny Smith'],
+[4,'4131','Apple Fuji'],[4,'4133','Apple Gala'],[4,'1264','Kiwi golden'],[4,'4030','Kiwi'],[4,'4025','Pear fragrant','Sheet also lists 4426 for pear fragrant'],[4,'4426','Pear fragrant (2nd)','Sheet also lists 4025'],
+[4,'4408','Pear golden'],[4,'4409','Pear Singo'],[4,'4890','Pear Tianjin'],[4,'','Pear Qiuyue','No code on sheet'],[4,'4407','Pear sand'],[4,'1224','Mangosteen'],[4,'1234','Durian'],
+[4,'3040','Dragon fruit white'],[4,'1239','Dragon fruit red'],[4,'1237','Dragon fruit small red'],[4,'1240','Dragon fruit yellow'],[4,'1241','Rambutan'],[4,'1245','Papaya'],[4,'1248','Papaya green'],
+[4,'1253','Pineapple'],[4,'4397','Passion fruit'],[4,'1293','Star apple'],[4,'1301','Java apple'],[4,'1302','Lychee (branch)'],[4,'4309','Lychee Feizixiao'],[4,'1282','Jackfruit'],
+[5,'4254','Bread fruit'],[5,'3381','Soursop','Frozen soursop has its own barcode, written as 81671002138'],[5,'4220','Cherimoya'],[5,'1270','Cactus pear'],[5,'4490','Cocoa fruit'],[5,'4307','Longan'],[5,'4308','Loquat'],
+[5,'4256','Star fruit'],[5,'3382','Sugar apple'],[5,'4310','Mamey'],[5,'1212','Blackberry'],[5,'1214','Blueberry'],[5,'1216','Strawberry'],[5,'1209','Raspberry'],[5,'4045','Cherry'],
+[5,'4635','Grape red seedless'],[5,'4022','Grape green seedless'],[5,'4270','Grape scuppernong'],[5,'4427','Persimmon'],[5,'4428','Persimmon Hachiya'],[5,'4429','Persimmon Fuyu'],
+[5,'1242','Pomegranate'],[5,'3440','Pomegranate premium'],[5,'3127','Pomegranate small'],[5,'1279','Dates jujube'],[5,'1243','Coconut brown'],[5,'1244','Coconut EZ open'],[5,'11244','Coconut Thai young'],
+[5,'4260','Coconut green','$6.99 each'],[5,'4262','Coconut white'],[5,'4046','Avocado small','Each'],[5,'4771','Avocado large','By the pound'],[5,'1177','Mung bean sprouts'],[5,'11037','Soy bean sprouts'],
+[6,'1200','Banana flower'],[6,'1201','Banana'],[6,'1202','Banana Thai'],[6,'1203','Plantain'],[6,'1204','Mango'],[6,'3488','Mango round'],[6,'4312','Mango baby'],[6,'4959','Mango red'],[6,'4961','Mango honey'],
+[6,'4585','Mango green'],[6,'4315','Mango Haden'],[6,'1206','Guava'],[6,'1225','Guava pink'],[6,'3302','Apricot'],[6,'3035','Nectarine white'],[6,'4035','Nectarine yellow'],[6,'4042','Plum red'],
+[6,'1255','Plum black'],[6,'4436','Plum sugar'],[6,'4442','Plum green','Sheet also lists 4435'],[6,'1257','Plum sour'],[6,'3246','Milk fruit'],
+[7,'4044','Peach yellow'],[7,'4401','Peach white'],[7,'1215','Peach flat'],[7,'1221','Honeydew'],[7,'1268','Melon Hami'],[7,'3623','Melon golden Hami'],[7,'1251','Melon Korean'],[7,'4050','Melon cantaloupe'],
+[7,'1287','Melon Taiwan'],[7,'4333','Melon pepino'],[7,'1303','Apple cantaloupe'],[7,'3152','Melon gold'],[7,'4031','Watermelon'],[7,'4032','Watermelon small'],
+[7,'1232','Pomelo green','$8.99'],[7,'3130','Pomelo green (2nd)','$8.99'],[7,'3128','Pomelo red'],[7,'4279','Pomelo white','$4.99'],[7,'4296','Pomelo Chinese'],[7,'4491','Grapefruit','Red/pink'],[7,'4494','Grapefruit','Yellow/white'],
+[7,'1246','Lemon'],[7,'1247','Lime'],[7,'3524','Tangerine Juicy Crunch'],[7,'4055','Tangerine honey mandarin'],[7,'4012','Orange navel'],[7,'3632','Mandarin Sumo'],[7,'4450','Mandarin Murcott'],
+[7,'4455','Mandarin Wogan'],[7,'1220','Kumquat'],[7,'1230','Mexican hawthorn']
+].map(([s,c,n,t],i)=>({i,s,c,n,t:t||''}));
+const $=id=>document.getElementById(id),esc=x=>x.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let sec=-1,mode='look',sub='type',cur=null,streak=0,right=0,miss=0,locked=false;
+let weak={};try{weak=JSON.parse(localStorage.getItem('pluWeak')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('pluWeak',JSON.stringify(weak))}catch(e){}};
+$('chips').innerHTML=['All',...S].map((n,k)=>`<button data-s="${k-1}" aria-pressed="${k===0}">${n}</button>`).join('');
+$('chips').onclick=e=>{const b=e.target.closest('button');if(!b)return;sec=+b.dataset.s;for(const x of $('chips').children)x.setAttribute('aria-pressed',x===b);mode==='look'?draw():next()};
+function draw(){
+  const q=$('q').value.trim().toLowerCase();
+  const list=D.filter(d=>(sec<0||d.s===sec)&&(!q||d.n.toLowerCase().includes(q)||d.c.startsWith(q)||d.t.toLowerCase().includes(q)));
+  $('count').textContent=list.length+(list.length===1?' item':' items');
+  $('grid').innerHTML=list.length?list.map(d=>`<div class="item"><span class="code${d.c?'':' none'}">${d.c||'—'}</span><span class="name">${esc(d.n)}</span><span class="note">${esc(d.t||S[d.s])}</span></div>`).join(''):'<p class="empty">Nothing matches that. Try part of the name, like "pom" or "mango".</p>';
+}
+$('q').oninput=draw;
+function setMode(m){mode=m;$('mLook').setAttribute('aria-pressed',m==='look');$('mPrac').setAttribute('aria-pressed',m==='prac');$('look').hidden=m!=='look';$('lookBar').hidden=m!=='look';$('prac').hidden=m!=='prac';m==='prac'?next():draw()}
+$('mLook').onclick=()=>setMode('look');$('mPrac').onclick=()=>setMode('prac');
+function setSub(m){sub=m;$('sType').setAttribute('aria-pressed',m==='type');$('sPick').setAttribute('aria-pressed',m==='pick');next()}
+$('sType').onclick=()=>setSub('type');$('sPick').onclick=()=>setSub('pick');
+const pool=()=>D.filter(d=>d.c&&(sec<0||d.s===sec));
+function pick(){const p=pool();let tot=0;const w=p.map(d=>{const v=1+3*(weak[d.c+d.n]||0);tot+=v;return v});let r=Math.random()*tot;for(let k=0;k<p.length;k++){r-=w[k];if(r<=0&&p[k]!==cur)return p[k]}return p[0]}
+const shuffle=a=>{for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+function next(){
+  cur=pick();locked=false;const c=$('card');
+  if(sub==='type'){
+    c.innerHTML=`<div class="cat">${S[cur.s]}</div><div class="q">${esc(cur.n)}</div>
+    <form id="f"><input id="ans" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Code" aria-label="PLU code"><div class="fb" id="fb"></div>
+    <div class="row"><button class="btn alt" type="button" id="skip">Show me</button><button class="btn" type="submit" id="go">Check</button></div></form>`;
+    $('f').onsubmit=e=>{e.preventDefault();if(locked){next();return}const v=$('ans').value.trim();if(!v)return;grade(v===cur.c)};
+    $('skip').onclick=()=>{if(locked){next();return}grade(false)};
+    $('ans').focus({preventScroll:true});
+  }else{
+    const others=shuffle(pool().filter(d=>d.c!==cur.c)).slice(0,3);
+    const opts=shuffle([cur,...others]);
+    c.innerHTML=`<div class="cat">${S[cur.s]}</div><div class="q big">${cur.c}</div><div class="choices">${opts.map(o=>`<button data-i="${o.i}">${esc(o.n)}</button>`).join('')}</div><div class="fb" id="fb"></div><button class="btn" id="nx" hidden>Next</button>`;
+    c.querySelector('.choices').onclick=e=>{const b=e.target.closest('button');if(!b||locked)return;const ok=D[+b.dataset.i].c===cur.c;
+      for(const x of c.querySelectorAll('.choices button'))if(D[+x.dataset.i].c===cur.c)x.classList.add('right');if(!ok)b.classList.add('wrong');grade(ok);$('nx').hidden=false;$('nx').focus()};
+    $('nx').onclick=next;
+  }
+}
+function grade(ok){
+  locked=true;const k=cur.c+cur.n,fb=$('fb');
+  if(ok){streak++;right++;weak[k]=Math.max(0,(weak[k]||0)-1);fb.className='fb ok';fb.textContent='Right — '+cur.c+' '+cur.n}
+  else{streak=0;miss++;weak[k]=Math.min(5,(weak[k]||0)+2);fb.className='fb no';fb.textContent=cur.n+' is '+cur.c+(cur.t?' · '+cur.t:'')}
+  save();$('sStreak').textContent=streak;$('sRight').textContent=right;$('sMiss').textContent=miss;
+  if(sub==='type'){$('go').textContent='Next';$('skip').hidden=true;$('ans').readOnly=true;$('go').focus()}
+}
+draw();
+}
+</script>
+</body></html>
