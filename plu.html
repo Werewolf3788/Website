@@ -65,6 +65,8 @@ main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
 .sub button{flex:1;min-height:40px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px Barlow;cursor:pointer}
 .sub button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .foot{color:var(--mute);font-size:13px;text-align:center;margin-top:24px}
+/* hide Google Translate's banner/tooltips so the page looks the same in any language */
+.goog-te-banner-frame,.skiptranslate>iframe,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip{display:none!important}body{top:0!important}
 @media(max-width:600px){h1{font-size:24px}.code{font-size:30px}}
 @media(prefers-reduced-motion:no-preference){.card{animation:pop .18s ease-out}@keyframes pop{from{transform:scale(.97);opacity:.6}}}
 </style></head><body>
@@ -136,7 +138,7 @@ function draw(){
   const q=$('q').value.trim().toLowerCase();
   const list=D.filter(d=>(sec<0||d.s===sec)&&(!q||d.n.toLowerCase().includes(q)||d.c.startsWith(q)||d.t.toLowerCase().includes(q)));
   $('count').textContent=list.length+(list.length===1?' item':' items');
-  $('grid').innerHTML=list.length?list.map(d=>`<div class="item"><span class="pic">${img(d)}</span><div><span class="code${d.c?'':' none'}">${d.c||'—'}</span><div class="name">${esc(d.n)}</div><div class="note">${esc(d.t||S[d.s])}</div></div></div>`).join(''):'<p class="empty">Nothing matches that. Try part of the name, like "pom" or "mango".</p>';
+  $('grid').innerHTML=list.length?list.map(d=>`<div class="item"><span class="pic">${img(d)}</span><div><span class="code notranslate${d.c?'':' none'}" translate="no">${d.c||'—'}</span><div class="name">${esc(d.n)}</div><div class="note">${esc(d.t||S[d.s])}</div></div></div>`).join(''):'<p class="empty">Nothing matches that. Try part of the name, like "pom" or "mango".</p>';
 }
 $('q').oninput=draw;
 function setMode(m){mode=m;$('mLook').setAttribute('aria-pressed',m==='look');$('mPrac').setAttribute('aria-pressed',m==='prac');$('look').hidden=m!=='look';$('lookBar').hidden=m!=='look';$('prac').hidden=m!=='prac';m==='prac'?next():draw()}
@@ -158,7 +160,7 @@ function next(){
   }else{
     const others=shuffle(pool().filter(d=>d.c!==cur.c)).slice(0,3);
     const opts=shuffle([cur,...others]);
-    c.innerHTML=`<div class="cat">${S[cur.s]}</div><div class="q big">${cur.c}</div><div class="choices">${opts.map(o=>`<button data-i="${o.i}"><span class="pic">${img(o)}</span>${esc(o.n)}</button>`).join('')}</div><div class="fb" id="fb"></div><button class="btn" id="nx" hidden>Next</button>`;
+    c.innerHTML=`<div class="cat">${S[cur.s]}</div><div class="q big notranslate" translate="no">${cur.c}</div><div class="choices">${opts.map(o=>`<button data-i="${o.i}"><span class="pic">${img(o)}</span>${esc(o.n)}</button>`).join('')}</div><div class="fb" id="fb"></div><button class="btn" id="nx" hidden>Next</button>`;
     c.querySelector('.choices').onclick=e=>{const b=e.target.closest('button');if(!b||locked)return;const ok=D[+b.dataset.i].c===cur.c;
       for(const x of c.querySelectorAll('.choices button'))if(D[+x.dataset.i].c===cur.c)x.classList.add('right');if(!ok)b.classList.add('wrong');grade(ok);$('nx').hidden=false;$('nx').focus()};
     $('nx').onclick=next;
@@ -173,5 +175,39 @@ function grade(ok){
 }
 draw();
 }
+</script>
+<script>
+/* =========================================================================
+   Background translator: reads the device/browser language and, if it isn't
+   English, quietly translates the page with Google Translate. No button.
+   English devices don't load anything extra.
+   ========================================================================= */
+(function () {
+  var langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en']);
+  var raw = String(langs[0] || 'en').toLowerCase();
+  var code = raw.split('-')[0];
+  if (code === 'zh') code = /tw|hk|mo|hant/.test(raw) ? 'zh-TW' : 'zh-CN';
+  if (code === 'he') code = 'iw';
+  var host = location.hostname;
+  function setCookie(v) {
+    var exp = v ? '' : ';expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'googtrans=' + v + ';path=/' + exp;
+    if (host.indexOf('.') > 0) document.cookie = 'googtrans=' + v + ';path=/;domain=' + host + exp;
+  }
+  if (code === 'en') { if (/googtrans=/.test(document.cookie)) setCookie(''); return; }
+  setCookie('/en/' + code);
+  document.documentElement.setAttribute('data-auto-lang', code);
+  window.googleTranslateElementInit = function () {
+    try { new google.translate.TranslateElement({ pageLanguage: 'en', autoDisplay: false }, 'gt-hidden'); } catch (e) {}
+  };
+  function load() {
+    var box = document.createElement('div'); box.id = 'gt-hidden'; box.style.display = 'none';
+    document.body.appendChild(box);
+    var s = document.createElement('script');
+    s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    s.async = true; document.body.appendChild(s);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
+})();
 </script>
 </body></html>
