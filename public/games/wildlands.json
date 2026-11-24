@@ -4185,18 +4185,18 @@
         },
         {
           "region": "Ocoro",
-          "lat": -15.3346,
-          "long": -62.1213,
+          "lat": -15.3165,
+          "long": -62.1221,
           "id": "ksf_ocoro_05",
           "name": "Shopping List",
-          "location": "Picture Evidence #5 of 9 · Just northwest of Coca Paste Factory · 📍 -15.3346, -62.1213",
+          "location": "Picture Evidence #5 of 9 · Coca Paste Factory, second floor office (on the armchair) · 📍 -15.3165, -62.1221",
           "category": "Document",
-          "guide": "A purchase order for chemical precursors, written by the Ocoro labs supervisor to Via-B Gas, in Libertad. These precursors are required to process coca leaves into coca paste, then into cocaine. Just northwest of Coca Paste Factory (The cartel's industrial coca paste laboratory). 📍 Lat -15.3346, Long -62.1213.",
+          "guide": "A purchase order for chemical precursors, written by the Ocoro labs supervisor to Via-B Gas, in Libertad. These precursors are required to process coca leaves into coca paste, then into cocaine. Inside the big brick factory building at the Coca Paste Factory: get to the second floor (a broken window off the tin roof works), and it's lying on the seat of the brown armchair by the window. 📍 Lat -15.3165, Long -62.1221.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_ocoro_05.jpg",
           "tags": "kingslayer file document",
-          "map_x": 0.61644,
-          "map_y": 0.28937
+          "map_x": 0.61635,
+          "map_y": 0.28726
         },
         {
           "region": "Ocoro",
