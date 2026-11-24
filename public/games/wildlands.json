@@ -4170,18 +4170,18 @@
         },
         {
           "region": "Ocoro",
-          "lat": -16.6198,
-          "long": -60.6881,
+          "lat": -16.6059,
+          "long": -60.6883,
           "id": "ksf_ocoro_04",
           "name": "Memories",
-          "location": "Picture Evidence #4 of 9 · Southwest of Outpost · 📍 -16.6198, -60.6881",
+          "location": "Picture Evidence #4 of 9 · Inside the two-story house at the Pujio outpost (kitchen) · 📍 -16.6059, -60.6883",
           "category": "Document",
-          "guide": "An old photograph of Doctor Katrine Svendsen, before she came to be known as \"La Gringa\". Svendsen was an idealist. She came to Bolivia to help the people, working for Hands Over Bolivia. Southwest of Outpost (Guards Pujio, East sector). 📍 Lat -16.6198, Long -60.6881.",
+          "guide": "An old photograph of Doctor Katrine Svendsen, before she came to be known as \"La Gringa\". Svendsen was an idealist. She came to Bolivia to help the people, working for Hands Over Bolivia. Inside the big two-story white house with the red tile roof at the outpost guarding Pujio (East sector). Go in and head to the kitchen: it's on the island counter next to the toaster, in front of the dark chest. 📍 Lat -16.6059, Long -60.6883.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_ocoro_04.jpg",
           "tags": "kingslayer file document",
-          "map_x": 0.78202,
-          "map_y": 0.43953
+          "map_x": 0.782,
+          "map_y": 0.43791
         },
         {
           "region": "Ocoro",
