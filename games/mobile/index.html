@@ -117,6 +117,11 @@
   <div class="muted">For rough days: light a lantern with slow breathing, find the fireflies to ground yourself, stack a cairn to cool off, gentle memory games, a <b>reasons jar</b>, your own plan for hard moments, and one-tap texts to <b>your people</b>. Everything you put in it stays <b>private on your device</b>. Nothing is uploaded or shown to friends.</div>
   <div class="row"><button id="playCalm">Open</button></div>
 </div>
+  <div class="card">
+  <h2 style="margin:0 0 4px">🏰 Bastion Builder</h2>
+  <div class="muted">3D tower defense: place spawner camps, build your own road to the castle, and defend it with towers and traps through endless waves. Enemies drop towers, paths and traps. Get <b>3 of the same</b>, open Inventory and hit <b>Fuse</b> to make a <b>+1</b>. Upgrade board, spawner shop, full stats and run history. Works with a PS5/Xbox controller. Saves to your account.</div>
+  <div class="row"><button id="playBastion">Play</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -155,6 +160,7 @@
   $('playMj').onclick = function () { location.href = 'mahjong.html'; };
   $('playCalm').onclick = function () { location.href = 'calm.html'; };
   $('playSurv').onclick = function () { location.href = 'survive.html'; };
+  $('playBastion').onclick = function () { location.href = 'bastion.html'; };
   $('playFrog').onclick = function () { location.href = 'frogger.html'; };
   $('playShip').onclick = function () { location.href = 'battleship.html'; };
   $('hostShip').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'battleship.html?room=' + encodeURIComponent(c); };
