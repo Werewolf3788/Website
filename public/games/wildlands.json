@@ -5739,18 +5739,18 @@
         },
         {
           "region": "Ocoro",
-          "lat": -15.3136,
-          "long": -62.0919,
+          "lat": -15.2931,
+          "long": -62.0929,
           "id": "wc_ocoro_01",
           "name": "SR-635",
-          "location": "Just north of Coca Paste Factory · 📍 -15.3136, -62.0919",
+          "location": "Coca Paste Factory, inside the ARMERIA building · 📍 -15.2931, -62.0929",
           "category": "Submachine Gun",
-          "guide": "An SMG-sized AR. Just north of Coca Paste Factory (The cartel's industrial coca paste laboratory). 📍 Lat -15.3136, Long -62.0919.",
+          "guide": "An SMG-sized AR. At the Coca Paste Factory, go into the building marked ARMERIA (north end, by the railway): the case is on the floor next to the green lockers. 📍 Lat -15.2931, Long -62.0929.",
           "image_url": "/Images/wildlands/icons/weapon_case.png",
-          "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
+          "location_image_url": "/Images/wildlands/spots/wc_ocoro_01.jpg",
           "tags": "weapon case",
-          "map_x": 0.61983,
-          "map_y": 0.28692
+          "map_x": 0.61971,
+          "map_y": 0.28453
         },
         {
           "region": "Ocoro",
