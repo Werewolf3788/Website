@@ -1475,7 +1475,11 @@ window.appState.syncFriendsProgress = async function() {
                 const np = profile.now_playing;
                 if (np && np.t && Date.now() - Number(np.t) < 150000 && /^[a-z0-9_-]+$/.test(String(np.game || ''))) nowPlays.push({ kind: 'mobile', game: np.game, title: np.title || np.game, status: np.status || '', room: np.room || '', open: Number(np.open) || 0 });
                 if (psnTag) {
-                    const ps = (await rtdb.ref(`/psn/gamertags/${psnTag}`).once('value')).val();
+                    // Presence is written by Playstation/psn.js to the playstation-stats project, not entertainment-71888.
+                    const psKey = String(psnTag).replace(/[.$#\[\]\/]/g, '_');
+                    let ps = null;
+                    if (psnRtdb) { await psnReady; ps = (await psnRtdb.ref(`/psn/gamertags/${psKey}`).once('value').catch(() => null))?.val() || null; }
+                    if (!ps) ps = (await rtdb.ref(`/psn/gamertags/${psKey}`).once('value').catch(() => null))?.val() || null;
                     if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && String(ps.currentGame).toLowerCase() !== 'idle') nowPlays.push({ kind: 'console', platform: ps.displayPlatform || ps.platform || 'PlayStation', title: ps.currentGame, status: ps.gameStatus || '' });
                 }
                 let sid = String(profile.steam_id || '').trim();
@@ -1947,6 +1951,12 @@ function ensureUniversalStyles() {
         .wm-wrap.hide-got .wm-pin.got { display: none; }
         .wm-pin.off, .wm-pin.miss { display: none; }
         .wm-pin.sel { box-shadow: 0 0 0 3px #fff; z-index: 2; }
+        .wm-pin.hit, .wm-pin.focus { opacity: 1; filter: none; z-index: 2; }
+        .wm-wrap.hide-got .wm-pin.got.hit, .wm-wrap.hide-got .wm-pin.got.focus, .wm-pin.off.focus { display: block; }
+        .wm-pin.focus { animation: wmPulse 1.2s ease-out 3; }
+        @keyframes wmPulse { 0% { box-shadow: 0 0 0 3px #fff, 0 0 0 0 rgba(250,204,21,.9); } 100% { box-shadow: 0 0 0 3px #fff, 0 0 0 22px rgba(250,204,21,0); } }
+        .wm-view-btn { margin-top: 8px; padding: 5px 10px; border-radius: 999px; border: 1px solid #334155; background: #0f172a; color: #93c5fd; font-size: .78rem; font-weight: 800; cursor: pointer; }
+        .wm-view-btn:hover { background: #1e293b; color: #fff; }
         .wm-bar { position: relative; z-index: 6; min-height: 32px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
         .wm-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: .75rem; font-weight: 800; cursor: pointer; }
         .wm-chip.off { opacity: .4; }
@@ -2178,7 +2188,8 @@ function currentTierGroup(groups, level) {
 // World map: a pin for every collectible that has map_x/map_y (0-1 across the map
 // picture). Collected pins dim (or hide); tap a pin for details and a tick button.
 // ---------------------------------------------------------------------------
-const wmState = { s: 1, x: 0, y: 0, hideGot: false, layersOn: null, sel: null };
+const wmState = { s: 1, x: 0, y: 0, hideGot: false, layersOn: null, sel: null, lastQ: '' };
+const WM_MAX_ZOOM = 16;
 function worldMapHtml(data) {
     const wm = data && data.world_map; if (!wm || !wm.image_url) return '';
     const layers = wm.layers || [];
@@ -2207,20 +2218,20 @@ function worldMapHtml(data) {
                 <div class="wm-zoom"><button type="button" data-z="in">+</button><button type="button" data-z="out">−</button><button type="button" data-z="reset">⟲</button></div>
                 <div class="wm-pop" id="wmPop" hidden></div>
             </div>
-            <div style="font-size:.7rem;color:#64748b;margin-top:6px;">Drag to move, scroll or pinch to zoom. Bright pins are what you still need; tap one for details. Searching above filters the pins too.</div>
+            <div style="font-size:.7rem;color:#64748b;margin-top:6px;">Drag to move, scroll or pinch to zoom. Bright pins are what you still need; tap one for details. Searching above zooms the map to what matches, and every item has a 📍 View on map button.</div>
         </div></div>`;
 }
 function wmApply() {
     const inner = document.getElementById('wmInner'), wrap = document.getElementById('wmWrap'); if (!inner || !wrap) return;
     const W = wrap.clientWidth, H = wrap.clientHeight;
-    wmState.s = Math.min(8, Math.max(1, wmState.s));
+    wmState.s = Math.min(WM_MAX_ZOOM, Math.max(1, wmState.s));
     wmState.x = Math.min(0, Math.max(W - W * wmState.s, wmState.x));
     wmState.y = Math.min(0, Math.max(H - H * wmState.s, wmState.y));
     inner.style.transform = `translate(${wmState.x}px,${wmState.y}px) scale(${wmState.s})`;
     inner.style.setProperty('--wm-s', wmState.s);
 }
 function wmZoomAt(f, cx, cy) {
-    const s0 = wmState.s, s1 = Math.min(8, Math.max(1, s0 * f));
+    const s0 = wmState.s, s1 = Math.min(WM_MAX_ZOOM, Math.max(1, s0 * f));
     wmState.x = cx - (cx - wmState.x) * (s1 / s0); wmState.y = cy - (cy - wmState.y) * (s1 / s0); wmState.s = s1; wmApply();
 }
 function setupWorldMap(data) {
@@ -2262,7 +2273,7 @@ function setupWorldMap(data) {
         wmState.sel = { g: pin.dataset.g, id: pin.dataset.id }; wmShowPop();
     });
     window.addEventListener('resize', wmApply);
-    wmApply(); updateWorldMap();
+    wmApply(); wmAddCardButtons(); updateWorldMap();
 }
 function wmShowPop() {
     const pop = document.getElementById('wmPop'); if (!pop) return;
@@ -2282,6 +2293,45 @@ function wmShowPop() {
     pop.hidden = false;
 }
 window.wmState = wmState; window.wmShowPop = wmShowPop;
+// Centre the map on pins (inner coords at scale 1) at zoom s.
+function wmCenterOn(px, py, s) {
+    const wrap = document.getElementById('wmWrap'); if (!wrap) return;
+    wmState.s = s; wmState.x = wrap.clientWidth / 2 - px * s; wmState.y = wrap.clientHeight / 2 - py * s; wmApply();
+}
+// "📍 View on map" on an item: open the map, zoom in on that pin, select it and make it pulse.
+function wmFocus(g, id) {
+    const sec = document.getElementById('worldMapSection'), wrap = document.getElementById('wmWrap'); if (!sec || !wrap) return;
+    sec.classList.remove('section-collapsed');
+    const pin = document.querySelector(`.wm-pin[data-g="${CSS.escape(g)}"][data-id="${CSS.escape(id)}"]`); if (!pin) return;
+    document.querySelectorAll('.wm-pin.focus').forEach(p => p.classList.remove('focus'));
+    pin.classList.remove('miss'); void pin.offsetWidth; pin.classList.add('focus');
+    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    requestAnimationFrame(() => {
+        wmCenterOn(pin.offsetLeft, pin.offsetTop, Math.max(wmState.s, 6));
+        wmState.sel = { g, id }; wmShowPop();
+    });
+}
+window.wmFocus = wmFocus;
+// Add a "View on map" button to every item card that has a pin.
+function wmAddCardButtons() {
+    const have = new Set([...document.querySelectorAll('#wmInner .wm-pin')].map(p => p.dataset.g + '|' + p.dataset.id));
+    document.querySelectorAll('#section-container .game-item-card[data-group][data-id]').forEach(card => {
+        const g = card.getAttribute('data-group'), id = card.getAttribute('data-id');
+        if (!have.has(g + '|' + id) || card.querySelector('.wm-view-btn')) return;
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'wm-view-btn'; b.textContent = '📍 View on map';
+        b.onclick = (e) => { e.stopPropagation(); wmFocus(g, id); };
+        card.appendChild(b);
+    });
+}
+// After a search, zoom the map to fit what matched (only when the search text changes).
+function wmFitPins(pins) {
+    const wrap = document.getElementById('wmWrap'); if (!wrap || !pins.length) return;
+    const xs = pins.map(p => p.offsetLeft), ys = pins.map(p => p.offsetTop);
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    const W = wrap.clientWidth, H = wrap.clientHeight, pad = 0.15;
+    const s = Math.min(6, Math.max(1, Math.min(W / Math.max(maxX - minX + W * pad, 1), H / Math.max(maxY - minY + H * pad, 1))));
+    wmCenterOn((minX + maxX) / 2, (minY + maxY) / 2, s);
+}
 function updateWorldMap() {
     const inner = document.getElementById('wmInner'); if (!inner) return;
     const q = ((document.getElementById('universalSearchInput') || {}).value || '').trim().toLowerCase();
@@ -2293,11 +2343,19 @@ function updateWorldMap() {
         p.classList.toggle('got', has);
         p.classList.toggle('off', wmState.layersOn && wmState.layersOn[g] === false);
         p.classList.toggle('miss', !!shown && !shown.has(g + '|' + id));
+        p.classList.toggle('hit', !!shown && shown.has(g + '|' + id));
         if (!p.classList.contains('off') && !p.classList.contains('miss')) { if (has) got++; else need++; }
         const pc = per[g] || (per[g] = [0, 0]); pc[1]++; if (has) pc[0]++;
     });
     document.querySelectorAll('#wmLegend [data-count]').forEach(el => { const c = per[el.dataset.count] || [0, 0]; el.textContent = `${c[0]}/${c[1]}`; });
     const cnt = document.getElementById('wmCount'); if (cnt) cnt.textContent = `${need} still to find · ${got} collected`;
+    if (q !== wmState.lastQ) {
+        wmState.lastQ = q;
+        const hits = [...inner.querySelectorAll('.wm-pin.hit:not(.off)')];
+        if (q && hits.length && hits.length <= 40) wmFitPins(hits);
+        else if (!q) { wmState.s = 1; wmState.x = 0; wmState.y = 0; wmApply(); }
+    }
+    wmAddCardButtons();
     if (wmState.sel) wmShowPop();
 }
 function buildItemCard(o) {
