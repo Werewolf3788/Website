@@ -28,6 +28,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0}
 #top>*{pointer-events:auto}
 #cashPill{font-size:20px;background:linear-gradient(#22c55e,#15803d);border-color:#86efac}
 #hpWrap{min-width:140px}
+.coin{display:inline-block;width:1em;height:1em;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff7b0,#fbbf24 45%,#b45309);border:2px solid #92400e;vertical-align:-2px}
 #hpBar{height:10px;flex:1;background:#300;border-radius:6px;overflow:hidden;min-width:70px}
 #hpFill{height:100%;background:linear-gradient(90deg,#ef4444,#f97316);width:100%}
 #bottom{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);left:8px;right:8px;display:flex;gap:6px;align-items:flex-end;justify-content:space-between;pointer-events:none;z-index:5;flex-wrap:wrap}
@@ -121,7 +122,7 @@ body.pad .touchOnly{display:none}
 
 <div id="top">
   <a class="pill" href="./" style="text-decoration:none;color:#fff">⬅ Hub</a>
-  <div class="pill" id="cashPill">🪙 <span id="cash">0</span></div>
+  <div class="pill" id="cashPill"><span class="coin"></span> <span id="cash">0</span></div>
   <div class="pill" id="hpWrap">🏰 <div id="hpBar"><div id="hpFill"></div></div> <span id="hpTxt">20</span></div>
   <div class="pill">⚡ <button class="btn gray" id="spd" style="padding:2px 10px">x1</button></div>
   <div class="pill" id="acct">Guest</div>
@@ -200,8 +201,10 @@ body.pad .touchOnly{display:none}
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const WHATS_NEW = [
+  'Roads, camps and the castle now connect at corners too, not just sides.',
+  'Road tiles that don\'t reach the castle show red, and a camp with no road shows a red "!".',
   'New game! Build roads from your spawner camps to the castle and defend it.',
   'Enemies drop towers, paths and traps. Get 3 of the same, open Inventory and hit Fuse to make a +1.',
   'Spend cash on the Upgrades hex board and buy new camps in the Spawner Shop.',
@@ -396,6 +399,7 @@ function campMesh(id){const d=CAMPS[id];const g=new THREE.Group();
   const door=new THREE.Mesh(new THREE.BoxGeometry(.18,.22,.02),new THREE.MeshLambertMaterial({color:0x3f2a14}));door.position.set(0,.11,.31);g.add(door);
   g.traverse(o=>o.castShadow=true);return g;}
 const pathMat={road:new THREE.MeshLambertMaterial({color:0xb7791f}),stone:new THREE.MeshLambertMaterial({color:0xcbd5e1})};
+const badPathMat=new THREE.MeshLambertMaterial({color:0xc2410c,emissive:0x5a0f0f});
 function pathMesh(id){const m=new THREE.Mesh(new THREE.BoxGeometry(1,.06,1),pathMat[id]);m.position.y=.03;m.receiveShadow=true;return m;}
 function trapMesh(id){const g=new THREE.Group();
   if(id==='tar'){const t=new THREE.Mesh(new THREE.CylinderGeometry(.4,.4,.03,16),new THREE.MeshLambertMaterial({color:0x111111}));t.position.y=.08;g.add(t);}
@@ -422,7 +426,8 @@ let routes=new Map(); // spawner key -> waypoint array (null if no route)
 function isPath(x,y){const c=cells.get(ck(x,y));return c&&c.k==='p';}
 function recomputeRoutes(){
   routes=new Map();const D=new Map();const q=[];
-  const N4=[[1,0],[-1,0],[0,1],[0,-1]];
+  // corners count too: camps, road tiles and the castle connect side-to-side OR diagonally
+  const N4=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
   for(const [dx,dy] of N4)if(isPath(dx,dy)){D.set(ck(dx,dy),0);q.push([dx,dy]);}
   while(q.length){const [x,y]=q.shift();const d=D.get(ck(x,y));
     for(const [dx,dy] of N4){const nx=x+dx,ny=y+dy,k=ck(nx,ny);if(isPath(nx,ny)&&!D.has(k)){D.set(k,d+1);q.push([nx,ny]);}}}
@@ -434,6 +439,13 @@ function recomputeRoutes(){
       for(const [dx,dy] of N4){const k=ck(cur[0]+dx,cur[1]+dy);if(D.get(k)===d-1){nxt=[cur[0]+dx,cur[1]+dy];break;}}
       cur=nxt;wp.push(W(cur[0],cur[1]));}
     wp.push(W(0,0));routes.set(ck(c.x,c.y),wp);
+  }
+  // show what's connected: road tiles that don't reach the castle turn red, unlinked camps get a red "!"
+  for(const c of cells.values()){
+    if(c.k==='p')c.mesh.material=D.has(ck(c.x,c.y))?pathMat[c.id]:badPathMat;
+    if(c.k==='s'){const ok=!!routes.get(ck(c.x,c.y));
+      if(c.mesh.userData.warn){c.mesh.remove(c.mesh.userData.warn);c.mesh.userData.warn=null;}
+      if(!ok){const w=makeLabel('!','#ff4d4d',.6);w.position.set(0,1.15,0);c.mesh.add(w);c.mesh.userData.warn=w;}}
   }
   updateHint();
 }
@@ -721,7 +733,7 @@ $('rotL').onclick=()=>{cam.theta-=Math.PI/4;placeCam();};$('rotR').onclick=()=>{
 function updateHint(){const h=$('hint');if(inBattle){h.style.display='none';return;}
   const camps=[...cells.values()].filter(c=>c.k==='s');h.style.display='';
   if(!camps.length)h.innerHTML='Open <b>Inventory → Camp</b>, hold your 🌲 Forest and tap a tile at least 2 away from the castle.';
-  else if(![...routes.values()].some(r=>r))h.innerHTML='Now hold a 🟫 <b>Path</b> and tap tiles to build a road from your camp to a tile next to the castle.';
+  else if(![...routes.values()].some(r=>r))h.innerHTML=placedCount('p')?'Road not connected yet: <b style="color:#ff8a65">red</b> road tiles don\'t reach the castle. Keep laying road until it touches the castle and your camp (sides or corners both work).':'Now hold a 🟫 <b>Path</b> and tap tiles to build a road from your camp to the castle.';
   else if(!placedCount('t'))h.innerHTML='Road connected! Place 🏹 towers next to the road, then hit <b>Start Battle</b>.';
   else h.innerHTML='Ready — hit <b>Start Battle</b>. Drops go to your Inventory; 3 of the same → <b>Fuse</b> for +1.';}
 
