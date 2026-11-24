@@ -6684,16 +6684,16 @@
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.9132,
-          "long": -61.027,
+          "lat": -14.8938,
+          "long": -61.0301,
           "id": "sp_espiritu_santo_06",
           "name": "Skill Point #6 (+1)",
-          "location": "At Coca Warehouse · 📍 -14.9132, -61.027",
-          "guide": "At Coca Warehouse (A warehouse where the cartel stores coca leaves). 📍 Lat -14.9132, Long -61.027.",
+          "location": "At Coca Warehouse, just south of the main road by the river · 📍 -14.8938, -61.0301",
+          "guide": "At Coca Warehouse (A warehouse where the cartel stores coca leaves): take the short side road south off the main riverside road; the skill point is at the warehouse building by the helipad at the end of it. 📍 Lat -14.8938, Long -61.0301.",
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.74273,
-          "map_y": 0.24034,
+          "map_x": 0.74237,
+          "map_y": 0.23808,
           "code": "SP-ESP-06"
         },
         {
