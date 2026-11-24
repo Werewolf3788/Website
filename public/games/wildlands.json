@@ -3853,6 +3853,18 @@
           "code": "KF-MED-09"
         },
         {
+          "region": "Media Luna",
+          "id": "ksf_media_luna_10",
+          "name": "El Comandante",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Media Luna",
+          "category": "Video",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Media Luna for the first time. Legendary commander in La Unidad, real identity unknown, not trusted by El Sueño.",
+          "image_url": "/Images/wildlands/icons/kingslayer_file.png",
+          "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
+          "tags": "kingslayer file video",
+          "code": "KF-MED-10"
+        },
+        {
           "region": "Mojocoyo",
           "id": "ksf_mojocoyo_01",
           "name": "Antonio",
