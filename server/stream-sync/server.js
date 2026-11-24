@@ -10,8 +10,10 @@
  *   - posts one Discord "live" alert per stream
  *
  * Render's free plan sleeps after ~15 min without visits. The Apps Script
- * StreamHook visits /wake every minute while the channel is live, so the
- * service only runs (and only uses free hours) during streams.
+ * StreamHook visits /wake every minute while the channel is live (that is what
+ * wakes it up). Once awake and live, keepAwake() below also visits itself every
+ * 10 min so it stays up for the whole stream even if StreamHook stops. It still
+ * sleeps between streams, so it only uses free hours while live.
  *
  * Env: FIREBASE_SERVICE_ACCOUNT, STREAM_SYNC_APP_OWNER_KEY, PUBLIC_URL, STATE_SECRET, SETUP_PAGE_URL (optional)
  * Settings and secrets live in Firebase - see README.md.
@@ -45,10 +47,29 @@ async function tick() {
             catch (e) { results[u.key] = { error: e.message }; console.warn(`[sync ${u.key}] ${e.stack || e.message}`); }
         }
         last = { at: new Date().toISOString(), results };
+        keepAwake(Object.values(results).some(r => r && r.live));
     } catch (e) {
         last = { at: new Date().toISOString(), error: e.message };
         console.warn("[tick] " + e.message);
     } finally { running = false; }
+}
+
+/* Keep-awake: Render's free plan sleeps after ~15 min without outside visits, which
+ * stopped title/category updates mid-stream whenever StreamHook wasn't running.
+ * While anyone is live, visit our own public URL every 10 minutes (that goes through
+ * Render's front door, so it counts as a visit). When nobody is live we stop, so the
+ * service still sleeps between streams and only uses free hours while streaming. */
+const KEEP_AWAKE_MS = 10 * 60 * 1000;
+let lastSelfPing = 0;
+function keepAwake(anyLive) {
+    if (!anyLive || !PUBLIC_URL || Date.now() - lastSelfPing < KEEP_AWAKE_MS) return;
+    lastSelfPing = Date.now();
+    const url = PUBLIC_URL + "/health?keepalive=1";
+    const done = (ok) => { if (!ok) console.warn("[keep-awake] self visit failed"); };
+    try {
+        if (typeof fetch === "function") fetch(url).then(r => done(r.ok)).catch(() => done(false));
+        else require("https").get(url, r => { r.resume(); done(r.statusCode < 400); }).on("error", () => done(false));
+    } catch (e) { done(false); }
 }
 
 /* First run: give the app owner starter settings (only if they have none). */
