@@ -2789,6 +2789,23 @@ function setupUniversalSearch() {
     });
 }
 
+// Typo-tolerant word match: same word, or 1 letter off (2 for longer words).
+function searchNear(t, w) {
+    if (!w || Math.abs(t.length - w.length) > 2 || t.length < 4) return false;
+    if (w.startsWith(t) || t.startsWith(w) && w.length >= 4) return true;
+    const max = t.length >= 7 ? 2 : 1;
+    let prev = Array.from({ length: w.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= t.length; i++) {
+        const cur = [i]; let rowMin = i;
+        for (let j = 1; j <= w.length; j++) {
+            cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (t[i - 1] === w[j - 1] ? 0 : 1));
+            if (cur[j] < rowMin) rowMin = cur[j];
+        }
+        if (rowMin > max) return false;
+        prev = cur;
+    }
+    return prev[w.length] <= max;
+}
 function runUniversalSearch(raw) {
     const container = document.getElementById('section-container');
     const countEl = document.getElementById('universalSearchCount');
@@ -2815,13 +2832,29 @@ function runUniversalSearch(raw) {
     const terms = q.split(/\s+/);
     // "#4" means number 4 exactly, not #40-#49. "4" on its own after "#"-less words still matches anywhere.
     const termTest = terms.map(t => /^#\d+$/.test(t) ? (h) => new RegExp(t + '(?!\\d)').test(h) : (h) => h.includes(t));
-    let matches = 0;
+    let matches = 0, closest = false;
     cards.forEach(c => {
         const hay = c.getAttribute('data-search') || '';
         const hit = termTest.every(f => f(hay));
         c.classList.toggle('search-hidden', !hit);
         if (hit) matches++;
     });
+    // Nothing has every word (a typo, or voice typing "local fire" for "local feud"):
+    // show every card that has any of the words instead, allowing small typos.
+    if (!matches) {
+        const words = terms.filter(t => t.length >= 3 && !/^#\d+$/.test(t));
+        if (words.length) {
+            const scored = [];
+            cards.forEach(c => {
+                const hay = c.getAttribute('data-search') || '';
+                const hayWords = hay.split(/[^a-z0-9áéíóúñü#]+/);
+                const n = words.filter(t => hay.includes(t) || hayWords.some(w => searchNear(t, w))).length;
+                if (n) scored.push([c, n]);
+            });
+            scored.forEach(([c]) => { c.classList.remove('search-hidden'); matches++; });
+            closest = matches > 0;
+        }
+    }
 
     sections.slice().reverse().forEach(s => {
         if (s.dataset.prevCollapsed === undefined) {
@@ -2832,7 +2865,7 @@ function runUniversalSearch(raw) {
         if (hasMatch) s.classList.remove('section-collapsed');
     });
 
-    if (countEl) countEl.innerText = matches ? `${matches} result${matches === 1 ? '' : 's'}` : 'No results';
+    if (countEl) countEl.innerText = matches ? `${closest ? 'No exact match - showing any word: ' : ''}${matches} result${matches === 1 ? '' : 's'}` : 'No results';
     document.querySelectorAll('.mark-shown-bar').forEach(b => { b.hidden = !matches; }); updateWorldMap();
 }
 // Bulk marking: with a search active, tick (or clear) every checkbox card still showing,
