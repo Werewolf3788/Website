@@ -1,0 +1,20 @@
+{
+  "cardOpacity": { "type": "slider", "label": "Card see-through (lower = clearer)", "value": 55, "min": 10, "max": 95, "step": 5 },
+  "accentColor": { "type": "colorpicker", "label": "Accent colour", "value": "#9333ea" },
+  "side": { "type": "dropdown", "label": "Which side", "value": "left", "options": { "left": "Left", "right": "Right" } },
+  "cardWidth": { "type": "number", "label": "Card width (px)", "value": 380, "min": 260, "max": 600 },
+  "fontSize": { "type": "number", "label": "Text size (px)", "value": 16, "min": 12, "max": 26 },
+  "maxCards": { "type": "number", "label": "Most cards on screen", "value": 5, "min": 1, "max": 10 },
+  "chatSeconds": { "type": "number", "label": "Chat card stays (seconds, 0 = until pushed out)", "value": 25, "min": 0, "max": 300 },
+  "alertSeconds": { "type": "number", "label": "Alert card stays (seconds)", "value": 12, "min": 3, "max": 120 },
+  "botName": { "type": "text", "label": "Your bot account (shown with a ✓)", "value": "modem3788" },
+  "ignoreUsers": { "type": "text", "label": "Never show these (comma separated)", "value": "streamelements,nightbot" },
+  "hideCommands": { "type": "checkbox", "label": "Hide !commands", "value": true },
+  "showChat": { "type": "checkbox", "label": "Show chat cards", "value": true },
+  "showAlerts": { "type": "checkbox", "label": "Show alert cards", "value": true },
+  "showFollows": { "type": "checkbox", "label": "Follows", "value": true },
+  "showSubs": { "type": "checkbox", "label": "Subs & gifts", "value": true },
+  "showCheers": { "type": "checkbox", "label": "Bits", "value": true },
+  "showTips": { "type": "checkbox", "label": "Tips", "value": true },
+  "showRaids": { "type": "checkbox", "label": "Raids", "value": true }
+}
