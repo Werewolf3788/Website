@@ -3555,6 +3555,48 @@ function playBetterHtml(data) {
     </section>`;
 }
 
+// Generic "Controls" panel: any game JSON with a `controls` key
+// ({ title, note, layouts:[{platform,name,sections:[{title,rows:[{button,action}]}]}], sources })
+// gets a collapsible button-reference card with one tab per platform.
+function controlsHtml(data) {
+    const c = data && data.controls; if (!c) return '';
+    const layouts = toArr(c.layouts).filter(l => l && toArr(l.sections).length);
+    if (!layouts.length) return '';
+    const tabBtn = (l, i) => `<button type="button" data-ctl-tab="${i}" onclick="(function(b){var s=b.closest('section');s.querySelectorAll('[data-ctl-tab]').forEach(function(x){var on=x===b;x.style.background=on?'#2563eb':'#1e293b';x.style.color=on?'#fff':'#cbd5e1';});s.querySelectorAll('[data-ctl-pane]').forEach(function(p){p.style.display=p.getAttribute('data-ctl-pane')===b.getAttribute('data-ctl-tab')?'':'none';});})(this)" style="border:1px solid #334155;border-radius:999px;padding:4px 12px;font-size:0.85rem;cursor:pointer;background:${i ? '#1e293b' : '#2563eb'};color:${i ? '#cbd5e1' : '#fff'}">${escapeHtml(l.name || l.platform || ('Layout ' + (i + 1)))}</button>`;
+    const sec = (s) => `<div style="break-inside:avoid;margin-bottom:12px"><div style="font-weight:700;color:#e2e8f0;margin-bottom:4px">${escapeHtml(s.title || '')}</div><table style="width:100%;border-collapse:collapse;font-size:0.88rem">${toArr(s.rows).map(r => `<tr style="border-top:1px solid #334155"><td style="padding:4px 8px 4px 0;color:#93c5fd;white-space:nowrap;vertical-align:top;font-weight:600">${escapeHtml(r.button || '')}</td><td style="padding:4px 0;color:#cbd5e1">${escapeHtml(r.action || '')}</td></tr>`).join('')}</table></div>`;
+    return `
+    <section class="category-section section-collapsed">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>🎮 ${escapeHtml(c.title || 'Controls')}</h2><span>▾</span></div>
+        <div class="section-content">
+            ${c.note ? `<p style="color:#94a3b8;font-size:0.82rem;margin:0 0 10px">${escapeHtml(c.note)}</p>` : ''}
+            ${layouts.length > 1 ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${layouts.map(tabBtn).join('')}</div>` : ''}
+            ${layouts.map((l, i) => `<div data-ctl-pane="${i}" style="${i ? 'display:none;' : ''}columns:2 320px;column-gap:24px">${toArr(l.sections).map(sec).join('')}</div>`).join('')}
+            ${sourcesLineHtml(c.sources)}
+        </div>
+    </section>`;
+}
+function sourcesLineHtml(list) {
+    const srcs = toArr(list).filter(s => s && /^https?:\/\//.test(s.url || ''));
+    return srcs.length ? `<div style="font-size:0.75rem;color:#64748b;margin-top:6px">Sources: ${srcs.map(s => `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" style="color:#64748b">${escapeHtml(s.title || s.url)}</a>`).join(' · ')}</div>` : '';
+}
+// Generic "Guides" panel: any game JSON with a `guides` list
+// ([{ id, title, summary, sections:[{title, ordered, points:[]}], sources }])
+// gets one collapsible how-to card per guide.
+function guidesHtml(data) {
+    const guides = toArr(data && data.guides).filter(g => g && g.title);
+    if (!guides.length) return '';
+    const sec = (s) => { const tag = s.ordered ? 'ol' : 'ul'; return `<div style="break-inside:avoid;margin-bottom:10px"><div style="font-weight:700;color:#e2e8f0;margin-bottom:4px">${escapeHtml(s.title || '')}</div><${tag} style="margin:0;padding-left:20px;color:#cbd5e1;font-size:0.88rem;line-height:1.5">${toArr(s.points).map(p => `<li>${escapeHtml(p)}</li>`).join('')}</${tag}></div>`; };
+    return guides.map(g => `
+    <section class="category-section section-collapsed" id="guide-${escapeHtml(g.id || '')}">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>📘 ${escapeHtml(g.title)}</h2><span>▾</span></div>
+        <div class="section-content">
+            ${g.summary ? `<p style="color:#cbd5e1;font-size:0.9rem;margin:0 0 10px">${escapeHtml(g.summary)}</p>` : ''}
+            <div style="columns:2 320px;column-gap:24px">${toArr(g.sections).map(sec).join('')}</div>
+            ${sourcesLineHtml(g.sources)}
+        </div>
+    </section>`).join('');
+}
+
 function profilePanelHtml(data) {
     const pp = data && data.player_profile; if (!pp) return '';
     const w = (appState.wallet) || {};
@@ -3872,7 +3914,7 @@ function renderUniversalCompanion(data) {
 
     // Legacy fallback renderer
     let html = '';
-    let pinnedHtml = profilePanelHtml(appState.gameData) + resourcePanelHtml(appState.gameData) + (appState.gameData && appState.gameData.play_better ? playBetterHtml(appState.gameData) : '');
+    let pinnedHtml = profilePanelHtml(appState.gameData) + resourcePanelHtml(appState.gameData) + (appState.gameData && appState.gameData.play_better ? playBetterHtml(appState.gameData) : '') + guidesHtml(appState.gameData) + controlsHtml(appState.gameData);
     // Pinned groups (e.g. tech_upgrades) render first, above missions, trophies,
     // and every other collectible category, so progress toward them — and what
     // each one costs — is always visible at the top of the page.
