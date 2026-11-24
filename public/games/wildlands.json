@@ -6390,16 +6390,16 @@
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.7493,
-          "long": -61.1285,
+          "lat": -14.7285,
+          "long": -61.1326,
           "id": "sp_espiritu_santo_05",
           "name": "Skill Point #5 (+3)",
-          "location": "At Guari Mine · 📍 -14.7493, -61.1285",
-          "guide": "At Guari Mine (A dangerous gold mine exploited by Monte Oro). 📍 Lat -14.7493, Long -61.1285.",
+          "location": "At Guari Mine, inside the mine tunnel · 📍 -14.7285, -61.1326",
+          "guide": "At Guari Mine (A dangerous gold mine exploited by Monte Oro), by the road junction west of the helipads. Go into the dark mine tunnel (night vision helps): the skill point is on the wooden crate against the rock wall. 📍 Lat -14.7285, Long -61.1326.",
           "image_url": "/Images/wildlands/icons/skill_point.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.731,
-          "map_y": 0.2212
+          "location_image_url": "/Images/wildlands/spots/sp_espiritu_santo_05.jpg",
+          "map_x": 0.73053,
+          "map_y": 0.21877
         },
         {
           "region": "Espiritu Santo",
