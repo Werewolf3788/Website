@@ -2813,6 +2813,18 @@
           "code": "KF-INC-04"
         },
         {
+          "region": "Inca Camina",
+          "id": "ksf_inca_camina_05",
+          "name": "Bowman Briefing (Inca Camina)",
+          "location": "Bowman Briefing · Unlocks automatically when you first enter Inca Camina",
+          "category": "Video",
+          "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Inca Camina for the first time. (Tell the site its in-game title once you see it in your Kingslayer Files list.)",
+          "image_url": "/Images/wildlands/icons/kingslayer_file.png",
+          "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
+          "tags": "kingslayer file video",
+          "code": "KF-INC-05"
+        },
+        {
           "region": "Itacua",
           "id": "ksf_itacua_01",
           "name": "La Yuri & El Polito",
