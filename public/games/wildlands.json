@@ -8324,17 +8324,17 @@
         },
         {
           "region": "Espiritu Santo",
-          "lat": -15.1093,
-          "long": -61.1616,
+          "lat": -15.0911,
+          "long": -61.1649,
           "id": "ac_espiritu_santo_04",
           "name": "Rail: Range Finder",
-          "location": "🔫 Sniper · At Bahia Floresta · 📍 -15.1093, -61.1616",
+          "location": "🔫 Sniper · Bahia Floresta, house in the middle of the village · 📍 -15.0911, -61.1649",
           "category": "Rail",
-          "guide": "Increases your accuracy and range. Fits: Sniper Rifle. At Bahia Floresta (A cocaleros village, now occupied by the cartel). 📍 Lat -15.1093, Long -61.1616.",
+          "guide": "Increases your accuracy and range. Fits: Sniper Rifle. At Bahia Floresta (A cocaleros village, now occupied by the cartel): the house in the middle of the village, between the helipads where the roads cross. Inside, it's on the small wooden cabinet in the corner by the window, next to a stack of books. 📍 Lat -15.0911, Long -61.1649.",
           "image_url": "/Images/wildlands/icons/accessory_case.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.72721,
-          "map_y": 0.2632
+          "location_image_url": "/Images/wildlands/spots/ac_espiritu_santo_04.jpg",
+          "map_x": 0.72683,
+          "map_y": 0.26108
         },
         {
           "region": "Espiritu Santo",
