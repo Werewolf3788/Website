@@ -4971,18 +4971,18 @@
         },
         {
           "region": "Villa Verde",
-          "lat": -16.1617,
-          "long": -61.1653,
+          "lat": -16.1472,
+          "long": -61.1675,
           "id": "ksf_villa_verde_02",
           "name": "A Local Feud",
-          "location": "Recording #2 of 11 · Northwest of Maco · 📍 -16.1617, -61.1653",
+          "location": "Recording #2 of 11 · Maco, the building at the northwest edge of town · 📍 -16.1472, -61.1675",
           "category": "Document",
-          "guide": "A news report about riots between the cocaleros and the miners. Northwest of Maco (A cocalero village controlled by the cartel). 📍 Lat -16.1617, Long -61.1653.",
+          "guide": "A news report about riots between the cocaleros and the miners. In the building at the northwest edge of Maco, just off the loop road on the hill above the river (the same building as the Extended (30) magazine accessory case). 📍 Lat -16.1472, Long -61.1675.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
+          "location_image_url": "/Images/wildlands/spots/maco_villa_verde.jpg",
           "tags": "kingslayer file document",
-          "map_x": 0.72689,
-          "map_y": 0.38601
+          "map_x": 0.72664,
+          "map_y": 0.38432
         },
         {
           "region": "Villa Verde",
@@ -9430,17 +9430,17 @@
         },
         {
           "region": "Villa Verde",
-          "lat": -16.1635,
-          "long": -61.1691,
+          "lat": -16.148,
+          "long": -61.1722,
           "id": "ac_villa_verde_01",
           "name": "Magazine: Extended (30)",
-          "location": "🔫 SMG · West of Maco · 📍 -16.1635, -61.1691",
+          "location": "🔫 SMG · Maco, the building at the northwest edge of town · 📍 -16.148, -61.1722",
           "category": "Magazine",
-          "guide": "6x35 Magazine (30) Fits: Submachine Gun. West of Maco (A cocalero village controlled by the cartel). 📍 Lat -16.1635, Long -61.1691.",
+          "guide": "6x35 Magazine (30) Fits: Submachine Gun. It's in the building at the northwest edge of Maco, just off the loop road on the hill above the river (the same building as the 'A Local Feud' recording). 📍 Lat -16.148, Long -61.1722.",
           "image_url": "/Images/wildlands/icons/accessory_case.png",
-          "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
-          "map_x": 0.72645,
-          "map_y": 0.38622
+          "location_image_url": "/Images/wildlands/spots/maco_villa_verde.jpg",
+          "map_x": 0.72609,
+          "map_y": 0.38441
         },
         {
           "region": "Villa Verde",
