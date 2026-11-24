@@ -1484,14 +1484,14 @@ window.appState.syncFriendsProgress = async function() {
                     if (!ps) ps = (await rtdb.ref(`/psn/gamertags/${psKey}`).once('value').catch(() => null))?.val() || null;
                     if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && String(ps.currentGame).toLowerCase() !== 'idle') nowPlays.push({ kind: 'console', platform: ps.displayPlatform || ps.platform || 'PlayStation', title: ps.currentGame, status: ps.gameStatus || '' });
                 }
-                let sid = String(profile.steam_id || '').trim();
+                var sid = String(profile.steam_id || '').trim();
                 if (sid && !/^7656119\d{10}$/.test(sid)) { const vn = (await rtdb.ref(`/platforms/steam_vanity/${sid.toLowerCase()}`).once('value')).val(); sid = typeof vn === 'string' ? vn : ''; }
                 if (sid) { const sp = (await rtdb.ref(`/platforms/steam_users/${sid}/profile`).once('value')).val(); if (sp && sp.currentGame) nowPlays.push({ kind: 'console', platform: 'Steam', title: sp.currentGame, status: '' }); }
             } catch (e) {}
             const { done, ribbons, medalProg, rankProg } = friendDoneSet(save && save.data, psnEarned);
             const rank = psnRank || (save && save.data && save.data.campaignRank) || null;
             return {
-                code, userKey, name, avatar, nowPlays, plats,
+                code, userKey, name, avatar, nowPlays, plats, steamId: (typeof sid === 'string' && /^7656119\d{10}$/.test(sid)) ? sid : '',
                 platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length,
                 done, ribbons, medalProg, rankProg, rank, save: save && save.data,
                 // kept so a live Firestore update can recompute done/ribbons without re-running
@@ -1503,6 +1503,7 @@ window.appState.syncFriendsProgress = async function() {
         this.friendsProgress = results;
         this.applyStateToUI();
         renderSquadRoster();
+        watchFriendPresence(results, token);
         if (firestore) {
             results.forEach((entry) => {
                 if (!entry.hasSave || !entry.saveDocKey || !entry.platform) return;
@@ -1529,6 +1530,51 @@ window.appState.syncFriendsProgress = async function() {
         if (rosterContainer) rosterContainer.innerHTML = `<div style="font-size:0.8rem; color:#f87171;">Couldn't load squad progress: ${escapeHtml(e.message || String(e))}</div>`;
     }
 };
+// Live "Playing now": follow each friend's status in Firebase (PlayStation presence in the
+// playstation-stats project, Steam profile, mobile board-game presence) so the cards change
+// the moment Firebase does, without reloading. Only the few small presence fields are
+// watched, not the whole player card, to keep downloads tiny on the free plan.
+function watchFriendPresence(results, token) {
+    const PS_FIELDS = ['online', 'currentGame', 'gameStatus', 'displayPlatform', 'platform'];
+    let redraw = null;
+    const schedule = () => { clearTimeout(redraw); redraw = setTimeout(() => { if (token === friendSyncToken) renderSquadRoster(); }, 200); };
+    const setPlays = (cur) => {
+        const plays = [];
+        const np = cur._np;
+        if (np && np.t && Date.now() - Number(np.t) < 150000 && /^[a-z0-9_-]+$/.test(String(np.game || ''))) plays.push({ kind: 'mobile', game: np.game, title: np.title || np.game, status: np.status || '', room: np.room || '', open: Number(np.open) || 0 });
+        const ps = cur._ps || {};
+        if ((ps.online === true || ps.online === 'true') && ps.currentGame && !/^(idle|dashboard)$/i.test(String(ps.currentGame))) plays.push({ kind: 'console', platform: ps.displayPlatform || ps.platform || 'PlayStation', title: ps.currentGame, status: ps.gameStatus || '' });
+        const sp = cur._steam;
+        if (sp && sp.currentGame && sp.state !== 'offline') plays.push({ kind: 'console', platform: 'Steam', title: sp.currentGame, status: '' });
+        cur.nowPlays = plays;
+        schedule();
+    };
+    const listen = (ref, onVal) => {
+        const cb = snap => { if (token === friendSyncToken) onVal(snap.val()); };
+        ref.on('value', cb, err => console.warn('[Squad presence]', err && err.message));
+        friendSnapshotUnsubs.push(() => ref.off('value', cb));
+    };
+    toArr(results).forEach(entry => {
+        if (!entry || entry.hidden) return;
+        const cur = () => toArr(appState.friendsProgress).find(x => x.code === entry.code);
+        if (entry.psnTag) {
+            const key = String(entry.psnTag).replace(/[.$#\[\]\/]/g, '_');
+            const db = psnRtdb || rtdb;
+            Promise.resolve(psnRtdb ? psnReady : null).then(() => {
+                if (token !== friendSyncToken) return;
+                PS_FIELDS.forEach(field => listen(db.ref(`/psn/gamertags/${key}/${field}`), v => {
+                    const c = cur(); if (!c) return;
+                    c._ps = Object.assign({}, c._ps, { [field]: v }); setPlays(c);
+                }));
+            });
+        }
+        if (entry.steamId) listen(rtdb.ref(`/platforms/steam_users/${entry.steamId}/profile`), v => { const c = cur(); if (!c) return; c._steam = v; setPlays(c); });
+        if (entry.userKey) listen(rtdb.ref(`/users/${entry.userKey}/now_playing`), v => { const c = cur(); if (!c) return; c._np = v; setPlays(c); });
+    });
+    // Mobile presence goes stale after 2.5 min without a new write; re-check now and then.
+    const t = setInterval(() => { if (token !== friendSyncToken) return clearInterval(t); toArr(appState.friendsProgress).forEach(c => { if (c._np) setPlays(c); }); }, 60000);
+    friendSnapshotUnsubs.push(() => clearInterval(t));
+}
 function friendInitials(n) { return String(n || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase(); }
 function friendBadge(f, extra, notDone) {
     const first = String(f.name || '').trim().split(/\s+/)[0];
