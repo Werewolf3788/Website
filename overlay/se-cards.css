@@ -1,0 +1,85 @@
+/* Werewolf3788 Social Cards - StreamElements Custom Widget (CSS tab)
+   See-through "glass" cards: chat = tweet-style cards, follows/subs/raids/bits/tips = phone-notification cards. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+:root {
+  --accent: {{accentColor}};
+  --card-alpha: calc({{cardOpacity}} / 100);
+  --card-w: {{cardWidth}}px;
+  --font: {{fontSize}}px;
+}
+html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+* { box-sizing: border-box; }
+
+.cards {
+  position: absolute; bottom: 24px; {{side}}: 24px;
+  width: var(--card-w);
+  display: flex; flex-direction: column-reverse; gap: 12px;
+  font-family: 'Inter', system-ui, sans-serif; font-size: var(--font); color: #f8fafc;
+}
+
+/* ---- shared glass card ---- */
+.card {
+  position: relative;
+  background: rgba(15, 23, 42, var(--card-alpha));
+  backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 18px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .08);
+  animation: card-in .55s cubic-bezier(.2, .9, .3, 1.25) both, card-float 6s ease-in-out .6s infinite;
+  transform-origin: left bottom;
+}
+.cards.right .card { transform-origin: right bottom; }
+/* older cards sit back a little, like a stack of posts */
+.card:nth-child(2) { opacity: .92; }
+.card:nth-child(3) { opacity: .82; }
+.card:nth-child(n+4) { opacity: .7; }
+.card.leaving { animation: card-out .5s ease-in forwards; }
+
+@keyframes card-in { from { opacity: 0; transform: translateY(30px) rotate(-3deg) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes card-out { to { opacity: 0; transform: translateX(-40px) scale(.95); height: 0; margin: 0; padding-top: 0; padding-bottom: 0; } }
+.cards.right .card.leaving { animation-name: card-out-r; }
+@keyframes card-out-r { to { opacity: 0; transform: translateX(40px) scale(.95); height: 0; margin: 0; padding-top: 0; padding-bottom: 0; } }
+@keyframes card-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -3px; } }
+
+/* ---- tweet-style chat card ---- */
+.tw-head { display: flex; align-items: center; gap: 10px; }
+.tw-av { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: #334155; border: 2px solid rgba(255,255,255,.18); }
+.tw-who { min-width: 0; line-height: 1.15; }
+.tw-name { font-weight: 800; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tw-name img.badge { width: 16px; height: 16px; }
+.tw-handle { font-size: .82em; color: #94a3b8; }
+.tw-src { margin-left: auto; font-size: .7em; font-weight: 800; letter-spacing: .04em; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.1); color: #e2e8f0; flex: 0 0 auto; }
+.tw-src.twitch { background: rgba(145, 70, 255, .35); }
+.tw-src.yt { background: rgba(255, 0, 0, .35); }
+.tw-src.tt { background: rgba(37, 244, 238, .25); }
+.tw-src.kick { background: rgba(83, 252, 24, .25); }
+.tw-src.bot { background: var(--accent); color: #fff; }
+.tw-text { margin: 8px 0 6px; line-height: 1.35; word-wrap: break-word; }
+.tw-text img.emote { height: 1.6em; vertical-align: middle; margin: -4px 1px; }
+.tw-foot { display: flex; gap: 22px; font-size: .78em; color: #94a3b8; }
+.card.bot { border-color: var(--accent); box-shadow: 0 0 18px var(--accent), 0 10px 30px rgba(0,0,0,.35); }
+.verified { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; }
+
+/* ---- phone-notification alert card ---- */
+.phone {
+  border-radius: 28px; padding: 18px 16px 14px;
+  border: 2px solid rgba(255, 255, 255, .22);
+}
+.phone::before { /* the speaker notch */
+  content: ''; position: absolute; top: 7px; left: 50%; width: 56px; height: 5px; margin-left: -28px;
+  border-radius: 9px; background: rgba(255, 255, 255, .28);
+}
+.ph-row { display: flex; align-items: center; gap: 12px; }
+.ph-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; flex: 0 0 auto; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.ph-app { font-size: .72em; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #cbd5e1; }
+.ph-title { font-weight: 800; font-size: 1.12em; }
+.ph-sub { color: #cbd5e1; font-size: .9em; margin-top: 2px; }
+.ph-time { margin-left: auto; align-self: flex-start; font-size: .72em; color: #94a3b8; }
+.phone.follower .ph-icon { background: #ec4899; box-shadow: 0 0 16px #ec4899; }
+.phone.sub .ph-icon { background: #8b5cf6; box-shadow: 0 0 16px #8b5cf6; }
+.phone.cheer .ph-icon { background: #a855f7; box-shadow: 0 0 16px #a855f7; }
+.phone.tip .ph-icon { background: #22c55e; box-shadow: 0 0 16px #22c55e; }
+.phone.raid .ph-icon { background: #f97316; box-shadow: 0 0 16px #f97316; }
+.phone.redemption .ph-icon { background: #0ea5e9; box-shadow: 0 0 16px #0ea5e9; }
