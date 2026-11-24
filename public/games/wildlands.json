@@ -3140,18 +3140,18 @@
         },
         {
           "region": "La Cruz",
-          "lat": -18.0841,
-          "long": -61.6708,
+          "lat": -18.0768,
+          "long": -61.677,
           "id": "ksf_la_cruz_02",
           "name": "Love at First Burn",
-          "location": "Recording #2 of 10 · At Hoyito · 📍 -18.0841, -61.6708",
+          "location": "Recording #2 of 10 · Burnt-out ruins at Hoyito · 📍 -18.0768, -61.6770",
           "category": "Document",
-          "guide": "On a local talk show, two recently engaged lovebirds tell how surviving the wildfire together brought them true love. At Hoyito (A village ravaged by a huge forest fire). 📍 Lat -18.0841, Long -61.6708.",
+          "guide": "On a local talk show, two recently engaged lovebirds tell how surviving the wildfire together brought them true love. In the burnt-out wooden ruins at Hoyito, by the river on the La Cruz border. 📍 Lat -18.0768, Long -61.6770.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_la_cruz_02.jpg",
           "tags": "kingslayer file document",
-          "map_x": 0.66872,
-          "map_y": 0.61028
+          "map_x": 0.668,
+          "map_y": 0.60943
         },
         {
           "region": "La Cruz",
