@@ -2,6 +2,49 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 54,
+   "date": "Nov 22",
+   "game": "recon",
+   "items": [
+    "🎖️ Your AI squad always fights back now, on every difficulty: they hit just as hard on Hard as on Normal, engage shooters out to 120 m, and move up beside you when they can't see who's shooting"
+   ]
+  },
+  {
+   "id": 53,
+   "date": "Nov 22",
+   "game": "recon",
+   "items": [
+    "🔥 New squad order: Fire at will. Your AI squad shoots any guard they can see, no marking needed (Tab / hold R1 for squad orders)",
+    "Squad orders now let you pick Fire at will, Shoot marked targets, or Hold fire, with a ✓ next to the one that's on. Regroup no longer resets it"
+   ]
+  },
+  {
+   "id": 52,
+   "date": "Nov 22",
+   "game": "recon",
+   "items": [
+    "📦 Skill Points, weapon cases, accessories and medals no longer sit on hut roofs or watch towers you can't climb. Anything that landed up there is now on the ground right beside the building"
+   ]
+  },
+  {
+   "id": 51,
+   "date": "Nov 22",
+   "game": "recon",
+   "items": [
+    "🎯 Sync shots now count down live on screen: 3 · 2 · 1 · FIRE",
+    "A sync shot timer under the top bar ticks down the cooldown every second and turns green when it's ready again (it stays up even after your marked targets are gone)"
+   ]
+  },
+  {
+   "id": 50,
+   "date": "Nov 22",
+   "game": "battleship",
+   "items": [
+    "Placing ships is easier: tap any open square and the ship slides to fit around it instead of saying it doesn't fit",
+    "Rotate now turns the ship wherever there's room around it"
+   ]
+  },
+  {
    "id": 49,
    "date": "Nov 20",
    "game": "recon",

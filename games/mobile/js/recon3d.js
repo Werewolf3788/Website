@@ -281,6 +281,13 @@ function buildWorld(items) {
   // pickups
   const LOOK = { sp: [0x38bdf8, '⬆️'], weapon: [0xf97316, '🔫'], acc: [0xa78bfa, '🔧'], medal: [0xfacc15, '🏅'], crate: [0x65a30d, '📦'] };
   items.forEach(it => {
+    // Nothing spawns on a roof or tower top you can't climb: slide it out to the open ground beside the building
+    for (let pass = 0; pass < 4; pass++) {
+      const c = colliders.find(o => o.top - hAt(it.x, it.z) > 1.2 && it.x > o.x0 - .8 && it.x < o.x1 + .8 && it.z > o.z0 - .8 && it.z < o.z1 + .8);
+      if (!c) break;
+      const out = [[c.x0 - 1.2 - it.x, 0], [c.x1 + 1.2 - it.x, 0], [0, c.z0 - 1.2 - it.z], [0, c.z1 + 1.2 - it.z]].sort((p, q) => Math.hypot(p[0], p[1]) - Math.hypot(q[0], q[1]))[0];
+      it.x += out[0]; it.z += out[1];
+    }
     const L = LOOK[it.kind], g = new THREE.Group(), y = groundAt(it.x, it.z, 999);
     const m = it.kind === 'crate' ? box(1, .7, .7, mat(0x4d7c0f), 0, .35, 0) : it.kind === 'sp' ? new THREE.Mesh(new THREE.OctahedronGeometry(.4), mat(L[0], { emissive: L[0], emissiveIntensity: .7 })) : box(it.kind === 'weapon' ? 1.3 : .8, .4, .5, mat(L[0], { emissive: L[0], emissiveIntensity: .35 }), 0, .2, 0);
     if (it.kind === 'sp') m.position.y = 1.1;
@@ -756,13 +763,14 @@ function spotMarking(dt, origin, dir, maxD, state, speed) {
   else state.markT = 0;
 }
 function syncShot() {
-  if (MP.client) { const l = enemies.filter(e => e.marked && !e.dead).map(e => enemies.indexOf(e)); if (!l.length) { say('Mark targets first'); return; } netHost({ k: 'sync', l }); big('SYNC SHOT', 1200); return; }
+  if (syncPending) return;   // already counting down
+  if (MP.client) { const l = enemies.filter(e => e.marked && !e.dead).map(e => enemies.indexOf(e)); if (!l.length) { say('Mark targets first'); return; } if (syncCool > 0) { say('Sync shot ready in ' + Math.ceil(syncCool) + 's'); return; } netHost({ k: 'sync', l }); syncPending = { list: [], t: 3, n: 0, view: true }; syncCool = 40 * (1 - eff('born_leader')) + 3; return; }
   if (S.squadOff || !squad.some(b => !b.inactive && !b.down)) { say(MP.on ? 'Sync shot needs an AI squadmate (they fill empty co-op slots)' : 'Sync shot needs your AI squad: turn it on in the pause menu'); return; }
   const max = 3 + (rank('extra_sync_shot') ? effNum('extra_sync_shot') : 0);
   const list = enemies.filter(e => e.marked && !e.dead && e.pos.distanceTo(P.pos) < 180).sort((a, b) => a.pos.distanceTo(P.pos) - b.pos.distanceTo(P.pos)).slice(0, max);
   if (!list.length) { say('Mark targets first (R1 tap / middle mouse / drone / binoculars)'); return; }
   if (syncCool > 0) { say('Sync shot ready in ' + Math.ceil(syncCool) + 's'); return; }
-  syncPending = { list, t: 1.6 }; big('SYNC SHOT ' + list.length, 1500); say('Squad: "On your mark… 3, 2, 1"');
+  syncPending = { list, t: 3, n: 0 }; say('🎯 Sync shot on ' + list.length + ' target' + (list.length === 1 ? '' : 's') + ': on your mark…');
 }
 
 // ------------------------------------------------------------------ vehicles
@@ -888,7 +896,11 @@ function update(dt, pad) {
   P.shotAgo = (P.shotAgo || 0) + dt; if (P.shotAgo > .16) { const k = Math.exp(-dt * 9); P.recoil = (P.recoil || 0) * k; P.recoilYaw = (P.recoilYaw || 0) * k; }   // the kick settles back to where you were aiming
   if (D.cool > 0 && P.mode !== 'drone') D.cool -= dt;
   if (syncCool > 0) syncCool -= dt;
-  if (syncPending) { syncPending.t -= dt; if (syncPending.t <= 0) { const L = syncPending.list; syncPending = null; L.forEach((e, i) => { if (e.dead) return; const b = squad[i % squad.length]; tracer(eye(b.pos, 1.4), eye(e.pos, 1.7), 0xbbf7d0); damageEnemy(e, 999, true, 'sync'); }); SFX.shot(true, 'sr'); syncCool = 40 * (1 - eff('born_leader')); say('Sync shot: ' + L.length + ' down'); } }
+  if (syncPending) { syncPending.t -= dt;
+    // Live 3 · 2 · 1 on screen while the squad lines up
+    const n = Math.ceil(syncPending.t); if (n > 0 && n !== syncPending.n) { syncPending.n = n; big('🎯 ' + n, 1100); SFX.click(); }
+    if (syncPending.t <= 0 && syncPending.view) { syncPending = null; big('🎯 FIRE', 900); }
+    else if (syncPending.t <= 0) { const L = syncPending.list; syncPending = null; big('🎯 FIRE', 900); L.forEach((e, i) => { if (e.dead) return; const b = squad[i % squad.length]; tracer(eye(b.pos, 1.4), eye(e.pos, 1.7), 0xbbf7d0); damageEnemy(e, 999, true, 'sync'); }); SFX.shot(true, 'sr'); syncCool = 40 * (1 - eff('born_leader')); say('Sync shot: ' + L.length + ' down'); } }
 
   enemiesTick(dt); squadTick(dt);
   // grenades
@@ -1063,6 +1075,7 @@ function squadTick(dt) {
     if (b.hp < botMaxHP() && T - (b.hurtT || 0) > 6) b.hp = Math.min(botMaxHP(), b.hp + dt * 8);
     let tgt = null, run = false;
     if (b === medic) { tgt = (patient === 'P' ? P.pos : patient.pos).clone(); run = true; }
+    else if (b.flankTo && !b.hold) { tgt = b.flankTo.clone(); run = true; }    // in a fight but can't see the shooter: move up beside you to get a clear shot
     else if (!b.hold) tgt = P.pos.clone().addScaledVector(right, b.off[0] * (fight ? 1.8 : 1)).addScaledVector(fwd, -b.off[1] * (fight ? 1.4 : 1));
     if (tgt) {
       const d = Math.hypot(tgt.x - b.pos.x, tgt.z - b.pos.z);
@@ -1079,16 +1092,21 @@ function squadTick(dt) {
     b.shotT -= dt;
     if (b !== medic || !b.moving) {
       const be = eye(b.pos, 1.5);
-      const foes = enemies.filter(e => !e.dead && (e.alert || (squadOpenFire && e.marked)) && e.pos.distanceTo(b.pos) < 90);
+      // always fight back, on every difficulty: any guard that is in the fight, out to 120 m
+      const foes = enemies.filter(e => !e.dead && (e.alert || (squadOpenFire >= 1 && e.marked) || (squadOpenFire === 2 && e.pos.distanceTo(b.pos) < 75)) && e.pos.distanceTo(b.pos) < 120);
       foes.sort((x, y) => x.pos.distanceTo(b.pos) - y.pos.distanceTo(b.pos));
       const foe = foes.find(e => los(be, eye(e.pos, 1.4)));
+      const angry = foes.filter(e => e.alert);
+      // nobody in sight but the squad is under fire: head for a spot beside you, toward the nearest shooter
+      if (!foe && angry.length && b !== medic) { const f0 = angry[0], dir = new V3(f0.pos.x - P.pos.x, 0, f0.pos.z - P.pos.z).normalize(); b.flankTo = P.pos.clone().addScaledVector(dir, 5).addScaledVector(right, (b.off[0] >= 0 ? 1 : -1) * (3 + Math.abs(b.off[0]))); }
+      else b.flankTo = null;
       if (foe) {
         b.face = Math.atan2(-(foe.pos.x - b.pos.x), -(foe.pos.z - b.pos.z));
         if (b.shotT <= 0) {
           b.shotT = rnd(.45, .95); const dist = foe.pos.distanceTo(b.pos), h = Math.random() < clamp(.55 - dist / 150, .18, .5);
           const from = be.clone().addScaledVector(new V3(-Math.sin(b.face), 0, -Math.cos(b.face)), .55);
           b.sc = ((b.sc | 0) + 1) % 10; flash(from, .7); tracer(from, eye(foe.pos, h ? 1.4 : 2.3), 0xbbf7d0); SFX.shot(false, 'ar', clamp(.7 - dist / 150, .2, .6));
-          if (h) { damageEnemy(foe, 28 * (1 + eff('trained_rebels')), false, 'squad'); foe.flinch = .18; }
+          if (h) { damageEnemy(foe, 28 * (1 + eff('trained_rebels')) * DF().hp, false, 'squad'); foe.flinch = .18; }
         }
       } else if (foes[0]) b.face = turnTo(b.face, Math.atan2(-(foes[0].pos.x - b.pos.x), -(foes[0].pos.z - b.pos.z)), dt * 4);
     }
@@ -1097,7 +1115,7 @@ function squadTick(dt) {
   if (P.mode === 'down' && !up.length && !P.toldAlone) { P.toldAlone = true; say('Your whole squad is down · E / hold □ to skip the wait', 5000); }
   if (P.mode !== 'down') P.toldAlone = false;
 }
-let squadOpenFire = false;
+let squadOpenFire = 0;   // 0 = only fight back, 1 = shoot marked targets, 2 = fire at will (any guard they can see)
 function reinforce() {      // cleared camps are re-garrisoned 20 minutes later (when you are not close by)
   if (MP.client) return;
   camps.forEach(c => { const t = S.camps[c.id]; if (c.cleared && t && Date.now() - t > 20 * 60 * 1000 && Math.hypot(P.pos.x - c.x, P.pos.z - c.z) > 120) { delete S.camps[c.id]; spawnCampGuards(c); pickups.forEach(p => { if (p.kind === 'crate' && p.camp === c.id) { delete S.picked[p.id]; p.mesh.visible = true; } }); say('📻 Reinforcements reached ' + c.name); save(); } });
@@ -1289,6 +1307,12 @@ function fastTravel(uid) {
 
 // ------------------------------------------------------------------ HUD drawing
 function hudNow() {
+  // Sync shot timer: counts down live every HUD tick, shows ready when it can fire again
+  const sy = $('syncT'); if (sy) {
+    const can = MP.client || (!S.squadOff && squad.some(b => !b.inactive && !b.down));
+    sy.textContent = syncPending ? '🎯 Sync shot firing…' : syncCool > 0 ? '🎯 Sync shot in ' + Math.ceil(syncCool) + 's' : can ? '🎯 Sync shot ready' : '';
+    sy.classList.toggle('is-ready', !syncPending && syncCool <= 0);
+  }
   $('lvl').textContent = S.level; $('xpbar').firstChild.style.width = Math.round(S.xp / xpNeed() * 100) + '%';
   $('res').innerHTML = '⬆️ <b>' + S.sp + '</b> SP · ' + RES.map(r => r[1] + ' ' + (S.res[r[0]] | 0)).join(' · ') + (S.squadOff ? '' : '<br>🎖️ ' + squad.filter(b => !b.inactive).map(b => (b.down ? '⛑️' : b.hp < botMaxHP() * .5 ? '🟠' : '🟢') + b.name).join(' ')) + (MP.on ? '<br>👥 ' + Object.values(MP.remotes).filter(r => !r.stale).map(r => (r.mode === 'down' ? '⛑️' : '🔵') + esc(r.name)).join(' ') : '') + (countMarked() ? '<br>🔺 ' + countMarked() + ' marked' + (syncCool > 0 ? ' · sync ' + Math.ceil(syncCool) + 's' : ' · sync ready') : '');
   const n = curGun();
@@ -1398,9 +1422,11 @@ function renderLoadout() {
 function openWheel() {
   show('wheel'); const m = countMarked();
   const opts = [['🎯 Sync shot' + (m ? ' (' + m + ' marked)' : ' (mark targets first)') + (syncCool > 0 ? ' · ' + Math.ceil(syncCool) + 's' : ''), () => syncShot()],
-    ['🔁 Regroup on me', () => { squad.forEach(b => { b.hold = false; }); squadOpenFire = false; say('Squad: "Moving to you"'); }],
+    ['🔁 Regroup on me', () => { squad.forEach(b => { b.hold = false; }); say('Squad: "Moving to you"'); }],
     ['✋ Hold position', () => { squad.forEach(b => { b.hold = true; }); say('Squad: "Holding here"'); }],
-    [squadOpenFire ? '🤫 Hold fire' : '🔥 Open fire on marked targets', () => { squadOpenFire = !squadOpenFire; say(squadOpenFire ? 'Squad: "Engaging marked targets"' : 'Squad: "Holding fire"'); }]];
+    ['🔥 Fire at will' + (squadOpenFire === 2 ? ' ✓' : ''), () => { squadOpenFire = 2; say('Squad: "Weapons free, taking any shot we\'ve got"'); }],
+    ['🎯 Shoot marked targets' + (squadOpenFire === 1 ? ' ✓' : ''), () => { squadOpenFire = 1; say('Squad: "Engaging marked targets"'); }],
+    ['🤫 Hold fire (only fight back)' + (squadOpenFire === 0 ? ' ✓' : ''), () => { squadOpenFire = 0; say('Squad: "Holding fire"'); }]];
   if (MP.client) opts.splice(1);
   $('wheelList').innerHTML = opts.map((o, i) => '<button class="alt" data-w="' + i + '">' + (i + 1) + ' · ' + o[0] + '</button>').join('');
   $('wheelList').querySelectorAll('[data-w]').forEach(b => b.onclick = () => { closeMenus(); opts[+b.getAttribute('data-w')][1](); });

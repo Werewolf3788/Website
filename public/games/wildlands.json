@@ -1620,7 +1620,7 @@
           "name": "Vehicle Drop-Off",
           "region": "Rebel Support",
           "location": "Tier 1: Request an SUV.",
-          "guide": "Calls in Rebel forces to drop off a vehicle nearby. Power 1: an SUV; Power 2: an armored vehicle; Power 3: a helicopter.",
+          "guide": "Calls in Rebel forces to drop off a vehicle nearby. Power 1: an SUV; Power 2: an armored vehicle; Power 3: a helicopter. Armed/Gatling choppers are unlocked from crates or packs. See the \"How to get the Gatling chopper\" guide.",
           "levels": 9,
           "image_url": "/Images/wildlands/skills/vehicle_drop_off.png",
           "tier_groups": [
@@ -10212,6 +10212,339 @@
       "Mark Unidad and Santa Blanca outposts from a distance, take out alarms and commanders first, then clear the rest."
     ]
   },
+  "controls": {
+    "title": "Controls",
+    "note": "Default layouts. Crouch, prone, aim and walk/run can each be switched between Hold and Toggle in Settings (Gameplay / Keyboard & Mouse). Ground vehicles, helicopters, planes and the drone have their own separate control and sensitivity settings.",
+    "layouts": [
+      {
+        "platform": "playstation",
+        "name": "PlayStation controller",
+        "sections": [
+          {
+            "title": "On foot & combat",
+            "rows": [
+              {
+                "button": "Left Stick",
+                "action": "Move · L3 (click): Sprint"
+              },
+              {
+                "button": "Right Stick",
+                "action": "Look / camera · R3 (click): Melee (or Swap Shoulder while aiming)"
+              },
+              {
+                "button": "L2 (hold)",
+                "action": "Aim Down Sights (ADS)"
+              },
+              {
+                "button": "R2",
+                "action": "Shoot / fire weapon"
+              },
+              {
+                "button": "L1",
+                "action": "Throw / use equipped item (Grenade, Flashbang, C4, Mine)"
+              },
+              {
+                "button": "R1",
+                "action": "Tap: Mark target (Sync Shot) · Hold: Squad & Rebel Support wheel"
+              },
+              {
+                "button": "Cross (X)",
+                "action": "Vault / climb / take cover / deploy parachute (mid-air)"
+              },
+              {
+                "button": "Circle (O)",
+                "action": "Tap: Crouch · Hold: Prone"
+              },
+              {
+                "button": "Square (□)",
+                "action": "Tap: Reload · Hold: Interact, loot, grab enemy, enter vehicle"
+              },
+              {
+                "button": "Triangle (△)",
+                "action": "Tap: Switch primary weapon · Double-tap: Sidearm · Hold: Holster weapon"
+              }
+            ]
+          },
+          {
+            "title": "D-pad & menus",
+            "rows": [
+              {
+                "button": "D-Pad Up",
+                "action": "Launch / recall drone"
+              },
+              {
+                "button": "D-Pad Down",
+                "action": "Equip binoculars"
+              },
+              {
+                "button": "D-Pad Left",
+                "action": "Cycle throwables / gadgets (Frag, Flashbang, C4, Mine, Flare)"
+              },
+              {
+                "button": "D-Pad Right",
+                "action": "Cycle vision modes (Normal → Night Vision → Thermal)"
+              },
+              {
+                "button": "Touchpad",
+                "action": "Open TacMap / Loadout / Skills / Missions menu"
+              },
+              {
+                "button": "Options",
+                "action": "Pause menu"
+              }
+            ]
+          },
+          {
+            "title": "While holding L2 (aiming)",
+            "rows": [
+              {
+                "button": "D-Pad Up",
+                "action": "Attach / remove suppressor"
+              },
+              {
+                "button": "D-Pad Down",
+                "action": "Switch to underbarrel grenade launcher"
+              },
+              {
+                "button": "D-Pad Left",
+                "action": "Change firing mode (Single / Burst / Full Auto)"
+              },
+              {
+                "button": "D-Pad Right",
+                "action": "Toggle scope zoom / aim mode (over-the-shoulder vs. first-person ADS)"
+              }
+            ]
+          },
+          {
+            "title": "Vehicles (ground & helicopters)",
+            "rows": [
+              {
+                "button": "R2 / L2",
+                "action": "Accelerate / brake & reverse"
+              },
+              {
+                "button": "Left Stick",
+                "action": "Steer (ground) / tilt & pitch (helicopter)"
+              },
+              {
+                "button": "Right Stick",
+                "action": "Camera · R3 (click): Look behind"
+              },
+              {
+                "button": "Square (□) (hold)",
+                "action": "Enter / exit vehicle"
+              },
+              {
+                "button": "Cross (X)",
+                "action": "Switch seats (Handbrake in cars / Ascend in Classic helicopter mode)"
+              },
+              {
+                "button": "Circle (O)",
+                "action": "Handbrake (cars) / Descend (Classic helicopter mode)"
+              },
+              {
+                "button": "R1",
+                "action": "Fire vehicle weapons / squad attack order"
+              },
+              {
+                "button": "D-Pad Up / Down / Right",
+                "action": "Radio / headlights / vision mode"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "platform": "pc",
+        "name": "PC keyboard & mouse (defaults)",
+        "sections": [
+          {
+            "title": "Movement & stance",
+            "rows": [
+              {
+                "button": "W A S D",
+                "action": "Move"
+              },
+              {
+                "button": "Shift",
+                "action": "Sprint"
+              },
+              {
+                "button": "Alt",
+                "action": "Walk / run toggle"
+              },
+              {
+                "button": "C",
+                "action": "Crouch"
+              },
+              {
+                "button": "Ctrl",
+                "action": "Prone"
+              },
+              {
+                "button": "Space",
+                "action": "Cross / climb / vault"
+              }
+            ]
+          },
+          {
+            "title": "Combat & weapons",
+            "rows": [
+              {
+                "button": "Left Click",
+                "action": "Shoot"
+              },
+              {
+                "button": "Right Click",
+                "action": "Aim"
+              },
+              {
+                "button": "R",
+                "action": "Reload"
+              },
+              {
+                "button": "X",
+                "action": "Aim mode"
+              },
+              {
+                "button": "Z",
+                "action": "Swap shoulder / rate of fire"
+              },
+              {
+                "button": "H",
+                "action": "Stow / hide weapon"
+              },
+              {
+                "button": "1–4",
+                "action": "Weapons / items"
+              }
+            ]
+          },
+          {
+            "title": "Recon & squad",
+            "rows": [
+              {
+                "button": "Q / B",
+                "action": "Drone / binoculars"
+              },
+              {
+                "button": "V / N",
+                "action": "Cycle vision mode (night vision / thermal)"
+              },
+              {
+                "button": "Tab",
+                "action": "Squad orders wheel"
+              },
+              {
+                "button": "F / G",
+                "action": "Use item / grenade"
+              }
+            ]
+          },
+          {
+            "title": "Menus & HUD",
+            "rows": [
+              {
+                "button": "M",
+                "action": "TacMap"
+              },
+              {
+                "button": "J",
+                "action": "Skills / loadout"
+              },
+              {
+                "button": "I",
+                "action": "Equipment / skills"
+              },
+              {
+                "button": "T",
+                "action": "Text chat"
+              },
+              {
+                "button": "NumLock",
+                "action": "Hide HUD"
+              },
+              {
+                "button": "Esc",
+                "action": "Pause menu"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "title": "Ubisoft Help: supported peripherals",
+        "url": "https://www.ubisoft.com/en-us/help/ghost-recon-wildlands/connectivity-and-performance/article/supported-peripherals-for-ghost-recon-wildlands/000061323"
+      },
+      {
+        "title": "DefKey: Wildlands PC shortcuts",
+        "url": "https://defkey.com/ghost-recon-wildlands-pc-shortcuts"
+      },
+      {
+        "title": "Ghost Recon Wildlands wiki: Key bindings",
+        "url": "https://ghostreconwildlands-archive.fandom.com/wiki/Key_bindings"
+      },
+      {
+        "title": "GamePressure: Wildlands PC controls",
+        "url": "https://www.gamepressure.com/ghost-recon-wildlands/pc/z99808"
+      }
+    ]
+  },
+  "guides": [
+    {
+      "id": "gatling_chopper",
+      "title": "How to get the Gatling chopper",
+      "summary": "The Gatling helicopter is a light chopper fitted with miniguns. You don't find it in the world. You unlock it from crates or store packs, then call it in with Rebel Vehicle Drop-Off.",
+      "sections": [
+        {
+          "title": "Unlocking it",
+          "points": [
+            "Prestige Crates: earn Prestige Credits from Daily Challenges and open Prestige Crates. These can drop armed or Gatling helicopters.",
+            "Spec Ops Crates & store packs: armed helicopters also come from Spec Ops Crates or certain vehicle/store packs.",
+            "Basic (unarmed) choppers come from Rebel Vehicle Drop-Off itself. Armed and exclusive choppers come from crates or packs."
+          ]
+        },
+        {
+          "title": "Calling it in (Rebel Drop-Off)",
+          "ordered": true,
+          "points": [
+            "Unlock Vehicle Drop-Off (Rebel Support tree) by doing Rebel Ops side missions. Helicopters need rank 3 (Power 3).",
+            "Open the Rebel Support wheel: PlayStation, hold R1. PC, hold Tab and cycle with Q / E.",
+            "Pick Vehicle Drop-Off, then choose the Gatling chopper from your unlocked vehicles. The rebels drop it near you."
+          ]
+        },
+        {
+          "title": "Want a heavier gunship instead?",
+          "points": [
+            "Unidad bases and outposts (for example in Flor de Oro, Media Luna and Caimanes) spawn AH-1Z Viper gunships you can steal. Watch out for SAM sites and base defenses."
+          ]
+        }
+      ],
+      "related_items": [
+        "skill_vehicle_drop_off"
+      ],
+      "sources": [
+        {
+          "title": "Steam discussion: Gatling helicopter",
+          "url": "https://steamcommunity.com/app/460930/discussions/0/4843149419123595345/"
+        },
+        {
+          "title": "Reddit r/Wildlands: How do I have the Gatling helicopter?",
+          "url": "https://www.reddit.com/r/Wildlands/comments/fl34f6/how_do_i_have_the_gatling_helicopter/"
+        },
+        {
+          "title": "GameFAQs board thread",
+          "url": "https://gamefaqs.gamespot.com/boards/168639-tom-clancys-ghost-recon-wildlands/76328533"
+        },
+        {
+          "title": "Reddit r/Wildlands: Viper attack helicopter location",
+          "url": "https://www.reddit.com/r/Wildlands/comments/6oywyg/viper_attack_helicopter_location/"
+        }
+      ]
+    }
+  ],
   "map_icons": [
     {
       "id": "kingslayer_file",

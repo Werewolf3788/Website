@@ -477,10 +477,55 @@ async function loadFriendProgress() {
       const name = prof.username || prof.display_name || fo.username || code, scope = prof.tracking_scope || 'friends';
       let ok = scope !== 'private';
       if (scope === 'close') ok = !!(prof.friends && prof.friends[S.U.friend_code] && prof.friends[S.U.friend_code].close_friend === true);
-      if (!ok) return { code, name, hidden:true, games:[] };
-      return { code, name, games:(await readTracking(fs, idsFor(code))).slice(0, 4) };
+      const plays = await friendNowPlaying(key, code, prof, fo);
+      if (!ok) return { code, name, hidden:true, games:[], plays };
+      return { code, name, plays, games:(await readTracking(fs, idsFor(code))).slice(0, 4) };
     }));
+    // friends who are playing right now go to the top
+    S.friendsProg.sort((a, b) => (b.plays.length > 0) - (a.plays.length > 0));
+    if (!S.friendsNowTimer) S.friendsNowTimer = setInterval(refreshFriendsNow, 60000);
   } catch (e) { console.warn('[friends progress]', e); S.friendsProg = null; }
+  if (!$('#profile-root').hidden) render();
+}
+
+/* What a friend is playing right now (live, not the hourly sync): mobile games, PlayStation, Xbox, Steam.
+   Honours the friend's own "Online status & now playing" setting (accounts/profiles/{key}.privacy.activity). */
+const STATS_DB = 'https://playstation-stats-default-rtdb.firebaseio.com';
+async function friendNowPlaying(key, code, prof, fo) {
+  const plays = [], now = Date.now();
+  try {
+    let act = 'friends';
+    if (key) { try { act = (await W.db.ref('accounts/profiles/' + key + '/privacy/activity').once('value')).val() || 'friends'; } catch (e) {} }
+    if (act === 'private') return plays;
+    if (act === 'close' && !(prof.friends && prof.friends[S.U.friend_code] && prof.friends[S.U.friend_code].close_friend === true)) return plays;
+    let mob = null; try { mob = (await W.db.ref('mobilegames/rooms/presence/' + code).once('value')).val(); } catch (e) {}
+    if (!(mob && mob.t && now - mob.t < 150000)) mob = prof.now_playing && prof.now_playing.t && now - prof.now_playing.t < 150000 ? prof.now_playing : null;
+    if (mob && mob.title) plays.push({ platform:'Mobile games', title:mob.title, status:mob.status || '' });
+    const tag = String(prof.psn_username || fo.psn_username || '').trim();
+    if (tag) for (const t of [...new Set([tag, tag.toLowerCase()])]) {
+      try { const r = await fetch(`${STATS_DB}/psn/gamertags/${encodeURIComponent(t)}.json?t=${now}`); const ps = r.ok ? await r.json() : null;
+        if (ps) { if ((ps.online === true || ps.online === 'true') && ps.currentGame && !/^(idle|standby)$/i.test(String(ps.currentGame))) plays.push({ platform:ps.displayPlatform || 'PlayStation', title:ps.currentGame, status:String(ps.gameStatus || ps.currentGameActivity || '').trim() }); break; } } catch (e) {}
+    }
+    const xt = String(prof.xbox_gamertag || fo.xbox_gamertag || '').trim();
+    if (xt) { try { const r = await fetch(`${STATS_DB}/xbox/gamertags/${encodeURIComponent(xt)}.json?t=${now}`); const xd = r.ok ? await r.json() : null;
+      if (xd && /online/i.test(xd.presenceState || '') && xd.presenceText && !/^(home|online)$/i.test(String(xd.presenceText).trim())) plays.push({ platform:'Xbox', title:String(xd.presenceText).trim(), status:'' }); } catch (e) {} }
+    let sid = String(prof.steam_id || '').trim();
+    if (sid && !/^7656119\d{10}$/.test(sid)) { try { const v = (await W.db.ref('platforms/steam_vanity/' + sid.toLowerCase().replace(/[.$#\[\]\/]/g, '_')).once('value')).val(); sid = typeof v === 'string' ? v : ''; } catch (e) { sid = ''; } }
+    if (sid) { try { const sp = (await W.db.ref('platforms/steam_users/' + sid + '/profile').once('value')).val(); if (sp && sp.currentGame) plays.push({ platform:'Steam', title:sp.currentGame, status:'' }); } catch (e) {} }
+  } catch (e) { console.warn('[friend now playing]', code, e); }
+  return plays;
+}
+// keep the "playing now" part live without reloading everyone's tracking
+async function refreshFriendsNow() {
+  if (!S.friendsProg || document.hidden) return;
+  const friends = S.U.friends || {};
+  await Promise.all(S.friendsProg.map(async f => {
+    const fo = Object.values(friends).find(x => x && String(x.friend_code || '').toUpperCase() === f.code) || friends[f.code] || {};
+    const key = await W.ownerKeyOfCode(f.code);
+    let prof = {}; if (key) { try { prof = (await W.db.ref('users/' + key).once('value')).val() || {}; } catch (e) {} }
+    f.plays = await friendNowPlaying(key, f.code, prof, fo);
+  }));
+  S.friendsProg.sort((a, b) => (b.plays.length > 0) - (a.plays.length > 0));
   if (!$('#profile-root').hidden) render();
 }
 
@@ -489,7 +534,7 @@ function friendsInner() {
   if (!S.friendsProg) return '';
   const head = `<div class="h2" style="margin:1rem 0 .5rem"><i class="fas fa-user-group"></i> Friends</div>`;
   if (!S.friendsProg.length) return head + '<div class="mute" style="font-size:.85rem">No friends added yet.</div>';
-  return head + S.friendsProg.map(f => `<div style="margin-bottom:.8rem"><div style="font-weight:800;margin-bottom:.3rem"><a href="profile.html#${encodeURIComponent(f.code)}" onclick="setTimeout(()=>location.reload(),0)" style="color:inherit;text-decoration:none" title="Open ${esc(f.name)}'s profile">${esc(f.name)} <i class="fas fa-chevron-right" style="font-size:.7em;opacity:.6"></i></a></div>` +
+  return head + S.friendsProg.map(f => `<div style="margin-bottom:.8rem"><div style="font-weight:800;margin-bottom:.3rem"><a href="profile.html#${encodeURIComponent(f.code)}" onclick="setTimeout(()=>location.reload(),0)" style="color:inherit;text-decoration:none" title="Open ${esc(f.name)}'s profile">${esc(f.name)} <i class="fas fa-chevron-right" style="font-size:.7em;opacity:.6"></i></a>${(f.plays || []).map(p => `<div style="font-weight:700;font-size:.8rem;color:#22c55e;margin-top:.15rem"><i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle"></i> Playing ${esc(p.title)} <span class="mute" style="font-weight:600">&bull; ${esc(p.platform)}${p.status ? ' &bull; ' + esc(p.status) : ''}</span></div>`).join('')}</div>` +
     (f.hidden ? '<div class="mute" style="font-size:.8rem">Keeps their tracking private.</div>' : f.games.length ? trackingRows(f.games) : '<div class="mute" style="font-size:.8rem">No tracked games yet.</div>') + '</div>').join('');
 }
 
