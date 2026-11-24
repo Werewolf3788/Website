@@ -342,6 +342,8 @@ window.appState = {
                             cost: cItem.cost != null ? cItem.cost : null,
                             category: cItem.category || '',
                             tags: cItem.tags || '',
+                            // Short code (e.g. AC-ITA-05) shown on the card and searchable.
+                            code: cItem.code || '',
                             // A location card that is the same thing as a skill's ★ bonus medal: { group, id }.
                             bonus_for: cItem.bonus_for || null,
                             levels: cItem.levels != null ? cItem.levels : null,
@@ -1955,6 +1957,7 @@ function ensureUniversalStyles() {
         .wm-wrap.hide-got .wm-pin.got.hit, .wm-wrap.hide-got .wm-pin.got.focus, .wm-pin.off.focus { display: block; }
         .wm-pin.focus { animation: wmPulse 1.2s ease-out 3; }
         @keyframes wmPulse { 0% { box-shadow: 0 0 0 3px #fff, 0 0 0 0 rgba(250,204,21,.9); } 100% { box-shadow: 0 0 0 3px #fff, 0 0 0 22px rgba(250,204,21,0); } }
+        .item-code { display: inline-block; margin-left: 4px; padding: 1px 7px; border-radius: 6px; background: #0f172a; border: 1px solid #334155; color: #fbbf24; font: 800 .72rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .04em; vertical-align: middle; user-select: all; }
         .wm-view-btn { margin-top: 8px; padding: 5px 10px; border-radius: 999px; border: 1px solid #334155; background: #0f172a; color: #93c5fd; font-size: .78rem; font-weight: 800; cursor: pointer; }
         .wm-view-btn:hover { background: #1e293b; color: #fff; }
         .wm-bar { position: relative; z-index: 6; min-height: 32px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
@@ -2359,7 +2362,7 @@ function updateWorldMap() {
     if (wmState.sel) wmShowPop();
 }
 function buildItemCard(o) {
-    const search = [o.title, o.sub, o.body, o.badge, o.ctx, o.type].filter(Boolean).join(' ').toLowerCase();
+    const search = [o.code, o.code ? String(o.code).replace(/-/g, '') : '', o.title, o.sub, o.body, o.badge, o.ctx, o.type].filter(Boolean).join(' ').toLowerCase();
     const img = o.img ? toSecureUrl(o.img) : '';
     const groupAttr = (o.group ? ` data-group="${escapeHtml(o.group)}"` : '') + (o.bonusFor ? ` data-bonus-for="${escapeHtml(o.bonusFor)}"` : '');
     const groupArg = o.group ? `, '${escapeHtml(o.group)}'` : '';
@@ -2390,7 +2393,7 @@ function buildItemCard(o) {
             <div class="${hasMore ? 'card-more-toggle' : ''}" style="display:flex; gap:10px; align-items:center; min-width:0; flex:1 1 auto; ${hasMore ? 'cursor:pointer;' : ''}"${hasMore ? ` onclick="this.closest('.game-item-card').classList.toggle('more-open')"` : ''}>
                 ${img ? `<img src="${img}" alt="" loading="lazy" style="${o.wideImg ? 'width:96px; height:40px; object-fit:contain; background:#0f172a;' : 'width:40px; height:40px; object-fit:cover;'} border-radius:6px; flex:0 0 auto;" onerror="this.style.display='none'">` : ''}
                 <div style="min-width:0;">
-                    <span class="trophy-rank ${o.badgeClass || 'rank-bronze'}">${escapeHtml(o.badge || '')}</span>
+                    <span class="trophy-rank ${o.badgeClass || 'rank-bronze'}">${escapeHtml(o.badge || '')}</span>${o.code ? ` <span class="item-code" title="Type this code in search to jump to it">${escapeHtml(o.code)}</span>` : ''}
                     <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(o.title || '')}${hasMore ? ' <span class="card-chevron">▾</span>' : ''}</h3>
                     ${o.sub ? `<div class="card-sub" style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.sub)}</div>` : ''}
                 </div>
@@ -2829,6 +2832,24 @@ function runUniversalSearch(raw) {
         return;
     }
 
+    // A code like "ac-ita-05" / "acita05" / "AC ITA 05" jumps straight to that one item.
+    const codeQ = q.replace(/[\s-]+/g, '');
+    if (/^[a-z]{2}[a-z]{3}\d{1,3}$/.test(codeQ)) {
+        const want = codeQ.replace(/^([a-z]{5})(\d)$/, '$10$2');
+        const exact = [...cards].filter(c => (c.getAttribute('data-search') || '').split(' ').includes(want));
+        if (exact.length) {
+            cards.forEach(c => c.classList.toggle('search-hidden', !exact.includes(c)));
+            sections.slice().reverse().forEach(s => {
+                if (s.dataset.prevCollapsed === undefined) s.dataset.prevCollapsed = s.classList.contains('section-collapsed') ? '1' : '0';
+                const has = !!s.querySelector('.game-item-card:not(.search-hidden)');
+                s.classList.toggle('search-hidden', !has); if (has) s.classList.remove('section-collapsed');
+            });
+            if (countEl) countEl.innerText = `${exact.length} result${exact.length === 1 ? '' : 's'}`;
+            document.querySelectorAll('.mark-shown-bar').forEach(b => { b.hidden = false; }); updateWorldMap();
+            exact[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+    }
     const terms = q.split(/\s+/);
     // "#4" means number 4 exactly, not #40-#49. "4" on its own after "#"-less words still matches anywhere.
     const termTest = terms.map(t => /^#\d+$/.test(t) ? (h) => new RegExp(t + '(?!\\d)').test(h) : (h) => h.includes(t));
@@ -4150,7 +4171,7 @@ function renderUniversalCompanion(data) {
                             badge: it.region || humanize(cKey), badgeClass: 'rank-silver',
                             // Section name + item type are searchable too ("koani kingslayer", "barvechos weapon case").
                             ctx: [humanize(cKey), data.collectibles && data.collectibles[cKey] && data.collectibles[cKey].quest_name, it.category, it.tags].filter(Boolean).join(' '),
-                            title: it.name || id, sub: it.location || '',
+                            title: it.name || id, sub: it.location || '', code: it.code || '',
                             bonusFor: it.bonus_for && it.bonus_for.id,
                             body: it.guide || '', img: it.image_url, locImg: it.location_image_url,
                             levelGoal: it.levels > 1 ? it.levels : 0, bonus: it.bonus || null,
@@ -4167,7 +4188,7 @@ function renderUniversalCompanion(data) {
     // e.g. "libertad #4", "skill point #3", "interview", "ak-47".
     const searchBar = `<div class="uni-search-wrap">
             <input type="search" id="universalSearchInput" class="uni-search-input" autocomplete="off"
-                   placeholder="Search: name, #number, province or place (e.g. libertad #4, skill point #3)">
+                   placeholder="Search: name, code (AC-ITA-05), #number, province or place (e.g. libertad #4, skill point #3)">
             <span class="mark-shown-bar" hidden>
                 <button type="button" class="uni-search-btn" onclick="appState.markShown(true)">✓ Mark all shown</button>
                 <button type="button" class="uni-search-btn" onclick="appState.markShown(false)">Clear shown</button>
