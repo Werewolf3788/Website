@@ -6688,10 +6688,10 @@
           "long": -61.0301,
           "id": "sp_espiritu_santo_06",
           "name": "Skill Point #6 (+1)",
-          "location": "At Coca Warehouse, just south of the main road by the river · 📍 -14.8938, -61.0301",
-          "guide": "At Coca Warehouse (A warehouse where the cartel stores coca leaves): take the short side road south off the main riverside road; the skill point is at the warehouse building by the helipad at the end of it. 📍 Lat -14.8938, Long -61.0301.",
+          "location": "At Coca Warehouse, inside the red-brick warehouse on the red toolbox · 📍 -14.8938, -61.0301",
+          "guide": "At Coca Warehouse (A warehouse where the cartel stores coca leaves): take the short side road south off the main riverside road to the red-brick warehouse with the roll-up door. Go inside: the skill point is on top of the rusty red toolbox, next to the blue barrels and the Hoja Cola boxes. 📍 Lat -14.8938, Long -61.0301.",
           "image_url": "/Images/wildlands/icons/skill_point.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
+          "location_image_url": "/Images/wildlands/spots/sp_espiritu_santo_06.jpg",
           "map_x": 0.74237,
           "map_y": 0.23808,
           "code": "SP-ESP-06"
