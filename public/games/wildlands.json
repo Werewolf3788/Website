@@ -2181,7 +2181,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Barvechos for the first time. Accountant to the cartel, expert money-launderer.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-BAR-01"
         },
         {
           "region": "Barvechos",
@@ -2196,7 +2197,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.24943,
-          "map_y": 0.3589
+          "map_y": 0.3589,
+          "code": "KF-BAR-02"
         },
         {
           "region": "Barvechos",
@@ -2211,7 +2213,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.31529,
-          "map_y": 0.4504
+          "map_y": 0.4504,
+          "code": "KF-BAR-03"
         },
         {
           "region": "Barvechos",
@@ -2226,7 +2229,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.31433,
-          "map_y": 0.42966
+          "map_y": 0.42966,
+          "code": "KF-BAR-04"
         },
         {
           "region": "Barvechos",
@@ -2241,7 +2245,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.34092,
-          "map_y": 0.45744
+          "map_y": 0.45744,
+          "code": "KF-BAR-05"
         },
         {
           "region": "Barvechos",
@@ -2256,7 +2261,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.30722,
-          "map_y": 0.484
+          "map_y": 0.484,
+          "code": "KF-BAR-06"
         },
         {
           "region": "Barvechos",
@@ -2271,7 +2277,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.26297,
-          "map_y": 0.4435
+          "map_y": 0.4435,
+          "code": "KF-BAR-07"
         },
         {
           "region": "Barvechos",
@@ -2286,7 +2293,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.30285,
-          "map_y": 0.40251
+          "map_y": 0.40251,
+          "code": "KF-BAR-08"
         },
         {
           "region": "Caimanes",
@@ -2297,7 +2305,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Caimanes for the first time. Recruited by Nidia Flores, highly intelligent but crazy, he designs drug subs for the cartel.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-CAI-01"
         },
         {
           "region": "Caimanes",
@@ -2312,7 +2321,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.93925,
-          "map_y": 0.43585
+          "map_y": 0.43585,
+          "code": "KF-CAI-02"
         },
         {
           "region": "Caimanes",
@@ -2327,7 +2337,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.8727,
-          "map_y": 0.52785
+          "map_y": 0.52785,
+          "code": "KF-CAI-03"
         },
         {
           "region": "Caimanes",
@@ -2342,7 +2353,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.93503,
-          "map_y": 0.4971
+          "map_y": 0.4971,
+          "code": "KF-CAI-04"
         },
         {
           "region": "Caimanes",
@@ -2357,7 +2369,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.94139,
-          "map_y": 0.50508
+          "map_y": 0.50508,
+          "code": "KF-CAI-05"
         },
         {
           "region": "Caimanes",
@@ -2372,7 +2385,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.89539,
-          "map_y": 0.42879
+          "map_y": 0.42879,
+          "code": "KF-CAI-06"
         },
         {
           "region": "Caimanes",
@@ -2387,7 +2401,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.93915,
-          "map_y": 0.43225
+          "map_y": 0.43225,
+          "code": "KF-CAI-07"
         },
         {
           "region": "Caimanes",
@@ -2402,7 +2417,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.89512,
-          "map_y": 0.62316
+          "map_y": 0.62316,
+          "code": "KF-CAI-08"
         },
         {
           "region": "Caimanes",
@@ -2417,7 +2433,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.85599,
-          "map_y": 0.54951
+          "map_y": 0.54951,
+          "code": "KF-CAI-09"
         },
         {
           "region": "Caimanes",
@@ -2432,7 +2449,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.91176,
-          "map_y": 0.45746
+          "map_y": 0.45746,
+          "code": "KF-CAI-10"
         },
         {
           "region": "Caimanes",
@@ -2447,7 +2465,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.92186,
-          "map_y": 0.57451
+          "map_y": 0.57451,
+          "code": "KF-CAI-11"
         },
         {
           "region": "Espiritu Santo",
@@ -2458,7 +2477,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Espiritu Santo for the first time. A fanatical priestess, she's into the darker side of Santa Muerte.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-ESP-01"
         },
         {
           "region": "Espiritu Santo",
@@ -2473,7 +2493,8 @@
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.87364,
-          "map_y": 0.06606
+          "map_y": 0.06606,
+          "code": "KF-ESP-02"
         },
         {
           "region": "Espiritu Santo",
@@ -2488,22 +2509,24 @@
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.872,
-          "map_y": 0.1852
+          "map_y": 0.1852,
+          "code": "KF-ESP-03"
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.35,
-          "long": -60.2667,
+          "lat": -14.3305,
+          "long": -60.27,
           "id": "ksf_espiritu_santo_04",
           "name": "Santera Goes Too Far",
-          "location": "Recording #4 of 10 · Just southwest of Santa Muerte Sanctuary · 📍 -14.35, -60.2667",
+          "location": "Recording #4 of 10 · Inside the Santa Muerte Sanctuary, on the floor by the side altar · 📍 -14.3305, -60.27",
           "category": "Document",
-          "guide": "El Cardenal tries to convince La Santera to change her ways. Just southwest of Santa Muerte Sanctuary (The holiest place of Santa Muerte). 📍 Lat -14.35, Long -60.2667.",
+          "guide": "El Cardenal tries to convince La Santera to change her ways. Inside the Santa Muerte Sanctuary (the big shrine hall by the helipads): walk up the red-edged steps, and it's lying on the floor among the scattered papers in front of the small side altar table (blue and red Santa Muerte figures). (The 'Religious Syncretism' legend is on the main altar in the same hall.) 📍 Lat -14.3305, Long -60.27.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_espiritu_santo_04.jpg",
           "tags": "kingslayer file document",
-          "map_x": 0.83045,
-          "map_y": 0.17471
+          "map_x": 0.83007,
+          "map_y": 0.17243,
+          "code": "KF-ESP-04"
         },
         {
           "region": "Espiritu Santo",
@@ -2518,7 +2541,8 @@
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.8399,
-          "map_y": 0.259
+          "map_y": 0.259,
+          "code": "KF-ESP-05"
         },
         {
           "region": "Espiritu Santo",
@@ -2533,7 +2557,8 @@
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.81648,
-          "map_y": 0.16193
+          "map_y": 0.16193,
+          "code": "KF-ESP-06"
         },
         {
           "region": "Espiritu Santo",
@@ -2548,7 +2573,8 @@
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.87066,
-          "map_y": 0.06316
+          "map_y": 0.06316,
+          "code": "KF-ESP-07"
         },
         {
           "region": "Espiritu Santo",
@@ -2563,37 +2589,40 @@
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.71036,
-          "map_y": 0.32193
+          "map_y": 0.32193,
+          "code": "KF-ESP-08"
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.3505,
-          "long": -60.2647,
+          "lat": -14.3312,
+          "long": -60.2683,
           "id": "ksf_espiritu_santo_09",
           "name": "Religious Syncretism",
-          "location": "Legend #9 of 10 · Just southwest of Santa Muerte Sanctuary · 📍 -14.3505, -60.2647",
+          "location": "Legend #9 of 10 · Inside the Santa Muerte Sanctuary, on the main altar · 📍 -14.3312, -60.2683",
           "category": "Legend",
-          "guide": "The main religion in Bolivia is Catholicism, although it is considered highly syncretic. It is a complex mix of native and foreign influences, both in germs of rites and beliefs. In their effort to convert indigenous communities, the first Catholic Missions led by the Spanish mixed native religious principles with Catholic teachings in order to promote Christianity. The plan then was to gradually eliminate indigenous beliefs, except it never really worked. Today, it is still common to honor both God and Pachamama in the same ceremony. Just southwest of Santa Muerte Sanctuary (The holiest place of Santa Muerte). 📍 Lat -14.3505, Long -60.2647.",
+          "guide": "The main religion in Bolivia is Catholicism, although it is considered highly syncretic. It is a complex mix of native and foreign influences, both in germs of rites and beliefs. In their effort to convert indigenous communities, the first Catholic Missions led by the Spanish mixed native religious principles with Catholic teachings in order to promote Christianity. The plan then was to gradually eliminate indigenous beliefs, except it never really worked. Today, it is still common to honor both God and Pachamama in the same ceremony. Inside the Santa Muerte Sanctuary (the big shrine hall by the helipads): it's on the long main altar between the tall candles and the white flower vase, under the twisted gold columns. (The 'Santera Goes Too Far' recording is on the floor by the side altar in the same hall.) 📍 Lat -14.3312, Long -60.2683.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_espiritu_santo_09.jpg",
           "tags": "kingslayer file legend",
-          "map_x": 0.83068,
-          "map_y": 0.17477
+          "map_x": 0.83026,
+          "map_y": 0.17252,
+          "code": "KF-ESP-09"
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.335,
-          "long": -60.5804,
+          "lat": -14.3146,
+          "long": -60.585,
           "id": "ksf_espiritu_santo_10",
           "name": "Cult of Santa Muerte (expansion)",
-          "location": "Legend #10 of 10 · At Pilgrim House · 📍 -14.335, -60.5804",
+          "location": "Legend #10 of 10 · Pilgrim House, window ledge behind the candle memorial · 📍 -14.3146, -60.585",
           "category": "Legend",
-          "guide": "The Santa Muerte Cult has been rapidly growing over the past 15 years, gaining several million followers in Mexico, the USA, and parts of Central America. This can be credited to a popular belief that Santa Muerte grants miracles more easily than her Catholic 'cousins', but it is also due to the fact she embodies the identity and values of a growing number of poor Mexicans facing violence and struggling to survive in a brutal economy. At Pilgrim House (Housing for foreign Santa Muerte pilgrims). 📍 Lat -14.335, Long -60.5804.",
+          "guide": "The Santa Muerte Cult has been rapidly growing over the past 15 years, gaining several million followers in Mexico, the USA, and parts of Central America. This can be credited to a popular belief that Santa Muerte grants miracles more easily than her Catholic 'cousins', but it is also due to the fact she embodies the identity and values of a growing number of poor Mexicans facing violence and struggling to survive in a brutal economy. At the Pilgrim House, the walled compound of buildings right beside the main road (the in-game map tooltip calls it Picture Evidence): it's on the window ledge behind the candle memorial (teddy bear, skulls and sunflowers) on the building's front porch. 📍 Lat -14.3146, Long -60.585.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_espiritu_santo_10.jpg",
           "tags": "kingslayer file legend",
-          "map_x": 0.79424,
-          "map_y": 0.17292
+          "map_x": 0.79371,
+          "map_y": 0.17054,
+          "code": "KF-ESP-10"
         },
         {
           "region": "Flor de Oro",
@@ -2604,7 +2633,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Flor de Oro for the first time. Leader of Bolivia's La Unidad, in the cartel's pocket.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-FLO-01"
         },
         {
           "region": "Flor de Oro",
@@ -2619,7 +2649,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.74595,
-          "map_y": 0.86296
+          "map_y": 0.86296,
+          "code": "KF-FLO-02"
         },
         {
           "region": "Flor de Oro",
@@ -2634,7 +2665,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.71036,
-          "map_y": 0.81138
+          "map_y": 0.81138,
+          "code": "KF-FLO-03"
         },
         {
           "region": "Flor de Oro",
@@ -2649,7 +2681,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.7439,
-          "map_y": 0.71529
+          "map_y": 0.71529,
+          "code": "KF-FLO-04"
         },
         {
           "region": "Flor de Oro",
@@ -2664,7 +2697,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.78381,
-          "map_y": 0.91585
+          "map_y": 0.91585,
+          "code": "KF-FLO-05"
         },
         {
           "region": "Flor de Oro",
@@ -2679,7 +2713,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.71931,
-          "map_y": 0.85252
+          "map_y": 0.85252,
+          "code": "KF-FLO-06"
         },
         {
           "region": "Flor de Oro",
@@ -2694,7 +2729,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.75267,
-          "map_y": 0.90221
+          "map_y": 0.90221,
+          "code": "KF-FLO-07"
         },
         {
           "region": "Flor de Oro",
@@ -2709,7 +2745,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.67643,
-          "map_y": 0.74793
+          "map_y": 0.74793,
+          "code": "KF-FLO-09"
         },
         {
           "region": "Inca Camina",
@@ -2724,7 +2761,8 @@
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.11682,
-          "map_y": 0.78642
+          "map_y": 0.78642,
+          "code": "KF-INC-01"
         },
         {
           "region": "Inca Camina",
@@ -2739,7 +2777,8 @@
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.10194,
-          "map_y": 0.87929
+          "map_y": 0.87929,
+          "code": "KF-INC-02"
         },
         {
           "region": "Inca Camina",
@@ -2754,7 +2793,8 @@
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.1587,
-          "map_y": 0.79789
+          "map_y": 0.79789,
+          "code": "KF-INC-03"
         },
         {
           "region": "Inca Camina",
@@ -2769,7 +2809,8 @@
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.17294,
-          "map_y": 0.80771
+          "map_y": 0.80771,
+          "code": "KF-INC-04"
         },
         {
           "region": "Itacua",
@@ -2780,7 +2821,8 @@
           "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"Amaru's Rescue\". Medically-trained. Crazy in love. Torturers.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-ITA-01"
         },
         {
           "region": "Itacua",
@@ -2795,7 +2837,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.51586,
-          "map_y": 0.42878
+          "map_y": 0.42878,
+          "code": "KF-ITA-02"
         },
         {
           "region": "Itacua",
@@ -2810,7 +2853,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.5101,
-          "map_y": 0.48404
+          "map_y": 0.48404,
+          "code": "KF-ITA-03"
         },
         {
           "region": "Itacua",
@@ -2825,7 +2869,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.3794,
-          "map_y": 0.5298
+          "map_y": 0.5298,
+          "code": "KF-ITA-04"
         },
         {
           "region": "Itacua",
@@ -2840,7 +2885,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.55595,
-          "map_y": 0.51391
+          "map_y": 0.51391,
+          "code": "KF-ITA-05"
         },
         {
           "region": "Itacua",
@@ -2855,7 +2901,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.46038,
-          "map_y": 0.55038
+          "map_y": 0.55038,
+          "code": "KF-ITA-06"
         },
         {
           "region": "Itacua",
@@ -2870,7 +2917,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.47367,
-          "map_y": 0.58748
+          "map_y": 0.58748,
+          "code": "KF-ITA-07"
         },
         {
           "region": "Itacua",
@@ -2885,7 +2933,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.50977,
-          "map_y": 0.56383
+          "map_y": 0.56383,
+          "code": "KF-ITA-08"
         },
         {
           "region": "Itacua",
@@ -2900,7 +2949,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.44542,
-          "map_y": 0.43528
+          "map_y": 0.43528,
+          "code": "KF-ITA-09"
         },
         {
           "region": "Itacua",
@@ -2915,7 +2965,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.46459,
-          "map_y": 0.50217
+          "map_y": 0.50217,
+          "code": "KF-ITA-10"
         },
         {
           "region": "Koani",
@@ -2926,7 +2977,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Koani for the first time. Pilot. Coke smuggler. Wild man.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-KOA-01"
         },
         {
           "region": "Koani",
@@ -2941,7 +2993,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.10221,
-          "map_y": 0.21005
+          "map_y": 0.21005,
+          "code": "KF-KOA-02"
         },
         {
           "region": "Koani",
@@ -2956,7 +3009,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.11783,
-          "map_y": 0.10916
+          "map_y": 0.10916,
+          "code": "KF-KOA-03"
         },
         {
           "region": "Koani",
@@ -2971,7 +3025,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.26297,
-          "map_y": 0.14189
+          "map_y": 0.14189,
+          "code": "KF-KOA-04"
         },
         {
           "region": "Koani",
@@ -2986,7 +3041,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.24193,
-          "map_y": 0.07521
+          "map_y": 0.07521,
+          "code": "KF-KOA-05"
         },
         {
           "region": "Koani",
@@ -3001,7 +3057,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.24883,
-          "map_y": 0.04046
+          "map_y": 0.04046,
+          "code": "KF-KOA-06"
         },
         {
           "region": "Koani",
@@ -3016,7 +3073,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.0721,
-          "map_y": 0.06865
+          "map_y": 0.06865,
+          "code": "KF-KOA-07"
         },
         {
           "region": "Koani",
@@ -3031,7 +3089,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.06305,
-          "map_y": 0.22825
+          "map_y": 0.22825,
+          "code": "KF-KOA-08"
         },
         {
           "region": "Koani",
@@ -3046,7 +3105,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.03613,
-          "map_y": 0.13054
+          "map_y": 0.13054,
+          "code": "KF-KOA-09"
         },
         {
           "region": "Koani",
@@ -3061,7 +3121,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.14731,
-          "map_y": 0.06819
+          "map_y": 0.06819,
+          "code": "KF-KOA-10"
         },
         {
           "region": "Koani",
@@ -3076,7 +3137,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.04148,
-          "map_y": 0.23573
+          "map_y": 0.23573,
+          "code": "KF-KOA-11"
         },
         {
           "region": "Koani",
@@ -3091,7 +3153,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.09031,
-          "map_y": 0.19729
+          "map_y": 0.19729,
+          "code": "KF-KOA-12"
         },
         {
           "region": "Koani",
@@ -3106,7 +3169,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.05748,
-          "map_y": 0.22886
+          "map_y": 0.22886,
+          "code": "KF-KOA-13"
         },
         {
           "region": "Koani",
@@ -3121,7 +3185,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.15701,
-          "map_y": 0.12293
+          "map_y": 0.12293,
+          "code": "KF-KOA-14"
         },
         {
           "region": "La Cruz",
@@ -3136,7 +3201,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.90482,
-          "map_y": 0.69439
+          "map_y": 0.69439,
+          "code": "KF-LCR-01"
         },
         {
           "region": "La Cruz",
@@ -3151,7 +3217,8 @@
           "location_image_url": "/Images/wildlands/spots/ksf_la_cruz_02.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.668,
-          "map_y": 0.60943
+          "map_y": 0.60943,
+          "code": "KF-LCR-02"
         },
         {
           "region": "La Cruz",
@@ -3166,7 +3233,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.85797,
-          "map_y": 0.7161
+          "map_y": 0.7161,
+          "code": "KF-LCR-03"
         },
         {
           "region": "La Cruz",
@@ -3181,7 +3249,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.82245,
-          "map_y": 0.76257
+          "map_y": 0.76257,
+          "code": "KF-LCR-04"
         },
         {
           "region": "La Cruz",
@@ -3196,7 +3265,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.64384,
-          "map_y": 0.64846
+          "map_y": 0.64846,
+          "code": "KF-LCR-05"
         },
         {
           "region": "La Cruz",
@@ -3211,7 +3281,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.69786,
-          "map_y": 0.68776
+          "map_y": 0.68776,
+          "code": "KF-LCR-06"
         },
         {
           "region": "La Cruz",
@@ -3226,7 +3297,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.71089,
-          "map_y": 0.62691
+          "map_y": 0.62691,
+          "code": "KF-LCR-07"
         },
         {
           "region": "La Cruz",
@@ -3241,7 +3313,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.82359,
-          "map_y": 0.76326
+          "map_y": 0.76326,
+          "code": "KF-LCR-08"
         },
         {
           "region": "La Cruz",
@@ -3256,7 +3329,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.91607,
-          "map_y": 0.71712
+          "map_y": 0.71712,
+          "code": "KF-LCR-09"
         },
         {
           "region": "La Cruz",
@@ -3271,7 +3345,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.71685,
-          "map_y": 0.69315
+          "map_y": 0.69315,
+          "code": "KF-LCR-10"
         },
         {
           "region": "Libertad",
@@ -3282,7 +3357,8 @@
           "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"Chemical Trail\". A brilliant chemist, he works for the cartel because he likes the money and girls.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-LIB-01"
         },
         {
           "region": "Libertad",
@@ -3297,7 +3373,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.90242,
-          "map_y": 0.96022
+          "map_y": 0.96022,
+          "code": "KF-LIB-02"
         },
         {
           "region": "Libertad",
@@ -3312,7 +3389,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.80204,
-          "map_y": 0.80704
+          "map_y": 0.80704,
+          "code": "KF-LIB-03"
         },
         {
           "region": "Libertad",
@@ -3327,7 +3405,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.93887,
-          "map_y": 0.92619
+          "map_y": 0.92619,
+          "code": "KF-LIB-04"
         },
         {
           "region": "Libertad",
@@ -3342,7 +3421,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.87422,
-          "map_y": 0.80725
+          "map_y": 0.80725,
+          "code": "KF-LIB-05"
         },
         {
           "region": "Libertad",
@@ -3357,7 +3437,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.84615,
-          "map_y": 0.82154
+          "map_y": 0.82154,
+          "code": "KF-LIB-06"
         },
         {
           "region": "Libertad",
@@ -3372,7 +3453,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.89445,
-          "map_y": 0.78481
+          "map_y": 0.78481,
+          "code": "KF-LIB-07"
         },
         {
           "region": "Libertad",
@@ -3387,7 +3469,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.91064,
-          "map_y": 0.94378
+          "map_y": 0.94378,
+          "code": "KF-LIB-08"
         },
         {
           "region": "Libertad",
@@ -3402,7 +3485,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.89885,
-          "map_y": 0.8841
+          "map_y": 0.8841,
+          "code": "KF-LIB-09"
         },
         {
           "region": "Libertad",
@@ -3417,7 +3501,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.83947,
-          "map_y": 0.87752
+          "map_y": 0.87752,
+          "code": "KF-LIB-10"
         },
         {
           "region": "Libertad",
@@ -3432,7 +3517,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.90238,
-          "map_y": 0.78683
+          "map_y": 0.78683,
+          "code": "KF-LIB-11"
         },
         {
           "region": "Libertad",
@@ -3447,7 +3533,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.84921,
-          "map_y": 0.80594
+          "map_y": 0.80594,
+          "code": "KF-LIB-12"
         },
         {
           "region": "Malca",
@@ -3458,7 +3545,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Malca for the first time. World's most-famous narcocorrido singer, loved by the Santa Blanca drug cartel.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-MAL-01"
         },
         {
           "region": "Malca",
@@ -3473,7 +3561,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.61113,
-          "map_y": 0.80632
+          "map_y": 0.80632,
+          "code": "KF-MAL-02"
         },
         {
           "region": "Malca",
@@ -3488,7 +3577,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.63977,
-          "map_y": 0.95374
+          "map_y": 0.95374,
+          "code": "KF-MAL-03"
         },
         {
           "region": "Malca",
@@ -3503,7 +3593,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.61966,
-          "map_y": 0.83297
+          "map_y": 0.83297,
+          "code": "KF-MAL-04"
         },
         {
           "region": "Malca",
@@ -3518,7 +3609,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.62038,
-          "map_y": 0.85722
+          "map_y": 0.85722,
+          "code": "KF-MAL-05"
         },
         {
           "region": "Malca",
@@ -3533,7 +3625,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.53074,
-          "map_y": 0.85413
+          "map_y": 0.85413,
+          "code": "KF-MAL-06"
         },
         {
           "region": "Malca",
@@ -3548,7 +3641,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.60236,
-          "map_y": 0.80612
+          "map_y": 0.80612,
+          "code": "KF-MAL-07"
         },
         {
           "region": "Malca",
@@ -3563,7 +3657,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.65252,
-          "map_y": 0.90943
+          "map_y": 0.90943,
+          "code": "KF-MAL-08"
         },
         {
           "region": "Malca",
@@ -3578,7 +3673,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.46682,
-          "map_y": 0.77849
+          "map_y": 0.77849,
+          "code": "KF-MAL-09"
         },
         {
           "region": "Malca",
@@ -3593,7 +3689,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.49964,
-          "map_y": 0.84965
+          "map_y": 0.84965,
+          "code": "KF-MAL-10"
         },
         {
           "region": "Malca",
@@ -3608,7 +3705,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.54787,
-          "map_y": 0.77355
+          "map_y": 0.77355,
+          "code": "KF-MAL-11"
         },
         {
           "region": "Media Luna",
@@ -3623,7 +3721,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.36937,
-          "map_y": 0.17505
+          "map_y": 0.17505,
+          "code": "KF-MED-01"
         },
         {
           "region": "Media Luna",
@@ -3638,7 +3737,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.35937,
-          "map_y": 0.20246
+          "map_y": 0.20246,
+          "code": "KF-MED-02"
         },
         {
           "region": "Media Luna",
@@ -3653,7 +3753,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.31641,
-          "map_y": 0.11995
+          "map_y": 0.11995,
+          "code": "KF-MED-03"
         },
         {
           "region": "Media Luna",
@@ -3668,7 +3769,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.30622,
-          "map_y": 0.18214
+          "map_y": 0.18214,
+          "code": "KF-MED-04"
         },
         {
           "region": "Media Luna",
@@ -3683,7 +3785,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.37795,
-          "map_y": 0.07471
+          "map_y": 0.07471,
+          "code": "KF-MED-05"
         },
         {
           "region": "Media Luna",
@@ -3698,7 +3801,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.37225,
-          "map_y": 0.11865
+          "map_y": 0.11865,
+          "code": "KF-MED-06"
         },
         {
           "region": "Media Luna",
@@ -3713,7 +3817,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.38937,
-          "map_y": 0.13296
+          "map_y": 0.13296,
+          "code": "KF-MED-07"
         },
         {
           "region": "Media Luna",
@@ -3728,7 +3833,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.36682,
-          "map_y": 0.12146
+          "map_y": 0.12146,
+          "code": "KF-MED-08"
         },
         {
           "region": "Media Luna",
@@ -3743,7 +3849,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.36645,
-          "map_y": 0.21344
+          "map_y": 0.21344,
+          "code": "KF-MED-09"
         },
         {
           "region": "Mojocoyo",
@@ -3754,7 +3861,8 @@
           "guide": "This Kingslayer File unlocks automatically during the story mission \"Mojocoyo's Boss\". Paranoid cokehead, in charge of smuggling logistics.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-MOJ-01"
         },
         {
           "region": "Mojocoyo",
@@ -3769,7 +3877,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.16643,
-          "map_y": 0.34762
+          "map_y": 0.34762,
+          "code": "KF-MOJ-02"
         },
         {
           "region": "Mojocoyo",
@@ -3784,7 +3893,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.12207,
-          "map_y": 0.409
+          "map_y": 0.409,
+          "code": "KF-MOJ-03"
         },
         {
           "region": "Mojocoyo",
@@ -3799,7 +3909,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.15023,
-          "map_y": 0.29891
+          "map_y": 0.29891,
+          "code": "KF-MOJ-04"
         },
         {
           "region": "Mojocoyo",
@@ -3814,7 +3925,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.17172,
-          "map_y": 0.38621
+          "map_y": 0.38621,
+          "code": "KF-MOJ-05"
         },
         {
           "region": "Mojocoyo",
@@ -3829,7 +3941,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.22778,
-          "map_y": 0.32048
+          "map_y": 0.32048,
+          "code": "KF-MOJ-06"
         },
         {
           "region": "Mojocoyo",
@@ -3844,7 +3957,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.18375,
-          "map_y": 0.27251
+          "map_y": 0.27251,
+          "code": "KF-MOJ-07"
         },
         {
           "region": "Mojocoyo",
@@ -3859,7 +3973,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.20846,
-          "map_y": 0.36269
+          "map_y": 0.36269,
+          "code": "KF-MOJ-08"
         },
         {
           "region": "Mojocoyo",
@@ -3874,7 +3989,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.1967,
-          "map_y": 0.30149
+          "map_y": 0.30149,
+          "code": "KF-MOJ-09"
         },
         {
           "region": "Mojocoyo",
@@ -3889,7 +4005,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.20729,
-          "map_y": 0.35563
+          "map_y": 0.35563,
+          "code": "KF-MOJ-10"
         },
         {
           "region": "Monte Puncu",
@@ -3904,7 +4021,8 @@
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.74238,
-          "map_y": 0.05464
+          "map_y": 0.05464,
+          "code": "KF-MPU-01"
         },
         {
           "region": "Monte Puncu",
@@ -3919,7 +4037,8 @@
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.57832,
-          "map_y": 0.04405
+          "map_y": 0.04405,
+          "code": "KF-MPU-02"
         },
         {
           "region": "Monte Puncu",
@@ -3934,7 +4053,8 @@
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.79388,
-          "map_y": 0.07355
+          "map_y": 0.07355,
+          "code": "KF-MPU-03"
         },
         {
           "region": "Monte Puncu",
@@ -3949,7 +4069,8 @@
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.60978,
-          "map_y": 0.06295
+          "map_y": 0.06295,
+          "code": "KF-MPU-04"
         },
         {
           "region": "Montuyoc",
@@ -3960,7 +4081,8 @@
           "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"The Deserter\". American mercenary, has trained Santa Blanca's troops into an elite military force.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-MTY-01"
         },
         {
           "region": "Montuyoc",
@@ -3975,7 +4097,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.24552,
-          "map_y": 0.5917
+          "map_y": 0.5917,
+          "code": "KF-MTY-02"
         },
         {
           "region": "Montuyoc",
@@ -3990,7 +4113,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.15761,
-          "map_y": 0.48426
+          "map_y": 0.48426,
+          "code": "KF-MTY-03"
         },
         {
           "region": "Montuyoc",
@@ -4005,7 +4129,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.30579,
-          "map_y": 0.54352
+          "map_y": 0.54352,
+          "code": "KF-MTY-04"
         },
         {
           "region": "Montuyoc",
@@ -4020,7 +4145,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.22846,
-          "map_y": 0.5347
+          "map_y": 0.5347,
+          "code": "KF-MTY-05"
         },
         {
           "region": "Montuyoc",
@@ -4035,7 +4161,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.21313,
-          "map_y": 0.59563
+          "map_y": 0.59563,
+          "code": "KF-MTY-06"
         },
         {
           "region": "Montuyoc",
@@ -4050,7 +4177,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.10721,
-          "map_y": 0.57291
+          "map_y": 0.57291,
+          "code": "KF-MTY-07"
         },
         {
           "region": "Montuyoc",
@@ -4065,7 +4193,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.12185,
-          "map_y": 0.6111
+          "map_y": 0.6111,
+          "code": "KF-MTY-08"
         },
         {
           "region": "Montuyoc",
@@ -4080,7 +4209,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.05218,
-          "map_y": 0.54451
+          "map_y": 0.54451,
+          "code": "KF-MTY-09"
         },
         {
           "region": "Montuyoc",
@@ -4095,7 +4225,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.18921,
-          "map_y": 0.4601
+          "map_y": 0.4601,
+          "code": "KF-MTY-10"
         },
         {
           "region": "Montuyoc",
@@ -4110,7 +4241,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.12809,
-          "map_y": 0.53791
+          "map_y": 0.53791,
+          "code": "KF-MTY-11"
         },
         {
           "region": "Montuyoc",
@@ -4125,7 +4257,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.20678,
-          "map_y": 0.64973
+          "map_y": 0.64973,
+          "code": "KF-MTY-12"
         },
         {
           "region": "Ocoro",
@@ -4136,7 +4269,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Ocoro for the first time. Cocaine producer and grandson of the highest ranking Bolivian in the cartel.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-OCO-01"
         },
         {
           "region": "Ocoro",
@@ -4151,7 +4285,8 @@
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.67627,
-          "map_y": 0.30694
+          "map_y": 0.30694,
+          "code": "KF-OCO-02"
         },
         {
           "region": "Ocoro",
@@ -4166,7 +4301,8 @@
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.55919,
-          "map_y": 0.40151
+          "map_y": 0.40151,
+          "code": "KF-OCO-03"
         },
         {
           "region": "Ocoro",
@@ -4181,7 +4317,8 @@
           "location_image_url": "/Images/wildlands/spots/ksf_ocoro_04.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.782,
-          "map_y": 0.43791
+          "map_y": 0.43791,
+          "code": "KF-OCO-04"
         },
         {
           "region": "Ocoro",
@@ -4196,7 +4333,8 @@
           "location_image_url": "/Images/wildlands/spots/ksf_ocoro_05.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.61635,
-          "map_y": 0.28726
+          "map_y": 0.28726,
+          "code": "KF-OCO-05"
         },
         {
           "region": "Ocoro",
@@ -4211,7 +4349,8 @@
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.68124,
-          "map_y": 0.41632
+          "map_y": 0.41632,
+          "code": "KF-OCO-06"
         },
         {
           "region": "Ocoro",
@@ -4226,7 +4365,8 @@
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.56866,
-          "map_y": 0.35382
+          "map_y": 0.35382,
+          "code": "KF-OCO-07"
         },
         {
           "region": "Ocoro",
@@ -4241,7 +4381,8 @@
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.55554,
-          "map_y": 0.58209
+          "map_y": 0.58209,
+          "code": "KF-OCO-08"
         },
         {
           "region": "Ocoro",
@@ -4256,7 +4397,8 @@
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.6631,
-          "map_y": 0.56936
+          "map_y": 0.56936,
+          "code": "KF-OCO-09"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4267,7 +4409,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering P.N. de Agua Verde for the first time. The privileged son of a telecom billionaire, in charge of the cartel's resort.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-PNV-01"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4282,7 +4425,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.651,
-          "map_y": 0.2837
+          "map_y": 0.2837,
+          "code": "KF-PNV-02"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4297,7 +4441,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.67916,
-          "map_y": 0.28495
+          "map_y": 0.28495,
+          "code": "KF-PNV-03"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4312,7 +4457,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.49301,
-          "map_y": 0.22857
+          "map_y": 0.22857,
+          "code": "KF-PNV-04"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4327,7 +4473,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.56761,
-          "map_y": 0.28775
+          "map_y": 0.28775,
+          "code": "KF-PNV-05"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4342,7 +4489,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.4393,
-          "map_y": 0.27075
+          "map_y": 0.27075,
+          "code": "KF-PNV-06"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4357,7 +4505,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.50092,
-          "map_y": 0.19454
+          "map_y": 0.19454,
+          "code": "KF-PNV-07"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4372,7 +4521,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.69381,
-          "map_y": 0.23047
+          "map_y": 0.23047,
+          "code": "KF-PNV-08"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4387,7 +4537,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.65797,
-          "map_y": 0.28793
+          "map_y": 0.28793,
+          "code": "KF-PNV-09"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4402,7 +4553,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.51482,
-          "map_y": 0.27182
+          "map_y": 0.27182,
+          "code": "KF-PNV-10"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -4417,7 +4569,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.49255,
-          "map_y": 0.22846
+          "map_y": 0.22846,
+          "code": "KF-PNV-11"
         },
         {
           "region": "Pucara",
@@ -4428,7 +4581,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Pucara for the first time. Wannabe tough guy, disc jockey for Santa Blanca Cartel Radio.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-PUC-01"
         },
         {
           "region": "Pucara",
@@ -4443,7 +4597,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.38499,
-          "map_y": 0.71194
+          "map_y": 0.71194,
+          "code": "KF-PUC-02"
         },
         {
           "region": "Pucara",
@@ -4458,7 +4613,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.35103,
-          "map_y": 0.67482
+          "map_y": 0.67482,
+          "code": "KF-PUC-03"
         },
         {
           "region": "Pucara",
@@ -4473,7 +4629,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.42501,
-          "map_y": 0.71586
+          "map_y": 0.71586,
+          "code": "KF-PUC-04"
         },
         {
           "region": "Pucara",
@@ -4488,7 +4645,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.29652,
-          "map_y": 0.70418
+          "map_y": 0.70418,
+          "code": "KF-PUC-05"
         },
         {
           "region": "Pucara",
@@ -4503,7 +4661,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.41362,
-          "map_y": 0.77292
+          "map_y": 0.77292,
+          "code": "KF-PUC-06"
         },
         {
           "region": "Pucara",
@@ -4518,7 +4677,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.39254,
-          "map_y": 0.75796
+          "map_y": 0.75796,
+          "code": "KF-PUC-07"
         },
         {
           "region": "Pucara",
@@ -4533,7 +4693,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.54661,
-          "map_y": 0.71668
+          "map_y": 0.71668,
+          "code": "KF-PUC-08"
         },
         {
           "region": "Pucara",
@@ -4548,7 +4709,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.44822,
-          "map_y": 0.67746
+          "map_y": 0.67746,
+          "code": "KF-PUC-09"
         },
         {
           "region": "Pucara",
@@ -4563,7 +4725,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.41248,
-          "map_y": 0.76445
+          "map_y": 0.76445,
+          "code": "KF-PUC-10"
         },
         {
           "region": "Pucara",
@@ -4578,7 +4741,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.38069,
-          "map_y": 0.70386
+          "map_y": 0.70386,
+          "code": "KF-PUC-11"
         },
         {
           "region": "Pucara",
@@ -4593,7 +4757,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.4445,
-          "map_y": 0.69329
+          "map_y": 0.69329,
+          "code": "KF-PUC-12"
         },
         {
           "region": "Remanzo",
@@ -4604,7 +4769,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Remanzo for the first time. Manager of packaging, has survived more mortal injuries than Rasputin.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-REM-01"
         },
         {
           "region": "Remanzo",
@@ -4619,7 +4785,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.27211,
-          "map_y": 0.25369
+          "map_y": 0.25369,
+          "code": "KF-REM-02"
         },
         {
           "region": "Remanzo",
@@ -4634,7 +4801,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.22991,
-          "map_y": 0.25681
+          "map_y": 0.25681,
+          "code": "KF-REM-03"
         },
         {
           "region": "Remanzo",
@@ -4649,7 +4817,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.16642,
-          "map_y": 0.18276
+          "map_y": 0.18276,
+          "code": "KF-REM-04"
         },
         {
           "region": "Remanzo",
@@ -4664,7 +4833,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.21333,
-          "map_y": 0.26521
+          "map_y": 0.26521,
+          "code": "KF-REM-05"
         },
         {
           "region": "Remanzo",
@@ -4679,7 +4849,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.27677,
-          "map_y": 0.27913
+          "map_y": 0.27913,
+          "code": "KF-REM-06"
         },
         {
           "region": "Remanzo",
@@ -4694,7 +4865,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.2286,
-          "map_y": 0.24234
+          "map_y": 0.24234,
+          "code": "KF-REM-07"
         },
         {
           "region": "San Mateo",
@@ -4705,7 +4877,8 @@
           "guide": "This Kingslayer File unlocks automatically upon completing the story mission \"The Death Truck\". Mysterious and feared, he disposes of dead bodies for the cartel.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-SMT-01"
         },
         {
           "region": "San Mateo",
@@ -4720,7 +4893,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.36595,
-          "map_y": 0.26213
+          "map_y": 0.26213,
+          "code": "KF-SMT-02"
         },
         {
           "region": "San Mateo",
@@ -4735,7 +4909,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.4358,
-          "map_y": 0.39006
+          "map_y": 0.39006,
+          "code": "KF-SMT-03"
         },
         {
           "region": "San Mateo",
@@ -4750,7 +4925,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.37593,
-          "map_y": 0.35433
+          "map_y": 0.35433,
+          "code": "KF-SMT-04"
         },
         {
           "region": "San Mateo",
@@ -4765,7 +4941,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.32865,
-          "map_y": 0.33766
+          "map_y": 0.33766,
+          "code": "KF-SMT-05"
         },
         {
           "region": "San Mateo",
@@ -4780,7 +4957,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.30961,
-          "map_y": 0.2996
+          "map_y": 0.2996,
+          "code": "KF-SMT-06"
         },
         {
           "region": "San Mateo",
@@ -4795,7 +4973,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.31253,
-          "map_y": 0.25854
+          "map_y": 0.25854,
+          "code": "KF-SMT-07"
         },
         {
           "region": "San Mateo",
@@ -4810,7 +4989,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.38132,
-          "map_y": 0.30507
+          "map_y": 0.30507,
+          "code": "KF-SMT-08"
         },
         {
           "region": "San Mateo",
@@ -4825,7 +5005,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.30773,
-          "map_y": 0.28913
+          "map_y": 0.28913,
+          "code": "KF-SMT-09"
         },
         {
           "region": "San Mateo",
@@ -4840,7 +5021,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.32849,
-          "map_y": 0.33489
+          "map_y": 0.33489,
+          "code": "KF-SMT-10"
         },
         {
           "region": "San Mateo",
@@ -4855,7 +5037,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.33569,
-          "map_y": 0.28718
+          "map_y": 0.28718,
+          "code": "KF-SMT-11"
         },
         {
           "region": "Tabacal",
@@ -4866,7 +5049,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Tabacal for the first time. After a lifetime picking coca leaves, she manages the cartel's coca fields.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-TAB-01"
         },
         {
           "region": "Tabacal",
@@ -4881,7 +5065,8 @@
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.47947,
-          "map_y": 0.06305
+          "map_y": 0.06305,
+          "code": "KF-TAB-02"
         },
         {
           "region": "Tabacal",
@@ -4896,7 +5081,8 @@
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.45221,
-          "map_y": 0.16733
+          "map_y": 0.16733,
+          "code": "KF-TAB-03"
         },
         {
           "region": "Tabacal",
@@ -4911,7 +5097,8 @@
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.51929,
-          "map_y": 0.14428
+          "map_y": 0.14428,
+          "code": "KF-TAB-04"
         },
         {
           "region": "Tabacal",
@@ -4926,7 +5113,8 @@
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.43469,
-          "map_y": 0.11736
+          "map_y": 0.11736,
+          "code": "KF-TAB-05"
         },
         {
           "region": "Tabacal",
@@ -4941,7 +5129,8 @@
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.58394,
-          "map_y": 0.07453
+          "map_y": 0.07453,
+          "code": "KF-TAB-06"
         },
         {
           "region": "Tabacal",
@@ -4956,7 +5145,8 @@
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.61998,
-          "map_y": 0.14613
+          "map_y": 0.14613,
+          "code": "KF-TAB-07"
         },
         {
           "region": "Villa Verde",
@@ -4967,7 +5157,8 @@
           "guide": "This Kingslayer File unlocks automatically after Bowman's briefing upon entering Villa Verde for the first time. In charge of the cartel's mining operation, he got his face burned off in a chemical accident.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
-          "tags": "kingslayer file video"
+          "tags": "kingslayer file video",
+          "code": "KF-VVE-01"
         },
         {
           "region": "Villa Verde",
@@ -4982,7 +5173,8 @@
           "location_image_url": "/Images/wildlands/spots/ksf_villa_verde_02.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.72664,
-          "map_y": 0.38432
+          "map_y": 0.38432,
+          "code": "KF-VVE-02"
         },
         {
           "region": "Villa Verde",
@@ -4997,7 +5189,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.8399,
-          "map_y": 0.41247
+          "map_y": 0.41247,
+          "code": "KF-VVE-03"
         },
         {
           "region": "Villa Verde",
@@ -5012,7 +5205,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.91081,
-          "map_y": 0.27282
+          "map_y": 0.27282,
+          "code": "KF-VVE-04"
         },
         {
           "region": "Villa Verde",
@@ -5027,7 +5221,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.94412,
-          "map_y": 0.2113
+          "map_y": 0.2113,
+          "code": "KF-VVE-05"
         },
         {
           "region": "Villa Verde",
@@ -5042,7 +5237,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.87081,
-          "map_y": 0.27909
+          "map_y": 0.27909,
+          "code": "KF-VVE-06"
         },
         {
           "region": "Villa Verde",
@@ -5057,7 +5253,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.90734,
-          "map_y": 0.20581
+          "map_y": 0.20581,
+          "code": "KF-VVE-07"
         },
         {
           "region": "Villa Verde",
@@ -5072,7 +5269,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file document",
           "map_x": 0.88846,
-          "map_y": 0.21996
+          "map_y": 0.21996,
+          "code": "KF-VVE-08"
         },
         {
           "region": "Villa Verde",
@@ -5087,7 +5285,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.88949,
-          "map_y": 0.20214
+          "map_y": 0.20214,
+          "code": "KF-VVE-09"
         },
         {
           "region": "Villa Verde",
@@ -5102,7 +5301,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.86678,
-          "map_y": 0.3927
+          "map_y": 0.3927,
+          "code": "KF-VVE-10"
         },
         {
           "region": "Villa Verde",
@@ -5117,7 +5317,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "kingslayer file legend",
           "map_x": 0.94347,
-          "map_y": 0.24541
+          "map_y": 0.24541,
+          "code": "KF-VVE-11"
         }
       ],
       "file_kinds": [
@@ -5255,7 +5456,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "weapon case",
           "map_x": 0.19108,
-          "map_y": 0.39534
+          "map_y": 0.39534,
+          "code": "WC-BAR-01"
         },
         {
           "region": "Barvechos",
@@ -5270,7 +5472,8 @@
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "tags": "weapon case",
           "map_x": 0.24331,
-          "map_y": 0.41591
+          "map_y": 0.41591,
+          "code": "WC-BAR-02"
         },
         {
           "region": "Caimanes",
@@ -5285,7 +5488,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "weapon case",
           "map_x": 0.92343,
-          "map_y": 0.49766
+          "map_y": 0.49766,
+          "code": "WC-CAI-01"
         },
         {
           "region": "Caimanes",
@@ -5300,7 +5504,8 @@
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "tags": "weapon case",
           "map_x": 0.81473,
-          "map_y": 0.56828
+          "map_y": 0.56828,
+          "code": "WC-CAI-02"
         },
         {
           "region": "Espiritu Santo",
@@ -5315,7 +5520,8 @@
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "tags": "weapon case",
           "map_x": 0.87437,
-          "map_y": 0.06545
+          "map_y": 0.06545,
+          "code": "WC-ESP-01"
         },
         {
           "region": "Espiritu Santo",
@@ -5330,7 +5536,8 @@
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "tags": "weapon case",
           "map_x": 0.84098,
-          "map_y": 0.21835
+          "map_y": 0.21835,
+          "code": "WC-ESP-02"
         },
         {
           "region": "Flor de Oro",
@@ -5345,7 +5552,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "weapon case",
           "map_x": 0.7528,
-          "map_y": 0.8041
+          "map_y": 0.8041,
+          "code": "WC-FLO-01"
         },
         {
           "region": "Flor de Oro",
@@ -5360,7 +5568,8 @@
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "tags": "weapon case",
           "map_x": 0.7168,
-          "map_y": 0.79336
+          "map_y": 0.79336,
+          "code": "WC-FLO-02"
         },
         {
           "region": "Inca Camina",
@@ -5375,7 +5584,8 @@
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "tags": "weapon case",
           "map_x": 0.1918,
-          "map_y": 0.69623
+          "map_y": 0.69623,
+          "code": "WC-INC-01"
         },
         {
           "region": "Inca Camina",
@@ -5390,7 +5600,8 @@
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "tags": "weapon case",
           "map_x": 0.11002,
-          "map_y": 0.87882
+          "map_y": 0.87882,
+          "code": "WC-INC-02"
         },
         {
           "region": "Itacua",
@@ -5405,7 +5616,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "weapon case",
           "map_x": 0.44895,
-          "map_y": 0.4393
+          "map_y": 0.4393,
+          "code": "WC-ITA-01"
         },
         {
           "region": "Itacua",
@@ -5420,7 +5632,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "weapon case",
           "map_x": 0.56511,
-          "map_y": 0.51396
+          "map_y": 0.51396,
+          "code": "WC-ITA-02"
         },
         {
           "region": "Itacua",
@@ -5435,7 +5648,8 @@
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "tags": "weapon case",
           "map_x": 0.42953,
-          "map_y": 0.57158
+          "map_y": 0.57158,
+          "code": "WC-ITA-03"
         },
         {
           "region": "Koani",
@@ -5450,7 +5664,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "weapon case",
           "map_x": 0.24811,
-          "map_y": 0.0383
+          "map_y": 0.0383,
+          "code": "WC-KOA-01"
         },
         {
           "region": "Koani",
@@ -5465,7 +5680,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "weapon case",
           "map_x": 0.19969,
-          "map_y": 0.14881
+          "map_y": 0.14881,
+          "code": "WC-KOA-02"
         },
         {
           "region": "Koani",
@@ -5480,7 +5696,8 @@
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "tags": "weapon case",
           "map_x": 0.0223,
-          "map_y": 0.17355
+          "map_y": 0.17355,
+          "code": "WC-KOA-03"
         },
         {
           "region": "La Cruz",
@@ -5495,7 +5712,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "weapon case",
           "map_x": 0.64599,
-          "map_y": 0.63549
+          "map_y": 0.63549,
+          "code": "WC-LCR-01"
         },
         {
           "region": "La Cruz",
@@ -5510,7 +5728,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "weapon case",
           "map_x": 0.6988,
-          "map_y": 0.69022
+          "map_y": 0.69022,
+          "code": "WC-LCR-02"
         },
         {
           "region": "La Cruz",
@@ -5525,7 +5744,8 @@
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "tags": "weapon case",
           "map_x": 0.91341,
-          "map_y": 0.69894
+          "map_y": 0.69894,
+          "code": "WC-LCR-03"
         },
         {
           "region": "Libertad",
@@ -5540,7 +5760,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "weapon case",
           "map_x": 0.79556,
-          "map_y": 0.82856
+          "map_y": 0.82856,
+          "code": "WC-LIB-01"
         },
         {
           "region": "Libertad",
@@ -5555,7 +5776,8 @@
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "tags": "weapon case",
           "map_x": 0.91024,
-          "map_y": 0.94413
+          "map_y": 0.94413,
+          "code": "WC-LIB-02"
         },
         {
           "region": "Malca",
@@ -5570,7 +5792,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "weapon case",
           "map_x": 0.55117,
-          "map_y": 0.77289
+          "map_y": 0.77289,
+          "code": "WC-MAL-01"
         },
         {
           "region": "Malca",
@@ -5585,7 +5808,8 @@
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "tags": "weapon case",
           "map_x": 0.6566,
-          "map_y": 0.92379
+          "map_y": 0.92379,
+          "code": "WC-MAL-02"
         },
         {
           "region": "Media Luna",
@@ -5600,7 +5824,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "weapon case",
           "map_x": 0.32634,
-          "map_y": 0.08777
+          "map_y": 0.08777,
+          "code": "WC-MED-01"
         },
         {
           "region": "Media Luna",
@@ -5615,7 +5840,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "weapon case",
           "map_x": 0.38493,
-          "map_y": 0.07455
+          "map_y": 0.07455,
+          "code": "WC-MED-02"
         },
         {
           "region": "Media Luna",
@@ -5630,7 +5856,8 @@
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "tags": "weapon case",
           "map_x": 0.36896,
-          "map_y": 0.15223
+          "map_y": 0.15223,
+          "code": "WC-MED-03"
         },
         {
           "region": "Mojocoyo",
@@ -5645,7 +5872,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "weapon case",
           "map_x": 0.10515,
-          "map_y": 0.29739
+          "map_y": 0.29739,
+          "code": "WC-MOJ-01"
         },
         {
           "region": "Mojocoyo",
@@ -5660,7 +5888,8 @@
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "tags": "weapon case",
           "map_x": 0.10847,
-          "map_y": 0.34908
+          "map_y": 0.34908,
+          "code": "WC-MOJ-02"
         },
         {
           "region": "Monte Puncu",
@@ -5675,7 +5904,8 @@
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "tags": "weapon case",
           "map_x": 0.74068,
-          "map_y": 0.05321
+          "map_y": 0.05321,
+          "code": "WC-MPU-01"
         },
         {
           "region": "Monte Puncu",
@@ -5690,7 +5920,8 @@
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "tags": "weapon case",
           "map_x": 0.65826,
-          "map_y": 0.08742
+          "map_y": 0.08742,
+          "code": "WC-MPU-02"
         },
         {
           "region": "Montuyoc",
@@ -5705,7 +5936,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "weapon case",
           "map_x": 0.2988,
-          "map_y": 0.5471
+          "map_y": 0.5471,
+          "code": "WC-MTY-01"
         },
         {
           "region": "Montuyoc",
@@ -5720,7 +5952,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "weapon case",
           "map_x": 0.05563,
-          "map_y": 0.54255
+          "map_y": 0.54255,
+          "code": "WC-MTY-02"
         },
         {
           "region": "Montuyoc",
@@ -5735,7 +5968,8 @@
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "tags": "weapon case",
           "map_x": 0.12183,
-          "map_y": 0.60986
+          "map_y": 0.60986,
+          "code": "WC-MTY-03"
         },
         {
           "region": "Ocoro",
@@ -5750,7 +5984,8 @@
           "location_image_url": "/Images/wildlands/spots/wc_ocoro_01.jpg",
           "tags": "weapon case",
           "map_x": 0.61971,
-          "map_y": 0.28453
+          "map_y": 0.28453,
+          "code": "WC-OCO-01"
         },
         {
           "region": "Ocoro",
@@ -5765,7 +6000,8 @@
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "tags": "weapon case",
           "map_x": 0.75631,
-          "map_y": 0.53696
+          "map_y": 0.53696,
+          "code": "WC-OCO-02"
         },
         {
           "region": "Ocoro",
@@ -5780,7 +6016,8 @@
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "tags": "weapon case",
           "map_x": 0.67773,
-          "map_y": 0.41059
+          "map_y": 0.41059,
+          "code": "WC-OCO-03"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -5795,7 +6032,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "weapon case",
           "map_x": 0.69509,
-          "map_y": 0.23074
+          "map_y": 0.23074,
+          "code": "WC-PNV-01"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -5810,7 +6048,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "weapon case",
           "map_x": 0.65774,
-          "map_y": 0.28802
+          "map_y": 0.28802,
+          "code": "WC-PNV-02"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -5825,7 +6064,8 @@
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "tags": "weapon case",
           "map_x": 0.42387,
-          "map_y": 0.28008
+          "map_y": 0.28008,
+          "code": "WC-PNV-03"
         },
         {
           "region": "Pucara",
@@ -5840,7 +6080,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "weapon case",
           "map_x": 0.39162,
-          "map_y": 0.75766
+          "map_y": 0.75766,
+          "code": "WC-PUC-01"
         },
         {
           "region": "Pucara",
@@ -5855,7 +6096,8 @@
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "tags": "weapon case",
           "map_x": 0.43935,
-          "map_y": 0.68573
+          "map_y": 0.68573,
+          "code": "WC-PUC-02"
         },
         {
           "region": "Remanzo",
@@ -5870,7 +6112,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "weapon case",
           "map_x": 0.19747,
-          "map_y": 0.21415
+          "map_y": 0.21415,
+          "code": "WC-REM-01"
         },
         {
           "region": "Remanzo",
@@ -5885,7 +6128,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "weapon case",
           "map_x": 0.25404,
-          "map_y": 0.20128
+          "map_y": 0.20128,
+          "code": "WC-REM-02"
         },
         {
           "region": "Remanzo",
@@ -5900,7 +6144,8 @@
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "tags": "weapon case",
           "map_x": 0.22562,
-          "map_y": 0.25731
+          "map_y": 0.25731,
+          "code": "WC-REM-03"
         },
         {
           "region": "San Mateo",
@@ -5915,7 +6160,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "weapon case",
           "map_x": 0.35759,
-          "map_y": 0.26117
+          "map_y": 0.26117,
+          "code": "WC-SMT-01"
         },
         {
           "region": "San Mateo",
@@ -5930,7 +6176,8 @@
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "tags": "weapon case",
           "map_x": 0.307,
-          "map_y": 0.30193
+          "map_y": 0.30193,
+          "code": "WC-SMT-02"
         },
         {
           "region": "Tabacal",
@@ -5945,7 +6192,8 @@
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "tags": "weapon case",
           "map_x": 0.4692,
-          "map_y": 0.14588
+          "map_y": 0.14588,
+          "code": "WC-TAB-01"
         },
         {
           "region": "Tabacal",
@@ -5960,7 +6208,8 @@
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "tags": "weapon case",
           "map_x": 0.54782,
-          "map_y": 0.0892
+          "map_y": 0.0892,
+          "code": "WC-TAB-02"
         },
         {
           "region": "Villa Verde",
@@ -5975,7 +6224,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "weapon case",
           "map_x": 0.87253,
-          "map_y": 0.27489
+          "map_y": 0.27489,
+          "code": "WC-VVE-01"
         },
         {
           "region": "Villa Verde",
@@ -5990,7 +6240,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "weapon case",
           "map_x": 0.82434,
-          "map_y": 0.33085
+          "map_y": 0.33085,
+          "code": "WC-VVE-02"
         },
         {
           "region": "Villa Verde",
@@ -6005,7 +6256,8 @@
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "tags": "weapon case",
           "map_x": 0.69383,
-          "map_y": 0.39399
+          "map_y": 0.39399,
+          "code": "WC-VVE-03"
         },
         {
           "id": "wpn_boss_llamativo",
@@ -6014,7 +6266,8 @@
           "location": "Boss weapon · Agua Verde",
           "category": "LMG",
           "guide": "Unique LMG, unlocked automatically for defeating Carzita in Agua Verde.",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-PNV-01"
         },
         {
           "id": "wpn_boss_el_obsequio",
@@ -6024,7 +6277,8 @@
           "category": "Shotgun",
           "guide": "Unique Shotgun, unlocked automatically for defeating El Cerebro in Caimanes.",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-CAI-01"
         },
         {
           "id": "wpn_boss_la_novena",
@@ -6034,7 +6288,8 @@
           "category": "Handgun",
           "guide": "Unique Handgun, unlocked automatically for defeating El Gato in Espiritu Santo.",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-ESP-01"
         },
         {
           "id": "wpn_boss_el_general",
@@ -6044,7 +6299,8 @@
           "category": "Handgun",
           "guide": "Unique Handgun, unlocked automatically for defeating General Baro in Flor de Oro.",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-FLO-01"
         },
         {
           "id": "wpn_boss_the_warhawk",
@@ -6054,7 +6310,8 @@
           "category": "Sniper",
           "guide": "Unique Sniper, unlocked automatically for defeating Boston Reed in Koani.",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-KOA-01"
         },
         {
           "id": "wpn_boss_mendeleyev",
@@ -6064,7 +6321,8 @@
           "category": "SMG",
           "guide": "Unique SMG, unlocked automatically for defeating Marcus Jensen in Libertad.",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-LIB-01"
         },
         {
           "id": "wpn_boss_el_cuentista",
@@ -6074,7 +6332,8 @@
           "category": "Shotgun",
           "guide": "Unique Shotgun, unlocked automatically for defeating El Chido in Malca.",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-MAL-01"
         },
         {
           "id": "wpn_boss_unidad_rpk_74",
@@ -6084,7 +6343,8 @@
           "category": "LMG",
           "guide": "Unique LMG, unlocked automatically for defeating El Comandante in Media Luna.",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-MED-74"
         },
         {
           "id": "wpn_boss_lady_killer",
@@ -6094,7 +6354,8 @@
           "category": "Handgun",
           "guide": "Unique Handgun, unlocked automatically for defeating Antonio in Mojocoyo.",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-MOJ-01"
         },
         {
           "id": "wpn_boss_the_bff",
@@ -6104,7 +6365,8 @@
           "category": "Handgun",
           "guide": "Unique Handgun, unlocked automatically for defeating El Emisario in Remanzo.",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-REM-01"
         },
         {
           "id": "wpn_boss_residuos",
@@ -6114,7 +6376,8 @@
           "category": "SMG",
           "guide": "Unique SMG, unlocked automatically for defeating Pozolero in San Mateo.",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
-          "tags": "boss weapon"
+          "tags": "boss weapon",
+          "code": "BW-SMT-01"
         }
       ],
       "source": "Locations, numbers and descriptions from the SwissGameGuides interactive map; coordinates converted to MapGenie's Lat/Long (checked against MapGenie in Libertad).",
@@ -6178,7 +6441,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.32676,
-          "map_y": 0.37789
+          "map_y": 0.37789,
+          "code": "SP-BAR-01"
         },
         {
           "region": "Barvechos",
@@ -6191,7 +6455,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.33725,
-          "map_y": 0.4099
+          "map_y": 0.4099,
+          "code": "SP-BAR-02"
         },
         {
           "region": "Barvechos",
@@ -6204,7 +6469,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.19019,
-          "map_y": 0.39922
+          "map_y": 0.39922,
+          "code": "SP-BAR-03"
         },
         {
           "region": "Barvechos",
@@ -6217,7 +6483,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.31985,
-          "map_y": 0.43296
+          "map_y": 0.43296,
+          "code": "SP-BAR-04"
         },
         {
           "region": "Barvechos",
@@ -6230,7 +6497,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.31281,
-          "map_y": 0.45732
+          "map_y": 0.45732,
+          "code": "SP-BAR-05"
         },
         {
           "region": "Barvechos",
@@ -6243,7 +6511,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.34925,
-          "map_y": 0.45807
+          "map_y": 0.45807,
+          "code": "SP-BAR-06"
         },
         {
           "region": "Barvechos",
@@ -6256,7 +6525,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.22893,
-          "map_y": 0.50641
+          "map_y": 0.50641,
+          "code": "SP-BAR-07"
         },
         {
           "region": "Caimanes",
@@ -6269,7 +6539,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.89261,
-          "map_y": 0.4344
+          "map_y": 0.4344,
+          "code": "SP-CAI-01"
         },
         {
           "region": "Caimanes",
@@ -6282,7 +6553,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.86579,
-          "map_y": 0.53538
+          "map_y": 0.53538,
+          "code": "SP-CAI-02"
         },
         {
           "region": "Caimanes",
@@ -6295,7 +6567,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.85545,
-          "map_y": 0.54972
+          "map_y": 0.54972,
+          "code": "SP-CAI-03"
         },
         {
           "region": "Caimanes",
@@ -6308,7 +6581,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.81163,
-          "map_y": 0.57306
+          "map_y": 0.57306,
+          "code": "SP-CAI-04"
         },
         {
           "region": "Caimanes",
@@ -6321,7 +6595,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.81395,
-          "map_y": 0.63603
+          "map_y": 0.63603,
+          "code": "SP-CAI-05"
         },
         {
           "region": "Caimanes",
@@ -6334,7 +6609,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.87167,
-          "map_y": 0.59336
+          "map_y": 0.59336,
+          "code": "SP-CAI-06"
         },
         {
           "region": "Espiritu Santo",
@@ -6347,7 +6623,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "map_x": 0.88677,
-          "map_y": 0.11234
+          "map_y": 0.11234,
+          "code": "SP-ESP-01"
         },
         {
           "region": "Espiritu Santo",
@@ -6360,7 +6637,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "map_x": 0.84636,
-          "map_y": 0.18187
+          "map_y": 0.18187,
+          "code": "SP-ESP-02"
         },
         {
           "region": "Espiritu Santo",
@@ -6373,20 +6651,22 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "map_x": 0.81545,
-          "map_y": 0.16921
+          "map_y": 0.16921,
+          "code": "SP-ESP-03"
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.5573,
-          "long": -60.8388,
+          "lat": -14.5364,
+          "long": -60.8426,
           "id": "sp_espiritu_santo_04",
           "name": "Skill Point #4 (+3)",
-          "location": "Just east of Guari · 📍 -14.5573, -60.8388",
-          "guide": "Just east of Guari (A fishing village occupied by the cartel). 📍 Lat -14.5573, Long -60.8388.",
+          "location": "Guari, on the roof of the two-story wooden house (northeast side of town) · 📍 -14.5364, -60.8426",
+          "guide": "In Guari (A fishing village occupied by the cartel), on the northeast side of town near the helipad: the tall two-story wooden house. Climb to the roof terrace (blue tarp, fire barrel, plastic chair): the skill point is lying on top of the low wooden wall. 📍 Lat -14.5364, Long -60.8426.",
           "image_url": "/Images/wildlands/icons/skill_point.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.76442,
-          "map_y": 0.19883
+          "location_image_url": "/Images/wildlands/spots/sp_espiritu_santo_04.jpg",
+          "map_x": 0.76398,
+          "map_y": 0.19639,
+          "code": "SP-ESP-04"
         },
         {
           "region": "Espiritu Santo",
@@ -6399,20 +6679,22 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/spots/sp_espiritu_santo_05.jpg",
           "map_x": 0.73053,
-          "map_y": 0.21877
+          "map_y": 0.21877,
+          "code": "SP-ESP-05"
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.9132,
-          "long": -61.027,
+          "lat": -14.8938,
+          "long": -61.0301,
           "id": "sp_espiritu_santo_06",
           "name": "Skill Point #6 (+1)",
-          "location": "At Coca Warehouse · 📍 -14.9132, -61.027",
-          "guide": "At Coca Warehouse (A warehouse where the cartel stores coca leaves). 📍 Lat -14.9132, Long -61.027.",
+          "location": "At Coca Warehouse, inside the red-brick warehouse on the red toolbox · 📍 -14.8938, -61.0301",
+          "guide": "At Coca Warehouse (A warehouse where the cartel stores coca leaves): take the short side road south off the main riverside road to the red-brick warehouse with the roll-up door. Go inside: the skill point is on top of the rusty red toolbox, next to the blue barrels and the Hoja Cola boxes. 📍 Lat -14.8938, Long -61.0301.",
           "image_url": "/Images/wildlands/icons/skill_point.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.74273,
-          "map_y": 0.24034
+          "location_image_url": "/Images/wildlands/spots/sp_espiritu_santo_06.jpg",
+          "map_x": 0.74237,
+          "map_y": 0.23808,
+          "code": "SP-ESP-06"
         },
         {
           "region": "Flor de Oro",
@@ -6425,7 +6707,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.6864,
-          "map_y": 0.74923
+          "map_y": 0.74923,
+          "code": "SP-FLO-01"
         },
         {
           "region": "Flor de Oro",
@@ -6438,7 +6721,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.69901,
-          "map_y": 0.78007
+          "map_y": 0.78007,
+          "code": "SP-FLO-02"
         },
         {
           "region": "Flor de Oro",
@@ -6451,7 +6735,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.77109,
-          "map_y": 0.73713
+          "map_y": 0.73713,
+          "code": "SP-FLO-03"
         },
         {
           "region": "Flor de Oro",
@@ -6464,7 +6749,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.77966,
-          "map_y": 0.76093
+          "map_y": 0.76093,
+          "code": "SP-FLO-04"
         },
         {
           "region": "Flor de Oro",
@@ -6477,7 +6763,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.70997,
-          "map_y": 0.81139
+          "map_y": 0.81139,
+          "code": "SP-FLO-05"
         },
         {
           "region": "Flor de Oro",
@@ -6490,7 +6777,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.74095,
-          "map_y": 0.83308
+          "map_y": 0.83308,
+          "code": "SP-FLO-06"
         },
         {
           "region": "Flor de Oro",
@@ -6503,7 +6791,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.72661,
-          "map_y": 0.86444
+          "map_y": 0.86444,
+          "code": "SP-FLO-07"
         },
         {
           "region": "Inca Camina",
@@ -6516,7 +6805,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.23445,
-          "map_y": 0.64647
+          "map_y": 0.64647,
+          "code": "SP-INC-01"
         },
         {
           "region": "Inca Camina",
@@ -6529,7 +6819,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.18624,
-          "map_y": 0.6997
+          "map_y": 0.6997,
+          "code": "SP-INC-02"
         },
         {
           "region": "Inca Camina",
@@ -6542,7 +6833,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.1098,
-          "map_y": 0.75949
+          "map_y": 0.75949,
+          "code": "SP-INC-03"
         },
         {
           "region": "Inca Camina",
@@ -6555,7 +6847,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.16782,
-          "map_y": 0.81776
+          "map_y": 0.81776,
+          "code": "SP-INC-04"
         },
         {
           "region": "Inca Camina",
@@ -6568,7 +6861,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.23718,
-          "map_y": 0.80535
+          "map_y": 0.80535,
+          "code": "SP-INC-05"
         },
         {
           "region": "Inca Camina",
@@ -6581,7 +6875,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.2653,
-          "map_y": 0.84703
+          "map_y": 0.84703,
+          "code": "SP-INC-06"
         },
         {
           "region": "Inca Camina",
@@ -6594,7 +6889,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.35226,
-          "map_y": 0.91113
+          "map_y": 0.91113,
+          "code": "SP-INC-07"
         },
         {
           "region": "Inca Camina",
@@ -6607,7 +6903,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.37906,
-          "map_y": 0.91848
+          "map_y": 0.91848,
+          "code": "SP-INC-08"
         },
         {
           "region": "Itacua",
@@ -6620,7 +6917,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.44989,
-          "map_y": 0.42048
+          "map_y": 0.42048,
+          "code": "SP-ITA-01"
         },
         {
           "region": "Itacua",
@@ -6633,7 +6931,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.44716,
-          "map_y": 0.4566
+          "map_y": 0.4566,
+          "code": "SP-ITA-02"
         },
         {
           "region": "Itacua",
@@ -6646,7 +6945,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.53626,
-          "map_y": 0.46965
+          "map_y": 0.46965,
+          "code": "SP-ITA-03"
         },
         {
           "region": "Itacua",
@@ -6659,7 +6959,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.53965,
-          "map_y": 0.47968
+          "map_y": 0.47968,
+          "code": "SP-ITA-04"
         },
         {
           "region": "Itacua",
@@ -6672,7 +6973,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.54052,
-          "map_y": 0.52875
+          "map_y": 0.52875,
+          "code": "SP-ITA-05"
         },
         {
           "region": "Itacua",
@@ -6685,7 +6987,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.5047,
-          "map_y": 0.56247
+          "map_y": 0.56247,
+          "code": "SP-ITA-06"
         },
         {
           "region": "Itacua",
@@ -6698,7 +7001,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.46195,
-          "map_y": 0.54645
+          "map_y": 0.54645,
+          "code": "SP-ITA-07"
         },
         {
           "region": "Itacua",
@@ -6711,7 +7015,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.36076,
-          "map_y": 0.54363
+          "map_y": 0.54363,
+          "code": "SP-ITA-08"
         },
         {
           "region": "Koani",
@@ -6724,7 +7029,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.21304,
-          "map_y": 0.08073
+          "map_y": 0.08073,
+          "code": "SP-KOA-01"
         },
         {
           "region": "Koani",
@@ -6737,7 +7043,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.15223,
-          "map_y": 0.13736
+          "map_y": 0.13736,
+          "code": "SP-KOA-02"
         },
         {
           "region": "Koani",
@@ -6750,7 +7057,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.14848,
-          "map_y": 0.06453
+          "map_y": 0.06453,
+          "code": "SP-KOA-03"
         },
         {
           "region": "Koani",
@@ -6763,7 +7071,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.10131,
-          "map_y": 0.20993
+          "map_y": 0.20993,
+          "code": "SP-KOA-04"
         },
         {
           "region": "Koani",
@@ -6776,7 +7085,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.08707,
-          "map_y": 0.23176
+          "map_y": 0.23176,
+          "code": "SP-KOA-05"
         },
         {
           "region": "Koani",
@@ -6789,7 +7099,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.05361,
-          "map_y": 0.22685
+          "map_y": 0.22685,
+          "code": "SP-KOA-06"
         },
         {
           "region": "Koani",
@@ -6802,7 +7113,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.04311,
-          "map_y": 0.0276
+          "map_y": 0.0276,
+          "code": "SP-KOA-07"
         },
         {
           "region": "La Cruz",
@@ -6815,7 +7127,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.6267,
-          "map_y": 0.6945
+          "map_y": 0.6945,
+          "code": "SP-LCR-01"
         },
         {
           "region": "La Cruz",
@@ -6828,7 +7141,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.65658,
-          "map_y": 0.74813
+          "map_y": 0.74813,
+          "code": "SP-LCR-02"
         },
         {
           "region": "La Cruz",
@@ -6841,7 +7155,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.68596,
-          "map_y": 0.70061
+          "map_y": 0.70061,
+          "code": "SP-LCR-03"
         },
         {
           "region": "La Cruz",
@@ -6854,7 +7169,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.81121,
-          "map_y": 0.69998
+          "map_y": 0.69998,
+          "code": "SP-LCR-04"
         },
         {
           "region": "La Cruz",
@@ -6867,7 +7183,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.85903,
-          "map_y": 0.71491
+          "map_y": 0.71491,
+          "code": "SP-LCR-05"
         },
         {
           "region": "La Cruz",
@@ -6880,7 +7197,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.88102,
-          "map_y": 0.72556
+          "map_y": 0.72556,
+          "code": "SP-LCR-06"
         },
         {
           "region": "La Cruz",
@@ -6893,7 +7211,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.9515,
-          "map_y": 0.71492
+          "map_y": 0.71492,
+          "code": "SP-LCR-07"
         },
         {
           "region": "La Cruz",
@@ -6906,7 +7225,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.786,
-          "map_y": 0.73253
+          "map_y": 0.73253,
+          "code": "SP-LCR-08"
         },
         {
           "region": "Libertad",
@@ -6919,7 +7239,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.8737,
-          "map_y": 0.80705
+          "map_y": 0.80705,
+          "code": "SP-LIB-01"
         },
         {
           "region": "Libertad",
@@ -6932,7 +7253,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.79735,
-          "map_y": 0.86317
+          "map_y": 0.86317,
+          "code": "SP-LIB-02"
         },
         {
           "region": "Libertad",
@@ -6945,7 +7267,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.82473,
-          "map_y": 0.87851
+          "map_y": 0.87851,
+          "code": "SP-LIB-03"
         },
         {
           "region": "Libertad",
@@ -6958,7 +7281,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.88664,
-          "map_y": 0.86655
+          "map_y": 0.86655,
+          "code": "SP-LIB-04"
         },
         {
           "region": "Libertad",
@@ -6971,7 +7295,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.92844,
-          "map_y": 0.88741
+          "map_y": 0.88741,
+          "code": "SP-LIB-05"
         },
         {
           "region": "Libertad",
@@ -6984,7 +7309,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.94714,
-          "map_y": 0.91332
+          "map_y": 0.91332,
+          "code": "SP-LIB-06"
         },
         {
           "region": "Libertad",
@@ -6997,7 +7323,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.88146,
-          "map_y": 0.95355
+          "map_y": 0.95355,
+          "code": "SP-LIB-07"
         },
         {
           "region": "Malca",
@@ -7010,7 +7337,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.42474,
-          "map_y": 0.79694
+          "map_y": 0.79694,
+          "code": "SP-MAL-01"
         },
         {
           "region": "Malca",
@@ -7023,7 +7351,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.47156,
-          "map_y": 0.78694
+          "map_y": 0.78694,
+          "code": "SP-MAL-02"
         },
         {
           "region": "Malca",
@@ -7036,7 +7365,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.60567,
-          "map_y": 0.7242
+          "map_y": 0.7242,
+          "code": "SP-MAL-03"
         },
         {
           "region": "Malca",
@@ -7049,7 +7379,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.61114,
-          "map_y": 0.88613
+          "map_y": 0.88613,
+          "code": "SP-MAL-04"
         },
         {
           "region": "Malca",
@@ -7062,7 +7393,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.65588,
-          "map_y": 0.91689
+          "map_y": 0.91689,
+          "code": "SP-MAL-05"
         },
         {
           "region": "Malca",
@@ -7075,7 +7407,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.69525,
-          "map_y": 0.93215
+          "map_y": 0.93215,
+          "code": "SP-MAL-06"
         },
         {
           "region": "Malca",
@@ -7088,7 +7421,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.53251,
-          "map_y": 0.85563
+          "map_y": 0.85563,
+          "code": "SP-MAL-07"
         },
         {
           "region": "Media Luna",
@@ -7101,7 +7435,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.39934,
-          "map_y": 0.08874
+          "map_y": 0.08874,
+          "code": "SP-MED-01"
         },
         {
           "region": "Media Luna",
@@ -7114,7 +7449,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.38965,
-          "map_y": 0.13375
+          "map_y": 0.13375,
+          "code": "SP-MED-02"
         },
         {
           "region": "Media Luna",
@@ -7127,7 +7463,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.36804,
-          "map_y": 0.11975
+          "map_y": 0.11975,
+          "code": "SP-MED-03"
         },
         {
           "region": "Media Luna",
@@ -7140,7 +7477,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.33435,
-          "map_y": 0.1142
+          "map_y": 0.1142,
+          "code": "SP-MED-04"
         },
         {
           "region": "Media Luna",
@@ -7153,7 +7491,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.29442,
-          "map_y": 0.11146
+          "map_y": 0.11146,
+          "code": "SP-MED-05"
         },
         {
           "region": "Media Luna",
@@ -7166,7 +7505,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.3304,
-          "map_y": 0.17653
+          "map_y": 0.17653,
+          "code": "SP-MED-06"
         },
         {
           "region": "Media Luna",
@@ -7179,7 +7519,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.36914,
-          "map_y": 0.16907
+          "map_y": 0.16907,
+          "code": "SP-MED-07"
         },
         {
           "region": "Mojocoyo",
@@ -7192,7 +7533,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.14996,
-          "map_y": 0.29889
+          "map_y": 0.29889,
+          "code": "SP-MOJ-01"
         },
         {
           "region": "Mojocoyo",
@@ -7205,7 +7547,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.15388,
-          "map_y": 0.26848
+          "map_y": 0.26848,
+          "code": "SP-MOJ-02"
         },
         {
           "region": "Mojocoyo",
@@ -7218,7 +7561,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.18275,
-          "map_y": 0.26582
+          "map_y": 0.26582,
+          "code": "SP-MOJ-03"
         },
         {
           "region": "Mojocoyo",
@@ -7231,7 +7575,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.17919,
-          "map_y": 0.33333
+          "map_y": 0.33333,
+          "code": "SP-MOJ-04"
         },
         {
           "region": "Mojocoyo",
@@ -7244,7 +7589,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.20685,
-          "map_y": 0.35616
+          "map_y": 0.35616,
+          "code": "SP-MOJ-05"
         },
         {
           "region": "Mojocoyo",
@@ -7257,7 +7603,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.14661,
-          "map_y": 0.42115
+          "map_y": 0.42115,
+          "code": "SP-MOJ-06"
         },
         {
           "region": "Monte Puncu",
@@ -7270,7 +7617,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.63933,
-          "map_y": 0.19212
+          "map_y": 0.19212,
+          "code": "SP-MPU-01"
         },
         {
           "region": "Monte Puncu",
@@ -7283,7 +7631,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.70481,
-          "map_y": 0.19398
+          "map_y": 0.19398,
+          "code": "SP-MPU-02"
         },
         {
           "region": "Monte Puncu",
@@ -7296,7 +7645,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.69806,
-          "map_y": 0.10392
+          "map_y": 0.10392,
+          "code": "SP-MPU-03"
         },
         {
           "region": "Monte Puncu",
@@ -7309,7 +7659,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.73159,
-          "map_y": 0.10399
+          "map_y": 0.10399,
+          "code": "SP-MPU-04"
         },
         {
           "region": "Monte Puncu",
@@ -7322,7 +7673,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.741,
-          "map_y": 0.08464
+          "map_y": 0.08464,
+          "code": "SP-MPU-05"
         },
         {
           "region": "Monte Puncu",
@@ -7335,7 +7687,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.77645,
-          "map_y": 0.07448
+          "map_y": 0.07448,
+          "code": "SP-MPU-06"
         },
         {
           "region": "Monte Puncu",
@@ -7348,7 +7701,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.61316,
-          "map_y": 0.0556
+          "map_y": 0.0556,
+          "code": "SP-MPU-07"
         },
         {
           "region": "Monte Puncu",
@@ -7361,7 +7715,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.60023,
-          "map_y": 0.05351
+          "map_y": 0.05351,
+          "code": "SP-MPU-08"
         },
         {
           "region": "Montuyoc",
@@ -7374,7 +7729,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.30237,
-          "map_y": 0.55048
+          "map_y": 0.55048,
+          "code": "SP-MTY-01"
         },
         {
           "region": "Montuyoc",
@@ -7387,7 +7743,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.22416,
-          "map_y": 0.52915
+          "map_y": 0.52915,
+          "code": "SP-MTY-02"
         },
         {
           "region": "Montuyoc",
@@ -7400,7 +7757,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.20147,
-          "map_y": 0.50935
+          "map_y": 0.50935,
+          "code": "SP-MTY-03"
         },
         {
           "region": "Montuyoc",
@@ -7413,7 +7771,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.15142,
-          "map_y": 0.48954
+          "map_y": 0.48954,
+          "code": "SP-MTY-04"
         },
         {
           "region": "Montuyoc",
@@ -7426,7 +7785,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.1693,
-          "map_y": 0.43312
+          "map_y": 0.43312,
+          "code": "SP-MTY-05"
         },
         {
           "region": "Montuyoc",
@@ -7439,7 +7799,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.07687,
-          "map_y": 0.49078
+          "map_y": 0.49078,
+          "code": "SP-MTY-06"
         },
         {
           "region": "Montuyoc",
@@ -7452,7 +7813,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.06583,
-          "map_y": 0.51134
+          "map_y": 0.51134,
+          "code": "SP-MTY-07"
         },
         {
           "region": "Montuyoc",
@@ -7465,7 +7827,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.23039,
-          "map_y": 0.5859
+          "map_y": 0.5859,
+          "code": "SP-MTY-08"
         },
         {
           "region": "Ocoro",
@@ -7478,7 +7841,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.63951,
-          "map_y": 0.34239
+          "map_y": 0.34239,
+          "code": "SP-OCO-01"
         },
         {
           "region": "Ocoro",
@@ -7491,7 +7855,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.55958,
-          "map_y": 0.40216
+          "map_y": 0.40216,
+          "code": "SP-OCO-02"
         },
         {
           "region": "Ocoro",
@@ -7504,7 +7869,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.55191,
-          "map_y": 0.44181
+          "map_y": 0.44181,
+          "code": "SP-OCO-03"
         },
         {
           "region": "Ocoro",
@@ -7517,7 +7883,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.642,
-          "map_y": 0.48103
+          "map_y": 0.48103,
+          "code": "SP-OCO-04"
         },
         {
           "region": "Ocoro",
@@ -7530,7 +7897,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.5899,
-          "map_y": 0.50716
+          "map_y": 0.50716,
+          "code": "SP-OCO-05"
         },
         {
           "region": "Ocoro",
@@ -7543,7 +7911,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.75404,
-          "map_y": 0.45103
+          "map_y": 0.45103,
+          "code": "SP-OCO-06"
         },
         {
           "region": "Ocoro",
@@ -7556,7 +7925,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.77482,
-          "map_y": 0.42554
+          "map_y": 0.42554,
+          "code": "SP-OCO-07"
         },
         {
           "region": "Ocoro",
@@ -7569,7 +7939,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.66254,
-          "map_y": 0.41785
+          "map_y": 0.41785,
+          "code": "SP-OCO-08"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -7582,7 +7953,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.54659,
-          "map_y": 0.23726
+          "map_y": 0.23726,
+          "code": "SP-PNV-01"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -7595,7 +7967,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.49911,
-          "map_y": 0.19524
+          "map_y": 0.19524,
+          "code": "SP-PNV-02"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -7608,7 +7981,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.48667,
-          "map_y": 0.1969
+          "map_y": 0.1969,
+          "code": "SP-PNV-03"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -7621,7 +7995,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.56816,
-          "map_y": 0.28849
+          "map_y": 0.28849,
+          "code": "SP-PNV-04"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -7634,7 +8009,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.52919,
-          "map_y": 0.3259
+          "map_y": 0.3259,
+          "code": "SP-PNV-05"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -7647,7 +8023,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.53265,
-          "map_y": 0.36713
+          "map_y": 0.36713,
+          "code": "SP-PNV-06"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -7660,7 +8037,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.46534,
-          "map_y": 0.31911
+          "map_y": 0.31911,
+          "code": "SP-PNV-07"
         },
         {
           "region": "Pucara",
@@ -7673,7 +8051,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.32748,
-          "map_y": 0.59445
+          "map_y": 0.59445,
+          "code": "SP-PUC-01"
         },
         {
           "region": "Pucara",
@@ -7686,7 +8065,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.31421,
-          "map_y": 0.72566
+          "map_y": 0.72566,
+          "code": "SP-PUC-02"
         },
         {
           "region": "Pucara",
@@ -7699,7 +8079,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.34992,
-          "map_y": 0.67218
+          "map_y": 0.67218,
+          "code": "SP-PUC-03"
         },
         {
           "region": "Pucara",
@@ -7712,7 +8093,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.38756,
-          "map_y": 0.68149
+          "map_y": 0.68149,
+          "code": "SP-PUC-04"
         },
         {
           "region": "Pucara",
@@ -7725,7 +8107,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.41122,
-          "map_y": 0.75902
+          "map_y": 0.75902,
+          "code": "SP-PUC-05"
         },
         {
           "region": "Pucara",
@@ -7738,7 +8121,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.45555,
-          "map_y": 0.69232
+          "map_y": 0.69232,
+          "code": "SP-PUC-06"
         },
         {
           "region": "Pucara",
@@ -7751,7 +8135,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.53889,
-          "map_y": 0.73628
+          "map_y": 0.73628,
+          "code": "SP-PUC-07"
         },
         {
           "region": "Remanzo",
@@ -7764,7 +8149,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.14421,
-          "map_y": 0.1951
+          "map_y": 0.1951,
+          "code": "SP-REM-01"
         },
         {
           "region": "Remanzo",
@@ -7777,7 +8163,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.23849,
-          "map_y": 0.17409
+          "map_y": 0.17409,
+          "code": "SP-REM-02"
         },
         {
           "region": "Remanzo",
@@ -7790,7 +8177,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.25187,
-          "map_y": 0.20374
+          "map_y": 0.20374,
+          "code": "SP-REM-03"
         },
         {
           "region": "Remanzo",
@@ -7803,7 +8191,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.25765,
-          "map_y": 0.22504
+          "map_y": 0.22504,
+          "code": "SP-REM-04"
         },
         {
           "region": "Remanzo",
@@ -7816,7 +8205,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.21036,
-          "map_y": 0.22959
+          "map_y": 0.22959,
+          "code": "SP-REM-05"
         },
         {
           "region": "Remanzo",
@@ -7829,7 +8219,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.21221,
-          "map_y": 0.26636
+          "map_y": 0.26636,
+          "code": "SP-REM-06"
         },
         {
           "region": "San Mateo",
@@ -7842,7 +8233,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.30359,
-          "map_y": 0.29988
+          "map_y": 0.29988,
+          "code": "SP-SMT-01"
         },
         {
           "region": "San Mateo",
@@ -7855,7 +8247,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.3282,
-          "map_y": 0.33466
+          "map_y": 0.33466,
+          "code": "SP-SMT-02"
         },
         {
           "region": "San Mateo",
@@ -7868,7 +8261,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.34382,
-          "map_y": 0.31836
+          "map_y": 0.31836,
+          "code": "SP-SMT-03"
         },
         {
           "region": "San Mateo",
@@ -7881,7 +8275,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.40694,
-          "map_y": 0.42134
+          "map_y": 0.42134,
+          "code": "SP-SMT-04"
         },
         {
           "region": "San Mateo",
@@ -7894,7 +8289,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.43292,
-          "map_y": 0.34433
+          "map_y": 0.34433,
+          "code": "SP-SMT-05"
         },
         {
           "region": "San Mateo",
@@ -7907,7 +8303,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.39284,
-          "map_y": 0.28319
+          "map_y": 0.28319,
+          "code": "SP-SMT-06"
         },
         {
           "region": "Tabacal",
@@ -7920,7 +8317,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.43626,
-          "map_y": 0.11882
+          "map_y": 0.11882,
+          "code": "SP-TAB-01"
         },
         {
           "region": "Tabacal",
@@ -7933,7 +8331,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.47915,
-          "map_y": 0.06302
+          "map_y": 0.06302,
+          "code": "SP-TAB-02"
         },
         {
           "region": "Tabacal",
@@ -7946,7 +8345,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.56495,
-          "map_y": 0.07477
+          "map_y": 0.07477,
+          "code": "SP-TAB-03"
         },
         {
           "region": "Tabacal",
@@ -7959,7 +8359,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.53002,
-          "map_y": 0.09222
+          "map_y": 0.09222,
+          "code": "SP-TAB-04"
         },
         {
           "region": "Tabacal",
@@ -7972,7 +8373,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.56253,
-          "map_y": 0.11548
+          "map_y": 0.11548,
+          "code": "SP-TAB-05"
         },
         {
           "region": "Tabacal",
@@ -7985,7 +8387,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.56205,
-          "map_y": 0.13512
+          "map_y": 0.13512,
+          "code": "SP-TAB-06"
         },
         {
           "region": "Tabacal",
@@ -7998,7 +8401,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.63246,
-          "map_y": 0.13843
+          "map_y": 0.13843,
+          "code": "SP-TAB-07"
         },
         {
           "region": "Villa Verde",
@@ -8011,7 +8415,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.94138,
-          "map_y": 0.09583
+          "map_y": 0.09583,
+          "code": "SP-VVE-01"
         },
         {
           "region": "Villa Verde",
@@ -8024,7 +8429,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/spots/sp_villa_verde_02.jpg",
           "map_x": 0.77778,
-          "map_y": 0.29623
+          "map_y": 0.29623,
+          "code": "SP-VVE-02"
         },
         {
           "region": "Villa Verde",
@@ -8037,7 +8443,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.69019,
-          "map_y": 0.39519
+          "map_y": 0.39519,
+          "code": "SP-VVE-03"
         },
         {
           "region": "Villa Verde",
@@ -8050,7 +8457,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.82204,
-          "map_y": 0.36366
+          "map_y": 0.36366,
+          "code": "SP-VVE-04"
         },
         {
           "region": "Villa Verde",
@@ -8063,7 +8471,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.89568,
-          "map_y": 0.37498
+          "map_y": 0.37498,
+          "code": "SP-VVE-05"
         },
         {
           "region": "Villa Verde",
@@ -8076,7 +8485,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.92891,
-          "map_y": 0.34554
+          "map_y": 0.34554,
+          "code": "SP-VVE-06"
         },
         {
           "region": "Villa Verde",
@@ -8089,7 +8499,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.96831,
-          "map_y": 0.33616
+          "map_y": 0.33616,
+          "code": "SP-VVE-07"
         },
         {
           "region": "Villa Verde",
@@ -8102,7 +8513,8 @@
           "image_url": "/Images/wildlands/icons/skill_point.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.95801,
-          "map_y": 0.31161
+          "map_y": 0.31161,
+          "code": "SP-VVE-08"
         }
       ]
     },
@@ -8124,7 +8536,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.34187,
-          "map_y": 0.38775
+          "map_y": 0.38775,
+          "code": "AC-BAR-01"
         },
         {
           "region": "Barvechos",
@@ -8138,7 +8551,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.31088,
-          "map_y": 0.40314
+          "map_y": 0.40314,
+          "code": "AC-BAR-02"
         },
         {
           "region": "Barvechos",
@@ -8152,7 +8566,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.27391,
-          "map_y": 0.38044
+          "map_y": 0.38044,
+          "code": "AC-BAR-03"
         },
         {
           "region": "Barvechos",
@@ -8166,7 +8581,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.25053,
-          "map_y": 0.38923
+          "map_y": 0.38923,
+          "code": "AC-BAR-04"
         },
         {
           "region": "Barvechos",
@@ -8180,7 +8596,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.26845,
-          "map_y": 0.46331
+          "map_y": 0.46331,
+          "code": "AC-BAR-05"
         },
         {
           "region": "Barvechos",
@@ -8194,7 +8611,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/barvechos.jpg",
           "map_x": 0.32674,
-          "map_y": 0.51611
+          "map_y": 0.51611,
+          "code": "AC-BAR-06"
         },
         {
           "region": "Caimanes",
@@ -8208,7 +8626,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.79528,
-          "map_y": 0.46082
+          "map_y": 0.46082,
+          "code": "AC-CAI-01"
         },
         {
           "region": "Caimanes",
@@ -8222,7 +8641,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.8745,
-          "map_y": 0.46357
+          "map_y": 0.46357,
+          "code": "AC-CAI-02"
         },
         {
           "region": "Caimanes",
@@ -8236,7 +8656,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.93766,
-          "map_y": 0.4309
+          "map_y": 0.4309,
+          "code": "AC-CAI-03"
         },
         {
           "region": "Caimanes",
@@ -8250,7 +8671,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.92071,
-          "map_y": 0.49412
+          "map_y": 0.49412,
+          "code": "AC-CAI-04"
         },
         {
           "region": "Caimanes",
@@ -8264,7 +8686,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.89327,
-          "map_y": 0.63768
+          "map_y": 0.63768,
+          "code": "AC-CAI-05"
         },
         {
           "region": "Caimanes",
@@ -8278,21 +8701,23 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/caimanes.jpg",
           "map_x": 0.91957,
-          "map_y": 0.56785
+          "map_y": 0.56785,
+          "code": "AC-CAI-06"
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.5067,
-          "long": -60.5377,
+          "lat": -14.4865,
+          "long": -60.5416,
           "id": "ac_espiritu_santo_01",
           "name": "Stock: Folded Buttstock",
-          "location": "🔫 Assault Rifle · At Observation Post · 📍 -14.5067, -60.5377",
+          "location": "🔫 Assault Rifle · Observation Post, inside the ARMERIA building (helicopter on its roof) · 📍 -14.4865, -60.5416",
           "category": "Stock",
-          "guide": "Folded for mobility, but gives less stability while aiming. Fits: Assault Rifle. At Observation Post (Controlling and identifying the pilgrims). 📍 Lat -14.5067, Long -60.5377.",
+          "guide": "Folded for mobility, but gives less stability while aiming. Fits: Assault Rifle. At the Observation Post at the end of the winding road: go into the building marked ARMERIA, the one with a helicopter parked on its roof and stairs up the side. 📍 Lat -14.4865, Long -60.5416.",
           "image_url": "/Images/wildlands/icons/accessory_case.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.79918,
-          "map_y": 0.19296
+          "location_image_url": "/Images/wildlands/spots/ac_espiritu_santo_01.jpg",
+          "map_x": 0.79873,
+          "map_y": 0.1906,
+          "code": "AC-ESP-01"
         },
         {
           "region": "Espiritu Santo",
@@ -8306,35 +8731,38 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "map_x": 0.7855,
-          "map_y": 0.12641
+          "map_y": 0.12641,
+          "code": "AC-ESP-02"
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.9477,
-          "long": -60.3209,
+          "lat": -14.9302,
+          "long": -60.3247,
           "id": "ac_espiritu_santo_03",
           "name": "Stock: Folded Buttstock",
-          "location": "🔫 LMG · At Observation Post · 📍 -14.9477, -60.3209",
+          "location": "🔫 LMG · Observation Post on the hilltop at the end of the switchback road · 📍 -14.9302, -60.3247",
           "category": "Stock",
-          "guide": "Folded for mobility, but gives less stability while aiming. Fits: Light Machine Gun. At Observation Post (Oversees cartel activities in Espiritu Santo). 📍 Lat -14.9477, Long -60.3209.",
+          "guide": "Folded for mobility, but gives less stability while aiming. Fits: Light Machine Gun. At the Observation Post on the hilltop: follow the switchback road up from the main road; the case is among the small buildings at the top by the helipad. 📍 Lat -14.9302, Long -60.3247.",
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.82425,
-          "map_y": 0.24445
+          "map_x": 0.82381,
+          "map_y": 0.24241,
+          "code": "AC-ESP-03"
         },
         {
           "region": "Espiritu Santo",
-          "lat": -15.1093,
-          "long": -61.1616,
+          "lat": -15.0911,
+          "long": -61.1649,
           "id": "ac_espiritu_santo_04",
           "name": "Rail: Range Finder",
-          "location": "🔫 Sniper · At Bahia Floresta · 📍 -15.1093, -61.1616",
+          "location": "🔫 Sniper · Bahia Floresta, house in the middle of the village · 📍 -15.0911, -61.1649",
           "category": "Rail",
-          "guide": "Increases your accuracy and range. Fits: Sniper Rifle. At Bahia Floresta (A cocaleros village, now occupied by the cartel). 📍 Lat -15.1093, Long -61.1616.",
+          "guide": "Increases your accuracy and range. Fits: Sniper Rifle. At Bahia Floresta (A cocaleros village, now occupied by the cartel): the house in the middle of the village, between the helipads where the roads cross. Inside, it's on the small wooden cabinet in the corner by the window, next to a stack of books. 📍 Lat -15.0911, Long -61.1649.",
           "image_url": "/Images/wildlands/icons/accessory_case.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.72721,
-          "map_y": 0.2632
+          "location_image_url": "/Images/wildlands/spots/ac_espiritu_santo_04.jpg",
+          "map_x": 0.72683,
+          "map_y": 0.26108,
+          "code": "AC-ESP-04"
         },
         {
           "region": "Espiritu Santo",
@@ -8348,7 +8776,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
           "map_x": 0.73366,
-          "map_y": 0.29253
+          "map_y": 0.29253,
+          "code": "AC-ESP-05"
         },
         {
           "region": "Flor de Oro",
@@ -8362,7 +8791,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.69532,
-          "map_y": 0.7634
+          "map_y": 0.7634,
+          "code": "AC-FLO-01"
         },
         {
           "region": "Flor de Oro",
@@ -8376,7 +8806,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.72707,
-          "map_y": 0.77215
+          "map_y": 0.77215,
+          "code": "AC-FLO-02"
         },
         {
           "region": "Flor de Oro",
@@ -8390,7 +8821,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.79019,
-          "map_y": 0.80276
+          "map_y": 0.80276,
+          "code": "AC-FLO-03"
         },
         {
           "region": "Flor de Oro",
@@ -8404,7 +8836,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.71092,
-          "map_y": 0.85347
+          "map_y": 0.85347,
+          "code": "AC-FLO-04"
         },
         {
           "region": "Flor de Oro",
@@ -8418,7 +8851,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.73438,
-          "map_y": 0.88729
+          "map_y": 0.88729,
+          "code": "AC-FLO-05"
         },
         {
           "region": "Flor de Oro",
@@ -8432,7 +8866,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/flor_de_oro.jpg",
           "map_x": 0.75326,
-          "map_y": 0.93668
+          "map_y": 0.93668,
+          "code": "AC-FLO-06"
         },
         {
           "region": "Inca Camina",
@@ -8446,7 +8881,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.13682,
-          "map_y": 0.91851
+          "map_y": 0.91851,
+          "code": "AC-INC-01"
         },
         {
           "region": "Inca Camina",
@@ -8460,7 +8896,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.21569,
-          "map_y": 0.76144
+          "map_y": 0.76144,
+          "code": "AC-INC-02"
         },
         {
           "region": "Inca Camina",
@@ -8474,7 +8911,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.29639,
-          "map_y": 0.78334
+          "map_y": 0.78334,
+          "code": "AC-INC-03"
         },
         {
           "region": "Inca Camina",
@@ -8488,7 +8926,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/inca_camina.jpg",
           "map_x": 0.30332,
-          "map_y": 0.88452
+          "map_y": 0.88452,
+          "code": "AC-INC-04"
         },
         {
           "region": "Itacua",
@@ -8502,7 +8941,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.51457,
-          "map_y": 0.42271
+          "map_y": 0.42271,
+          "code": "AC-ITA-01"
         },
         {
           "region": "Itacua",
@@ -8516,7 +8956,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.42331,
-          "map_y": 0.46513
+          "map_y": 0.46513,
+          "code": "AC-ITA-02"
         },
         {
           "region": "Itacua",
@@ -8530,7 +8971,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.5566,
-          "map_y": 0.51217
+          "map_y": 0.51217,
+          "code": "AC-ITA-03"
         },
         {
           "region": "Itacua",
@@ -8544,7 +8986,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.49851,
-          "map_y": 0.56161
+          "map_y": 0.56161,
+          "code": "AC-ITA-04"
         },
         {
           "region": "Itacua",
@@ -8558,7 +9001,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/itacua.jpg",
           "map_x": 0.61766,
-          "map_y": 0.60548
+          "map_y": 0.60548,
+          "code": "AC-ITA-05"
         },
         {
           "region": "Koani",
@@ -8572,7 +9016,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.21512,
-          "map_y": 0.06366
+          "map_y": 0.06366,
+          "code": "AC-KOA-01"
         },
         {
           "region": "Koani",
@@ -8586,7 +9031,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.2273,
-          "map_y": 0.1548
+          "map_y": 0.1548,
+          "code": "AC-KOA-02"
         },
         {
           "region": "Koani",
@@ -8600,7 +9046,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.10965,
-          "map_y": 0.13618
+          "map_y": 0.13618,
+          "code": "AC-KOA-03"
         },
         {
           "region": "Koani",
@@ -8614,7 +9061,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.09853,
-          "map_y": 0.1717
+          "map_y": 0.1717,
+          "code": "AC-KOA-04"
         },
         {
           "region": "Koani",
@@ -8628,7 +9076,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.13419,
-          "map_y": 0.21667
+          "map_y": 0.21667,
+          "code": "AC-KOA-05"
         },
         {
           "region": "Koani",
@@ -8642,7 +9091,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/koani.jpg",
           "map_x": 0.03615,
-          "map_y": 0.13033
+          "map_y": 0.13033,
+          "code": "AC-KOA-06"
         },
         {
           "region": "La Cruz",
@@ -8656,7 +9106,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.59524,
-          "map_y": 0.67433
+          "map_y": 0.67433,
+          "code": "AC-LCR-01"
         },
         {
           "region": "La Cruz",
@@ -8670,7 +9121,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.70717,
-          "map_y": 0.6282
+          "map_y": 0.6282,
+          "code": "AC-LCR-02"
         },
         {
           "region": "La Cruz",
@@ -8684,7 +9136,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
           "map_x": 0.88982,
-          "map_y": 0.74878
+          "map_y": 0.74878,
+          "code": "AC-LCR-03"
         },
         {
           "region": "Libertad",
@@ -8698,7 +9151,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.84257,
-          "map_y": 0.78928
+          "map_y": 0.78928,
+          "code": "AC-LIB-01"
         },
         {
           "region": "Libertad",
@@ -8712,7 +9166,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.90096,
-          "map_y": 0.78803
+          "map_y": 0.78803,
+          "code": "AC-LIB-02"
         },
         {
           "region": "Libertad",
@@ -8726,7 +9181,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.9037,
-          "map_y": 0.8505
+          "map_y": 0.8505,
+          "code": "AC-LIB-03"
         },
         {
           "region": "Libertad",
@@ -8740,7 +9196,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.86757,
-          "map_y": 0.93399
+          "map_y": 0.93399,
+          "code": "AC-LIB-04"
         },
         {
           "region": "Libertad",
@@ -8754,7 +9211,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/libertad.jpg",
           "map_x": 0.79622,
-          "map_y": 0.90134
+          "map_y": 0.90134,
+          "code": "AC-LIB-05"
         },
         {
           "region": "Malca",
@@ -8768,7 +9226,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.49385,
-          "map_y": 0.77163
+          "map_y": 0.77163,
+          "code": "AC-MAL-01"
         },
         {
           "region": "Malca",
@@ -8782,7 +9241,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.60787,
-          "map_y": 0.76383
+          "map_y": 0.76383,
+          "code": "AC-MAL-02"
         },
         {
           "region": "Malca",
@@ -8796,7 +9256,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.60355,
-          "map_y": 0.80006
+          "map_y": 0.80006,
+          "code": "AC-MAL-03"
         },
         {
           "region": "Malca",
@@ -8810,7 +9271,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/malca.jpg",
           "map_x": 0.50002,
-          "map_y": 0.84941
+          "map_y": 0.84941,
+          "code": "AC-MAL-04"
         },
         {
           "region": "Media Luna",
@@ -8824,7 +9286,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.30277,
-          "map_y": 0.03798
+          "map_y": 0.03798,
+          "code": "AC-MED-01"
         },
         {
           "region": "Media Luna",
@@ -8838,7 +9301,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.37227,
-          "map_y": 0.11842
+          "map_y": 0.11842,
+          "code": "AC-MED-02"
         },
         {
           "region": "Media Luna",
@@ -8852,7 +9316,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.31803,
-          "map_y": 0.12361
+          "map_y": 0.12361,
+          "code": "AC-MED-03"
         },
         {
           "region": "Media Luna",
@@ -8866,7 +9331,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.30707,
-          "map_y": 0.19209
+          "map_y": 0.19209,
+          "code": "AC-MED-04"
         },
         {
           "region": "Media Luna",
@@ -8880,7 +9346,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/media_luna.jpg",
           "map_x": 0.38244,
-          "map_y": 0.21285
+          "map_y": 0.21285,
+          "code": "AC-MED-05"
         },
         {
           "region": "Mojocoyo",
@@ -8894,7 +9361,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.2279,
-          "map_y": 0.32092
+          "map_y": 0.32092,
+          "code": "AC-MOJ-01"
         },
         {
           "region": "Mojocoyo",
@@ -8908,7 +9376,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.17046,
-          "map_y": 0.38678
+          "map_y": 0.38678,
+          "code": "AC-MOJ-02"
         },
         {
           "region": "Mojocoyo",
@@ -8922,7 +9391,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.12875,
-          "map_y": 0.36992
+          "map_y": 0.36992,
+          "code": "AC-MOJ-03"
         },
         {
           "region": "Mojocoyo",
@@ -8936,7 +9406,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/mojocoyo.jpg",
           "map_x": 0.07833,
-          "map_y": 0.35915
+          "map_y": 0.35915,
+          "code": "AC-MOJ-04"
         },
         {
           "region": "Monte Puncu",
@@ -8950,7 +9421,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.64685,
-          "map_y": 0.18676
+          "map_y": 0.18676,
+          "code": "AC-MPU-01"
         },
         {
           "region": "Monte Puncu",
@@ -8964,7 +9436,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.66992,
-          "map_y": 0.18072
+          "map_y": 0.18072,
+          "code": "AC-MPU-02"
         },
         {
           "region": "Monte Puncu",
@@ -8978,7 +9451,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.68886,
-          "map_y": 0.14254
+          "map_y": 0.14254,
+          "code": "AC-MPU-03"
         },
         {
           "region": "Monte Puncu",
@@ -8992,7 +9466,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.73727,
-          "map_y": 0.08698
+          "map_y": 0.08698,
+          "code": "AC-MPU-04"
         },
         {
           "region": "Monte Puncu",
@@ -9006,7 +9481,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/monte_puncu.jpg",
           "map_x": 0.75777,
-          "map_y": 0.02392
+          "map_y": 0.02392,
+          "code": "AC-MPU-05"
         },
         {
           "region": "Montuyoc",
@@ -9020,7 +9496,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.32035,
-          "map_y": 0.56696
+          "map_y": 0.56696,
+          "code": "AC-MTY-01"
         },
         {
           "region": "Montuyoc",
@@ -9034,7 +9511,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.15916,
-          "map_y": 0.48576
+          "map_y": 0.48576,
+          "code": "AC-MTY-02"
         },
         {
           "region": "Montuyoc",
@@ -9048,7 +9526,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.05097,
-          "map_y": 0.69538
+          "map_y": 0.69538,
+          "code": "AC-MTY-03"
         },
         {
           "region": "Montuyoc",
@@ -9062,7 +9541,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/montuyoc.jpg",
           "map_x": 0.15162,
-          "map_y": 0.61311
+          "map_y": 0.61311,
+          "code": "AC-MTY-04"
         },
         {
           "region": "Ocoro",
@@ -9076,7 +9556,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.63049,
-          "map_y": 0.35031
+          "map_y": 0.35031,
+          "code": "AC-OCO-01"
         },
         {
           "region": "Ocoro",
@@ -9090,7 +9571,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.58562,
-          "map_y": 0.57016
+          "map_y": 0.57016,
+          "code": "AC-OCO-02"
         },
         {
           "region": "Ocoro",
@@ -9104,7 +9586,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.71837,
-          "map_y": 0.58754
+          "map_y": 0.58754,
+          "code": "AC-OCO-03"
         },
         {
           "region": "Ocoro",
@@ -9118,7 +9601,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
           "map_x": 0.72237,
-          "map_y": 0.49599
+          "map_y": 0.49599,
+          "code": "AC-OCO-04"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -9132,7 +9616,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.58236,
-          "map_y": 0.26826
+          "map_y": 0.26826,
+          "code": "AC-PNV-01"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -9146,7 +9631,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.48729,
-          "map_y": 0.25047
+          "map_y": 0.25047,
+          "code": "AC-PNV-02"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -9160,7 +9646,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.52676,
-          "map_y": 0.32396
+          "map_y": 0.32396,
+          "code": "AC-PNV-03"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -9174,7 +9661,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/p_n_de_agua_verde.jpg",
           "map_x": 0.47472,
-          "map_y": 0.32674
+          "map_y": 0.32674,
+          "code": "AC-PNV-04"
         },
         {
           "region": "Pucara",
@@ -9188,7 +9676,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.31128,
-          "map_y": 0.64588
+          "map_y": 0.64588,
+          "code": "AC-PUC-01"
         },
         {
           "region": "Pucara",
@@ -9202,7 +9691,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.29666,
-          "map_y": 0.70282
+          "map_y": 0.70282,
+          "code": "AC-PUC-02"
         },
         {
           "region": "Pucara",
@@ -9216,7 +9706,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.42511,
-          "map_y": 0.72031
+          "map_y": 0.72031,
+          "code": "AC-PUC-03"
         },
         {
           "region": "Pucara",
@@ -9230,7 +9721,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.49867,
-          "map_y": 0.70428
+          "map_y": 0.70428,
+          "code": "AC-PUC-04"
         },
         {
           "region": "Pucara",
@@ -9244,7 +9736,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.54454,
-          "map_y": 0.72304
+          "map_y": 0.72304,
+          "code": "AC-PUC-05"
         },
         {
           "region": "Pucara",
@@ -9258,7 +9751,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/pucara.jpg",
           "map_x": 0.56763,
-          "map_y": 0.72171
+          "map_y": 0.72171,
+          "code": "AC-PUC-06"
         },
         {
           "region": "Remanzo",
@@ -9272,7 +9766,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.16652,
-          "map_y": 0.18299
+          "map_y": 0.18299,
+          "code": "AC-REM-01"
         },
         {
           "region": "Remanzo",
@@ -9286,7 +9781,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.15912,
-          "map_y": 0.2275
+          "map_y": 0.2275,
+          "code": "AC-REM-02"
         },
         {
           "region": "Remanzo",
@@ -9300,7 +9796,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.2712,
-          "map_y": 0.25262
+          "map_y": 0.25262,
+          "code": "AC-REM-03"
         },
         {
           "region": "Remanzo",
@@ -9314,7 +9811,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/remanzo.jpg",
           "map_x": 0.26902,
-          "map_y": 0.28988
+          "map_y": 0.28988,
+          "code": "AC-REM-04"
         },
         {
           "region": "San Mateo",
@@ -9328,7 +9826,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.29969,
-          "map_y": 0.23242
+          "map_y": 0.23242,
+          "code": "AC-SMT-01"
         },
         {
           "region": "San Mateo",
@@ -9342,7 +9841,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.43493,
-          "map_y": 0.38391
+          "map_y": 0.38391,
+          "code": "AC-SMT-02"
         },
         {
           "region": "San Mateo",
@@ -9356,7 +9856,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.3808,
-          "map_y": 0.30675
+          "map_y": 0.30675,
+          "code": "AC-SMT-03"
         },
         {
           "region": "San Mateo",
@@ -9370,7 +9871,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/san_mateo.jpg",
           "map_x": 0.38674,
-          "map_y": 0.23542
+          "map_y": 0.23542,
+          "code": "AC-SMT-04"
         },
         {
           "region": "Tabacal",
@@ -9384,7 +9886,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.44981,
-          "map_y": 0.07223
+          "map_y": 0.07223,
+          "code": "AC-TAB-01"
         },
         {
           "region": "Tabacal",
@@ -9398,7 +9901,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.60803,
-          "map_y": 0.12123
+          "map_y": 0.12123,
+          "code": "AC-TAB-02"
         },
         {
           "region": "Tabacal",
@@ -9412,7 +9916,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.54004,
-          "map_y": 0.16184
+          "map_y": 0.16184,
+          "code": "AC-TAB-03"
         },
         {
           "region": "Tabacal",
@@ -9426,7 +9931,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/tabacal.jpg",
           "map_x": 0.52048,
-          "map_y": 0.14628
+          "map_y": 0.14628,
+          "code": "AC-TAB-04"
         },
         {
           "region": "Villa Verde",
@@ -9440,7 +9946,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/spots/ac_villa_verde_01.jpg",
           "map_x": 0.72609,
-          "map_y": 0.38441
+          "map_y": 0.38441,
+          "code": "AC-VVE-01"
         },
         {
           "region": "Villa Verde",
@@ -9454,7 +9961,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.87842,
-          "map_y": 0.3989
+          "map_y": 0.3989,
+          "code": "AC-VVE-02"
         },
         {
           "region": "Villa Verde",
@@ -9468,7 +9976,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.95126,
-          "map_y": 0.2552
+          "map_y": 0.2552,
+          "code": "AC-VVE-03"
         },
         {
           "region": "Villa Verde",
@@ -9482,7 +9991,8 @@
           "image_url": "/Images/wildlands/icons/accessory_case.png",
           "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
           "map_x": 0.95543,
-          "map_y": 0.20614
+          "map_y": 0.20614,
+          "code": "AC-VVE-04"
         }
       ]
     },
@@ -9508,7 +10018,8 @@
             "id": "skill_aircraft_shield"
           },
           "map_x": 0.25601,
-          "map_y": 0.37885
+          "map_y": 0.37885,
+          "code": "BM-BAR-01"
         },
         {
           "region": "Barvechos",
@@ -9526,7 +10037,8 @@
             "id": "skill_ammo_capacity"
           },
           "map_x": 0.25759,
-          "map_y": 0.42779
+          "map_y": 0.42779,
+          "code": "BM-BAR-02"
         },
         {
           "region": "Caimanes",
@@ -9545,7 +10057,8 @@
           },
           "map_x": 0.81018,
           "map_y": 0.59424,
-          "verified": "Found in-game"
+          "verified": "Found in-game",
+          "code": "BM-CAI-01"
         },
         {
           "region": "Espiritu Santo",
@@ -9564,7 +10077,8 @@
           },
           "map_x": 0.85477,
           "map_y": 0.12679,
-          "verified": "Found in-game"
+          "verified": "Found in-game",
+          "code": "BM-ESP-01"
         },
         {
           "region": "Flor de Oro",
@@ -9582,7 +10096,8 @@
             "id": "skill_binocular_zoom"
           },
           "map_x": 0.78217,
-          "map_y": 0.91458
+          "map_y": 0.91458,
+          "code": "BM-FLO-01"
         },
         {
           "region": "Inca Camina",
@@ -9600,7 +10115,8 @@
             "id": "skill_bleed_out_time"
           },
           "map_x": 0.28321,
-          "map_y": 0.82395
+          "map_y": 0.82395,
+          "code": "BM-INC-01"
         },
         {
           "region": "Itacua",
@@ -9618,7 +10134,8 @@
             "id": "skill_bullet_resistance"
           },
           "map_x": 0.55198,
-          "map_y": 0.55878
+          "map_y": 0.55878,
+          "code": "BM-ITA-01"
         },
         {
           "region": "Itacua",
@@ -9636,7 +10153,8 @@
             "id": "skill_born_leader"
           },
           "map_x": 0.51392,
-          "map_y": 0.60787
+          "map_y": 0.60787,
+          "code": "BM-ITA-02"
         },
         {
           "region": "Koani",
@@ -9654,7 +10172,8 @@
             "id": "skill_car_shield"
           },
           "map_x": 0.23548,
-          "map_y": 0.08174
+          "map_y": 0.08174,
+          "code": "BM-KOA-01"
         },
         {
           "region": "Koani",
@@ -9672,7 +10191,8 @@
             "id": "skill_c4"
           },
           "map_x": 0.06798,
-          "map_y": 0.0744
+          "map_y": 0.0744,
+          "code": "BM-KOA-02"
         },
         {
           "region": "La Cruz",
@@ -9690,7 +10210,8 @@
             "id": "skill_detection"
           },
           "map_x": 0.81995,
-          "map_y": 0.75875
+          "map_y": 0.75875,
+          "code": "BM-LCR-01"
         },
         {
           "region": "Libertad",
@@ -9708,7 +10229,8 @@
             "id": "skill_diversion_lure"
           },
           "map_x": 0.86104,
-          "map_y": 0.81243
+          "map_y": 0.81243,
+          "code": "BM-LIB-01"
         },
         {
           "region": "Libertad",
@@ -9726,7 +10248,8 @@
             "id": "skill_armor"
           },
           "map_x": 0.89933,
-          "map_y": 0.96254
+          "map_y": 0.96254,
+          "code": "BM-LIB-02"
         },
         {
           "region": "Malca",
@@ -9744,7 +10267,8 @@
             "id": "skill_explosion_resistance"
           },
           "map_x": 0.62007,
-          "map_y": 0.85697
+          "map_y": 0.85697,
+          "code": "BM-MAL-01"
         },
         {
           "region": "Media Luna",
@@ -9762,7 +10286,8 @@
             "id": "skill_mark_area"
           },
           "map_x": 0.29316,
-          "map_y": 0.0701
+          "map_y": 0.0701,
+          "code": "BM-MED-01"
         },
         {
           "region": "Media Luna",
@@ -9780,7 +10305,8 @@
             "id": "skill_flare_gun"
           },
           "map_x": 0.35761,
-          "map_y": 0.20414
+          "map_y": 0.20414,
+          "code": "BM-MED-02"
         },
         {
           "region": "Mojocoyo",
@@ -9798,7 +10324,8 @@
             "id": "skill_range"
           },
           "map_x": 0.13184,
-          "map_y": 0.28409
+          "map_y": 0.28409,
+          "code": "BM-MOJ-01"
         },
         {
           "region": "Mojocoyo",
@@ -9816,7 +10343,8 @@
             "id": "skill_flashbang_grenade"
           },
           "map_x": 0.18103,
-          "map_y": 0.26488
+          "map_y": 0.26488,
+          "code": "BM-MOJ-02"
         },
         {
           "region": "Monte Puncu",
@@ -9834,7 +10362,8 @@
             "id": "skill_speed"
           },
           "map_x": 0.70748,
-          "map_y": 0.13338
+          "map_y": 0.13338,
+          "code": "BM-MPU-01"
         },
         {
           "region": "Monte Puncu",
@@ -9852,7 +10381,8 @@
             "id": "skill_frag_grenade"
           },
           "map_x": 0.65096,
-          "map_y": 0.08888
+          "map_y": 0.08888,
+          "code": "BM-MPU-02"
         },
         {
           "region": "Montuyoc",
@@ -9870,7 +10400,8 @@
             "id": "skill_hip_fire_spread"
           },
           "map_x": 0.11918,
-          "map_y": 0.60692
+          "map_y": 0.60692,
+          "code": "BM-MTY-01"
         },
         {
           "region": "Ocoro",
@@ -9888,7 +10419,8 @@
             "id": "skill_mine"
           },
           "map_x": 0.57246,
-          "map_y": 0.36353
+          "map_y": 0.36353,
+          "code": "BM-OCO-01"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -9906,7 +10438,8 @@
             "id": "skill_trained_rebels"
           },
           "map_x": 0.5732,
-          "map_y": 0.25583
+          "map_y": 0.25583,
+          "code": "BM-PNV-01"
         },
         {
           "region": "P.N. de Agua Verde",
@@ -9924,7 +10457,8 @@
             "id": "skill_no_pain"
           },
           "map_x": 0.51198,
-          "map_y": 0.26617
+          "map_y": 0.26617,
+          "code": "BM-PNV-02"
         },
         {
           "region": "Pucara",
@@ -9942,7 +10476,8 @@
             "id": "skill_revive_speed"
           },
           "map_x": 0.38527,
-          "map_y": 0.7144
+          "map_y": 0.7144,
+          "code": "BM-PUC-01"
         },
         {
           "region": "Remanzo",
@@ -9960,7 +10495,8 @@
             "id": "skill_squad_resilience"
           },
           "map_x": 0.24497,
-          "map_y": 0.29731
+          "map_y": 0.29731,
+          "code": "BM-REM-01"
         },
         {
           "region": "San Mateo",
@@ -9978,7 +10514,8 @@
             "id": "skill_stable_aim"
           },
           "map_x": 0.37917,
-          "map_y": 0.35241
+          "map_y": 0.35241,
+          "code": "BM-SMT-01"
         },
         {
           "region": "Tabacal",
@@ -9996,7 +10533,8 @@
             "id": "skill_time_to_aim"
           },
           "map_x": 0.58724,
-          "map_y": 0.07318
+          "map_y": 0.07318,
+          "code": "BM-TAB-01"
         },
         {
           "region": "Villa Verde",
@@ -10015,7 +10553,8 @@
           },
           "map_x": 0.95569,
           "map_y": 0.10857,
-          "verified": "Found in-game"
+          "verified": "Found in-game",
+          "code": "BM-VVE-01"
         },
         {
           "region": "Villa Verde",
@@ -10034,7 +10573,8 @@
           },
           "map_x": 0.89869,
           "map_y": 0.21269,
-          "verified": "Found in-game"
+          "verified": "Found in-game",
+          "code": "BM-VVE-02"
         }
       ],
       "trophy_completes": [
@@ -10636,5 +11176,39 @@
         "color": "#facc15"
       }
     ]
+  },
+  "item_code_key": {
+    "note": "Every map item has a short code: TYPE-PROVINCE-NUMBER. Type it in search to jump straight to it (dashes optional).",
+    "types": {
+      "KF": "Kingslayer File",
+      "SP": "Skill Point",
+      "AC": "Accessory Case",
+      "WC": "Weapon Case",
+      "BW": "Boss / province weapon",
+      "BM": "Bonus Medal"
+    },
+    "provinces": {
+      "PNV": "P.N. de Agua Verde",
+      "BAR": "Barvechos",
+      "CAI": "Caimanes",
+      "ESP": "Espiritu Santo",
+      "FLO": "Flor de Oro",
+      "INC": "Inca Camina",
+      "ITA": "Itacua",
+      "KOA": "Koani",
+      "LCR": "La Cruz",
+      "LIB": "Libertad",
+      "MAL": "Malca",
+      "MED": "Media Luna",
+      "MOJ": "Mojocoyo",
+      "MPU": "Monte Puncu",
+      "MTY": "Montuyoc",
+      "OCO": "Ocoro",
+      "PUC": "Pucara",
+      "REM": "Remanzo",
+      "SMT": "San Mateo",
+      "TAB": "Tabacal",
+      "VVE": "Villa Verde"
+    }
   }
 }
