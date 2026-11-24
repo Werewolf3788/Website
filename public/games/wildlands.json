@@ -3140,18 +3140,18 @@
         },
         {
           "region": "La Cruz",
-          "lat": -18.0841,
-          "long": -61.6708,
+          "lat": -18.0768,
+          "long": -61.677,
           "id": "ksf_la_cruz_02",
           "name": "Love at First Burn",
-          "location": "Recording #2 of 10 · At Hoyito · 📍 -18.0841, -61.6708",
+          "location": "Recording #2 of 10 · Burnt-out ruins at Hoyito · 📍 -18.0768, -61.6770",
           "category": "Document",
-          "guide": "On a local talk show, two recently engaged lovebirds tell how surviving the wildfire together brought them true love. At Hoyito (A village ravaged by a huge forest fire). 📍 Lat -18.0841, Long -61.6708.",
+          "guide": "On a local talk show, two recently engaged lovebirds tell how surviving the wildfire together brought them true love. In the burnt-out wooden ruins at Hoyito, by the river on the La Cruz border. 📍 Lat -18.0768, Long -61.6770.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/la_cruz.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_la_cruz_02.jpg",
           "tags": "kingslayer file document",
-          "map_x": 0.66872,
-          "map_y": 0.61028
+          "map_x": 0.668,
+          "map_y": 0.60943
         },
         {
           "region": "La Cruz",
@@ -4185,18 +4185,18 @@
         },
         {
           "region": "Ocoro",
-          "lat": -15.3346,
-          "long": -62.1213,
+          "lat": -15.3165,
+          "long": -62.1221,
           "id": "ksf_ocoro_05",
           "name": "Shopping List",
-          "location": "Picture Evidence #5 of 9 · Just northwest of Coca Paste Factory · 📍 -15.3346, -62.1213",
+          "location": "Picture Evidence #5 of 9 · Coca Paste Factory, second floor office (on the armchair) · 📍 -15.3165, -62.1221",
           "category": "Document",
-          "guide": "A purchase order for chemical precursors, written by the Ocoro labs supervisor to Via-B Gas, in Libertad. These precursors are required to process coca leaves into coca paste, then into cocaine. Just northwest of Coca Paste Factory (The cartel's industrial coca paste laboratory). 📍 Lat -15.3346, Long -62.1213.",
+          "guide": "A purchase order for chemical precursors, written by the Ocoro labs supervisor to Via-B Gas, in Libertad. These precursors are required to process coca leaves into coca paste, then into cocaine. Inside the big brick factory building at the Coca Paste Factory: get to the second floor (a broken window off the tin roof works), and it's lying on the seat of the brown armchair by the window. 📍 Lat -15.3165, Long -62.1221.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_ocoro_05.jpg",
           "tags": "kingslayer file document",
-          "map_x": 0.61644,
-          "map_y": 0.28937
+          "map_x": 0.61635,
+          "map_y": 0.28726
         },
         {
           "region": "Ocoro",
@@ -4971,18 +4971,18 @@
         },
         {
           "region": "Villa Verde",
-          "lat": -16.1617,
-          "long": -61.1653,
+          "lat": -16.1472,
+          "long": -61.1675,
           "id": "ksf_villa_verde_02",
           "name": "A Local Feud",
-          "location": "Recording #2 of 11 · Northwest of Maco · 📍 -16.1617, -61.1653",
+          "location": "Recording #2 of 11 · Maco: wooden house on stilts (helipad out front), on the old mattress · 📍 -16.1472, -61.1675",
           "category": "Document",
-          "guide": "A news report about riots between the cocaleros and the miners. Northwest of Maco (A cocalero village controlled by the cartel). 📍 Lat -16.1617, Long -61.1653.",
+          "guide": "A news report about riots between the cocaleros and the miners. At the northwest edge of Maco, in the tall wooden house on stilts with a helipad in front: go up onto the main deck and into the right-hand room. It's lying on the old mattress between the blue trash bags. (The Extended (30) magazine accessory case is upstairs in the same house.) 📍 Lat -16.1472, Long -61.1675.",
           "image_url": "/Images/wildlands/icons/kingslayer_file.png",
-          "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
+          "location_image_url": "/Images/wildlands/spots/ksf_villa_verde_02.jpg",
           "tags": "kingslayer file document",
-          "map_x": 0.72689,
-          "map_y": 0.38601
+          "map_x": 0.72664,
+          "map_y": 0.38432
         },
         {
           "region": "Villa Verde",
@@ -5739,18 +5739,18 @@
         },
         {
           "region": "Ocoro",
-          "lat": -15.3136,
-          "long": -62.0919,
+          "lat": -15.2931,
+          "long": -62.0929,
           "id": "wc_ocoro_01",
           "name": "SR-635",
-          "location": "Just north of Coca Paste Factory · 📍 -15.3136, -62.0919",
+          "location": "Coca Paste Factory, inside the ARMERIA building · 📍 -15.2931, -62.0929",
           "category": "Submachine Gun",
-          "guide": "An SMG-sized AR. Just north of Coca Paste Factory (The cartel's industrial coca paste laboratory). 📍 Lat -15.3136, Long -62.0919.",
+          "guide": "An SMG-sized AR. At the Coca Paste Factory, go into the building marked ARMERIA (north end, by the railway): the case is on the floor next to the green lockers. 📍 Lat -15.2931, Long -62.0929.",
           "image_url": "/Images/wildlands/icons/weapon_case.png",
-          "location_image_url": "/Images/wildlands/provinces/ocoro.jpg",
+          "location_image_url": "/Images/wildlands/spots/wc_ocoro_01.jpg",
           "tags": "weapon case",
-          "map_x": 0.61983,
-          "map_y": 0.28692
+          "map_x": 0.61971,
+          "map_y": 0.28453
         },
         {
           "region": "Ocoro",
@@ -6390,16 +6390,16 @@
         },
         {
           "region": "Espiritu Santo",
-          "lat": -14.7493,
-          "long": -61.1285,
+          "lat": -14.7285,
+          "long": -61.1326,
           "id": "sp_espiritu_santo_05",
           "name": "Skill Point #5 (+3)",
-          "location": "At Guari Mine · 📍 -14.7493, -61.1285",
-          "guide": "At Guari Mine (A dangerous gold mine exploited by Monte Oro). 📍 Lat -14.7493, Long -61.1285.",
+          "location": "At Guari Mine, inside the mine tunnel · 📍 -14.7285, -61.1326",
+          "guide": "At Guari Mine (A dangerous gold mine exploited by Monte Oro), by the road junction west of the helipads. Go into the dark mine tunnel (night vision helps): the skill point is on the wooden crate against the rock wall. 📍 Lat -14.7285, Long -61.1326.",
           "image_url": "/Images/wildlands/icons/skill_point.png",
-          "location_image_url": "/Images/wildlands/provinces/espiritu_santo.jpg",
-          "map_x": 0.731,
-          "map_y": 0.2212
+          "location_image_url": "/Images/wildlands/spots/sp_espiritu_santo_05.jpg",
+          "map_x": 0.73053,
+          "map_y": 0.21877
         },
         {
           "region": "Espiritu Santo",
@@ -8015,16 +8015,16 @@
         },
         {
           "region": "Villa Verde",
-          "lat": -15.4096,
-          "long": -60.7201,
+          "lat": -15.3919,
+          "long": -60.7238,
           "id": "sp_villa_verde_02",
           "name": "Skill Point #2 (+3)",
-          "location": "At Pyrolusite Laboratory Dos · 📍 -15.4096, -60.7201",
-          "guide": "At Pyrolusite Laboratory Dos (Pyrolusite is converted into chemical precursors). 📍 Lat -15.4096, Long -60.7201.",
+          "location": "At Pyrolusite Laboratory Dos, second floor of the big shed · 📍 -15.3919, -60.7238",
+          "guide": "At Pyrolusite Laboratory Dos (Pyrolusite is converted into chemical precursors). Go up to the second-floor walkway inside the big metal shed: the skill point is on the rusty red toolbox in the corner, next to the fire extinguisher. 📍 Lat -15.3919, Long -60.7238.",
           "image_url": "/Images/wildlands/icons/skill_point.png",
-          "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
-          "map_x": 0.77821,
-          "map_y": 0.2983
+          "location_image_url": "/Images/wildlands/spots/sp_villa_verde_02.jpg",
+          "map_x": 0.77778,
+          "map_y": 0.29623
         },
         {
           "region": "Villa Verde",
@@ -9430,17 +9430,17 @@
         },
         {
           "region": "Villa Verde",
-          "lat": -16.1635,
-          "long": -61.1691,
+          "lat": -16.148,
+          "long": -61.1722,
           "id": "ac_villa_verde_01",
           "name": "Magazine: Extended (30)",
-          "location": "🔫 SMG · West of Maco · 📍 -16.1635, -61.1691",
+          "location": "🔫 SMG · Maco: wooden house on stilts (helipad out front), upstairs left room on the blue shelf · 📍 -16.148, -61.1722",
           "category": "Magazine",
-          "guide": "6x35 Magazine (30) Fits: Submachine Gun. West of Maco (A cocalero village controlled by the cartel). 📍 Lat -16.1635, Long -61.1691.",
+          "guide": "6x35 Magazine (30) Fits: Submachine Gun. At the northwest edge of Maco there's a tall wooden house on stilts with a helipad in front. Take the outside stairs to the upper deck and go into the left-hand room: the case is on the blue metal shelf, second shelf down. (The 'A Local Feud' recording is in the same house.) 📍 Lat -16.148, Long -61.1722.",
           "image_url": "/Images/wildlands/icons/accessory_case.png",
-          "location_image_url": "/Images/wildlands/provinces/villa_verde.jpg",
-          "map_x": 0.72645,
-          "map_y": 0.38622
+          "location_image_url": "/Images/wildlands/spots/ac_villa_verde_01.jpg",
+          "map_x": 0.72609,
+          "map_y": 0.38441
         },
         {
           "region": "Villa Verde",
