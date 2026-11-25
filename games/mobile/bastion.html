@@ -184,7 +184,7 @@ body.pad .touchOnly{display:none}
 
 <!-- Upgrades -->
 <div class="panel mid" id="upg">
-  <div class="hd"><h2>⬆ Upgrades</h2><span class="pill">🪙 <span id="upgCash">0</span></span><button class="x" data-close>X</button></div>
+  <div class="hd"><h2>⬆ Upgrades</h2><span class="pill">💰 <span id="upgCash">0</span></span><button class="x" data-close>X</button></div>
   <div class="bd"><div class="small" style="margin-bottom:8px;text-align:center">Spend cash to unlock permanent upgrades. Tap a hex to buy the next level.</div><div class="hexWrap" id="hexWrap"></div></div>
 </div>
 
@@ -275,7 +275,7 @@ const ENEMY = {
 
 /* ---------- upgrades ---------- */
 const UPG = [
-  {k:'cash',ic:'🪙',name:'Cash',base:250,g:1.6,max:40,col:'#eab308',fx:l=>'+'+(l*8)+'%'},
+  {k:'cash',ic:'💰',name:'Cash',base:250,g:1.6,max:40,col:'#eab308',fx:l=>'+'+(l*8)+'%'},
   {k:'dmg',ic:'💥',name:'Tower damage',base:200,g:1.6,max:40,col:'#f97316',fx:l=>'+'+(l*8)+'%'},
   {k:'board',ic:'🧱',name:'Board',base:2500,g:3.2,max:4,col:'#3b82f6',fx:l=>(7+l*2)+' x '+(7+l*2)},
   {k:'castle',ic:'🏰',name:'Castle health',base:150,g:1.45,max:60,col:'#06b6d4',fx:l=>20+l*10},
@@ -685,7 +685,7 @@ window.buyCamp=id=>{const c=CAMPS[id];if(!S.shop.stock[id]||S.cash<c.price)retur
 /* ---------- upgrades ---------- */
 function renderUpg(){$('upgCash').textContent=fmt(S.cash);
   $('hexWrap').innerHTML=UPG.map(u=>{const l=U(u.k),max=l>=u.max,cost=upgCost(u,l);
-    return `<div class="hex${max?' max':''}${!max&&S.cash<cost?' cant':''}" style="background:${u.col}" onclick="buyUpg('${u.k}')"><span class="ic">${u.ic}</span>${u.name}<span>${u.fx(l)}</span><span class="cost">${max?'MAX':'🪙 '+fmt(cost)}</span><span style="font-size:9px">Lv ${l}/${u.max}</span></div>`;}).join('');}
+    return `<div class="hex${max?' max':''}${!max&&S.cash<cost?' cant':''}" style="background:${u.col}" onclick="buyUpg('${u.k}')"><span class="ic">${u.ic}</span>${u.name}<span>${u.fx(l)}</span><span class="cost">${max?'MAX':'💰 '+fmt(cost)}</span><span style="font-size:9px">Lv ${l}/${u.max}</span></div>`;}).join('');}
 window.buyUpg=k=>{const u=UPG.find(x=>x.k===k),l=U(k);if(l>=u.max)return;const cost=upgCost(u,l);if(S.cash<cost)return toast('Not enough cash');
   S.cash-=cost;S.upg[k]=l+1;sfx('buy');toast(`⬆ ${u.name}: ${u.fx(l+1)}`);
   if(k==='board'){buildBoard();resize();}
