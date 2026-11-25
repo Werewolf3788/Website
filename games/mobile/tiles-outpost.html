@@ -135,7 +135,7 @@ function hud(){
 /* ---------------- mission select ---------------- */
 function viewMissions(){
   hud();
-  var html = '<div class="home"><a href="index.html">☰ Games</a><a href="#" id="toHeroes">🪖 Squad</a></div>';
+  var html = '<div class="home"><a href="#" id="toHeroes">🪖 Squad</a></div>';
   html += '<div class="story">The outpost holds the only road east. Twelve missions stand between your three survivors and the Sun Gate — and nothing moves out here unless you move it.</div>';
   html += '<div class="res"><div><b>' + teamPower() + '</b>squad power</div><div><b>' + Object.keys(S.stars).length + '</b>missions cleared</div><div><b>' + S.wins + '</b>battles won</div></div>';
   if (S.ambush) html += '<div class="card" style="border-color:#f59e0b"><div class="mrow"><div class="num">⚡</div><div class="g"><div class="nm">Wandering horde</div><div class="sm">A tougher wave is passing the outpost. Double gold if you break it.</div></div><button id="ambushBtn">Fight</button></div></div>';

@@ -321,7 +321,7 @@ $('pauseBtn').onclick = function(){
   else { G.running = true; last = performance.now(); $('pauseBtn').textContent = '⏸ Pause'; raf = requestAnimationFrame(loop); }
 };
 $('restartBtn').onclick = function(){ intro(); };
-document.addEventListener('visibilitychange', function(){ if (document.hidden) pause(); });
+document.addEventListener('visibilitychange', function(){ if (document.hidden) { pause(); if (G) $('pauseBtn').textContent = '▶ Resume'; } });
 
 load();
 $('cash').textContent = Math.floor(S.cash);
