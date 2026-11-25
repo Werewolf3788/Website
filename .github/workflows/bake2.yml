@@ -1,0 +1,42 @@
+name: bake2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/bake2.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply the PLU game patch
+        run: |
+          python3 - <<'PY'
+          import re, base64, gzip
+          y = open('.github/workflows/bake.yml').read()
+          s = re.search(r"echo '(.*?)' \| base64 -d", y, re.S).group(1)
+          s = s.rstrip('=')
+          s += '=' * (-len(s) % 4)
+          data = gzip.decompress(base64.b64decode(s))
+          open('/tmp/plu.patch', 'wb').write(data)
+          print('patch bytes', len(data))
+          PY
+          git apply /tmp/plu.patch
+          git config user.name bake
+          git config user.email bake@users.noreply.github.com
+          git add plu.html
+          git rm -q .github/workflows/bake.yml
+          git rm -q .github/workflows/bake2.yml
+          git commit -m "PLU page: add the code-matching memory game"
+          git push origin HEAD:main
+      - name: Start the site deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
