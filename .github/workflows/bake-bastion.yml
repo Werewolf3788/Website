@@ -1,0 +1,25 @@
+name: bake-bastion
+on:
+  push:
+    paths:
+      - '.github/workflows/bake-bastion.yml'
+permissions:
+  contents: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply Bastion patch and push
+        run: |
+          set -euo pipefail
+          f=games/mobile/bastion.html
+          test "$(sha256sum "$f" | cut -d' ' -f1)" = "b287a0fa049da156d8b75cb597a6882977da429d2695b5874d8c5e219ddcfad1"
+          echo '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' | base64 -d | xz -d > /tmp/bastion.diff
+          git apply /tmp/bastion.diff
+          test "$(sha256sum "$f" | cut -d' ' -f1)" = "d110ecb72c4000932eddfa625863e6cbeae078684fbe13792c9b8965660c0dcd"
+          git config user.name "bake-bot"
+          git config user.email "bake-bot@users.noreply.github.com"
+          git add "$f"
+          git commit -m "Bastion v1.1.2: Skyguard Flak anti-air tower"
+          git push
