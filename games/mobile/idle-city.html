@@ -15,290 +15,318 @@
 <meta charset="utf-8">
 <script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0f172a">
-<title>Idle City</title>
+<meta name="theme-color" content="#150e22">
+<title>City Rush</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-  html,body{margin:0;min-height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
-  #app{max-width:620px;margin:0 auto;padding-bottom:20px}
-  #top{position:sticky;top:0;z-index:5;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:#0f172a;border-bottom:1px solid #1e293b}
-  #top .t{font-size:.8rem;color:#94a3b8} #top b{color:#fde047}
-  #top button{background:none;border:0;color:#e2e8f0;font:inherit;cursor:pointer}
-  #cash{font-size:1.15rem;font-weight:900}
-  #sky{position:relative;height:132px;margin:10px 12px 0;border-radius:14px;overflow:hidden;
-       background:linear-gradient(#0b1e3a 0%,#123a63 45%,#1e5d7a 72%,#2c7a5f 100%);cursor:pointer}
-  #stars{position:absolute;inset:0;opacity:.7}
-  #ground{position:absolute;left:0;right:0;bottom:0;height:34px;background:linear-gradient(#1f5f3f,#143c2a)}
-  #city{position:absolute;left:0;right:0;bottom:30px;height:98px;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:0 6px}
-  .bld{width:13px;border-radius:3px 3px 0 0;background:#334155;border:1px solid #0b1220;position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-  .bld::after{content:'';position:absolute;inset:3px 2px auto;height:3px;background:rgba(253,224,71,.75);border-radius:1px;box-shadow:0 8px 0 rgba(253,224,71,.5),0 16px 0 rgba(253,224,71,.35)}
-  #hint1{position:absolute;top:8px;left:0;right:0;text-align:center;font-size:.72rem;color:#cbd5e1;text-shadow:0 1px 4px #000;pointer-events:none}
-  .float{position:absolute;font-weight:900;color:#fde047;text-shadow:0 2px 6px #000;pointer-events:none;animation:up .9s ease-out forwards;font-size:1rem;z-index:9}
-  @keyframes up{to{transform:translateY(-46px);opacity:0}}
-  #tabs{display:flex;gap:6px;margin:10px 12px 0}
-  #tabs button{flex:1;background:#1e293b;color:#cbd5e1;border:0;border-radius:10px;padding:10px;font:inherit;font-weight:700;cursor:pointer}
-  #tabs button.on{background:#22c55e;color:#04210f}
-  #list{padding:10px 12px}
-  .brow{display:grid;grid-template-columns:38px 1fr auto;gap:8px;align-items:center;background:#1e293b;border-radius:12px;padding:10px;margin-bottom:8px}
-  .brow .ic{font-size:24px;text-align:center}
-  .brow .nm{font-weight:800;font-size:.92rem} .brow .sub{font-size:.72rem;color:#94a3b8;margin-top:2px}
-  .brow button{background:#22c55e;color:#04210f;border:0;border-radius:9px;padding:10px 10px;font:inherit;font-weight:800;font-size:.78rem;cursor:pointer;min-width:96px;line-height:1.25}
-  .brow button:disabled{background:#334155;color:#64748b;cursor:default}
-  .brow button .c{display:block;font-weight:700;font-size:.68rem;opacity:.85}
-  #bulk{display:flex;gap:6px;margin:0 12px 4px}
-  #bulk button{flex:1;background:#334155;color:#cbd5e1;border:0;border-radius:999px;padding:8px;font:inherit;font-size:.78rem;font-weight:800;cursor:pointer}
-  #bulk button.on{background:#38bdf8;color:#04210f}
-  #foot{color:#64748b;font-size:.72rem;text-align:center;padding:5px 12px 0}
-  #ov{position:fixed;inset:0;z-index:20;background:#000c;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
-  #ov button{background:#22c55e;color:#04210f;font-weight:800;border:0;border-radius:10px;padding:12px 20px;font:inherit;cursor:pointer}
-  #ovT{font-size:1.4rem;font-weight:900} #ovS{color:#cbd5e1;max-width:400px}
+  html,body{margin:0;height:100%;background:#150e22;color:#fff2e2;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;height:100%}
+  #hud{display:flex;gap:6px;align-items:center;justify-content:space-between;padding:8px 10px;font-size:.78rem;font-weight:800;background:#1d1430}
+  .pill{background:#2a1d40;border-radius:999px;padding:5px 9px}
+  #hud a{color:#fbcfe8;text-decoration:none}
+  #lane{position:relative;flex:1;min-height:0;overflow:hidden;background:linear-gradient(#1b1130,#2a1740 60%,#3b1f52)}
+  #lane:before{content:'';position:absolute;left:0;right:0;bottom:0;height:26%;background:repeating-linear-gradient(90deg,#241934 0 14px,#2b1e3e 14px 28px)}
+  #counter{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(#f59e0b,#b45309);box-shadow:3px 0 12px #0006}
+  .cust{position:absolute;top:34%;transform:translate(-50%,-50%);text-align:center;will-change:left;transition:opacity .25s}
+  .cust .who{font-size:1.7rem;line-height:1;filter:drop-shadow(0 3px 4px #0007)}
+  .cust .ord{font-size:1rem;background:#fff2e2;border-radius:999px;padding:1px 5px;margin-top:2px;display:inline-block;color:#1d1430}
+  .cust .pat{width:38px;height:4px;background:#0006;border-radius:3px;margin:3px auto 0;overflow:hidden}
+  .cust .pat i{display:block;height:100%;background:#4ade80}
+  .cust.gone{opacity:0;transform:translate(-50%,-160%) scale(.7)}
+  .cust.angry .pat i{background:#ef4444}
+  #banner{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#fbbf24;color:#3b1f05;font-weight:900;font-size:.72rem;padding:4px 10px;border-radius:999px;opacity:0;transition:opacity .2s}
+  #banner.on{opacity:1}
+  #combo{position:absolute;right:8px;top:8px;font-weight:900;color:#fda4af;font-size:.8rem}
+  #floor{background:#1d1430;padding:8px 8px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  #floor button{border:0;border-radius:14px;padding:10px 4px;font:inherit;font-weight:900;font-size:.72rem;color:#1d1430;background:#fcd34d;display:flex;flex-direction:column;align-items:center;gap:2px}
+  #floor button b{font-size:1.5rem}
+  #floor button:active{transform:scale(.96)}
+  #floor button.off{filter:grayscale(1) brightness(.6)}
+  #foot{display:flex;gap:6px;padding:8px;background:#1d1430}
+  #foot button{flex:1;border:0;border-radius:10px;padding:9px;font:inherit;font-weight:800;font-size:.74rem;background:#3b2a55;color:#e9d5ff}
+  #sheet{position:absolute;inset:0;background:#150e22f2;padding:16px;overflow:auto;display:none;z-index:6}
+  #sheet.on{display:block}
+  #sheet h2{margin:0 0 6px;font-size:1.15rem;color:#fbbf24}
+  #sheet p{margin:0 0 12px;font-size:.85rem;line-height:1.5;color:#e9d5ff}
+  .up{display:flex;align-items:center;gap:10px;background:#241832;border:1px solid #3b2a55;border-radius:12px;padding:10px;margin-bottom:8px}
+  .up .g{flex:1}
+  .up .nm{font-weight:800;font-size:.85rem}
+  .up .sm{font-size:.7rem;color:#c4b5fd;margin-top:2px}
+  .up button{border:0;border-radius:9px;padding:8px 10px;font:inherit;font-weight:900;font-size:.74rem;background:#4ade80;color:#04210f}
+  .up button:disabled{background:#3b2a55;color:#8b7aa8}
+  .big{width:100%;border:0;border-radius:12px;padding:13px;font:inherit;font-weight:900;background:#fbbf24;color:#3b1f05;font-size:.9rem}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="top">
-    <div><div class="t">Cash</div><div id="cash">0</div></div>
-    <div style="text-align:center"><div class="t">Per second</div><div id="sps" style="font-weight:800">0</div></div>
-    <div style="text-align:right"><div class="t">Tap gives</div><div id="tapv" style="font-weight:800">1</div></div>
-    <button id="gamesBtn">☰</button>
+  <div id="hud">
+    <span class="pill">💰 <b id="cash">0</b></span>
+    <span class="pill" id="goal">0 / 16</span>
+    <span class="pill">❤️ <b id="lives">3</b></span>
+    <a href="index.html">☰ Games</a>
   </div>
-  <div id="sky"><div id="stars"></div><div id="city"></div><div id="ground"></div><div id="hint1">tap the city to earn</div></div>
-  <div id="bulk"><button data-k="1" class="on">Buy ×1</button><button data-k="10">Buy ×10</button><button data-k="max">Buy max</button></div>
-  <div id="tabs"><button data-t="b" class="on">🏗️ Buildings</button><button data-t="u">⭐ Upgrades</button></div>
-  <div id="list"></div>
-  <div id="foot">Your city earns cash while you are away (up to 2 hours at half speed). Everything saves on this device.</div>
+  <div id="lane">
+    <div id="counter"></div>
+    <div id="banner"></div>
+    <div id="combo"></div>
+  </div>
+  <div id="floor">
+    <button data-o="🍋"><b>🍋</b>Lemonade</button>
+    <button data-o="☕"><b>☕</b>Café</button>
+    <button data-o="🍩"><b>🍩</b>Bakery</button>
+  </div>
+  <div id="foot">
+    <button id="pauseBtn">⏸ Pause</button>
+    <button id="restartBtn">↻ Restart district</button>
+  </div>
+  <div id="sheet"></div>
 </div>
-<div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn">Nice</button></div>
 <script>
 (function(){
 'use strict';
 var $ = function(id){ return document.getElementById(id); };
+var LANE = $('lane'), SHEET = $('sheet');
+var SAVE = 'cityrush_v1';
 
-var BUILDINGS = [
-  { id:'stand',  n:'Lemonade Stand', ic:'🍋', cost:15,       inc:0.15,  col:'#facc15' },
-  { id:'shop',   n:'Corner Shop',    ic:'🏪', cost:120,      inc:1.2,   col:'#fb923c' },
-  { id:'cafe',   n:'Café',           ic:'☕', cost:900,      inc:7,     col:'#f472b6' },
-  { id:'bakery', n:'Bakery',         ic:'🥐', cost:6500,     inc:38,    col:'#38bdf8' },
-  { id:'mart',   n:'Supermarket',    ic:'🛒', cost:45000,    inc:210,   col:'#4ade80' },
-  { id:'office', n:'Office Block',   ic:'🏢', cost:320000,   inc:1400,  col:'#a78bfa' },
-  { id:'mall',   n:'Shopping Mall',  ic:'🏬', cost:2400000,  inc:9200,  col:'#f97316' },
-  { id:'tower',  n:'Sky Tower',      ic:'🏙️', cost:18000000, inc:62000, col:'#22d3ee' }
+var DISTRICTS = [
+  { n:'Lemonade Lane', goal:14, speed:15, gap:1.5, tip:3, who:['🧍','👩','🧑‍🦱'],
+    story:'You borrow a folding table, a jug and a bag of lemons. One corner, one afternoon, and the first customer is already walking over.' },
+  { n:'Old Market', goal:20, speed:12.5, gap:1.25, tip:4, who:['🧑‍🌾','👴','🧕'],
+    story:'The market crowd is bigger and pickier. Keep the queue moving and the traders will start talking about the kid with the cart.' },
+  { n:'Riverside Walk', goal:26, speed:11, gap:1.1, tip:5, who:['🚶','👨‍🦰','👵'],
+    story:'A food cart licence, a proper awning, and joggers who order three things at once. Riverside does not wait for anyone.' },
+  { n:'Station Row', goal:32, speed:9.5, gap:0.95, tip:6, who:['🧑‍💼','👩‍💻','🧑‍🎓'],
+    story:'Commuters. Ninety seconds between trains and no patience at all. This is where a cart becomes a name.' },
+  { n:'Uptown Terrace', goal:40, speed:8.2, gap:0.85, tip:8, who:['🎩','👗','🕴️'],
+    story:'Uptown money, uptown manners, uptown queue. Rent is brutal, but one good afternoon here pays for the whole month.' },
+  { n:'Grand Plaza', goal:48, speed:7, gap:0.72, tip:10, who:['🎉','🧑‍🚀','👑'],
+    story:'The plaza is packed for the festival and your little cart is the only thing open. Keep serving — this is the shift they will remember.' }
 ];
-var GROWTH = 1.15;
-var SAVE = 'idlecity_v1';
 
-var S = { coins:0, tapLvl:0, mult:0, counts:{}, earned:0, last:Date.now() };
-var bulk = 1, tab = 'b';
-var rows = {}, sig = '';
+var S = { district:0, cash:0, best:0, doubleTip:0, extraLife:0, slow:0, station3:true };
+var G = null, raf = 0, last = 0;
 
 function load(){
   try {
-    var raw = localStorage.getItem(SAVE);
-    if (!raw) return;
-    var d = JSON.parse(raw);
-    if (!d) return;
-    S.coins = +d.coins || 0; S.tapLvl = +d.tapLvl || 0; S.mult = +d.mult || 0;
-    S.earned = +d.earned || 0; S.last = +d.last || Date.now();
-    S.counts = d.counts || {};
+    var d = JSON.parse(localStorage.getItem(SAVE) || 'null');
+    if (d) for (var k in S) if (typeof d[k] === 'number') S[k] = d[k];
   } catch (e) {}
 }
-function save(){
-  S.last = Date.now();
-  try { localStorage.setItem(SAVE, JSON.stringify(S)); } catch (e) {}
+function save(){ try { localStorage.setItem(SAVE, JSON.stringify(S)); } catch (e) {} }
+function money(n){ S.cash += n; $('cash').textContent = Math.floor(S.cash); }
+
+/* ---------------- district flow ---------------- */
+function district(){ return DISTRICTS[Math.min(S.district, DISTRICTS.length - 1)]; }
+
+function showSheet(html){ SHEET.innerHTML = html; SHEET.classList.add('on'); }
+function hideSheet(){ SHEET.classList.remove('on'); }
+
+function intro(){
+  pause();
+  var d = district();
+  showSheet('<h2>District ' + (S.district + 1) + ' — ' + d.n + '</h2><p>' + d.story + '</p>' +
+    '<p style="font-size:.78rem;color:#c4b5fd">Serve ' + d.goal + ' customers before you lose all three hearts. Tap the right counter for each order — wrong counter breaks your streak.</p>' +
+    '<button class="big" id="beginBtn">Open the counter</button>');
+  $('beginBtn').onclick = function(){ hideSheet(); startDistrict(); };
 }
 
-function fmt(n){
-  if (!isFinite(n)) return '0';
-  var a = Math.abs(n);
-  if (a >= 1e15) return (n / 1e15).toFixed(2) + 'Q';
-  if (a >= 1e12) return (n / 1e12).toFixed(2) + 'T';
-  if (a >= 1e9) return (n / 1e9).toFixed(2) + 'B';
-  if (a >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-  if (a >= 1e4) return (n / 1e3).toFixed(1) + 'K';
-  if (a >= 100) return Math.floor(n).toLocaleString();
-  return (Math.round(n * 10) / 10).toString();
+function startDistrict(){
+  LANE.querySelectorAll('.cust').forEach(function(c){ c.remove(); });
+  var d = district();
+  G = { goal: d.goal, served: 0, lives: 3 + S.extraLife, combo: 0, spawnT: 0.6, custs: [], running: true,
+        rush: 0, nextRush: 14, elapsed: 0, over: false };
+  $('lives').textContent = G.lives;
+  $('goal').textContent = '0 / ' + G.goal;
+  $('combo').textContent = '';
+  last = performance.now();
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(loop);
 }
 
-function owned(b){ return S.counts[b.id] | 0; }
-function mult(){ return 1 + S.mult * 0.1; }
-function sps(){
-  var t = 0;
-  for (var i = 0; i < BUILDINGS.length; i++) t += owned(BUILDINGS[i]) * BUILDINGS[i].inc;
-  return t * mult();
-}
-function tapValue(){ return (1 + S.tapLvl * 2 + sps() * 0.12) * 1; }
-function nextCost(b){ return Math.ceil(b.cost * Math.pow(GROWTH, owned(b))); }
-function bulkCost(b, k){
-  var c = 0, n = owned(b);
-  for (var i = 0; i < k; i++) c += Math.ceil(b.cost * Math.pow(GROWTH, n + i));
-  return c;
-}
-function maxBuy(b){
-  var n = 0, c = owned(b), total = 0;
-  while (total + Math.ceil(b.cost * Math.pow(GROWTH, c + n)) <= S.coins && n < 500) { total += Math.ceil(b.cost * Math.pow(GROWTH, c + n)); n++; }
-  return { n:n, cost:total };
-}
-var TAP_UP_COST = function(){ return Math.ceil(40 * Math.pow(2.1, S.tapLvl)); };
-var MULT_UP_COST = function(){ return Math.ceil(600 * Math.pow(3.2, S.mult)); };
+function pause(){ if (G) G.running = false; cancelAnimationFrame(raf); }
 
-/* ---------- rendering ---------- */
-function buildRows(){
-  var list = $('list');
-  list.innerHTML = '';
-  rows = {};
-  if (tab === 'b') {
-    BUILDINGS.forEach(function(b){
-      var d = document.createElement('div');
-      d.className = 'brow';
-      d.innerHTML = '<div class="ic">' + b.ic + '</div>' +
-        '<div><div class="nm">' + b.n + '</div><div class="sub"></div></div>' +
-        '<button></button>';
-      list.appendChild(d);
-      var btn = d.querySelector('button');
-      btn.onclick = function(){ buy(b); };
-      var sub = d.querySelector('.sub');
-      rows[b.id] = { own: sub, btn: btn };
-    });
-  } else {
-    addUpgrade('👆 Tap power', 'Each tap earns more cash', TAP_UP_COST, function(){ S.tapLvl++; }, function(){ return 'Lv ' + S.tapLvl; });
-    addUpgrade('💹 City income', '+10% to every building', MULT_UP_COST, function(){ S.mult++; }, function(){ return '+ ' + (S.mult * 10) + '%'; });
-  }
-  updateRows();
-}
-function addUpgrade(name, desc, costFn, apply, valueFn){
-  var d = document.createElement('div');
-  d.className = 'brow';
-  d.innerHTML = '<div class="ic">' + name.split(' ')[0] + '</div><div><div class="nm">' + name.replace(/^\S+\s/, '') +
-    '</div><div class="sub">' + desc + '</div></div><button></button>';
-  $('list').appendChild(d);
-  var btn = d.querySelector('button'), sub = d.querySelector('.sub');
-  btn.onclick = function(){ var c = costFn(); if (S.coins < c) return; S.coins -= c; apply(); refresh(); save(); };
-  rows['up_' + name] = { own: { textContent: '' }, btn: btn, cost: costFn, value: valueFn, sub: sub };
-}
-
-function updateRows(){
-  $('cash').textContent = '$' + fmt(S.coins);
-  $('sps').textContent = '$' + fmt(sps()) + '/s';
-  $('tapv').textContent = '$' + fmt(tapValue());
-  if (tab === 'b') {
-    BUILDINGS.forEach(function(b){
-      var r = rows[b.id]; if (!r) return;
-      var k = bulk === 'max' ? Math.max(1, maxBuy(b).n) : bulk;
-      var cost = bulkCost(b, k);
-      r.own.textContent = owned(b) + ' owned · ' + fmt(owned(b) * b.inc * mult()) + '/s each';
-      r.btn.innerHTML = (bulk === 'max' ? 'Buy ' + Math.max(1, maxBuy(b).n) : 'Buy ' + k) + '<span class="c">$' + fmt(cost) + '</span>';
-      r.btn.disabled = S.coins < cost;
-    });
-  } else {
-    Object.keys(rows).forEach(function(k){
-      var r = rows[k]; if (k.indexOf('up_') !== 0) return;
-      var c = r.cost();
-      r.btn.innerHTML = 'Upgrade<span class="c">$' + fmt(c) + '</span>';
-      r.btn.disabled = S.coins < c;
-      r.own.textContent = r.value();
-    });
-  }
-  drawCity();
-}
-
-function drawCity(){
-  var items = [];
-  BUILDINGS.forEach(function(b, i){
-    var n = Math.min(owned(b), 9);
-    for (var k = 0; k < n; k++) items.push({ i:i, col:b.col });
-  });
-  items = items.slice(0, 34);
-  var key = items.map(function(x){ return x.i + x.col; }).join('|');
-  if (key === sig) return;
-  sig = key;
-  var city = $('city');
-  city.innerHTML = items.map(function(x){
-    var h = 16 + x.i * 10 + Math.random() * 8;
-    return '<div class="bld" style="height:' + h.toFixed(0) + 'px;background:' + x.col + '"></div>';
-  }).join('');
-}
-
-function refresh(){ updateRows(); }
-
-/* ---------- actions ---------- */
-function buy(b){
-  var r = rows[b.id]; if (!r) return;
-  var k = bulk === 'max' ? maxBuy(b).n : bulk;
-  if (k < 1) return;
-  var cost = bulkCost(b, k);
-  if (S.coins < cost) return;
-  S.coins -= cost;
-  S.counts[b.id] = owned(b) + k;
-  sig = '';
-  refresh(); save();
-}
-
-function tapAt(ev){
-  var gain = tapValue();
-  S.coins += gain; S.earned += gain;
-  var r = $('sky').getBoundingClientRect();
-  var f = document.createElement('div');
-  f.className = 'float';
-  f.textContent = '+$' + fmt(gain);
-  f.style.left = Math.max(6, Math.min(r.width - 60, ev.clientX - r.left - 16)) + 'px';
-  f.style.top = Math.max(4, Math.min(r.height - 30, ev.clientY - r.top)) + 'px';
-  $('sky').appendChild(f);
-  setTimeout(function(){ f.remove(); }, 900);
-  refresh();
-}
-
-$('sky').addEventListener('pointerdown', function(e){ e.preventDefault(); tapAt(e); }, { passive:false });
-
-$('bulk').addEventListener('click', function(e){
-  var b = e.target.closest('button'); if (!b) return;
-  bulk = b.dataset.k === 'max' ? 'max' : (+b.dataset.k);
-  [].forEach.call($('bulk').children, function(x){ x.classList.toggle('on', x === b); });
-  updateRows();
-});
-$('tabs').addEventListener('click', function(e){
-  var b = e.target.closest('button'); if (!b) return;
-  tab = b.dataset.t;
-  [].forEach.call($('tabs').children, function(x){ x.classList.toggle('on', x === b); });
-  buildRows();
-});
-$('gamesBtn').onclick = function(){ location.href = 'index.html'; };
-$('ovBtn').onclick = function(){ $('ov').style.display = 'none'; };
-
-/* ---------- tick ---------- */
-var last = performance.now();
-setInterval(function(){
-  var now = performance.now();
-  var dt = Math.min(1, (now - last) / 1000);
+function loop(now){
+  if (!G || !G.running) return;
+  var dt = Math.min(0.05, (now - last) / 1000);
   last = now;
-  S.coins += sps() * dt;
-  S.earned += sps() * dt;
-  refresh();
-}, 250);
-setInterval(save, 5000);
-addEventListener('beforeunload', save);
+  G.elapsed += dt;
+  if (G.rush > 0) { G.rush -= dt; if (G.rush <= 0) setBanner(''); }
+  if (G.elapsed >= G.nextRush) {
+    G.rush = 7; G.nextRush += 22;
+    setBanner('⚡ RUSH HOUR — double customers, double tips');
+  }
+  var d = district();
+  var rate = (G.rush > 0 ? 2.1 : 1) * (1 + S.district * 0.05);
+  G.spawnT -= dt;
+  if (G.spawnT <= 0) { G.spawnT = d.gap / rate; spawn(d); }
 
-/* stars */
-(function(){
-  var h = '';
-  for (var i = 0; i < 46; i++) h += '<div style="position:absolute;width:2px;height:2px;background:#e0f2fe;border-radius:50%;opacity:' +
-    (0.3 + Math.random() * 0.7).toFixed(2) + ';left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 55).toFixed(1) + '%"></div>';
-  $('stars').innerHTML = h;
-})();
-
-/* ---------- boot ---------- */
-load();
-var away = (Date.now() - S.last) / 1000;
-if (away > 60 && sps() > 0) {
-  var gain = sps() * Math.min(away, 7200) * 0.5;
-  S.coins += gain;
-  $('ovT').textContent = '🏙️ Welcome back!';
-  $('ovS').textContent = 'Your city kept working while you were away and brought in $' + fmt(gain) + '.';
-  $('ov').style.display = 'flex';
+  var W = LANE.clientWidth;
+  for (var i = G.custs.length - 1; i >= 0; i--) {
+    var c = G.custs[i];
+    if (c.state === 'served') { c.t += dt; if (c.t > 0.35) { c.el.remove(); G.custs.splice(i, 1); } continue; }
+    if (c.state === 'angry') { c.t += dt; if (c.t > 0.6) { c.el.remove(); G.custs.splice(i, 1); } continue; }
+    c.x -= dt / c.speed;
+    c.pat -= dt;
+    c.el.style.left = (20 + c.x * (W - 40)) + 'px';
+    var pct = Math.max(0, c.pat / c.maxPat * 100);
+    c.el.querySelector('.pat i').style.width = pct + '%';
+    c.el.classList.toggle('angry', pct < 30);
+    if (c.x <= 0.02 || c.pat <= 0) miss(c);
+  }
+  raf = requestAnimationFrame(loop);
 }
-S.last = Date.now();
-buildRows();
-refresh();
-save();
+
+function spawn(d){
+  var orders = S.station3 ? ['🍋', '☕', '🍩'] : ['🍋', '☕', '🍩', '🍋'];
+  var c = {
+    x: 1, speed: d.speed * (0.85 + Math.random() * 0.35),
+    order: orders[Math.floor(Math.random() * orders.length)],
+    maxPat: (6 + Math.random() * 3) * (1 + S.slow * 0.18), state: 'walk', t: 0
+  };
+  c.pat = c.maxPat;
+  var el = document.createElement('div');
+  el.className = 'cust';
+  el.innerHTML = '<div class="who">' + d.who[Math.floor(Math.random() * d.who.length)] + '</div>' +
+    '<div class="ord">' + c.order + '</div><div class="pat"><i style="width:100%"></i></div>';
+  LANE.appendChild(el);
+  c.el = el;
+  el.style.left = (20 + c.x * (LANE.clientWidth - 40)) + 'px';
+  G.custs.push(c);
+}
+
+function setBanner(t){
+  var b = $('banner');
+  b.textContent = t;
+  b.classList.toggle('on', !!t);
+}
+
+function serve(order){
+  if (!G || !G.running || G.over) return;
+  var pick = null;
+  G.custs.forEach(function(c){
+    if (c.state !== 'walk' || c.order !== order) return;
+    if (!pick || c.x < pick.x) pick = c;
+  });
+  if (!pick) { breakCombo(); flash(order, false); return; }
+  G.combo++;
+  var mult = Math.min(3, 1 + G.combo * 0.12);
+  var d = district();
+  var tip = Math.round((d.tip + S.doubleTip) * mult * (G.rush > 0 ? 2 : 1));
+  money(tip); pick.state = 'served'; pick.el.classList.add('gone');
+  pick.t = 0;
+  pick.el.querySelector('.ord').textContent = '+' + tip;
+  G.served++;
+  $('goal').textContent = G.served + ' / ' + G.goal;
+  $('combo').textContent = G.combo > 1 ? 'x' + G.combo + ' streak' : '';
+  flash(order, true);
+  if (G.served >= G.goal) clearDistrict();
+}
+
+function flash(order, good){
+  var b = document.querySelector('#floor button[data-o="' + order + '"]');
+  if (!b) return;
+  b.style.background = good ? '#4ade80' : '#ef4444';
+  setTimeout(function(){ b.style.background = '#fcd34d'; }, 120);
+}
+
+function breakCombo(){
+  if (G.combo > 2) setBanner('Streak lost');
+  G.combo = 0;
+  $('combo').textContent = '';
+}
+
+function miss(c){
+  if (c.state !== 'walk') return;
+  c.state = 'angry';
+  c.t = 0;
+  c.el.classList.add('gone');
+  c.el.querySelector('.ord').textContent = '😤';
+  G.combo = 0;
+  $('combo').textContent = '';
+  G.lives--;
+  $('lives').textContent = Math.max(0, G.lives);
+  if (G.lives <= 0) loseDistrict();
+}
+
+function clearDistrict(){
+  G.over = true; G.running = false;
+  pause();
+  save();
+  var bonus = 20 + S.district * 25;
+  money(bonus);
+  setTimeout(function(){
+    if (S.district >= DISTRICTS.length - 1) return ending();
+    showSheet('<h2>District cleared — ' + district().n + '</h2>' +
+      '<p>' + G.served + ' served, ' + bonus + ' bonus cash. Time for a proper upgrade before the next street.</p>' +
+      '<div id="ups"></div><button class="big" id="nextBtn">Next district</button>');
+    renderUpgrades();
+    $('nextBtn').onclick = function(){
+      S.district = Math.min(DISTRICTS.length - 1, S.district + 1);
+      S.best = Math.max(S.best, S.district);
+      save(); hideSheet(); intro();
+    };
+  }, 260);
+}
+
+function loseDistrict(){
+  G.over = true; G.running = false;
+  pause();
+  save();
+  setTimeout(function(){
+    showSheet('<h2>Closing early</h2><p>The last customer walked off and the street emptied out. Nothing is lost — the cart is still yours, and the district will be just as busy in a minute.</p>' +
+      '<button class="big" id="retryBtn">Try the district again</button>');
+    $('retryBtn').onclick = function(){ hideSheet(); intro(); };
+  }, 300);
+}
+
+var UPGRADES = [
+  { k:'doubleTip', nm:'Better ingredients', sm:'+2 cash on every serve', cost:function(){ return 45 + S.doubleTip * 40; } },
+  { k:'extraLife', nm:'Charm offensive', sm:'One more heart in every district', cost:function(){ return 70 + S.extraLife * 60; }, max:2 },
+  { k:'slow', nm:'Comfier seating', sm:'Customers wait a bit longer', cost:function(){ return 50 + S.slow * 45; }, max:3 }
+];
+
+function renderUpgrades(){
+  var html = '';
+  UPGRADES.forEach(function(u, i){
+    var maxed = u.max && S[u.k] >= u.max;
+    var c = u.cost();
+    html += '<div class="up"><div class="g"><div class="nm">' + u.nm + (maxed ? ' · maxed' : '') + '</div><div class="sm">' + u.sm + '</div></div>' +
+      '<button data-u="' + i + '"' + (maxed || S.cash < c ? ' disabled' : '') + '>' + (maxed ? '✓' : c + ' 💰') + '</button></div>';
+  });
+  $('ups').innerHTML = html;
+  [].forEach.call($('ups').querySelectorAll('[data-u]'), function(b){
+    b.onclick = function(){
+      var u = UPGRADES[+b.dataset.u], c = u.cost();
+      if (S.cash < c) return;
+      S.cash -= c; S[u.k]++;
+      money(0); save(); renderUpgrades();
+    };
+  });
+}
+
+function ending(){
+  showSheet('<h2>The plaza is yours</h2><p>Six districts, one folding table, and a queue that wraps the fountain. The city knows the cart now — and the cart knows what it is doing.</p>' +
+    '<p style="font-size:.8rem">Keep playing: restart the plaza for a better score, or go back and take every district again with all the upgrades.</p>' +
+    '<button class="big" id="againBtn">Back to Lemonade Lane</button>');
+  $('againBtn').onclick = function(){ S.district = 0; save(); hideSheet(); intro(); };
+}
+
+$('floor').addEventListener('click', function(e){
+  var b = e.target.closest('button');
+  if (b && G && G.running) serve(b.dataset.o);
+});
+$('pauseBtn').onclick = function(){
+  if (!G) return intro();
+  if (G.running) { pause(); $('pauseBtn').textContent = '▶ Resume'; }
+  else { G.running = true; last = performance.now(); $('pauseBtn').textContent = '⏸ Pause'; raf = requestAnimationFrame(loop); }
+};
+$('restartBtn').onclick = function(){ intro(); };
+document.addEventListener('visibilitychange', function(){ if (document.hidden) pause(); });
+
+load();
+$('cash').textContent = Math.floor(S.cash);
+$('lives').textContent = 3 + S.extraLife;
+intro();
 })();
 </script>
 </body>
