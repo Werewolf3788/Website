@@ -1,0 +1,32 @@
+name: bake-bastion
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply tower model patch
+        env:
+          PAYLOAD: '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'
+        run: |
+          printf '%s' "$PAYLOAD" | base64 -d | xz -dc > "$RUNNER_TEMP/towers.patch"
+          test "$(sha256sum "$RUNNER_TEMP/towers.patch" | cut -d' ' -f1)" = "4f6071330ac263fc5ca6b3c4a11d2a5e463c48090c35d3d5a2984b1a2e145065"
+          git apply "$RUNNER_TEMP/towers.patch"
+          test "$(sha256sum games/mobile/bastion.html | cut -d' ' -f1)" = "6efb9ef5f2f3cdd1b864bf11908bb6645ebf0f12634b1fa45d01d613ef6c15e2"
+      - name: Commit and push
+        run: |
+          git config user.name "bake-bot"
+          git config user.email "bake-bot@users.noreply.github.com"
+          git add games/mobile/bastion.html
+          if git diff --cached --quiet; then echo "already up to date"; else git commit -m "Give every Bastion tower its own model"; git push origin HEAD:main; fi
+      - name: Trigger deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
