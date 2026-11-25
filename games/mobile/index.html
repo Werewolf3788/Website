@@ -122,6 +122,21 @@
   <div class="muted">3D tower defense: place spawner camps, build your own road to the castle, and defend it with towers and traps through endless waves. Enemies drop towers, paths and traps. Get <b>3 of the same</b>, open Inventory and hit <b>Fuse</b> to make a <b>+1</b>. Upgrade board, spawner shop, full stats and run history. Works with a PS5/Xbox controller. Saves to your account.</div>
   <div class="row"><button id="playBastion">Play</button></div>
 </div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🧱 Brick Breaker</h2>
+  <div class="muted">Arcade brick busting: slide the paddle, keep the ball alive and clear every brick on the board. Three lives, endless levels that add a row and a bit more speed, and your best score saved on this device. Drag anywhere to move the paddle, tap to launch.</div>
+  <div class="row"><button id="brickBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🔢 Merge 2048</h2>
+  <div class="muted">Slide the tiles and join matching numbers: 2 and 2 make 4, 4 and 4 make 8, all the way to 2048 and past it. Swipe or use the arrow keys, undo a slip, and your best score is saved on this device.</div>
+  <div class="row"><button id="mergeBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">💣 Minefield</h2>
+  <div class="muted">The classic mine hunt: dig the safe squares, read the numbers and flag the mines. Easy 9×9, Medium 12×12 and Hard 16×16. Your first tap is always safe, and your best time for each size is saved on this device.</div>
+  <div class="row"><button id="minesBtn">Play</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -197,6 +212,9 @@
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'tycoon.html?room=' + encodeURIComponent(c);
   };
+  $('brickBtn').onclick = function () { location.href = 'bricks.html'; };
+  $('mergeBtn').onclick = function () { location.href = 'merge.html'; };
+  $('minesBtn').onclick = function () { location.href = 'mines.html'; };
   // ---- leaderboard
   var LGAMES = [['all', 'All games'], ['wahoo', '🎲 Wahoo'], ['tycoon', '🏙️ Monopoly'], ['frogger', '🐸 Frogger'], ['race', '🏎️ Racing'], ['battleship', '🚢 Battleship']], leadTab = 'all', leadData = null;
   var BEST = { frogger: ['Best solo', function (v) { return v + ' crossed'; }, false], battleship: ['Fewest shots', function (v) { return v + ' shots'; }, true], race: ['Best lap', function (v) { var t = v / 1000, m = Math.floor(t / 60); return m + ':' + (t % 60).toFixed(1).padStart(4, '0'); }, true] };

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Merge 2048</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;height:100%}
+  #top{padding:8px 12px;font-size:.85rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a}
+  #top button{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;padding:2px 4px}
+  #wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px}
+  #board{position:relative;width:min(92vw,64vh,440px);aspect-ratio:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:8px;background:#334155;padding:8px;border-radius:14px;touch-action:none}
+  .cell{background:#1e293b;border-radius:9px;display:flex;align-items:center;justify-content:center;position:relative}
+  .tile{position:absolute;inset:0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:clamp(18px,7.4vw,34px);line-height:1;letter-spacing:-1px}
+  .tile.small{font-size:clamp(14px,5.6vw,25px)}
+  .tile.pop{animation:pop .14s ease-out}
+  @keyframes pop{0%{transform:scale(.55)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+  #bar{display:flex;gap:8px;justify-content:center;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0f172a}
+  #bar button{flex:1;max-width:170px;background:#334155;color:#e2e8f0;border:0;border-radius:12px;padding:12px 6px;font:inherit;font-weight:700;cursor:pointer}
+  #bar button:disabled{opacity:.4}
+  #hint{background:#0f172a;color:#94a3b8;font-size:.76rem;text-align:center;padding:0 10px calc(8px + env(safe-area-inset-bottom))}
+  #ov{position:fixed;inset:0;z-index:20;background:#000c;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
+  #ov button{background:#22c55e;color:#04210f;font-weight:800;border:0;border-radius:10px;padding:12px 20px;font:inherit;cursor:pointer}
+  #ov button.alt{background:#334155;color:#e2e8f0}
+  #ovT{font-size:1.6rem;font-weight:900} #ovS{color:#cbd5e1;max-width:420px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <span>🔢 <b>Merge 2048</b></span>
+    <span>Score <b id="score">0</b> · Best <b id="best">0</b></span>
+    <span><button id="gamesBtn">☰ Games</button></span>
+  </div>
+  <div id="wrap"><div id="board"></div></div>
+  <div id="bar"><button id="undoBtn">↩ Undo</button><button id="newBtn">↺ New game</button></div>
+  <div id="hint">Swipe the board or use the arrow keys. Same numbers join into one bigger number.</div>
+</div>
+<div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button><button id="ovBtn2" class="alt" style="display:none"></button></div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var N = 4;
+var board = $('board');
+var g = [], score = 0, best = parseInt(localStorage.getItem('m2048_best') || '0', 10) || 0;
+var stack = [], popped = {}, won = false, over = false, keepPlaying = false;
+
+var SKIN = {
+  2:    ['#eee4da', '#776e65'],
+  4:    ['#ede0c8', '#776e65'],
+  8:    ['#f2b179', '#ffffff'],
+  16:   ['#f59563', '#ffffff'],
+  32:   ['#f67c5f', '#ffffff'],
+  64:   ['#f65e3b', '#ffffff'],
+  128:  ['#edcf72', '#ffffff'],
+  256:  ['#edcc61', '#ffffff'],
+  512:  ['#edc850', '#ffffff'],
+  1024: ['#edc53f', '#ffffff'],
+  2048: ['#edc22e', '#ffffff']
+};
+function skin(v){ return SKIN[v] || ['#3c3a32', '#ffffff']; }
+
+function blank(){ var a = []; for (var i = 0; i < N * N; i++) a.push(0); return a; }
+
+function newGame(){
+  g = blank(); score = 0; stack = []; popped = {}; won = false; over = false; keepPlaying = false;
+  addTile(); addTile();
+  $('ov').style.display = 'none';
+  render(); hud();
+}
+
+function addTile(){
+  var free = [];
+  for (var i = 0; i < g.length; i++) if (!g[i]) free.push(i);
+  if (!free.length) return;
+  var i = free[Math.floor(Math.random() * free.length)];
+  g[i] = Math.random() < 0.9 ? 2 : 4;
+  popped[i] = true;
+}
+
+function hud(){
+  $('score').textContent = score.toLocaleString();
+  $('best').textContent = best.toLocaleString();
+  $('undoBtn').disabled = !stack.length;
+}
+
+function render(){
+  var html = '';
+  for (var i = 0; i < N * N; i++) {
+    var v = g[i];
+    if (!v) { html += '<div class="cell"></div>'; continue; }
+    var sk = skin(v), txt = String(v);
+    var cls = 'tile' + (txt.length > 2 ? ' small' : '') + (popped[i] ? ' pop' : '');
+    html += '<div class="cell"><div class="' + cls + '" style="background:' + sk[0] + ';color:' + sk[1] + '">' + txt + '</div></div>';
+  }
+  board.innerHTML = html;
+  popped = {};
+}
+
+/* one line slide/merge; dirs: 0 left, 1 right, 2 up, 3 down */
+function slide(dir){
+  var before = g.slice(), merges = {}, moved = false, prevScore = score;
+  for (var line = 0; line < N; line++) {
+    var idx = [];
+    for (var k = 0; k < N; k++) {
+      var r, c;
+      if (dir === 0) { r = line; c = k; }
+      else if (dir === 1) { r = line; c = N - 1 - k; }
+      else if (dir === 2) { r = k; c = line; }
+      else { r = N - 1 - k; c = line; }
+      idx.push(r * N + c);
+    }
+    var vals = [], i;
+    for (i = 0; i < N; i++) if (g[idx[i]]) vals.push(g[idx[i]]);
+    var out = [];
+    for (i = 0; i < vals.length; i++) {
+      if (i + 1 < vals.length && vals[i] === vals[i + 1]) {
+        var sum = vals[i] * 2;
+        out.push(sum);
+        score += sum;
+        merges[idx[out.length - 1]] = true;
+        i++;
+      } else out.push(vals[i]);
+    }
+    for (i = 0; i < N; i++) {
+      var nv = out[i] || 0;
+      if (g[idx[i]] !== nv) moved = true;
+      g[idx[i]] = nv;
+    }
+  }
+  return { moved: moved, merges: merges, before: before, prevScore: prevScore };
+}
+
+function canMove(){
+  for (var i = 0; i < g.length; i++) if (!g[i]) return true;
+  for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) {
+    var v = g[r * N + c];
+    if (c + 1 < N && g[r * N + c + 1] === v) return true;
+    if (r + 1 < N && g[(r + 1) * N + c] === v) return true;
+  }
+  return false;
+}
+
+function move(dir){
+  if (over) return;
+  var res = slide(dir);
+  if (!res.moved) return;
+  stack.push({ g: res.before, score: res.prevScore });
+  popped = res.merges;
+  addTile();
+  render(); hud();
+  if (score > best) { best = score; try { localStorage.setItem('m2048_best', String(best)); } catch (e) {} hud(); }
+  if (!won && g.indexOf(2048) >= 0) {
+    won = true;
+    if (!keepPlaying) { showOverlay('🎉 You made 2048!', 'You can stop here or keep going for a bigger tile.', 'Keep playing', function(){ keepPlaying = true; }); return; }
+  }
+  if (!canMove()) {
+    over = true;
+    showOverlay('No moves left', 'Final score ' + score.toLocaleString() + ' · best ' + best.toLocaleString(), 'New game', newGame);
+  }
+}
+function undo(){
+  if (!stack.length) return;
+  var s = stack.pop();
+  g = s.g.slice(); score = s.score; over = false;
+  render(); hud();
+}
+
+function showOverlay(t, s, btn, fn, btn2, fn2){
+  $('ovT').textContent = t; $('ovS').textContent = s || '';
+  $('ovBtn').textContent = btn;
+  $('ovBtn').onclick = function(){ $('ov').style.display = 'none'; fn(); };
+  if (btn2) { $('ovBtn2').style.display = ''; $('ovBtn2').textContent = btn2; $('ovBtn2').onclick = function(){ $('ov').style.display = 'none'; fn2(); }; }
+  else $('ovBtn2').style.display = 'none';
+  $('ov').style.display = 'flex';
+}
+
+/* ---------- input ---------- */
+var KEYMAP = { ArrowLeft: 0, ArrowRight: 1, ArrowUp: 2, ArrowDown: 3, a: 0, d: 1, w: 2, s: 3 };
+addEventListener('keydown', function(e){
+  var d = KEYMAP[e.key];
+  if (d === undefined) return;
+  e.preventDefault();
+  move(d);
+});
+
+var sx = 0, sy = 0, tracking = false;
+board.addEventListener('pointerdown', function(e){ sx = e.clientX; sy = e.clientY; tracking = true; });
+board.addEventListener('pointerup', function(e){
+  if (!tracking) return;
+  tracking = false;
+  var dx = e.clientX - sx, dy = e.clientY - sy;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+  if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 1 : 0);
+  else move(dy > 0 ? 3 : 2);
+});
+board.addEventListener('pointercancel', function(){ tracking = false; });
+
+$('newBtn').onclick = newGame;
+$('undoBtn').onclick = undo;
+$('gamesBtn').onclick = function(){ location.href = 'index.html'; };
+
+newGame();
+})();
+</script>
+</body>
+</html>

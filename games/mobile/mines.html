@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Minefield</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;height:100%}
+  #top{padding:6px 12px;font-size:.85rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.6}
+  #top button,#top a{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;padding:2px 4px}
+  #diffs{display:flex;gap:6px;justify-content:center;padding:6px 10px;background:#0f172a}
+  #diffs button{background:#334155;color:#cbd5e1;border:0;border-radius:999px;padding:8px 14px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
+  #diffs button.on{background:#22c55e;color:#04210f}
+  #stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px}
+  #grid{display:grid;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr);gap:3px;
+        width:min(94vw,72vh,520px);aspect-ratio:1;touch-action:manipulation}
+  .cell{background:#334155;border-radius:4px;display:flex;align-items:center;justify-content:center;
+        font-weight:900;font-size:clamp(9px,2.6vw,20px);cursor:pointer;line-height:1}
+  .cell.open{background:#1e293b;cursor:default}
+  .cell.open.mine{background:#dc2626}
+  .cell.flag{background:#3f3f46;color:#fbbf24}
+  .cell.wrong{background:#7f1d1d}
+  .cell.pop{animation:pop .16s ease-out}
+  @keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
+  #hint{padding:6px 12px calc(8px + env(safe-area-inset-bottom));background:#0f172a;color:#94a3b8;font-size:.75rem;text-align:center}
+  #ov{position:fixed;inset:0;z-index:20;background:#000c;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
+  #ov button{background:#22c55e;color:#04210f;font-weight:800;border:0;border-radius:10px;padding:12px 20px;font:inherit;cursor:pointer}
+  #ovT{font-size:1.5rem;font-weight:900} #ovS{color:#cbd5e1;max-width:420px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <span>💣 <b>Minefield</b></span>
+    <span>💣 <b id="left">10</b> · ⏱ <b id="time">0:00</b> · Best <b id="best">—</b></span>
+    <span><button id="flagBtn">🚩 Flag: off</button> <button id="newBtn">↺ New</button> <button id="gamesBtn">☰ Games</button></span>
+  </div>
+  <div id="diffs">
+    <button data-d="easy" class="on">Easy 9×9</button>
+    <button data-d="med">Medium 12×12</button>
+    <button data-d="hard">Hard 16×16</button>
+  </div>
+  <div id="stage"><div id="grid"></div></div>
+  <div id="hint">Tap to dig · long-press (or right-click) to flag · the first tap is always safe</div>
+</div>
+<div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button></div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var DIFFS = {
+  easy: { n: 9,  m: 10, label: 'Easy 9×9' },
+  med:  { n: 12, m: 26, label: 'Medium 12×12' },
+  hard: { n: 16, m: 40, label: 'Hard 16×16' }
+};
+var NUMCOL = ['', '#60a5fa', '#34d399', '#f87171', '#a78bfa', '#fbbf24', '#22d3ee', '#f472b6', '#e2e8f0'];
+
+var cur = 'easy', N = 9, MINES = 10;
+var data = [], els = [];
+var started = false, over = false, opened = 0, flags = 0;
+var t0 = 0, timer = null, flagMode = false, pressT = null, suppress = false;
+
+function bestKey(){ return 'ms_best_' + cur; }
+function getBest(){ return parseInt(localStorage.getItem(bestKey()) || '0', 10) || 0; }
+function fmt(s){ s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+
+function hud(){
+  $('left').textContent = Math.max(0, MINES - flags);
+  $('best').textContent = getBest() ? fmt(getBest()) : '—';
+  $('flagBtn').textContent = '🚩 Flag: ' + (flagMode ? 'on' : 'off');
+  $('flagBtn').style.color = flagMode ? '#4ade80' : '';
+}
+
+function newGame(key){
+  if (key) cur = key;
+  var D = DIFFS[cur];
+  N = D.n; MINES = D.m;
+  data = []; els = [];
+  started = false; over = false; opened = 0; flags = 0; suppress = false;
+  clearInterval(timer); timer = null; t0 = 0;
+  $('time').textContent = '0:00';
+  $('ov').style.display = 'none';
+  var grid = $('grid');
+  grid.style.setProperty('--n', N);
+  grid.innerHTML = '';
+  var frag = document.createDocumentFragment();
+  for (var i = 0; i < N * N; i++) {
+    data.push({ mine: false, open: false, flag: false, near: 0 });
+    var d = document.createElement('div');
+    d.className = 'cell';
+    d.dataset.i = i;
+    els.push(d);
+    frag.appendChild(d);
+  }
+  grid.appendChild(frag);
+  hud();
+}
+
+function idx(r, c){ return r * N + c; }
+function neighbours(i){
+  var r = Math.floor(i / N), c = i % N, out = [];
+  for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
+    if (!dr && !dc) continue;
+    var nr = r + dr, nc = c + dc;
+    if (nr < 0 || nc < 0 || nr >= N || nc >= N) continue;
+    out.push(idx(nr, nc));
+  }
+  return out;
+}
+
+function placeMines(safe){
+  var banned = {}; banned[safe] = true;
+  neighbours(safe).forEach(function(i){ banned[i] = true; });
+  var spots = [];
+  for (var i = 0; i < N * N; i++) if (!banned[i]) spots.push(i);
+  for (var k = spots.length - 1; k > 0; k--) {
+    var j = Math.floor(Math.random() * (k + 1));
+    var t = spots[k]; spots[k] = spots[j]; spots[j] = t;
+  }
+  for (var m = 0; m < MINES && m < spots.length; m++) data[spots[m]].mine = true;
+  for (var x = 0; x < N * N; x++) {
+    if (data[x].mine) continue;
+    data[x].near = neighbours(x).filter(function(y){ return data[y].mine; }).length;
+  }
+}
+
+function startTimer(){
+  t0 = Date.now();
+  clearInterval(timer);
+  timer = setInterval(function(){
+    if (over) return;
+    $('time').textContent = fmt((Date.now() - t0) / 1000);
+  }, 250);
+}
+
+function paint(i, open){
+  var d = data[i], el = els[i];
+  el.className = 'cell';
+  if (d.flag) { el.className = 'cell flag'; el.textContent = '🚩'; return; }
+  if (d.open) {
+    el.className = 'cell open' + (d.mine ? ' mine' : '');
+    if (d.mine) el.textContent = '💥';
+    else if (d.near) { el.textContent = d.near; el.style.color = NUMCOL[d.near]; }
+    else el.textContent = '';
+    return;
+  }
+  el.textContent = '';
+  el.style.color = '';
+}
+
+function openCell(i){
+  var d = data[i];
+  if (d.open || d.flag) return;
+  if (!started) { placeMines(i); started = true; startTimer(); }
+  d.open = true; opened++;
+  paint(i);
+  els[i].classList.add('pop');
+  if (d.mine) return lose(i);
+  if (!d.near) {
+    neighbours(i).forEach(function(n){
+      if (!data[n].open && !data[n].flag && !data[n].mine) openCell(n);
+    });
+  }
+  if (opened >= N * N - MINES) win();
+}
+
+function toggleFlag(i){
+  var d = data[i];
+  if (d.open || over) return;
+  d.flag = !d.flag;
+  flags += d.flag ? 1 : -1;
+  paint(i);
+  hud();
+}
+
+function lose(hit){
+  over = true; clearInterval(timer);
+  for (var i = 0; i < N * N; i++) {
+    var d = data[i];
+    if (d.mine && !d.flag) { d.open = true; paint(i); }
+    if (!d.mine && d.flag) { els[i].className = 'cell wrong'; els[i].textContent = '❌'; }
+  }
+  els[hit].style.background = '#991b1b';
+  show('💥 Boom', 'You hit a mine on ' + DIFFS[cur].label + '. Give it another go.', 'Try again');
+}
+
+function win(){
+  over = true; clearInterval(timer);
+  var secs = Math.round((Date.now() - t0) / 1000);
+  var prev = getBest();
+  var beat = !prev || secs < prev;
+  if (beat) { try { localStorage.setItem(bestKey(), String(secs)); } catch (e) {} }
+  for (var i = 0; i < N * N; i++) {
+    if (data[i].mine && !data[i].flag) { data[i].flag = true; flags++; paint(i); }
+  }
+  hud();
+  show('🎉 Field cleared',
+    DIFFS[cur].label + ' in ' + fmt(secs) + (beat ? ' — a new best time!' : ' · best ' + fmt(prev)),
+    'Play again');
+}
+
+function show(title, sub, btn){
+  $('ovT').textContent = title;
+  $('ovS').textContent = sub || '';
+  $('ovBtn').textContent = btn;
+  $('ovBtn').onclick = function(){ newGame(); };
+  $('ov').style.display = 'flex';
+}
+
+/* ---------- input ---------- */
+$('grid').addEventListener('pointerdown', function(e){
+  var el = e.target.closest('.cell');
+  if (!el || over) return;
+  var i = +el.dataset.i;
+  suppress = false;
+  clearTimeout(pressT);
+  pressT = setTimeout(function(){
+    suppress = true;
+    toggleFlag(i);
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch (er) {}
+  }, 420);
+});
+$('grid').addEventListener('pointerup', function(e){
+  var el = e.target.closest('.cell');
+  clearTimeout(pressT);
+  if (!el || over) return;
+  if (suppress) { suppress = false; return; }
+  var i = +el.dataset.i;
+  if (flagMode) toggleFlag(i);
+  else openCell(i);
+});
+$('grid').addEventListener('pointercancel', function(){ clearTimeout(pressT); });
+$('grid').addEventListener('contextmenu', function(e){
+  e.preventDefault();
+  var el = e.target.closest('.cell');
+  if (!el || over) return;
+  clearTimeout(pressT);
+  toggleFlag(+el.dataset.i);
+});
+
+$('flagBtn').onclick = function(){ flagMode = !flagMode; hud(); };
+$('newBtn').onclick = function(){ newGame(); };
+$('gamesBtn').onclick = function(){ location.href = 'index.html'; };
+$('diffs').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-d]');
+  if (!b) return;
+  [].forEach.call($('diffs').children, function(x){ x.classList.toggle('on', x === b); });
+  newGame(b.dataset.d);
+});
+
+newGame();
+})();
+</script>
+</body>
+</html>
