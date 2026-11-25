@@ -608,8 +608,9 @@ function statRows(k,id,l){const d=defOf(k,id);let h='';
     ${d.splash?`<div class="row"><span>Splash</span><b>${d.splash} tiles</b></div>`:''}${s.chain?`<div class="row"><span>Chain</span><b>${s.chain} targets</b></div>`:''}
     <div class="row"><span>Hits flying</span><b>${d.air?'Yes':'No'}</b></div>
     <div class="row"><span>Fusion</span><b>Next +1: x1.12 dmg, +5% speed</b></div>`;}
-  if(k==='s'){const c=CAMPS[id];h+=`<div class="row"><span>Drop luck</span><b>x${(c.luck*(1+l*0.1)).toFixed(2)}</b></div>
-    <div class="row"><span>Enemy HP</span><b>x${c.hp.toFixed(2)}</b></div><div class="row"><span>Enemies per wave</span><b>+${l*20}%</b></div>`;}
+  if(k==='s'){const c=CAMPS[id];const q=hiFactor(c.luck*(1+l*0.1));h+=`<div class="row"><span>Drop luck</span><b>x${(c.luck*(1+l*0.1)).toFixed(2)}</b></div>
+    <div class="row"><span>Enemy HP</span><b>x${c.hp.toFixed(2)}</b></div><div class="row"><span>Enemies per wave</span><b>+${l*20}%</b></div>
+    <div class="row"><span>Legendary drop bonus</span><b>x${(1+9*q).toFixed(1)}</b></div><div class="row"><span>Mythic drop bonus</span><b>x${(1+19*q).toFixed(1)}</b></div>`;}
   if(k==='p'){const sl=(d.base||0)+U('road')*.03;h+=`<div class="row"><span>Slow on this tile</span><b>${(sl*100).toFixed(0)}%</b></div>`;}
   if(k==='r'){h+=`<div class="row"><span>Damage per cross</span><b>${(d.dmg*Math.pow(1.15,l)*mult().dmg*(1+waveNo*0.08)).toFixed(1)}</b></div>${d.slow?`<div class="row"><span>Slow</span><b>${d.slow*100}%</b></div>`:''}`;}
   return h;}
@@ -698,7 +699,7 @@ function renderStats(){const m=mult();let h='';
   if(statTab==='player'){const runLuck=waveLuck();
     h=`<div class="big3"><div style="background:linear-gradient(#ef4444,#b91c1c)"><small>DAMAGE</small>x${m.dmg.toFixed(2)}</div><div style="background:linear-gradient(#fbbf24,#d97706)"><small>GOLD</small>x${m.cash.toFixed(2)}</div><div style="background:linear-gradient(#4ade80,#16a34a)"><small>LUCK</small>+${((m.luck+runLuck)*100).toFixed(1)}%</div></div>
     ${[['Damage multiplier','x'+m.dmg.toFixed(2)],['Crit chance (on top of each tower)','+'+(m.crit*100).toFixed(1)+'%'],['Crit damage','+'+(m.critd*100).toFixed(0)+'%'],['Attack speed','+'+((m.aspd-1)*100).toFixed(0)+'%'],['Range','+'+m.range.toFixed(2)+' tiles'],
-      ['Gold per kill','x'+m.cash.toFixed(2)],['Wave gold scaling','+6% per wave'],['Luck from upgrades','+'+(m.luck*100).toFixed(0)+'%'],['Luck from waves (this run)','+'+(runLuck*100).toFixed(1)+'%'],
+      ['Gold per kill','x'+m.cash.toFixed(2)],['Wave gold scaling','+6% per wave'],['Luck from upgrades','+'+(m.luck*100).toFixed(0)+'%'],['Luck from waves (this run)','+'+(runLuck*100).toFixed(1)+'%'],['Legendary drops','wave 60+ · up to x10 with top spawners'],['Mythic drops','wave 100+ · up to x20 with top spawners'],
       ['Castle health',m.castle],['Board',boardN()+' x '+boardN()],['Start wave','Wave '+m.startWave],['Total kills',fmt(S.totalKills)],['Best wave',S.best]].map(([a,b])=>`<div class="row"><span>${a}</span><b>${b}</b></div>`).join('')}`;}
   else if(statTab==='tower'){const ts=[...cells.values()].filter(c=>c.k==='t');const agg={};
     ts.forEach(t=>{const k=t.id+'|'+t.l;agg[k]=agg[k]||{id:t.id,l:t.l,n:0,dmg:0,kills:0,execs:0};const a=agg[k];a.n++;a.dmg+=t.dmgDone;a.kills+=t.kills;a.execs+=t.execs;});
@@ -727,6 +728,8 @@ const ago=t=>{const m=(Date.now()-t)/60000;return m<60?Math.max(1,Math.round(m))
 let inBattle=false,waveNo=0,castleHp=20,spawnQueue=[],enemies=[],waveActive=false,waveTimer=0,speed=1,runTime=0;
 let run={kills:0,cash:0,dmg:0};
 const waveLuck=()=>inBattle?Math.min(4,waveNo*0.005*(1+Math.floor(waveNo/50)*0.2)):0;
+// how good a spawner is for legendary / mythic drops: 0 at a Forest camp, 1 at a Pirate Cove
+const hiFactor=cl=>Math.max(0,Math.min(1,(cl-1)/3.2));
 function startRun(){
   if(![...routes.values()].some(r=>r))return toast('Connect a spawner camp to the castle with path tiles first!');
   inBattle=true;castleHp=mult().castle;waveNo=mult().startWave-1;runTime=0;run={kills:0,cash:0,dmg:0};
@@ -788,7 +791,12 @@ function kill(e,tower){if(e.dead)return;e.dead=true;run.kills++;{const p=e.g.pos
 function rollDrop(e){const luck=1+mult().luck+waveLuck();const camp=CAMPS[e.camp.id];const cl=camp.luck*(1+e.camp.l*0.1);
   const chance=(e.d.boss?1:0.035)*Math.min(5,luck)*(0.6+cl*0.4);
   if(Math.random()>chance)return;
-  const w=RAR.map((r,i)=>RAR_W[r]*(i?Math.pow(luck*cl,i*0.35):1));const tot=w.reduce((a,b)=>a+b,0);let x=Math.random()*tot,ri=0;while(x>w[ri]){x-=w[ri];ri++;}
+  const w=RAR.map((r,i)=>RAR_W[r]*(i&&i<4?Math.pow(luck*cl,i*0.35):1));
+  // legendary waits for wave 60, mythic for wave 100, and better spawners multiply them: x10 / x20 at the top camps
+  const q=hiFactor(cl);
+  w[4]=waveNo>=60?RAR_W.legendary*(1+9*q)*luck:0;
+  w[5]=waveNo>=100?RAR_W.mythic*(1+19*q)*luck:0;
+  const tot=w.reduce((a,b)=>a+b,0);let x=Math.random()*tot,ri=0;while(x>w[ri]){x-=w[ri];ri++;}
   if(e.d.boss)ri=Math.max(ri,2);
   let pool=[];const r=RAR[Math.min(ri,5)];
   for(const k of ['t','p','r'])for(const id in KINDS[k])if(KINDS[k][id].r===r)pool.push([k,id]);
