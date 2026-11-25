@@ -1,0 +1,68 @@
+name: outpost-publish
+on:
+  push:
+    paths:
+      - .github/workflows/outpost-publish.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: unpack and patch
+        run: |
+          python3 - <<'PY'
+          import base64, lzma, tarfile, io, json, hashlib
+          bz = """
+          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
+          """
+          raw = lzma.decompress(base64.b64decode(bz.strip()))
+          t = tarfile.open(fileobj=io.BytesIO(raw))
+          names = t.getnames()
+          t.extractall('.')
+          print('unpacked', names)
+          game = 'games/mobile/tiles-outpost.html'
+          print('sha', hashlib.sha256(open(game,'rb').read()).hexdigest())
+
+          p = 'games/mobile/index.html'
+          s = open(p).read()
+          if 'tilesOutpostBtn' in s:
+              print('hub already has card')
+          else:
+              anchor = '<div class="card soon">'
+              assert s.count(anchor) == 1, s.count(anchor)
+              card = ('<div class="card">\n'
+                      '  <h2 style="margin:0 0 4px">\U0001F3DB\uFE0F Tiles Outpost</h2>\n'
+                      '  <div class="muted">Build a camp on a grid, train three heroes and send them out to clear expedition stages. Farms, sawmills, quarries and gold mines keep earning while you are away; barracks and temples add squad power, and every cleared stage fills the backpack with loot. Saves on this device.</div>\n'
+                      '  <div class="row"><button id="tilesOutpostBtn">Play</button></div>\n'
+                      '</div>\n')
+              s = s.replace(anchor, card + anchor)
+              marker = '// ---- leaderboard'
+              assert s.count(marker) == 1, s.count(marker)
+              line = "$('tilesOutpostBtn').onclick=function(){location.href='tiles-outpost.html'};\n"
+              s = s.replace(marker, line + marker)
+              open(p,'w').write(s)
+              print('hub patched', len(s))
+
+          c = json.load(open('games/mobile/changelog.json'))
+          if c['entries'][0]['id'] < 57:
+              c['entries'].insert(0, {
+                  'id': 57,
+                  'date': 'Nov 25',
+                  'game': 'all',
+                  'items': ['\U0001F3DB\uFE0F New game: Tiles Outpost - build a grid camp, train three heroes and clear expedition stages for loot']
+              })
+              json.dump(c, open('games/mobile/changelog.json','w'), indent=1, ensure_ascii=False)
+              print('changelog latest', c['entries'][0]['id'])
+          PY
+      - name: commit
+        run: |
+          git config user.name "bake-bot"
+          git config user.email "bake-bot@users.noreply.github.com"
+          git add games/mobile/tiles-outpost.html games/mobile/index.html games/mobile/changelog.json
+          git commit -m "Add Tiles Outpost game and hub card"
+          git push
