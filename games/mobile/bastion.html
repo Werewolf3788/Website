@@ -130,6 +130,7 @@ body.pad .touchOnly{display:none}
   <div class="pill" id="cashPill" title="Your cash balance"><span class="coin"></span> <span style="font-size:.6em;opacity:.9">CASH</span> <span id="cash">0</span></div>
   <div class="pill" id="hpWrap">🏰 <div id="hpBar"><div id="hpFill"></div></div> <span id="hpTxt">20</span></div>
   <div class="pill">⚡ <button class="btn gray" id="spd" style="padding:2px 10px">x1</button></div>
+  <div class="pill"><button class="btn gray" id="pause" title="Pause / resume" style="padding:2px 10px">⏸</button></div>
   <div class="pill" id="acct">Guest</div>
 </div>
 
@@ -209,8 +210,10 @@ body.pad .touchOnly{display:none}
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 const WHATS_NEW = [
+  'Pause button (and the P key): stop the battle at any moment, look at your towers, then carry on.',
+  'Calling a wave before the last one is cleared now pays a small early bonus in cash, so pushing the pace is worth something.',
   'Every tower now shoots its own way: crossbow bolts, arcing cannonballs, ice shards, rapid tracers, smoking rockets, high-arc mortar shells, pink lasers, chain lightning, golden beams from the sky and fireballs.',
   'Real explosions with fire, smoke, flashes of light and shock rings, plus new sounds for each weapon.',
   'More realistic look: evening sky with stars, soft shadows, better lighting, trees and rocks around the board, and enemies that walk, flap, flash when hit, glow blue when frozen and burn when on fire.',
@@ -725,14 +728,14 @@ const fmtTime=s=>{s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padSt
 const ago=t=>{const m=(Date.now()-t)/60000;return m<60?Math.max(1,Math.round(m))+'m':m<1440?Math.round(m/60)+'h':Math.round(m/1440)+'d';};
 
 /* ---------- battle ---------- */
-let inBattle=false,waveNo=0,castleHp=20,spawnQueue=[],enemies=[],waveActive=false,waveTimer=0,speed=1,runTime=0;
+let inBattle=false,waveNo=0,castleHp=20,spawnQueue=[],enemies=[],waveActive=false,waveTimer=0,speed=1,runTime=0,paused=false;
 let run={kills:0,cash:0,dmg:0};
 const waveLuck=()=>inBattle?Math.min(4,waveNo*0.005*(1+Math.floor(waveNo/50)*0.2)):0;
 // how good a spawner is for legendary / mythic drops: 0 at a Forest camp, 1 at a Pirate Cove
 const hiFactor=cl=>Math.max(0,Math.min(1,(cl-1)/3.2));
 function startRun(){
   if(![...routes.values()].some(r=>r))return toast('Connect a spawner camp to the castle with path tiles first!');
-  inBattle=true;castleHp=mult().castle;waveNo=mult().startWave-1;runTime=0;run={kills:0,cash:0,dmg:0};
+  inBattle=true;castleHp=mult().castle;waveNo=mult().startWave-1;runTime=0;run={kills:0,cash:0,dmg:0};setPaused(false);
   for(const c of cells.values()){c.dmgDone=0;c.kills=0;c.execs=0;c.cd=0;}
   nextWave();updHud();$('hint').style.display='none';}
 function nextWave(){waveNo++;waveActive=true;waveTimer=0;
@@ -935,7 +938,7 @@ function update(dt){
   enemies=enemies.filter(e=>!e.dead);
   if(inBattle&&waveActive&&!spawnQueue.length&&!enemies.length&&!projs.length){waveActive=false;
     const bonus=10*waveNo*mult().cash;S.cash+=bonus;run.cash+=bonus;
-    if(autoNext)setTimeout(()=>{if(inBattle&&!waveActive)nextWave();},1500/speed);save();}
+    if(autoNext&&!paused)setTimeout(()=>{if(inBattle&&!waveActive&&!paused)nextWave();},1500/speed);save();}
 }
 let autoNext=true;
 function endRun(won){if(!inBattle)return;inBattle=false;waveActive=false;spawnQueue=[];
@@ -955,10 +958,15 @@ function updHud(){$('cash').textContent=fmt(S.cash);$('cash2').textContent=fmt(S
   const mx=inBattle?mult().castle:mult().castle;const hp=inBattle?castleHp:mx;$('hpFill').style.width=(hp/mx*100)+'%';$('hpTxt').textContent=Math.ceil(hp)+'/'+mx;
   $('waveBtn').textContent=!inBattle?'Start Battle':waveActive?'Skip Wave':'Next Wave';$('forfeit').style.display=inBattle?'':'none';
   if($('upg').classList.contains('open'))$('upgCash').textContent=fmt(S.cash);}
-$('waveBtn').onclick=()=>{if(!inBattle)startRun();else{if(!waveActive||spawnQueue.length<5){nextWave();}else toast('Wait for the wave to finish spawning.');}};
+$('waveBtn').onclick=()=>{if(!inBattle)startRun();else{if(!waveActive||spawnQueue.length<5){
+  // calling a wave before the last one is cleared pays a small early bonus
+  if(waveActive){const b=Math.round((5+waveNo*2)*mult().cash);S.cash+=b;run.cash+=b;toast('⏩ Called early: +'+fmt(b)+' cash');save();}
+  nextWave();}else toast('Wait for the wave to finish spawning.');}};
 $('forfeit').onclick=()=>{if(confirmForfeit){endRun(true);confirmForfeit=false;}else{confirmForfeit=true;toast('Tap 🏳 again to forfeit this run');setTimeout(()=>confirmForfeit=false,2500);}};
 let confirmForfeit=false;
 $('spd').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('spd').textContent='x'+speed;};
+function setPaused(v){paused=v;$('pause').textContent=paused?'▶':'⏸';$('pause').style.background=paused?'#f59e0b':'';$('pause').style.color=paused?'#111':'';}
+$('pause').onclick=()=>{setPaused(!paused);if(paused)toast('⏸ Paused — tap ▶ to carry on');};
 $('dropSel').onclick=()=>{setHolding(null);renderInv();};
 $('rotL').onclick=()=>{cam.theta-=Math.PI/4;placeCam();};$('rotR').onclick=()=>{cam.theta+=Math.PI/4;placeCam();};
 function updateHint(){const h=$('hint');if(inBattle){h.style.display='none';return;}
@@ -994,6 +1002,7 @@ cvs.addEventListener('contextmenu',e=>{e.preventDefault();setHolding(null);rende
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;
   if(e.key==='i')$('inv').classList.contains('open')?closePanel('inv'):openPanel('inv');
   if(e.key===' '){e.preventDefault();$('waveBtn').click();}
+  if(e.key==='p')$('pause').click();
   if(e.key==='Escape'){setHolding(null);['info','inv','shop','upg','stats','modal'].forEach(closePanel);}
   if(e.key==='q')$('rotL').click();if(e.key==='e')$('rotR').click();});
 
@@ -1071,8 +1080,8 @@ async function initFirebase(){
 /* ---------- loop ---------- */
 const clock=new THREE.Clock();
 function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(),.1);pollPad(raw);
-  let dt=raw*speed;if(inBattle)while(dt>0){const s=Math.min(dt,.05);update(s);dt-=s;}
-  const now=performance.now()/1000,gdt=inBattle?raw*speed:raw;
+  const sp=paused?0:speed;let dt=raw*sp;if(inBattle)while(dt>0){const s=Math.min(dt,.05);update(s);dt-=s;}
+  const now=performance.now()/1000,gdt=inBattle?raw*sp:raw;
   for(const e of enemies){e.bar.scale.x=Math.max(.01,e.hp/e.max)*e.d.size*2.4;e.bar.quaternion.copy(camera.quaternion);
     e.bar.material.color.setHex(e.hp/e.max>.5?0x22c55e:e.hp/e.max>.25?0xfacc15:0xef4444);
     const u=e.mdl.userData,ph=now*(e.d.spd*9*speed)+e.ph;
