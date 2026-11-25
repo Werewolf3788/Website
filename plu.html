@@ -195,7 +195,7 @@ const ICO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 const sayBtn=(d,w='')=>`<button class="say notranslate" translate="no" data-say="${d.i}" data-what="${w}" aria-label="Say it out loud">${ICO}</button>`;
 const $=id=>document.getElementById(id),esc=x=>x.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 let sec=-1,mode='look',sub='type',cur=null,streak=0,right=0,miss=0,locked=false;
-let G=null,gtick=null;
+let G=null,gtick=null,gpeek=null;
 let R=null,RS={cust:0,items:0,right:0,tries:0,streak:0,best:0};
 let weak={};try{weak=JSON.parse(localStorage.getItem('pluWeak')||'{}')}catch(e){}
 const save=()=>{try{localStorage.setItem('pluWeak',JSON.stringify(weak))}catch(e){}};
@@ -208,7 +208,7 @@ function draw(){
   $('grid').innerHTML=list.length?list.map(d=>`<div class="item"><span class="pic">${img(d)}</span><div><span class="code notranslate${d.c?'':' none'}" translate="no">${d.c||'—'}</span><div class="name">${esc(d.n)}</div><div class="note">${esc(d.t||S[d.s])}</div></div>${sayBtn(d)}</div>`).join(''):'<p class="empty">Nothing matches that. Try part of the name, like "pom" or "mango".</p>';
 }
 $('q').oninput=draw;
-function setMode(m){mode=m;if(m!=='game')clearInterval(gtick);$('mLook').setAttribute('aria-pressed',m==='look');$('mPrac').setAttribute('aria-pressed',m==='prac');$('mGame').setAttribute('aria-pressed',m==='game');$('mReg').setAttribute('aria-pressed',m==='reg');$('look').hidden=m!=='look';$('lookBar').hidden=m!=='look';$('prac').hidden=m!=='prac';$('game').hidden=m!=='game';$('reg').hidden=m!=='reg';m==='game'?newGame():m==='reg'?startReg():m==='prac'?next():draw()}
+function setMode(m){mode=m;if(m!=='game'){clearInterval(gtick);clearInterval(gpeek)}$('mLook').setAttribute('aria-pressed',m==='look');$('mPrac').setAttribute('aria-pressed',m==='prac');$('mGame').setAttribute('aria-pressed',m==='game');$('mReg').setAttribute('aria-pressed',m==='reg');$('look').hidden=m!=='look';$('lookBar').hidden=m!=='look';$('prac').hidden=m!=='prac';$('game').hidden=m!=='game';$('reg').hidden=m!=='reg';m==='game'?newGame():m==='reg'?startReg():m==='prac'?next():draw()}
 $('mLook').onclick=()=>setMode('look');$('mPrac').onclick=()=>setMode('prac');$('mGame').onclick=()=>setMode('game');$('mReg').onclick=()=>setMode('reg');
 function setSub(m){sub=m;$('sType').setAttribute('aria-pressed',m==='type');$('sPick').setAttribute('aria-pressed',m==='pick');next()}
 $('sType').onclick=()=>setSub('type');$('sPick').onclick=()=>setSub('pick');
@@ -273,17 +273,29 @@ function gStats(){
   if(!G)return;
   $('gPairs').textContent=Object.keys(G.done).length+'/'+G.picks.length;
   $('gMoves').textContent=G.moves;
-  $('gTime').textContent=mmss(Date.now()-G.t0);
+  $('gTime').textContent=mmss(G.t0?Date.now()-G.t0:0);
   const b=gBest();$('gBest').textContent=b?mmss(b):'—';
 }
 function newGame(){
-  clearInterval(gtick);
+  clearInterval(gtick);clearInterval(gpeek);
   const p=pool();if(!p.length)return;
   const picks=shuffle(p.slice()).slice(0,Math.min(6,p.length));
-  G={picks:picks,deck:shuffle(picks.reduce((a,_,k)=>{a.push({k:k,kind:'code'},{k:k,kind:'item'});return a},[])),open:[],done:{},moves:0,lock:false,t0:Date.now()};
-  $('gstat').textContent='Flip two cards — a code and the produce it belongs to.';
-  $('board').innerHTML=G.deck.map((c,i)=>`<button class="mcard" data-i="${i}" aria-label="Hidden card"><span class="qm">?</span></button>`).join('');
+  G={picks:picks,deck:shuffle(picks.reduce((a,_,k)=>{a.push({k:k,kind:'code'},{k:k,kind:'item'});return a},[])),open:[],done:{},moves:0,lock:true,t0:0};
+  // show every card first, then hide them, so you never have to flip blind
+  $('board').innerHTML=G.deck.map((c,i)=>`<button class="mcard up" data-i="${i}" aria-label="Card">${gFace(c)}</button>`).join('');
   gStats();gtick=setInterval(gStats,500);
+  let left=4;
+  const peekMsg=()=>{$('gstat').textContent='Look at the board — hiding in '+left+'…'};
+  peekMsg();
+  gpeek=setInterval(()=>{
+    left--;
+    if(left>0){peekMsg();return}
+    clearInterval(gpeek);
+    document.querySelectorAll('.mcard').forEach(el=>{el.classList.remove('up');el.innerHTML='<span class="qm">?</span>';el.setAttribute('aria-label','Hidden card')});
+    G.lock=false;G.t0=Date.now();
+    $('gstat').textContent='Flip two cards — a code and the produce it belongs to.';
+    gStats();
+  },1000);
 }
 function gFace(card){
   const it=G.picks[card.k];
