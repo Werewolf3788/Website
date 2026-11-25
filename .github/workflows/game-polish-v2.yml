@@ -1,0 +1,57 @@
+name: game-polish-v2
+on:
+  push:
+    paths:
+      - .github/workflows/game-polish-v2.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: polish
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          edits = {
+              'games/mobile/merge-lair.html': [
+                  ('  <div id="board"></div>', '  <div id="raidInfo"></div>\n  <div id="board"></div>', 1),
+                  ("var dmg = [2, 5, 12, 26, 55, 110][it.t];", 'var dmg = DMG[it.t];', 1),
+                  ("var N = 6;", 'var N = 6;\nvar DMG = [3, 7, 16, 32, 60, 120];', 1),
+                  ("{ n:'Scavenger Captain', ic:'🪓', hp:70, smashEvery:3", "{ n:'Scavenger Captain', ic:'🪓', hp:45, smashEvery:3", 1),
+                  ("{ n:'Wyrm Hunter', ic:'🗡️', hp:170, smashEvery:3", "{ n:'Wyrm Hunter', ic:'🗡️', hp:150, smashEvery:3", 1),
+                  ("{ n:'The Siege Marshal', ic:'🏰', hp:320, smashEvery:2", "{ n:'The Siege Marshal', ic:'🏰', hp:300, smashEvery:2", 1),
+                  ("  hud();\n  var board = $('board');", "  hud();\n  var ri = $('raidInfo');\n  if (ri) {\n    if (S.raid) {\n      var pct = Math.max(0, S.raid.hp / S.raid.max * 100);\n      var until = S.raid.boss.smashEvery - (S.raid.throws % S.raid.boss.smashEvery);\n      ri.innerHTML = '<div class=\"card\" style=\"border-color:#ef4444\"><div class=\"nm\">' + S.raid.boss.ic + ' ' + S.raid.boss.n + ' · ' + Math.max(0, S.raid.hp) + ' / ' + S.raid.max + ' HP</div>' +\n        '<div class=\"bar\"><i style=\"width:' + pct + '%\"></i></div>' +\n        '<div class=\"sm\">Tap a creature to hurl it. ' + until + ' throw' + (until === 1 ? '' : 's') + ' until it smashes one of yours.</div></div>';\n    } else ri.innerHTML = '';\n  }\n  var board = $('board');", 1),
+                  ("var creatures = S.board.filter(function(x){ return x; }).length;", "var creatures = S.board.filter(function(x){ return x; }).length;\n  var hitFor = S.board.reduce(function(a, x){ return a + (x ? DMG[x.t] : 0); }, 0);", 1),
+                  ("'<p style=\"margin-top:12px;font-size:.8rem\">Tap your creatures on the board to hurl them. Bigger tiers hit much harder. You lose when the board is empty and the boss is still standing.</p>'", "'<p style=\"margin-top:12px;font-size:.8rem\">Tap your creatures on the board to hurl them. Your whole nest can hit for <b>' + hitFor + '</b> right now, and the boss has <b>' + boss.hp + '</b>. You lose when the board is empty and the boss is still standing.</p>'", 1)
+              ],
+              'games/mobile/idle-city.html': [
+                  ('.cust{position:absolute;top:34%;transform:translate(-50%,-50%);text-align:center;will-change:left;transition:opacity .25s}', '.cust{position:absolute;top:38%;transform:translate(-50%,-50%);text-align:center;will-change:left;transition:opacity .25s;background:#ffffff1f;border-radius:14px;padding:4px 7px;box-shadow:0 4px 12px #0006}', 1),
+                  ('.cust .who{font-size:1.7rem;', '.cust .who{font-size:2.1rem;', 1),
+                  ('c.el.style.left = (20 + c.x * (W - 40)) + \'px\';', 'c.el.style.left = (30 + c.x * (W - 70)) + \'px\';', 1),
+                  ('el.style.left = (20 + c.x * (LANE.clientWidth - 40)) + \'px\';', 'el.style.left = (30 + c.x * (LANE.clientWidth - 70)) + \'px\';', 1)
+              ]
+          }
+          for path, pairs in edits.items():
+              s = open(path).read()
+              for old, new, want in pairs:
+                  n = s.count(old)
+                  print(path, '|', old[:42], '| found', n)
+                  if n != want:
+                      raise SystemExit('anchor mismatch')
+                  s = s.replace(old, new)
+              open(path, 'w').write(s)
+              print('sha', path, hashlib.sha256(open(path,'rb').read()).hexdigest())
+          PY
+      - name: commit
+        run: |
+          git config user.name "bake-bot"
+          git config user.email "bake-bot@users.noreply.github.com"
+          git rm -q .github/workflows/game-polish-v2.yml
+          git add games/mobile/merge-lair.html games/mobile/idle-city.html
+          git commit -m "Show raid health in Merge Lair and make City Rush customers readable"
+          git push
