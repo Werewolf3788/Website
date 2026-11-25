@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 58,
+   "date": "Nov 25",
+   "game": "all",
+   "items": [
+    "🚚 City Rush replaces the old idle city — serve a live queue across six districts, with rush hours and upgrades",
+    "🏛️ Tiles Outpost is now a twelve-mission story campaign with turn-based battles and star ratings",
+    "🐉 Merge Lair got story quests and boss raids, and the nest refills every time you merge"
+   ]
+  },
+  {
    "id": 57,
    "date": "Nov 25",
    "game": "all",
