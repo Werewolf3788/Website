@@ -82,9 +82,10 @@ input.search{flex:1;background:#08204f;border:2px solid #38bdf8;border-radius:10
 .hexWrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .hex{width:118px;height:104px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;padding:6px 18px;font-size:11px;font-weight:800;line-height:1.15}
 .hex .ic{font-size:22px}
-.hex .cost{font-size:12px;color:#fff;background:#0006;border-radius:6px;padding:0 4px;margin-top:2px}
+.hex .cost{font-size:12px;color:#4ade80;background:#0006;border-radius:6px;padding:0 4px;margin-top:2px}
 .hex.max{filter:saturate(.4)}
-.hex.cant .cost{color:#fca5a5}
+.hex.cant .cost{color:#f87171;font-weight:900}
+.hex.max .cost{color:#e2e8f0}
 /* stats */
 .bars{display:flex;align-items:flex-end;gap:6px;height:170px;padding:8px;background:#08204f;border-radius:12px;position:relative}
 .bars .b{flex:1;background:linear-gradient(#4ade80,#16a34a);border-radius:6px 6px 0 0;position:relative;min-height:3px}
@@ -157,6 +158,7 @@ body.pad .touchOnly{display:none}
     <div class="caps"><div><span id="capT">0/6</span><small>Defenses</small></div><div><span id="capS">0/1</span><small>Spawners</small></div><div><span id="capR">0/2</span><small>Traps</small></div></div>
     <div class="tabs" id="invTabs"><button data-k="t" class="on">Towers</button><button data-k="p">Paths</button><button data-k="s">Camp</button><button data-k="r">Traps</button></div>
     <div style="display:flex;gap:6px;margin-bottom:8px"><input class="search" id="invSearch" placeholder="Search name..."><button class="btn purple" id="fuseAll">✨ Fuse All</button></div>
+    <div style="margin-bottom:6px"><button class="btn gray" id="autoFuse" style="width:100%;padding:5px 8px">♻ Auto-fuse: Off</button></div>
     <div class="small" style="margin-bottom:6px">Get 3 of the same item at the same level, then hit <b>Fuse</b> to turn them into one <b>+1</b>. Tap an item to hold it, then tap the board to place it.</div>
     <div class="grid" id="invGrid"></div>
   </div>
@@ -201,8 +203,10 @@ body.pad .touchOnly{display:none}
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.0.4';
+const VERSION = '1.0.5';
 const WHATS_NEW = [
+  'Upgrade costs now turn green when you can afford them and red when you cannot, and they update live while the panel is open.',
+  'Auto-fuse: turn it on in the Inventory and any 3 of the same item fuse themselves the moment the third one drops.',
   'While you hold a tower, trap or camp, the bar next to "Holding:" shows how many spaces you have left before the upgrade wall, so you can plan the layout.',
   'Enemies are monsters now: horns, teeth, claws and flapping bat wings — no more plain balls.',
   'Two new anti-air guns: Skyward Flak and Skyfire Battery. They only shoot at flying enemies.',
@@ -550,9 +554,22 @@ function fuseAll(){let n=0,again=true;
   if(n){sfx('fuse');toast(`✨ Fused ${n} time${n>1?'s':''}`);}else toast('Nothing has 3 of the same yet.');
   setHolding(holding);renderInv();save();}
 
+/* ---------- auto-fuse ---------- */
+function paintAuto(){const b=$('autoFuse');if(!b)return;const on=!!S.autoFuse;
+  b.textContent='♻ Auto-fuse: '+(on?'On':'Off');b.classList.toggle('green',on);b.classList.toggle('gray',!on);}
+function autoFuseNow(quiet){if(!S.autoFuse)return 0;let n=0,again=true;
+  while(again){again=false;for(const key of Object.keys(S.inv)){let guard=0;
+    while(fuse(key,true)&&guard++<50){n++;again=true;}}}
+  if(n){sfx('fuse');if(!quiet)toast(`♻ Auto-fused ${n} time${n>1?'s':''}`);setHolding(holding);save();
+    if($('inv').classList.contains('open'))renderInv();}
+  return n;}
+$('autoFuse').onclick=()=>{S.autoFuse=!S.autoFuse;paintAuto();
+  if(S.autoFuse){const n=autoFuseNow();if(!n)toast('♻ Auto-fuse on — every 3 of the same will fuse themselves');}
+  else toast('Auto-fuse off');save();renderInv();};
+
 /* ---------- inventory UI ---------- */
 let invTab='t';
-function renderInv(){updateCaps();const q=$('invSearch').value.toLowerCase();
+function renderInv(){updateCaps();paintAuto();const q=$('invSearch').value.toLowerCase();
   const keys=Object.keys(S.inv).filter(k=>{const p=parseKey(k);return p.k===invTab&&defOf(p.k,p.id)&&defOf(p.k,p.id).name.toLowerCase().includes(q);})
     .sort((a,b)=>{const A=parseKey(a),B=parseKey(b);return RAR.indexOf(defOf(B.k,B.id).r)-RAR.indexOf(defOf(A.k,A.id).r)||A.id.localeCompare(B.id)||A.l-B.l;});
   $('invGrid').innerHTML=keys.length?keys.map(key=>{const {k,id,l}=parseKey(key);const d=defOf(k,id);const n=S.inv[key];
@@ -722,6 +739,7 @@ function rollDrop(e){const luck=1+mult().luck+waveLuck();const camp=CAMPS[e.camp
   if(r==='common'&&Math.random()<.4)pool=[['p','road']];
   const [k,id]=pool[Math.floor(Math.random()*pool.length)];invAdd(k,id,0);const d=defOf(k,id);
   addDrop(d);if(RAR.indexOf(d.r)>=3){toast(`<span class="t-${d.r}">${d.ic} ${d.r.toUpperCase()} drop: ${d.name}!</span>`);sfx('rare');}
+  if(S.autoFuse)autoFuseNow(true);
   if($('inv').classList.contains('open'))renderInv();}
 const dropList=[];
 function addDrop(d){dropList.unshift(d);dropList.length=Math.min(dropList.length,8);
@@ -907,6 +925,7 @@ function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(
   if(castleFlash>0){castleFlash-=raw;scene.background.setHex(castleFlash>0?0x3b0d0d:0x0b1430);}
   cursor.material.opacity=.5+Math.sin(performance.now()/200)*.35;
   if(Math.random()<.2)updHud();
+  refreshUpgLive();
   if($('shop').classList.contains('open')&&S.shop){const ms=S.shop.refreshAt-Date.now();if(ms<=0)renderShop();$('shopTimer').textContent='New stock in '+fmtTime(Math.max(0,ms)/1000);}
   renderer.render(scene,camera);}
 
