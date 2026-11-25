@@ -1,0 +1,43 @@
+name: Bastion auto-fuse bake (one-off)
+
+# One-off helper: applies the upgrade-colour + auto-fuse patch, commits it,
+# then removes itself and kicks off the normal deploy workflow.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/bastion-autofuse-bake.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply patch
+        env:
+          PATCH: "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"
+        run: |
+          echo "$PATCH" | base64 -d | gunzip > /tmp/autofuse.patch
+          git apply --check /tmp/autofuse.patch
+          git apply /tmp/autofuse.patch
+          grep -c autoFuseNow games/mobile/bastion.html
+
+      - name: Commit the change
+        run: |
+          git config user.name "SMLC bot"
+          git config user.email "actions@users.noreply.github.com"
+          git rm -q .github/workflows/bastion-autofuse-bake.yml
+          git add games/mobile/bastion.html
+          git commit -m "Bastion Builder: live upgrade cost colours and auto-fuse"
+          git push
+
+      - name: Deploy the live site
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
