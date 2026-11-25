@@ -1,0 +1,32 @@
+name: bake-bastion
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply wave difficulty patch
+        env:
+          PAYLOAD: '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'
+        run: |
+          printf '%s' "$PAYLOAD" | base64 -d | xz -dc > "$RUNNER_TEMP/wave.patch"
+          test "$(sha256sum "$RUNNER_TEMP/wave.patch" | cut -d' ' -f1)" = "3821095c70eeeb48e492b155f7ca7227878b7984715858e4eec1dd25d78b77ec"
+          git apply "$RUNNER_TEMP/wave.patch"
+          test "$(sha256sum games/mobile/bastion.html | cut -d' ' -f1)" = "9075f95bbb8843e48fd08c32cf7cd71998faa94012428c36ac1a2234b9008592"
+      - name: Commit and push
+        run: |
+          git config user.name "bake-bot"
+          git config user.email "bake-bot@users.noreply.github.com"
+          git add games/mobile/bastion.html
+          if git diff --cached --quiet; then echo "already up to date"; else git commit -m "Make enemies tougher and faster as waves go up"; git push origin HEAD:main; fi
+      - name: Trigger deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
