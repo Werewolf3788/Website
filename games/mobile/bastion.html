@@ -203,8 +203,10 @@ body.pad .touchOnly{display:none}
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.0.5';
+const VERSION = '1.0.6';
 const WHATS_NEW = [
+  'Fixed placing on phones: picking an item now closes the panels so the board is free to tap, and turns Remove mode off.',
+  'If the item you tapped is no longer in the inventory, the game now tells you instead of doing nothing.',
   'Upgrade costs now turn green when you can afford them and red when you cannot, and they update live while the panel is open.',
   'Auto-fuse: turn it on in the Inventory and any 3 of the same item fuse themselves the moment the third one drops.',
   'While you hold a tower, trap or camp, the bar next to "Holding:" shows how many spaces you have left before the upgrade wall, so you can plan the layout.',
@@ -471,10 +473,10 @@ function setRemoveMode(on){removeMode=!!on;const b=$('delMode');
   else{b.textContent='\ud83e\uddf9 Remove';b.classList.remove('green');b.classList.add('red');}}
 $('delMode').onclick=function(){setRemoveMode(!removeMode);};
 function setHolding(key){holding=key&&S.inv[key]?key:null;
-  if(!holding){$('holding').textContent='nothing';rangeRing.visible=false;return;}
+  if(!holding){$('holding').textContent='nothing';rangeRing.visible=false;return false;}
   const {k,id,l}=parseKey(holding);const d=defOf(k,id);
   $('holding').innerHTML=`${d.ic} ${d.name}${l?' <b style="color:#fde047">+'+l+'</b>':''} <span class="small">x${S.inv[holding]}</span> <span id="holdSlots" class="small" style="font-weight:900"></span>`;
-  paintHoldSlots();}
+  paintHoldSlots();return true;}
 /* spaces left before the upgrade wall, shown while you are placing */
 const SLOT_UPG={t:'Defenses',s:'Spawners',r:'Traps'};
 function slotInfo(k){const c=caps();if(!c[k])return null;return {left:Math.max(0,c[k]-placedCount(k)),max:c[k],name:SLOT_UPG[k]};}
@@ -575,7 +577,14 @@ function renderInv(){updateCaps();paintAuto();const q=$('invSearch').value.toLow
   $('invGrid').innerHTML=keys.length?keys.map(key=>{const {k,id,l}=parseKey(key);const d=defOf(k,id);const n=S.inv[key];
     return `<div class="card r-${d.r}${holding===key?' sel':''}" data-key="${key}">${l?`<span class="lv">+${l}</span>`:''}${n>=3&&l<MAX_LVL?'<span class="rdy">FUSE!</span>':''}${d.ic}<span class="nm">${d.name}</span><span class="ct">x${n}</span></div>`;}).join('')
     :`<div class="small">Nothing here yet. Enemies drop these in battle${invTab==='s'?' — or buy camps in the Spawner Shop':''}.</div>`;}
-$('invGrid').onclick=e=>{const c=e.target.closest('.card');if(!c)return;setHolding(c.dataset.key);renderInv();showInfoInv(c.dataset.key);};
+$('invGrid').onclick=e=>{const c=e.target.closest('.card');if(!c)return;
+  if(removeMode)setRemoveMode(false);
+  if(!setHolding(c.dataset.key))return toast('That item is gone from your inventory — tap Fuse All or reopen the Inventory');
+  renderInv();
+  if(innerWidth<700){ // on a phone the panels cover the board: get out of the way so you can tap a tile
+    closePanel('inv');closePanel('info');
+    toast('Holding '+defOf(parseKey(c.dataset.key).k,parseKey(c.dataset.key).id).name+' — tap a tile to place it');
+  } else showInfoInv(c.dataset.key);};
 $('invTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;invTab=b.dataset.k;[...$('invTabs').children].forEach(x=>x.classList.toggle('on',x===b));renderInv();};
 $('invSearch').oninput=renderInv;$('fuseAll').onclick=fuseAll;
 function updateCaps(){const c=caps();$('capT').textContent=placedCount('t')+'/'+c.t;$('capS').textContent=placedCount('s')+'/'+c.s;$('capR').textContent=placedCount('r')+'/'+c.r;paintHoldSlots();}
