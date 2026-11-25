@@ -1,0 +1,43 @@
+name: Bastion slots bake (one-off)
+
+# One-off helper: applies the "spaces left" patch for Bastion Builder, commits it,
+# then removes itself and kicks off the normal deploy workflow.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/bastion-slots-bake.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply patch
+        env:
+          PATCH: "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"
+        run: |
+          echo "$PATCH" | base64 -d | gunzip > /tmp/slots.patch
+          git apply --check /tmp/slots.patch
+          git apply /tmp/slots.patch
+          grep -c paintHoldSlots games/mobile/bastion.html
+
+      - name: Commit the change
+        run: |
+          git config user.name "SMLC bot"
+          git config user.email "actions@users.noreply.github.com"
+          git rm -q .github/workflows/bastion-slots-bake.yml
+          git add games/mobile/bastion.html
+          git commit -m "Bastion Builder: show spaces left before the upgrade wall while placing"
+          git push
+
+      - name: Deploy the live site
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
