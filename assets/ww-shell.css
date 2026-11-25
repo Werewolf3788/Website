@@ -72,6 +72,15 @@ html.ww-shell-on [data-ww-legacy-nav] { display: none !important; }
 }
 .ww-burger svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; }
 
+/* ---------- Tip button (sits in the top menu, next to the sandwich) ---------- */
+.ww-tip {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 13px; margin-left: 4px;
+    border-radius: 999px; background: rgba(244, 114, 182, .16); border: 1px solid rgba(244, 114, 182, .5);
+    color: #f9a8d4; text-decoration: none; font: 800 .85rem var(--ww-font); white-space: nowrap; flex: 0 0 auto;
+}
+.ww-tip:hover { background: rgba(244, 114, 182, .3); color: #fff; }
+.ww-tip svg { width: 15px; height: 15px; fill: currentColor; stroke: none; }
+
 /* Narrow desktop / tablet: sandwich menu */
 html.ww-burger-mode .ww-menu-links { display: none; }
 html.ww-burger-mode .ww-burger { display: inline-flex; }

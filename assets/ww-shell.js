@@ -26,6 +26,8 @@
 
     // ---------------------------------------------------------------- config
     const RTDB = 'https://entertainment-71888-default-rtdb.firebaseio.com';
+    // Tip link (StreamElements). One place to change it.
+    const TIP_URL = 'https://streamelements.com/werewolf3788/tip';
     const MENU_CACHE_KEY = 'ww_menu_cache_v1';
     const MENU_MAX_AGE_MS = 6 * 60 * 60 * 1000;
     // Public half of the Web Push key pair. The private half is the
@@ -261,6 +263,7 @@
         }).join('');
         return `<nav class="ww-menu" aria-label="Site menu">
             <ul class="ww-menu-links">${li || '<li><span class="ww-link" style="opacity:.6">Loading…</span></li>'}</ul>
+            <a class="ww-tip" href="${esc(TIP_URL)}" target="_blank" rel="noopener noreferrer" aria-label="Send a tip">${icon('heart')}<span>Tip</span></a>
             <button type="button" class="ww-burger" data-ww-open-drawer aria-label="Open menu" aria-controls="ww-drawer" aria-expanded="false">${icon('burger', '')}<span>Menu</span></button>
         </nav>`;
     }
@@ -275,7 +278,11 @@
     }
 
     function appActionsHtml() {
-        return `<div class="ww-section-title">App</div>
+        return `<div class="ww-section-title">Support</div>
+        <ul class="ww-list">
+            <li><a class="ww-row" href="${esc(TIP_URL)}" target="_blank" rel="noopener noreferrer">${icon('heart')}<span>Send a tip</span><span class="ww-row-detail">StreamElements</span></a></li>
+        </ul>
+        <div class="ww-section-title">App</div>
         <ul class="ww-list">
 ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidden>${icon('install')}<span>Install app</span><span class="ww-row-detail">Add to home screen</span></button></li>`}
             ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-push>${icon('bell')}<span>Notifications</span><span class="ww-row-detail" data-ww-push-state>…</span></button></li>`}
