@@ -421,21 +421,98 @@ rangeRing.rotation.x=-Math.PI/2;rangeRing.position.y=.05;rangeRing.visible=false
 let cells=new Map(), traps=new Map();
 const ck=(x,y)=>x+','+y;
 
+/* every tower gets its own little model so you can tell them apart on the board */
+const TM={
+  white:new THREE.MeshStandardMaterial({color:0xf8fafc,roughness:.85}),
+  wood:new THREE.MeshStandardMaterial({color:0x8b5a2b,roughness:.95,flatShading:true}),
+  dark:new THREE.MeshStandardMaterial({color:0x374151,roughness:.7,metalness:.15,flatShading:true}),
+  steel:new THREE.MeshStandardMaterial({color:0xb6bec9,roughness:.45,metalness:.5,flatShading:true}),
+  gold:new THREE.MeshStandardMaterial({color:0xeab308,roughness:.45,metalness:.45,emissive:0x6b4a00,emissiveIntensity:.25,flatShading:true}),
+  red:new THREE.MeshStandardMaterial({color:0xef4444,roughness:.6,flatShading:true}),
+  ice:new THREE.MeshStandardMaterial({color:0xbfefff,roughness:.25,metalness:.1,emissive:0x2b7ea8,emissiveIntensity:.35,transparent:true,opacity:.93,flatShading:true}),
+  pink:new THREE.MeshStandardMaterial({color:0xf472b6,roughness:.35,emissive:0xbe185d,emissiveIntensity:.55,flatShading:true})
+};
 function towerMesh(id){const d=TOWERS[id];const g=new THREE.Group();
-  const base=new THREE.Mesh(new THREE.CylinderGeometry(.38,.42,.22,8),new THREE.MeshStandardMaterial({color:0xf8fafc}));base.position.y=.11;g.add(base);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(.38,.42,.22,8),TM.white);base.position.y=.11;g.add(base);
   const head=new THREE.Group();head.position.y=.35;g.add(head);
-  const mat=new THREE.MeshStandardMaterial({color:d.color});
-  let body;
-  switch(id){
-    case 'frost':body=new THREE.Mesh(new THREE.OctahedronGeometry(.25),mat);body.position.y=.15;break;
-    case 'coil':body=new THREE.Mesh(new THREE.TorusKnotGeometry(.14,.05,40,6),mat);body.position.y=.15;break;
-    case 'scales':body=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.5),mat);const bar=new THREE.Mesh(new THREE.BoxGeometry(.6,.05,.05),mat);bar.position.y=.22;body.add(bar);break;
-    case 'gate':body=new THREE.Group();const p1=new THREE.Mesh(new THREE.BoxGeometry(.08,.6,.08),mat),p2=p1.clone();p1.position.x=-.22;p2.position.x=.22;
-      const tb=new THREE.Mesh(new THREE.BoxGeometry(.65,.08,.12),mat);tb.position.y=.3;body.add(p1,p2,tb);body.position.y=.15;break;
-    default:{body=new THREE.Mesh(new THREE.BoxGeometry(.32,.2,.32),mat);const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.42,8),new THREE.MeshStandardMaterial({color:0x374151}));
-      barrel.rotation.x=Math.PI/2;barrel.position.z=.25;body.add(barrel);}
+  const body=new THREE.Group();head.add(body);
+  const acc=new THREE.MeshStandardMaterial({color:d.color,roughness:.55,metalness:.2,emissive:d.color,emissiveIntensity:.15,flatShading:true});
+  if(id==='crossbow'){ // 🏹 bow, string and loaded bolt on a wooden stock
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(.035,.05,.3,8),TM.wood);post.position.y=.15;body.add(post);
+    const stock=new THREE.Mesh(new THREE.BoxGeometry(.08,.07,.5),TM.wood);stock.position.set(0,.3,.04);body.add(stock);
+    const bow=new THREE.Mesh(new THREE.TorusGeometry(.24,.022,6,16,Math.PI),TM.steel);bow.position.set(0,.3,0);bow.rotation.x=-Math.PI/2;body.add(bow);
+    const string=new THREE.Mesh(new THREE.BoxGeometry(.48,.012,.012),TM.white);string.position.set(0,.3,0);body.add(string);
+    const bolt=new THREE.Mesh(new THREE.CylinderGeometry(.016,.016,.44,6),TM.wood);bolt.rotation.x=Math.PI/2;bolt.position.set(0,.35,.12);body.add(bolt);
+    const tip=new THREE.Mesh(new THREE.ConeGeometry(.035,.1,6),TM.steel);tip.rotation.x=Math.PI/2;tip.position.set(0,.35,.38);body.add(tip);
+  } else if(id==='cannon'){ // 💣 fat barrel on two big wheels
+    const bed=new THREE.Mesh(new THREE.BoxGeometry(.42,.16,.42),TM.wood);bed.position.y=.1;body.add(bed);
+    const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.13,.1,.56,14),TM.dark);barrel.rotation.x=Math.PI/2;barrel.position.set(0,.28,.04);body.add(barrel);
+    const rim=new THREE.Mesh(new THREE.CylinderGeometry(.145,.145,.08,14),TM.steel);rim.rotation.x=Math.PI/2;rim.position.set(0,.28,.33);body.add(rim);
+    for(const sx of[-1,1]){
+      const w=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.07,14),TM.wood);w.rotation.z=Math.PI/2;w.position.set(sx*.24,.17,0);body.add(w);
+      const hub=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.1,8),TM.gold);hub.rotation.z=Math.PI/2;hub.position.set(sx*.24,.17,0);body.add(hub);
+    }
+  } else if(id==='frost'){ // ❄️ tall ice spire with crystal shards
+    const spire=new THREE.Mesh(new THREE.OctahedronGeometry(.34,0),TM.ice);spire.scale.set(1,2.1,1);spire.position.y=.36;body.add(spire);
+    for(let i=0;i<3;i++){const a=i/3*Math.PI*2;const s=new THREE.Mesh(new THREE.OctahedronGeometry(.16,0),TM.ice);s.scale.set(.7,2.2,.7);s.position.set(Math.cos(a)*.2,.24,Math.sin(a)*.2);s.rotation.set(Math.sin(a)*.25,0,-Math.cos(a)*.25);body.add(s);}
+    const core=new THREE.Mesh(new THREE.IcosahedronGeometry(.09,0),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0x7dd3fc,emissiveIntensity:1.2}));core.position.y=.3;body.add(core);
+  } else if(id==='gatling'){ // ⚙️ six spinning barrels
+    const drum=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.24,10),TM.dark);drum.rotation.x=Math.PI/2;drum.position.set(0,.28,0);body.add(drum);
+    for(let i=0;i<6;i++){const a=i/6*Math.PI*2;const b=new THREE.Mesh(new THREE.CylinderGeometry(.028,.028,.44,6),TM.steel);b.rotation.x=Math.PI/2;b.position.set(Math.cos(a)*.1,.28+Math.sin(a)*.1,.2);body.add(b);}
+    const ammo=new THREE.Mesh(new THREE.BoxGeometry(.16,.18,.22),acc);ammo.position.set(0,.16,-.16);body.add(ammo);
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(.05,.08,.18,8),TM.dark);post.position.y=.09;body.add(post);
+  } else if(id==='missile'){ // 🚀 rack of four rockets
+    const rack=new THREE.Mesh(new THREE.BoxGeometry(.44,.26,.3),TM.dark);rack.position.y=.26;body.add(rack);
+    for(const [dx,dy] of [[-.11,.07],[.11,.07],[-.11,-.07],[.11,-.07]]){
+      const tube=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,.4,8),TM.steel);tube.rotation.x=Math.PI/2;tube.position.set(dx,.26+dy,.16);body.add(tube);
+      const nose=new THREE.Mesh(new THREE.ConeGeometry(.058,.14,8),TM.red);nose.rotation.x=Math.PI/2;nose.position.set(dx,.26+dy,.43);body.add(nose);
+    }
+    const stand=new THREE.Mesh(new THREE.CylinderGeometry(.06,.1,.14,8),TM.dark);stand.position.y=.07;body.add(stand);
+  } else if(id==='mortar'){ // 🎯 short fat tube angled up
+    const plate=new THREE.Mesh(new THREE.CylinderGeometry(.3,.34,.12,10),TM.dark);plate.position.y=.06;body.add(plate);
+    const tg=new THREE.Group();tg.position.set(0,.18,-.02);tg.rotation.x=.7;body.add(tg);
+    const tube=new THREE.Mesh(new THREE.CylinderGeometry(.1,.13,.5,12),acc);tube.position.y=.25;tg.add(tube);
+    const mouth=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.08,12),TM.dark);mouth.position.y=.5;tg.add(mouth);
+    for(const sx of[-1,1]){const leg=new THREE.Mesh(new THREE.BoxGeometry(.05,.34,.05),TM.steel);leg.position.set(sx*.16,.16,0);leg.rotation.z=sx*.2;body.add(leg);}
+  } else if(id==='laser'){ // 🔆 floating pink prism
+    const housing=new THREE.Mesh(new THREE.CylinderGeometry(.2,.24,.14,8),TM.dark);housing.position.y=.09;body.add(housing);
+    const prism=new THREE.Mesh(new THREE.OctahedronGeometry(.2,0),TM.pink);prism.scale.set(1,1.7,1);prism.position.y=.38;body.add(prism);
+    const core=new THREE.Mesh(new THREE.OctahedronGeometry(.08,0),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xf472b6,emissiveIntensity:1.6}));core.position.y=.38;body.add(core);
+    for(let i=0;i<3;i++){const a=i/3*Math.PI*2;const f=new THREE.Mesh(new THREE.BoxGeometry(.05,.26,.1),TM.gold);f.position.set(Math.cos(a)*.2,.16,Math.sin(a)*.2);f.rotation.y=-a;body.add(f);}
+  } else if(id==='coil'){ // ⚡ tesla column with rings and a glowing orb
+    const column=new THREE.Mesh(new THREE.CylinderGeometry(.07,.1,.44,8),TM.dark);column.position.y=.24;body.add(column);
+    for(let i=0;i<3;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(.11,.024,6,14),TM.gold);ring.rotation.x=Math.PI/2;ring.position.y=.14+i*.12;body.add(ring);}
+    const orb=new THREE.Mesh(new THREE.IcosahedronGeometry(.15,1),new THREE.MeshStandardMaterial({color:0xfacc15,emissive:0xfacc15,emissiveIntensity:1.1,roughness:.3}));orb.position.y=.55;body.add(orb);
+  } else if(id==='scales'){ // ⚖️ balance with two hanging pans
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(.035,.05,.5,8),TM.gold);post.position.y=.25;body.add(post);
+    const beam=new THREE.Mesh(new THREE.BoxGeometry(.66,.035,.035),TM.gold);beam.position.y=.52;body.add(beam);
+    for(const sx of[-1,1]){
+      const chain=new THREE.Mesh(new THREE.BoxGeometry(.012,.13,.012),TM.steel);chain.position.set(sx*.3,.45,0);body.add(chain);
+      const pan=new THREE.Mesh(new THREE.CylinderGeometry(.1,.08,.04,10),TM.gold);pan.position.set(sx*.3,.37,0);body.add(pan);
+    }
+    const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.06,0),TM.white);gem.position.y=.6;body.add(gem);
+  } else if(id==='gate'){ // 🐉 little ember wyrm on a rock
+    const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.3,0),new THREE.MeshStandardMaterial({color:0x4b5563,roughness:1,flatShading:true}));rock.scale.set(1,.6,1);rock.position.y=.1;body.add(rock);
+    const skin=new THREE.MeshStandardMaterial({color:0xef4444,emissive:0x7f1d1d,emissiveIntensity:.45,roughness:.6,flatShading:true});
+    const belly=new THREE.MeshStandardMaterial({color:0xfbbf24,emissive:0x92400e,emissiveIntensity:.4,roughness:.7,flatShading:true});
+    const wyrm=new THREE.Group();wyrm.position.y=.14;body.add(wyrm);
+    const tors=new THREE.Mesh(new THREE.IcosahedronGeometry(.17,0),skin);tors.scale.set(1,.9,1.4);tors.position.set(0,.14,-.04);wyrm.add(tors);
+    const neck=new THREE.Mesh(new THREE.CylinderGeometry(.07,.1,.2,7),skin);neck.position.set(0,.28,.12);neck.rotation.x=.35;wyrm.add(neck);
+    const skull=new THREE.Mesh(new THREE.BoxGeometry(.18,.14,.2),skin);skull.position.set(0,.4,.2);wyrm.add(skull);
+    const snout=new THREE.Mesh(new THREE.BoxGeometry(.13,.08,.16),skin);snout.position.set(0,.36,.34);wyrm.add(snout);
+    const jaw=new THREE.Mesh(new THREE.BoxGeometry(.12,.04,.14),belly);jaw.position.set(0,.31,.33);wyrm.add(jaw);
+    for(const sx of[-1,1]){
+      const horn=new THREE.Mesh(new THREE.ConeGeometry(.03,.12,5),belly);horn.position.set(sx*.06,.48,.16);horn.rotation.x=-.5;wyrm.add(horn);
+      const eye=new THREE.Mesh(new THREE.SphereGeometry(.022,6,6),new THREE.MeshStandardMaterial({color:0xfde047,emissive:0xfde047,emissiveIntensity:1.6}));eye.position.set(sx*.055,.42,.29);wyrm.add(eye);
+      const wing=new THREE.Mesh(new THREE.ConeGeometry(.2,.34,3),skin);wing.scale.set(.12,1,1);wing.position.set(sx*.14,.28,-.02);wing.rotation.set(.2,0,sx*-.5);wyrm.add(wing);
+    }
+    const tail=new THREE.Mesh(new THREE.ConeGeometry(.07,.34,6),skin);tail.position.set(0,.18,-.26);tail.rotation.x=-1.9;wyrm.add(tail);
+    const flame=new THREE.Mesh(new THREE.ConeGeometry(.05,.16,6),new THREE.MeshStandardMaterial({color:0xff8a00,emissive:0xff3d00,emissiveIntensity:1.3}));flame.position.set(0,.33,.47);flame.rotation.x=Math.PI/2;wyrm.add(flame);
+  } else { // fallback gun
+    const block=new THREE.Mesh(new THREE.BoxGeometry(.32,.2,.32),acc);block.position.y=.12;body.add(block);
+    const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.42,8),TM.dark);barrel.rotation.x=Math.PI/2;barrel.position.set(0,.24,.25);body.add(barrel);
   }
-  head.add(body);g.userData.head=head;g.traverse(o=>{o.castShadow=true});return g;}
+  g.userData.head=head;g.traverse(o=>{o.castShadow=true});return g;}
 function campMesh(id){const d=CAMPS[id];const g=new THREE.Group();
   const hut=new THREE.Mesh(new THREE.BoxGeometry(.6,.35,.6),new THREE.MeshStandardMaterial({color:0xfef3c7}));hut.position.y=.18;g.add(hut);
   const roof=new THREE.Mesh(new THREE.ConeGeometry(.5,.4,4),new THREE.MeshStandardMaterial({color:d.color}));roof.position.y=.55;roof.rotation.y=Math.PI/4;g.add(roof);
@@ -456,7 +533,7 @@ function rebuildItems(){
     let mesh;
     if(k==='t')mesh=towerMesh(id);else if(k==='s')mesh=campMesh(id);else if(k==='p')mesh=pathMesh(id);else mesh=trapMesh(id);
     mesh.position.x+=x;mesh.position.z+=y;itemGroup.add(mesh);
-    if(l>0){const lb=makeLabel('+'+l,'#fde047',.45);lb.position.set(x,k==='p'||k==='r'?.35:1.05,y);itemGroup.add(lb);}
+    if(l>0){const lb=makeLabel('+'+l,'#fde047',.45);lb.position.set(x,k==='p'||k==='r'?.35:1.15,y);itemGroup.add(lb);}
     const rec={...it,mesh,cd:0,dmgDone:0,kills:0,execs:0};
     if(k==='r')traps.set(ck(x,y),rec);else cells.set(ck(x,y),rec);
   }
