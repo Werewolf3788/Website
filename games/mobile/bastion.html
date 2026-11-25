@@ -133,7 +133,7 @@ body.pad .touchOnly{display:none}
 <div id="toast"></div>
 
 <div id="bottom">
-  <div id="hotbar"><span class="small">Holding:</span> <span class="sel" id="holding">nothing</span> <button class="btn gray" id="dropSel" style="padding:3px 8px">✕</button></div>
+  <div id="hotbar"><span class="small">Holding:</span> <span class="sel" id="holding">nothing</span> <button class="btn gray" id="dropSel" style="padding:3px 8px">✕</button> <button class="btn red" id="delMode" style="padding:3px 8px" title="Keep removing placed items">🧹 Remove</button></div>
   <div id="waveBox">
     <div><small>Wave</small><b id="wave">0</b></div>
     <div><small>Enemies</small><b id="enemies">0</b></div>
@@ -201,8 +201,9 @@ body.pad .touchOnly{display:none}
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.0.1';
+const VERSION = '1.0.2';
 const WHATS_NEW = [
+  'Remove mode: hit Remove, then tap towers, paths or traps on the board to take them back one after another. It stays on until you hit Done.',
   'Roads, camps and the castle now connect at corners too, not just sides.',
   'Road tiles that don\'t reach the castle show red, and a camp with no road shows a red "!".',
   'New game! Build roads from your spawner camps to the castle and defend it.',
@@ -452,6 +453,13 @@ function recomputeRoutes(){
 
 /* ---------- placement ---------- */
 let holding=null; // inventory key
+let removeMode=false; // stays on until the player turns it off
+function setRemoveMode(on){removeMode=!!on;const b=$('delMode');
+  if(removeMode){setHolding(null);closePanel('info');
+    b.textContent='\u2705 Done removing';b.classList.remove('red');b.classList.add('green');
+    toast('Remove mode on \u2014 tap any tower, path or trap to take it back. Hit <b>Done removing</b> when finished.');}
+  else{b.textContent='\ud83e\uddf9 Remove';b.classList.remove('green');b.classList.add('red');}}
+$('delMode').onclick=function(){setRemoveMode(!removeMode);};
 function setHolding(key){holding=key&&S.inv[key]?key:null;
   if(!holding){$('holding').textContent='nothing';rangeRing.visible=false;return;}
   const {k,id,l}=parseKey(holding);const d=defOf(k,id);
@@ -459,6 +467,7 @@ function setHolding(key){holding=key&&S.inv[key]?key:null;
 function tryPlace(x,y){
   if(Math.abs(x)>half()||Math.abs(y)>half())return;
   const here=cells.get(ck(x,y)), trap=traps.get(ck(x,y));
+  if(removeMode){ if(trap)return pickUp(trap); if(here)return pickUp(here); return; }
   if(!holding){ if(trap)return showInfoPlaced(trap); if(here)return showInfoPlaced(here); return; }
   const {k,id,l}=parseKey(holding);const cap=caps();
   if(x===0&&y===0)return toast('That is your castle.');
@@ -476,8 +485,8 @@ function pickUp(rec){
   if(rec.k==='p'){ // a trap on it comes back too
     const t=traps.get(ck(rec.x,rec.y));if(t){S.board=S.board.filter(b=>!(b.x===t.x&&b.y===t.y&&b.k==='r'));invAdd('r',t.id,t.l);}
   }
-  invAdd(rec.k,rec.id,rec.l);rebuildItems();closePanel('info');renderInv();save();toast('Picked up '+defOf(rec.k,rec.id).name);
-}
+  invAdd(rec.k,rec.id,rec.l);rebuildItems();if(!removeMode)closePanel('info');renderInv();save();
+  toast((removeMode?'Removed ':'Picked up ')+defOf(rec.k,rec.id).name+(removeMode?' \u2014 keep tapping to remove more':''));}
 
 /* ---------- info cards ---------- */
 function statRows(k,id,l){const d=defOf(k,id);let h='';
@@ -763,7 +772,7 @@ cvs.addEventListener('contextmenu',e=>{e.preventDefault();setHolding(null);rende
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;
   if(e.key==='i')$('inv').classList.contains('open')?closePanel('inv'):openPanel('inv');
   if(e.key===' '){e.preventDefault();$('waveBtn').click();}
-  if(e.key==='Escape'){setHolding(null);['info','inv','shop','upg','stats','modal'].forEach(closePanel);}
+  if(e.key==='Escape'){setHolding(null);setRemoveMode(false);['info','inv','shop','upg','stats','modal'].forEach(closePanel);}
   if(e.key==='q')$('rotL').click();if(e.key==='e')$('rotR').click();});
 
 /* ---------- gamepad (PS5 / Bluetooth) ---------- */
