@@ -210,8 +210,9 @@ body.pad .touchOnly{display:none}
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.1.1';
+const VERSION = '1.1.2';
 const WHATS_NEW = [
+  '🔫 New tower: the Skyguard Flak. It only shoots at flying enemies, so it never wastes a shot on the ground.',
   'Pause button (and the P key): stop the battle at any moment, look at your towers, then carry on.',
   'Calling a wave before the last one is cleared now pays a small early bonus in cash, so pushing the pace is worth something.',
   'Every tower now shoots its own way: crossbow bolts, arcing cannonballs, ice shards, rapid tracers, smoking rockets, high-arc mortar shells, pink lasers, chain lightning, golden beams from the sky and fireballs.',
@@ -241,6 +242,7 @@ const TOWERS = {
   gatling:{name:'Rapid Repeater',r:'uncommon',ic:'⚙️',dmg:4,rate:5,range:2,color:0x60a5fa,air:true,desc:'Very fast fire rate.'},
   missile:{name:'Rocket Rack',r:'rare',ic:'🚀',dmg:30,rate:0.5,range:3.5,splash:1,color:0x94a3b8,air:true,desc:'Long range splash rockets.'},
   mortar:{name:'Siege Mortar',r:'rare',ic:'🎯',dmg:70,rate:0.3,range:4.5,splash:1.3,color:0x4d7c0f,air:false,desc:'Huge splash, ground only.'},
+  flak:{name:'Skyguard Flak',r:'rare',ic:'🔫',dmg:26,rate:1.3,range:3.4,splash:0.6,color:0x38bdf8,air:true,aa:true,desc:'Anti-air only: big flak bursts at flying enemies, never fires at the ground.'},
   laser:{name:'Prism Laser',r:'epic',ic:'🔆',dmg:12,rate:6,range:3,color:0xf472b6,air:true,desc:'Rapid beam.'},
   coil:{name:'Thunder Coil',r:'epic',ic:'⚡',dmg:25,rate:1.2,range:2.8,chain:3,color:0xfacc15,air:true,desc:'Lightning jumps to 3 enemies.'},
   scales:{name:'Judgement Scales',r:'legendary',ic:'⚖️',dmg:50,rate:1,range:3,exec:0.1,color:0xeab308,air:true,desc:'Executes non-boss enemies under 10% HP.'},
@@ -477,6 +479,14 @@ function towerMesh(id){const d=TOWERS[id];const g=new THREE.Group();
     const tube=new THREE.Mesh(new THREE.CylinderGeometry(.1,.13,.5,12),acc);tube.position.y=.25;tg.add(tube);
     const mouth=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.08,12),TM.dark);mouth.position.y=.5;tg.add(mouth);
     for(const sx of[-1,1]){const leg=new THREE.Mesh(new THREE.BoxGeometry(.05,.34,.05),TM.steel);leg.position.set(sx*.16,.16,0);leg.rotation.z=sx*.2;body.add(leg);}
+  } else if(id==='flak'){ // 🔫 twin anti-air barrels aimed at the sky
+    const turret=new THREE.Mesh(new THREE.CylinderGeometry(.22,.26,.16,10),TM.dark);turret.position.y=.12;body.add(turret);
+    const yoke=new THREE.Group();yoke.position.y=.26;yoke.rotation.x=-.75;body.add(yoke);
+    for(const sx of[-1,1]){
+      const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.045,.055,.5,8),TM.steel);barrel.rotation.x=Math.PI/2;barrel.position.set(sx*.09,0,.22);yoke.add(barrel);
+      const tip=new THREE.Mesh(new THREE.CylinderGeometry(.065,.065,.06,8),acc);tip.rotation.x=Math.PI/2;tip.position.set(sx*.09,0,.47);yoke.add(tip);
+    }
+    const dish=new THREE.Mesh(new THREE.SphereGeometry(.1,8,6,0,Math.PI*2,0,Math.PI/2),acc);dish.rotation.x=Math.PI;dish.position.set(0,.16,-.14);body.add(dish);
   } else if(id==='laser'){ // 🔆 floating pink prism
     const housing=new THREE.Mesh(new THREE.CylinderGeometry(.2,.24,.14,8),TM.dark);housing.position.y=.09;body.add(housing);
     const prism=new THREE.Mesh(new THREE.OctahedronGeometry(.2,0),TM.pink);prism.scale.set(1,1.7,1);prism.position.y=.38;body.add(prism);
@@ -609,7 +619,7 @@ function statRows(k,id,l){const d=defOf(k,id);let h='';
     <div class="row"><span>Fire rate</span><b>${s.rate.toFixed(2)} / s</b></div><div class="row"><span>Range</span><b>${s.range.toFixed(2)} tiles</b></div>
     <div class="row"><span>Critical</span><b>${(s.crit*100).toFixed(1)}% · x${s.critx.toFixed(2)}</b></div>
     ${d.splash?`<div class="row"><span>Splash</span><b>${d.splash} tiles</b></div>`:''}${s.chain?`<div class="row"><span>Chain</span><b>${s.chain} targets</b></div>`:''}
-    <div class="row"><span>Hits flying</span><b>${d.air?'Yes':'No'}</b></div>
+    <div class="row"><span>${d.aa?'Targets':'Hits flying'}</span><b>${d.aa?'Flying only':(d.air?'Yes':'No')}</b></div>
     <div class="row"><span>Fusion</span><b>Next +1: x1.12 dmg, +5% speed</b></div>`;}
   if(k==='s'){const c=CAMPS[id];const q=hiFactor(c.luck*(1+l*0.1));h+=`<div class="row"><span>Drop luck</span><b>x${(c.luck*(1+l*0.1)).toFixed(2)}</b></div>
     <div class="row"><span>Enemy HP</span><b>x${c.hp.toFixed(2)}</b></div><div class="row"><span>Enemies per wave</span><b>+${l*20}%</b></div>
@@ -882,7 +892,7 @@ function tailOf(mesh,d=.16){_back.set(0,0,-d).applyQuaternion(mesh.quaternion);r
 /* how each tower shoots */
 function muzzle(t,target){const head=t.mesh.userData.head;const dir=new THREE.Vector3(target.g.position.x-t.x,0,target.g.position.z-t.y).normalize();
   return new THREE.Vector3(t.x,.5,t.y).addScaledVector(dir,.3);}
-function splashAt(pos,r,d,hit){for(const e of enemies){if(e.dead)continue;if(e.d.fly&&!d.air)continue;const dx=e.g.position.x-pos.x,dz=e.g.position.z-pos.z;if(dx*dx+dz*dz<=r*r)hit(e);}}
+function splashAt(pos,r,d,hit){for(const e of enemies){if(e.dead)continue;if(e.d.fly&&!d.air)continue;if(d.aa&&!e.d.fly)continue;const dx=e.g.position.x-pos.x,dz=e.g.position.z-pos.z;if(dx*dx+dz*dz<=r*r)hit(e);}}
 function shoot(t,d,s,best,hit){const from=muzzle(t,best);t.kick=1;
   const one=(pos,e)=>{if(e)hit(e);};
   switch(t.id){
@@ -900,6 +910,9 @@ function shoot(t,d,s,best,hit){const from=muzzle(t,best);t.kick=1;
     case 'mortar': particle(from,{col:0xffd27a,size:.6,life:.1});smoke(from,4,.35);lightFlash(from,0xffb060,8);
       proj({mesh:mk([PG.shell,PM.olive]),from:from.clone().setY(.8),target:best,speed:5,arc:2.6,trail:p=>{if(Math.random()<.5)particle(p,{col:0x9a9a9a,size:.1,life:.6,add:false,alpha:.35,grow:.2});},
         onHit:p=>{explosion(p,s.splash,true,0xff5a1f);splashAt(p,s.splash,d,hit);}});sfx('cannon');break;
+    case 'flak': {const m=mk([PG.shell,PM.olive]);particle(from,{col:0xffd27a,size:.3,life:.06});
+      proj({mesh:m,from:from.clone().setY(.8),target:best,speed:17,trail:p=>{if(Math.random()<.6)particle(p,{col:0xbbbbbb,size:.12,life:.35,add:false,alpha:.4,grow:.3});},
+        onHit:p=>{explosion(p,s.splash,true,0xffc04d);splashAt(p,s.splash,d,hit);}});sfx('cannon');break;}
     case 'laser': {const to=aimPoint(best);beam(from,to,0xff4fd8,.045,.08);beam(from,to,0xffffff,.012,.08);particle(to,{col:0xff7ae0,size:.35,life:.1});particle(from,{col:0xff9ee8,size:.25,life:.06});hit(best);if(Math.random()<.3)sfx('laser');break;}
     case 'coil': {let cur=best;const hitSet=new Set();let prev=new THREE.Vector3(t.x,.85,t.y);lightFlash(prev,0x9fd8ff,7);
       for(let i=0;i<s.chain&&cur;i++){hitSet.add(cur);const to=aimPoint(cur);lightning(prev,to);hit(cur);prev=to;
@@ -916,7 +929,7 @@ function shoot(t,d,s,best,hit){const from=muzzle(t,best);t.kick=1;
 function updateTowers(dt){const m=mult();
   for(const t of cells.values()){if(t.k!=='t')continue;t.cd-=dt;if(t.cd>0)continue;
     const d=TOWERS[t.id],s=towerStats(t.id,t.l);let best=null;
-    for(const e of enemies){if(e.dead)continue;if(e.d.fly&&!d.air)continue;
+    for(const e of enemies){if(e.dead)continue;if(e.d.fly&&!d.air)continue;if(d.aa&&!e.d.fly)continue;
       const dx=e.g.position.x-t.x,dz=e.g.position.z-t.y;if(dx*dx+dz*dz>s.range*s.range)continue;
       if(!best||e.prog>best.prog)best=e;}
     if(!best)continue;t.cd=1/s.rate;
