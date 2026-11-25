@@ -1,0 +1,31 @@
+name: movies-bake
+on: push
+permissions:
+  contents: write
+  actions: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply patch
+        env:
+          PATCH: "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"
+        run: |
+          set -e
+          echo "$PATCH" | base64 -d | gunzip > /tmp/x.patch
+          git apply --check /tmp/x.patch
+          git apply /tmp/x.patch
+          grep -c "amazonSearch" Movies.html
+          git config user.name "bake-bot"
+          git config user.email "bake@users.noreply.github.com"
+          git add Movies.html
+          git rm .github/workflows/movies-bake.yml
+          git commit -m "Movies: tagged Amazon search links for titles with no product link"
+          git push
+      - name: Deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
