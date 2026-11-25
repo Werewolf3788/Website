@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>Merge Lair</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;height:100%}
+  #top{padding:6px 12px;font-size:.85rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.6}
+  #top button{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;padding:2px 4px}
+  #top b{color:#fde047}
+  #boardWrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px;position:relative}
+  #board{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(7,1fr);gap:4px;
+         width:min(94vw,62vh,470px);aspect-ratio:1;background:#1e293b;padding:6px;border-radius:14px;touch-action:manipulation}
+  .cell{background:#0f172a;border-radius:8px;display:flex;align-items:center;justify-content:center;
+        font-size:clamp(16px,5.4vw,30px);line-height:1;cursor:pointer;transition:transform .1s,box-shadow .1s}
+  .cell.has{background:#243244}
+  .cell.sel{box-shadow:0 0 0 3px #fde047 inset;transform:scale(.94)}
+  .cell.pop{animation:pop .18s ease-out}
+  @keyframes pop{0%{transform:scale(.55)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+  #bar{display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0f172a}
+  #bar button{flex:1;border:0;border-radius:12px;padding:11px 4px;font:inherit;font-size:.8rem;font-weight:800;cursor:pointer;background:#334155;color:#e2e8f0}
+  #bar button.nest{background:#22c55e;color:#04210f}
+  #bar button.on{background:#fbbf24;color:#3b2200}
+  #bar button:disabled{opacity:.45;cursor:default}
+  #bar .lbl{display:block;font-size:.66rem;font-weight:600;opacity:.8}
+  #toast{position:fixed;left:0;right:0;bottom:88px;text-align:center;pointer-events:none;z-index:15}
+  #toast div{display:inline-block;background:#0f172aee;border:1px solid #334155;color:#fde68a;font-weight:700;
+             padding:8px 14px;border-radius:999px;font-size:.82rem;margin-top:6px;animation:fade 2.2s forwards}
+  @keyframes fade{0%{opacity:0;transform:translateY(6px)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+  #ov{position:fixed;inset:0;z-index:20;background:#000d;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
+  #ov button{background:#22c55e;color:#04210f;font-weight:800;border:0;border-radius:10px;padding:12px 20px;font:inherit;cursor:pointer}
+  #ov button.alt{background:#334155;color:#e2e8f0}
+  #ovT{font-size:1.5rem;font-weight:900} #ovS{color:#cbd5e1;max-width:420px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <span>🐉 <b>Merge Lair</b></span>
+    <span>💰 <b id="coins">0</b> · Best <b id="best">0</b></span>
+    <span><button id="helpBtn">❔ How to play</button> <button id="gamesBtn">☰ Games</button></span>
+  </div>
+  <div id="boardWrap"><div id="board"></div></div>
+  <div id="bar">
+    <button class="nest" id="nestBtn">🥚 Lay egg<span class="lbl" id="nestSub">0 ready</span></button>
+    <button id="buyBtn">🛒 Buy egg<span class="lbl" id="buySub">$20</span></button>
+    <button id="sellBtn">🗑️ Sell<span class="lbl">off</span></button>
+    <button id="newBtn">↺<span class="lbl">New lair</span></button>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button><button id="ovBtn2" class="alt" style="display:none"></button></div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+
+var N = 7;
+var TIERS = [
+  { n:'Egg',          ic:'🥚' },
+  { n:'Hatchling',    ic:'🐣' },
+  { n:'Wyrmling',     ic:'🦎' },
+  { n:'Drake',        ic:'🦖' },
+  { n:'Dragon',       ic:'🐉' },
+  { n:'Elder Dragon', ic:'🐲' }
+];
+var SAVE = 'mergelair_v1';
+var REGEN = 4;            // seconds per nest charge
+var MAX_CHARGES = 5;
+
+var S = { cells:[], coins:0, best:0, earned:0, charges:3, regenT:0, buys:0, elders:0, played:false };
+var els = [], selected = null, sellMode = false, popped = {};
+
+function blank(){ var a = []; for (var i = 0; i < N * N; i++) a.push(-1); return a; }
+
+function load(){
+  S.cells = blank();
+  try {
+    var raw = localStorage.getItem(SAVE);
+    if (!raw) return;
+    var d = JSON.parse(raw);
+    if (!d) return;
+    if (Array.isArray(d.cells) && d.cells.length === N * N) S.cells = d.cells.map(function(v){ return (v >= 0 && v < TIERS.length) ? v : -1; });
+    S.coins = +d.coins || 0; S.best = +d.best || 0; S.earned = +d.earned || 0;
+    S.charges = typeof d.charges === 'number' ? d.charges : 3;
+    S.regenT = +d.regenT || 0; S.buys = +d.buys || 0; S.elders = +d.elders || 0;
+    S.played = !!d.played;
+  } catch (e) {}
+}
+function save(){
+  try {
+    localStorage.setItem(SAVE, JSON.stringify({
+      cells:S.cells, coins:S.coins, best:S.best, earned:S.earned,
+      charges:S.charges, regenT:S.regenT, buys:S.buys, elders:S.elders, played:S.played
+    }));
+  } catch (e) {}
+}
+
+function fmt(n){
+  var a = Math.abs(n);
+  if (a >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+  if (a >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+  if (a >= 1e4) return (n / 1e3).toFixed(1) + 'K';
+  return Math.round(n).toLocaleString();
+}
+function coinsFor(tier){ return Math.round(6 * Math.pow(1.9, tier)); }
+function sellFor(tier){ return Math.round(8 * Math.pow(2, tier)); }
+function eggCost(){ return Math.ceil(20 * Math.pow(1.12, S.buys)); }
+
+function toast(msg){
+  var d = document.createElement('div');
+  d.textContent = msg;
+  $('toast').appendChild(d);
+  setTimeout(function(){ d.remove(); }, 2300);
+}
+
+function freeCells(){
+  var out = [];
+  for (var i = 0; i < S.cells.length; i++) if (S.cells[i] < 0) out.push(i);
+  return out;
+}
+function countItems(){
+  var n = 0;
+  for (var i = 0; i < S.cells.length; i++) if (S.cells[i] >= 0) n++;
+  return n;
+}
+
+/* ---------- board ---------- */
+function buildBoard(){
+  var b = $('board');
+  b.innerHTML = '';
+  els = [];
+  for (var i = 0; i < N * N; i++) {
+    var d = document.createElement('div');
+    d.className = 'cell';
+    d.dataset.i = i;
+    b.appendChild(d);
+    els.push(d);
+  }
+}
+function render(){
+  for (var i = 0; i < els.length; i++) {
+    var t = S.cells[i], el = els[i];
+    el.className = 'cell' + (t >= 0 ? ' has' : '') + (selected === i ? ' sel' : '') + (popped[i] ? ' pop' : '');
+    el.textContent = t >= 0 ? TIERS[t].ic : '';
+    el.title = t >= 0 ? TIERS[t].n : '';
+  }
+  popped = {};
+  $('coins').textContent = fmt(S.coins);
+  $('best').textContent = fmt(S.best);
+  $('nestSub').textContent = S.charges + ' ready';
+  $('buySub').textContent = '$' + fmt(eggCost());
+  $('buyBtn').disabled = S.coins < eggCost() || !freeCells().length;
+  $('nestBtn').disabled = S.charges < 1 || !freeCells().length;
+  $('sellBtn').querySelector('.lbl').textContent = sellMode ? 'on' : 'off';
+  $('sellBtn').classList.toggle('on', sellMode);
+}
+
+/* ---------- moves ---------- */
+function spawnEgg(tier){
+  var free = freeCells();
+  if (!free.length) { toast('The lair is full — merge or sell something'); return false; }
+  var i = free[Math.floor(Math.random() * free.length)];
+  S.cells[i] = tier;
+  popped[i] = true;
+  return true;
+}
+
+function dist(a, b){
+  var ar = Math.floor(a / N), ac = a % N, br = Math.floor(b / N), bc = b % N;
+  return Math.abs(ar - br) + Math.abs(ac - bc);
+}
+/* the third of a kind that joins a merge: nearest one to the target */
+function findThird(tier, a, b){
+  var best = -1, bd = 1e9;
+  for (var i = 0; i < S.cells.length; i++) {
+    if (i === a || i === b) continue;
+    if (S.cells[i] !== tier) continue;
+    var d = dist(i, b);
+    if (d < bd) { bd = d; best = i; }
+  }
+  return best;
+}
+
+function tapCell(i){
+  if (sellMode) {
+    if (S.cells[i] < 0) return;
+    var tier = S.cells[i], gain = sellFor(tier);
+    S.coins += gain;
+    S.cells[i] = -1;
+    selected = null;
+    toast('Sold ' + TIERS[tier].n + ' for $' + fmt(gain));
+    render(); save();
+    return;
+  }
+  if (S.cells[i] < 0) { selected = null; render(); return; }
+  if (selected === null) { selected = i; render(); return; }
+  if (selected === i) { selected = null; render(); return; }
+
+  var a = selected, b = i, ta = S.cells[a], tb = S.cells[b];
+  if (ta !== tb) { selected = b; toast('Those are different — match the same kind'); render(); return; }
+
+  var third = findThird(ta, a, b);
+  if (third < 0) { selected = b; toast('You need 3 of the same to merge'); render(); return; }
+
+  merge(a, b, third, ta);
+}
+
+function merge(a, b, third, tier){
+  S.cells[a] = -1;
+  S.cells[third] = -1;
+  selected = null;
+
+  var gain, next = tier + 1;
+  if (next < TIERS.length) {
+    S.cells[b] = next;
+    popped[b] = true;
+    gain = coinsFor(tier);
+    toast('Merged into ' + TIERS[next].ic + ' ' + TIERS[next].n + ' · +$' + fmt(gain));
+    if (next === TIERS.length - 1) {
+      S.elders++;
+      var bonus = 500 * S.elders;
+      S.coins += bonus;
+      S.earned += bonus;
+      setTimeout(function(){
+        overlay('🐲 An Elder Dragon!', 'You merged all the way up. Bonus $' + fmt(bonus) + ' — keep three of them for a jackpot.', 'Keep going');
+      }, 120);
+    }
+  } else {
+    S.cells[b] = -1;
+    gain = Math.round(400 * Math.pow(3, tier));
+    popped[b] = true;
+    toast('Three Elder Dragons hatch a jackpot! +$' + fmt(gain));
+  }
+  S.coins += gain;
+  S.earned += gain;
+  if (S.earned > S.best) { S.best = S.earned; }
+  render(); save();
+}
+
+/* ---------- overlay ---------- */
+function overlay(t, s, btn, fn, btn2, fn2){
+  $('ovT').textContent = t;
+  $('ovS').textContent = s || '';
+  $('ovBtn').textContent = btn;
+  $('ovBtn').onclick = function(){ $('ov').style.display = 'none'; if (fn) fn(); };
+  if (btn2) {
+    $('ovBtn2').style.display = '';
+    $('ovBtn2').textContent = btn2;
+    $('ovBtn2').onclick = function(){ $('ov').style.display = 'none'; if (fn2) fn2(); };
+  } else $('ovBtn2').style.display = 'none';
+  $('ov').style.display = 'flex';
+}
+
+/* ---------- controls ---------- */
+function layEgg(){
+  if (S.charges < 1) { toast('The nest is resting — it refills every ' + REGEN + 's'); return; }
+  if (!freeCells().length) { toast('The lair is full — merge or sell something'); return; }
+  S.charges--;
+  spawnEgg(0);
+  render(); save();
+}
+function buyEgg(){
+  var c = eggCost();
+  if (S.coins < c) return;
+  if (!freeCells().length) { toast('The lair is full — merge or sell something'); return; }
+  S.coins -= c;
+  S.buys++;
+  spawnEgg(0);
+  render(); save();
+}
+
+$('board').addEventListener('click', function(e){
+  var el = e.target.closest('.cell');
+  if (!el) return;
+  tapCell(+el.dataset.i);
+});
+$('nestBtn').onclick = layEgg;
+$('buyBtn').onclick = buyEgg;
+$('sellBtn').onclick = function(){ sellMode = !sellMode; selected = null; render(); };
+$('helpBtn').onclick = function(){
+  overlay('❔ How to play',
+    'Tap the nest to lay eggs. Tap an egg, then tap another of the same kind — a third one joins in and they merge into the next creature. Keep merging to reach the Elder Dragon. Sell things you do not need, and buy extra eggs with your coins.',
+    'Got it');
+};
+$('newBtn').onclick = function(){
+  overlay('Start a new lair?', 'Your board and coins start again from scratch.', 'Yes, start over', function(){
+    S.cells = blank(); S.coins = 0; S.charges = 3; S.regenT = 0; S.buys = 0; S.elders = 0; S.earned = 0;
+    selected = null; sellMode = false;
+    render(); save();
+  }, 'Cancel', function(){});
+};
+$('gamesBtn').onclick = function(){ location.href = 'index.html'; };
+
+/* nest recharges */
+setInterval(function(){
+  if (S.charges >= MAX_CHARGES) { S.regenT = 0; render(); return; }
+  S.regenT++;
+  if (S.regenT >= REGEN) { S.regenT = 0; S.charges = Math.min(MAX_CHARGES, S.charges + 1); save(); }
+  render();
+}, 1000);
+setInterval(save, 5000);
+addEventListener('beforeunload', save);
+
+/* ---------- boot ---------- */
+load();
+if (!S.played) {
+  spawnEgg(0); spawnEgg(0); spawnEgg(0); spawnEgg(0);
+  S.played = true;
+}
+buildBoard();
+render();
+save();
+})();
+</script>
+</body>
+</html>
