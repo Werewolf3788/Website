@@ -201,8 +201,10 @@ body.pad .touchOnly{display:none}
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.0.2';
+const VERSION = '1.0.3';
 const WHATS_NEW = [
+  'Enemies are monsters now: horns, teeth, claws and flapping bat wings — no more plain balls.',
+  'Two new anti-air guns: Skyward Flak and Skyfire Battery. They only shoot at flying enemies.',
   'Remove mode: hit Remove, then tap towers, paths or traps on the board to take them back one after another. It stays on until you hit Done.',
   'Roads, camps and the castle now connect at corners too, not just sides.',
   'Road tiles that don\'t reach the castle show red, and a camp with no road shows a red "!".',
@@ -227,7 +229,9 @@ const TOWERS = {
   laser:{name:'Prism Laser',r:'epic',ic:'🔆',dmg:12,rate:6,range:3,color:0xf472b6,air:true,desc:'Rapid beam.'},
   coil:{name:'Thunder Coil',r:'epic',ic:'⚡',dmg:25,rate:1.2,range:2.8,chain:3,color:0xfacc15,air:true,desc:'Lightning jumps to 3 enemies.'},
   scales:{name:'Judgement Scales',r:'legendary',ic:'⚖️',dmg:50,rate:1,range:3,exec:0.1,color:0xeab308,air:true,desc:'Executes non-boss enemies under 10% HP.'},
-  gate:{name:'Ember Wyrm Gate',r:'mythic',ic:'🐉',dmg:40,rate:2,range:3.4,splash:0.9,burn:0.25,color:0xef4444,air:true,desc:'Burning splash; sets enemies on fire.'}
+  gate:{name:'Ember Wyrm Gate',r:'mythic',ic:'🐉',dmg:40,rate:2,range:3.4,splash:0.9,burn:0.25,color:0xef4444,air:true,desc:'Burning splash; sets enemies on fire.'},
+  flak:{name:'Skyward Flak',r:'uncommon',ic:'🎈',dmg:9,rate:1.8,range:3,color:0x93c5fd,air:true,airOnly:true,desc:'Anti-air gun: only shoots flying enemies.'},
+  skyfire:{name:'Skyfire Battery',r:'rare',ic:'🛰️',dmg:26,rate:1.1,range:3.8,splash:0.8,color:0x38bdf8,air:true,airOnly:true,desc:'Anti-air splash: only shoots flying enemies.'}
 };
 const PATHS = {
   road:{name:'Dirt Road',r:'common',ic:'🟫',desc:'Enemies walk on it. Each +1 slows enemies on it by 3%.'},
@@ -391,7 +395,8 @@ function towerMesh(id){const d=TOWERS[id];const g=new THREE.Group();
     case 'gate':body=new THREE.Group();const p1=new THREE.Mesh(new THREE.BoxGeometry(.08,.6,.08),mat),p2=p1.clone();p1.position.x=-.22;p2.position.x=.22;
       const tb=new THREE.Mesh(new THREE.BoxGeometry(.65,.08,.12),mat);tb.position.y=.3;body.add(p1,p2,tb);body.position.y=.15;break;
     default:{body=new THREE.Mesh(new THREE.BoxGeometry(.32,.2,.32),mat);const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.42,8),new THREE.MeshLambertMaterial({color:0x374151}));
-      barrel.rotation.x=Math.PI/2;barrel.position.z=.25;body.add(barrel);}
+      barrel.rotation.x=Math.PI/2;barrel.position.z=.25;body.add(barrel);
+      if(d.airOnly){barrel.rotation.x=Math.PI/2-.8;barrel.position.set(0,.16,.16);}}
   }
   head.add(body);g.userData.head=head;g.traverse(o=>{o.castShadow=true});return g;}
 function campMesh(id){const d=CAMPS[id];const g=new THREE.Group();
@@ -495,7 +500,7 @@ function statRows(k,id,l){const d=defOf(k,id);let h='';
     <div class="row"><span>Fire rate</span><b>${s.rate.toFixed(2)} / s</b></div><div class="row"><span>Range</span><b>${s.range.toFixed(2)} tiles</b></div>
     <div class="row"><span>Critical</span><b>${(s.crit*100).toFixed(1)}% · x${s.critx.toFixed(2)}</b></div>
     ${d.splash?`<div class="row"><span>Splash</span><b>${d.splash} tiles</b></div>`:''}${s.chain?`<div class="row"><span>Chain</span><b>${s.chain} targets</b></div>`:''}
-    <div class="row"><span>Hits flying</span><b>${d.air?'Yes':'No'}</b></div>
+    <div class="row"><span>Targets</span><b>${d.airOnly?'Flying only':d.air?'Ground &amp; flying':'Ground only'}</b></div>
     <div class="row"><span>Fusion</span><b>Next +1: x1.12 dmg, +5% speed</b></div>`;}
   if(k==='s'){const c=CAMPS[id];h+=`<div class="row"><span>Drop luck</span><b>x${(c.luck*(1+l*0.1)).toFixed(2)}</b></div>
     <div class="row"><span>Enemy HP</span><b>x${c.hp.toFixed(2)}</b></div><div class="row"><span>Enemies per wave</span><b>+${l*20}%</b></div>`;}
@@ -573,7 +578,12 @@ window.buyCamp=id=>{const c=CAMPS[id];if(!S.shop.stock[id]||S.cash<c.price)retur
 /* ---------- upgrades ---------- */
 function renderUpg(){$('upgCash').textContent=fmt(S.cash);
   $('hexWrap').innerHTML=UPG.map(u=>{const l=U(u.k),max=l>=u.max,cost=upgCost(u,l);
-    return `<div class="hex${max?' max':''}${!max&&S.cash<cost?' cant':''}" style="background:${u.col}" onclick="buyUpg('${u.k}')"><span class="ic">${u.ic}</span>${u.name}<span>${u.fx(l)}</span><span class="cost">${max?'MAX':'🪙 '+fmt(cost)}</span><span style="font-size:9px">Lv ${l}/${u.max}</span></div>`;}).join('');}
+    return `<div class="hex${max?' max':''}${!max&&S.cash<cost?' cant':''}" data-k="${u.k}" style="background:${u.col}" onclick="buyUpg('${u.k}')"><span class="ic">${u.ic}</span>${u.name}<span>${u.fx(l)}</span><span class="cost">${max?'MAX':'🪙 '+fmt(cost)}</span><span style="font-size:9px">Lv ${l}/${u.max}</span></div>`;}).join('');}
+function refreshUpgLive(){if(!$('upg').classList.contains('open'))return false;
+  $('upgCash').textContent=fmt(S.cash);
+  $('hexWrap').querySelectorAll('.hex[data-k]').forEach(h=>{const u=UPG.find(x=>x.k===h.dataset.k);if(!u)return;
+    const l=U(u.k),max=l>=u.max,can=!max&&S.cash>=upgCost(u,l);h.classList.toggle('max',max);h.classList.toggle('cant',!max&&!can);});
+  return true;}
 window.buyUpg=k=>{const u=UPG.find(x=>x.k===k),l=U(k);if(l>=u.max)return;const cost=upgCost(u,l);if(S.cash<cost)return toast('Not enough cash');
   S.cash-=cost;S.upg[k]=l+1;sfx('buy');toast(`⬆ ${u.name}: ${u.fx(l+1)}`);
   if(k==='board'){buildBoard();resize();}
@@ -632,16 +642,48 @@ function nextWave(){waveNo++;waveActive=true;waveTimer=0;
   spawnQueue.sort((a,b)=>a.delay-b.delay);
   if(boss)toast('👑 Boss wave '+waveNo+'!');
   updHud();}
-const eGeo={ground:new THREE.SphereGeometry(1,12,10),fly:new THREE.OctahedronGeometry(1)};
 const hpGeo=new THREE.PlaneGeometry(1,.08);
+/* ---------- monsters (shared shapes/materials, little creatures instead of balls) ---------- */
+const MG={
+  torso:new THREE.SphereGeometry(.42,10,8),eye:new THREE.SphereGeometry(.14,8,6),pupil:new THREE.SphereGeometry(.07,6,6),
+  brow:new THREE.BoxGeometry(.16,.05,.05),mouth:new THREE.BoxGeometry(.3,.1,.05),tooth:new THREE.ConeGeometry(.035,.1,4),
+  leg:new THREE.CylinderGeometry(.09,.07,.3,6),foot:new THREE.SphereGeometry(.11,6,6),
+  arm:new THREE.CylinderGeometry(.07,.05,.34,6),claw:new THREE.SphereGeometry(.1,6,6),
+  horn:new THREE.ConeGeometry(.1,.34,6),ear:new THREE.ConeGeometry(.09,.36,4),tusk:new THREE.ConeGeometry(.05,.18,5),
+  crown:new THREE.CylinderGeometry(.26,.26,.12,8,1,true),spike:new THREE.ConeGeometry(.06,.2,4),wing:new THREE.ConeGeometry(.26,.7,4)
+};
+const MM={dark:new THREE.MeshLambertMaterial({color:0x1f2937}),bone:new THREE.MeshLambertMaterial({color:0xf8fafc}),skin:{}};
+const mSkin=c=>MM.skin[c]||(MM.skin[c]=new THREE.MeshLambertMaterial({color:c}));
+const MOB={grunt:{arms:1,horns:1},runner:{arms:1,ears:1},brute:{arms:1,horns:1,tusks:1,big:1},flyer:{wings:1},boss:{arms:1,horns:1,tusks:1,crown:1,big:1}};
+function monsterMesh(t){const d=ENEMY[t],o=MOB[t]||{},skin=mSkin(d.col),g=new THREE.Group(),B=new THREE.Group();g.add(B);
+  const torso=new THREE.Mesh(MG.torso,skin);torso.scale.set(o.big?1.15:1,1.15,o.big?1:.85);B.add(torso);torso.castShadow=true;
+  const add=(geo,mat,x,y,z,rx,rz)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(rz)m.rotation.z=rz;B.add(m);return m;};
+  for(const s of [-1,1]){
+    add(MG.eye,MM.bone,s*.17,.22,.34);add(MG.pupil,MM.dark,s*.18,.22,.45);
+    add(MG.brow,MM.dark,s*.17,.37,.34,0,s*.4);
+    add(MG.leg,skin,s*.17,-.42,0);add(MG.foot,MM.dark,s*.17,-.57,.04).scale.set(1,.55,1.35);
+    if(o.arms){add(MG.arm,skin,s*.42,.02,.02,0,s*.55);add(MG.claw,MM.dark,s*.55,-.13,.05);}
+    if(o.horns)add(MG.horn,MM.bone,s*.22,.5,0,0,-s*.3);
+    if(o.ears)add(MG.ear,skin,s*.2,.44,-.06,0,-s*.8);
+    if(o.tusks)add(MG.tusk,MM.bone,s*.15,-.13,.4,Math.PI,0);
+  }
+  add(MG.mouth,MM.dark,0,-.06,.42);
+  for(let i=-1;i<=1;i++)add(MG.tooth,MM.bone,i*.09,-.01,.45,Math.PI,0);
+  if(o.crown){add(MG.crown,MM.bone,0,.56,0);for(let i=0;i<5;i++){const a=i/5*Math.PI*2;add(MG.spike,MM.bone,Math.cos(a)*.24,.68,Math.sin(a)*.24);}}
+  const wings=[];
+  if(o.wings)for(const s of [-1,1]){const p=new THREE.Group();p.position.set(s*.3,.08,-.1);p.userData.s=s;B.add(p);
+    const w=new THREE.Mesh(MG.wing,MM.dark);w.position.x=s*.3;w.scale.z=.2;w.rotation.z=s*Math.PI/2;w.castShadow=true;p.add(w);wings.push(p);}
+  return {g,wings};
+}
 function spawnEnemy(q){const d=ENEMY[q.t];const camp=CAMPS[q.camp.id];
   const hp=8*Math.pow(1.14,waveNo-1)*d.hp*camp.hp*(1+q.camp.l*0.05);
-  const m=new THREE.Mesh(d.fly?eGeo.fly:eGeo.ground,new THREE.MeshLambertMaterial({color:d.col}));m.scale.setScalar(d.size);m.castShadow=true;
-  const bar=new THREE.Mesh(hpGeo,new THREE.MeshBasicMaterial({color:0x22c55e,depthTest:false}));bar.renderOrder=9;bar.position.y=d.size+.25;bar.scale.x=d.size*2.4;
-  const g=new THREE.Group();g.add(m,bar);enemyGroup.add(g);
+  const s=d.size*2.2,mm=monsterMesh(q.t);mm.g.scale.setScalar(s);
+  const bar=new THREE.Mesh(hpGeo,new THREE.MeshBasicMaterial({color:0x22c55e,depthTest:false}));bar.renderOrder=9;bar.position.y=.75*s+.14;bar.scale.x=d.size*2.4;
+  const g=new THREE.Group();g.add(mm.g,bar);enemyGroup.add(g);
   const start=q.route[0].clone();g.position.copy(start);
-  const e={t:q.t,d,g,bar,hp,max:hp,camp:q.camp,route:d.fly?[start,W(0,0)]:q.route,wi:1,prog:0,slowT:0,slowF:1,burnT:0,burnD:0,trapHit:new Set(),dead:false};
-  if(d.fly)g.position.y=.9;else g.position.y=d.size;
+  const groundY=.6*s;
+  const e={t:q.t,d,g,body:mm.g,wings:mm.wings,bar,hp,max:hp,camp:q.camp,route:d.fly?[start,W(0,0)]:q.route,wi:1,prog:0,slowT:0,slowF:1,burnT:0,burnD:0,trapHit:new Set(),dead:false,seed:Math.random()*6.28,groundY};
+  g.position.y=d.fly?.75:groundY;
   enemies.push(e);}
 function tileSlow(e){if(e.d.fly)return 1;const x=Math.round(e.g.position.x),y=Math.round(e.g.position.z);const c=cells.get(ck(x,y));
   let f=1;if(c&&c.k==='p'){const pd=PATHS[c.id];f*=1-Math.min(.6,(pd.base||0)+c.l*(c.id==='stone'?.04:.03));}
@@ -684,7 +726,7 @@ function boom(pos,r,color=0xffa500){const m=new THREE.Mesh(new THREE.RingGeometr
 function updateTowers(dt){const m=mult();
   for(const t of cells.values()){if(t.k!=='t')continue;t.cd-=dt;if(t.cd>0)continue;
     const d=TOWERS[t.id],s=towerStats(t.id,t.l);let best=null;
-    for(const e of enemies){if(e.dead)continue;if(e.d.fly&&!d.air)continue;
+    for(const e of enemies){if(e.dead)continue;if(e.d.fly&&!d.air)continue;if(d.airOnly&&!e.d.fly)continue;
       const dx=e.g.position.x-t.x,dz=e.g.position.z-t.y;if(dx*dx+dz*dz>s.range*s.range)continue;
       if(!best||e.prog>best.prog)best=e;}
     if(!best)continue;t.cd=1/s.rate;
@@ -695,10 +737,10 @@ function updateTowers(dt){const m=mult();
       if(d.slow){e.slowT=1.5;e.slowF=1-d.slow;}if(d.burn){e.burnT=3;e.burnD=s.dmg*d.burn;e.burnBy=t;}
       damage(e,a,t);};
     if(d.splash){const c=best.g.position.clone();tracer(from,c,0xffb347);boom(c,s.splash);
-      for(const e of enemies){if(e.dead)continue;if(e.d.fly&&!d.air)continue;if(e.g.position.distanceTo(c)<=s.splash)hit(e);}}
+      for(const e of enemies){if(e.dead)continue;if(e.d.fly&&!d.air)continue;if(d.airOnly&&!e.d.fly)continue;if(e.g.position.distanceTo(c)<=s.splash)hit(e);}}
     else if(d.chain){let cur=best;const hitSet=new Set();let prev=from;
       for(let i=0;i<s.chain&&cur;i++){hitSet.add(cur);tracer(prev,cur.g.position.clone(),0xfacc15);hit(cur);prev=cur.g.position.clone();
-        let nx=null,nd=1.6;for(const e of enemies){if(e.dead||hitSet.has(e))continue;const dd=e.g.position.distanceTo(prev);if(dd<nd){nd=dd;nx=e;}}cur=nx;}}
+        let nx=null,nd=1.6;for(const e of enemies){if(e.dead||hitSet.has(e))continue;if(d.airOnly&&!e.d.fly)continue;const dd=e.g.position.distanceTo(prev);if(dd<nd){nd=dd;nx=e;}}cur=nx;}}
     else{tracer(from,best.g.position.clone(),t.id==='laser'?0xf472b6:null);hit(best);}
     if(Math.random()<.15)sfx('shot');
   }}
@@ -709,7 +751,7 @@ function update(dt){
     if(e.burnT>0){e.burnT-=dt;damage(e,e.burnD*dt,e.burnBy);}
     if(!e.dead)moveEnemy(e,dt);}
   updateTowers(dt);
-  for(const e of enemies)if(e.dead){enemyGroup.remove(e.g);e.g.children[0].material.dispose();}
+  for(const e of enemies)if(e.dead){enemyGroup.remove(e.g);e.bar.material.dispose();}
   enemies=enemies.filter(e=>!e.dead);
   if(inBattle&&waveActive&&!spawnQueue.length&&!enemies.length){waveActive=false;
     const bonus=10*waveNo*mult().cash;S.cash+=bonus;run.cash+=bonus;
@@ -732,7 +774,7 @@ let castleFlash=0;function flashCastle(){castleFlash=.3;}
 function updHud(){$('cash').textContent=fmt(S.cash);$('wave').textContent=waveNo;$('enemies').textContent=enemies.length+spawnQueue.length;
   const mx=inBattle?mult().castle:mult().castle;const hp=inBattle?castleHp:mx;$('hpFill').style.width=(hp/mx*100)+'%';$('hpTxt').textContent=Math.ceil(hp)+'/'+mx;
   $('waveBtn').textContent=!inBattle?'Start Battle':waveActive?'Skip Wave':'Next Wave';$('forfeit').style.display=inBattle?'':'none';
-  if($('upg').classList.contains('open'))$('upgCash').textContent=fmt(S.cash);}
+  refreshUpgLive();}
 $('waveBtn').onclick=()=>{if(!inBattle)startRun();else{if(!waveActive||spawnQueue.length<5){nextWave();}else toast('Wait for the wave to finish spawning.');}};
 $('forfeit').onclick=()=>{if(confirmForfeit){endRun(true);confirmForfeit=false;}else{confirmForfeit=true;toast('Tap 🏳 again to forfeit this run');setTimeout(()=>confirmForfeit=false,2500);}};
 let confirmForfeit=false;
@@ -847,7 +889,10 @@ function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(
   let dt=raw*speed;if(inBattle)while(dt>0){const s=Math.min(dt,.05);update(s);dt-=s;}
   for(const e of enemies){e.bar.scale.x=Math.max(.01,e.hp/e.max)*e.d.size*2.4;e.bar.quaternion.copy(camera.quaternion);
     e.bar.material.color.setHex(e.hp/e.max>.5?0x22c55e:e.hp/e.max>.25?0xfacc15:0xef4444);
-    if(e.d.fly)e.g.children[0].rotation.y+=raw*3;}
+    const tt=performance.now()/1000+e.seed;
+    e.g.position.y=(e.d.fly?.75:e.groundY)+Math.sin(tt*(e.d.fly?4:7))*.02;
+    if(e.body)e.body.rotation.z=Math.sin(tt*7)*.07;
+    if(e.wings.length)for(const w of e.wings)w.rotation.z=Math.sin(tt*14)*.55*w.userData.s;}
   for(let i=fx.length-1;i>=0;i--){const f=fx[i];f.t-=raw;if(f.ring){const s=1+(1-f.t/.3)*f.ring*4;f.o.scale.set(s,s,s);f.o.material.opacity=f.t/.3;}
     if(f.t<=0){fxGroup.remove(f.o);f.o.geometry.dispose();if(f.ring)f.o.material.dispose();fx.splice(i,1);}}
   if(castleFlash>0){castleFlash-=raw;scene.background.setHex(castleFlash>0?0x3b0d0d:0x0b1430);}
