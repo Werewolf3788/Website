@@ -27,8 +27,8 @@
   #lane{position:relative;flex:1;min-height:0;overflow:hidden;background:linear-gradient(#1b1130,#2a1740 60%,#3b1f52)}
   #lane:before{content:'';position:absolute;left:0;right:0;bottom:0;height:26%;background:repeating-linear-gradient(90deg,#241934 0 14px,#2b1e3e 14px 28px)}
   #counter{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(#f59e0b,#b45309);box-shadow:3px 0 12px #0006}
-  .cust{position:absolute;top:34%;transform:translate(-50%,-50%);text-align:center;will-change:left;transition:opacity .25s}
-  .cust .who{font-size:1.7rem;line-height:1;filter:drop-shadow(0 3px 4px #0007)}
+  .cust{position:absolute;top:38%;transform:translate(-50%,-50%);text-align:center;will-change:left;transition:opacity .25s;background:#ffffff1f;border-radius:14px;padding:4px 7px;box-shadow:0 4px 12px #0006}
+  .cust .who{font-size:2.1rem;line-height:1;filter:drop-shadow(0 3px 4px #0007)}
   .cust .ord{font-size:1rem;background:#fff2e2;border-radius:999px;padding:1px 5px;margin-top:2px;display:inline-block;color:#1d1430}
   .cust .pat{width:38px;height:4px;background:#0006;border-radius:3px;margin:3px auto 0;overflow:hidden}
   .cust .pat i{display:block;height:100%;background:#4ade80}
@@ -167,7 +167,7 @@ function loop(now){
     if (c.state === 'angry') { c.t += dt; if (c.t > 0.6) { c.el.remove(); G.custs.splice(i, 1); } continue; }
     c.x -= dt / c.speed;
     c.pat -= dt;
-    c.el.style.left = (20 + c.x * (W - 40)) + 'px';
+    c.el.style.left = (30 + c.x * (W - 70)) + 'px';
     var pct = Math.max(0, c.pat / c.maxPat * 100);
     c.el.querySelector('.pat i').style.width = pct + '%';
     c.el.classList.toggle('angry', pct < 30);
@@ -190,7 +190,7 @@ function spawn(d){
     '<div class="ord">' + c.order + '</div><div class="pat"><i style="width:100%"></i></div>';
   LANE.appendChild(el);
   c.el = el;
-  el.style.left = (20 + c.x * (LANE.clientWidth - 40)) + 'px';
+  el.style.left = (30 + c.x * (LANE.clientWidth - 70)) + 'px';
   G.custs.push(c);
 }
 

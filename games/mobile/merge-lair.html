@@ -60,6 +60,7 @@
   <a href="index.html">☰ Games</a>
 </div>
 <div class="wrap">
+  <div id="raidInfo"></div>
   <div id="board"></div>
   <div id="msg"></div>
   <div id="bar">
@@ -82,6 +83,7 @@ var TIERS = [
   { ic:'🐉', n:'Drake' }, { ic:'🐲', n:'Wyrm' }, { ic:'🔥', n:'Elder Dragon' }
 ];
 var N = 6;
+var DMG = [3, 7, 16, 32, 60, 120];
 var QUESTS = [
   { id:1, t:'Make five merges', story:'The nest is cold and there is one egg in it. Merge what you have, keep the bloodline moving, and the lair will wake up around you.', goal:function(){ return S.merges >= 5; }, prog:function(){ return Math.min(S.merges, 5) + '/5 merges'; } },
   { id:2, t:'Hatch a Wyrmling', story:'Something in the dark shifted when the first Hatchlings clawed out. A Wyrmling would be proof the lair still remembers how to make dragons.', goal:function(){ return S.bestTier >= 2; }, prog:function(){ return 'best creature: ' + TIERS[S.bestTier].n; } },
@@ -93,9 +95,9 @@ var QUESTS = [
   { id:8, t:'End the siege', story:'They have brought everything they have to the lair mouth. One last fight, and the mountain belongs to the nest again.', goal:function(){ return S.raids >= 3; }, prog:function(){ return S.raids + '/3 raids won'; } }
 ];
 var BOSSES = [
-  { n:'Scavenger Captain', ic:'🪓', hp:70, smashEvery:3, story:'A crowbar, a lantern, and far too much confidence.' },
-  { n:'Wyrm Hunter', ic:'🗡️', hp:170, smashEvery:3, story:'Net, spear, and a map of every tunnel in the mountain.' },
-  { n:'The Siege Marshal', ic:'🏰', hp:320, smashEvery:2, story:'Every raider for fifty miles, and a battering ram pointed at your nest.' }
+  { n:'Scavenger Captain', ic:'🪓', hp:45, smashEvery:3, story:'A crowbar, a lantern, and far too much confidence.' },
+  { n:'Wyrm Hunter', ic:'🗡️', hp:150, smashEvery:3, story:'Net, spear, and a map of every tunnel in the mountain.' },
+  { n:'The Siege Marshal', ic:'🏰', hp:300, smashEvery:2, story:'Every raider for fifty miles, and a battering ram pointed at your nest.' }
 ];
 
 var S = { coins:20, charges:3, merges:0, bestTier:0, raids:0, board:[], sel:-1, raid:null, throwing:false, quest:0 };
@@ -133,6 +135,16 @@ function hud(){
 
 function render(){
   hud();
+  var ri = $('raidInfo');
+  if (ri) {
+    if (S.raid) {
+      var pct = Math.max(0, S.raid.hp / S.raid.max * 100);
+      var until = S.raid.boss.smashEvery - (S.raid.throws % S.raid.boss.smashEvery);
+      ri.innerHTML = '<div class="card" style="border-color:#ef4444"><div class="nm">' + S.raid.boss.ic + ' ' + S.raid.boss.n + ' · ' + Math.max(0, S.raid.hp) + ' / ' + S.raid.max + ' HP</div>' +
+        '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="sm">Tap a creature to hurl it. ' + until + ' throw' + (until === 1 ? '' : 's') + ' until it smashes one of yours.</div></div>';
+    } else ri.innerHTML = '';
+  }
   var board = $('board');
   var html = '';
   for (var i = 0; i < S.board.length; i++) {
@@ -211,10 +223,11 @@ function openRaid(){
   var idx = Math.min(S.raids, BOSSES.length - 1);
   var boss = BOSSES[idx];
   var creatures = S.board.filter(function(x){ return x; }).length;
+  var hitFor = S.board.reduce(function(a, x){ return a + (x ? DMG[x.t] : 0); }, 0);
   showSheet('<h2>Raid ' + (idx + 1) + ': ' + boss.n + '</h2><p>' + boss.story + '</p>' +
     '<div class="boss"><div class="ic">' + boss.ic + '</div><div class="nm">' + boss.n + '</div>' +
     '<div class="bar"><i style="width:100%"></i></div><div class="sm">' + boss.hp + ' HP · smashes a creature every ' + boss.smashEvery + ' throws</div></div>' +
-    '<p style="margin-top:12px;font-size:.8rem">Tap your creatures on the board to hurl them. Bigger tiers hit much harder. You lose when the board is empty and the boss is still standing.</p>' +
+    '<p style="margin-top:12px;font-size:.8rem">Tap your creatures on the board to hurl them. Your whole nest can hit for <b>' + hitFor + '</b> right now, and the boss has <b>' + boss.hp + '</b>. You lose when the board is empty and the boss is still standing.</p>' +
     '<button class="big" id="startRaid" style="width:100%;background:#ef4444;color:#fff;border:0;border-radius:12px;padding:13px;font-weight:900" ' + (creatures < 3 ? 'disabled' : '') + '>' +
     (creatures < 3 ? 'Need at least 3 creatures' : 'Begin the raid') + '</button><button id="closeRaid" class="alt" style="width:100%;margin-top:8px">Not yet</button>');
   $('closeRaid').onclick = hideSheet;
@@ -225,7 +238,7 @@ function openRaid(){
 function hurl(i){
   var it = S.board[i];
   if (!it) return;
-  var dmg = [2, 5, 12, 26, 55, 110][it.t];
+  var dmg = DMG[it.t];
   S.board[i] = null;
   S.raid.hp -= dmg;
   S.raid.throws++;
