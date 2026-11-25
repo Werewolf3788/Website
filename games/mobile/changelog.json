@@ -2,6 +2,15 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 56,
+   "date": "Nov 25",
+   "game": "all",
+   "items": [
+    "🏙️ New game: Idle City — tap and build a skyline that keeps earning while you're away, with upgrades and offline cash",
+    "🐉 New game: Merge Lair — lay eggs, merge three of a kind and work your way up to Elder Dragons"
+   ]
+  },
+  {
    "id": 55,
    "date": "Nov 25",
    "game": "all",

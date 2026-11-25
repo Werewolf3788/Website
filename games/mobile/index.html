@@ -137,6 +137,16 @@
   <div class="muted">The classic mine hunt: dig the safe squares, read the numbers and flag the mines. Easy 9×9, Medium 12×12 and Hard 16×16. Your first tap is always safe, and your best time for each size is saved on this device.</div>
   <div class="row"><button id="minesBtn">Play</button></div>
 </div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🏙️ Idle City</h2>
+  <div class="muted">Build a city that earns while you are away. Tap the skyline for cash, spend it on lemonade stands up to sky towers, and buy upgrades for bigger taps and +10% city income. It keeps earning for up to two hours offline at half speed, and saves on this device.</div>
+  <div class="row"><button id="idleCityBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🐉 Merge Lair</h2>
+  <div class="muted">Merge Dragons-style: tap the nest to lay eggs, then tap an egg and tap another of the same kind — a third one joins in and the three become the next creature. Work up from Eggs to Elder Dragons, sell what you don't need and buy extra eggs with your coins. Saves on this device.</div>
+  <div class="row"><button id="mergeLairBtn">Play</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -215,6 +225,8 @@
   $('brickBtn').onclick = function () { location.href = 'bricks.html'; };
   $('mergeBtn').onclick = function () { location.href = 'merge.html'; };
   $('minesBtn').onclick = function () { location.href = 'mines.html'; };
+  $('idleCityBtn').onclick = function () { location.href = 'idle-city.html'; };
+  $('mergeLairBtn').onclick = function () { location.href = 'merge-lair.html'; };
   // ---- leaderboard
   var LGAMES = [['all', 'All games'], ['wahoo', '🎲 Wahoo'], ['tycoon', '🏙️ Monopoly'], ['frogger', '🐸 Frogger'], ['race', '🏎️ Racing'], ['battleship', '🚢 Battleship']], leadTab = 'all', leadData = null;
   var BEST = { frogger: ['Best solo', function (v) { return v + ' crossed'; }, false], battleship: ['Fewest shots', function (v) { return v + ' shots'; }, true], race: ['Best lap', function (v) { var t = v / 1000, m = Math.floor(t / 60); return m + ':' + (t % 60).toFixed(1).padStart(4, '0'); }, true] };
