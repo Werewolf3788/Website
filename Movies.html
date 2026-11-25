@@ -1148,7 +1148,12 @@ function storeUrl(m, s) {
   let u = m.links[s.key];
   if (s.key === 'amazon') {
     if (!u) return amazonSearch(m);
-    if (!/tag=/.test(u) && !/amzn\.to/.test(u)) u += (u.includes('?') ? '&' : '?') + 'tag=' + CFG.amazonTag;
+    if (!/tag=/.test(u)) {
+      // Short links (link.amazon, amzn.to, a.co) already carry the store id, and Amazon errors out when a tag is appended.
+      let host = '';
+      try { host = new URL(/^\/\//.test(u) ? 'https:' + u : u).hostname; } catch (e) { host = ''; }
+      if (!host || /(^|\.)amazon\.[a-z.]+$/i.test(host)) u += (u.includes('?') ? '&' : '?') + 'tag=' + CFG.amazonTag;
+    }
     return u;
   }
   if (!u) return '';
