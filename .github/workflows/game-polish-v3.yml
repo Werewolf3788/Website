@@ -1,0 +1,48 @@
+name: game-polish-v3
+on:
+  push:
+    paths:
+      - .github/workflows/game-polish-v3.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: polish
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          edits = {
+              'games/mobile/idle-city.html': [
+                  ("document.addEventListener('visibilitychange', function(){ if (document.hidden) pause(); });",
+                   "document.addEventListener('visibilitychange', function(){ if (document.hidden) { pause(); if (G) $('pauseBtn').textContent = '▶ Resume'; } });", 1)
+              ],
+              'games/mobile/tiles-outpost.html': [
+                  ("<div class=\"home\"><a href=\"index.html\">☰ Games</a><a href=\"#\" id=\"toHeroes\">🪖 Squad</a></div>",
+                   "<div class=\"home\"><a href=\"#\" id=\"toHeroes\">🪖 Squad</a></div>", 1)
+              ]
+          }
+          for path, pairs in edits.items():
+              s = open(path).read()
+              for old, new, want in pairs:
+                  n = s.count(old)
+                  print(path, 'found', n)
+                  if n != want:
+                      raise SystemExit('anchor mismatch')
+                  s = s.replace(old, new)
+              open(path, 'w').write(s)
+              print('sha', path, hashlib.sha256(open(path, 'rb').read()).hexdigest())
+          PY
+      - name: commit
+        run: |
+          git config user.name "bake-bot"
+          git config user.email "bake-bot@users.noreply.github.com"
+          git rm -q .github/workflows/game-polish-v3.yml
+          git add games/mobile/idle-city.html games/mobile/tiles-outpost.html
+          git commit -m "Resume hint when the rush pauses, tidy the outpost header"
+          git push
