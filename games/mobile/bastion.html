@@ -699,7 +699,7 @@ function renderStats(){const m=mult();let h='';
   if(statTab==='player'){const runLuck=waveLuck();
     h=`<div class="big3"><div style="background:linear-gradient(#ef4444,#b91c1c)"><small>DAMAGE</small>x${m.dmg.toFixed(2)}</div><div style="background:linear-gradient(#fbbf24,#d97706)"><small>GOLD</small>x${m.cash.toFixed(2)}</div><div style="background:linear-gradient(#4ade80,#16a34a)"><small>LUCK</small>+${((m.luck+runLuck)*100).toFixed(1)}%</div></div>
     ${[['Damage multiplier','x'+m.dmg.toFixed(2)],['Crit chance (on top of each tower)','+'+(m.crit*100).toFixed(1)+'%'],['Crit damage','+'+(m.critd*100).toFixed(0)+'%'],['Attack speed','+'+((m.aspd-1)*100).toFixed(0)+'%'],['Range','+'+m.range.toFixed(2)+' tiles'],
-      ['Gold per kill','x'+m.cash.toFixed(2)],['Wave gold scaling','+6% per wave'],['Luck from upgrades','+'+(m.luck*100).toFixed(0)+'%'],['Luck from waves (this run)','+'+(runLuck*100).toFixed(1)+'%'],['Legendary drops','wave 60+ · up to x10 with top spawners'],['Mythic drops','wave 100+ · up to x20 with top spawners'],
+      ['Gold per kill','x'+m.cash.toFixed(2)],['Wave gold scaling','+6% per wave'],['Enemy HP per wave','+16% (compounds)'],['Enemy speed per wave','+0.6% (max +60%)'],['Luck from upgrades','+'+(m.luck*100).toFixed(0)+'%'],['Luck from waves (this run)','+'+(runLuck*100).toFixed(1)+'%'],['Legendary drops','wave 60+ · up to x10 with top spawners'],['Mythic drops','wave 100+ · up to x20 with top spawners'],
       ['Castle health',m.castle],['Board',boardN()+' x '+boardN()],['Start wave','Wave '+m.startWave],['Total kills',fmt(S.totalKills)],['Best wave',S.best]].map(([a,b])=>`<div class="row"><span>${a}</span><b>${b}</b></div>`).join('')}`;}
   else if(statTab==='tower'){const ts=[...cells.values()].filter(c=>c.k==='t');const agg={};
     ts.forEach(t=>{const k=t.id+'|'+t.l;agg[k]=agg[k]||{id:t.id,l:t.l,n:0,dmg:0,kills:0,execs:0};const a=agg[k];a.n++;a.dmg+=t.dmgDone;a.kills+=t.kills;a.execs+=t.execs;});
@@ -763,12 +763,12 @@ function enemyModel(d){const g=new THREE.Group();const mat=new THREE.MeshStandar
     const e1=new THREE.Mesh(eGeo.eye,eyeMat),e2=e1.clone();e1.position.set(-.15,.12,.6);e2.position.set(.15,.12,.6);g.add(e1,e2);}
   g.traverse(o=>{if(o.isMesh)o.castShadow=true;});g.userData.mat=mat;return g;}
 function spawnEnemy(q){const d=ENEMY[q.t];const camp=CAMPS[q.camp.id];
-  const hp=8*Math.pow(1.14,waveNo-1)*d.hp*camp.hp*(1+q.camp.l*0.05);
+  const hp=8*Math.pow(1.16,waveNo-1)*d.hp*camp.hp*(1+q.camp.l*0.05);
   const mdl=enemyModel(d);const sc=d.fly?d.size*1.4:d.size*1.05;mdl.scale.setScalar(sc);
   const bar=new THREE.Mesh(hpGeo,new THREE.MeshBasicMaterial({color:0x22c55e,depthTest:false}));bar.renderOrder=9;bar.position.y=d.fly?.55:sc*1.95+.12;bar.scale.x=d.size*2.4;
   const g=new THREE.Group();g.add(mdl,bar);enemyGroup.add(g);
   const start=q.route[0].clone();g.position.copy(start);
-  const e={t:q.t,d,g,mdl,bar,hp,max:hp,camp:q.camp,route:d.fly?[start,W(0,0)]:q.route,wi:1,prog:0,slowT:0,slowF:1,burnT:0,burnD:0,flash:0,ph:Math.random()*6,trapHit:new Set(),dead:false};
+  const e={t:q.t,d,g,mdl,bar,hp,max:hp,camp:q.camp,route:d.fly?[start,W(0,0)]:q.route,spdMul:Math.min(1.6,1+(waveNo-1)*0.006),wi:1,prog:0,slowT:0,slowF:1,burnT:0,burnD:0,flash:0,ph:Math.random()*6,trapHit:new Set(),dead:false};
   if(d.fly)g.position.y=.9;else g.position.y=0;
   smoke(g.position.clone().setY(.2),3,.3);
   enemies.push(e);}
@@ -776,7 +776,7 @@ function tileSlow(e){if(e.d.fly)return 1;const x=Math.round(e.g.position.x),y=Ma
   let f=1;if(c&&c.k==='p'){const pd=PATHS[c.id];f*=1-Math.min(.6,(pd.base||0)+U('road')*.03);}
   const t=traps.get(ck(x,y));if(t&&!e.trapHit.has(t)){e.trapHit.add(t);const td=TRAPS[t.id];damage(e,td.dmg*Math.pow(1.15,t.l)*mult().dmg*(1+waveNo*0.08),null);if(td.slow){e.slowT=2;e.slowF=1-td.slow;}}
   return f;}
-function moveEnemy(e,dt){const spd=e.d.spd*(e.slowT>0?e.slowF:1)*tileSlow(e);let step=spd*dt;
+function moveEnemy(e,dt){const spd=e.d.spd*e.spdMul*(e.slowT>0?e.slowF:1)*tileSlow(e);let step=spd*dt;
   while(step>0&&!e.dead){const tgt=e.route[e.wi];if(!tgt){reachCastle(e);return;}
     const p=e.g.position;const dx=tgt.x-p.x,dz=tgt.z-p.z;const dist=Math.hypot(dx,dz);
     if(dist<=step){p.x=tgt.x;p.z=tgt.z;step-=dist;e.prog+=dist;e.wi++;if(e.wi>=e.route.length){reachCastle(e);return;}}
