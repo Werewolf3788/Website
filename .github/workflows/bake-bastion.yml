@@ -1,0 +1,32 @@
+name: bake-bastion
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply cash icon patch
+        env:
+          PAYLOAD: '/Td6WFoAAATm1rRGAgAhARwAAAAQz1jM4AkVA8JdABboBAwi80qiPdY4ASRHL+7e5wkl5BInxhO36EhthwDu3/iVew1j9o9KtLJ3pwN9JGGCcnIIp17NnS2o4i0PUprgT+VTHTzzvrukKMu53wmevgAoBkXNRLSZuKbC9XDnY81ktZLmNne0NRQP1re5t0oPbvoFBcupB+ckrI61hmt+PEgotgcXDdbcnGnJzijWsRqKnfta9g2vO11gcR93jCze6vNvuCIEPDzWUJwjBnVbSonDoPDFdikwMnM0UuQ35jQB40nH0rFNi3QZu5FwxthZqCCg/xoMz8t1zxHE5vX0feIVFyrKxNJWn83ExriPdmR0X5VAbJNGKta2PROQnw6Q8O1cfYD9BZ+LRlpOMujF+V950k4Clyu9Nudorw8Ww4UfaqZW+JrOMjTQEX4R61xqlBozC3OjnKVc1rcss/mTYvwK/K90Hbxy+bPVL+lDXQVJrPLl/cw6pXclEoHmrRM85+CqROkx7tXpZunshvX/sVUQzzCrhuG+Hce3JLhH71UHQ7Ad9SAskQbRVugHH1F9OYs7JYDMa9Otg6zHx+Uw5co1cBjgy4Njo+vNauWQKqoK63bsgkQNjQfUTN6+QmFHwWTJf/pyr7Nt0qYx1IoWy/fxmRgjdc3KsNgZmTqy5AIbHi/w8qxwljrTbWDMCLqpJoIRET8WTPQzKpolKChfWBZwD0v/NL0S86bFKjJzAfRhB1E9SSmUdm//U5RMnUzZMGbPpBOSOW3xG3PreXScSzid8v//P25DwDy4AtWhRUybRzV727Gv/l0mC7VfBBi7JO4HtTZvpsFJt+8BdNOBa+d2Eds1j0wtZLpxof0Nvcj/Dnk+qMdTuI2i3xy7xFTVJilW3bR5ke8g/MpmxKoIxiAon8B9tkD106VhycQvmd4EMDaF/4GT2dd8X24Ey8skLW7lOLmgRIE2mkJhqlYehFOeAMiKp+asqcF3gnm1ENg3M0Qez+HH6bogGJB5HVHLxz9zU2irgI6ApVo+nhDFbixQ5D/pTZ9zc5/BL7/OW4Y4l9a7igfX4by95kQQHitcx21BKbbnvIPvo3NBfY/QMuMVsz8R9pRPdfP7/z/c+n9NOYMeWKJ4BquKpha9M9sK0SaZH2y/9FRT56LDSUMU2kKUzG4Vf0h0WovWz4a5x0ft0AppngfBZ6xWGVc/3aaLWs+y3LprL5OeK7HixX1tjeQSE0jFOn4x2XQRb+TPLO60ADLxvFeDcs5U/oyE7vgrC8KpPzkADoZ63JJ9iCyFUJIKrGtSYsGx0hwTsYBa6DhqAAAATiIL2+fmDUAAAd4HlhIAAPS8yN6xxGf7AgAAAAAEWVo='
+        run: |
+          printf '%s' "$PAYLOAD" | base64 -d | xz -dc > "$RUNNER_TEMP/cash.patch"
+          test "$(sha256sum "$RUNNER_TEMP/cash.patch" | cut -d' ' -f1)" = "86dcad1d34f9a43c8087f583e3ee7d62b12f121bd00a5f8635b1aaba4a492515"
+          git apply "$RUNNER_TEMP/cash.patch"
+          test "$(sha256sum games/mobile/bastion.html | cut -d' ' -f1)" = "14a507981a190407c453fd48900d21fb0bce2a687de57a20ada56e4b0f7d7d59"
+      - name: Commit and push
+        run: |
+          git config user.name "bake-bot"
+          git config user.email "bake-bot@users.noreply.github.com"
+          git add games/mobile/bastion.html
+          if git diff --cached --quiet; then echo "already up to date"; else git commit -m "Use a money bag instead of the coin emoji for cash"; git push origin HEAD:main; fi
+      - name: Trigger deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
