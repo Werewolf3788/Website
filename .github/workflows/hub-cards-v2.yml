@@ -1,0 +1,58 @@
+name: hub-cards-v2
+on:
+  push:
+    paths:
+      - .github/workflows/hub-cards-v2.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: patch hub and changelog
+        run: |
+          python3 - <<'PY'
+          import json, re
+          p = 'games/mobile/index.html'
+          s = open(p).read()
+
+          cards = {
+              '🏙️ Idle City': ('🚚 City Rush', 'Six districts, one cart. Customers queue up with an order and their patience is running out — tap the right counter, keep the streak alive, then spend your cash on upgrades between districts. Rush hours double everything.', 'idleCityBtn'),
+              '🐉 Merge Lair': ('🐉 Merge Lair', 'Merge three of a kind to raise bigger creatures, then raid the bosses camped at the lair mouth by hurling them. Eight story quests, three bosses, and the nest refills every time you merge — no waiting.', 'mergeLairBtn'),
+              '🏛️ Tiles Outpost': ('🏛️ Tiles Outpost', 'A twelve-mission story campaign with turn-based squad battles. Pick attacks, abilities and potions, level your three survivors between fights, replay missions for stars and break the boss at the Sun Gate.', 'tilesOutpostBtn')
+          }
+
+          for old, (new, text, btn) in cards.items():
+              pat = re.compile(r'<div class="card">\s*<h2 style="margin:0 0 4px">' + re.escape(old) + r'</h2>\s*<div class="muted">.*?</div>\s*<div class="row"><button id="' + btn + r'">Play</button></div>\s*</div>', re.S)
+              block = '<div class="card">\n  <h2 style="margin:0 0 4px">' + new + '</h2>\n  <div class="muted">' + text + '</div>\n  <div class="row"><button id="' + btn + '">Play</button></div>\n</div>'
+              s, n = pat.subn(block, s)
+              print(old, 'replaced', n)
+          open(p, 'w').write(s)
+
+          c = json.load(open('games/mobile/changelog.json'))
+          if c['entries'][0]['id'] < 58:
+              c['entries'].insert(0, {
+                  'id': 58,
+                  'date': 'Nov 25',
+                  'game': 'all',
+                  'items': [
+                      '🚚 City Rush replaces the old idle city — serve a live queue across six districts, with rush hours and upgrades',
+                      '🏛️ Tiles Outpost is now a twelve-mission story campaign with turn-based battles and star ratings',
+                      '🐉 Merge Lair got story quests and boss raids, and the nest refills every time you merge'
+                  ]
+              })
+              json.dump(c, open('games/mobile/changelog.json', 'w'), indent=1, ensure_ascii=False)
+              print('changelog', c['entries'][0]['id'])
+          PY
+      - name: commit
+        run: |
+          git config user.name "bake-bot"
+          git config user.email "bake-bot@users.noreply.github.com"
+          git rm -q .github/workflows/outpost-v2.yml .github/workflows/rush-v2.yml || true
+          git add games/mobile/index.html games/mobile/changelog.json
+          git commit -m "Update hub cards and changelog for the rebuilt games"
+          git push
