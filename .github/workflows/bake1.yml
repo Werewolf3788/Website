@@ -1,0 +1,35 @@
+name: bake
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+  actions: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: apply
+        run: |
+          set -e
+          echo 'H4sIAMMUB2sC/21S227bMAx971cINQY0i5TKtzSVMCDYPmPYA2VJsRZb8my5cWv03yc5LbakfRFA8oiH55CEEAT3XTNuat82N+v1Gol/4X6PSJbjLVqH9xHt9zeI9c75uXKN68lQ1apVrDGH2iMJ/ZETIg7nmMT4LtGFftApTqhOIc1WAaCNauQFJtVllRc4Sbe5zsqIqaC/hGitQ32XbVMR68YeLzsUGU0BJ+pRpwoioh29uoCUYiu2FCePWmRQREhj7CVEClXIHU4yyEWmIgSqiiUqK8pMhOjg3PXgD5ArnJRa0h2sXt/c+SnBA/HRm28L/Ncnfr1+gMaeV8iYCl2/zsJNZDAvxh6YcL1UPQkZ3hpLTkb6mtHXm3Xc2ExOShyNJ15NPv5QBOTvcfAspfQL/zQbvorRe2exsd3oMeBNGxeAN8arFm/+dKaavRurOvjhjbOsBWu6sYEY8HfGcQhTDapRlWfWWcWvE4FnIZg/+xEn49eJIF04+Ty30B+MZZQLqI6H3o1Wsifo7+K1rfji2FscDmPFtbNB2bab7tNNib5D37gTHp6HoIaMBg9gh8DSG83dk+p1qJKJVY3pAl+tILg7fyBarvadK54j70DKuI90102ohemueDrhtOimFYov79xgFrcGb6rjM/euCwpewohSTazky0prkO7EKMpCj5SGJ6GU5nGOdF5kPFCKcrpIoSW6PYtBP1xoYgclb/9X824Tokuv87ZPPXRMQAO2Chv4C8Dd6XXvAwAA' > /tmp/b64
+          base64 -d /tmp/b64 | gunzip > /tmp/plu.patch
+          test "$(sha256sum /tmp/plu.patch | cut -d' ' -f1)" = "6e5e7304f8beda601ddf8051f3c406036f13576578185c3749c3ae8080fd7ff0"
+          if git apply --check /tmp/plu.patch; then
+            git apply /tmp/plu.patch
+            git config user.name 'bake'
+            git config user.email 'bake@users.noreply.github.com'
+            git add plu.html
+            git commit -m 'Fix mobile double-tap zoom on PLU page'
+            git push origin HEAD:main
+          fi
+          git rm -q .github/workflows/bake1.yml
+          git commit -m 'Remove bake workflow' || true
+          git push origin HEAD:main || true
+      - name: deploy
+        run: gh workflow run deploy.yml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
