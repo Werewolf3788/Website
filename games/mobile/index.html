@@ -147,6 +147,11 @@
   <div class="muted">Merge Dragons-style: tap the nest to lay eggs, then tap an egg and tap another of the same kind — a third one joins in and the three become the next creature. Work up from Eggs to Elder Dragons, sell what you don't need and buy extra eggs with your coins. Saves on this device.</div>
   <div class="row"><button id="mergeLairBtn">Play</button></div>
 </div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🏛️ Tiles Outpost</h2>
+  <div class="muted">Build a camp on a grid, train three heroes and send them out to clear expedition stages. Farms, sawmills, quarries and gold mines keep earning while you are away; barracks and temples add squad power, and every cleared stage fills the backpack with loot. Saves on this device.</div>
+  <div class="row"><button id="tilesOutpostBtn">Play</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -227,7 +232,8 @@
   $('minesBtn').onclick = function () { location.href = 'mines.html'; };
   $('idleCityBtn').onclick = function () { location.href = 'idle-city.html'; };
   $('mergeLairBtn').onclick = function () { location.href = 'merge-lair.html'; };
-  // ---- leaderboard
+  $('tilesOutpostBtn').onclick=function(){location.href='tiles-outpost.html'};
+// ---- leaderboard
   var LGAMES = [['all', 'All games'], ['wahoo', '🎲 Wahoo'], ['tycoon', '🏙️ Monopoly'], ['frogger', '🐸 Frogger'], ['race', '🏎️ Racing'], ['battleship', '🚢 Battleship']], leadTab = 'all', leadData = null;
   var BEST = { frogger: ['Best solo', function (v) { return v + ' crossed'; }, false], battleship: ['Fewest shots', function (v) { return v + ' shots'; }, true], race: ['Best lap', function (v) { var t = v / 1000, m = Math.floor(t / 60); return m + ':' + (t % 60).toFixed(1).padStart(4, '0'); }, true] };
   function drawLeaders() {

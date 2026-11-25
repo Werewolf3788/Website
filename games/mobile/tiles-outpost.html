@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>Tiles Outpost</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;height:100%}
+  #top{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:6px 10px;background:#0f172a;font-size:.78rem}
+  .chip{background:#1e293b;border-radius:999px;padding:5px 9px;font-weight:800;white-space:nowrap}
+  .chip small{opacity:.7;font-weight:600}
+  #power{color:#fbbf24}
+  #stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+         background:radial-gradient(circle at 50% 40%,#1b3a1c,#0b1a12 70%)}
+  #board{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;width:min(96vw,58vh,470px);transform:rotate(45deg) scale(.7)}
+  .tile{aspect-ratio:1;background:#2f4f1f;border-radius:5px;position:relative;box-shadow:inset 0 0 0 1px #24401a}
+  .tile.alt{background:#38591f}
+  .tile.pick{box-shadow:inset 0 0 0 2px #fde047}
+  .tile .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-45deg);font-size:19px;line-height:1}
+  .tile .lv{font-size:9px;font-weight:900;color:#fde047;text-shadow:0 1px 3px #000;margin-top:1px}
+  #panel{background:#0f172a;border-top:1px solid #1e293b;max-height:42vh;overflow:auto;padding:8px 10px 4px}
+  #panel h3{margin:0 0 6px;font-size:.95rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
+  .opt{background:#1e293b;border:0;border-radius:10px;padding:8px 6px;color:#e2e8f0;font:inherit;font-size:.72rem;text-align:center;cursor:pointer}
+  .opt b{display:block;font-size:1.3rem}
+  .opt.on{outline:2px solid #22c55e}
+  .opt:disabled{opacity:.45}
+  .row{display:flex;align-items:center;gap:8px;background:#1e293b;border-radius:10px;padding:8px;margin-bottom:6px}
+  .row .g{flex:1;min-width:0}
+  .row .nm{font-weight:800;font-size:.85rem}
+  .row .sm{font-size:.7rem;color:#94a3b8}
+  .row button{background:#22c55e;color:#04210f;border:0;border-radius:8px;padding:8px 10px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
+  .row button.alt{background:#334155;color:#e2e8f0}
+  .row button:disabled{background:#334155;color:#64748b}
+  #nav{display:flex;background:#0f172a;border-top:1px solid #1e293b;padding-bottom:env(safe-area-inset-bottom)}
+  #nav button{flex:1;background:none;border:0;color:#94a3b8;font:inherit;font-size:.7rem;font-weight:800;padding:8px 2px;cursor:pointer}
+  #nav button.on{color:#4ade80}
+  #nav b{display:block;font-size:1.15rem}
+  #toast{position:fixed;left:0;right:0;bottom:calc(46vh + 8px);text-align:center;pointer-events:none;z-index:9}
+  #toast div{display:inline-block;background:#0f172aee;border:1px solid #334155;color:#fde68a;font-weight:700;padding:7px 13px;border-radius:999px;font-size:.78rem;margin-top:5px}
+  .bar{height:6px;background:#0b1220;border-radius:3px;overflow:hidden;margin-top:4px}
+  .bar i{display:block;height:100%;background:#22c55e;width:0%}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <span class="chip">🍖 <b id="r-food">0</b></span>
+    <span class="chip">🪵 <b id="r-wood">0</b></span>
+    <span class="chip">🪨 <b id="r-stone">0</b></span>
+    <span class="chip">🪙 <b id="r-gold">0</b></span>
+    <span class="chip" id="power">⚔️ <b id="p-power">0</b></span>
+    <span class="chip"><small>Stage</small> <b id="p-stage">1012</b></span>
+  </div>
+  <div id="stage"><div id="board"></div></div>
+  <div id="panel"></div>
+  <div id="nav">
+    <button data-t="b" class="on"><b>🏗️</b>Build</button>
+    <button data-t="h"><b>🪖</b>Heroes</button>
+    <button data-t="e"><b>🗺️</b>Expedition</button>
+    <button data-t="p"><b>🎒</b>Bag</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var N = 7, SAVE = 'tilesoutpost_v1';
+
+var B = [
+  { id:'farm',    n:'Farm',      ic:'🌾', res:'food',  rate:0.7,  cost:{ wood:20 },              col:'#4ade80' },
+  { id:'saw',     n:'Sawmill',   ic:'🪵', res:'wood',  rate:0.5,  cost:{ wood:30 },              col:'#a16207' },
+  { id:'quarry',  n:'Quarry',    ic:'🪨', res:'stone', rate:0.32, cost:{ wood:45, food:20 },     col:'#94a3b8' },
+  { id:'mine',    n:'Gold Mine', ic:'⛏️', res:'gold',  rate:0.14, cost:{ wood:60, stone:40 },    col:'#fbbf24' },
+  { id:'barracks',n:'Barracks',  ic:'🏕️', res:null,    rate:0,    cost:{ wood:90, stone:60 },    col:'#60a5fa' },
+  { id:'temple',  n:'Temple',    ic:'🏛️', res:'gold',  rate:0.06, cost:{ stone:140, gold:70 },   col:'#f472b6' }
+];
+var HEROES = [
+  { id:'sarge', n:'Sarge', ic:'🪖', lvl:1 },
+  { id:'rusty', n:'Rusty', ic:'🔧', lvl:1 },
+  { id:'leila', n:'Leila', ic:'🎯', lvl:1 }
+];
+var RES = { food:'🍖', wood:'🪵', stone:'🪨', gold:'🪙' };
+
+var S = { res:{ food:70, wood:70, stone:30, gold:15 }, tiles:[], heroes:{}, stage:1012, march:null, bag:{}, last:Date.now() };
+var tab = 'b', placing = null, sel = -1, toastT = null;
+
+function blankTiles(){ var a = []; for (var i = 0; i < N * N; i++) a.push(null); return a; }
+function load(){
+  S.tiles = blankTiles();
+  HEROES.forEach(function(h){ S.heroes[h.id] = 1; });
+  try {
+    var d = JSON.parse(localStorage.getItem(SAVE) || 'null');
+    if (!d) return;
+    if (Array.isArray(d.tiles) && d.tiles.length === N * N) S.tiles = d.tiles;
+    if (d.res) for (var k in S.res) if (typeof d.res[k] === 'number') S.res[k] = d.res[k];
+    if (d.heroes) for (var h in S.heroes) if (typeof d.heroes[h] === 'number') S.heroes[h] = d.heroes[h];
+    S.stage = d.stage || 1012;
+    S.bag = d.bag || {};
+    S.march = d.march || null;
+    S.last = d.last || Date.now();
+  } catch (e) {}
+}
+function save(){
+  S.last = Date.now();
+  try { localStorage.setItem(SAVE, JSON.stringify({ res:S.res, tiles:S.tiles, heroes:S.heroes, stage:S.stage, bag:S.bag, march:S.march, last:S.last })); } catch (e) {}
+}
+function fmt(n){
+  n = Math.floor(n);
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e4) return (n / 1e3).toFixed(1) + 'K';
+  return String(n);
+}
+function toast(msg){
+  var box = $('toast');
+  box.innerHTML = '';
+  var d = document.createElement('div');
+  d.textContent = msg;
+  box.appendChild(d);
+  clearTimeout(toastT);
+  toastT = setTimeout(function(){ d.remove(); }, 2200);
+}
+
+/* ---------- numbers ---------- */
+function countOf(id){ var n = 0; S.tiles.forEach(function(t){ if (t && t.id === id) n++; }); return n; }
+function costOf(id){
+  var b = B.filter(function(x){ return x.id === id; })[0], c = {}, m = Math.pow(1.65, countOf(id));
+  for (var k in b.cost) c[k] = Math.ceil(b.cost[k] * m);
+  return c;
+}
+function canPay(c){ for (var k in c) if (S.res[k] < c[k]) return false; return true; }
+function pay(c){ for (var k in c) S.res[k] -= c[k]; }
+function costText(c){ var out = []; for (var k in c) out.push(RES[k] + c[k]); return out.join('  '); }
+function prod(){
+  var p = { food:0, wood:0, stone:0, gold:0 };
+  S.tiles.forEach(function(t){
+    if (!t) return;
+    var b = B.filter(function(x){ return x.id === t.id; })[0];
+    if (b.res) p[b.res] += b.rate * t.lvl;
+  });
+  return p;
+}
+function power(){
+  var p = 12;
+  HEROES.forEach(function(h){ p += 8 + S.heroes[h.id] * 7; });
+  p += countOf('barracks') * 9;
+  p += countOf('temple') * 4;
+  return p;
+}
+function upCost(t){
+  var b = B.filter(function(x){ return x.id === t.id; })[0];
+  var base = b.cost, o = {};
+  for (var k in base) o[k] = Math.ceil(base[k] * 0.8 * Math.pow(1.5, t.lvl));
+  return o;
+}
+function heroCost(h){ return { gold: Math.ceil(18 * Math.pow(1.7, S.heroes[h.id])) }; }
+
+/* ---------- board ---------- */
+function renderBoard(){
+  var b = $('board');
+  var html = '';
+  for (var i = 0; i < N * N; i++) {
+    var t = S.tiles[i];
+    var cls = 'tile' + (((i + Math.floor(i / N)) % 2) ? ' alt' : '') + (placing ? ' pick' : '');
+    html += '<div class="' + cls + '" data-i="' + i + '"><div class="c">' +
+      (t ? (B.filter(function(x){ return x.id === t.id; })[0].ic + '<span class="lv">' + t.lvl + '</span>') : '') +
+      '</div></div>';
+  }
+  b.innerHTML = html;
+  b.querySelectorAll('.tile').forEach(function(el){
+    el.onclick = function(){ tileTap(+el.dataset.i); };
+  });
+}
+
+function tileTap(i){
+  if (placing) {
+    var c = costOf(placing);
+    if (S.tiles[i]) { toast('That tile is taken'); return; }
+    if (!canPay(c)) { toast('Need ' + costText(c)); return; }
+    pay(c);
+    S.tiles[i] = { id: placing, lvl: 1 };
+    placing = null;
+    toast('Built ' + B.filter(function(x){ return x.id === S.tiles[i].id; })[0].n);
+    renderBoard(); renderPanel(); save();
+    return;
+  }
+  if (!S.tiles[i]) { toast('Pick a building below, then tap a tile'); return; }
+  sel = i;
+  renderPanel();
+}
+
+/* ---------- panels ---------- */
+function renderPanel(){
+  var p = $('panel');
+  if (tab === 'b') return panelBuild(p);
+  if (tab === 'h') return panelHeroes(p);
+  if (tab === 'e') return panelExp(p);
+  return panelBag(p);
+}
+
+function panelBuild(p){
+  if (sel >= 0 && S.tiles[sel]) {
+    var t = S.tiles[sel], b = B.filter(function(x){ return x.id === t.id; })[0];
+    var c = upCost(t);
+    p.innerHTML = '<h3>' + b.ic + ' ' + b.n + ' · level ' + t.lvl + '</h3>' +
+      '<div class="row"><div class="g"><div class="nm">' + (b.res ? '+' + (b.rate * t.lvl).toFixed(2) + ' ' + RES[b.res] + ' a second' : 'Boosts squad power') + '</div>' +
+      '<div class="sm">Upgrade to level ' + (t.lvl + 1) + ' · ' + costText(c) + '</div></div>' +
+      '<button id="upBtn">Upgrade</button></div>' +
+      '<div class="row"><div class="g"><div class="sm">Tap another tile, or pick a new building to place.</div></div><button class="alt" id="backBtn">Close</button></div>';
+    $('upBtn').onclick = function(){
+      if (!canPay(c)) { toast('Need ' + costText(c)); return; }
+      pay(c); t.lvl++; toast(b.n + ' is now level ' + t.lvl);
+      renderBoard(); renderPanel(); save();
+    };
+    $('backBtn').onclick = function(){ sel = -1; renderPanel(); };
+    return;
+  }
+  sel = -1;
+  var html = '<h3>Buildings</h3><div class="grid">';
+  B.forEach(function(b){
+    var c = costOf(b.id);
+    html += '<button class="opt' + (placing === b.id ? ' on' : '') + '" data-b="' + b.id + '"' + (canPay(c) ? '' : ' disabled') +
+      '><b>' + b.ic + '</b>' + b.n + '<div class="sm">' + costText(c) + '</div></button>';
+  });
+  html += '</div><div class="sm" style="margin-top:6px">Pick one, then tap an empty tile. Tap a building to upgrade it.</div>';
+  p.innerHTML = html;
+  p.querySelectorAll('[data-b]').forEach(function(el){
+    el.onclick = function(){ placing = el.dataset.b; sel = -1; renderBoard(); renderPanel(); };
+  });
+}
+
+function panelHeroes(p){
+  var html = '<h3>Squad · power ' + power() + '</h3>';
+  HEROES.forEach(function(h){
+    var lvl = S.heroes[h.id], c = heroCost(h);
+    html += '<div class="row"><div style="font-size:1.5rem">' + h.ic + '</div><div class="g"><div class="nm">' + h.n +
+      ' · level ' + lvl + '</div><div class="sm">+ ' + (8 + lvl * 7) + ' power · upgrade ' + costText(c) + '</div></div>' +
+      '<button data-h="' + h.id + '"' + (canPay(c) ? '' : ' disabled') + '>Train</button></div>';
+  });
+  html += '<div class="sm">Barracks and temples add power to the whole squad.</div>';
+  p.innerHTML = html;
+  p.querySelectorAll('[data-h]').forEach(function(el){
+    el.onclick = function(){
+      var h = HEROES.filter(function(x){ return x.id === el.dataset.h; })[0], c = heroCost(h);
+      if (!canPay(c)) return;
+      pay(c); S.heroes[h.id]++; toast(h.n + ' reached level ' + S.heroes[h.id]);
+      renderHud(); renderPanel(); save();
+    };
+  });
+}
+
+function stageInfo(i){
+  return { num: 1012 + i, need: 30 + i * 20, reward: { food:30 + i * 18, wood:25 + i * 15, stone:12 + i * 10, gold:6 + i * 5 } };
+}
+function panelExp(p){
+  var i = S.stage - 1012, st = stageInfo(i), next = stageInfo(i + 1);
+  var html = '<h3>Expedition · stage ' + st.num + '</h3>';
+  if (S.march) {
+    var left = Math.max(0, Math.ceil((S.march.end - Date.now()) / 1000));
+    html += '<div class="row"><div class="g"><div class="nm">Marching to stage ' + S.march.num + '</div>' +
+      '<div class="sm">' + left + 's left · squad power ' + S.march.power + ' vs ' + S.march.need + '</div>' +
+      '<div class="bar"><i id="mbar"></i></div></div></div>';
+  } else {
+    var ok = power() >= st.need;
+    html += '<div class="row"><div class="g"><div class="nm">Stage ' + st.num + ' · ' + (ok ? 'ready to clear' : 'needs ' + st.need + ' power') + '</div>' +
+      '<div class="sm">Reward ' + costText(st.reward) + '</div></div><button id="sendBtn"' + (ok ? '' : ' disabled') + '>Send squad</button></div>';
+    html += '<div class="row"><div class="g"><div class="nm" style="opacity:.6">Stage ' + next.num + ' · locked</div>' +
+      '<div class="sm">Needs ' + next.need + ' power · one stage behind</div></div></div>';
+  }
+  html += '<div class="sm">A march takes 15 seconds. Upgrades you finish mid-march still count when the squad arrives.</div>';
+  p.innerHTML = html;
+  if ($('sendBtn')) $('sendBtn').onclick = function(){
+    S.march = { num: st.num, need: st.need, end: Date.now() + 15000, from: Date.now(), power: power() };
+    renderPanel(); save();
+  };
+}
+
+function panelBag(p){
+  var keys = Object.keys(S.bag).filter(function(k){ return S.bag[k] > 0; });
+  var html = '<h3>Backpack</h3>';
+  if (!keys.length) html += '<div class="sm">Empty. Clearing expeditions fills this up.</div>';
+  html += '<div class="grid">';
+  keys.forEach(function(k){
+    var it = ITEMS[k];
+    html += '<button class="opt" data-i="' + k + '"><b>' + it.ic + '</b>' + it.n + '<div class="sm">x' + S.bag[k] + '</div></button>';
+  });
+  html += '</div>';
+  p.innerHTML = html;
+  p.querySelectorAll('[data-i]').forEach(function(el){
+    el.onclick = function(){ openItem(el.dataset.i); };
+  });
+}
+
+var ITEMS = {
+  chest:  { ic:'🎁', n:'Supply Crate' },
+  shard:  { ic:'💠', n:'Power Shard' },
+  voucher:{ ic:'🎟️', n:'Refresh Voucher' }
+};
+
+function openItem(k){
+  if (!S.bag[k]) return;
+  S.bag[k]--;
+  if (k === 'chest') {
+    var gain = { food:40, wood:40, stone:20, gold:12 };
+    for (var r in gain) S.res[r] += gain[r];
+    toast('Crate open: ' + costText(gain));
+  } else if (k === 'shard') {
+    var h = HEROES[Math.floor(Math.random() * HEROES.length)];
+    S.heroes[h.id]++;
+    toast('Shard used: ' + h.n + ' is now level ' + S.heroes[h.id]);
+  } else {
+    toast('Voucher saved — no rerolls in this outpost yet.');
+    S.bag[k]++;
+  }
+  renderHud(); renderPanel(); save();
+}
+
+/* ---------- hud / tick ---------- */
+function renderHud(){
+  $('r-food').textContent = fmt(S.res.food);
+  $('r-wood').textContent = fmt(S.res.wood);
+  $('r-stone').textContent = fmt(S.res.stone);
+  $('r-gold').textContent = fmt(S.res.gold);
+  $('p-power').textContent = power();
+  $('p-stage').textContent = S.stage;
+}
+
+function reward(rew){
+  for (var k in rew) S.res[k] += rew[k];
+}
+function finishMarch(){
+  var m = S.march; if (!m) return;
+  S.march = null;
+  if (power() >= m.need) {
+    var st = stageInfo(Math.max(0, m.num - 1012));
+    reward(st.reward);
+    S.stage++;
+    var drop = Math.random() < 0.55 ? 'chest' : (Math.random() < 0.6 ? 'shard' : 'voucher');
+    S.bag[drop] = (S.bag[drop] || 0) + 1;
+    toast('Stage ' + m.num + ' cleared! ' + costText(st.reward));
+  } else {
+    toast('The squad could not break stage ' + m.num + ' — train up and try again');
+  }
+  renderHud(); renderPanel(); save();
+}
+
+setInterval(function(){
+  var p = prod();
+  for (var k in p) S.res[k] += p[k] * 0.5;
+  if (S.march && Date.now() >= S.march.end) finishMarch();
+  else if (S.march && tab === 'e') {
+    renderPanel();
+    var barEl = $('mbar');
+    if (barEl) barEl.style.width = Math.min(100, Math.max(0, (Date.now() - S.march.from) / (S.march.end - S.march.from) * 100)) + '%';
+  }
+  renderHud();
+}, 500);
+setInterval(save, 5000);
+addEventListener('beforeunload', save);
+
+$('nav').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if (!b) return;
+  tab = b.dataset.t;
+  [].forEach.call($('nav').children, function(x){ x.classList.toggle('on', x === b); });
+  sel = -1; placing = null;
+  renderBoard(); renderPanel();
+});
+
+/* ---------- boot ---------- */
+load();
+var away = (Date.now() - S.last) / 1000;
+if (away > 120) {
+  var p = prod(), gained = false;
+  for (var k in p) if (p[k] > 0) { S.res[k] += p[k] * Math.min(away, 7200); gained = true; }
+  if (gained) setTimeout(function(){ toast('Your outpost worked while you were away'); }, 400);
+}
+if (!S.tiles.some(function(t){ return t; })) {
+  S.tiles[24] = { id:'temple', lvl:1 };
+  S.tiles[18] = { id:'farm', lvl:1 };
+  S.tiles[31] = { id:'saw', lvl:1 };
+}
+renderBoard(); renderHud(); renderPanel(); save();
+})();
+</script>
+</body>
+</html>
