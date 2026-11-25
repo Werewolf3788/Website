@@ -201,8 +201,9 @@ body.pad .touchOnly{display:none}
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.0.3';
+const VERSION = '1.0.4';
 const WHATS_NEW = [
+  'While you hold a tower, trap or camp, the bar next to "Holding:" shows how many spaces you have left before the upgrade wall, so you can plan the layout.',
   'Enemies are monsters now: horns, teeth, claws and flapping bat wings — no more plain balls.',
   'Two new anti-air guns: Skyward Flak and Skyfire Battery. They only shoot at flying enemies.',
   'Remove mode: hit Remove, then tap towers, paths or traps on the board to take them back one after another. It stays on until you hit Done.',
@@ -468,7 +469,15 @@ $('delMode').onclick=function(){setRemoveMode(!removeMode);};
 function setHolding(key){holding=key&&S.inv[key]?key:null;
   if(!holding){$('holding').textContent='nothing';rangeRing.visible=false;return;}
   const {k,id,l}=parseKey(holding);const d=defOf(k,id);
-  $('holding').innerHTML=`${d.ic} ${d.name}${l?' <b style="color:#fde047">+'+l+'</b>':''} <span class="small">x${S.inv[holding]}</span>`;}
+  $('holding').innerHTML=`${d.ic} ${d.name}${l?' <b style="color:#fde047">+'+l+'</b>':''} <span class="small">x${S.inv[holding]}</span> <span id="holdSlots" class="small" style="font-weight:900"></span>`;
+  paintHoldSlots();}
+/* spaces left before the upgrade wall, shown while you are placing */
+const SLOT_UPG={t:'Defenses',s:'Spawners',r:'Traps'};
+function slotInfo(k){const c=caps();if(!c[k])return null;return {left:Math.max(0,c[k]-placedCount(k)),max:c[k],name:SLOT_UPG[k]};}
+function paintHoldSlots(){const el=$('holdSlots');if(!el)return;
+  const s=slotInfo(holding?parseKey(holding).k:null);if(!s){el.textContent='';return;}
+  el.style.color=s.left>2?'#4ade80':s.left>0?'#fde047':'#f87171';
+  el.textContent=s.left>0?`${s.left} of ${s.max} spaces left`:`0 of ${s.max} · upgrade ${s.name}`;}
 function tryPlace(x,y){
   if(Math.abs(x)>half()||Math.abs(y)>half())return;
   const here=cells.get(ck(x,y)), trap=traps.get(ck(x,y));
@@ -552,7 +561,7 @@ function renderInv(){updateCaps();const q=$('invSearch').value.toLowerCase();
 $('invGrid').onclick=e=>{const c=e.target.closest('.card');if(!c)return;setHolding(c.dataset.key);renderInv();showInfoInv(c.dataset.key);};
 $('invTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;invTab=b.dataset.k;[...$('invTabs').children].forEach(x=>x.classList.toggle('on',x===b));renderInv();};
 $('invSearch').oninput=renderInv;$('fuseAll').onclick=fuseAll;
-function updateCaps(){const c=caps();$('capT').textContent=placedCount('t')+'/'+c.t;$('capS').textContent=placedCount('s')+'/'+c.s;$('capR').textContent=placedCount('r')+'/'+c.r;}
+function updateCaps(){const c=caps();$('capT').textContent=placedCount('t')+'/'+c.t;$('capS').textContent=placedCount('s')+'/'+c.s;$('capR').textContent=placedCount('r')+'/'+c.r;paintHoldSlots();}
 
 /* ---------- panels ---------- */
 function openPanel(id){if(id!=='info'&&id!=='inv')['shop','upg','stats','modal'].forEach(p=>p!==id&&closePanel(p));
