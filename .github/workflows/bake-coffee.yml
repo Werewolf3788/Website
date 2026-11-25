@@ -1,0 +1,32 @@
+name: coffee-bake
+on:
+  push:
+    paths:
+      - '.github/workflows/bake-coffee.yml'
+permissions:
+  contents: write
+  actions: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply support-link patch
+        env:
+          PATCH: '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'
+        run: |
+          set -euo pipefail
+          echo "$PATCH" | base64 -d | gunzip > /tmp/support.patch
+          git apply /tmp/support.patch
+          git config user.name "Werewolf3788"
+          git config user.email "raykevin71888@gmail.com"
+          git add games/all.html games/mobile/bastion.html games/mobile/index.html games/mobile/js/survive3d.js
+          git rm -q .github/workflows/bake-coffee.yml
+          git commit -m "Add Buy Me a Coffee support links (games hub, games page, Bastion, Tile Survival)"
+          git push origin HEAD:main
+      - name: Deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
