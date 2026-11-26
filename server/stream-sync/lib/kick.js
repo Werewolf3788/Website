@@ -115,8 +115,9 @@ async function ensureChatSubscription(key) {
 }
 
 let kickKey = null; // Kick's public key, used to check webhook signatures
-async function publicKey() {
-    if (kickKey) return kickKey;
+/** fresh = ignore the cached copy and ask Kick again (they rotate the key at any time). */
+async function publicKey(fresh) {
+    if (!fresh && kickKey) return kickKey;
     const r = await fetch(API + "/v1/public-key");
     const j = await r.json().catch(() => ({}));
     const k = j && j.data && j.data.public_key;
@@ -125,14 +126,29 @@ async function publicKey() {
     return k;
 }
 
-/** True only if the webhook really came from Kick. raw = exact request body (Buffer/string). */
+function signatureMatches(key, signed, signature) {
+    try {
+        const v = crypto.createVerify("RSA-SHA256");
+        v.update(signed);
+        v.end();
+        return v.verify(key, signature);
+    } catch (e) { return false; }
+}
+
+/** True only if the webhook really came from Kick. raw = exact request body (Buffer/string).
+ *  Kick's docs say to fetch the public key rather than hardcode it, because it can be rotated
+ *  at any time. So a signature that fails against the cached key is checked once more with a
+ *  freshly fetched key - otherwise every delivery would 401 until the process restarted. A
+ *  signature that fails against the fresh key too is forged and still refused. */
 async function verifyWebhook(headers, raw) {
     const id = headers["kick-event-message-id"], ts = headers["kick-event-message-timestamp"], sig = headers["kick-event-signature"];
     if (!id || !ts || !sig) return false;
-    const v = crypto.createVerify("RSA-SHA256");
-    v.update(`${id}.${ts}.${Buffer.isBuffer(raw) ? raw.toString("utf8") : String(raw)}`);
-    v.end();
-    try { return v.verify(await publicKey(), Buffer.from(String(sig), "base64")); } catch (e) { return false; }
+    const signed = `${id}.${ts}.${Buffer.isBuffer(raw) ? raw.toString("utf8") : String(raw)}`;
+    const signature = Buffer.from(String(sig), "base64");
+    if (kickKey && signatureMatches(kickKey, signed, signature)) return true;   // normal path: no request to Kick
+    let fresh;
+    try { fresh = await publicKey(true); } catch (e) { return false; }          // Kick unreachable: refuse, as before
+    return signatureMatches(fresh, signed, signature);
 }
 
 module.exports = { creds, token, searchCategories, updateChannel, authorizeUrl, exchangeCode, ensureChatSubscription, verifyWebhook, CHAT_EVENT };
