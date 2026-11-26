@@ -113,7 +113,7 @@ input.search{flex:1;background:#08204f;border:2px solid #38bdf8;border-radius:10
 #toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
 #toast div{background:#0d2a6bee;border:2px solid #fde047;border-radius:12px;padding:6px 12px;font-weight:800;animation:fade 2.6s forwards}
 @keyframes fade{0%{opacity:0;transform:translateY(-6px)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
-#acct{font-size:11px;opacity:.9}
+#acct{font-size:11px;opacity:.9;cursor:pointer}
 #hint{position:fixed;left:50%;top:110px;transform:translateX(-50%);background:#000a;border-radius:10px;padding:6px 12px;font-size:13px;z-index:4;pointer-events:none;text-align:center;max-width:90vw}
 .small{font-size:12px;opacity:.85}
 @media (max-width:640px){
@@ -1206,7 +1206,8 @@ const sfxLast={};function sfx(type){const nowT=performance.now();if(sfxLast[type
   g.gain.setValueAtTime(type==='shot'||type==='laser'||type==='zap'?.025:type==='boom'?.12:.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+set[1]);o.start(t);o.stop(t+set[1]);}catch(e){}}
 
 /* ---------- save: Firestore (signed in) / this device (guest) ---------- */
-let fb=null,docRef=null,saveT=0,dirty=false;
+let fb=null,docRef=null,saveT=0,dirty=false,authUser=null,fbReady=false;
+const APP=/[?&]app=1/.test(location.search);
 function save(now){S.updatedAt=Date.now();dirty=true;if(now)flush();}
 function snapshot(){const o=JSON.parse(JSON.stringify(S));return o;}
 function flush(){if(!dirty)return;dirty=false;const data=snapshot();
@@ -1220,6 +1221,15 @@ function fixSave(){ // roads no longer fuse: turn any +N road back into 3^N plai
 }
 function loadLocal(){try{const s=JSON.parse(localStorage.getItem('bastion_save')||'null');if(s&&s.v)S=Object.assign(fresh(),s);}catch(e){}fixSave();}
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+function signIn(){const p=new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(p).catch(e=>{
+    if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'))return firebase.auth().signInWithRedirect(p);
+    toast('Sign-in problem: '+((e&&e.message)||e));});}
+$('acct').onclick=()=>{
+  if(!fbReady){toast(APP?'This app saves on this phone. Sign in on the website with the same account to sync.':'Still connecting — try again in a second.');return;}
+  if(authUser){if(confirm('Sign out? Your progress stays on your account.'))firebase.auth().signOut();return;}
+  if(APP){toast('Google blocks sign-in inside apps, so this app saves on this phone. The website saves to your profile.');return;}
+  signIn();};
 async function initFirebase(){
   let cfg=null;
   for(const u of ['/__/firebase/init.json','https://entertainment-71888.web.app/__/firebase/init.json']){
@@ -1229,15 +1239,16 @@ async function initFirebase(){
   await loadScript(base+'firebase-app-compat.js');
   await Promise.all(['auth','database','firestore'].map(m=>loadScript(base+`firebase-${m}-compat.js`)));
   if(!firebase.apps.length)firebase.initializeApp(cfg);
+  fbReady=true;
   try{firebase.firestore().enablePersistence({synchronizeTabs:true}).catch(()=>{});}catch(e){}
   firebase.auth().onAuthStateChanged(async user=>{
-    if(!user){docRef=null;$('acct').textContent='Guest · saved on this device';return;}
+    if(!user){authUser=null;docRef=null;$('acct').textContent=APP?'📱 This phone':'Guest · tap to sign in';$('acct').title=APP?'Saved on this phone. Sign in on the website to sync.':'Tap to sign in and save to your profile';return;}
     const emailKey=(user.email||user.uid).toLowerCase().replace('@','_at_').replace(/\./g,'_');
     let fc=null,name=user.displayName||user.email;
     try{const snap=await firebase.database().ref('users/'+emailKey).get();const u=snap.val()||{};fc=u.friend_code;name=u.username||name;}catch(e){}
     const id=fc||emailKey;
     docRef=firebase.firestore().doc(`users/${id}/platform/mobile/game/${GAME_ID}`);
-    $('acct').textContent='👤 '+name+(fc?' · '+fc:'');
+    authUser=user;$('acct').textContent='👤 '+name+(fc?' · '+fc:'');$('acct').title='Signed in — tap to sign out';
     try{const d=await docRef.get();const remote=d.exists?d.data():null;
       const local=(()=>{try{return JSON.parse(localStorage.getItem('bastion_save')||'null');}catch(e){return null;}})();
       if(remote&&remote.v){S=Object.assign(fresh(),remote);}
