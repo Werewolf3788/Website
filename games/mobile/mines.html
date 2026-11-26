@@ -16,49 +16,99 @@
 <script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<title>Minefield</title>
+<title>Minefield: Sweep Team</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
   html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
   #app{display:flex;flex-direction:column;height:100%}
-  #top{padding:6px 12px;font-size:.85rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.6}
+  #top{padding:6px 12px;font-size:.82rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.6}
   #top button,#top a{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;padding:2px 4px}
-  #diffs{display:flex;gap:6px;justify-content:center;padding:6px 10px;background:#0f172a}
+  #obj{padding:5px 12px;background:#111c33;border-bottom:1px solid #1e293b;font-size:.74rem;color:#cbd5e1;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
+  #objTitle{font-weight:800;color:#fbbf24}
+  #tools{display:flex;gap:6px;justify-content:center;padding:6px 10px;background:#0f172a}
+  #tools button{background:#334155;color:#cbd5e1;border:0;border-radius:999px;padding:8px 13px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
+  #tools button.on{background:#22c55e;color:#04210f}
+  #tools button.arm{background:#f59e0b;color:#1f1300}
+  #tools button:disabled{opacity:.4}
+  #diffs{display:none;gap:6px;justify-content:center;padding:6px 10px;background:#0f172a}
   #diffs button{background:#334155;color:#cbd5e1;border:0;border-radius:999px;padding:8px 14px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
   #diffs button.on{background:#22c55e;color:#04210f}
   #stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px}
   #grid{display:grid;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr);gap:3px;
-        width:min(94vw,72vh,520px);aspect-ratio:1;touch-action:manipulation}
+        width:min(94vw,70vh,520px);aspect-ratio:1;touch-action:manipulation}
   .cell{background:#334155;border-radius:4px;display:flex;align-items:center;justify-content:center;
         font-weight:900;font-size:clamp(9px,2.6vw,20px);cursor:pointer;line-height:1}
   .cell.open{background:#1e293b;cursor:default}
   .cell.open.mine{background:#dc2626}
   .cell.flag{background:#3f3f46;color:#fbbf24}
   .cell.wrong{background:#7f1d1d}
+  .cell.crate{background:#3f3a22;color:#fde68a}
+  .cell.ping{box-shadow:inset 0 0 0 2px #fbbf24}
   .cell.pop{animation:pop .16s ease-out}
   @keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
-  #hint{padding:6px 12px calc(8px + env(safe-area-inset-bottom));background:#0f172a;color:#94a3b8;font-size:.75rem;text-align:center}
-  #ov{position:fixed;inset:0;z-index:20;background:#000c;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
+  #toast{position:absolute;left:0;right:0;top:6px;text-align:center;font-size:.8rem;font-weight:800;color:#fde68a;text-shadow:0 1px 6px #000;pointer-events:none;min-height:1.2em}
+  #hint{padding:6px 12px calc(8px + env(safe-area-inset-bottom));background:#0f172a;color:#94a3b8;font-size:.74rem;text-align:center}
+  #stageWrap{flex:1;min-height:0;display:flex;position:relative}
+  #ov{position:fixed;inset:0;z-index:40;background:#000c;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
   #ov button{background:#22c55e;color:#04210f;font-weight:800;border:0;border-radius:10px;padding:12px 20px;font:inherit;cursor:pointer}
-  #ovT{font-size:1.5rem;font-weight:900} #ovS{color:#cbd5e1;max-width:420px}
+  #ov button.alt{background:#334155;color:#e2e8f0}
+  #ovT{font-size:1.45rem;font-weight:900} #ovS{color:#cbd5e1;max-width:440px;white-space:pre-line;line-height:1.45;font-size:.92rem}
+  #camp{position:fixed;inset:0;z-index:30;background:#0b1220;display:none;flex-direction:column}
+  #campTop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;background:#0f172a;border-bottom:1px solid #1e293b;font-size:.86rem}
+  #campTop button{background:none;border:0;color:#e2e8f0;font:inherit;cursor:pointer;padding:4px 6px}
+  #campBody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 12px calc(20px + env(safe-area-inset-bottom))}
+  .mhead{margin:2px 0 10px;color:#94a3b8;font-size:.8rem;line-height:1.5}
+  .mrow{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:#111c33;border:1px solid #1e293b;border-radius:12px;padding:10px 12px;margin-bottom:8px;color:#e2e8f0;font:inherit;cursor:pointer}
+  .mrow.done{border-color:#22c55e66}
+  .mrow.lock{opacity:.42}
+  .mnum{width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:#1e293b;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem}
+  .mrow.done .mnum{background:#14532d;color:#86efac}
+  .mname{font-weight:700;font-size:.9rem}
+  .mobj{color:#94a3b8;font-size:.74rem;margin-top:2px}
+  .mstars{margin-left:auto;color:#fbbf24;letter-spacing:1px;font-size:.82rem;white-space:nowrap}
+  .shopB{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#111c33;border:1px solid #1e293b;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:.84rem}
+  .shopB button{background:#22c55e;color:#04210f;border:0;border-radius:9px;padding:8px 12px;font:inherit;font-weight:800;cursor:pointer}
+  .shopB button:disabled{background:#334155;color:#94a3b8}
+  .shopB small{display:block;color:#94a3b8;font-weight:400;font-size:.74rem;margin-top:2px}
+  .secTitle{font-weight:800;margin:16px 0 8px;color:#e2e8f0;font-size:.9rem}
+  #freeBtn{width:100%;background:#334155;color:#e2e8f0;border:0;border-radius:12px;padding:12px;font:inherit;font-weight:800;cursor:pointer;margin-top:4px}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="top">
-    <span>💣 <b>Minefield</b></span>
-    <span>💣 <b id="left">10</b> · ⏱ <b id="time">0:00</b> · Best <b id="best">—</b></span>
-    <span><button id="flagBtn">🚩 Flag: off</button> <button id="newBtn">↺ New</button> <button id="gamesBtn">☰ Games</button></span>
+    <span>💣 <b>Sweep Team</b></span>
+    <span>💣 <b id="left">10</b> · ⏱ <b id="time">0:00</b> · 📦 <b id="crates">0/0</b></span>
+    <span>🪙 <b id="coins">0</b> · <button id="campBtn">🗺 Ops</button> <button id="gamesBtn">☰ Games</button></span>
+  </div>
+  <div id="obj"><span id="objTitle">Sweep Team</span><span id="objList"></span></div>
+  <div id="tools">
+    <button id="flagBtn">🚩 Flag: off</button>
+    <button id="scanBtn">📡 Scan ×0</button>
+    <button id="newBtn">↺ Restart</button>
   </div>
   <div id="diffs">
     <button data-d="easy" class="on">Easy 9×9</button>
     <button data-d="med">Medium 12×12</button>
     <button data-d="hard">Hard 16×16</button>
   </div>
-  <div id="stage"><div id="grid"></div></div>
+  <div id="stageWrap"><div id="stage"><div id="grid"></div><div id="toast"></div></div></div>
   <div id="hint">Tap to dig · long-press (or right-click) to flag · the first tap is always safe</div>
 </div>
-<div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button></div>
+<div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button><button id="ovBtn2" class="alt" style="display:none"></button></div>
+<div id="camp">
+  <div id="campTop">
+    <span>💣 <b>Sweep Team</b> · 🪙 <b id="campCoins">0</b> · ⭐ <b id="campStars">0</b>/36</span>
+    <span><button id="campClose">✕ Close</button></span>
+  </div>
+  <div id="campBody">
+    <div class="mhead">Twelve clearance operations. Every field has a supply crate or two and a target time — dig fast, flag clean and the stars add up.</div>
+    <div id="missionList"></div>
+    <div class="secTitle">🎒 Kit</div>
+    <div id="shop"></div>
+    <button id="freeBtn">♾ Free play — classic Easy / Medium / Hard</button>
+  </div>
+</div>
 <script>
 (function(){
 'use strict';
@@ -70,37 +120,157 @@ var DIFFS = {
 };
 var NUMCOL = ['', '#60a5fa', '#34d399', '#f87171', '#a78bfa', '#fbbf24', '#22d3ee', '#f472b6', '#e2e8f0'];
 
-var cur = 'easy', N = 9, MINES = 10;
+/* ---------------- save ---------------- */
+var SAVE = 'ms_sweep_v1';
+var save = { coins: 0, stars: {}, unlocked: 1, scans: 2, best: {} };
+try {
+  var raw = localStorage.getItem(SAVE);
+  if (raw) {
+    var p = JSON.parse(raw);
+    if (p && typeof p === 'object') {
+      save.coins = p.coins || 0;
+      save.stars = p.stars || {};
+      save.unlocked = p.unlocked || 1;
+      save.scans = typeof p.scans === 'number' ? p.scans : 2;
+      save.best = p.best || {};
+    }
+  }
+} catch (e) {}
+function persist(){ try { localStorage.setItem(SAVE, JSON.stringify(save)); } catch (e) {} }
+function totalStars(){
+  var t = 0;
+  for (var k in save.stars) if (save.stars.hasOwnProperty(k)) t += save.stars[k];
+  return t;
+}
+
+var MISSIONS = [
+  { name: 'First Sweep', story: 'The yard is seeded with old ordnance and the crew will not walk it until you do. Clear it and bring the crate home.',
+    n: 6, mines: 5, target: 75, crates: 1 },
+  { name: 'Rubble Line', story: 'Half the block came down last night. Sweep the rubble line, take the crate, and keep your boots clean.',
+    n: 7, mines: 7, target: 90, crates: 1 },
+  { name: 'Night Watch', story: 'No lights, no drone, just the numbers. Two crates are buried somewhere out there.',
+    n: 8, mines: 9, target: 100, crates: 2 },
+  { name: 'Supply Drop', story: 'Command dropped supplies straight onto a live field. Find all three crates before the convoy leaves.',
+    n: 9, mines: 10, target: 90, crates: 3 },
+  { name: 'Cold Trail', story: 'The dogs lost the trail at the old depot. Sweep it twice as fast as the yard.',
+    n: 9, mines: 12, target: 80, crates: 2 },
+  { name: 'Grid Lock', story: 'A 12×12 field with a shift change in three minutes. Two crates are your ticket out.',
+    n: 10, mines: 14, target: 105, crates: 2 },
+  { name: 'Blind Spot', story: 'Radar has a hole in it and the field knows. Three crates, and every flag has to be honest.',
+    n: 10, mines: 18, target: 115, crates: 3 },
+  { name: 'Pressure Plate', story: 'Weight sensors below the surface — one wrong flag and the crew reroutes. Sweep clean.',
+    n: 11, mines: 20, target: 110, crates: 3 },
+  { name: 'Deep Field', story: 'Four crates, twenty-four mines, and a field that runs deep. This is where the real sweepers work.',
+    n: 12, mines: 24, target: 135, crates: 4 },
+  { name: 'Blackout Run', story: 'Power is out across the district. Thirty mines, no lights, three crates — go by feel and the numbers.',
+    n: 12, mines: 30, target: 125, crates: 3 },
+  { name: 'Last Signal', story: 'The last survivor is pinned beyond this field. Clear it in one push and take every crate with you.',
+    n: 14, mines: 36, target: 155, crates: 4 },
+  { name: 'The Crater', story: 'Ground zero. Forty-four mines, five crates and the whole crew behind you. Sweep it clean.',
+    n: 14, mines: 44, target: 170, crates: 5 }
+];
+
+/* ---------------- state ---------------- */
+var cur = null, missionIndex = -1, freeDiff = 'easy';
+var N = 9, MINES = 10;
 var data = [], els = [];
 var started = false, over = false, opened = 0, flags = 0;
-var t0 = 0, timer = null, flagMode = false, pressT = null, suppress = false;
+var t0 = 0, timer = null, flagMode = false, scanMode = false, pressT = null, suppress = false;
+var cratesTotal = 0, cratesFound = 0, wrongFlags = 0, coinsRun = 0, lastPing = 0;
 
-function bestKey(){ return 'ms_best_' + cur; }
-function getBest(){ return parseInt(localStorage.getItem(bestKey()) || '0', 10) || 0; }
 function fmt(s){ s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+function starString(n){ return '★★★'.slice(0, n) + '☆☆☆'.slice(0, 3 - n); }
+function freeBestKey(){ return 'ms_best_' + freeDiff; }
+function getFreeBest(){ return parseInt(localStorage.getItem(freeBestKey()) || '0', 10) || 0; }
 
 function hud(){
   $('left').textContent = Math.max(0, MINES - flags);
-  $('best').textContent = getBest() ? fmt(getBest()) : '—';
+  $('crates').textContent = cratesFound + '/' + (cratesTotal || 0);
+  $('coins').textContent = (save.coins + coinsRun).toLocaleString();
+  $('campCoins').textContent = (save.coins + coinsRun).toLocaleString();
+  $('campStars').textContent = totalStars();
   $('flagBtn').textContent = '🚩 Flag: ' + (flagMode ? 'on' : 'off');
-  $('flagBtn').style.color = flagMode ? '#4ade80' : '';
+  $('flagBtn').classList.toggle('on', flagMode);
+  $('scanBtn').textContent = '📡 Scan ×' + save.scans;
+  $('scanBtn').classList.toggle('arm', scanMode);
+  $('scanBtn').disabled = save.scans <= 0 && !scanMode;
+  if (cur) {
+    $('objTitle').textContent = (missionIndex + 1) + '. ' + cur.name;
+    $('objList').textContent = 'target ' + fmt(cur.target) + ' · ★★ under target · ★★★ no wrong flags';
+  } else {
+    var b = getFreeBest();
+    $('objTitle').textContent = 'Free play — ' + DIFFS[freeDiff].label;
+    $('objList').textContent = b ? 'best ' + fmt(b) : 'no time saved yet';
+  }
+}
+function toast(msg){
+  $('toast').textContent = msg;
+  clearTimeout(toast.t);
+  toast.t = setTimeout(function(){ $('toast').textContent = ''; }, 2000);
 }
 
-function newGame(key){
-  if (key) cur = key;
-  var D = DIFFS[cur];
-  N = D.n; MINES = D.m;
-  data = []; els = [];
-  started = false; over = false; opened = 0; flags = 0; suppress = false;
-  clearInterval(timer); timer = null; t0 = 0;
-  $('time').textContent = '0:00';
-  $('ov').style.display = 'none';
+/* ---------------- campaign UI ---------------- */
+function missionStars(i){ return save.stars[i] || 0; }
+function renderCampaign(){
+  var html = '';
+  for (var i = 0; i < MISSIONS.length; i++) {
+    var m = MISSIONS[i], st = missionStars(i), locked = i + 1 > save.unlocked;
+    html += '<button class="mrow' + (st ? ' done' : '') + (locked ? ' lock' : '') + '" data-m="' + i + '">' +
+      '<span class="mnum">' + (locked ? '🔒' : (i + 1)) + '</span>' +
+      '<span><span class="mname">' + m.name + '</span>' +
+      '<span class="mobj">' + m.n + '×' + m.n + ' · ' + m.mines + ' mines · ' + m.crates + ' crate' + (m.crates === 1 ? '' : 's') + '</span></span>' +
+      '<span class="mstars">' + starString(st) + '</span></button>';
+  }
+  $('missionList').innerHTML = html;
+  var sh = '<div class="shopB"><span>📡 Drone scan <b>×' + save.scans + '</b><small>Reveals a 3×3 patch and flags any mines in it</small></span>' +
+    '<button data-buy="scan"' + (save.coins + coinsRun < 60 ? ' disabled' : '') + '>60 🪙</button></div>';
+  $('shop').innerHTML = sh;
+  $('campCoins').textContent = (save.coins + coinsRun).toLocaleString();
+  $('campStars').textContent = totalStars();
+}
+function openCampaign(){
+  renderCampaign();
+  $('camp').style.display = 'flex';
+}
+function hideCampaign(){ $('camp').style.display = 'none'; }
+
+$('missionList').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-m]');
+  if (!b) return;
+  var i = +b.dataset.m;
+  if (i + 1 > save.unlocked) { toast('Clear the operation before this one first'); return; }
+  var m = MISSIONS[i];
+  var lines = [m.story, '',
+    'Field: ' + m.n + '×' + m.n + ' with ' + m.mines + ' mines',
+    'Supply crates to find: ' + m.crates,
+    '',
+    '★ Clear the field   ★★ under ' + fmt(m.target) + '   ★★★ no wrong flags',
+    'Best so far: ' + starString(missionStars(i))];
+  showOverlay((i + 1) + '. ' + m.name, lines.join('\n'), 'Deploy', function(){ startMission(i); }, 'Op list', openCampaign);
+});
+$('shop').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-buy]');
+  if (!b) return;
+  if (save.coins + coinsRun < 60) { toast('Not enough coins yet'); return; }
+  save.coins += coinsRun; coinsRun = 0;
+  save.coins -= 60; save.scans++;
+  persist(); renderCampaign(); hud();
+  toast('📡 Drone scan bought');
+});
+$('campClose').onclick = hideCampaign;
+$('campBtn').onclick = openCampaign;
+$('freeBtn').onclick = function(){ startFree(); };
+
+/* ---------------- build / start ---------------- */
+function buildGrid(n){
+  N = n;
   var grid = $('grid');
   grid.style.setProperty('--n', N);
   grid.innerHTML = '';
+  data = []; els = [];
   var frag = document.createDocumentFragment();
   for (var i = 0; i < N * N; i++) {
-    data.push({ mine: false, open: false, flag: false, near: 0 });
+    data.push({ mine: false, open: false, flag: false, near: 0, crate: false, ping: false });
     var d = document.createElement('div');
     d.className = 'cell';
     d.dataset.i = i;
@@ -108,7 +278,35 @@ function newGame(key){
     frag.appendChild(d);
   }
   grid.appendChild(frag);
+}
+
+function resetRun(){
+  started = false; over = false; opened = 0; flags = 0;
+  wrongFlags = 0; cratesFound = 0; lastPing = 0; scanMode = false;
+  clearInterval(timer); timer = null; t0 = 0;
+  $('time').textContent = '0:00';
+  $('ov').style.display = 'none';
+}
+
+function startMission(i){
+  cur = MISSIONS[i]; missionIndex = i;
+  resetRun();
+  MINES = cur.mines; cratesTotal = cur.crates; coinsRun = 0;
+  buildGrid(cur.n);
+  hideCampaign();
+  $('diffs').style.display = 'none';
   hud();
+  toast(cur.name + ' — find ' + cur.crates + ' crate' + (cur.crates === 1 ? '' : 's') + ' and clear the field');
+}
+function startFree(){
+  cur = null; missionIndex = -1;
+  resetRun();
+  MINES = DIFFS[freeDiff].m; cratesTotal = 0; coinsRun = 0;
+  buildGrid(DIFFS[freeDiff].n);
+  hideCampaign();
+  $('diffs').style.display = 'flex';
+  hud();
+  toast('Free play — ' + DIFFS[freeDiff].label);
 }
 
 function idx(r, c){ return r * N + c; }
@@ -137,6 +335,14 @@ function placeMines(safe){
     if (data[x].mine) continue;
     data[x].near = neighbours(x).filter(function(y){ return data[y].mine; }).length;
   }
+  var safePool = [];
+  for (var c = 0; c < N * N; c++) if (!data[c].mine && !banned[c]) safePool.push(c);
+  for (var s = safePool.length - 1; s > 0; s--) {
+    var q = Math.floor(Math.random() * (s + 1));
+    var tmp = safePool[s]; safePool[s] = safePool[q]; safePool[q] = tmp;
+  }
+  var want = Math.min(cratesTotal, safePool.length);
+  for (var w = 0; w < want; w++) data[safePool[w]].crate = true;
 }
 
 function startTimer(){
@@ -148,85 +354,180 @@ function startTimer(){
   }, 250);
 }
 
-function paint(i, open){
+function paint(i){
   var d = data[i], el = els[i];
   el.className = 'cell';
+  el.style.color = '';
   if (d.flag) { el.className = 'cell flag'; el.textContent = '🚩'; return; }
   if (d.open) {
     el.className = 'cell open' + (d.mine ? ' mine' : '');
     if (d.mine) el.textContent = '💥';
+    else if (d.crate) { el.textContent = '📦'; }
     else if (d.near) { el.textContent = d.near; el.style.color = NUMCOL[d.near]; }
     else el.textContent = '';
     return;
   }
+  if (d.crate) { el.className = 'cell crate'; el.textContent = '📦'; return; }
   el.textContent = '';
-  el.style.color = '';
 }
 
 function openCell(i){
   var d = data[i];
-  if (d.open || d.flag) return;
+  if (d.open || d.flag || over) return;
   if (!started) { placeMines(i); started = true; startTimer(); }
   d.open = true; opened++;
   paint(i);
   els[i].classList.add('pop');
   if (d.mine) return lose(i);
+  if (d.crate) {
+    cratesFound++;
+    coinsRun += 15;
+    save.scans++;
+    persist();
+    toast('📦 Supply crate — +1 📡 scan, +15 🪙');
+  }
   if (!d.near) {
     neighbours(i).forEach(function(n){
       if (!data[n].open && !data[n].flag && !data[n].mine) openCell(n);
     });
   }
-  if (opened >= N * N - MINES) win();
+  if (opened >= N * N - MINES) return win();
+  maybePing();
+}
+
+function maybePing(){
+  if (!cur || over) return;
+  if (opened - lastPing < 12) return;
+  lastPing = opened;
+  var pool = [];
+  for (var i = 0; i < N * N; i++) if (!data[i].open && !data[i].mine && !data[i].flag) pool.push(i);
+  if (!pool.length) return;
+  var k = pool[Math.floor(Math.random() * pool.length)];
+  data[k].ping = true;
+  toast('📡 Sonar ping — a safe pocket opens up');
+  openCell(k);
+  if (!over) hud();
 }
 
 function toggleFlag(i){
   var d = data[i];
   if (d.open || over) return;
+  if (!started) { placeMines(i); started = true; startTimer(); }
   d.flag = !d.flag;
   flags += d.flag ? 1 : -1;
+  if (d.flag && !d.mine) { wrongFlags++; persist(); }
   paint(i);
   hud();
 }
 
+function doScan(i){
+  if (!scanMode) return;
+  if (save.scans <= 0) { scanMode = false; hud(); return; }
+  if (data[i].open) { toast('That square is already dug'); return; }
+  save.scans--;
+  scanMode = false;
+  if (!started) { placeMines(i); started = true; startTimer(); }
+  var r = Math.floor(i / N), c = i % N;
+  var seen = 0;
+  for (var rr = r - 1; rr <= r + 1; rr++) {
+    for (var cc = c - 1; cc <= c + 1; cc++) {
+      if (rr < 0 || cc < 0 || rr >= N || cc >= N) continue;
+      var k = idx(rr, cc), d = data[k];
+      if (d.open) continue;
+      if (d.mine) {
+        if (!d.flag) { d.flag = true; flags++; paint(k); }
+      } else {
+        d.ping = true;
+        openCell(k);
+        seen++;
+      }
+      if (over) break;
+    }
+    if (over) break;
+  }
+  persist(); paint(i); hud();
+  toast('📡 Scan complete — ' + seen + ' squares cleared');
+  if (!over) maybePing();
+}
+
 function lose(hit){
   over = true; clearInterval(timer);
+  scanMode = false;
   for (var i = 0; i < N * N; i++) {
     var d = data[i];
     if (d.mine && !d.flag) { d.open = true; paint(i); }
     if (!d.mine && d.flag) { els[i].className = 'cell wrong'; els[i].textContent = '❌'; }
   }
   els[hit].style.background = '#991b1b';
-  show('💥 Boom', 'You hit a mine on ' + DIFFS[cur].label + '. Give it another go.', 'Try again');
+  save.coins += coinsRun; coinsRun = 0; persist(); hud();
+  showOverlay('💥 Boom', 'You hit a mine on ' + (cur ? cur.name : DIFFS[freeDiff].label) + '. Nothing lost — the field resets.',
+    'Try again', retry, 'Op list', openCampaign);
 }
 
 function win(){
   over = true; clearInterval(timer);
+  scanMode = false;
   var secs = Math.round((Date.now() - t0) / 1000);
-  var prev = getBest();
-  var beat = !prev || secs < prev;
-  if (beat) { try { localStorage.setItem(bestKey(), String(secs)); } catch (e) {} }
+  var st = 1;
+  if (cur && secs <= cur.target) st++;
+  if (wrongFlags === 0) st++;
+  var pay;
+  if (cur) {
+    var prev = missionStars(missionIndex);
+    if (st > prev) save.stars[missionIndex] = st;
+    if (missionIndex + 1 === save.unlocked && missionIndex + 1 < MISSIONS.length) save.unlocked = missionIndex + 2;
+    pay = 25 + st * 20 + cratesFound * 10;
+    save.coins += coinsRun + pay;
+    coinsRun = 0;
+    persist(); hud();
+    var sub = starString(st) + '\nCleared in ' + fmt(secs) + ' · ' + cratesFound + '/' + cratesTotal + ' crates · ' + (wrongFlags === 0 ? 'clean flags' : wrongFlags + ' wrong flag' + (wrongFlags === 1 ? '' : 's')) +
+      '\n+' + pay + ' 🪙';
+    var next = missionIndex + 1;
+    if (next < MISSIONS.length)
+      showOverlay('✅ ' + cur.name + ' cleared', sub, 'Next op', function(){ startMission(next); }, 'Op list', openCampaign);
+    else
+      showOverlay('🏆 Every field cleared', sub + '\nThe whole district is safe. Free play is yours.', 'Op list', openCampaign, 'Free play', startFree);
+  } else {
+    var prevBest = getFreeBest();
+    var beat = !prevBest || secs < prevBest;
+    if (beat) { try { localStorage.setItem(freeBestKey(), String(secs)); } catch (e) {} }
+    pay = 15 + st * 10;
+    save.coins += coinsRun + pay;
+    coinsRun = 0;
+    persist(); hud();
+    showOverlay('🎉 Field cleared',
+      DIFFS[freeDiff].label + ' in ' + fmt(secs) + (beat ? ' — a new best time!' : ' · best ' + fmt(prevBest)) +
+      '\n+' + pay + ' 🪙',
+      'Play again', startFree, 'Op list', openCampaign);
+  }
   for (var i = 0; i < N * N; i++) {
     if (data[i].mine && !data[i].flag) { data[i].flag = true; flags++; paint(i); }
   }
   hud();
-  show('🎉 Field cleared',
-    DIFFS[cur].label + ' in ' + fmt(secs) + (beat ? ' — a new best time!' : ' · best ' + fmt(prev)),
-    'Play again');
+}
+function retry(){
+  if (cur) startMission(missionIndex); else startFree();
 }
 
-function show(title, sub, btn){
-  $('ovT').textContent = title;
-  $('ovS').textContent = sub || '';
+function showOverlay(t, s, btn, fn, btn2, fn2){
+  $('ovT').textContent = t;
+  $('ovS').textContent = s || '';
   $('ovBtn').textContent = btn;
-  $('ovBtn').onclick = function(){ newGame(); };
+  $('ovBtn').onclick = function(){ $('ov').style.display = 'none'; fn(); };
+  if (btn2) {
+    $('ovBtn2').style.display = '';
+    $('ovBtn2').textContent = btn2;
+    $('ovBtn2').onclick = function(){ $('ov').style.display = 'none'; fn2(); };
+  } else $('ovBtn2').style.display = 'none';
   $('ov').style.display = 'flex';
 }
 
-/* ---------- input ---------- */
+/* ---------------- input ---------------- */
 $('grid').addEventListener('pointerdown', function(e){
   var el = e.target.closest('.cell');
   if (!el || over) return;
   var i = +el.dataset.i;
+  if (scanMode) return;
   suppress = false;
   clearTimeout(pressT);
   pressT = setTimeout(function(){
@@ -241,6 +542,7 @@ $('grid').addEventListener('pointerup', function(e){
   if (!el || over) return;
   if (suppress) { suppress = false; return; }
   var i = +el.dataset.i;
+  if (scanMode) { doScan(i); return; }
   if (flagMode) toggleFlag(i);
   else openCell(i);
 });
@@ -248,22 +550,38 @@ $('grid').addEventListener('pointercancel', function(){ clearTimeout(pressT); })
 $('grid').addEventListener('contextmenu', function(e){
   e.preventDefault();
   var el = e.target.closest('.cell');
-  if (!el || over) return;
+  if (!el || over || scanMode) return;
   clearTimeout(pressT);
   toggleFlag(+el.dataset.i);
 });
 
-$('flagBtn').onclick = function(){ flagMode = !flagMode; hud(); };
-$('newBtn').onclick = function(){ newGame(); };
+$('flagBtn').onclick = function(){
+  flagMode = !flagMode;
+  if (flagMode) scanMode = false;
+  hud();
+};
+$('scanBtn').onclick = function(){
+  if (save.scans <= 0) { toast('No scans left — clear a crate or buy one'); return; }
+  scanMode = !scanMode;
+  if (scanMode) flagMode = false;
+  hud();
+  if (scanMode) toast('📡 Tap a square to scan the 3×3 around it');
+};
+$('newBtn').onclick = retry;
 $('gamesBtn').onclick = function(){ location.href = 'index.html'; };
 $('diffs').addEventListener('click', function(e){
   var b = e.target.closest('button[data-d]');
   if (!b) return;
   [].forEach.call($('diffs').children, function(x){ x.classList.toggle('on', x === b); });
-  newGame(b.dataset.d);
+  freeDiff = b.dataset.d;
+  startFree();
 });
 
-newGame();
+/* ---------------- boot ---------------- */
+buildGrid(DIFFS.easy.n);
+hud();
+renderCampaign();
+$('camp').style.display = 'flex';
 })();
 </script>
 </body>
