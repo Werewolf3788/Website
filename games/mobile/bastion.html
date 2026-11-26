@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Bastion Builder — Tower Defense</title>
+<link rel="manifest" href="bastion.webmanifest">
+<meta name="theme-color" content="#0b1430">
+<link rel="apple-touch-icon" href="icons/bastion-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bastion">
 <!-- Google tag -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-JDNSLD3GFE');</script>
@@ -1316,6 +1323,8 @@ syncTopH();
 window.__bastion={cam,placeCam,get S(){return S},startRun,nextWave,tryPlace,setHolding,fuse,get enemies(){return enemies},get inBattle(){return inBattle},get waveNo(){return waveNo},get routes(){return routes}};
 window.__places={openWorld,enterPlace,leavePlace,get inPlace(){return inPlace}};
 {const want=new URLSearchParams(location.search).get('place');if(want&&PLACES.some(p=>p.id===want))setTimeout(()=>enterPlace(want),250);}
+/* installed as an app: cache the shell so the icon opens the game straight away */
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('bastion-sw.js').catch(()=>{});
 </script>
 </body>
 </html>

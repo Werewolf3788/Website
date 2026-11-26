@@ -1,0 +1,39 @@
+{
+  "id": "/games/mobile/bastion",
+  "name": "Bastion Builder",
+  "short_name": "Bastion",
+  "description": "Build the roads, place the towers and hold the castle, then walk into the Nest to merge creatures - all on one purse.",
+  "start_url": "/games/mobile/bastion",
+  "scope": "/games/mobile/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "fullscreen"
+  ],
+  "orientation": "any",
+  "background_color": "#0b1430",
+  "theme_color": "#0b1430",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "/games/mobile/icons/bastion-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/games/mobile/icons/bastion-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/games/mobile/icons/bastion-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
