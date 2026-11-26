@@ -18,7 +18,7 @@
     if (window.wwMenuData) return;
 
     const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv';
-    const CACHE_KEY = 'ww_menu_sheet_v2';   // v2: own-site links follow the site you're on
+    const CACHE_KEY = 'ww_menu_sheet_v3';   // v3: link and picture columns are read by what the cells hold
 
     // ---- CSV parser (handles quotes, commas and line breaks inside cells)
     function parseCsv(text) {
@@ -64,24 +64,50 @@
     const sanitizeKey = (s) => String(s || '').trim().replace(/[.$#\[\]\/]/g, '')
         .replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
 
+    const looksLikeImage = (v) => /\.(png|jpe?g|webp|gif|avif|svg)(?:[?#]|$)/i.test(v) || /^data:image\//i.test(v);
+
     function buildMenu(rows) {
         if (!rows.length) return {};
         const head = rows[0].map(h => String(h || '').toLowerCase());
+        const body = rows.slice(1);
         const col = (re, fallback) => { const i = head.findIndex(h => re.test(h)); return i >= 0 ? i : fallback; };
-        const cName = col(/^name/, 0), cGroup = col(/^group/, 1), cUrl = col(/url/, 2),
-              cImg = col(/^image/, 3), cTag = col(/^tag/, 5);
+        const cName = col(/^name/, 0), cGroup = col(/^group/, 1), cTag = col(/^tag/, 5);
+        const cellsAt = (i) => (i >= 0 ? body.map(r => String(r[i] || '').trim()).filter(Boolean) : []);
+        const pictureShare = (i) => { const c = cellsAt(i); return c.length ? c.filter(looksLikeImage).length / c.length : 0; };
+
+        /* The sheet has more than one "Url with UTM" column and one of them holds the
+         * poster pictures, so the link column and the picture column are chosen by what
+         * the cells look like rather than by their position. Reading them by position
+         * once pointed the links at the pictures: a menu item opened a poster instead of
+         * the page. */
+        const linkColumns = head.map((h, i) => i).filter(i => /^url|link|href/.test(head[i]));
+        const cUrl = (linkColumns.length ? linkColumns : [2]).reduce((best, i) => (pictureShare(i) < pictureShare(best) ? i : best));
+
+        let cImg = head.findIndex(h => /image|poster|thumb|photo/.test(h));
+        if (cImg < 0 || pictureShare(cImg) === 0) {
+            cImg = head.map((h, i) => i)
+                .filter(i => i !== cUrl && i !== cName && i !== cGroup)
+                .reduce((best, i) => (pictureShare(i) > pictureShare(best) ? i : best), -1);
+            if (pictureShare(cImg) === 0) cImg = -1;                          // nothing holds pictures: leave it empty
+        }
+
         const now = new Date().toISOString();
         const out = {};
-        rows.slice(1).forEach((r, i) => {
+        body.forEach((r, i) => {
             const rowNumber = i + 2;
             const name = String(r[cName] || '').trim();
             if (!name || name.startsWith('#')) return;                       // blank / commented rows
             const group = String(r[cGroup] || '').trim();
+            let image = String(r[cImg] || '').trim();
             let url = String(r[cUrl] || '').trim();
+            if (looksLikeImage(url)) {                                       // a poster is never a menu link
+                if (!image) image = url;
+                url = '';
+            }
             if (url.startsWith('#REF') || /ref!/i.test(url)) url = '';         // formula errors
             if (url && !/^(https?:)?\/\//i.test(url) && !url.startsWith('#') && !url.startsWith('.') && !url.startsWith('/')) url = 'https://' + url;
             url = siteUrl(url);
-            const item = { title: name, url, image: String(r[cImg] || '').trim(), tag: String(r[cTag] || '').trim(),
+            const item = { title: name, url, image, tag: String(r[cTag] || '').trim(),
                            group: group || 'Standalone', rowNumber, updatedAt: now };
             const g = group.toLowerCase();
             if (!g || g === 'home' || g === 'none' || g === 'standalone') {
