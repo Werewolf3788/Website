@@ -198,6 +198,7 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
     <div class="caps"><div><span id="capT">0/6</span><small>Defenses</small></div><div><span id="capS">0/1</span><small>Spawners</small></div><div><span id="capR">0/2</span><small>Traps</small></div></div>
     <div class="tabs" id="invTabs"><button data-k="t" class="on">Towers</button><button data-k="p">Paths</button><button data-k="s">Camp</button><button data-k="r">Traps</button></div>
     <div style="display:flex;gap:6px;margin-bottom:8px"><input class="search" id="invSearch" placeholder="Search name..."><button class="btn purple" id="fuseAll">✨ Fuse All</button></div>
+    <div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn gray" id="autoFuseBtn" style="flex:1">⚡ Auto-fuse: OFF</button><button class="btn red" id="wipeBtn" style="flex:1">🧹 Wipe board</button></div>
     <div class="small" style="margin-bottom:6px">Get 3 of the same item at the same level, then hit <b>Fuse</b> to turn them into one <b>+1</b>. Tap an item to hold it, then tap the board to place it.</div>
     <div class="small" style="margin-bottom:8px;padding:6px 8px;border-left:3px solid #fde047;background:rgba(253,224,71,.10);border-radius:6px"><b>Levels fuse separately:</b> 3 Cannon make a Cannon II, and 3 Cannon II make a Cannon III. A Cannon never fuses with a Cannon II.</div>
     <div class="grid" id="invGrid"></div>
@@ -385,7 +386,7 @@ const upgCost = (u,l)=>Math.round(u.base*Math.pow(u.g,l));
 /* ---------- state ---------- */
 const fresh = ()=>({
   v:2, cash:0, upg:{}, inv:{'t-crossbow-0':3,'t-cannon-0':1,'p-road-0':30,'s-forest-0':1,'r-spikes-0':1},
-  board:[], runs:[], best:0, totalKills:0, shop:null, seenVersion:'', updatedAt:0
+  autoFuse:false, board:[], runs:[], best:0, totalKills:0, shop:null, seenVersion:'', updatedAt:0
 });
 let S = fresh();
 const U = k=>S.upg[k]||0;
@@ -768,8 +769,11 @@ function showInfoPlaced(rec){selectedRec=rec;const d=defOf(rec.k,rec.id);
 /* ---------- fusion ---------- */
 function fuse(key,quiet){const {k,id,l}=parseKey(key);if(k==='p')return false;if((S.inv[key]||0)<3||l>=MAX_LVL)return false;
   invAdd(k,id,l,-3);invAdd(k,id,l+1,1);
+  // the cards, the holding chip and an open info card all switch to the new weapon straight away
+  if(holding===key&&!S.inv[key])setHolding(null);
+  renderInv();
   if(!quiet){sfx('fuse');toast(`✨ Fused 3 ${tierName(defOf(k,id),l)} → <b>${tierName(defOf(k,id),l+1)}</b>`);
-    if(holding===key&&!S.inv[key])setHolding(null);renderInv();showInfoInv(keyOf(k,id,l+1));save();}
+    if($('info').classList.contains('open'))showInfoInv(keyOf(k,id,l+1));save();}
   return true;}
 window.fuse=fuse;window.setHolding=setHolding;
 function fuseAll(){let n=0,again=true;
@@ -777,6 +781,29 @@ function fuseAll(){let n=0,again=true;
     if(parseKey(key).k!==invTab)continue;while(fuse(key,true)){n++;again=true;}}}
   if(n){sfx('fuse');toast(`✨ Fused ${n} time${n>1?'s':''}`);}else toast('Nothing here has 3 copies at the <b>same level</b>. A Cannon and a Cannon II are different items — the corner chip shows how many of that exact one you have.');
   setHolding(holding);renderInv();save();}
+
+/* ---------- auto-fuse + wiping the board ---------- */
+function renderAutoFuse(){const b=$('autoFuseBtn');if(!b)return;b.textContent='⚡ Auto-fuse: '+(S.autoFuse?'ON':'OFF');b.classList.toggle('purple',!!S.autoFuse);}
+function autoFuseNow(announce){if(!S.autoFuse)return 0;
+  let n=0,again=true;
+  while(again){again=false;for(const key of Object.keys(S.inv)){const p=parseKey(key);if(p.k==='p')continue;while(fuse(key,true)){n++;again=true;}}}
+  if(n){renderInv();save();if(announce)toast('⚡ Auto-fused '+n+' upgrade'+(n>1?'s':''));}
+  return n;}
+function wipeBoard(){
+  if(!S.board.length)return toast('Nothing is placed on the board yet.');
+  const n=S.board.length;
+  S.board.forEach(b=>invAdd(b.k,b.id,b.l,1));
+  S.board=[];setHolding(null);rebuildItems();updateCaps();closePanel('info');renderInv();save();
+  toast('🧹 Board cleared — '+n+' item'+(n>1?'s':'')+' back in your inventory at the same level');
+  autoFuseNow(true);}
+$('autoFuseBtn').onclick=()=>{S.autoFuse=!S.autoFuse;renderAutoFuse();save();
+  if(S.autoFuse){const n=autoFuseNow(false);toast(n?'⚡ Auto-fuse on — merged '+n+' right away':'⚡ Auto-fuse on — three of the same level now merge as soon as they drop');}
+  else toast('⚡ Auto-fuse off — fuse by hand again');};
+$('wipeBtn').onclick=()=>{
+  if(!S.board.length)return toast('Nothing is placed on the board yet.');
+  modal('🧹 Wipe the board?','<div class="small" style="margin-bottom:10px">Every tower, camp, road and trap comes off the board and goes back into your inventory at the same level, so you can lay the base out again from scratch. Your cash, upgrades and castle are untouched.</div><div style="display:flex;gap:8px"><button class="btn red" id="wipeYes" style="flex:1">Wipe it</button><button class="btn gray" id="wipeNo" style="flex:1">Keep it</button></div>');
+  $('wipeYes').onclick=()=>{closePanel('modal');wipeBoard();};
+  $('wipeNo').onclick=()=>closePanel('modal');};
 
 /* ---------- inventory UI ---------- */
 let invTab='t';
@@ -942,6 +969,7 @@ function rollDrop(e){const luck=1+mult().luck+waveLuck();const camp=CAMPS[e.camp
   if(r==='common'&&Math.random()<.5)pool=[['p','road']];
   const [k,id]=pool[Math.floor(Math.random()*pool.length)];invAdd(k,id,0,k==='p'?2+Math.floor(Math.random()*3):1);const d=defOf(k,id);
   addDrop(d);if(RAR.indexOf(d.r)>=3){toast(`<span class="t-${d.r}">${d.ic} ${d.r.toUpperCase()} drop: ${d.name}!</span>`);sfx('rare');}
+  if(S.autoFuse&&k!=='p')autoFuseNow(false);
   if($('inv').classList.contains('open'))renderInv();}
 const dropList=[];
 function addDrop(d){dropList.unshift(d);dropList.length=Math.min(dropList.length,8);
@@ -1245,7 +1273,7 @@ function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(
   renderer.render(scene,camera);}
 
 /* ---------- boot ---------- */
-loadLocal();buildBoard();resize();updHud();setHolding(null);frame();
+loadLocal();buildBoard();resize();updHud();setHolding(null);renderAutoFuse();frame();
 if(S.seenVersion!==VERSION){modal('🆕 What\'s new · v'+VERSION,'<ul style="margin:0;padding-left:18px;line-height:1.5">'+WHATS_NEW.map(x=>'<li>'+x+'</li>').join('')+'</ul>');S.seenVersion=VERSION;save();}
 initFirebase().catch(e=>console.warn('firebase',e));
 /* ---------- places: the lair and the rest of the bastion, under the same top bar ---------- */
