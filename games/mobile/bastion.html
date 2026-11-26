@@ -61,6 +61,9 @@ button{font:inherit;color:inherit;cursor:pointer;border:0}
 .panel .hd h2{margin:0;font-size:20px;flex:1;letter-spacing:.5px}
 .panel .bd{padding:10px;overflow:auto;flex:1}
 .x{background:linear-gradient(#ff7a59,#dc2626);width:34px;height:34px;border-radius:10px;font-weight:900;box-shadow:0 3px 0 #7f1d1d}
+.panel .hd .hstat{flex:0 1 auto;min-width:0;max-width:66%;text-align:right;font-size:10px;line-height:1.25;font-weight:700;color:#fff;padding-right:2px}
+.panel .hd .hstat b{display:block;font-size:10.5px;color:#fde047;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.panel .hd .hstat small{display:block;font-weight:600;font-size:9px;opacity:.88;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mid{left:50%;top:50%;transform:translate(-50%,-50%);width:min(920px,94vw)}
 #inv{left:10px;top:60px;width:min(440px,94vw);bottom:auto;max-height:calc(100% - 80px)}
 #info{right:10px;top:60px;width:min(300px,80vw)}
@@ -200,7 +203,7 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
 
 <!-- Inventory -->
 <div class="panel" id="inv">
-  <div class="hd"><h2>🎒 Inventory</h2><button class="x" data-close>X</button></div>
+  <div class="hd"><h2>🎒 Inventory</h2><div class="hstat" id="invStat"></div><button class="x" data-close>X</button></div>
   <div class="bd">
     <div class="caps"><div><span id="capT">0/6</span><small>Defenses</small></div><div><span id="capS">0/1</span><small>Spawners</small></div><div><span id="capR">0/2</span><small>Traps</small></div></div>
     <div class="tabs" id="invTabs"><button data-k="t" class="on">Towers</button><button data-k="p">Paths</button><button data-k="s">Camp</button><button data-k="r">Traps</button></div>
@@ -226,7 +229,7 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
 
 <!-- Upgrades -->
 <div class="panel mid" id="upg">
-  <div class="hd"><h2>⬆ Upgrades</h2><span class="pill">💰 <span id="upgCash">0</span></span><button class="x" data-close>X</button></div>
+  <div class="hd"><h2>⬆ Upgrades</h2><div class="hstat" id="upgStat"></div><span class="pill">💰 <span id="upgCash">0</span></span><button class="x" data-close>X</button></div>
   <div class="bd"><div class="small" style="margin-bottom:8px;text-align:center">Spend cash to unlock permanent upgrades. Tap a hex to buy the next level.</div><div class="hexWrap" id="hexWrap"></div></div>
 </div>
 
@@ -362,6 +365,17 @@ function quickStats(k, id, l){
 }
 
 const MAX_LVL = 10;
+
+/* the stat readout that sits in the empty top-right corner of the Inventory and Upgrades panels */
+function invStat(key){const el=$('invStat');if(!el)return;
+  if(!key){el.innerHTML='';return;}
+  const {k,id,l}=parseKey(key),d=defOf(k,id);
+  const nx=(k==='p'||l>=MAX_LVL)?'':'<small>\u2192 '+quickStats(k,id,l+1)+'</small>';
+  el.innerHTML='<b>'+tierName(d,l)+'</b><small>'+quickStats(k,id,l)+'</small>'+nx;}
+function upgStat(k,l){const el=$('upgStat');if(!el)return;
+  const u=k?UPG.find(x=>x.k===k):null;if(!u){el.innerHTML='';return;}
+  el.innerHTML='<b>'+u.ic+' '+u.name+' \u00b7 Lv '+l+'/'+u.max+'</b><small>'+u.fx(l)+' now</small>'+(l<u.max?'<small>\u2192 next Lv '+(l+1)+': '+u.fx(l+1)+'</small>':'');}
+let lastUpg=null;
 
 const ENEMY = {
   grunt:{hp:1,spd:1,dmg:1,col:0xdc2626,size:.22},
@@ -779,7 +793,7 @@ function fuse(key,quiet){const {k,id,l}=parseKey(key);if(k==='p')return false;if
   // the cards, the holding chip and an open info card all switch to the new weapon straight away
   if(holding===key&&!S.inv[key])setHolding(null);
   renderInv();
-  if(!quiet){sfx('fuse');toast(`✨ Fused 3 ${tierName(defOf(k,id),l)} → <b>${tierName(defOf(k,id),l+1)}</b>`);
+  if(!quiet){sfx('fuse');invStat(keyOf(k,id,l+1));toast(`✨ Fused 3 ${tierName(defOf(k,id),l)} → <b>${tierName(defOf(k,id),l+1)}</b>`);
     if($('info').classList.contains('open'))showInfoInv(keyOf(k,id,l+1));save();}
   return true;}
 window.fuse=fuse;window.setHolding=setHolding;
@@ -826,14 +840,14 @@ function renderInv(){updateCaps();const q=$('invSearch').value.toLowerCase();
     const tag = !canFuse ? '' : (n>=3 ? '<span class="rdy">FUSE!</span>' : `<span class="need">${n}/3</span>`);
     return `<div class="card r-${d.r}${holding===key?' sel':''}" data-key="${key}" title="${tierName(d,l)} — ${quickStats(k,id,l)}">${l?`<span class="lv">Lv ${l+1}</span>`:''}${tag}${tierIcon(d,l)}<span class="nm">${tierName(d,l)}</span><span class="ct">x${n}</span></div>`;}).join('')
     :`<div class="small">Nothing here yet. Enemies drop these in battle${invTab==='s'?' — or buy camps in the Spawner Shop':''}.</div>`;}
-$('invGrid').onclick=e=>{const c=e.target.closest('.card');if(!c)return;setHolding(c.dataset.key);renderInv();showInfoInv(c.dataset.key);};
+$('invGrid').onclick=e=>{const c=e.target.closest('.card');if(!c)return;setHolding(c.dataset.key);renderInv();showInfoInv(c.dataset.key);invStat(c.dataset.key);};
 $('invTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;invTab=b.dataset.k;[...$('invTabs').children].forEach(x=>x.classList.toggle('on',x===b));renderInv();};
 $('invSearch').oninput=renderInv;$('fuseAll').onclick=fuseAll;
 function updateCaps(){const c=caps();$('capT').textContent=placedCount('t')+'/'+c.t;$('capS').textContent=placedCount('s')+'/'+c.s;$('capR').textContent=placedCount('r')+'/'+c.r;}
 
 /* ---------- panels ---------- */
 function openPanel(id){if(id!=='info'&&id!=='inv')['shop','upg','stats','modal'].forEach(p=>p!==id&&closePanel(p));
-  $(id).classList.add('open');if(id==='inv')renderInv();if(id==='shop')renderShop();if(id==='upg')renderUpg();if(id==='stats')renderStats();}
+  $(id).classList.add('open');if(id==='inv'){renderInv();invStat(holding);}if(id==='shop')renderShop();if(id==='upg'){renderUpg();if(lastUpg)upgStat(lastUpg.k,U(lastUpg.k));}if(id==='stats')renderStats();}
 function closePanel(id){$(id).classList.remove('open');if(id==='info'){rangeRing.visible=false;selectedRec=null;}}
 document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{const id=b.dataset.open;$(id).classList.contains('open')?closePanel(id):openPanel(id);});
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closePanel(b.closest('.panel').id));
@@ -857,7 +871,7 @@ function renderUpg(){$('upgCash').textContent=fmt(S.cash);
   $('hexWrap').innerHTML=UPG.map(u=>{const l=U(u.k),max=l>=u.max,cost=upgCost(u,l);
     return `<div class="hex${max?' max':''}${!max&&S.cash<cost?' cant':''}" style="background:${u.col}" onclick="buyUpg('${u.k}')"><span class="ic">${u.ic}</span>${u.name}<span>${u.fx(l)}</span><span class="cost">${max?'MAX':'💰 '+fmt(cost)}</span><span style="font-size:9px">Lv ${l}/${u.max}</span></div>`;}).join('');}
 window.buyUpg=k=>{const u=UPG.find(x=>x.k===k),l=U(k);if(l>=u.max)return;const cost=upgCost(u,l);if(S.cash<cost)return toast('Not enough cash');
-  S.cash-=cost;S.upg[k]=l+1;sfx('buy');toast(`⬆ ${u.name}: ${u.fx(l+1)}`);
+  S.cash-=cost;S.upg[k]=l+1;sfx('buy');lastUpg={k,l:l+1};upgStat(k,l+1);toast(`⬆ ${u.name}: ${u.fx(l+1)}`);
   if(k==='board'){buildBoard();resize();}
   if(k==='castle'&&!inBattle)castleHp=mult().castle;
   renderUpg();updateCaps();updHud();save();};
