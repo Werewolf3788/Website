@@ -58,10 +58,10 @@ button{font:inherit;color:inherit;cursor:pointer;border:0}
 .panel{position:fixed;z-index:20;background:var(--panel);background-image:radial-gradient(#ffffff10 1.5px,transparent 1.5px);background-size:18px 18px;border:4px solid #3b82f6;border-radius:18px;box-shadow:0 10px 40px #000a;display:none;flex-direction:column;max-height:calc(100% - 24px)}
 .panel.open{display:flex}
 .panel .hd{display:flex;align-items:center;gap:8px;padding:10px 12px;background:linear-gradient(#2563eb,#1d4ed8);border-radius:14px 14px 0 0}
-.panel .hd h2{margin:0;font-size:20px;flex:1;letter-spacing:.5px}
+.panel .hd h2{margin:0;font-size:20px;flex:1;letter-spacing:.5px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .panel .bd{padding:10px;overflow:auto;flex:1}
 .x{background:linear-gradient(#ff7a59,#dc2626);width:34px;height:34px;border-radius:10px;font-weight:900;box-shadow:0 3px 0 #7f1d1d}
-.panel .hd .hstat{flex:0 1 auto;min-width:0;max-width:66%;text-align:right;font-size:10px;line-height:1.25;font-weight:700;color:#fff;padding-right:2px}
+.panel .hd .hstat{flex:0 1 auto;min-width:0;max-width:46%;text-align:right;font-size:10px;line-height:1.25;font-weight:700;color:#fff;padding-right:2px}
 .panel .hd .hstat b{display:block;font-size:10.5px;color:#fde047;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .panel .hd .hstat small{display:block;font-weight:600;font-size:9px;opacity:.88;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mid{left:50%;top:50%;transform:translate(-50%,-50%);width:min(920px,94vw)}
