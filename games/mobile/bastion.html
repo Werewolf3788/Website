@@ -241,7 +241,7 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
 <div class="panel mid" id="stats">
   <div class="hd"><h2>📊 Full Stats</h2><button class="x" data-close>X</button></div>
   <div class="bd">
-    <div class="tabs" id="statTabs"><button data-k="player" class="on">Player Stats</button><button data-k="tower">Tower Stats</button><button data-k="runs">Run History</button></div>
+    <div class="tabs" id="statTabs"><button data-k="player" class="on">Player Stats</button><button data-k="tower">Tower Stats</button><button data-k="runs">Run History</button><button data-k="friends">Friends</button></div>
     <div id="statBody"></div>
   </div>
 </div>
@@ -906,6 +906,40 @@ window.buyUpg=k=>{const u=UPG.find(x=>x.k===k),l=U(k);if(l>=u.max)return;const c
 
 /* ---------- stats ---------- */
 let statTab='player';
+/* ---------- friends' Bastion stats (their saved summary, honouring each friend's own sharing setting) ---------- */
+let friendsData=null,friendsLoading=false,friendsAt=0;
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function loadFriendsStats(){
+  if(!authUser||!fbReady){friendsData=null;return;}
+  if(friendsLoading||(friendsData&&Date.now()-friendsAt<60000))return;
+  friendsLoading=true;
+  try{const db=firebase.database(),fs=firebase.firestore();
+    const emailKey=(authUser.email||authUser.uid).toLowerCase().replace('@','_at_').replace(/\./g,'_');
+    const me=(await db.ref('users/'+emailKey).get()).val()||{},friends=me.friends||{},myCode=String(me.friend_code||'').toUpperCase();
+    const meRow=Object.assign({name:'You',code:myCode,you:true},{stats:statSummary()});
+    const rows=await Promise.all(Object.entries(friends).map(async([fk,fo])=>{fo=fo||{};const code=String(fo.friend_code||fk).toUpperCase();
+      let prof={};try{const pk=(await db.ref('accounts/friend_codes/'+code).get()).val();
+        const cands=typeof pk==='string'?[pk]:pk&&typeof pk==='object'?['user_key','userKey','email_key','emailKey','key','owner','uid','email'].map(f=>pk[f]).filter(x=>typeof x==='string'&&x):[];
+        for(let c of cands){c=c.trim();if(c.includes('@'))c=c.toLowerCase().replace(/\./g,'_').replace('@','_at_');const v=(await db.ref('users/'+c).get()).val();if(v){prof=v;break;}}}catch(e){}
+      const name=prof.username||prof.display_name||fo.username||code,scope=prof.tracking_scope||'friends';
+      let ok=scope!=='private';if(scope==='close')ok=!!(prof.friends&&prof.friends[myCode]&&prof.friends[myCode].close_friend===true);
+      if(!ok)return {name,code,hidden:true};
+      try{const d=await fs.doc('user/'+code+'/platform/mobile/game/bastion').get();const pr=d.exists?(d.data()||{}).progress:null;
+        return {name,code,stats:pr&&(pr.stats||{best:pr.best,kills:pr.kills}),t:pr&&pr.t};}catch(e){return {name,code,err:true};}}));
+    friendsData=[meRow].concat(rows).sort((a,b)=>((b.stats&&b.stats.best)||-1)-((a.stats&&a.stats.best)||-1));friendsAt=Date.now();
+  }catch(e){console.warn('friends stats',e);friendsData=[];}
+  friendsLoading=false;if(statTab==='friends'&&$('stats').classList.contains('open'))renderStats();}
+function friendsHtml(){
+  if(!authUser)return '<div class="small">Sign in to compare your Bastion stats with your friends and allies. Friends add each other with their friend codes on the site.</div>';
+  if(!friendsData)return '<div class="small">Loading your friends\u2019 bases…</div>';
+  if(friendsData.length<2)return '<div class="small">No friends yet. Add friends with their friend code on your profile, and their Bastion stats show up here.</div>';
+  const f=v=>v==null?'–':fmt(v);
+  return `<div class="small" style="margin-bottom:6px">Ranked by best wave. Your stats are shared with friends unless you turn game tracking off in Settings.</div>
+  <div class="tw" style="font-weight:800;opacity:.8;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr"><span>Player</span><span>Best wave</span><span>Damage</span><span>Gold</span><span>Kills</span></div>`+
+  friendsData.map(r=>{const s=r.stats;return `<div class="tw" style="grid-template-columns:1.6fr 1fr 1fr 1fr 1fr"><span><b>${esc(r.name)}</b>${r.you?'':' <span class="small">'+esc(r.code)+'</span>'}</span>`+
+    (r.hidden?'<span class="small" style="grid-column:span 4">keeps their stats private</span>':!s?'<span class="small" style="grid-column:span 4">hasn\u2019t played Bastion yet</span>':
+    `<span>${f(s.best)}</span><span>${s.dmg?'x'+s.dmg:'–'}</span><span>${s.gold?'x'+s.gold:'–'}</span><span>${f(s.kills)}</span>`)+'</div>';}).join('');}
+
 $('statTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;statTab=b.dataset.k;[...$('statTabs').children].forEach(x=>x.classList.toggle('on',x===b));renderStats();};
 function renderStats(){const m=mult();let h='';
   if(statTab==='player'){const runLuck=waveLuck();
@@ -920,6 +954,7 @@ function renderStats(){const m=mult();let h='';
     <div class="tw" style="font-weight:800;opacity:.8"><span></span><span>Tower</span><span>Damage</span><span>DPS</span><span>Kills</span></div>`+
     (list.length?list.map(a=>{const d=TOWERS[a.id];return `<div class="tw"><span style="font-size:20px">${d.ic}</span><span><b class="t-${d.r}">${d.name}${a.l?' +'+a.l:''}</b>${a.n>1?' x'+a.n:''}<div style="height:5px;background:#08204f;border-radius:3px;margin-top:3px"><div style="height:100%;width:${(a.dmg/tot*100).toFixed(0)}%;background:#fde047;border-radius:3px"></div></div></span><span>${fmt(a.dmg)}</span><span>${fmt(a.dmg/secs)}</span><span>${a.kills}</span></div>`;}).join('')
       :'<div class="small">Place towers to see their stats.</div>');}
+  else if(statTab==='friends'){h=friendsHtml();if(!friendsData&&!friendsLoading)loadFriendsStats();}
   else{const r=S.runs.slice(-10);if(!r.length)h='<div class="small">Finish a run to see your history.</div>';else{
     const avg=f=>r.reduce((s,x)=>s+x[f],0)/r.length;
     h=`<div style="font-weight:800;margin-bottom:6px">Average of your last ${r.length} runs</div><div class="avgGrid"><div>Avg wave<b>${Math.round(avg('wave'))}</b></div><div>Avg time<b>${fmtTime(avg('time'))}</b></div><div>Avg kills<b>${fmt(avg('kills'))}</b></div>
@@ -1259,7 +1294,15 @@ function snapshot(){const o=JSON.parse(JSON.stringify(S));return o;}
 function progressInfo(){const t=(typeof cells!=='undefined')?[...cells.values()].filter(c=>c.k==='t').length:0;
   return {title:'Bastion Builder',icon:'\u{1F3F0}',kind:'bastion',best:S.best||0,cash:Math.round(S.cash||0),
     towers:t,camps:(typeof placedCount==='function')?placedCount('s'):0,kills:S.totalKills||0,
-    runs:(S.runs||[]).length,upg:Object.values(S.upg||{}).reduce((a,b)=>a+b,0),t:Date.now()};}
+    runs:(S.runs||[]).length,upg:Object.values(S.upg||{}).reduce((a,b)=>a+b,0),stats:statSummary(),t:Date.now()};}
+// the Player Stats list, saved with the game so the profile page and friends can show it
+function statSummary(){try{const m=mult(),r=(S.runs||[]).slice(-10),avg=f=>r.length?r.reduce((a,x)=>a+(x[f]||0),0)/r.length:0;
+  const top=Object.keys(S.inv).concat((S.board||[]).map(b=>keyOf(b.k,b.id,b.l))).map(parseKey).filter(p=>p.k==='t'&&TOWERS[p.id])
+    .sort((a,b)=>b.l-a.l||RAR.indexOf(TOWERS[b.id].r)-RAR.indexOf(TOWERS[a.id].r));
+  const seen=new Set(),best=[];for(const p of top){if(seen.has(p.id))continue;seen.add(p.id);best.push({ic:TOWERS[p.id].ic,name:TOWERS[p.id].name,lv:p.l+1});if(best.length>=3)break;}
+  return {dmg:+m.dmg.toFixed(2),gold:+m.cash.toFixed(2),luck:Math.round(m.luck*1000)/10,crit:Math.round(m.crit*1000)/10,critd:Math.round(m.critd*100),
+    aspd:Math.round((m.aspd-1)*100),range:+m.range.toFixed(2),castle:m.castle,board:boardN(),startWave:m.startWave,kills:S.totalKills||0,best:S.best||0,
+    avgWave:Math.round(avg('wave')),avgKills:Math.round(avg('kills')),avgTime:Math.round(avg('time')),avgDmg:Math.round(avg('dmg')),runs:(S.runs||[]).length,topTowers:best};}catch(e){return null;}}
 function flush(){if(!dirty)return;dirty=false;const data=snapshot();
   if(docRef){data.progress=progressInfo();docRef.set(data).catch(e=>console.warn('save failed',e));}
   else{try{localStorage.setItem('bastion_save',JSON.stringify(data));}catch(e){}}}
