@@ -25,7 +25,8 @@
   #top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
   #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
-  @media(min-width:860px){#main{max-width:none;width:90vw;grid-template-columns:minmax(0,min(calc(100vh - 70px),62%)) 1fr !important}}
+  @media(min-width:860px){#main{max-width:none;width:90vw;padding-top:6px;grid-template-columns:minmax(0,min(calc(100vh - 52px),64%)) 1fr !important}
+    body.bigBoard #main{grid-template-columns:minmax(0,68%) 1fr !important}}
   /* wide screens: board + property cards on the left, dice and seats stacked on the right (as before) */
   @media(min-width:860px){
     #main{grid-template-columns:minmax(0,640px) 1fr;grid-template-areas:"board play" "board panel" "deeds panel";align-items:start}
@@ -129,7 +130,7 @@
 <div id="top">
   <span>🏙️ <b id="roomLabel">Monopoly</b> · 👥 <b id="count">1</b></span>
   <span>💵 <b id="bank">—</b> · 🏆 <b id="wins">0</b></span>
-  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="sizeBtn" title="Board size">⤢ Bigger board</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
 </div>
 <div id="main">
   <div id="left">
@@ -157,7 +158,7 @@
     </div>
     <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
     <div id="log"></div>
-    <div class="muted" style="margin-top:10px"><b>Classic or Speed Die:</b> the host picks before the game starts. Speed Die adds a third die once you have passed Start. Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 3 houses and then a hotel once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, your houses are sold and properties mortgaged automatically before you go bankrupt. The blue Speed Die joins your two white dice once you have passed or landed on Start: 1, 2 or 3 is added to your move; Mr. Monopoly moves you on again to the next property nobody owns (or, if everything is owned, to the next one an opponent owns, and you pay rent); the Bus lets you move just the first white die, just the second, or both added together; and three of a kind (1-1-1, 2-2-2 or 3-3-3) lets you jump to any space on the board. Only the white dice count as doubles and the Speed Die is not used while you are in jail. Doubles roll again, but a second set of doubles in a row goes to jail. When you land on a Surprise or Community Fund space you can follow the card or ignore it. In jail you can pay $50 bail or try for doubles. Rents rise by 25% every 4 rounds in long games. Every 30 minutes a game lasts, each player still in (not bots) gets a $1,000 bonus to keep it going. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
+    <div class="muted" style="margin-top:10px"><b>Classic or Speed Die:</b> the host picks before the game starts. Speed Die adds a third die once you have passed Start. Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 3 houses and then a hotel once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, the game waits while you raise the money your way: sell houses, mortgage or sell properties, or trade. Then pay, or declare bankruptcy. (Bots raise money automatically, and so does a player who has left the table.) The blue Speed Die joins your two white dice once you have passed or landed on Start: 1, 2 or 3 is added to your move; Mr. Monopoly moves you on again to the next property nobody owns (or, if everything is owned, to the next one an opponent owns, and you pay rent); the Bus lets you move just the first white die, just the second, or both added together; and three of a kind (1-1-1, 2-2-2 or 3-3-3) lets you jump to any space on the board. Only the white dice count as doubles and the Speed Die is not used while you are in jail. Doubles roll again, but a second set of doubles in a row goes to jail. When you land on a Surprise or Community Fund space you can follow the card or ignore it. In jail you can pay $50 bail or try for doubles. Rents rise by 25% every 4 rounds in long games. Every 30 minutes a game lasts, each player still in (not bots) gets a $1,000 bonus to keep it going. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
   </div>
 </div>
 <div id="tradeDlg"><div id="tradeBox"></div></div>
@@ -264,7 +265,28 @@
   function setOf(i) { var sp = SP[i], a = []; if (sp.t === 'prop') return group(sp.g); SP.forEach(function (x, j) { if (x.t === sp.t) a.push(j); }); return a; }
   function setHasHouses(s, i) { return SP[i].t === 'prop' && group(SP[i].g).some(function (j) { return housesOf(s, j) > 0; }); }
   function mgValue(i) { return Math.floor(SP[i].p / 2); } function unmgCost(i) { return Math.ceil(SP[i].p * 0.55); } function bankValue(i) { return Math.floor(SP[i].p * 0.6); }
-  function manageOk(s) { return s.status === 'playing' && (s.phase === 'roll' || s.phase === 'end'); }
+  function manageOk(s) { return s.status === 'playing' && (s.phase === 'roll' || s.phase === 'end' || s.phase === 'debt'); }
+  // a bill was put on hold during this move: the turn waits in the 'debt' phase until it is paid or the player goes bankrupt
+  function holdForDebt(s) { if (s.debt && s.debt.length && s.phase !== 'debt' && s.status === 'playing') { s.debtPrev = s.phase; s.phase = 'debt'; } }
+  function doPayDebt(s) {
+    if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, q = plOf(s, p), tot = debtTotal(s);
+    if (q.cash < tot) return false;
+    var list = s.debt; delete s.debt; delete s.debtP;
+    list.forEach(function (d) { payNow(s, p, d.to, d.amt); });
+    addLog(s, '✅ ' + NAMES[p] + ' paid $' + tot + '.');
+    s.phase = s.debtPrev || 'end'; delete s.debtPrev; return true;
+  }
+  function doBankrupt(s) {   // give up: everything goes to whoever is owed (houses are sold first, as in the rules)
+    if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, list = s.debt; delete s.debt; delete s.debtP;
+    for (var k = 0; k < list.length && !plOf(s, p).bankrupt; k++) payNow(s, p, list[k].to, list[k].amt);
+    s.phase = s.debtPrev || 'end'; delete s.debtPrev;
+    if (plOf(s, p).bankrupt && s.status === 'playing') advance(s);
+    return true;
+  }
+  function doDebtAuto(s) {   // only for a player who has left the table: sell up automatically like before
+    if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, tot = debtTotal(s);
+    raiseCash(s, p, tot); if (plOf(s, p).cash >= tot) return doPayDebt(s); return doBankrupt(s);
+  }
   function rentOf(s, i, sum) {
     var sp = SP[i], o = ownerOf(s, i), base, h;
     if (sp.t === 'rail') base = RAIL_RENT[Math.min(3, countOwned(s, o, 'rail') - 1)];
@@ -293,7 +315,20 @@
     var a = alive(s);
     if (a.length <= 1 && s.status === 'playing') { s.status = 'done'; s.winner = a.length ? a[0] : s.turn; addLog(s, NAMES[s.winner] + ' wins the game!'); }
   }
+  function isPerson(s, p) { var st = seatOf(s, p); return !!st && !st.bot; }
+  function debtTotal(s) { return (s.debt || []).reduce(function (a, d) { return a + d.amt; }, 0); }
   function pay(s, from, to, amt) {
+    var f = plOf(s, from);
+    // a person who cannot pay is never sold up automatically: the bill is put on hold and THEY choose what to
+    // mortgage, sell or trade (or declare bankruptcy). Only bots raise cash automatically.
+    if (isPerson(s, from) && s.status === 'playing' && (f.cash < amt || (s.debt && s.debt.length && s.debtP === from))) {
+      if (!s.debt) s.debt = []; s.debtP = from; s.debt.push({ to: to, amt: amt });
+      addLog(s, '💸 ' + NAMES[from] + ' owes $' + amt + (to >= 0 ? ' to ' + NAMES[to] : '') + ' but only has $' + f.cash + '. Raise the money: sell houses, mortgage or trade.');
+      return true;
+    }
+    return payNow(s, from, to, amt);
+  }
+  function payNow(s, from, to, amt) {
     var f = plOf(s, from);
     if (f.cash < amt) raiseCash(s, from, amt);
     if (f.cash >= amt) { f.cash -= amt; if (to >= 0) plOf(s, to).cash += amt; else s.pot = (s.pot | 0) + amt; return true; }
@@ -556,6 +591,7 @@
   }
   function botAct(s) {
     var p = s.turn, q = plOf(s, p), b;
+    if (s.phase === 'debt') return { k: 'debt' };
     if (s.phase === 'bus' && s.bus) {
       var bb = s.bus[0], bs = -1e9; s.bus.forEach(function (n) { var dest = (q.pos + n) % 40, sc = spaceScore(s, p, dest) + (dest < q.pos ? 100 : 0); if (sc > bs) { bs = sc; bb = n; } });
       return { k: 'bus', v: bb };
@@ -652,6 +688,7 @@
       if (!cur) return cur;
       var s = JSON.parse(JSON.stringify(cur)); norm(s);
       if (fn(s) === false) return;
+      holdForDebt(s);
       s.rid = (s.rid | 0) + 1; s.t = firebase.database.ServerValue.TIMESTAMP;
       return s;
     });
@@ -671,6 +708,7 @@
   function actPropose(t) { turnAct(function (s) { return doPropose(s, t); }); }
   function actTradeAnswer(yes) { seatAct(function (s) { return s.trade ? s.trade.to : -1; }, function (s) { return doTradeAnswer(s, yes); }); }
   function actTradeCancel() { seatAct(function (s) { return s.trade ? s.trade.from : -1; }, doTradeCancel); }
+  function actPayDebt() { turnAct(doPayDebt); } function actBankrupt() { turnAct(doBankrupt); } function actDebtAuto() { turnAct(doDebtAuto); }
   function actBail() { turnAct(doBail); } function actBuild(i) { turnAct(function (s) { return doBuild(s, i); }); }
 
   // ---------- dice, sound
@@ -766,7 +804,7 @@
     if (a.k === 'roll') spinThen(actRoll); else if (a.k === 'buy') actBuy(); else if (a.k === 'pass') actPass();
     else if (a.k === 'end') actEnd(); else if (a.k === 'bail') actBail(); else if (a.k === 'build') actBuild(a.i);
     else if (a.k === 'bid') actBid(a.v); else if (a.k === 'drop') actDrop(); else if (a.k === 'unmort') actUnmort(a.i);
-    else if (a.k === 'bus') actBus(a.v); else if (a.k === 'any') actAny(a.i); else if (a.k === 'card') actCard(a.v);
+    else if (a.k === 'bus') actBus(a.v); else if (a.k === 'any') actAny(a.i); else if (a.k === 'card') actCard(a.v); else if (a.k === 'debt') actDebtAuto();
   }
   // ---------- bot speed (🐢 button): how long bots wait between moves so people can follow along
   var PACES = { slow: 3.2, normal: 2.2, fast: 1 }, PACE_ICON = { slow: '🐢 Slow bots', normal: '🚶 Normal bots', fast: '🐇 Fast bots' };
@@ -774,6 +812,10 @@
   function bd(ms) { return Math.round(ms * PACES[pace]); }
   (function () { var b = document.getElementById('paceBtn'); if (!b) return; b.textContent = PACE_ICON[pace];
     b.onclick = function () { pace = pace === 'slow' ? 'normal' : pace === 'normal' ? 'fast' : 'slow'; try { localStorage.setItem('ww_bot_pace', pace); } catch (e) {} b.textContent = PACE_ICON[pace]; }; })();
+  // board size: fit the screen height (default) or extra large (wider than the screen is tall, scroll to see it all)
+  (function () { var big = false; try { big = localStorage.getItem('ty_big') === '1'; } catch (e) {} var b = document.getElementById('sizeBtn');
+    function set() { document.body.classList.toggle('bigBoard', big); if (b) b.textContent = big ? '⤡ Fit board to screen' : '⤢ Bigger board'; }
+    set(); if (b) b.onclick = function () { big = !big; try { localStorage.setItem('ty_big', big ? '1' : '0'); } catch (e) {} set(); }; })();
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
     if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
@@ -1161,6 +1203,13 @@
       a += '</select><button class="go" data-a="any">Go there</button>';
     } else if (myTurn && s.phase === 'card' && s.card) {
       a += '<div class="offer" style="width:100%">🃏 <b>' + s.card.d + ':</b> ' + s.card.x + '<div style="margin-top:6px;display:flex;gap:8px"><button class="go" data-a="cardyes">Follow the card</button><button data-a="cardno">Ignore it</button></div></div>';
+    } else if (myTurn && s.phase === 'debt' && s.debt) {
+      var owe = debtTotal(s), have = q0.cash, short = Math.max(0, owe - have);
+      a += '<div class="offer" style="width:100%;border-color:#ef4444">💸 <b>You owe $' + owe + '</b>' + (s.debt.length === 1 && s.debt[0].to >= 0 ? ' to ' + NAMES[s.debt[0].to] : '') + ' and have <b>$' + have + '</b>.' +
+        (short ? ' You need <b>$' + short + ' more</b>. Raise it your way: sell houses, mortgage or sell properties in <b>My properties</b> (middle of the board), or trade with another player.' : ' You have enough now.') + '</div>';
+      a += '<button class="go" data-a="paydebt"' + (short ? ' disabled' : '') + '>Pay $' + owe + '</button>';
+      if (alive(s).length > 1 && !s.trade) a += '<button data-a="trade">🤝 Trade</button>';
+      a += '<button data-a="bankrupt" style="background:#7f1d1d">Declare bankruptcy</button>';
     } else if (myTurn) {
       var can = buildable(s, s.turn);
       if (s.phase === 'roll') { a += '<button class="go" data-a="roll">🎲 Roll dice</button>'; if (q0.jail > 0 && q0.cash >= 50) a += '<button data-a="bail">Pay $50 bail</button>'; }
@@ -1231,7 +1280,7 @@
     else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
     else if (a === 'bus') actBus(+b.dataset.v); else if (a === 'any') actAny(sel); else if (a === 'cardyes') actCard(true); else if (a === 'cardno') actCard(false);
     else if (a === 'mode') setMode(b.dataset.v);
-    else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail();
+    else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail(); else if (a === 'paydebt') actPayDebt(); else if (a === 'bankrupt') { if (confirm('Declare bankruptcy? You are out of the game and what you own goes to whoever you owe.')) actBankrupt(); }
     else if (a === 'togglebuild') { showBuild = !showBuild; render(); } else if (a === 'build') actBuild(+b.dataset.i);
     else if (a === 'sellh') actSellH(+b.dataset.i); else if (a === 'mort') actMort(+b.dataset.i); else if (a === 'unmort') actUnmort(+b.dataset.i);
     else if (a === 'sellp') { if (confirm('Sell ' + SP[+b.dataset.i].n + ' back to the bank for $' + bankValue(+b.dataset.i) + '? (Mortgaging gives $' + mgValue(+b.dataset.i) + ' and you keep it.)')) actSellP(+b.dataset.i); }
