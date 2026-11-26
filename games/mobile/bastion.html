@@ -83,6 +83,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0}
 .card .need{position:absolute;top:3px;right:4px;font-size:10px;font-weight:900;color:#c7d6ff;opacity:.85}
 .card .nm{font-size:8.5px}
 .card .nm{position:absolute;bottom:3px;left:5px;font-size:9px;font-weight:700;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.9}
+.card .lvs{position:absolute;left:4px;right:4px;bottom:16px;font-size:8.5px;font-weight:800;color:#fde68a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.lvrow{display:flex;align-items:center;gap:6px;padding:6px 0;border-top:1px solid rgba(255,255,255,.12)}.lvrow .lvn{flex:1}.lvrow .btn{padding:6px 10px;font-size:12px}
 .card .rdy{position:absolute;top:3px;right:4px;font-size:11px;color:var(--green);font-weight:900}
 .r-common{border-color:var(--common)}.r-uncommon{border-color:var(--uncommon)}.r-rare{border-color:var(--rare)}.r-epic{border-color:var(--epic)}.r-legendary{border-color:var(--legendary)}.r-mythic{border-color:var(--mythic)}
 .t-common{color:var(--common)}.t-uncommon{color:var(--uncommon)}.t-rare{color:var(--rare)}.t-epic{color:var(--epic)}.t-legendary{color:var(--legendary)}.t-mythic{color:var(--mythic)}
@@ -212,7 +214,7 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
     <div style="display:flex;gap:6px;margin-bottom:8px"><input class="search" id="invSearch" placeholder="Search name..."><button class="btn purple" id="fuseAll">✨ Fuse All</button></div>
     <div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn gray" id="autoFuseBtn" style="flex:1">⚡ Auto-fuse: OFF</button><button class="btn red" id="wipeBtn" style="flex:1">🧹 Wipe board</button></div>
     <div class="small" style="margin-bottom:6px">Get 3 of the same item at the same level, then hit <b>Fuse</b> to turn them into one <b>+1</b>. Tap an item to hold it, then tap the board to place it.</div>
-    <div class="small" style="margin-bottom:8px;padding:6px 8px;border-left:3px solid #fde047;background:rgba(253,224,71,.10);border-radius:6px"><b>Levels fuse separately:</b> 3 Cannon make a Cannon II, and 3 Cannon II make a Cannon III. A Cannon never fuses with a Cannon II.</div>
+    <div class="small" style="margin-bottom:8px;padding:6px 8px;border-left:3px solid #fde047;background:rgba(253,224,71,.10);border-radius:6px"><b>One card per weapon:</b> it shows your best level and how many you own in total (all levels together). Tap it to see each level, place one, or fuse: 3 of the same level make the next level.</div>
     <div class="grid" id="invGrid"></div>
   </div>
 </div>
@@ -775,6 +777,26 @@ function showInfoInv(key){const {k,id,l}=parseKey(key);const d=defOf(k,id);
   ${d.look?`<div class="small" style="margin:0 0 8px;color:#c7d6ff"><b>Placed:</b> ${d.look}</div>`:''}${statRows(k,id,l)}${fuseBox(k,id,l)}
   <div style="display:flex;gap:6px;margin-top:10px"><button class="btn green" style="flex:1" onclick="setHolding('${key}');closePanel('info');if(innerWidth<700)closePanel('inv')">Place on board</button></div>`;
   openPanel('info');}
+function famKeys(k,id){return Object.keys(S.inv).filter(x=>{const p=parseKey(x);return p.k===k&&p.id===id&&S.inv[x]>0;}).sort((a,b)=>parseKey(b).l-parseKey(a).l);}
+function fuseFamily(k,id){let n=0;for(let l=0;l<MAX_LVL;l++){while(fuse(keyOf(k,id,l),true))n++;}
+  if(n){sfx('fuse');toast('✨ Fused '+n+' time'+(n>1?'s':''));}else toast('You need 3 of the same level to fuse.');
+  const top=famKeys(k,id)[0];if(holding&&parseKey(holding).id===id&&parseKey(holding).k===k)setHolding(top||null);renderInv();if(top)showInfoFam(k,id);else closePanel('info');save();}
+window.fuseFamily=fuseFamily;
+function showInfoFam(k,id){const keys=famKeys(k,id);if(!keys.length){closePanel('info');return;}
+  const top=keys[0],l=parseKey(top).l,d=defOf(k,id),total=keys.reduce((a,x)=>a+S.inv[x],0);
+  const canAny=k!=='p'&&keys.some(x=>S.inv[x]>=3&&parseKey(x).l<MAX_LVL);
+  const rows=keys.map(x=>{const L=parseKey(x).l,n=S.inv[x],ok=k!=='p'&&n>=3&&L<MAX_LVL;
+    return `<div class="lvrow"><span class="lvn"><b>${k==='p'?'':'Lv '+(L+1)+' · '}x${n}</b>${k!=='p'&&L<MAX_LVL?` <span class="small">${ok?'ready to fuse':Math.min(n,3)+'/3 to Lv '+(L+2)}</span>`:''}</span>
+    <button class="btn green" onclick="setHolding('${x}');renderInv();closePanel('info');if(innerWidth<700)closePanel('inv')">Place</button>${k!=='p'&&L<MAX_LVL?`<button class="btn gold" ${ok?'':'disabled'} onclick="fuse('${x}')">Fuse</button>`:''}</div>`;}).join('');
+  $('infoName').innerHTML=`${tierIcon(d,l)} ${tierName(d,l)}`;
+  $('infoBody').innerHTML=`<div class="t-${d.r}" style="font-weight:800;text-transform:capitalize">${d.r} ${KIND_NAME[k]} · best level ${l+1} · ${total} owned</div>
+  <div style="font-weight:800;margin:6px 0 2px">${quickStats(k,id,l)}</div>
+  <div class="small" style="margin:4px 0 8px">${d.desc||''}</div>
+  ${d.look?`<div class="small" style="margin:0 0 8px;color:#c7d6ff"><b>Placed:</b> ${d.look}</div>`:''}${statRows(k,id,l)}
+  <div style="font-weight:800;margin:10px 0 2px">Your ${d.name}${k==='p'?'s':' by level'}</div>${rows}
+  ${k==='p'?fuseBox(k,id,l):`<button class="btn gold" style="width:100%;margin-top:8px" ${canAny?'':'disabled'} onclick="fuseFamily('${k}','${id}')">⚡ Fuse all of these as high as they go</button>`}`;
+  openPanel('info');}
+window.showInfoFam=showInfoFam;
 let selectedRec=null;
 function showInfoPlaced(rec){selectedRec=rec;const d=defOf(rec.k,rec.id);
   $('infoName').innerHTML=`${tierIcon(d,rec.l)} ${tierName(d,rec.l)}`;
@@ -796,7 +818,7 @@ function fuse(key,quiet){const {k,id,l}=parseKey(key);if(k==='p')return false;if
   if(holding===key&&!S.inv[key])setHolding(null);
   renderInv();
   if(!quiet){sfx('fuse');invStat(keyOf(k,id,l+1));toast(`✨ Fused 3 ${tierName(defOf(k,id),l)} → <b>${tierName(defOf(k,id),l+1)}</b>`);
-    if($('info').classList.contains('open'))showInfoInv(keyOf(k,id,l+1));save();}
+    if($('info').classList.contains('open'))showInfoFam(k,id);save();}
   return true;}
 window.fuse=fuse;window.setHolding=setHolding;
 function fuseAll(){let n=0,again=true;
@@ -831,18 +853,22 @@ $('wipeBtn').onclick=()=>{
 /* ---------- inventory UI ---------- */
 let invTab='t';
 function renderInv(){updateCaps();const q=$('invSearch').value.toLowerCase();
-  const keys=Object.keys(S.inv).filter(k=>{const p=parseKey(k);return p.k===invTab&&defOf(p.k,p.id)&&defOf(p.k,p.id).name.toLowerCase().includes(q);})
-    // one block per weapon (rarest families first), and inside a weapon the highest level sits at the front
-    .sort((a,b)=>{const A=parseKey(a),B=parseKey(b);
-      return RAR.indexOf(defOf(B.k,B.id).r)-RAR.indexOf(defOf(A.k,A.id).r)
-        ||defOf(A.k,A.id).name.localeCompare(defOf(B.k,B.id).name)
-        ||B.l-A.l;});
-  $('invGrid').innerHTML=keys.length?keys.map(key=>{const {k,id,l}=parseKey(key);const d=defOf(k,id);const n=S.inv[key];
-    const canFuse = k!=='p' && l<MAX_LVL;
-    const tag = !canFuse ? '' : (n>=3 ? '<span class="rdy">FUSE!</span>' : `<span class="need">${n}/3</span>`);
-    return `<div class="card r-${d.r}${holding===key?' sel':''}" data-key="${key}" title="${tierName(d,l)} — ${quickStats(k,id,l)}">${l?`<span class="lv">Lv ${l+1}</span>`:''}${tag}${tierIcon(d,l)}<span class="nm">${tierName(d,l)}</span><span class="ct">x${n}</span></div>`;}).join('')
+  // one card per weapon: best level on the front, total owned across every level, and the level split underneath
+  const fams=new Map();
+  for(const key of Object.keys(S.inv)){const p=parseKey(key);const d=defOf(p.k,p.id);
+    if(p.k!==invTab||!d||!(S.inv[key]>0)||!d.name.toLowerCase().includes(q))continue;
+    const f=p.k+'-'+p.id;if(!fams.has(f))fams.set(f,{k:p.k,id:p.id,d,keys:[]});fams.get(f).keys.push(key);}
+  const list=[...fams.values()].sort((A,B)=>RAR.indexOf(B.d.r)-RAR.indexOf(A.d.r)||A.d.name.localeCompare(B.d.name));
+  $('invGrid').innerHTML=list.length?list.map(f=>{const {k,id,d}=f;
+    f.keys.sort((a,b)=>parseKey(b).l-parseKey(a).l);
+    const top=f.keys[0],l=parseKey(top).l,total=f.keys.reduce((a,x)=>a+S.inv[x],0);
+    const ready=k!=='p'&&f.keys.some(x=>S.inv[x]>=3&&parseKey(x).l<MAX_LVL);
+    const split=k==='p'||f.keys.length<2?'':f.keys.map(x=>'L'+(parseKey(x).l+1)+'×'+S.inv[x]).join(' ');
+    const sel=holding&&parseKey(holding).k===k&&parseKey(holding).id===id;
+    const tag=ready?'<span class="rdy">FUSE!</span>':'';
+    return `<div class="card r-${d.r}${sel?' sel':''}" data-key="${top}" data-k="${k}" data-id="${id}" title="${d.name}: ${total} owned${split?' ('+split+')':''}">${k!=='p'?`<span class="lv">Lv ${l+1}</span>`:''}${tag}${tierIcon(d,l)}${split?`<span class="lvs">${split}</span>`:''}<span class="nm">${tierName(d,l)}</span><span class="ct">x${total}</span></div>`;}).join('')
     :`<div class="small">Nothing here yet. Enemies drop these in battle${invTab==='s'?' — or buy camps in the Spawner Shop':''}.</div>`;}
-$('invGrid').onclick=e=>{const c=e.target.closest('.card');if(!c)return;setHolding(c.dataset.key);renderInv();showInfoInv(c.dataset.key);invStat(c.dataset.key);};
+$('invGrid').onclick=e=>{const c=e.target.closest('.card');if(!c)return;setHolding(c.dataset.key);renderInv();showInfoFam(c.dataset.k,c.dataset.id);invStat(c.dataset.key);};
 $('invTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;invTab=b.dataset.k;[...$('invTabs').children].forEach(x=>x.classList.toggle('on',x===b));renderInv();};
 $('invSearch').oninput=renderInv;$('fuseAll').onclick=fuseAll;
 function updateCaps(){const c=caps();$('capT').textContent=placedCount('t')+'/'+c.t;$('capS').textContent=placedCount('s')+'/'+c.s;$('capR').textContent=placedCount('r')+'/'+c.r;}
