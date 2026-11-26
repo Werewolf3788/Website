@@ -69,7 +69,7 @@
     <button id="questBtn" class="alt">📜 Quests</button>
   </div>
   <div class="card" style="margin-top:10px"><div class="nm">How it works</div>
-    <div class="sm">Tap a creature, then tap another of the same kind — the closest third one joins in and the three become the next tier. Every merge refills one nest charge, so keep merging. Raids: tap a creature while raiding to hurl it at the boss.</div></div>
+    <div class="sm">Tap a creature, then tap another of the same kind — the two fuse into the next tier. Every merge refills one nest charge, so keep merging. Raids: tap a creature while raiding to hurl it at the boss.</div></div>
 </div>
 <div id="sheet"></div>
 <div id="toast"></div>
@@ -162,44 +162,25 @@ function tapTile(i){
   var it = S.board[i];
   if (!it) return;
   if (S.sel === i) { S.sel = -1; render(); return; }
-  if (S.sel < 0) { S.sel = i; say(TIERS[it.t].n + ' selected — tap another ' + TIERS[it.t].n + ' to merge three.'); render(); return; }
+  if (S.sel < 0) { S.sel = i; say(TIERS[it.t].n + ' selected — tap another ' + TIERS[it.t].n + ' to fuse them.'); render(); return; }
   var a = S.board[S.sel];
   if (!a) { S.sel = -1; return render(); }
   if (a.t !== it.t) { say('Those are different creatures. Match the same tier.'); S.sel = i; render(); return; }
   if (it.t >= TIERS.length - 1) { say('Elder Dragons are the top of the line — sell them or hurl them at a boss.'); S.sel = -1; return render(); }
-  var third = findThird(it.t, i, S.sel);
-  if (third < 0) {
-    say('You need three of the same kind — one more ' + TIERS[it.t].n + ' and this pair will fuse.');
-    S.sel = i; render(); return;
-  }
-  doMerge(S.sel, i, third);
+  doMerge(S.sel, i);
 }
 
-function findThird(tier, i, j){
-  var bi = Math.floor(i / N), bj = Math.floor(j / N), ci = Math.floor(i % N), cj = Math.floor(j % N);
-  var best = -1, bestD = 1e9;
-  for (var k = 0; k < S.board.length; k++) {
-    if (k === i || k === j) continue;
-    var it = S.board[k];
-    if (!it || it.t !== tier) continue;
-    var d = Math.abs(Math.floor(k / N) - bi) + Math.abs(k % N - ci) + Math.abs(Math.floor(k / N) - bj) + Math.abs(k % N - cj);
-    if (d < bestD) { bestD = d; best = k; }
-  }
-  return best;
-}
-
-function doMerge(a, b, c){
+function doMerge(a, b){
   var tier = S.board[a].t;
-  [a, b, c].forEach(function(k){ S.board[k] = null; });
-  var spot = a;
-  S.board[spot] = { t: tier + 1 };
+  [a, b].forEach(function(k){ S.board[k] = null; });
+  S.board[a] = { t: tier + 1 };
   S.merges++;
   S.charges = Math.min(5, S.charges + 1);
   var coins = 3 + (tier + 1) * 4;
   S.coins += coins;
   if (tier + 1 > S.bestTier) { S.bestTier = tier + 1; toast('First ' + TIERS[tier + 1].n + '!'); }
   S.sel = -1;
-  say('Three ' + TIERS[tier].n + 's fused into a ' + TIERS[tier + 1].n + ' · +' + coins + ' gold · +1 nest charge');
+  say('Two ' + TIERS[tier].n + 's fused into a ' + TIERS[tier + 1].n + ' · +' + coins + ' gold · +1 nest charge');
   checkQuests();
   save(); render();
 }
@@ -331,7 +312,7 @@ if (!S.board.some(function(x){ return x; })) {
 render();
 checkQuests();
 if (S.raids >= BOSSES.length) say('All three raids are broken. The lair is yours — keep merging for the fun of it.');
-else say('Tap a creature, then another of the same kind to merge three.');
+else say('Tap a creature, then another of the same kind to fuse them.');
 })();
 </script>
 </body>
