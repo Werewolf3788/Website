@@ -298,11 +298,22 @@
     addLog(s, '✅ ' + NAMES[p] + ' paid $' + tot + '.');
     s.phase = s.debtPrev || 'end'; delete s.debtPrev; return true;
   }
-  function doBankrupt(s) {   // give up: everything goes to whoever is owed (houses are sold first, as in the rules)
-    if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, list = s.debt; delete s.debt; delete s.debtP;
-    for (var k = 0; k < list.length && !plOf(s, p).bankrupt; k++) payNow(s, p, list[k].to, list[k].amt);
-    s.phase = s.debtPrev || 'end'; delete s.debtPrev;
-    if (plOf(s, p).bankrupt && s.status === 'playing') advance(s);
+  // declaring bankruptcy puts you OUT of the game straight away: houses go back to the bank for half price, then all
+  // your cash and properties go to whoever you owe (to the bank if you owe the bank). You never take another turn.
+  function goBankrupt(s, p, to) {
+    var q = plOf(s, p);
+    for (var i = 0; i < 40; i++) if (ownerOf(s, i) === p && housesOf(s, i)) { q.cash += housesOf(s, i) * Math.floor(SP[i].p / 4); delete s.hs[i]; }
+    if (to >= 0 && plOf(s, to) && !plOf(s, to).bankrupt) plOf(s, to).cash += q.cash; else s.pot = (s.pot | 0) + q.cash;
+    for (i = 0; i < 40; i++) if (ownerOf(s, i) === p) { if (to >= 0 && plOf(s, to) && !plOf(s, to).bankrupt) s.own[i] = to; else { delete s.own[i]; delete s.mg[i]; } }
+    q.cash = 0; q.bankrupt = true; q.jail = 0;
+    addLog(s, '💀 ' + NAMES[p] + ' declared bankruptcy and is out of the game' + (to >= 0 ? '. ' + NAMES[to] + ' takes everything.' : '.'));
+    checkWin(s);
+  }
+  function doBankrupt(s) {
+    if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, list = s.debt; delete s.debt; delete s.debtP; delete s.debtPrev;
+    var to = -1; for (var k = 0; k < list.length; k++) if (list[k].to >= 0) { to = list[k].to; break; }
+    goBankrupt(s, p, to);
+    if (s.status === 'playing') advance(s); else s.phase = 'end';
     return true;
   }
   function doDebtAuto(s) {   // only for a player who has left the table: sell up automatically like before
@@ -1215,7 +1226,7 @@
     try { var ms0 = mySeat(); if (window.WWTurn) WWTurn.update(!!S && S.status === 'playing' && ms0 >= 0 && (otherHumansPresent() || document.hidden) && (actorSeat(S) === ms0 || (S.trade && S.trade.to === ms0)), muted); } catch (e) {}
     var s = S; if (!s) return;
     if (pressing) { renderPending = true; return; }
-    var ms = mySeat(), playing = s.status === 'playing', myTurn = playing && ms === s.turn, p, i;
+    var ms = mySeat(), playing = s.status === 'playing', myOut = ms >= 0 && s.pl && plOf(s, ms) && plOf(s, ms).bankrupt, myTurn = playing && ms === s.turn && !myOut, p, i;
     for (p = 0; p < 4; p++) {
       var q = plOf(s, p), g = tokEls[p];
       if (!playing && s.status !== 'done' || !q || q.bankrupt || !seatOf(s, p)) { g.style.display = 'none'; continue; }
@@ -1280,6 +1291,7 @@
       if (manageOk(s) && !s.trade && alive(s).length > 1) a += '<button data-a="trade">🤝 Trade</button>';
       if (showBuild && can.length && (s.phase === 'roll' || s.phase === 'end')) can.forEach(function (j) { bl += '<button data-a="build" data-i="' + j + '">' + (housesOf(s, j) >= HOTEL - 1 ? '🏨 Hotel' : '🏠 House ' + (housesOf(s, j) + 1)) + ' · ' + SP[j].n + ' · $' + Math.floor(SP[j].p / 2) + '</button>'; });
     } else if (playing) a += '<span class="muted">Waiting for ' + (cs ? cs.name : NAMES[s.turn]) + (s.phase === 'card' && s.card ? ' (deciding about a card: ' + s.card.x + ')' : s.phase === 'any' ? ' (picking any space)' : s.phase === 'bus' ? ' (choosing a bus move)' : '') + '…</span>';
+    if (myOut && playing) { a = '<span class="muted">💀 You are bankrupt and out of this game. You can keep watching, or the host can start a 🆕 New game.</span>'; bl = ''; }
     $('acts').innerHTML = a; $('buildList').innerHTML = bl;
     // seats
     var h = '';
