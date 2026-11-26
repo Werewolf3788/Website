@@ -124,6 +124,80 @@
         color: var(--ink-faint);
     }
 
+    /* ---------- Today's field report ---------- */
+
+    .live {
+        position: relative;
+        z-index: 1;
+        border-bottom: 1px solid var(--ink);
+        background: linear-gradient(180deg, rgba(214, 197, 165, 0.55), rgba(214, 197, 165, 0.22));
+        padding: 13px 26px 12px;
+        display: grid;
+        grid-template-columns: minmax(190px, 0.8fr) minmax(0, 2fr);
+        gap: 8px 22px;
+        align-items: start;
+    }
+
+    .live-kicker {
+        font-size: 0.62rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        font-weight: 600;
+    }
+
+    .live-nazar strong {
+        display: block;
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: 1.02rem;
+        line-height: 1.25;
+        margin-top: 2px;
+        color: var(--ink);
+    }
+
+    .live-nazar .nazar-region {
+        display: block;
+        font-size: 0.84rem;
+        line-height: 1.35;
+        color: var(--ink-soft);
+        font-style: italic;
+    }
+
+    .live-cycles { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .cycle-chip {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.45);
+        padding: 2px 8px 3px;
+        font-size: 0.79rem;
+        line-height: 1.4;
+        color: var(--ink-soft);
+        white-space: nowrap;
+    }
+
+    .cycle-chip b {
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: 0.88rem;
+        color: var(--stamp);
+    }
+
+    .cycle-chip.is-muted { color: var(--ink-faint); font-style: italic; }
+
+    .live-note {
+        grid-column: 1 / -1;
+        font-size: 0.73rem;
+        line-height: 1.5;
+        color: var(--ink-faint);
+        margin-top: 2px;
+    }
+
+    .live-note a { color: var(--stamp); text-decoration: none; border-bottom: 1px dotted var(--stamp-soft); }
+
     /* ---------- Layout ---------- */
 
     .layout {
@@ -357,6 +431,17 @@
         font-variant-numeric: tabular-nums;
     }
 
+    .lot-cycle {
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        border: 1px solid var(--line-soft);
+        padding: 1px 5px;
+        margin-top: 2px;
+        white-space: nowrap;
+    }
+
     .lot-tally {
         font-family: var(--display);
         font-size: 0.85rem;
@@ -522,6 +607,7 @@
         .ledger-cell:last-child { border-bottom: 0; }
         .lots { grid-template-columns: 1fr; }
         .catalogue-footer { padding: 14px 16px 18px; }
+        .live { grid-template-columns: 1fr; padding: 11px 16px 12px; }
     }
 </style>
 <link rel="stylesheet" href="../assets/ww-shell.css">
@@ -542,6 +628,16 @@
             <span id="masthead-date">—</span>
         </div>
     </header>
+
+    <section class="live" id="live-band" aria-label="Today's field report" aria-live="polite">
+        <div class="live-nazar">
+            <p class="live-kicker">Madam Nazar</p>
+            <strong id="nazar-place">Reading the map…</strong>
+            <span class="nazar-region" id="nazar-region"></span>
+        </div>
+        <div class="live-cycles" id="live-cycles"></div>
+        <p class="live-note" id="live-note">Fetching today's cycle numbers…</p>
+    </section>
 
     <div class="layout">
         <aside class="rail" aria-label="Catalogue departments">
@@ -576,6 +672,20 @@
 
     var STORE_KEY = 'ww.rdr2.collector.v1';
     var DATA_URL = '../public/games/rdr2.json';
+    var CYCLES_URL = 'https://api.rdo.gg/cycles/';
+    var NAZAR_URL = 'https://api.rdo.gg/nazar/';
+
+    // api.rdo.gg groups the collections into nine cycle categories.
+    var CYCLE_LABELS = [
+        ['arrowhead', 'Arrowheads'], ['bottle', 'Bottles'], ['card', 'Tarot Cards'],
+        ['coin', 'Coins'], ['egg', 'Eggs'], ['flower', 'Flowers'],
+        ['heirloom', 'Family Heirlooms'], ['jewelry', 'Jewellery'], ['fossil', 'Fossils']
+    ];
+
+    var CYCLE_FIELDS = {
+        flowers: 'flower', bottles: 'bottle', eggs: 'egg', arrowheads: 'arrowhead',
+        heirlooms: 'heirloom', coins: 'coin'
+    };
 
     var DEPARTMENTS = [
         { id: 'collector', label: "Collector's Bag", glyph: '🔍', tag: 'Stocked', filled: true },
@@ -603,7 +713,8 @@
 
     var pane = document.getElementById('pane');
     var railNav = document.getElementById('rail-nav');
-    var state = { data: null, done: loadDone(), active: 'collector', summary: null };
+    var state = { data: null, done: loadDone(), active: 'collector' };
+    var LIVE = { cycles: null, nazar: null };
 
     /* ---------- storage ---------- */
 
@@ -651,6 +762,50 @@
 
     function glyphFor(key, name) {
         return GLYPHS[key] || COLLECTION_GLYPHS[name] || '🔍';
+    }
+
+    function cycleFieldFor(key) {
+        if (CYCLE_FIELDS[key]) return CYCLE_FIELDS[key];
+        if (key.indexOf('fossils_') === 0) return 'fossil';
+        if (key.indexOf('tarot_') === 0) return 'card';
+        if (key.indexOf('jewelry_') === 0) return 'jewelry';
+        return null;
+    }
+
+    // Today's cycle numbers, picked by timestamp so a stale response cannot
+    // show yesterday's rotation.
+    function todayCycles() {
+        if (!LIVE.cycles || !Array.isArray(LIVE.cycles.cycles) || !LIVE.cycles.cycles.length) return null;
+        var list = LIVE.cycles.cycles;
+        var now = Math.floor(Date.now() / 1000);
+        for (var i = 0; i < list.length; i++) {
+            var c = list[i];
+            if (c.startTime <= now && now <= c.endTime) return c;
+        }
+        for (var j = 0; j < list.length; j++) {
+            if (list[j].startTime > now) return list[j];
+        }
+        return list[list.length - 1];
+    }
+
+    function cycleFor(key) {
+        var field = cycleFieldFor(key);
+        var today = todayCycles();
+        if (!field || !today) return null;
+        var n = today[field];
+        return n ? String(n) : null;
+    }
+
+    // "w_4_copperhead_landing" -> "Copperhead Landing"
+    function prettyKey(raw) {
+        if (!raw) return '';
+        var text = String(raw).replace(/^[a-z]+_?\d+_/i, '').replace(/_/g, ' ').trim();
+        var SMALL = { of: 1, the: 1, and: 1, at: 1, de: 1, del: 1, la: 1, on: 1 };
+        return text.split(/\s+/).map(function (word, i) {
+            var lower = word.toLowerCase();
+            if (i > 0 && SMALL[lower]) return lower;
+            return lower.charAt(0).toUpperCase() + lower.slice(1);
+        }).join(' ');
     }
 
     function esc(s) {
@@ -757,6 +912,7 @@
                     '<span class="lot-name">' + esc(col.name) + '</span>' +
                     '<span class="lot-meta">' + col.items.length + ' items · ' + money(col.value) + ' for the set</span>' +
                 '</span>' +
+                '<span class="lot-cycle" data-cycle hidden></span>' +
                 '<span class="lot-tally" data-tally>0/' + col.items.length + '</span>' +
             '</button>' +
             '<div class="lot-body" id="lot-body-' + esc(col.key) + '" hidden>' +
@@ -858,6 +1014,13 @@
         var stamp = lot.querySelector('[data-stamp]');
         if (stamp) stamp.hidden = !complete;
 
+        var cycle = lot.querySelector('[data-cycle]');
+        if (cycle) {
+            var n = cycleFor(key);
+            cycle.textContent = n ? 'Cycle ' + n : '';
+            cycle.hidden = !n;
+        }
+
         var head = lot.querySelector('.lot-head');
         if (head) {
             head.setAttribute('aria-label', col.name + ' — ' + found + ' of ' + col.items.length + ' items found' + (complete ? ', set complete' : ''));
@@ -904,10 +1067,76 @@
             '<div class="notice">' + esc(message) + '</div>';
     }
 
+    /* ---------- live cycle + Madam Nazar ---------- */
+
+    function getJson(url) {
+        return fetch(url, { cache: 'no-cache' }).then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        });
+    }
+
+    function renderLive() {
+        var place = document.getElementById('nazar-place');
+        var region = document.getElementById('nazar-region');
+        var chips = document.getElementById('live-cycles');
+        var note = document.getElementById('live-note');
+        if (!place || !region || !chips || !note) return;
+
+        var nazar = LIVE.nazar;
+        var where = nazar ? (prettyKey(nazar.location) || prettyKey(nazar.landmark)) : '';
+        if (where) {
+            place.textContent = where;
+            var bits = [];
+            var landmark = prettyKey(nazar.landmark);
+            if (landmark && landmark !== where) bits.push('near ' + landmark);
+            var regionName = prettyKey(nazar.state);
+            if (regionName) bits.push(regionName);
+            region.textContent = bits.join(' · ');
+        } else {
+            place.textContent = 'Location unavailable';
+            region.textContent = 'api.rdo.gg did not answer';
+        }
+
+        var today = todayCycles();
+        if (today) {
+            chips.innerHTML = CYCLE_LABELS.map(function (pair) {
+                var n = today[pair[0]];
+                if (!n) return '';
+                return '<span class="cycle-chip"><span>' + esc(pair[1]) + '</span><b>' + esc(n) + '</b></span>';
+            }).join('') || '<span class="cycle-chip is-muted">No cycle numbers returned</span>';
+        } else {
+            chips.innerHTML = '<span class="cycle-chip is-muted">Cycle numbers unavailable</span>';
+        }
+
+        var checked = '';
+        if (LIVE.cycles && LIVE.cycles.updated) {
+            try {
+                checked = new Date(LIVE.cycles.updated * 1000).toLocaleString(undefined, {
+                    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+                });
+            } catch (e) { checked = ''; }
+        }
+        note.innerHTML = 'Cycle numbers and Madam Nazar\u2019s spot come from ' +
+            '<a href="https://rdo.gg/api" target="_blank" rel="noopener">api.rdo.gg</a>, which rolls over at 00:00 UTC.' +
+            (checked ? ' Updated ' + esc(checked) + '.' : '');
+    }
+
+    function loadLive() {
+        var cycles = getJson(CYCLES_URL).then(function (d) { LIVE.cycles = d; }).catch(function () { LIVE.cycles = null; });
+        var nazar = getJson(NAZAR_URL).then(function (d) { LIVE.nazar = d; }).catch(function () { LIVE.nazar = null; });
+        Promise.all([cycles, nazar]).then(function () {
+            renderLive();
+            collections().forEach(function (col) { updateLot(col.key); });
+        });
+    }
+
     function boot(data) {
         state.data = data;
         renderRail();
         renderPane();
+        renderLive();
+        loadLive();
     }
 
     stampDate();
