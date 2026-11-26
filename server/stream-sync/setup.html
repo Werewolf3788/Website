@@ -173,21 +173,47 @@ function banner(msg, bad) { const b = $("banner"); b.textContent = msg; b.classN
 const on = (ok, yes, no) => ok ? `<span class="ok">✔ ${yes}</span>` : `<span class="bad">✖ ${no}</span>`;
 
 /* The free Render service sleeps. Wake it early, and make Connect wait until it really answers:
-   if the sign-in is sent while it's still starting, Render reloads the page and the sign-in is lost. */
-async function awake(maxMs = 75000) {
-  const end = Date.now() + maxMs;
-  while (Date.now() < end) {
-    try { const r = await fetch(SYNC + "/health", { cache: "no-store" }); if (r.ok) return true; }
-    catch (e) {
-      /* Some browsers/ad blockers/VPNs block reading the answer; a no-cors request still
-         finishes only once the service has really answered, which is all we need. */
-      try { await fetch(SYNC + "/health?nc=" + Date.now(), { mode: "no-cors", cache: "no-store" }); return true; } catch (e2) {}
-    }
-    await new Promise((res) => setTimeout(res, 3000));
-  }
-  return false;
+   if the sign-in is sent while it's still starting, Render reloads the page and the sign-in is lost.
+
+   A sleeping service and a browser that refuses the request look alike, because both make fetch()
+   fail - but not the same way. A sleeping service keeps the request open for 30-60s and then
+   answers; a request the browser stopped (ad blocker, privacy extension, Brave Shields, a filtering
+   DNS/VPN, Chrome's own ad filter) fails in a few milliseconds. That difference decides whether
+   waiting is worthwhile, and it turns a silent 75-second retry loop into one honest message. */
+function probeHealth(timeoutMs) {
+  const started = Date.now();
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), timeoutMs);
+  return fetch(SYNC + "/health?nc=" + started, { cache: "no-store", signal: ctl.signal })
+    .then((r) => ({ state: r.ok ? "ready" : "booting" }),
+          () => ({ state: Date.now() - started < 1500 ? "unreachable" : "booting" }))
+    .finally(() => clearTimeout(timer));
 }
-awake();
+
+const WAKE_MSG = () => "This browser can't reach the sync service at " + SYNC + " - something in it " +
+  "is stopping the request (an ad blocker or privacy extension, Brave Shields, a filtering DNS/VPN, " +
+  "or Chrome's ad filter). Open " + SYNC + "/health in a new tab to check, then reload this page.";
+
+async function awake(maxMs = 45000) {
+  const end = Date.now() + maxMs;
+  let refused = 0;
+  while (Date.now() < end) {
+    const r = await probeHealth(Math.max(3000, Math.min(15000, end - Date.now())));
+    if (r.state === "ready") return "ready";
+    /* A booting service holds the request open; a request the browser stopped comes back in
+       milliseconds. One fast refusal can still be Render's edge refusing while it starts, so it
+       takes two in a row to call it the browser - after that, retrying only adds console errors. */
+    if (r.state === "unreachable" && ++refused >= 2) return "unreachable";
+    if (r.state === "booting") refused = 0;
+    await new Promise((res) => setTimeout(res, 2500));
+  }
+  return "timeout";
+}
+
+/* pre-warm in the background; say so only when this browser refuses the request */
+awake(20000).then((state) => {
+  if (state === "unreachable" && !$("banner").textContent) banner(WAKE_MSG(), true);
+});
 
 /* messages coming back from a sign-in */
 (() => {
@@ -267,7 +293,10 @@ async function save(obj, msg) {
 /* Twitch / Kick: hand off to the Render service with a fresh site sign-in */
 document.querySelectorAll("[data-connect]").forEach((b) => b.onclick = async () => {
   b.disabled = true; b.textContent = "Waking up the sync service…";
-  await awake();   // if it couldn't be confirmed, go anyway: the service sends you back with a message if it wasn't ready
+  /* If it couldn't be confirmed, go anyway: the service sends you back with a message when it
+     wasn't ready. A refused health check does not mean the POST fails - that is a page navigation,
+     not a fetch, so it still reaches the service and still wakes it. */
+  if (await awake() === "unreachable") banner(WAKE_MSG() + " Sending the sign-in anyway.", true);
   b.textContent = "Opening…";
   const f = $("connectForm");
   f.action = `${SYNC}/connect/${b.dataset.connect}`;

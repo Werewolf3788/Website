@@ -148,7 +148,7 @@ async function runUser({ key, cfg, user }) {
 
     if (Object.keys(patch).length) {
         try {
-            await twitch.updateChannel(key, broadcasterId, patch);
+            await twitch.updateChannel(key, broadcasterId, patch, cfg.twitch_login);
             log(key, "Twitch updated: " + JSON.stringify(patch));
         } catch (e) { out.twitch_error = e.message; log(key, e.message); }
     }
