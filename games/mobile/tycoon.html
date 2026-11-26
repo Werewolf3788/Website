@@ -25,6 +25,7 @@
   #top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
   #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
+  @media(min-width:860px){#main{max-width:none;width:90vw;grid-template-columns:minmax(0,min(calc(100vh - 70px),62%)) 1fr !important}}
   /* wide screens: board + property cards on the left, dice and seats stacked on the right (as before) */
   @media(min-width:860px){
     #main{grid-template-columns:minmax(0,640px) 1fr;grid-template-areas:"board play" "board panel" "deeds panel";align-items:start}

@@ -26,6 +26,7 @@
   #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
   @media(min-width:860px){#main{grid-template-columns:minmax(0,640px) 1fr;align-items:start}}
+  @media(min-width:860px){#main{max-width:none;width:90vw;grid-template-columns:minmax(0,min(calc(100vh - 70px),60%)) 1fr} #boardWrap{max-width:none}}
   #boardWrap{width:100%;max-width:640px;margin:0 auto;touch-action:manipulation}
   #board{display:block;width:100%;height:auto;border-radius:14px;background:#0b1220;touch-action:none}
   .ghost{cursor:pointer;animation:pulse .9s infinite;transform-box:fill-box;transform-origin:center}
