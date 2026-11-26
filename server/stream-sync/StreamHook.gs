@@ -5,7 +5,8 @@
 //   1. wakeStreamSync()  every minute: if a channel below is live on Twitch, visit
 //      the ww-stream-sync Render service so it wakes up / stays awake.
 //   2. doPost()          ww-stream-sync sends the new title here; this changes the
-//      title of the live YouTube broadcast on this Google account.
+//      title of the live YouTube broadcast on this Google account. It also sends
+//      the title as a chat announcement, which is posted in the live chat.
 //   3. runPsnSyncOnTime() starts the "PSN Sync and Deploy" GitHub workflow every 21
 //      minutes. GitHub's own cron for it only fires every few hours when GitHub is busy.
 //      It skips a start if the workflow already ran in the last 21 minutes (a push,
@@ -102,6 +103,7 @@ function doPost(e) {
   const secret = PropertiesService.getScriptProperties().getProperty("STREAM_HOOK_SECRET");
   if (!secret || data.secret !== secret) return out("denied");
   if (data.type === "youtube_title") return out(setYouTubeTitle_(String(data.title || "")));
+  if (data.type === "youtube_chat") return out(postYouTubeChat_(String(data.text || "")));
   return out("unknown type");
 }
 
@@ -129,6 +131,27 @@ function setYouTubeTitle_(title) {
   }
 }
 
+// Called by ww-stream-sync: {"type":"youtube_chat","secret":"...","text":"..."}
+// Posts one message in the live chat of the active broadcast.
+function postYouTubeChat_(text) {
+  text = String(text || "").trim().substring(0, 200);
+  if (!text) return "empty message";
+  try {
+    const list = YouTube.LiveBroadcasts.list("id,snippet", { broadcastStatus: "active", broadcastType: "all", maxResults: 5 });
+    const items = (list && list.items) || [];
+    if (!items.length) return "no active YouTube broadcast";
+    const chatId = items[0].snippet && items[0].snippet.liveChatId;
+    if (!chatId) return "no live chat on the broadcast";
+    YouTube.LiveChatMessages.insert({
+      snippet: { liveChatId: chatId, type: "textMessageEvent", textMessageDetails: { messageText: text } }
+    }, "snippet");
+    return "ok updated";
+  } catch (err) {
+    Logger.log("YouTube chat error: " + err);
+    return "error: " + err;
+  }
+}
+
 // Run ONCE by hand.
 function setupStreamHook() {
   const p = PropertiesService.getScriptProperties();
@@ -152,4 +175,9 @@ function setupStreamHook() {
 // Optional: run by hand while live to test the YouTube side.
 function testYouTubeTitle() {
   Logger.log(setYouTubeTitle_("Test title from StreamHook"));
+}
+
+// Optional: run by hand while live to check the chat announcement.
+function testYouTubeChat() {
+  Logger.log(postYouTubeChat_("Test message from StreamHook"));
 }
