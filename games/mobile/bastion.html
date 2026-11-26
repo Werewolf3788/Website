@@ -1344,6 +1344,12 @@ async function initFirebase(){
     const emailKey=(user.email||user.uid).toLowerCase().replace('@','_at_').replace(/\./g,'_');
     let fc=null,name=user.displayName||user.email;
     try{const snap=await firebase.database(app).ref('users/'+emailKey).get();const u=snap.val()||{};fc=u.friend_code;name=u.username||name;}catch(e){}
+    // a player whose first sign-in on the site happens here has no friend code yet: give them one the same way
+    // every other page does (js/common.js), so their save, profile stats and friends work like everyone else's
+    if(!fc){try{const db=firebase.database(app),AL='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      for(let i=0;i<6&&!fc;i++){let c='';for(let j=0;j<8;j++)c+=AL[Math.floor(Math.random()*AL.length)];
+        if((await db.ref('accounts/friend_codes/'+c).get()).exists())continue;
+        await db.ref('accounts/friend_codes/'+c).set(emailKey);await db.ref('users/'+emailKey+'/friend_code').set(c);fc=c;}}catch(e){console.warn('friend code',e);}}
     const key=((fc||'').trim().toUpperCase())||emailKey;
     docRef=firebase.firestore().doc(`user/${key}/platform/mobile/game/${GAME_ID}`);
     authUser=user;$('acct').textContent='👤 '+name+(fc?' · '+fc:'');$('acct').title='Signed in — tap to sign out';
