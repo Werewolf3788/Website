@@ -30,7 +30,16 @@
     #main{grid-template-columns:minmax(0,640px) 1fr;grid-template-areas:"board play" "board panel" "deeds panel";align-items:start}
     #left{display:contents} #boardWrap{grid-area:board} #play{grid-area:play;margin-top:0} #deeds{grid-area:deeds} #panel{grid-area:panel}
   }
-  #boardWrap{width:100%}
+  #boardWrap{width:100%;position:relative}
+  /* the selected / landed-on property card sits in the green middle of the board */
+  #centerCard{position:absolute;left:10.5%;top:10.5%;width:79%;height:79%;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:2%}
+  #centerCard .cc{pointer-events:auto;position:relative;width:min(340px,100%);max-height:100%;overflow:auto;border-radius:12px;box-shadow:0 8px 26px rgba(0,0,0,.55),0 0 0 2px rgba(255,255,255,.15);background:#1e293b;animation:ccIn .18s ease-out}
+  #centerCard .cc .deed.big{margin:0}
+  #centerCard .ccx{position:absolute;right:4px;top:4px;z-index:2;width:26px;height:26px;padding:0;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-weight:800;font-size:.85rem;line-height:26px}
+  #centerCard .cchere{font-size:.72rem;color:#cbd5e1;padding:4px 34px 0 8px;background:#1e293b}
+  @media(min-width:860px){#centerCard .cc{width:min(460px,100%)} #centerCard .deed.big{font-size:1rem} #centerCard .deed .band{font-size:1.05rem;padding:9px 36px 9px 12px} #centerCard .deed .body{padding:8px 12px} #centerCard .cchere{font-size:.8rem}}
+  @keyframes ccIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+  @media(max-width:520px){#centerCard .cc{font-size:.9em} #centerCard .deed.big{font-size:.74rem} #centerCard .deed .band{font-size:.78rem;padding:5px 30px 5px 8px} #centerCard .deed button{padding:5px 6px;font-size:.72rem}}
   #board{display:block;width:100%;height:auto;border-radius:12px;background:#0b1220}
   #board text{font-family:system-ui,sans-serif;pointer-events:none}
   .tok{transition:transform .35s ease-in-out}
@@ -114,7 +123,7 @@
 </div>
 <div id="main">
   <div id="left">
-    <div id="boardWrap"><svg id="board" viewBox="0 0 110 110"></svg></div>
+    <div id="boardWrap"><svg id="board" viewBox="0 0 110 110"></svg><div id="centerCard"></div></div>
     <div id="play">
       <div id="banner" style="display:none"></div>
       <div id="turn"></div>
@@ -579,7 +588,7 @@
   // ---------- session
   var me = null, myName = 'Player', cloudCode = null, stateRef = null, presenceRef = null, roomRefG = null;
   var beat = null;
-  var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0, sel = -1, showBuild = false, lastSelKey = '', pubTimer = null;
+  var ccHidden = -2; var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0, sel = -1, showBuild = false, lastSelKey = '', pubTimer = null;
   var emotes = {}, emoSeen = {}, lastEmo = 0, ac = null, shakeOn = false, lastShake = 0;
   var EMOS = ['👍', '😂', '😮', '😡', '🎉'];
 
@@ -904,7 +913,7 @@
     }
     $('board').addEventListener('click', function (e) {
       var c = e.target.closest ? e.target.closest('[data-c]') : null; if (!c) return;
-      sel = +c.dataset.c; renderInfo(); if (S && S.phase === 'any') render();
+      ccHidden = -2; sel = +c.dataset.c; renderInfo(); if (S && S.phase === 'any') render();
     });
   }
   var OFF = [[-2.3, -2.3], [2.3, -2.3], [-2.3, 2.3], [2.3, 2.3]];
@@ -1010,10 +1019,12 @@
   }
   function renderInfo() {
     var s = S; if (!s) return; renderMine(s);
-    if (sel < 0) { $('landed').innerHTML = '<div class="plain muted">Tap any space on the board to see its card.</div>'; }
+    $('landed').innerHTML = '<div class="plain muted">Tap any space on the board to see its card in the middle of the board.</div>';
+    if (sel < 0 || ccHidden === sel) { $('centerCard').innerHTML = ''; if (sel < 0) $('selLayer').innerHTML = ''; }
     else {
       var q = s.status === 'playing' ? plOf(s, s.turn) : null, here = q && q.pos === sel;
-      $('landed').innerHTML = '<div class="muted" style="margin-bottom:4px">' + (here ? '📍 ' + NAMES[s.turn] + ' is on this space' : 'Selected space') + '</div>' + deedHtml(s, sel, true);
+      $('centerCard').innerHTML = '<div class="cc"><button class="ccx" id="ccClose" title="Close">✕</button><div class="cchere">' + (here ? '📍 ' + NAMES[s.turn] + ' is on this space' : 'Selected space') + '</div>' + deedHtml(s, sel, true) + '</div>';
+      $('ccClose').onclick = function (e) { e.stopPropagation(); ccHidden = sel; renderInfo(); };
       var rc = cellRC(sel);
       $('selLayer').innerHTML = '<rect x="' + (rc[0] * 10 + .2) + '" y="' + (rc[1] * 10 + .2) + '" width="9.6" height="9.6" fill="none" stroke="#fff" stroke-width=".6" stroke-dasharray="1.2 .8"/>';
     }
@@ -1049,7 +1060,7 @@
     }
     var mq = (ms >= 0 && s.pl) ? plOf(s, ms) : null, bk = $('bank'), bt = mq ? '$' + mq.cash : '—';
     if (bk.textContent !== bt) { bk.textContent = bt; bk.classList.remove('bankpulse'); void bk.offsetWidth; bk.classList.add('bankpulse'); }
-    if (q0) { var sk = s.turn + ':' + q0.pos; if (sk !== lastSelKey) { lastSelKey = sk; sel = q0.pos; } }
+    if (q0) { var sk = s.turn + ':' + q0.pos; if (sk !== lastSelKey) { ccHidden = -2; lastSelKey = sk; sel = q0.pos; } }
     if (playing) { $('turn').innerHTML = dot(s.turn) + (myTurn ? 'Your turn' : (cs ? cs.name : NAMES[s.turn]) + '’s turn'); say(s.msg || ''); }
     else if (s.status === 'lobby') { $('turn').textContent = 'Get ready'; say('Pick your seat, add bots or invite friends, then start.'); }
     else { $('turn').innerHTML = dot(s.winner) + NAMES[s.winner] + ' won'; say(s.msg || ''); }
@@ -1127,10 +1138,10 @@
     renderInfo();
   }
 
-  $('main').addEventListener('change', function (e) { if (e.target && e.target.id === 'anySel') { sel = +e.target.value; renderInfo(); } });
+  $('main').addEventListener('change', function (e) { if (e.target && e.target.id === 'anySel') { ccHidden = -2; sel = +e.target.value; renderInfo(); } });
   $('main').addEventListener('click', function (e) {
     var dc = e.target.closest ? e.target.closest('.deed[data-c], #mine .n[data-c]') : null;
-    if (dc && !(e.target.closest('button'))) { sel = +dc.dataset.c; renderInfo(); if (S && S.phase === 'any') render(); return; }
+    if (dc && !(e.target.closest('button'))) { ccHidden = -2; sel = +dc.dataset.c; renderInfo(); if (S && S.phase === 'any') render(); return; }
     var eb = e.target.closest ? e.target.closest('button[data-e]') : null;
     if (eb) {
       var ms = mySeat(); if (ms < 0 || !roomRefG || Date.now() - lastEmo < 800) return;
