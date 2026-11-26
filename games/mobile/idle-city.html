@@ -24,12 +24,16 @@
   #hud{display:flex;gap:6px;align-items:center;justify-content:space-between;padding:8px 10px;font-size:.78rem;font-weight:800;background:#1d1430}
   .pill{background:#2a1d40;border-radius:999px;padding:5px 9px}
   #hud a{color:#fbcfe8;text-decoration:none}
-  #lane{position:relative;flex:1;min-height:0;overflow:hidden;background:radial-gradient(120% 80% at 66% 6%,#4a2568 0%,#2a1740 54%,#180f2b 100%)}
+  #lane{position:relative;flex:1;min-height:0;overflow:hidden;background:linear-gradient(#3d2560,#2b1746 45%,#1d1133)}
   #lane .glow{position:absolute;inset:0;background:radial-gradient(58% 42% at 60% 20%,#ffd9a02e,#0000 72%);pointer-events:none;z-index:4}
-  #lane .wall{position:absolute;left:0;right:0;top:0;height:35%;background:linear-gradient(#2f1c48,#261639 72%,#1f1232);border-bottom:3px solid #46295f;box-shadow:inset 0 -12px 26px #00000055}
-  #lane .shelf{position:absolute;top:15%;height:5px;border-radius:3px;background:#513470;box-shadow:0 3px 0 #241436,0 -13px 0 -3px #3c2456}
-  #lane .sign{position:absolute;left:19%;top:5%;background:#fbbf24;color:#3b1f05;font-weight:900;font-size:.58rem;letter-spacing:.3px;padding:3px 8px;border-radius:5px;box-shadow:0 4px 10px #00000080;transform:rotate(-2deg);z-index:2}
-  #lane .pave{position:absolute;left:0;right:0;bottom:0;height:68%;background:repeating-linear-gradient(90deg,#322348 0 36px,#2a1c3c 36px 72px),repeating-linear-gradient(0deg,#ffffff0d 0 1px,#0000 1px 28px),linear-gradient(#00000022,#00000055 78%);clip-path:polygon(0 100%,100% 100%,76% 0,20% 0)}
+  #lane .wall{position:absolute;left:0;right:0;top:0;height:36%;background:linear-gradient(#4a2d70,#38205a 62%,#2a1745);border-bottom:4px solid #5b3a82;box-shadow:inset 0 -18px 30px #0000004d}
+  #lane .win{position:absolute;left:14%;right:14%;top:6%;height:40%;border-radius:6px 6px 0 0;background:linear-gradient(#8ec5ff2e,#ffd9a02e),repeating-linear-gradient(90deg,#0000 0 33%,#0000003d 33% 34%,#0000 34% 66%,#0000003d 66% 67%,#0000 67%);box-shadow:0 0 22px #ffd9a033,inset 0 0 0 2px #6b4a94;border:2px solid #6b4a94}
+  #lane .bulb{position:absolute;width:7px;height:7px;border-radius:50%;background:#ffe6a8;box-shadow:0 0 12px 4px #ffd07a66}
+  #lane .shelf{position:absolute;top:3.5%;height:5px;border-radius:3px;background:#6b4a94;box-shadow:0 3px 0 #2a1745}
+  #lane .sign{position:absolute;left:8%;top:41%;background:#fbbf24;color:#3b1f05;font-weight:900;font-size:.58rem;letter-spacing:.3px;padding:3px 8px;border-radius:5px;box-shadow:0 4px 10px #00000080;transform:rotate(-2deg);z-index:2}
+  #lane .pave{position:absolute;left:-40%;right:-40%;bottom:-4%;height:72%;background-image:repeating-conic-gradient(#463063 0% 25%,#38244f 0% 50%);background-size:74px 74px;transform:perspective(420px) rotateX(57deg);transform-origin:bottom center;filter:saturate(1.1)}
+  #lane .pool{position:absolute;left:6%;bottom:20%;width:46%;height:34%;background:radial-gradient(closest-side,#ffd9a03d,#ffd9a000 72%);filter:blur(4px);pointer-events:none}
+  #lane .shadowline{position:absolute;left:0;right:0;bottom:0;height:26%;background:linear-gradient(#00000055,#00000099);pointer-events:none}
   #lane .rug{position:absolute;left:33%;bottom:4%;width:34%;height:6%;border-radius:50%;background:#7c3aed2e;filter:blur(7px)}
   #lane .adawn{position:absolute;left:0;top:20%;width:40px;height:13px;background:repeating-linear-gradient(135deg,#ef4444 0 7px,#fff7ed 7px 14px);border-radius:3px;box-shadow:0 5px 12px #00000090;z-index:3}
   .prop{position:absolute;filter:drop-shadow(0 5px 7px #00000090);pointer-events:none;z-index:1}
@@ -75,16 +79,24 @@
   </div>
   <div id="lane">
     <div class="wall"></div>
+    <div class="win"></div>
     <div class="shelf" style="left:8%;right:8%"></div>
+    <div class="bulb" style="left:18%;top:30%"></div>
+    <div class="bulb" style="left:42%;top:29%"></div>
+    <div class="bulb" style="left:68%;top:30%"></div>
+    <div class="bulb" style="left:88%;top:28.5%"></div>
     <div class="sign">OPEN · fresh daily</div>
     <div class="pave"></div>
+    <div class="pool"></div>
     <div class="rug"></div>
+    <div class="shadowline"></div>
     <div class="adawn"></div>
     <div id="counter"></div>
     <div class="prop" style="left:9%;bottom:5%;font-size:1.9rem">🪴</div>
     <div class="prop" style="right:7%;bottom:15%;font-size:1.7rem">🪴</div>
     <div class="prop" style="right:27%;bottom:4%;font-size:1.5rem">🪑</div>
-    <div class="prop" style="right:13%;top:37%;font-size:1.35rem">🪧</div>
+    <div class="prop" style="right:13%;top:33%;font-size:1.35rem">🪧</div>
+    <div class="prop" style="left:22%;top:36%;font-size:1.15rem">🪑</div>
     <div id="banner"></div>
     <div id="combo"></div>
     <div class="glow"></div>
