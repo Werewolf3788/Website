@@ -237,3 +237,25 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
     else mount();
 })();
+
+/* Weather-matched backdrop for the Red Dead Online catalogue. The sky behind
+   the page follows the live weather at the real-world town behind a frontier
+   location, the way the "Real Weather and Real Time Sync" mod drives the game.
+   Kept in its own file so no other page pays for it. */
+(function () {
+    'use strict';
+    if (!/\/games\/rdr2(?:\.html)?\/?$/i.test(location.pathname)) return;
+    if (document.getElementById('wwRdr2Weather')) return;
+
+    var path = '/assets/rdr2-weather.js';
+    if (/\.github\.io$/i.test(location.hostname)) {
+        var seg = location.pathname.split('/')[1];
+        if (seg) path = '/' + seg + path;
+    }
+
+    var script = document.createElement('script');
+    script.id = 'wwRdr2Weather';
+    script.src = path;
+    script.defer = true;
+    document.head.appendChild(script);
+})();
