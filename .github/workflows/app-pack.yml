@@ -19,7 +19,6 @@ jobs:
           python3 android/bastion-icon.py games/mobile/icons
           git config user.name "Bastion Bot"
           git config user.email "bot@users.noreply.github.com"
-          git rm -q --ignore-unmatch .github/workflows/app-pack.yml
           git add -A
           git commit -m "Add the Bastion app manifest, offline shell, icons and the Android project"
           git push
