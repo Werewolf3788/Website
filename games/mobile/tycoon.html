@@ -28,8 +28,25 @@
   /* desktop: the board is the big part (about two thirds of the width), the info column beside it is narrower.
      "Fit board to screen" shrinks the board so all of it fits the screen height without scrolling. */
   @media(min-width:860px){#main{max-width:none;width:90vw;padding-top:6px;grid-template-columns:minmax(0,65fr) minmax(320px,35fr) !important}
-    body.fitBoard #main{grid-template-columns:minmax(0,min(calc(100vh - 52px),64%)) 1fr !important}
-    #play{position:sticky;top:6px;z-index:3;align-self:start}}   /* dice and buttons stay in view while you scroll the big board */
+    body.fitBoard #main{grid-template-columns:minmax(0,min(calc(100vh - 46px),66%)) 1fr !important;padding-top:4px;padding-bottom:4px}
+  }
+  /* desktop table layout: dice, turn and buy / build buttons sit in the green middle of the board,
+     and "My properties" moves to the top of the right-hand column */
+  body.tableLayout #main{grid-template-areas:"board panel" "deeds panel" !important}
+  body.tableLayout #centerArea #play{position:absolute;inset:0;margin:0;overflow:auto;pointer-events:auto;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4%}
+  body.tableLayout #centerArea #play #turn{justify-content:center;font-size:1.25rem}
+  body.tableLayout #centerArea #play #dice{justify-content:center;flex-wrap:wrap}
+  body.tableLayout #centerArea #play #msg{flex:0 0 100%;max-height:none;font-size:1rem;text-align:center}
+  body.tableLayout #centerArea #play #acts{justify-content:center}
+  body.tableLayout #centerArea #play #acts,body.tableLayout #centerArea #play #buildList{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:620px}
+  body.tableLayout #centerArea #play .offer{text-align:left}
+  body.tableLayout #centerArea.showCard #play{visibility:hidden}
+  body.tableLayout .bLogo{display:none}
+  body.tableLayout #centerArea #play .die{width:76px;height:76px;padding:10px;border-radius:16px}
+  body.tableLayout #centerArea #play .die.sd{font-size:38px}
+  body.tableLayout #centerArea #play button{font-size:1.05rem;padding:11px 16px}
+  body.tableLayout #panel #mine{margin-bottom:12px}
+  body.tableLayout #panel{position:sticky;top:6px;max-height:calc(100vh - 12px);overflow:auto}
   /* wide screens: board + property cards on the left, dice and seats stacked on the right (as before) */
   @media(min-width:860px){
     #main{grid-template-columns:minmax(0,640px) 1fr;grid-template-areas:"board play" "board panel" "deeds panel";align-items:start}
@@ -133,7 +150,7 @@
 <div id="top">
   <span>🏙️ <b id="roomLabel">Monopoly</b> · 👥 <b id="count">1</b></span>
   <span>💵 <b id="bank">—</b> · 🏆 <b id="wins">0</b></span>
-  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="sizeBtn" title="Board size">⤡ Fit board to screen</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="sizeBtn" title="Board size">⤢ Big board</button> · <button id="newGameBtn" title="End this game and start a new one" style="display:none">🆕 New game</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
 </div>
 <div id="main">
   <div id="left">
@@ -816,9 +833,18 @@
   (function () { var b = document.getElementById('paceBtn'); if (!b) return; b.textContent = PACE_ICON[pace];
     b.onclick = function () { pace = pace === 'slow' ? 'normal' : pace === 'normal' ? 'fast' : 'slow'; try { localStorage.setItem('ww_bot_pace', pace); } catch (e) {} b.textContent = PACE_ICON[pace]; }; })();
   // board size: fit the screen height (default) or extra large (wider than the screen is tall, scroll to see it all)
-  (function () { var fit = false; try { fit = localStorage.getItem('ty_fit') === '1'; } catch (e) {} var b = document.getElementById('sizeBtn');
+  (function () { var fit = true; try { fit = localStorage.getItem('ty_fit') !== '0'; } catch (e) {} var b = document.getElementById('sizeBtn');
     function set() { document.body.classList.toggle('fitBoard', fit); if (b) b.textContent = fit ? '⤢ Big board' : '⤡ Fit board to screen'; }
     set(); if (b) b.onclick = function () { fit = !fit; try { localStorage.setItem('ty_fit', fit ? '1' : '0'); } catch (e) {} set(); }; })();
+  // move the play controls into the board middle and "My properties" to the right on wide screens; phones keep the stacked layout
+  function placeLayout() {
+    var wide = innerWidth >= 860, play = $('play'), mine = $('mine'), ca = $('centerArea'), panel = $('panel'), bw = $('boardWrap');
+    if (!play || !mine || !ca || !panel) return;
+    document.body.classList.toggle('tableLayout', wide);
+    if (wide) { if (play.parentNode !== ca) ca.insertBefore(play, ca.firstChild); if (mine.parentNode !== panel) panel.insertBefore(mine, panel.firstChild); }
+    else { if (play.parentNode !== bw.parentNode) bw.parentNode.insertBefore(play, bw.nextSibling); if (mine.parentNode !== ca) ca.insertBefore(mine, ca.firstChild); }
+  }
+  placeLayout(); addEventListener('resize', placeLayout);
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
     if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
@@ -942,10 +968,18 @@
   function addBot(slot) { mutate(function (s) { if (s.status !== 'lobby' || seatOf(s, slot) || s.hostUid !== me.uid) return false; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
   function fillBots() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid) return false; for (var i = 0; i < 4; i++) if (!seatOf(s, i)) s.seats[i] = { uid: 'bot' + i, name: NAMES[i] + ' Bot', bot: true }; }); }
   function removeBot(slot) { mutate(function (s) { var c = seatOf(s, slot); if (s.status !== 'lobby' || !c || !c.bot || s.hostUid !== me.uid) return false; delete s.seats[slot]; }); }
-  function resetToLobby(s) { s.status = 'lobby'; s.pl = {}; s.own = {}; s.hs = {}; s.winner = -1; s.log = []; s.msg = ''; s.pot = 0; s.phase = 'roll'; s.dice = [0, 0]; s.pend = -1; s.sd = 0; s.mr = 0; delete s.card; delete s.bus; }
+  function resetToLobby(s) { delete s.debt; delete s.debtP; delete s.debtPrev; delete s.trade; delete s.au; s.hb = 0; delete s.gt0; s.status = 'lobby'; s.pl = {}; s.own = {}; s.hs = {}; s.winner = -1; s.log = []; s.msg = ''; s.pot = 0; s.phase = 'roll'; s.dice = [0, 0]; s.pend = -1; s.sd = 0; s.mr = 0; delete s.card; delete s.bus; }
   function beginGame(s) { startState(s); markStarted(s); }
   function setMode(m) { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || (m !== 'classic' && m !== 'speed')) return false; s.mode = m; }); }
   function startGame() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false; beginGame(s); }); }
+  // host: end the running game and go back to the table setup (same seats, bots stay) to start a fresh one
+  function newGame() {
+    if (!S || !me || !isHost() || S.status === 'lobby') return;
+    var others = otherHumansPresent();
+    if (!confirm(S.status === 'playing' ? 'Start a new game? The current game ends' + (others ? ' for everyone at the table' : '') + ' and nobody wins it.' : 'Set up a new game?')) return;
+    mutate(function (s) { if (s.hostUid !== me.uid || s.status === 'lobby') return false; resetToLobby(s); s.msg = 'New game - pick Classic or Speed Die, then start.'; });
+  }
+  (function () { var b = document.getElementById('newGameBtn'); if (b) b.onclick = newGame; })();
   function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; resetToLobby(s); }); }
 
   // ---------- drawing
@@ -1006,7 +1040,7 @@
     for (var i = 0; i < 40; i++) h += cellStatic(i);
     h += '<g id="ownLayer" pointer-events="none"></g>';
     for (i = 0; i < 40; i++) h += cellText(i);
-    h += '<text x="55" y="48" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">MONO</text><text x="55" y="58" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">POLY</text>';
+    h += '<g class="bLogo"><text x="55" y="48" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">MONO</text><text x="55" y="58" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">POLY</text></g>';
     h += '<rect id="siren" x="10" y="10" width="90" height="90" fill="#ef4444" opacity="0" pointer-events="none"/><text id="sirenTxt" x="55" y="84" text-anchor="middle" font-size="6" font-weight="800" fill="#fff" stroke="#000" stroke-width=".3" opacity="0"></text>';
     h += '<g id="dyn"></g><g id="toks"></g><g id="emoLayer"></g><g id="selLayer"></g>';
     $('board').innerHTML = h;
@@ -1155,6 +1189,7 @@
 
   function render() {
     try { showHourly(); } catch (e) {}
+    try { var ngb = $('newGameBtn'); if (ngb) ngb.style.display = (S && S.status !== 'lobby' && isHost()) ? '' : 'none'; } catch (e) {}
     try { var ms0 = mySeat(); if (window.WWTurn) WWTurn.update(!!S && S.status === 'playing' && ms0 >= 0 && (otherHumansPresent() || document.hidden) && (actorSeat(S) === ms0 || (S.trade && S.trade.to === ms0)), muted); } catch (e) {}
     var s = S; if (!s) return;
     if (pressing) { renderPending = true; return; }
@@ -1209,7 +1244,7 @@
     } else if (myTurn && s.phase === 'debt' && s.debt) {
       var owe = debtTotal(s), have = q0.cash, short = Math.max(0, owe - have);
       a += '<div class="offer" style="width:100%;border-color:#ef4444">💸 <b>You owe $' + owe + '</b>' + (s.debt.length === 1 && s.debt[0].to >= 0 ? ' to ' + NAMES[s.debt[0].to] : '') + ' and have <b>$' + have + '</b>.' +
-        (short ? ' You need <b>$' + short + ' more</b>. Raise it your way: sell houses, mortgage or sell properties in <b>My properties</b> (middle of the board), or trade with another player.' : ' You have enough now.') + '</div>';
+        (short ? ' You need <b>$' + short + ' more</b>. Raise it your way: sell houses, mortgage or sell properties in <b>My properties</b>, or trade with another player.' : ' You have enough now.') + '</div>';
       a += '<button class="go" data-a="paydebt"' + (short ? ' disabled' : '') + '>Pay $' + owe + '</button>';
       if (alive(s).length > 1 && !s.trade) a += '<button data-a="trade">🤝 Trade</button>';
       a += '<button data-a="bankrupt" style="background:#7f1d1d">Declare bankruptcy</button>';
