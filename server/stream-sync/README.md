@@ -27,7 +27,7 @@ Sign in with the site login, then connect: Twitch (streaming account), Twitch ch
 
 Twitch and Kick sign-ins go through this service (`POST /connect/twitch|kick` with the site sign-in token) because they need the app secret; the callback saves the login to the user who started it.
 
-The site owner (`OWNER_KEY` in setup.html) also gets an **App keys** box for the Twitch/Kick client ID + secret.
+The site owner (`OWNER_KEY` in setup.html) also gets an **App keys** box for the Twitch/Kick client ID + secret and for the YouTube title hook (`youtube_hook_url` / `youtube_hook_secret`, the two lines `setupStreamHook()` prints).
 
 Kick chat uses Kick's official chat events: set the webhook URL `https://ww-stream-sync.onrender.com/webhooks/kick` on the Kick app (kick.com/settings/developer) and turn webhooks on. Each streamer is subscribed when they connect Kick.
 
@@ -67,7 +67,7 @@ Firebase keys can't contain `.` `#` `$` `[` `]` `/` - leave those characters out
 | `twitch_broadcaster_refresh`, `twitch_bot_refresh`, `kick_refresh` | each streamer | saved by the setup page sign-ins |
 | `psn_npsso` | each streamer (optional) | already saved from Settings; without it the PlayStation database is used |
 | `discord_webhook` | each streamer (optional) | paste a Discord channel webhook URL |
-| `youtube_hook_url`, `youtube_hook_secret` | each streamer (optional) | printed by `setupStreamHook()` in StreamHook.gs |
+| `youtube_hook_url`, `youtube_hook_secret` | each streamer (optional) | printed by `setupStreamHook()` in StreamHook.gs; paste them into the setup page's owner box (or straight into Firebase) |
 
 ## Render
 
