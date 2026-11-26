@@ -287,6 +287,8 @@
   function mgValue(i) { return Math.floor(SP[i].p / 2); } function unmgCost(i) { return Math.ceil(SP[i].p * 0.55); } function bankValue(i) { return Math.floor(SP[i].p * 0.6); }
   function manageOk(s) { return s.status === 'playing' && (s.phase === 'roll' || s.phase === 'end' || s.phase === 'debt'); }
   // a bill was put on hold during this move: the turn waits in the 'debt' phase until it is paid or the player goes bankrupt
+  function allOwned(s) { for (var i = 0; i < 40; i++) { var t = SP[i].t; if ((t === 'prop' || t === 'rail' || t === 'util') && ownerOf(s, i) < 0) return false; } return true; }
+  function markAllOwned(s) { if (s.status === 'playing' && s.allOwned !== s.gid && s.own && allOwned(s)) { s.allOwned = s.gid; addLog(s, '🏁 Every property is now owned! From here on it is trading, building and collecting rent.'); } }
   function holdForDebt(s) { if (s.debt && s.debt.length && s.phase !== 'debt' && s.status === 'playing') { s.debtPrev = s.phase; s.phase = 'debt'; } }
   function doPayDebt(s) {
     if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, q = plOf(s, p), tot = debtTotal(s);
@@ -713,7 +715,7 @@
       if (!cur) return cur;
       var s = JSON.parse(JSON.stringify(cur)); norm(s);
       if (fn(s) === false) return;
-      holdForDebt(s);
+      holdForDebt(s); markAllOwned(s);
       s.rid = (s.rid | 0) + 1; s.t = firebase.database.ServerValue.TIMESTAMP;
       return s;
     });
@@ -985,6 +987,21 @@
     mutate(function (s) { if (s.hostUid !== me.uid || s.status === 'lobby') return false; resetToLobby(s); s.msg = 'New game - pick Classic or Speed Die, then start.'; });
   }
   (function () { var b = document.getElementById('newGameBtn'); if (b) b.onclick = newGame; })();
+  var allSeen = -1;
+  function allOwnedAlert(s) {
+    var mine = 0, ms = mySeat(); for (var i = 0; i < 40; i++) if (ownerOf(s, i) === ms) mine++;
+    var body = 'All 28 properties are owned. You have ' + mine + '. Time to trade and build!';
+    try { if (window.WWTurn && !muted) WWTurn.chime(false); } catch (e) {}
+    try { if (navigator.vibrate) navigator.vibrate([200, 80, 200, 80, 200]); } catch (e) {}
+    var b = $('banner'); if (b) { b.style.display = ''; b.textContent = '🏁 ' + body; setTimeout(function () { if (S && S.status === 'playing') b.style.display = 'none'; }, 12000); }
+    try {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        var show = function () { try { var n = new Notification('🏁 Monopoly: every property is owned', { body: body, tag: 'ty-allowned', renotify: true }); n.onclick = function () { focus(); n.close(); }; } catch (e) {} };
+        if (navigator.serviceWorker && navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(function (r) { r.showNotification('🏁 Monopoly: every property is owned', { body: body, tag: 'ty-allowned', renotify: true, icon: '../../icons/icon-192.png', data: { url: location.href } }); }).catch(show);
+        else show();
+      } else if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(function () {});
+    } catch (e) {}
+  }
   function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; resetToLobby(s); }); }
 
   // ---------- drawing
@@ -1225,8 +1242,9 @@
     if (playing) { $('turn').innerHTML = dot(s.turn) + (myTurn ? 'Your turn' : (cs ? cs.name : NAMES[s.turn]) + '’s turn'); say(s.msg || ''); }
     else if (s.status === 'lobby') { $('turn').textContent = 'Get ready'; say('Pick your seat, add bots or invite friends, then start.'); }
     else { $('turn').innerHTML = dot(s.winner) + NAMES[s.winner] + ' won'; say(s.msg || ''); }
+    if (s.allOwned && s.allOwned === s.gid && allSeen !== s.gid && (s.status === 'playing') && mySeat() >= 0) { allSeen = s.gid; allOwnedAlert(s); }
     var ban = $('banner');
-    if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else ban.style.display = 'none';
+    if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else if (!/^🏁/.test(ban.textContent)) ban.style.display = 'none';
     // actions
     var a = '', bl = '', tr = playing ? s.trade : null, au = playing && s.phase === 'auction' ? s.au : null;
     if (tr && ms === tr.to) a += '<div class="offer">🤝 <b>Trade offer from ' + NAMES[tr.from] + '</b>' + tradeCards(s, tr) + '<div style="margin-top:6px;display:flex;gap:8px"><button class="go" data-a="tradeyes">Accept</button><button data-a="tradeno">Decline</button></div></div>';
