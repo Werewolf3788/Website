@@ -9,8 +9,8 @@ function fake(rel, exportsObj) {
     require.cache[p] = { id: p, filename: p, loaded: true, exports: exportsObj };
 }
 
-const calls = { patch: [], yt: [], state: [], discord: 0 };
-const kickCalls = { update: [] };
+const calls = { patch: [], yt: [], announce: [], state: [], discord: 0 };
+const kickCalls = { update: [], chat: [] };
 let psnCalls = 0;
 let secretsVal = { youtube_hook_url: "https://hook", youtube_hook_secret: "s", discord_webhook: "https://discord" };
 let channel = { game_id: "66082", game_name: "Games + Demos", title: "Gun with machine gun", tags: [] };
@@ -38,11 +38,17 @@ fake("psn.js", { snapshot: async () => { psnCalls++; return { ...presence, sourc
 fake("chat.js", { start: () => {}, stop: () => {}, status: () => ({}) });
 fake("kick.js", {
     searchCategories: async () => [{ id: "12", name: "Tom Clancy's Ghost Recon: Wildlands" }],
-    updateChannel: async (k, patch) => { kickCalls.update.push(patch); return true; }
+    updateChannel: async (k, patch) => { kickCalls.update.push(patch); return true; },
+    sendChat: async (k, id, text) => { kickCalls.chat.push(text); return "ok"; }
 });
 
 global.fetch = async (url, opt) => {
-    if (url === "https://hook") { calls.yt.push(JSON.parse(opt.body).title); return { text: async () => "ok updated" }; }
+    if (url === "https://hook") {
+        const body = JSON.parse(opt.body);
+        if (body.type === "youtube_chat") { calls.announce.push(body.text); return { text: async () => "ok updated" }; }
+        calls.yt.push(body.title);
+        return { text: async () => "ok updated" };
+    }
     if (url === "https://discord") { calls.discord++; return { ok: true }; }
     throw new Error("unexpected fetch " + url);
 };
@@ -127,4 +133,29 @@ test("source: twitch copies the Twitch name out and never asks PlayStation", asy
     assert.strictEqual(calls.yt.length, yt + 1);
     assert.strictEqual(calls.yt.at(-1), "Ghost Recon with the boys");
     assert.strictEqual(psnCalls, psn);
+});
+
+test("a new title is announced in YouTube and Kick chat, and the same title is not repeated", async () => {
+    secretsVal = { youtube_hook_url: "https://hook", youtube_hook_secret: "s", kick_refresh: "r" };
+    presence = { me: { online: true, title: "Tom Clancy's Ghost Recon Wildlands", titleId: "CUSA05410_00", status: "Chapter 9" }, friends: {} };
+    channel = { game_id: "496000", game_name: "Tom Clancy's Ghost Recon Wildlands", title: "old", tags: [] };
+    const cfgK = { twitch_login: "werewolf3788", bot_login: "modem3788", source: "auto", kick_user_id: "123" };
+    const yt = calls.announce.length, kc = kickCalls.chat.length;
+    const out = await runUser({ key: "k5", cfg: cfgK });
+    assert.deepStrictEqual(calls.announce.slice(yt), ["\u{1F534} Chapter 9"]);      // posted in the YouTube chat
+    assert.deepStrictEqual(kickCalls.chat.slice(kc), ["\u{1F534} Chapter 9"]);      // and in the Kick chat
+    assert.deepStrictEqual(out.announce, { youtube: "ok updated", kick: "ok" });
+    await runUser({ key: "k5", cfg: cfgK });                                        // nothing changed
+    assert.strictEqual(calls.announce.length, yt + 1);
+    assert.strictEqual(kickCalls.chat.length, kc + 1);
+});
+
+test("announce_title: false stops chat announcements", async () => {
+    secretsVal = { youtube_hook_url: "https://hook", youtube_hook_secret: "s", kick_refresh: "r" };
+    presence = { me: { online: true, title: "Tom Clancy's Ghost Recon Wildlands", titleId: "CUSA05410_00", status: "Chapter 10" }, friends: {} };
+    const yt = calls.announce.length, kc = kickCalls.chat.length;
+    await runUser({ key: "k6", cfg: { twitch_login: "werewolf3788", bot_login: "modem3788", source: "auto", kick_user_id: "123", announce_title: false } });
+    assert.strictEqual(calls.announce.length, yt);
+    assert.strictEqual(kickCalls.chat.length, kc);
+    secretsVal = { youtube_hook_url: "https://hook", youtube_hook_secret: "s", discord_webhook: "https://discord" };
 });
