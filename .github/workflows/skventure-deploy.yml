@@ -1,0 +1,173 @@
+# Deploys Scott's S&K Venture Signs site (Werewolf3788/SKVentureSigns) to Firebase Hosting
+# (skventuresigns-c35d5.web.app) FROM THIS REPO, using the key this repo already has.
+#
+# No new GitHub secrets anywhere:
+#   1. GCP_SA_KEY_WEBSITE (or FIREBASE_AUTH_SECRET), already set in THIS repo and used by the PSN / Steam /
+#      game-genres jobs, opens the Key Vault. These secrets only exist in Werewolf3788/Website, so this
+#      file must live here, not in SKVentureSigns.
+#   2. The SKVenture deploy key is read from the vault:
+#        entertainment-71888 RTDB  user_secrets/raykevin71888_at_gmail_com/firebase_skventure_service_account
+#      (fed by the "Keys" Google Sheet). Change it there only.
+#
+# FREE ZONE: both repos are public, so GitHub Actions minutes cost nothing; runs where nothing changed
+# stop in seconds. Firebase stays on the free Spark plan: only changed files upload, and Hosting keeps
+# just the last 5 versions so stored files never pile up toward the free 10 GB.
+#
+# Runs every 15 minutes and deploys only when SKVentureSigns main has a new commit.
+# Run it by hand (Actions -> "Deploy SKVentureSigns to Firebase Hosting" -> Run workflow) to deploy right now.
+
+name: Deploy SKVentureSigns to Firebase Hosting
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Deploy even if nothing changed
+        type: boolean
+        default: true
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skventure-hosting
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Latest SKVentureSigns commit
+        id: head
+        run: |
+          sha=$(git ls-remote https://github.com/Werewolf3788/SKVentureSigns refs/heads/main | cut -f1)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "SKVentureSigns main is at $sha"
+
+      - name: Already deployed?
+        id: seen
+        uses: actions/cache/restore@v4
+        with:
+          path: .skventure-deployed
+          key: skventure-deployed-${{ steps.head.outputs.sha }}
+          lookup-only: true
+
+      - name: Decide
+        id: go
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force }}" = "true" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ steps.seen.outputs.cache-hit }}" = "true" ]; then
+            echo "Nothing new on SKVentureSigns since the last deploy."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out SKVentureSigns
+        if: steps.go.outputs.run == 'true'
+        uses: actions/checkout@v5
+        with:
+          repository: Werewolf3788/SKVentureSigns
+          ref: ${{ steps.head.outputs.sha }}
+          path: site
+
+      - name: Get the SKVenture deploy key from the Key Vault
+        if: steps.go.outputs.run == 'true'
+        env:
+          VAULT_SA: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          VAULT_DB_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
+        run: |
+          pip install --quiet google-auth requests
+          python3 - <<'PY'
+          import base64, json, os, sys
+          import requests
+          import google.auth.transport.requests as gr
+          from google.oauth2 import service_account
+
+          def parse(raw, label):
+              t = (raw or "").strip()
+              if not t:
+                  print(f"::error::{label} is empty."); sys.exit(1)
+              c = json.loads(t) if t.startswith("{") else json.loads(base64.b64decode(t).decode())
+              if isinstance(c.get("private_key"), str):
+                  c["private_key"] = c["private_key"].replace("\\n", "\n")
+              return c
+
+          url = "https://entertainment-71888-default-rtdb.firebaseio.com/user_secrets/raykevin71888_at_gmail_com/firebase_skventure_service_account.json"
+          r = None
+          # Same two ways the PSN / Steam / game-genres jobs open the vault: service account first, database secret second.
+          if (os.environ.get("VAULT_SA") or "").strip():
+              try:
+                  creds = service_account.Credentials.from_service_account_info(
+                      parse(os.environ["VAULT_SA"], "GCP_SA_KEY_WEBSITE"),
+                      scopes=["https://www.googleapis.com/auth/firebase.database",
+                              "https://www.googleapis.com/auth/userinfo.email"])
+                  creds.refresh(gr.Request())
+                  r = requests.get(url, headers={"Authorization": f"Bearer {creds.token}"}, timeout=30)
+                  if r.status_code != 200:
+                      print(f"GCP_SA_KEY_WEBSITE read refused ({r.status_code}); trying FIREBASE_AUTH_SECRET.")
+              except Exception as e:
+                  print(f"GCP_SA_KEY_WEBSITE did not work ({e}); trying FIREBASE_AUTH_SECRET.")
+                  r = None
+          if (r is None or r.status_code != 200) and (os.environ.get("VAULT_DB_SECRET") or "").strip():
+              r = requests.get(url, params={"auth": os.environ["VAULT_DB_SECRET"].strip()}, timeout=30)
+          if r is None:
+              print("::error::Neither GCP_SA_KEY_WEBSITE nor FIREBASE_AUTH_SECRET is set in this repo."); sys.exit(1)
+          if r.status_code != 200:
+              print(f"::error::Key Vault refused the read ({r.status_code}): {r.text[:200]}"); sys.exit(1)
+          val = r.json()
+          if isinstance(val, dict) and "value" in val and "private_key" not in val:
+              val = val["value"]
+          if isinstance(val, str):
+              val = parse(val, "firebase_skventure_service_account") if val.strip() else None
+          if not val or "private_key" not in val:
+              print("::error::firebase_skventure_service_account is empty in the Key Vault. Paste the skventuresigns-c35d5 service account .json into its row in the Keys sheet.")
+              sys.exit(1)
+          for line in val["private_key"].splitlines():
+              if line.strip():
+                  print(f"::add-mask::{line.strip()}")
+          print(f'::add-mask::{val.get("private_key_id", "")}')
+
+          path = os.path.join(os.environ["RUNNER_TEMP"], "skventure-sa.json")
+          with open(path, "w") as f:
+              json.dump(val, f)
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"GOOGLE_APPLICATION_CREDENTIALS={path}\n")
+          print("Got the deploy key for project", val.get("project_id"))
+          PY
+
+      - name: Deploy to Firebase Hosting
+        if: steps.go.outputs.run == 'true'
+        working-directory: site
+        run: npx --yes firebase-tools@latest deploy --only hosting --project skventuresigns-c35d5 --non-interactive --message "SKVentureSigns ${{ steps.head.outputs.sha }}"
+
+      - name: Keep only the last 5 Hosting versions (stays inside the free storage)
+        if: steps.go.outputs.run == 'true'
+        run: |
+          python3 - <<'PY'
+          import requests, google.auth.transport.requests as gr
+          from google.oauth2 import service_account
+          import os
+          c = service_account.Credentials.from_service_account_file(
+              os.environ["GOOGLE_APPLICATION_CREDENTIALS"],
+              scopes=["https://www.googleapis.com/auth/firebase"])
+          c.refresh(gr.Request())
+          r = requests.patch(
+              "https://firebasehosting.googleapis.com/v1beta1/sites/skventuresigns-c35d5/config?updateMask=maxVersions",
+              headers={"Authorization": f"Bearer {c.token}"}, json={"maxVersions": 5}, timeout=30)
+          print("Version limit:", r.status_code, r.text[:200])
+          PY
+
+      - name: Remember this deploy
+        if: steps.go.outputs.run == 'true'
+        run: echo "${{ steps.head.outputs.sha }}" > .skventure-deployed
+
+      - name: Save
+        if: steps.go.outputs.run == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .skventure-deployed
+          key: skventure-deployed-${{ steps.head.outputs.sha }}
