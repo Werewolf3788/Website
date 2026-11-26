@@ -128,7 +128,7 @@
 <div id="top">
   <span>🏙️ <b id="roomLabel">Monopoly</b> · 👥 <b id="count">1</b></span>
   <span>💵 <b id="bank">—</b> · 🏆 <b id="wins">0</b></span>
-  <span><button id="snd" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
 </div>
 <div id="main">
   <div id="left">
@@ -767,12 +767,18 @@
     else if (a.k === 'bid') actBid(a.v); else if (a.k === 'drop') actDrop(); else if (a.k === 'unmort') actUnmort(a.i);
     else if (a.k === 'bus') actBus(a.v); else if (a.k === 'any') actAny(a.i); else if (a.k === 'card') actCard(a.v);
   }
+  // ---------- bot speed (🐢 button): how long bots wait between moves so people can follow along
+  var PACES = { slow: 3.2, normal: 2.2, fast: 1 }, PACE_ICON = { slow: '🐢 Slow bots', normal: '🚶 Normal bots', fast: '🐇 Fast bots' };
+  var pace = 'normal'; try { pace = localStorage.getItem('ww_bot_pace') || 'normal'; } catch (e) {} if (!PACES[pace]) pace = 'normal';
+  function bd(ms) { return Math.round(ms * PACES[pace]); }
+  (function () { var b = document.getElementById('paceBtn'); if (!b) return; b.textContent = PACE_ICON[pace];
+    b.onclick = function () { pace = pace === 'slow' ? 'normal' : pace === 'normal' ? 'fast' : 'slow'; try { localStorage.setItem('ww_bot_pace', pace); } catch (e) {} b.textContent = PACE_ICON[pace]; }; })();
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
     if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
     if (s.trade && isDriver()) {       // bots answer trade offers; an offer to someone who has left is turned down
       var ts = seatOf(s, s.trade.to), tk = 'trade:' + s.rid;
-      if (ts && (ts.bot || (WW.mode === 'cloud' && !players[ts.uid] && ts.gone && WW.now() - ts.gone > 90000)) && acted.k !== tk) { acted = { k: tk, t: Date.now() }; var yes = !!ts.bot && botLikesTrade(s, s.trade); setTimeout(function () { actTradeAnswer(yes); }, 1500); return; }
+      if (ts && (ts.bot || (WW.mode === 'cloud' && !players[ts.uid] && ts.gone && WW.now() - ts.gone > 90000)) && acted.k !== tk) { acted = { k: tk, t: Date.now() }; var yes = !!ts.bot && botLikesTrade(s, s.trade); setTimeout(function () { actTradeAnswer(yes); }, bd(1500)); return; }
     }
     var inAu = s.phase === 'auction' && !!s.au;
     var st = seatOf(s, actorSeat(s)); if (!st) return;
@@ -788,10 +794,10 @@
       auto = st.bot || away || idle; if (!auto) return;
     }
     var key = s.rid + ':' + actorSeat(s) + ':' + s.phase, now = Date.now();
-    if (acted.k === key && now - acted.t < 4000) return;
+    if (acted.k === key && now - acted.t < bd(1000) + 3500) return;
     function mark() { acted = { k: key, t: now }; }
     if (mine) return;      // your own turn never ends by itself: there may be building, trading or selling to do
-    var a = (inAu && !st.bot) ? { k: 'drop' } : botAct(s); mark(); setTimeout(function () { perform(a); }, a.k === 'roll' ? 800 : 1000);
+    var a = (inAu && !st.bot) ? { k: 'drop' } : botAct(s); mark(); setTimeout(function () { perform(a); }, bd(a.k === 'roll' ? 800 : 1000));
   }
   setInterval(tick, 2000);
 
