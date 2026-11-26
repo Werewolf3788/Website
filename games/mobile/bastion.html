@@ -1248,8 +1248,12 @@ const sfxLast={};function sfx(type){const nowT=performance.now();if(sfxLast[type
   g.gain.setValueAtTime(type==='shot'||type==='laser'||type==='zap'?.025:type==='boom'?.12:.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+set[1]);o.start(t);o.stop(t+set[1]);}catch(e){}}
 
 /* ---------- save: Firestore (signed in) / this device (guest) ---------- */
-let fb=null,docRef=null,saveT=0,dirty=false,authUser=null,fbReady=false,fbFailed=false;
+let fb=null,docRef=null,saveT=0,dirty=false,authUser=null,fbReady=false,fbFailed=false,fbAuth=null;
 const APP=/[?&]app=1/.test(location.search);
+function cachedUser(){try{return JSON.parse(localStorage.getItem('ww_auth_user_v1')||'null');}catch(e){return null;}}
+function setGuestChip(){const c=cachedUser(),has=!!(c&&(c.email||c.name));
+  $('acct').textContent=APP?'\u{1F4F1} This phone':(has?'Signed out \u00b7 tap to sign in':'Guest \u00b7 tap to sign in');
+  $('acct').title=APP?'Saved on this phone. Sign in on the website to sync.':'Tap to sign in and save to your profile';}
 function save(now){S.updatedAt=Date.now();dirty=true;if(now)flush();}
 function snapshot(){const o=JSON.parse(JSON.stringify(S));return o;}
 function progressInfo(){const t=(typeof cells!=='undefined')?[...cells.values()].filter(c=>c.k==='t').length:0;
@@ -1267,13 +1271,14 @@ function fixSave(){ // roads no longer fuse: turn any +N road back into 3^N plai
 }
 function loadLocal(){try{const s=JSON.parse(localStorage.getItem('bastion_save')||'null');if(s&&s.v)S=Object.assign(fresh(),s);}catch(e){}fixSave();}
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+const A=()=>fbAuth||firebase.auth();
 function signIn(){const p=new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(p).catch(e=>{
-    if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'))return firebase.auth().signInWithRedirect(p);
+  A().signInWithPopup(p).catch(e=>{
+    if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'))return A().signInWithRedirect(p);
     toast('Sign-in problem: '+((e&&e.message)||e));});}
 $('acct').onclick=()=>{
   if(!fbReady){if(!APP&&fbFailed){toast('Could not reach the sign-in service. Check your connection and reload.');return;}toast(APP?'This app saves on this phone. Sign in on the website with the same account to sync.':'Still connecting — try again in a second.');return;}
-  if(authUser){if(confirm('Sign out? Your progress stays on your account.'))firebase.auth().signOut();return;}
+  if(authUser){if(confirm('Sign out? Your progress stays on your account.'))A().signOut();return;}
   if(APP){toast('Google blocks sign-in inside apps, so this app saves on this phone. The website saves to your profile.');return;}
   signIn();};
 async function initFirebase(){
@@ -1283,18 +1288,23 @@ async function initFirebase(){
   const v='8.10.1',base=`https://www.gstatic.com/firebasejs/${v}/`;
   await loadScript(base+'firebase-app.js');
   await Promise.all(['auth','database','firestore'].map(m=>loadScript(base+`firebase-${m}.js`)));
-  if(!firebase.apps.length)firebase.initializeApp(cfg);
+  // reuse the app the rest of the site already signed into, so the session is shared
+  const app=firebase.apps.find(a=>a.options&&a.options.apiKey===cfg.apiKey)||firebase.initializeApp(cfg);
+  fbAuth=firebase.auth(app);
+  try{await fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
   fbReady=true;
-  try{firebase.firestore().enablePersistence({synchronizeTabs:true}).catch(()=>{});}catch(e){}
-  firebase.auth().onAuthStateChanged(async user=>{
-    if(!user){authUser=null;docRef=null;$('acct').textContent=APP?'📱 This phone':'Guest · tap to sign in';$('acct').title=APP?'Saved on this phone. Sign in on the website to sync.':'Tap to sign in and save to your profile';return;}
+  try{firebase.firestore(app).enablePersistence({synchronizeTabs:true}).catch(()=>{});}catch(e){}
+  fbAuth.onAuthStateChanged(async user=>{
+    if(!user){authUser=null;docRef=null;setGuestChip();
+      // a session can take a moment to come back from storage on a phone: check again shortly
+      setTimeout(()=>{if(!fbAuth.currentUser)setGuestChip();},2500);return;}
     const emailKey=(user.email||user.uid).toLowerCase().replace('@','_at_').replace(/\./g,'_');
     let fc=null,name=user.displayName||user.email;
-    try{const snap=await firebase.database().ref('users/'+emailKey).get();const u=snap.val()||{};fc=u.friend_code;name=u.username||name;}catch(e){}
+    try{const snap=await firebase.database(app).ref('users/'+emailKey).get();const u=snap.val()||{};fc=u.friend_code;name=u.username||name;}catch(e){}
     const key=((fc||'').trim().toUpperCase())||emailKey;
     docRef=firebase.firestore().doc(`user/${key}/platform/mobile/game/${GAME_ID}`);
     authUser=user;$('acct').textContent='👤 '+name+(fc?' · '+fc:'');$('acct').title='Signed in — tap to sign out';
-    try{const d=await docRef.get();let remote=d.exists?d.data():null;
+    try{const d=await docRef.get();let remote=d.exists?d.data()||null:null;
       // older Bastion saves were filed under users/… with a different key — pick them up once
       if(!remote||!remote.v)for(const old of [`users/${emailKey}/platform/mobile/game/${GAME_ID}`,`users/${key.toLowerCase()}/platform/mobile/game/${GAME_ID}`]){
         try{const o=await firebase.firestore().doc(old).get();if(o.exists&&(o.data()||{}).v){remote=o.data();break;}}catch(e){}}
@@ -1339,9 +1349,10 @@ function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(
   renderer.render(scene,camera);}
 
 /* ---------- boot ---------- */
+if(cachedUser())$('acct').textContent='Signing in…';
+initFirebase().catch(e=>{fbFailed=true;console.warn('firebase',e);});
 loadLocal();buildBoard();resize();updHud();setHolding(null);renderAutoFuse();frame();
 if(S.seenVersion!==VERSION){modal('🆕 What\'s new · v'+VERSION,'<ul style="margin:0;padding-left:18px;line-height:1.5">'+WHATS_NEW.map(x=>'<li>'+x+'</li>').join('')+'</ul>');S.seenVersion=VERSION;save();}
-initFirebase().catch(e=>{fbFailed=true;console.warn('firebase',e);});
 /* ---------- places: the lair and the rest of the bastion, under the same top bar ---------- */
 const PLACES=[
   {id:'nest',ic:'🪺',name:'The Nest',sub:'Merge creatures, raise dragons and raid the lair mouth. Everything you win here lands in your Bastion cash.',url:'merge-lair.html'}
