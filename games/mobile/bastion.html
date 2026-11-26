@@ -491,9 +491,17 @@ const TM={
   ice:new THREE.MeshStandardMaterial({color:0xbfefff,roughness:.25,metalness:.1,emissive:0x2b7ea8,emissiveIntensity:.35,transparent:true,opacity:.93,flatShading:true}),
   pink:new THREE.MeshStandardMaterial({color:0xf472b6,roughness:.35,emissive:0xbe185d,emissiveIntensity:.55,flatShading:true})
 };
-function towerMesh(id){const d=TOWERS[id];const g=new THREE.Group();
-  const base=new THREE.Mesh(new THREE.CylinderGeometry(.38,.42,.22,8),TM.white);base.position.y=.11;g.add(base);
-  const head=new THREE.Group();head.position.y=.35;g.add(head);
+function towerMesh(id,l=0){const d=TOWERS[id];const g=new THREE.Group();
+  const lv=Math.max(0,Math.min(MAX_LVL,l||0));
+  // every level adds a step under the tower, so a Lv 10 tower literally stands on its own record
+  for(let i=0;i<lv;i++){
+    const r=.45-i*.006;
+    const step=new THREE.Mesh(new THREE.CylinderGeometry(r,r+.02,.05,8),lv>=3?TM.gold:(i%2?TM.steel:TM.white));
+    step.position.y=.025+i*.05;g.add(step);
+  }
+  const lift=lv*.05;
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(.38,.42,.22,8),lv>=3?TM.gold:TM.white);base.position.y=.11+lift;g.add(base);
+  const head=new THREE.Group();head.position.y=.35+lift;g.add(head);
   const body=new THREE.Group();head.add(body);
   const acc=new THREE.MeshStandardMaterial({color:d.color,roughness:.55,metalness:.2,emissive:d.color,emissiveIntensity:.15,flatShading:true});
   if(id==='crossbow'){ // 🏹 bow, string and loaded bolt on a wooden stock
@@ -579,6 +587,24 @@ function towerMesh(id){const d=TOWERS[id];const g=new THREE.Group();
     const block=new THREE.Mesh(new THREE.BoxGeometry(.32,.2,.32),acc);block.position.y=.12;body.add(block);
     const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.42,8),TM.dark);barrel.rotation.x=Math.PI/2;barrel.position.set(0,.24,.25);body.add(barrel);
   }
+  // level bands: bronze trim, then gold, then a crown of light — the same three looks as the card icons
+  const band=lv>=6?3:lv>=3?2:lv>=1?1:0;
+  const bandCol=band>=3?0xffffff:band>=2?0xfacc15:0xf59e0b;
+  if(band>=1){
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(.4,.022,6,24),new THREE.MeshStandardMaterial({color:bandCol,emissive:bandCol,emissiveIntensity:.55,metalness:.5,roughness:.35}));
+    ring.rotation.x=Math.PI/2;ring.position.y=.225+lift;g.add(ring);
+  }
+  if(band>=2){
+    for(const sx of[-1,1]){const s=new THREE.Mesh(new THREE.OctahedronGeometry(.07,0),new THREE.MeshStandardMaterial({color:bandCol,emissive:bandCol,emissiveIntensity:.9,roughness:.3}));
+      s.scale.set(1,1.9,1);s.position.set(sx*.34,.34+lift,0);g.add(s);}
+  }
+  if(band>=3){
+    const crown=new THREE.Mesh(new THREE.TorusGeometry(.2,.028,6,20),new THREE.MeshStandardMaterial({color:0xfde047,emissive:0xfde047,emissiveIntensity:1.1,metalness:.55,roughness:.3}));
+    crown.rotation.x=Math.PI/2;crown.position.y=.95+lift;g.add(crown);
+    const orb=new THREE.Mesh(new THREE.IcosahedronGeometry(.085,0),new THREE.MeshStandardMaterial({color:0xffffff,emissive:bandCol,emissiveIntensity:1.5,roughness:.2}));
+    orb.position.y=1.04+lift;g.add(orb);
+  }
+  g.scale.setScalar(1+lv*.035);
   g.userData.head=head;g.traverse(o=>{o.castShadow=true});return g;}
 function campMesh(id){const d=CAMPS[id];const g=new THREE.Group();
   const hut=new THREE.Mesh(new THREE.BoxGeometry(.6,.35,.6),new THREE.MeshStandardMaterial({color:0xfef3c7}));hut.position.y=.18;g.add(hut);
@@ -598,9 +624,11 @@ function rebuildItems(){
   for(const it of S.board){
     const {x,y,k,id,l}=it;if(Math.abs(x)>half()||Math.abs(y)>half())continue;
     let mesh;
-    if(k==='t')mesh=towerMesh(id);else if(k==='s')mesh=campMesh(id);else if(k==='p')mesh=pathMesh(id);else mesh=trapMesh(id);
+    if(k==='t')mesh=towerMesh(id,l);else if(k==='s')mesh=campMesh(id);else if(k==='p')mesh=pathMesh(id);else mesh=trapMesh(id);
     mesh.position.x+=x;mesh.position.z+=y;itemGroup.add(mesh);
-    if(l>0){const lb=makeLabel('+'+l,'#fde047',.45);lb.position.set(x,k==='p'||k==='r'?.35:1.15,y);itemGroup.add(lb);}
+    if(l>0&&k==='t'){ // towers carry the same tier number as their card and float it above the model
+      const lb=makeLabel(TIER_NUM[l]||('+'+l),'#fde047',Math.min(.55,.4+l*.02));lb.position.set(x,1.2+l*.055,y);itemGroup.add(lb);}
+    else if(l>0){const lb=makeLabel('+'+l,'#fde047',.45);lb.position.set(x,k==='p'||k==='r'?.35:1.15,y);itemGroup.add(lb);}
     const rec={...it,mesh,cd:0,dmgDone:0,kills:0,execs:0};
     if(k==='r')traps.set(ck(x,y),rec);else cells.set(ck(x,y),rec);
   }
