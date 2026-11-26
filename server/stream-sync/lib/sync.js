@@ -93,18 +93,30 @@ async function runUser({ key, cfg, user }) {
 
     chat.start(key, { cfg, broadcasterId });
 
+    const out = { live: true, stream_id: s.id, twitch_category: s.game_name, checked_at: Date.now() };
+    /* auto (default): the PlayStation game + status drive the Twitch title and
+     * category, and that same title goes to YouTube and Kick. `twitch` copies
+     * whatever is set on Twitch out instead (PC / OBS), `playstation` only
+     * touches Twitch. */
+    const source = cfg.source || "auto";
+    if (source === "twitch") {
+        out.mode = "copy Twitch";
+        await copyTwitchToOthers(key, cfg, sec, broadcasterId, m, out);
+        out.chat = chat.status(key);
+        await store.saveState(key, out);
+        return out;
+    }
+
     const squad = cfg.squad || {};
     const myTag = cfg.psn_online_id || (user && (user.psn_username || user.psn_online_id)) || null;
     const snap = await psn.snapshot(key, cfg, myTag, Object.keys(squad), m.firstPsnCheckPending).catch((e) => ({ error: e.message }));
     m.firstPsnCheckPending = false;
-    const out = { live: true, stream_id: s.id, twitch_category: s.game_name, checked_at: Date.now() };
-    const source = cfg.source || "auto";   // auto: PlayStation when in a game there, otherwise copy Twitch
     if (!snap || snap.error) out.psn = snap ? "PSN error: " + snap.error : "no PlayStation data (no psn_npsso and no psn_online_id)";
     const me = snap && !snap.error ? snap.me : null;
     if (me) { out.psn_source = snap.source; out.psn_game = me.title || null; out.psn_status = me.status || null; }
-    if (source === "twitch" || !me || !me.online || !me.title) {
+    if (!me || !me.online || !me.title) {
         if (source === "playstation") { await store.saveState(key, out); return out; }
-        /* PC / OBS streamers (or not on PlayStation right now): whatever is set on Twitch goes to YouTube and Kick */
+        /* Not in a PlayStation game right now: whatever is set on Twitch goes to YouTube and Kick */
         out.mode = "copy Twitch";
         await copyTwitchToOthers(key, cfg, sec, broadcasterId, m, out);
         out.chat = chat.status(key);
@@ -122,7 +134,9 @@ async function runUser({ key, cfg, user }) {
     const patch = {};
     const cat = await twitchCategory(me.title, overrides);
     out.category_match = cat ? cat.name : "no match for " + me.title;
-    const ch = await twitch.channel(broadcasterId);
+    /* A failed Twitch read must not stop the YouTube / Kick updates below:
+     * the pass still sends the title out and retries Twitch next time. */
+    const ch = await twitch.channel(broadcasterId).catch((e) => { out.twitch_read_error = e.message; return null; });
     if (cat && ch && String(ch.game_id) !== String(cat.id)) patch.game_id = cat.id;   // always correct the category (fixes "Games + Demos")
 
     const fmt = { format: cfg.title_format || "status" };
