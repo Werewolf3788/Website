@@ -47,7 +47,7 @@ async function discordLiveAlert(key, sec, cfg, s, gameName) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             username: "Stream Alert",
-            content: cfg.discord_message || `🔴 ${cfg.twitch_login} is live! ${url}`,
+            content: cfg.discord_message || `\u{1F534} ${cfg.twitch_login} is live! ${url}`,
             embeds: [{ title: s.title || "Live on Twitch", url, description: `**Playing:** ${gameName || s.game_name || "?"}`, color: 9520895, image: art ? { url: art } : undefined, timestamp: new Date().toISOString() }]
         })
     }).catch((e) => log(key, "Discord alert failed: " + e.message));
@@ -61,6 +61,38 @@ async function youtubeTitle(key, sec, title) {
         body: JSON.stringify({ type: "youtube_title", secret: sec.youtube_hook_secret, title })
     });
     return (await r.text()).slice(0, 120);
+}
+
+async function youtubeChat(sec, text) {
+    const r = await fetch(sec.youtube_hook_url, {
+        method: "POST", redirect: "follow",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "youtube_chat", secret: sec.youtube_hook_secret, text })
+    });
+    return (await r.text()).slice(0, 120);
+}
+
+/* The Twitch title, posted as a chat message in YouTube and Kick when it changes.
+ * m.announced remembers the last line that went out, so the same title is never
+ * posted twice; a new title (or a new stream) posts again. Off with
+ * stream_sync.announce_title = false. */
+async function announceTitle(key, cfg, sec, m, title) {
+    const t = String(title || "").trim();
+    if (cfg.announce_title === false || !t || t === m.announced) return null;
+    const text = B.announceText(t);
+    if (!text) return null;
+    const out = {};
+    if (sec.youtube_hook_url && sec.youtube_hook_secret) {
+        try { out.youtube = await youtubeChat(sec, text); } catch (e) { out.youtube = "error: " + e.message; }
+    }
+    if (sec.kick_refresh && cfg.kick_user_id) {
+        try { out.kick = await kick.sendChat(key, cfg.kick_user_id, text); } catch (e) { out.kick = "error: " + e.message; }
+    }
+    if (!Object.keys(out).length) return null;
+    /* Remember it once one of them took it: if both failed, the next pass tries again. */
+    if (Object.values(out).some((v) => /^ok/i.test(String(v)))) m.announced = t;
+    log(key, "announced title: " + JSON.stringify(out));
+    return out;
 }
 
 async function runUser({ key, cfg, user }) {
@@ -79,7 +111,7 @@ async function runUser({ key, cfg, user }) {
     const sec = await store.secrets(key);
     if (!m || m.streamId !== s.id) {
         const prev = await store.state(key);
-        m = { live: true, streamId: s.id, firstPsnCheckPending: true, title: null, tagsDone: false, yt: null, kickTitle: null, kickCat: null };
+        m = { live: true, streamId: s.id, firstPsnCheckPending: true, title: null, tagsDone: false, yt: null, kickTitle: null, kickCat: null, announced: null };
         mem.set(key, m);
         if (prev.alerted_stream_id !== s.id) {
             await discordLiveAlert(key, sec, cfg, s);
@@ -148,12 +180,16 @@ async function runUser({ key, cfg, user }) {
 
     if (Object.keys(patch).length) {
         try {
-            await twitch.updateChannel(key, broadcasterId, patch, cfg.twitch_login);
+            await twitch.updateChannel(key, broadcasterId, patch);
             log(key, "Twitch updated: " + JSON.stringify(patch));
         } catch (e) { out.twitch_error = e.message; log(key, e.message); }
     }
     if (!out.twitch_error) { m.title = title; if (tags.length) m.tagsDone = true; }
     out.title = title;
+
+    /* The title as a chat announcement in YouTube and Kick (skipped when it hasn't changed) */
+    const ann = await announceTitle(key, cfg, sec, m, title);
+    if (ann) out.announce = ann;
 
     /* YouTube (title only) */
     const ytMode = cfg.youtube_mode || "same";
@@ -209,6 +245,10 @@ async function copyTwitchToOthers(key, cfg, sec, broadcasterId, m, out) {
             if (Object.keys(kp).length) { await kick.updateChannel(key, kp); if (kp.stream_title) m.kickTitle = kTitle; if (kc) m.kickCat = kc.id; out.kick = "updated"; }
         } catch (e) { out.kick = "error: " + e.message; }
     }
+
+    /* Copying Twitch: the title that is already live is what gets announced */
+    const ann = await announceTitle(key, cfg, sec, m, ch.title);
+    if (ann) out.announce = ann;
 }
 
 module.exports = { runUser };

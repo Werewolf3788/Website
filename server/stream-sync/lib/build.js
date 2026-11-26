@@ -6,11 +6,11 @@ const TWITCH_TITLE_MAX = 140;
 const YOUTUBE_TITLE_MAX = 100;
 const KICK_TITLE_MAX = 140;
 
-/** "Tom Clancy's Ghost ReconÂ® Wildlands" -> "Tom Clancy's Ghost Recon Wildlands" */
+/** "Tom Clancy's Ghost Recon (R) Wildlands" -> "Tom Clancy's Ghost Recon Wildlands" */
 function cleanName(s) {
     return String(s || "")
-        .replace(/[Â®â„¢Â©â„ ]/g, "")
-        .replace(/[â€™â€˜`]/g, "'")
+        .replace(/[\u00AE\u2122\u00A9\u2120]/g, "")
+        .replace(/[\u2019\u2018`]/g, "'")
         .replace(/\s+/g, " ")
         .trim();
 }
@@ -122,7 +122,7 @@ function squadInGame(me, squad, friends) {
 function clip(s, max) {
     s = String(s || "");
     if (s.length <= max) return s;
-    return s.slice(0, Math.max(0, max - 1)).trimEnd() + "â€¦";
+    return s.slice(0, Math.max(0, max - 1)).trimEnd() + "\u2026";
 }
 
 /** Title from the PlayStation game + status, never longer than max.
