@@ -123,3 +123,28 @@
         .catch(e => ({ ok: false, status: 503, json: async () => null }));
     window.wwMenuParse = (csvText) => buildMenu(parseCsv(csvText));   // for testing
 })();
+
+/* Game pill shortcuts (the pill bar on games/all).
+   The RDR2 pill opens the Wheeler, Rawson & Co. shop catalogue instead of the
+   collector-role checklist. Add more games here if they get a page of their own.
+   games/Universal.js rebuilds the pills, so this listens on the bar itself
+   rather than on the individual pills. */
+(function () {
+    var PILL_LINKS = { rdr2: '/games/rdr2.html' };
+    function wire() {
+        var bar = document.getElementById('gamePillsContainer');
+        if (!bar || bar.getAttribute('data-pill-links') === '1') return;
+        bar.setAttribute('data-pill-links', '1');
+        bar.addEventListener('click', function (e) {
+            var pill = e.target && e.target.closest ? e.target.closest('.game-pill') : null;
+            if (!pill) return;
+            var dest = PILL_LINKS[String(pill.getAttribute('data-game-key') || '').toLowerCase()];
+            if (!dest) return;
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = dest;
+        }, true);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
+    else wire();
+})();
