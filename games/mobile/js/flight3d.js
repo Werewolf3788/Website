@@ -896,3 +896,5 @@ requestAnimationFrame(frame);
 if (WW && WW.onReady) try { WW.onReady(() => publish()); } catch (e) {}
 // test hook for automated screenshots: window.__flight
 window.__flight = { sim(sec, inp) { const n = Math.round(sec * 120); for (let i = 0; i < n && mission.state === 'fly'; i++) { step(1 / 120, inp || { pitch: 0, roll: 0, yaw: 0 }); if (mission.M.timed) mission.time += 1000 / 120; checkLanding(); } }, attitude, S, startMission, setAttitude, height, FIELD_A, FIELD_B, MODES, get mission() { return mission; }, cam: m => { camMode = m; }, sky: s => { save.sky = s; applySky(); } };
+// auto-update (js/autoupdate.js): don't reload in the middle of a flight
+window.WW_BUSY = () => !!(mission && mission.state === 'fly' && !paused);

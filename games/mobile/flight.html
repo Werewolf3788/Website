@@ -78,5 +78,6 @@
 <script>document.write('<script src="js/gamepad.js"><\/script>');</script>
 <script>document.write('<script type="module" src="js/flight3d.js"><\/script>');</script>
 <script>setInterval(function(){var f=document.querySelector('#tThr i');if(f&&window.__flight)f.style.height=Math.round(window.__flight.S.thr*100)+'%';},100);</script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
 </body>
 </html>

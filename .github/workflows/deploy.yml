@@ -47,6 +47,9 @@ jobs:
           HOSTING_KEEP_RELEASES: '5'
         continue-on-error: true
 
+      - name: Stamp version.json (open game pages reload themselves when this changes)
+        run: printf '{"v":"%s","at":"%s"}\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > version.json
+
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
@@ -70,6 +73,9 @@ jobs:
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
+
+      - name: Stamp version.json (open game pages reload themselves when this changes)
+        run: printf '{"v":"%s","at":"%s"}\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > version.json
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

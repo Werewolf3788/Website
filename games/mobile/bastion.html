@@ -1374,6 +1374,9 @@ function showRemoteBattle(){const b=otherBattleLive(),el=$('remoteBattle');if(!e
   if(b&&!inBattle){el.style.display='block';el.innerHTML=`⚔️ Battle running on your other device · wave ${b.wave||1} · 🏰 ${b.hp||0}/${b.max||0}<br><span style="font-weight:600;font-size:11px">You can still change the map, fuse and upgrade here. Changes reach the battle live.</span>`;}
   else el.style.display='none';}
 setInterval(showRemoteBattle,2000);
+// auto-update (js/autoupdate.js): never reload in the middle of a battle, and save first
+window.WW_BUSY=()=>inBattle;
+window.WW_BEFORE_RELOAD=()=>{if(docRef){dirty=true;return cloudWrite();}flush(true);};
 // only one device battles at a time: claim the battle in the cloud before starting
 async function claimBattle(){
   if(!docRef)return true;
@@ -1521,5 +1524,6 @@ window.__places={openWorld,enterPlace,leavePlace,get inPlace(){return inPlace}};
 /* installed as an app: cache the shell so the icon opens the game straight away */
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('bastion-sw.js').catch(()=>{});
 </script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
 </body>
 </html>
