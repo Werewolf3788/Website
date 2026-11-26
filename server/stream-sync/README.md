@@ -12,7 +12,7 @@ While you're **live on Twitch** it checks every 30 seconds and:
 | Posts the new title as a chat message | YouTube, Kick |
 | Sets your tags (`base_tags`, plus `game_tags` for the current game) once per stream | Twitch |
 | Posts one "now live" alert | Discord webhook |
-| Relays YouTube, TikTok and Kick chat into Twitch chat (as your bot or your own account - your pick) | Twitch |
+| Relays YouTube, TikTok and Kick chat into the other places (as your bot or your own account - your pick) | Twitch, YouTube, Kick |
 
 PlayStation limits how often its API can be called, so the live PSN check is rationed: once when the stream starts, then at most once every `psn_poll_minutes` (default 5), only while live, using your own NPSSO. In between (and if PSN says "too many requests") it reuses the last answer or reads the PlayStation database that the 21-minute GitHub sync writes. Set `psn_poll_minutes` to `0` to never call PSN from here and use only the database.
 
@@ -29,6 +29,8 @@ Sign in with the site login, then connect: Twitch (streaming account), Twitch ch
 Twitch and Kick sign-ins go through this service (`POST /connect/twitch|kick` with the site sign-in token) because they need the app secret; the callback saves the login to the user who started it.
 
 The site owner (`OWNER_KEY` in setup.html) also gets an **App keys** box for the Twitch/Kick client ID + secret and for the YouTube title hook (`youtube_hook_url` / `youtube_hook_secret`, the two lines `setupStreamHook()` prints).
+
+Chat is fanned out and never loops: a message goes to every place except the one it came from, and each line the service posts is remembered for a few minutes, so the copy YouTube or Kick hands back is dropped rather than sent around again. The streamer, the chat bot and the platform's own account are never repeated either. TikTok can be read but not posted to, so TikTok chat goes out to the other three.
 
 Kick chat uses Kick's official chat events: set the webhook URL `https://ww-stream-sync.onrender.com/webhooks/kick` on the Kick app (kick.com/settings/developer) and turn webhooks on. Each streamer is subscribed when they connect Kick.
 

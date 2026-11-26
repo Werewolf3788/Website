@@ -35,7 +35,7 @@ fake("twitch.js", {
     sendChat: async () => true
 });
 fake("psn.js", { snapshot: async () => { psnCalls++; return { ...presence, source: "psn" }; } });
-fake("chat.js", { start: () => {}, stop: () => {}, status: () => ({}) });
+fake("chat.js", { start: () => {}, stop: () => {}, status: () => ({}), remember: () => {} });
 fake("kick.js", {
     searchCategories: async () => [{ id: "12", name: "Tom Clancy's Ghost Recon: Wildlands" }],
     updateChannel: async (k, patch) => { kickCalls.update.push(patch); return true; },
