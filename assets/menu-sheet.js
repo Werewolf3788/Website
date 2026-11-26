@@ -259,3 +259,57 @@
     script.defer = true;
     document.head.appendChild(script);
 })();
+
+/* The way out to Rockstar's own store (games/rdr2.html). The online catalogue
+   is a signed-in Rockstar app, so this can only ever be a plain outbound link:
+   nothing on this site can read a player's account, their wallet or their cart.
+   It means a player can restock from a phone instead of riding to a shop. */
+(function () {
+    'use strict';
+    if (!/\/games\/rdr2(?:\.html)?\/?$/i.test(location.pathname)) return;
+
+    var STORE_URL = 'https://socialclub.rockstargames.com/games/rdr2/catalogue/online/';
+    var CSS = [
+        '.store-callout{position:relative;z-index:1;padding:14px 26px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(248,241,222,.92),rgba(229,216,186,.6))}',
+        '.store-kicker{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}',
+        '.store-title{font-family:var(--display);font-weight:400;font-size:1.05rem;line-height:1.3;margin:4px 0 6px;color:var(--ink)}',
+        '.store-lede{font-size:.9rem;line-height:1.5;color:var(--ink-soft);max-width:70ch}',
+        '.store-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin-top:11px}',
+        '.store-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;border:1px solid #4f1a14;background:#7d2b23;color:#f8f1de;font-family:var(--serif);font-size:.95rem;letter-spacing:.03em;text-decoration:none}',
+        '.store-btn:hover{background:#5f1f19;color:#fff8e6}',
+        '.store-btn:focus-visible{outline:2px solid #96763e;outline-offset:2px}',
+        '.store-note{font-size:.76rem;line-height:1.45;color:var(--ink-faint);font-style:italic}',
+        '@media (max-width:860px){.store-callout{padding:12px 16px 14px}.store-actions{gap:8px}.store-btn{flex:1 1 100%}}'
+    ].join('\n');
+
+    function mount() {
+        var card = document.querySelector('.catalogue');
+        var band = card && card.querySelector('.live');
+        if (!card || !band || document.getElementById('wwStoreCallout')) return;
+
+        var style = document.createElement('style');
+        style.textContent = CSS;
+        document.head.appendChild(style);
+
+        var box = document.createElement('section');
+        box.className = 'store-callout';
+        box.id = 'wwStoreCallout';
+        box.setAttribute('aria-labelledby', 'wwStoreTitle');
+        box.innerHTML =
+            '<p class="store-kicker">Open all hours</p>' +
+            '<h2 class="store-title" id="wwStoreTitle">Wheeler, Rawson &amp; Co. — the real store, on your phone</h2>' +
+            '<p class="store-lede">Rockstar\u2019s own online catalogue is the same shelf the shops in game show, at the ' +
+                'prices this page cannot print. Order from it while you are out and the goods reach your character ' +
+                'the next time you saddle up.</p>' +
+            '<p class="store-actions">' +
+                '<a class="store-btn" href="' + STORE_URL + '" target="_blank" rel="noopener">Open the online catalogue</a>' +
+                '<span class="store-note">Sign in with the Rockstar account your Red Dead Online character is on. ' +
+                    'Your ticks on this page stay on this device.</span>' +
+            '</p>';
+
+        card.insertBefore(box, band);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
+    else mount();
+})();
