@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Werewolf Wings – flight game</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  #hud{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+  .hud{position:fixed;z-index:5}
+  #top{top:0;left:0;right:0;padding:calc(6px + env(safe-area-inset-top)) 12px 6px;font-size:.85rem;background:linear-gradient(#000a,#0000);text-shadow:0 1px 3px #000;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  #top button{color:#e2e8f0;background:#0006;border:0;border-radius:8px;font:inherit;padding:4px 8px;cursor:pointer;margin-left:4px}
+  #mName{font-weight:800} #mObj{color:#fde68a;font-size:.8rem}
+  #toast{left:0;right:0;top:calc(150px + env(safe-area-inset-top));text-align:center;color:#fde68a;font-weight:700;text-shadow:0 1px 3px #000;pointer-events:none;padding:0 12px}
+  #map{right:14px;bottom:14px;width:170px;height:170px;border-radius:50%;border:3px solid #ffffff55;pointer-events:none;opacity:.92}
+  #instr{left:50%;bottom:10px;transform:translateX(-50%);width:min(46vw,560px);pointer-events:none;border-radius:12px;overflow:hidden;box-shadow:0 6px 24px #000a;border:2px solid #3a3f47}
+  #instr canvas{width:100%;display:block}
+  body.cockpit #instr{display:none}
+  body.touch #instr{width:min(60vw,360px);bottom:auto;top:calc(48px + env(safe-area-inset-top));opacity:.92}
+  body.touch #map{width:110px;height:110px;bottom:auto;top:calc(48px + env(safe-area-inset-top))}
+  #touchUI{display:none} body.touch #touchUI{display:block}
+  #tStick{position:fixed;z-index:6;width:120px;height:120px;border-radius:50%;background:#ffffff1f;border:2px solid #ffffff55;display:none;pointer-events:none}
+  #tStick i{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:#ffffffaa}
+  #tThr{position:fixed;z-index:6;right:16px;bottom:calc(20px + env(safe-area-inset-bottom));width:58px;height:190px;border-radius:14px;background:#ffffff22;border:2px solid #ffffff55;touch-action:none;overflow:hidden}
+  #tThr i{position:absolute;left:0;right:0;bottom:0;background:#22c55e88}
+  #tThr b{position:absolute;left:0;right:0;top:6px;text-align:center;font-size:.7rem}
+  .tbtn{position:fixed;z-index:6;right:86px;width:54px;height:44px;border:0;border-radius:12px;background:#ffffff26;color:#fff;font-weight:800;font-size:.75rem}
+  #tCam{bottom:calc(166px + env(safe-area-inset-bottom))} #tGear{bottom:calc(116px + env(safe-area-inset-bottom))} #tFlap{bottom:calc(66px + env(safe-area-inset-bottom))} #tBrk{bottom:calc(16px + env(safe-area-inset-bottom));background:#ef444466}
+  #ov{position:fixed;inset:0;z-index:20;background:#000a;display:flex;align-items:center;justify-content:center;padding:16px}
+  #ovBox{background:#1e293bf2;border-radius:16px;padding:18px;width:min(94vw,620px);max-height:92vh;overflow-y:auto;user-select:text}
+  #ovBox h2{margin:0 0 8px} .muted{color:#94a3b8;font-size:.85rem}
+  #ovBox button{background:#22c55e;color:#04210f;border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:800;cursor:pointer;margin:4px 4px 0 0}
+  #ovBox button.alt{background:#334155;color:#e2e8f0}
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  #ovBox button.mode{display:block;width:100%;margin:0;text-align:left;background:#0f172a;color:#e2e8f0;border:2px solid #334155}
+  #ovBox button.mode:hover{border-color:#f97316}
+  .mode small{display:block;color:#94a3b8;font-weight:400;margin-top:4px;font-size:.78rem} .mode .st{color:#fbbf24;font-size:.8rem}
+  .optrow{display:flex;flex-wrap:wrap;gap:4px;margin-top:12px}
+  details{margin-top:12px} summary{cursor:pointer;font-weight:700} .ctl{line-height:1.6;margin-top:6px}
+  .bigstars{font-size:2.4rem;color:#fbbf24;margin:4px 0 8px}
+  @media (max-width:560px){ .modes{grid-template-columns:1fr} }
+  /* desktop: wider, bigger text on large / ultrawide screens */
+  @media (min-width:1600px){ #top{font-size:1rem} #ovBox{width:min(80vw,820px);font-size:1.1rem} #map{width:220px;height:220px} }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<canvas id="hud"></canvas>
+<div id="top" class="hud"><div><div id="mName">🛩️ Werewolf Wings</div><div id="mObj"></div></div><div><button id="camBtn">📷</button><button id="muteBtn">🔊</button><button id="pauseBtn">⏸ Menu</button><button id="gamesBtn">☰ Games</button></div></div>
+<div id="toast" class="hud"></div>
+<div id="instr" class="hud"></div>
+<canvas id="map" class="hud" width="300" height="300"></canvas>
+<div id="touchUI">
+  <div id="tStick"><i></i></div>
+  <div id="tThr"><i></i><b>THR</b></div>
+  <button class="tbtn" id="tCam">CAM</button><button class="tbtn" id="tGear">GEAR</button><button class="tbtn" id="tFlap">FLAPS</button><button class="tbtn" id="tBrk">BRAKE</button>
+</div>
+<div id="ov"><div id="ovBox"><h2>🛩️ Werewolf Wings</h2><div class="muted">Loading Howl Island…</div></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>document.write('<script src="js/common.js"><\/script>');</script>
+<script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/gamepad.js"><\/script>');</script>
+<script>document.write('<script type="module" src="js/flight3d.js"><\/script>');</script>
+<script>setInterval(function(){var f=document.querySelector('#tThr i');if(f&&window.__flight)f.style.height=Math.round(window.__flight.S.thr*100)+'%';},100);</script>
+</body>
+</html>

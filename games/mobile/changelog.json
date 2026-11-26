@@ -2,6 +2,14 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 61,
+   "date": "Nov 26",
+   "game": "all",
+   "items": [
+    "🛩️ New game: Werewolf Wings - fly the Skyrunner over Howl Island: ring runs through the mountain passes, a mail run to Pine Ridge and a landing challenge, in chase or cockpit view"
+   ]
+  },
+  {
    "id": 60,
    "date": "Nov 26",
    "game": "all",

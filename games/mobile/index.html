@@ -152,6 +152,11 @@
   <div class="muted">A two-chapter story campaign with turn-based squad battles. Twenty-four missions from the broken gate to the Sun Gate and on into the ash country beyond — pick attacks, abilities and potions, level your three survivors between fights, replay missions for stars and break the bosses at the Sun Gate, the Hollow King and the Dawnless.</div>
   <div class="row"><button id="tilesOutpostBtn">Play</button></div>
 </div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🛩️ Werewolf Wings</h2>
+  <div class="muted">3D flight game over Howl Island: take off from Werewolf Field, fly ring courses through the mountain passes, carry the mail to the Pine Ridge strip and grease the landing. Chase or cockpit view with lit instruments, day or sunset. Keyboard + mouse, touch or a PS5/Xbox controller. Best ring-run times go on the leaderboard.</div>
+  <div class="row"><button id="playFlight">Fly</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -197,6 +202,7 @@
   $('playCalm').onclick = function () { location.href = 'calm.html'; };
   $('playSurv').onclick = function () { location.href = 'survive.html'; };
   $('playBastion').onclick = function () { location.href = 'bastion.html'; };
+  $('playFlight').onclick = function () { location.href = 'flight.html'; };
   $('playFrog').onclick = function () { location.href = 'frogger.html'; };
   $('playShip').onclick = function () { location.href = 'battleship.html'; };
   $('hostShip').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'battleship.html?room=' + encodeURIComponent(c); };
