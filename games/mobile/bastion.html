@@ -1226,8 +1226,12 @@ let fb=null,docRef=null,saveT=0,dirty=false,authUser=null,fbReady=false,fbFailed
 const APP=/[?&]app=1/.test(location.search);
 function save(now){S.updatedAt=Date.now();dirty=true;if(now)flush();}
 function snapshot(){const o=JSON.parse(JSON.stringify(S));return o;}
+function progressInfo(){const t=(typeof cells!=='undefined')?[...cells.values()].filter(c=>c.k==='t').length:0;
+  return {title:'Bastion Builder',icon:'\u{1F3F0}',kind:'bastion',best:S.best||0,cash:Math.round(S.cash||0),
+    towers:t,camps:(typeof placedCount==='function')?placedCount('s'):0,kills:S.totalKills||0,
+    runs:(S.runs||[]).length,upg:Object.values(S.upg||{}).reduce((a,b)=>a+b,0),t:Date.now()};}
 function flush(){if(!dirty)return;dirty=false;const data=snapshot();
-  if(docRef){docRef.set(data).catch(e=>console.warn('save failed',e));}
+  if(docRef){data.progress=progressInfo();docRef.set(data).catch(e=>console.warn('save failed',e));}
   else{try{localStorage.setItem('bastion_save',JSON.stringify(data));}catch(e){}}}
 setInterval(flush,10000);addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.hidden)flush();});
 function fixSave(){ // roads no longer fuse: turn any +N road back into 3^N plain roads, and give 15 bonus roads once
@@ -1261,10 +1265,13 @@ async function initFirebase(){
     const emailKey=(user.email||user.uid).toLowerCase().replace('@','_at_').replace(/\./g,'_');
     let fc=null,name=user.displayName||user.email;
     try{const snap=await firebase.database().ref('users/'+emailKey).get();const u=snap.val()||{};fc=u.friend_code;name=u.username||name;}catch(e){}
-    const id=fc||emailKey;
-    docRef=firebase.firestore().doc(`users/${id}/platform/mobile/game/${GAME_ID}`);
+    const key=((fc||'').trim().toUpperCase())||emailKey;
+    docRef=firebase.firestore().doc(`user/${key}/platform/mobile/game/${GAME_ID}`);
     authUser=user;$('acct').textContent='👤 '+name+(fc?' · '+fc:'');$('acct').title='Signed in — tap to sign out';
-    try{const d=await docRef.get();const remote=d.exists?d.data():null;
+    try{const d=await docRef.get();let remote=d.exists?d.data():null;
+      // older Bastion saves were filed under users/… with a different key — pick them up once
+      if(!remote||!remote.v)for(const old of [`users/${emailKey}/platform/mobile/game/${GAME_ID}`,`users/${key.toLowerCase()}/platform/mobile/game/${GAME_ID}`]){
+        try{const o=await firebase.firestore().doc(old).get();if(o.exists&&(o.data()||{}).v){remote=o.data();break;}}catch(e){}}
       const local=(()=>{try{return JSON.parse(localStorage.getItem('bastion_save')||'null');}catch(e){return null;}})();
       if(remote&&remote.v){S=Object.assign(fresh(),remote);}
       else if(local&&local.v){S=Object.assign(fresh(),local);toast('Moved your guest progress to your account');}
