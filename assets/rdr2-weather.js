@@ -112,7 +112,6 @@
     var nowEl = null;
     var select = null;
     var offsetSeconds = 0;
-    var lastData = null;
 
     function place() {
         var saved = '';
@@ -123,8 +122,17 @@
         return PLACES[0];
     }
 
+    function mountStyle() {
+        if (document.getElementById('wwWeatherCSS')) return;
+        var style = document.createElement('style');
+        style.id = 'wwWeatherCSS';
+        style.textContent = CSS;
+        document.head.appendChild(style);
+    }
+
     function mountLayer() {
         if (layer) return;
+        mountStyle();
         layer = document.createElement('div');
         layer.id = 'wwWeather';
         layer.setAttribute('aria-hidden', 'true');
@@ -233,7 +241,6 @@
         var data = force ? null : cached(where.key);
 
         if (data) {
-            lastData = data;
             offsetSeconds = Number(data.utc_offset_seconds) || 0;
             var info = applySky(data.current || {});
             renderLine(data.current || null, info);
@@ -254,7 +261,6 @@
             })
             .then(function (json) {
                 if (!json || !json.current) throw new Error('no current weather');
-                lastData = json;
                 offsetSeconds = Number(json.utc_offset_seconds) || 0;
                 store(where.key, json);
                 var info = applySky(json.current);
@@ -270,6 +276,7 @@
     }
 
     function start() {
+        mountStyle();
         load(false);
         setInterval(localClock, 15000);
         setInterval(function () { load(true); }, CACHE_MS);
