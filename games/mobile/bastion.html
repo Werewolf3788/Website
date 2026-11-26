@@ -1302,7 +1302,8 @@ function statSummary(){try{const m=mult(),r=(S.runs||[]).slice(-10),avg=f=>r.len
   const seen=new Set(),best=[];for(const p of top){if(seen.has(p.id))continue;seen.add(p.id);best.push({ic:TOWERS[p.id].ic,name:TOWERS[p.id].name,lv:p.l+1});if(best.length>=3)break;}
   return {dmg:+m.dmg.toFixed(2),gold:+m.cash.toFixed(2),luck:Math.round(m.luck*1000)/10,crit:Math.round(m.crit*1000)/10,critd:Math.round(m.critd*100),
     aspd:Math.round((m.aspd-1)*100),range:+m.range.toFixed(2),castle:m.castle,board:boardN(),startWave:m.startWave,kills:S.totalKills||0,best:S.best||0,
-    avgWave:Math.round(avg('wave')),avgKills:Math.round(avg('kills')),avgTime:Math.round(avg('time')),avgDmg:Math.round(avg('dmg')),runs:(S.runs||[]).length,topTowers:best};}catch(e){return null;}}
+    avgWave:Math.round(avg('wave')),avgKills:Math.round(avg('kills')),avgTime:Math.round(avg('time')),avgDmg:Math.round(avg('dmg')),avgCash:Math.round(avg('cash')),runs:(S.runs||[]).length,topTowers:best,
+    recent:r.map(x=>({wave:x.wave||0,time:Math.round(x.time||0),kills:Math.round(x.kills||0),cash:Math.round(x.cash||0),dmg:Math.round(x.dmg||0),at:x.at||0}))};}catch(e){return null;}}
 function flush(){if(!dirty)return;dirty=false;const data=snapshot();
   if(docRef){data.progress=progressInfo();docRef.set(data).catch(e=>console.warn('save failed',e));}
   else{try{localStorage.setItem('bastion_save',JSON.stringify(data));}catch(e){}}}
