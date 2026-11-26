@@ -134,6 +134,30 @@ input.search{flex:1;background:#08204f;border:2px solid #38bdf8;border-radius:10
  #drops{bottom:calc(env(safe-area-inset-bottom,0px) + 118px)}
  .hex{width:96px;height:86px;font-size:10px;padding:4px 14px}
 }
+.upgDesc{background:#0b1f4a;border:2px solid #2f5aa8;border-radius:12px;padding:8px 10px;margin:0 auto 10px;max-width:620px;display:flex;gap:10px;align-items:center;min-height:58px}
+.upgDesc .ui{font-size:28px}.upgDesc .ut{flex:1;font-size:13px;line-height:1.35}.upgDesc .ut b{color:#fde047}
+.hex.picked{outline:4px solid #fde047;outline-offset:-4px}
+#coach{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));width:min(440px,94vw);background:#0b1f4af5;border:3px solid #fde047;border-radius:16px;padding:10px 12px;box-shadow:0 10px 30px #000b;display:none;color:#fff}
+#coach.on{display:block} #coach .ct{font-size:14px;line-height:1.4} #coach .ct b{color:#fde047} #coach .cs{font-size:11px;opacity:.75;margin-bottom:4px;font-weight:800}
+#coach .cb{display:flex;gap:6px;margin-top:8px;justify-content:flex-end} #coach .cb .btn{padding:6px 12px;font-size:13px}
+body.coachTop #coach{bottom:auto;top:calc(var(--topH,54px) + 8px)}
+body.coachOn #hint{display:none!important}
+.tutGlow{animation:tutGlow 1s ease-in-out infinite;position:relative;z-index:61}
+@keyframes tutGlow{0%,100%{box-shadow:0 0 0 3px #fde047,0 0 12px 4px #fde04788}50%{box-shadow:0 0 0 6px #fde047,0 0 26px 10px #fde047aa}}
+.tip{margin:0 0 8px;padding:6px 8px;border-left:3px solid #fde047;background:rgba(253,224,71,.10);border-radius:6px}
+.tip summary{cursor:pointer;font-weight:800;list-style:none}.tip summary::-webkit-details-marker{display:none}
+/* phones (installed app or browser): every panel becomes a full-height sheet under the top bar, so the cards get the room */
+@media (max-width:640px){
+ .panel{left:2vw!important;right:2vw!important;width:96vw!important;top:calc(var(--topH,54px) + 4px)!important;bottom:calc(6px + env(safe-area-inset-bottom,0px))!important;max-height:none!important;transform:none!important;border-width:3px;border-radius:16px}
+ #info,#modal{z-index:24}
+ .panel .hd{padding:7px 10px} .panel .hd h2{font-size:17px} #inv .hd h2,#upg .hd h2{font-size:16px}
+ .panel .bd{padding:8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+ .caps{gap:5px;margin-bottom:6px} .caps div{padding:3px;font-size:14px;border-radius:8px}
+ #invTabs button{padding:7px 4px;font-size:14px}
+ #inv .search{padding:8px 10px;font-size:15px} #inv .btn{padding:8px 10px;font-size:14px}
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+}
+@media (max-width:360px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
 body.pad .touchOnly{display:none}
 /* the rest of the bastion opens under this same top bar */
 #world{position:fixed;left:0;right:0;bottom:0;top:var(--topH,54px);background:#08122af2;z-index:8;display:none;padding:16px;overflow:auto}
@@ -164,10 +188,11 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
   <div class="pill" id="hpWrap">🏰 <div id="hpBar"><div id="hpFill"></div></div> <span id="hpTxt">20</span></div>
   <div class="pill" id="spdWrap">⚡ <button class="btn gray" id="spd" style="padding:2px 10px">x1</button></div>
   <div class="pill" id="pauseWrap"><button class="btn gray" id="pause" title="Pause / resume" style="padding:2px 10px">⏸</button></div>
-  <div class="pill" id="acct">Guest</div>
+  <div class="pill" id="acct">Guest</div><button class="pill" id="helpBtn" style="cursor:pointer;border:0;font:inherit" title="Play the tutorial">❓ Tutorial</button>
 </div>
 
 <div id="remoteBattle" style="display:none;position:fixed;left:50%;transform:translateX(-50%);top:calc(56px + env(safe-area-inset-top));z-index:40;background:rgba(127,29,29,.92);color:#fff;font-weight:800;font-size:13px;padding:6px 12px;border-radius:10px;box-shadow:0 4px 14px #0008;text-align:center;pointer-events:none"></div>
+<div id="coach"><div class="cs" id="coachStep"></div><div class="ct" id="coachText"></div><div class="cb"><button class="btn gray" id="coachSkip">Skip tutorial</button><button class="btn green" id="coachNext">Next</button></div></div>
 <div id="hint">Tap <b>Inventory</b>, pick a Path, then tap tiles to lay a road from your camp to the castle.</div>
 <div id="drops"><div class="lbl">LAST<br>DROPS</div></div>
 <div id="toast"></div>
@@ -214,8 +239,7 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
     <div class="tabs" id="invTabs"><button data-k="t" class="on">Towers</button><button data-k="p">Paths</button><button data-k="s">Camp</button><button data-k="r">Traps</button></div>
     <div style="display:flex;gap:6px;margin-bottom:8px"><input class="search" id="invSearch" placeholder="Search name..."><button class="btn purple" id="fuseAll">✨ Fuse All</button></div>
     <div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn gray" id="autoFuseBtn" style="flex:1">⚡ Auto-fuse: OFF</button><button class="btn red" id="wipeBtn" style="flex:1">🧹 Wipe board</button></div>
-    <div class="small" style="margin-bottom:6px">Get 3 of the same item at the same level, then hit <b>Fuse</b> to turn them into one <b>+1</b>. Tap an item to hold it, then tap the board to place it.</div>
-    <div class="small" style="margin-bottom:8px;padding:6px 8px;border-left:3px solid #fde047;background:rgba(253,224,71,.10);border-radius:6px"><b>One card per weapon:</b> it shows your best level and how many you own in total (all levels together). Tap it to see each level, place one, or fuse: 3 of the same level make the next level.</div>
+    <details class="tip small"><summary>ⓘ How the inventory works</summary><div style="margin-top:4px">Tap a card to hold it, then tap the board to place it. <b>One card per weapon:</b> it shows your best level and how many you own in total. Tap it to see each level, place one, or fuse: 3 of the same level make the next level.</div></details>
     <div class="grid" id="invGrid"></div>
   </div>
 </div>
@@ -235,7 +259,7 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
 <!-- Upgrades -->
 <div class="panel mid" id="upg">
   <div class="hd"><h2>⬆ Upgrades</h2><div class="hstat" id="upgStat"></div><span class="pill">💰 <span id="upgCash">0</span></span><button class="x" data-close>X</button></div>
-  <div class="bd"><div class="small" style="margin-bottom:8px;text-align:center">Spend cash to unlock permanent upgrades. Tap a hex to buy the next level.</div><div class="hexWrap" id="hexWrap"></div></div>
+  <div class="bd"><div class="small" style="margin-bottom:8px;text-align:center">Upgrades are permanent and work in every run. Tap a hex to see what it does, then tap <b>Buy</b> (or tap the same hex again).</div><div id="upgDesc" class="upgDesc"></div><div class="hexWrap" id="hexWrap"></div></div>
 </div>
 
 <!-- Stats -->
@@ -259,8 +283,11 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.2.0';
+const VERSION = '1.3.0';
 const WHATS_NEW = [
+  '🎓 New tutorial for first-time players, and a ❓ Tutorial button to replay it any time.',
+  '⬆ Upgrades now explain what each one does: tap a hex to read it, then Buy.',
+  '📱 Inventory, Upgrades and the other panels fill the phone screen so you can see all your cards.',
   '🔄 Live sync between your devices: build on your PC and battle on your phone (or the other way round). Map changes, fusing, upgrades, cash and inventory show up on every device within a second or two, no refresh needed.',
   '⚔️ Only one device runs a battle at a time. Your other screens show the live wave and castle health and can keep changing the map while it runs.',
   '🛡️ Saves now merge instead of overwrite, so an older screen left open can never wipe newer progress.',
@@ -380,20 +407,20 @@ const ENEMY = {
 
 /* ---------- upgrades ---------- */
 const UPG = [
-  {k:'cash',ic:'💰',name:'Cash',base:250,g:1.6,max:40,col:'#eab308',fx:l=>'+'+(l*8)+'%'},
-  {k:'dmg',ic:'💥',name:'Tower damage',base:200,g:1.6,max:40,col:'#f97316',fx:l=>'+'+(l*8)+'%'},
-  {k:'board',ic:'🧱',name:'Board',base:2500,g:3.2,max:4,col:'#3b82f6',fx:l=>(7+l*2)+' x '+(7+l*2)},
-  {k:'castle',ic:'🏰',name:'Castle health',base:150,g:1.45,max:60,col:'#06b6d4',fx:l=>20+l*10},
-  {k:'def',ic:'🗼',name:'Defenses',base:500,g:1.75,max:22,col:'#a855f7',fx:l=>6+l*2},
-  {k:'spawn',ic:'🏕',name:'Spawners',base:5000,g:4,max:19,col:'#f59e0b',fx:l=>1+l},
-  {k:'trap',ic:'📌',name:'Traps',base:800,g:2.2,max:8,col:'#ef4444',fx:l=>2+l},
-  {k:'luck',ic:'🍀',name:'Luck',base:300,g:1.6,max:40,col:'#22c55e',fx:l=>'+'+(l*10)+'%'},
-  {k:'crit',ic:'🎯',name:'Crit chance',base:400,g:1.7,max:20,col:'#ec4899',fx:l=>'+'+(l*2)+'%'},
-  {k:'critd',ic:'✴️',name:'Crit damage',base:400,g:1.6,max:30,col:'#db2777',fx:l=>'+'+(l*15)+'%'},
-  {k:'speed',ic:'⏩',name:'Attack speed',base:600,g:1.7,max:20,col:'#14b8a6',fx:l=>'+'+(l*4)+'%'},
-  {k:'range',ic:'📡',name:'Range',base:1500,g:2,max:10,col:'#0ea5e9',fx:l=>'+'+(l*0.15).toFixed(2)},
-  {k:'start',ic:'🚩',name:'Start wave',base:3000,g:2.5,max:10,col:'#64748b',fx:l=>'Wave '+(1+l*5)},
-  {k:'road',ic:'🟫',name:'Road slow',base:800,g:1.7,max:15,col:'#a16207',fx:l=>'-'+(l*3)+'% speed'}
+  {k:'cash',ic:'💰',name:'Cash',base:250,g:1.6,max:40,col:'#eab308',d:'Every enemy you kill pays more cash. Cash buys upgrades and spawner camps.',fx:l=>'+'+(l*8)+'%'},
+  {k:'dmg',ic:'💥',name:'Tower damage',base:200,g:1.6,max:40,col:'#f97316',d:'Every tower hits harder. The simplest way to get further.',fx:l=>'+'+(l*8)+'%'},
+  {k:'board',ic:'🧱',name:'Board',base:2500,g:3.2,max:4,col:'#3b82f6',d:'Makes the board bigger (2 more rows and columns), so longer roads and more towers fit.',fx:l=>(7+l*2)+' x '+(7+l*2)},
+  {k:'castle',ic:'🏰',name:'Castle health',base:150,g:1.45,max:60,col:'#06b6d4',d:'Your castle can take more hits before the run ends. Each enemy that reaches it costs health.',fx:l=>20+l*10},
+  {k:'def',ic:'🗼',name:'Defenses',base:500,g:1.75,max:22,col:'#a855f7',d:'How many towers you can have on the board at once.',fx:l=>6+l*2},
+  {k:'spawn',ic:'🏕',name:'Spawners',base:5000,g:4,max:19,col:'#f59e0b',d:'How many spawner camps you can place. More camps means more enemies, more drops and more cash.',fx:l=>1+l},
+  {k:'trap',ic:'📌',name:'Traps',base:800,g:2.2,max:8,col:'#ef4444',d:'How many traps you can put on road tiles. Traps hurt or slow enemies walking over them.',fx:l=>2+l},
+  {k:'luck',ic:'🍀',name:'Luck',base:300,g:1.6,max:40,col:'#22c55e',d:'Better drops: rarer towers, camps and traps fall from enemies more often.',fx:l=>'+'+(l*10)+'%'},
+  {k:'crit',ic:'🎯',name:'Crit chance',base:400,g:1.7,max:20,col:'#ec4899',d:'Extra chance for any tower shot to be a critical hit.',fx:l=>'+'+(l*2)+'%'},
+  {k:'critd',ic:'✴️',name:'Crit damage',base:400,g:1.6,max:30,col:'#db2777',d:'Critical hits do this much more damage.',fx:l=>'+'+(l*15)+'%'},
+  {k:'speed',ic:'⏩',name:'Attack speed',base:600,g:1.7,max:20,col:'#14b8a6',d:'Every tower shoots faster.',fx:l=>'+'+(l*4)+'%'},
+  {k:'range',ic:'📡',name:'Range',base:1500,g:2,max:10,col:'#0ea5e9',d:'Every tower reaches further, measured in tiles.',fx:l=>'+'+(l*0.15).toFixed(2)},
+  {k:'start',ic:'🚩',name:'Start wave',base:3000,g:2.5,max:10,col:'#64748b',d:'New runs start at a later wave: tougher enemies but better cash and drops right away. Skips the easy early waves.',fx:l=>'Wave '+(1+l*5)},
+  {k:'road',ic:'🟫',name:'Road slow',base:800,g:1.7,max:15,col:'#a16207',d:'Enemies walk slower on every road tile, so towers get more shots at them.',fx:l=>'-'+(l*3)+'% speed'}
 ];
 const upgCost = (u,l)=>Math.round(u.base*Math.pow(u.g,l));
 
@@ -884,9 +911,17 @@ function renderShop(){if(!S.shop||Date.now()>S.shop.refreshAt)rollShop();
 window.buyCamp=id=>{const c=CAMPS[id];if(!S.shop.stock[id]||S.cash<c.price)return;S.cash-=c.price;S.shop.stock[id]--;invAdd('s',id,0);sfx('buy');toast(`Bought ${c.ic} ${c.name}`);renderShop();updHud();save();};
 
 /* ---------- upgrades ---------- */
-function renderUpg(){$('upgCash').textContent=fmt(S.cash);
+function renderUpg(){$('upgCash').textContent=fmt(S.cash);setTimeout(()=>upgDesc(upgPick),0);
   $('hexWrap').innerHTML=UPG.map(u=>{const l=U(u.k),max=l>=u.max,cost=upgCost(u,l);
-    return `<div class="hex${max?' max':''}${!max&&S.cash<cost?' cant':''}" style="background:${u.col}" onclick="buyUpg('${u.k}')"><span class="ic">${u.ic}</span>${u.name}<span>${u.fx(l)}</span><span class="cost">${max?'MAX':'💰 '+fmt(cost)}</span><span style="font-size:9px">Lv ${l}/${u.max}</span></div>`;}).join('');}
+    return `<div class="hex${max?' max':''}${upgPick===u.k?' picked':''}${!max&&S.cash<cost?' cant':''}" style="background:${u.col}" onclick="pickUpg('${u.k}')" onmouseenter="upgDesc('${u.k}')"><span class="ic">${u.ic}</span>${u.name}<span>${u.fx(l)}</span><span class="cost">${max?'MAX':'💰 '+fmt(cost)}</span><span style="font-size:9px">Lv ${l}/${u.max}</span></div>`;}).join('');}
+let upgPick=null;
+function upgDesc(k){const el=$('upgDesc');if(!el)return;const u=k&&UPG.find(x=>x.k===k);
+  if(!u){el.innerHTML='<span class="ui">👆</span><div class="ut">Tap any upgrade to read what it does before you buy it.</div>';return;}
+  const l=U(u.k),max=l>=u.max,cost=upgCost(u,l);
+  el.innerHTML=`<span class="ui">${u.ic}</span><div class="ut"><b>${u.name}</b> · level ${l}/${u.max}<br>${u.d}<br><span class="small">Now: <b>${u.fx(l)}</b>${max?' · maxed out':` → next: <b>${u.fx(l+1)}</b> for 💰 ${fmt(cost)}`}</span></div>`+
+    (max?'':`<button class="btn ${S.cash>=cost?'green':'gray'}" onclick="buyUpg('${u.k}')">Buy</button>`);}
+window.upgDesc=upgDesc;
+window.pickUpg=k=>{if(upgPick===k)return buyUpg(k);upgPick=k;renderUpg();};
 window.buyUpg=k=>{const u=UPG.find(x=>x.k===k),l=U(k);if(l>=u.max)return;const cost=upgCost(u,l);if(S.cash<cost)return toast('Not enough cash');
   S.cash-=cost;S.upg[k]=l+1;sfx('buy');lastUpg={k,l:l+1};upgStat(k,l+1);toast(`⬆ ${u.name}: ${u.fx(l+1)}`);
   if(k==='board'){buildBoard();resize();}
@@ -1445,6 +1480,44 @@ async function initFirebase(){
   });
 }
 
+
+/* ---------- tutorial: the first time you play, a coach walks you through one full round ----------
+   Each step says what to do, glows the button to press, and moves on by itself when you have done it.
+   Replay it any time with ❓ Tutorial. Progress is kept in S.tut (done = true). */
+const hasRoute=()=>[...routes.values()].some(r=>r);
+const TUT=[
+  {t:'Welcome to <b>Bastion Builder</b>! Enemies walk out of <b>spawner camps</b>, follow your <b>roads</b> and try to reach your <b>castle</b> in the middle. Your <b>towers</b> shoot them on the way. Let’s build your first base.',next:true},
+  {t:'Tap <b>Inventory</b>. Everything you own lives there: towers, roads, camps and traps.',glow:'[data-open="inv"]',done:()=>$('inv').classList.contains('open')},
+  {t:'Open the <b>Camp</b> tab, tap the <b>Forest</b> camp card, then tap <b>Place on board</b>.',glow:'#invTabs [data-k="s"]',top:true,done:()=>holding&&parseKey(holding).k==='s'||placedCount('s')>0},
+  {t:'Now tap a tile on the board for your camp. It must be <b>at least 2 tiles away</b> from the castle in the middle.',top:true,done:()=>placedCount('s')>0},
+  {t:'Enemies need a road. Open <b>Inventory</b> → <b>Paths</b>, tap <b>Dirt Road</b> → <b>Place on board</b>, then tap tiles to lay a road from your camp to the castle. Tiles can touch on the sides or the corners.',glow:'[data-open="inv"]',top:true,done:hasRoute},
+  {t:'The road reaches the castle! Now open <b>Inventory</b> → <b>Towers</b>, pick the <b>Crossbow Turret</b>, and place it on an empty tile <b>next to the road</b>. Place every tower you have.',glow:'[data-open="inv"]',top:true,done:()=>placedCount('t')>0},
+  {t:'Ready! Tap <b>Start Battle</b>. Enemies come in waves. Each kill pays <b>cash</b>, and enemies sometimes <b>drop</b> new towers, roads, camps and traps.',glow:'#waveBtn',done:()=>inBattle},
+  {t:'Watch your towers work. Tap <b>Next Wave</b> to call the next wave early for a small cash bonus, or wait for it. The run ends when the castle runs out of health, and you keep all cash and drops.',next:true},
+  {t:'Between runs, spend cash in <b>Upgrades</b>. Tap a hex to read what it does, then <b>Buy</b>. Upgrades last forever.',glow:'[data-open="upg"]',done:()=>$('upg').classList.contains('open')},
+  {t:'Last tip: <b>3 of the same tower at the same level fuse</b> into one stronger level. Tap a card in Inventory to fuse, or turn on <b>Auto-fuse</b>. That’s it, have fun! Replay this any time with <b>❓ Tutorial</b>.',next:true,last:true}
+];
+let tutI=-1,glowEl=null,tutManual=false;
+function tutShow(){
+  if(glowEl){glowEl.classList.remove('tutGlow');glowEl=null;}
+  const st=TUT[tutI];if(!st){tutEnd();return;}
+  $('coach').classList.add('on');document.body.classList.add('coachOn');document.body.classList.toggle('coachTop',!!st.top);
+  $('coachStep').textContent='TUTORIAL · '+(tutI+1)+' of '+TUT.length;$('coachText').innerHTML=st.t;
+  $('coachNext').style.display=st.next?'':'none';$('coachNext').textContent=st.last?'Finish':'Next';
+  if(st.glow){glowEl=document.querySelector(st.glow);if(glowEl)glowEl.classList.add('tutGlow');}}
+function tutStart(){tutI=0;tutShow();}
+function tutEnd(){if(glowEl){glowEl.classList.remove('tutGlow');glowEl=null;}tutI=-1;$('coach').classList.remove('on');document.body.classList.remove('coachTop','coachOn');S.tut=true;save();}
+$('coachNext').onclick=()=>{tutI++;tutShow();};
+$('coachSkip').onclick=tutEnd;
+$('helpBtn').onclick=()=>{tutManual=true;['inv','info','shop','upg','stats','modal'].forEach(closePanel);tutStart();};
+setInterval(()=>{if(tutI<0)return;if(tutI<2&&!S.tut&&S.best&&!tutManual){tutI=-1;$('coach').classList.remove('on');document.body.classList.remove('coachOn');if(glowEl){glowEl.classList.remove('tutGlow');glowEl=null;}return;}const st=TUT[tutI];
+  if(st&&st.glow&&!glowEl){glowEl=document.querySelector(st.glow);if(glowEl)glowEl.classList.add('tutGlow');}
+  if(st&&st.done&&st.done()){tutI++;sfx('chime');tutShow();}},500);
+// first visit: start the tutorial for new players (not for anyone who has already played)
+let tutAuto=setInterval(()=>{if(performance.now()<3500)return;   // give a signed-in save a moment to arrive
+  if(S.tut||S.best||(S.board||[]).length||(S.runs||[]).length){clearInterval(tutAuto);return;}
+  if(!$('modal').classList.contains('open')&&tutI<0){clearInterval(tutAuto);tutStart();}},800);
+
 /* ---------- loop ---------- */
 const clock=new THREE.Clock();
 function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(),.1);pollPad(raw);
@@ -1480,6 +1553,8 @@ function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(
 if(cachedUser())$('acct').textContent='Signing in…';
 initFirebase().catch(e=>{fbFailed=true;console.warn('firebase',e);});
 loadLocal();buildBoard();resize();updHud();setHolding(null);renderAutoFuse();frame();
+const newPlayer=()=>!S.best&&!(S.board||[]).length&&!(S.runs||[]).length;
+if(S.seenVersion!==VERSION&&newPlayer()){S.seenVersion=VERSION;}
 if(S.seenVersion!==VERSION){modal('🆕 What\'s new · v'+VERSION,'<ul style="margin:0;padding-left:18px;line-height:1.5">'+WHATS_NEW.map(x=>'<li>'+x+'</li>').join('')+'</ul>');S.seenVersion=VERSION;save();}
 /* ---------- places: the lair and the rest of the bastion, under the same top bar ---------- */
 const PLACES=[
