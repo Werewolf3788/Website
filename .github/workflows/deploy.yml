@@ -63,7 +63,7 @@ jobs:
     if: ${{ github.event.workflow_run == null || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy_try.outputs.page_url || steps.deploy_retry.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -76,6 +76,18 @@ jobs:
         with:
           path: '.'
 
+      # GitHub sometimes can't find the artifact it was just given ("No artifacts named github-pages"):
+      # wait a moment and try once more before calling the deploy failed
       - name: Deploy to GitHub Pages
-        id: deployment
+        id: deploy_try
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Wait before retrying
+        if: steps.deploy_try.outcome == 'failure'
+        run: sleep 30
+
+      - name: Deploy to GitHub Pages (retry)
+        id: deploy_retry
+        if: steps.deploy_try.outcome == 'failure'
         uses: actions/deploy-pages@v4
