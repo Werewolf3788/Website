@@ -9,7 +9,7 @@ const store = require("./store");
 
 const API = "https://api.kick.com/public";
 const IDP = "https://id.kick.com/oauth";
-const SCOPES = "user:read channel:read channel:write events:subscribe";
+const SCOPES = "user:read channel:read channel:write chat:write events:subscribe";
 
 const toks = new Map();
 
@@ -76,6 +76,16 @@ async function updateChannel(key, patch) {
     if (!tok) return false;
     await api("PATCH", "/v1/channels", tok, patch);
     return true;
+}
+
+/* Post a line in the streamer's own Kick chat (needs the chat:write permission).
+ * Used for the title announcement, so it fails loudly instead of quietly doing nothing. */
+async function sendChat(key, broadcasterUserId, text) {
+    const tok = await token(key);
+    if (!tok) return "kick not connected";
+    if (!broadcasterUserId) return "no kick user id - reconnect Kick";
+    await api("POST", "/v1/chat", tok, { type: "message", content: String(text), broadcaster_user_id: Number(broadcasterUserId) });
+    return "ok";
 }
 
 /* OAuth for /setup */
@@ -151,4 +161,4 @@ async function verifyWebhook(headers, raw) {
     return signatureMatches(fresh, signed, signature);
 }
 
-module.exports = { creds, token, searchCategories, updateChannel, authorizeUrl, exchangeCode, ensureChatSubscription, verifyWebhook, CHAT_EVENT };
+module.exports = { creds, token, searchCategories, updateChannel, sendChat, authorizeUrl, exchangeCode, ensureChatSubscription, verifyWebhook, CHAT_EVENT };
