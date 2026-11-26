@@ -16,35 +16,70 @@
 <script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<title>Brick Breaker</title>
+<title>Brick Breaker: Breaker Corps</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
   html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
   #app{display:flex;flex-direction:column;height:100%}
-  #top{padding:6px 12px;font-size:.85rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.5}
+  #top{padding:6px 12px;font-size:.82rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.5}
   #top button,#top a{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;text-decoration:none;padding:2px 4px}
+  #obj{padding:5px 12px;background:#111c33;border-bottom:1px solid #1e293b;font-size:.74rem;color:#cbd5e1;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
+  #objTitle{font-weight:800;color:#fbbf24}
   #stage{position:relative;flex:1;min-height:0;background:radial-gradient(circle at 50% 20%,#1e3a8a,#0b1220 70%)}
   canvas{position:absolute;inset:0;display:block;touch-action:none}
-  #toast{position:absolute;top:8px;left:0;right:0;text-align:center;color:#fde68a;font-weight:800;text-shadow:0 1px 6px #000;pointer-events:none;min-height:1.3em}
-  #hint{padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0f172a;color:#94a3b8;font-size:.78rem;text-align:center}
-  #ov{position:fixed;inset:0;z-index:20;background:#000b;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
+  #toast{position:absolute;top:8px;left:0;right:0;text-align:center;color:#fde68a;font-weight:800;text-shadow:0 1px 6px #000;pointer-events:none;min-height:1.3em;padding:0 10px;font-size:.86rem}
+  #hint{padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0f172a;color:#94a3b8;font-size:.76rem;text-align:center}
+  #ov{position:fixed;inset:0;z-index:40;background:#000c;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
   #ov button{background:#22c55e;color:#04210f;font-weight:800;border:0;border-radius:10px;padding:12px 20px;font:inherit;cursor:pointer}
   #ov button.alt{background:#334155;color:#e2e8f0}
-  #ovT{font-size:1.5rem;font-weight:800} #ovS{color:#cbd5e1;max-width:420px}
+  #ovT{font-size:1.45rem;font-weight:900} #ovS{color:#cbd5e1;max-width:440px;white-space:pre-line;line-height:1.45;font-size:.92rem}
+  #camp{position:fixed;inset:0;z-index:30;background:#0b1220;display:none;flex-direction:column}
+  #campTop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;background:#0f172a;border-bottom:1px solid #1e293b;font-size:.86rem}
+  #campTop button{background:none;border:0;color:#e2e8f0;font:inherit;cursor:pointer;padding:4px 6px}
+  #campBody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 12px calc(20px + env(safe-area-inset-bottom))}
+  .mhead{margin:2px 0 10px;color:#94a3b8;font-size:.8rem;line-height:1.5}
+  .mrow{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:#111c33;border:1px solid #1e293b;border-radius:12px;padding:10px 12px;margin-bottom:8px;color:#e2e8f0;font:inherit;cursor:pointer}
+  .mrow.done{border-color:#22c55e66}
+  .mrow.lock{opacity:.42}
+  .mnum{width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:#1e293b;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem}
+  .mrow.done .mnum{background:#14532d;color:#86efac}
+  .mname{font-weight:700;font-size:.9rem}
+  .mobj{color:#94a3b8;font-size:.74rem;margin-top:2px}
+  .mstars{margin-left:auto;color:#fbbf24;letter-spacing:1px;font-size:.82rem;white-space:nowrap}
+  .shopB{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#111c33;border:1px solid #1e293b;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:.84rem}
+  .shopB button{background:#22c55e;color:#04210f;border:0;border-radius:9px;padding:8px 12px;font:inherit;font-weight:800;cursor:pointer}
+  .shopB button:disabled{background:#334155;color:#94a3b8}
+  .shopB small{display:block;color:#94a3b8;font-weight:400;font-size:.74rem;margin-top:2px}
+  .secTitle{font-weight:800;margin:16px 0 8px;color:#e2e8f0;font-size:.9rem}
+  #freeBtn{width:100%;background:#334155;color:#e2e8f0;border:0;border-radius:12px;padding:12px;font:inherit;font-weight:800;cursor:pointer;margin-top:4px}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="top">
     <span>🧱 <b>Brick Breaker</b></span>
-    <span>Score <b id="score">0</b> · Best <b id="best">0</b></span>
-    <span>Level <b id="lvl">1</b> · <span id="lives">❤❤❤</span></span>
-    <span><button id="muteBtn">🔊</button> <button id="pauseBtn">⏸</button> <button id="gamesBtn">☰ Games</button></span>
+    <span>Score <b id="score">0</b> · 🪙 <b id="coins">0</b> · ⭐ <b id="stars">0</b></span>
+    <span id="lives">❤❤❤</span>
+    <span><button id="muteBtn">🔊</button> <button id="pauseBtn">⏸</button> <button id="campBtn">🗺 Missions</button> <button id="gamesBtn">☰ Games</button></span>
   </div>
+  <div id="obj"><span id="objTitle">Breaker Corps</span><span id="objList"></span></div>
   <div id="stage"><canvas id="c"></canvas><div id="toast"></div></div>
-  <div id="hint">Drag anywhere to move the paddle · tap or Space to launch · ← → keys work too</div>
+  <div id="hint">Drag anywhere to move the paddle · tap or Space to launch · catch falling capsules for power-ups</div>
 </div>
 <div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button><button id="ovBtn2" class="alt" style="display:none"></button></div>
+<div id="camp">
+  <div id="campTop">
+    <span>🧱 <b>Breaker Corps</b> · 🪙 <b id="campCoins">0</b> · ⭐ <b id="campStars">0</b>/36</span>
+    <span><button id="campClose">✕ Close</button></span>
+  </div>
+  <div id="campBody">
+    <div class="mhead">Twelve missions across the city. Each one has an objective, a briefing and up to three stars. Earn coins to upgrade your rig between missions.</div>
+    <div id="missionList"></div>
+    <div class="secTitle">🛠 Upgrade rig</div>
+    <div id="shop"></div>
+    <button id="freeBtn">♾ Endless mode — no objective, chase the high score</button>
+  </div>
+</div>
 <script>
 (function(){
 'use strict';
@@ -52,11 +87,96 @@ var $ = function(id){ return document.getElementById(id); };
 var cv = $('c'), ctx = cv.getContext('2d'), stage = $('stage');
 var W = 320, H = 420, dpr = 1;
 
+/* ---------------- save ---------------- */
+var SAVE = 'bb_corps_v1';
+var save = { coins: 0, upg: { paddle: 0, life: 0, drops: 0 }, stars: {}, unlocked: 1 };
+try {
+  var raw = localStorage.getItem(SAVE);
+  if (raw) {
+    var p = JSON.parse(raw);
+    if (p && typeof p === 'object') {
+      save.coins = p.coins || 0;
+      if (p.upg) { save.upg.paddle = p.upg.paddle || 0; save.upg.life = p.upg.life || 0; save.upg.drops = p.upg.drops || 0; }
+      save.stars = p.stars || {};
+      save.unlocked = p.unlocked || 1;
+    }
+  }
+} catch (e) {}
+function persist(){ try { localStorage.setItem(SAVE, JSON.stringify(save)); } catch (e) {} }
+function totalStars(){
+  var t = 0;
+  for (var k in save.stars) if (save.stars.hasOwnProperty(k)) t += save.stars[k];
+  return t;
+}
+
+/* ---------------- story ---------------- */
+var MISSIONS = [
+  { name: 'Rooftop Warm-up',
+    story: 'The stacks came out of nowhere last night. You are Corporal Paddle, last active member of the Breaker Corps.\nClear the rooftop stack — that is your first order.',
+    rows: 3, scoreStar: 400,
+    goals: [{ kind: 'clear', label: 'Clear every brick' }] },
+  { name: 'Supply Run',
+    story: 'Scavengers stashed supplies inside gold bricks. A gold brick pays a fat coin bonus, so sweep the stack clean and smash every one you find.',
+    rows: 4, gold: 5, scoreStar: 700,
+    goals: [{ kind: 'clear', label: 'Clear every brick' }] },
+  { name: 'The Relay',
+    story: 'Four relay cores are holding the district grid online. Crack them open and the drones go blind.',
+    rows: 4, cores: 4, scoreStar: 900,
+    goals: [{ kind: 'cores', label: 'Destroy all 4 relay cores' }] },
+  { name: 'Under Pressure',
+    story: 'Sirens are closing in. You have 75 seconds to flatten the stack or the squad gets cornered.',
+    rows: 4, limit: 75, scoreStar: 1000,
+    goals: [{ kind: 'clear', label: 'Clear every brick' }] },
+  { name: 'Blast Zone',
+    story: 'Demolition charges are wired through this stack. Bomb bricks blow their neighbours to dust — use them instead of chasing every hit.',
+    rows: 5, bomb: 4, scoreStar: 1300,
+    goals: [{ kind: 'clear', label: 'Clear every brick' }] },
+  { name: 'Nest of Cores',
+    story: 'Six heavy cores, armoured rows on top. Work the edges and keep the ball out of the corners.',
+    rows: 5, cores: 6, hard: 1, scoreStar: 1600,
+    goals: [{ kind: 'cores', label: 'Destroy all 6 relay cores' }] },
+  { name: 'Night Shift',
+    story: 'The grid fights back at night — the ball runs hot and everything moves faster. Keep the board clear for 90 seconds of chaos.',
+    rows: 5, limit: 90, event: 'swarm', scoreStar: 1800,
+    goals: [{ kind: 'clear', label: 'Clear every brick' }] },
+  { name: 'Gold Run',
+    story: 'A bullion convoy crashed into the old bank stack. Six gold bricks and 2,500 points are on the table — go get paid.',
+    rows: 5, gold: 6, event: 'gold', scoreStar: 2600,
+    goals: [{ kind: 'clear', label: 'Clear every brick' }, { kind: 'score', value: 2500, label: 'Score 2,500' }] },
+  { name: 'Bomb Squad',
+    story: 'Command wired the whole block. Three cores are buried in a live minefield — clear it without getting fancy.',
+    rows: 6, bomb: 5, cores: 3, scoreStar: 2400,
+    goals: [{ kind: 'cores', label: 'Destroy all 3 relay cores' }, { kind: 'clear', label: 'Clear every brick' }] },
+  { name: 'Crossfire',
+    story: 'Eight cores, two armoured rows, and a stack tall enough to hide behind. This is where rookies stop.',
+    rows: 6, cores: 8, hard: 2, scoreStar: 3000,
+    goals: [{ kind: 'cores', label: 'Destroy all 8 relay cores' }] },
+  { name: 'The Gauntlet',
+    story: 'Two minutes, seven rows, triple-tough bricks. Nothing fancy — just you and the wall.',
+    rows: 7, tough: 2, hard: 2, limit: 120, event: 'swarm', scoreStar: 3600,
+    goals: [{ kind: 'clear', label: 'Clear every brick' }] },
+  { name: 'Breaker Prime',
+    story: 'The Prime stack: ten cores behind the toughest wall in the city. Break it and the Corps holds the skyline.',
+    rows: 7, cores: 10, tough: 2, hard: 2, event: 'gold', scoreStar: 5200,
+    goals: [{ kind: 'cores', label: 'Destroy all 10 relay cores' }, { kind: 'clear', label: 'Clear every brick' }] }
+];
+
+var UPG = [
+  { id: 'paddle', name: 'Wider paddle', desc: '+10 paddle width', base: 60, max: 4 },
+  { id: 'life', name: 'Spare heart', desc: 'Start each mission with one more life', base: 140, max: 2 },
+  { id: 'drops', name: 'Lucky bricks', desc: 'Power-ups drop more often', base: 90, max: 3 }
+];
+
+/* ---------------- runtime ---------------- */
 var score = 0, best = parseInt(localStorage.getItem('bb_best') || '0', 10) || 0;
-var lives = 3, level = 1;
-var state = 'ready';   // ready | playing | paused | over
+var lives = 3, endlessLevel = 1;
+var state = 'menu';   // menu | playing | paused | done
+var cur = null, missionIndex = -1;
+var coinsRun = 0, lostLives = 0, elapsed = 0, bricksBroken = 0, coresLeft = 0;
+var goldUntil = 0;
 var paddle = { x: 0, y: 0, w: 84, h: 12 };
-var ball = { x: 0, y: 0, vx: 0, vy: 0, r: 7, speed: 300 };
+var balls = [];
+var capsules = [];
 var holding = true;
 var rows = 5, cols = 8, grid = [], gap = 4, padX = 8, topPad = 10, bw = 30, bh = 18;
 var keys = { left: false, right: false };
@@ -65,6 +185,12 @@ var ac = null, lastT = 0;
 
 var COLORS = ['#f87171', '#fb923c', '#facc15', '#4ade80', '#38bdf8', '#a78bfa', '#f472b6'];
 var BRICK_DARK = ['#b91c1c', '#c2410c', '#a16207', '#15803d', '#0369a1', '#6d28d9', '#be185d'];
+var POWER = {
+  wide: { icon: '↔', label: 'Wide paddle', colour: '#38bdf8' },
+  multi: { icon: '⦿', label: 'Multiball', colour: '#a78bfa' },
+  slow: { icon: '🐢', label: 'Slow ball', colour: '#4ade80' },
+  life: { icon: '❤', label: 'Extra life', colour: '#f472b6' }
+};
 
 function beep(freq, dur, vol){
   if (muted) return;
@@ -78,22 +204,37 @@ function beep(freq, dur, vol){
     o.stop(ac.currentTime + (dur || 0.06));
   } catch (e) {}
 }
-
 function pad(n){ return n.toLocaleString(); }
+
 function hud(){
   $('score').textContent = pad(score);
-  $('best').textContent = pad(best);
-  $('lvl').textContent = level;
+  $('coins').textContent = pad(save.coins + coinsRun);
+  $('stars').textContent = totalStars();
   $('lives').textContent = lives > 0 ? new Array(lives + 1).join('❤') : '—';
   $('pauseBtn').textContent = state === 'paused' ? '▶' : '⏸';
+  $('campCoins').textContent = pad(save.coins + coinsRun);
+  $('campStars').textContent = totalStars();
+  var title = $('objTitle'), list = $('objList');
+  if (cur) {
+    var left = '';
+    if (cur.limit) left = Math.max(0, Math.ceil(cur.limit - elapsed)) + 's left';
+    var bits = [];
+    if (coresLeft > 0) bits.push(coresLeft + ' cores left');
+    if (cur.limit) bits.push(left);
+    list.textContent = bits.join(' · ');
+    title.textContent = (missionIndex + 1) + '. ' + cur.name;
+  } else {
+    title.textContent = 'Endless mode';
+    list.textContent = 'Level ' + endlessLevel + (best ? ' · best ' + pad(best) : '');
+  }
 }
 function toast(msg){
   $('toast').textContent = msg;
   clearTimeout(toast.t);
-  toast.t = setTimeout(function(){ $('toast').textContent = ''; }, 1600);
+  toast.t = setTimeout(function(){ $('toast').textContent = ''; }, 1900);
 }
 
-/* ---------- geometry ---------- */
+/* ---------------- board ---------------- */
 function brickRect(k){
   var r = Math.floor(k / cols), c = k % cols;
   return { x: padX + c * (bw + gap), y: topPad + r * (bh + gap), w: bw, h: bh, row: r };
@@ -101,20 +242,59 @@ function brickRect(k){
 function layoutBricks(){
   bw = (W - padX * 2 - gap * (cols - 1)) / cols;
 }
-function buildLevel(){
-  rows = Math.min(5 + Math.floor((level - 1) / 2), 7);
+function shuffled(n){
+  var a = [];
+  for (var i = 0; i < n; i++) a.push(i);
+  for (var k = a.length - 1; k > 0; k--) {
+    var j = Math.floor(Math.random() * (k + 1));
+    var t = a[k]; a[k] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function buildBoard(spec){
+  var r, c;
+  rows = spec && spec.rows ? spec.rows : Math.min(5 + Math.floor((endlessLevel - 1) / 2), 7);
+  cols = W < 380 ? 7 : 8;
+  var tough = spec && spec.tough ? spec.tough : 0;
+  var hard = spec && spec.hard ? spec.hard : 0;
   grid = [];
-  for (var r = 0; r < rows; r++)
-    for (var c = 0; c < cols; c++)
-      grid.push(level >= 3 && r === 0 ? 2 : 1);
+  for (r = 0; r < rows; r++) {
+    for (c = 0; c < cols; c++) {
+      var hp = r < tough ? 3 : (r < tough + hard ? 2 : 1);
+      grid.push({ hp: hp, max: hp, kind: 'n' });
+    }
+  }
+  if (spec) {
+    var order = shuffled(grid.length);
+    var oi = 0;
+    function claim(kind, count){
+      var made = 0;
+      while (made < count && oi < order.length) {
+        var k = order[oi++];
+        if (grid[k].kind !== 'n') continue;
+        grid[k].kind = kind;
+        made++;
+      }
+      if (kind === 'core') coresLeft = made;
+    }
+    claim('core', spec.cores || 0);
+    claim('gold', spec.gold || 0);
+    claim('bomb', spec.bomb || 0);
+  } else {
+    coresLeft = 0;
+    if (endlessLevel >= 3) {
+      var eo = shuffled(grid.length), en = Math.min(4, grid.length);
+      for (var i = 0; i < en; i++) grid[eo[i]].kind = i === 0 ? 'gold' : 'bomb';
+    }
+  }
   layoutBricks();
 }
 function bricksLeft(){
-  for (var i = 0; i < grid.length; i++) if (grid[i] > 0) return true;
+  for (var i = 0; i < grid.length; i++) if (grid[i].hp > 0) return true;
   return false;
 }
 
-/* ---------- resize ---------- */
+/* ---------------- size / balls ---------------- */
 function resize(){
   var r = stage.getBoundingClientRect();
   W = Math.max(260, Math.floor(r.width));
@@ -124,75 +304,303 @@ function resize(){
   cv.style.width = W + 'px'; cv.style.height = H + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   cols = W < 380 ? 7 : 8;
-  bh = Math.max(13, Math.min(26, Math.round(H * 0.034)));
-  paddle.w = Math.max(64, Math.min(130, Math.round(W * 0.2)));
+  bh = Math.max(12, Math.min(26, Math.floor((H * 0.52) / Math.max(rows, 3)) - gap));
+  var base = Math.max(64, Math.min(130, Math.round(W * 0.2)));
+  paddle.w = base + save.upg.paddle * 10;
   paddle.h = 12;
   paddle.y = H - 30;
   paddle.x = Math.min(Math.max(0, paddle.x || (W - paddle.w) / 2), W - paddle.w);
   layoutBricks();
-  if (holding) stickBall();
+  if (holding) stickBalls();
   draw();
 }
 
-function stickBall(){
-  ball.x = paddle.x + paddle.w / 2;
-  ball.y = paddle.y - ball.r - 2;
-  ball.vx = 0; ball.vy = 0;
+function newBall(){
+  return { x: paddle.x + paddle.w / 2, y: paddle.y - 9, vx: 0, vy: 0, r: 7, speed: 300 };
+}
+function stickBalls(){
   holding = true;
+  balls = [newBall()];
+  balls[0].x = paddle.x + paddle.w / 2;
+  balls[0].y = paddle.y - balls[0].r - 2;
+}
+function ballSpeedMul(){
+  return cur ? Math.min(1.55, 1 + (missionIndex * 0.035)) : Math.min(1.7, 1 + (endlessLevel - 1) * 0.08);
 }
 
-function newRun(){
-  score = 0; lives = 3; level = 1; ball.speed = 300;
-  buildLevel(); paddle.x = (W - paddle.w) / 2; stickBall();
-  state = 'playing'; hideOverlay(); hud();
-}
-function nextLevel(){
-  level++;
-  ball.speed = Math.min(760, ball.speed + 35);
-  buildLevel(); stickBall(); hud();
-  toast('Level ' + level + ' — bricks are quicker now');
-}
-function loseLife(){
-  lives--;
-  hud(); beep(160, 0.25, 0.06);
-  if (lives <= 0) return gameOver();
-  stickBall();
-  toast('Ouch — ' + lives + ' ' + (lives === 1 ? 'life' : 'lives') + ' left');
-}
-function gameOver(){
-  state = 'over';
-  var beat = score > best;
-  if (beat) { best = score; try { localStorage.setItem('bb_best', String(best)); } catch (e) {} }
+function startMission(i){
+  cur = MISSIONS[i]; missionIndex = i;
+  score = 0; coinsRun = 0; lostLives = 0; elapsed = 0; bricksBroken = 0; goldUntil = 0; eventsDone = 0;
+  capsules = [];
+  lives = 3 + save.upg.life;
+  buildBoard(cur);
+  stickBalls();
+  balls[0].speed = 300 * ballSpeedMul();
+  paddle.x = (W - paddle.w) / 2;
+  state = 'playing'; lastT = 0;
+  hideOverlay(); hideCampaign();
   hud();
-  showOverlay('💥 Out of lives',
-    'You scored ' + pad(score) + (beat ? ' — a new best!' : ' · best ' + pad(best)) + ' · reached level ' + level,
-    'Play again', newRun);
-  beep(220, 0.3, 0.06);
+  toast(cur.name + ' — ' + cur.goals[0].label);
+}
+function startEndless(){
+  cur = null; missionIndex = -1;
+  score = 0; coinsRun = 0; lostLives = 0; elapsed = 0; bricksBroken = 0; goldUntil = 0; eventsDone = 0;
+  capsules = [];
+  lives = 3 + save.upg.life; endlessLevel = 1;
+  buildBoard(null);
+  stickBalls();
+  balls[0].speed = 300;
+  state = 'playing'; lastT = 0;
+  hideOverlay(); hideCampaign();
+  hud();
+  toast('Endless — see how far you get');
 }
 
-/* ---------- overlay ---------- */
+/* ---------------- overlays ---------------- */
 function showOverlay(title, sub, btn, fn, btn2, fn2){
   $('ovT').textContent = title;
   $('ovS').textContent = sub || '';
   $('ovBtn').textContent = btn;
-  $('ovBtn').onclick = function(){ $('ov').style.display = 'none'; fn(); };
-  if (btn2) { $('ovBtn2').style.display = ''; $('ovBtn2').textContent = btn2; $('ovBtn2').onclick = function(){ $('ov').style.display = 'none'; fn2(); }; }
-  else $('ovBtn2').style.display = 'none';
+  $('ovBtn').onclick = function(){ hideOverlay(); fn(); };
+  if (btn2) {
+    $('ovBtn2').style.display = '';
+    $('ovBtn2').textContent = btn2;
+    $('ovBtn2').onclick = function(){ hideOverlay(); fn2(); };
+  } else $('ovBtn2').style.display = 'none';
   $('ov').style.display = 'flex';
 }
 function hideOverlay(){ $('ov').style.display = 'none'; }
 
-/* ---------- physics ---------- */
+function starString(n){ return '★★★'.slice(0, n) + '☆☆☆'.slice(0, 3 - n); }
+function missionStars(i){ return save.stars[i] || 0; }
+
+function renderCampaign(){
+  var html = '';
+  for (var i = 0; i < MISSIONS.length; i++) {
+    var m = MISSIONS[i], st = missionStars(i), locked = i + 1 > save.unlocked;
+    html += '<button class="mrow' + (st ? ' done' : '') + (locked ? ' lock' : '') + '" data-m="' + i + '">' +
+      '<span class="mnum">' + (locked ? '🔒' : (i + 1)) + '</span>' +
+      '<span><span class="mname">' + m.name + '</span>' +
+      '<span class="mobj">' + m.goals.map(function(g){ return g.label; }).join(' + ') + (m.limit ? ' · ' + m.limit + 's limit' : '') + '</span></span>' +
+      '<span class="mstars">' + starString(st) + '</span>' +
+      '</button>';
+  }
+  $('missionList').innerHTML = html;
+
+  var sh = '';
+  for (var u = 0; u < UPG.length; u++) {
+    var up = UPG[u], lvl = save.upg[up.id] || 0, cost = up.base * (lvl + 1), maxed = lvl >= up.max;
+    sh += '<div class="shopB"><span>' + up.name + ' <b>' + lvl + '/' + up.max + '</b><small>' + up.desc + '</small></span>' +
+      '<button data-up="' + up.id + '"' + (maxed || save.coins + coinsRun < cost ? ' disabled' : '') + '>' +
+      (maxed ? 'Maxed' : cost + ' 🪙') + '</button></div>';
+  }
+  $('shop').innerHTML = sh;
+  $('campCoins').textContent = pad(save.coins + coinsRun);
+  $('campStars').textContent = totalStars();
+}
+function openCampaign(){
+  if (state === 'playing') { state = 'paused'; }
+  renderCampaign();
+  $('camp').style.display = 'flex';
+  hud();
+}
+function hideCampaign(){ $('camp').style.display = 'none'; }
+
+$('missionList').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-m]');
+  if (!b) return;
+  var i = +b.dataset.m;
+  if (i + 1 > save.unlocked) { toast('Finish the mission before this one first'); return; }
+  var m = MISSIONS[i];
+  var lines = [m.story, ''];
+  lines.push('Objective: ' + m.goals.map(function(g){ return g.label; }).join(', '));
+  if (m.limit) lines.push('Time limit: ' + m.limit + ' seconds');
+  lines.push('');
+  lines.push('★ Clear it   ★★ Without losing a life   ★★★ Score ' + pad(m.scoreStar) + '+');
+  lines.push('Best so far: ' + starString(missionStars(i)));
+  showOverlay((i + 1) + '. ' + m.name, lines.join('\n'), 'Deploy', function(){ startMission(i); }, 'Mission list', openCampaign);
+});
+$('shop').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-up]');
+  if (!b) return;
+  var id = b.dataset.up, up = null, k;
+  for (k = 0; k < UPG.length; k++) if (UPG[k].id === id) up = UPG[k];
+  if (!up) return;
+  var lvl = save.upg[id] || 0;
+  if (lvl >= up.max) return;
+  var cost = up.base * (lvl + 1);
+  if (save.coins + coinsRun < cost) { toast('Not enough coins yet'); return; }
+  save.coins += coinsRun; coinsRun = 0;
+  save.coins -= cost;
+  save.upg[id] = lvl + 1;
+  persist();
+  if (id === 'paddle') resize();
+  beep(760, 0.08, 0.05);
+  toast(up.name + ' upgraded');
+  renderCampaign(); hud();
+});
+$('campClose').onclick = function(){
+  hideCampaign();
+  if (state === 'paused') { state = 'playing'; lastT = 0; }
+  hud();
+};
+$('campBtn').onclick = openCampaign;
+$('freeBtn').onclick = startEndless;
+
+/* ---------------- mission logic ---------------- */
+function goalsMet(){
+  if (!cur) return false;
+  for (var i = 0; i < cur.goals.length; i++) {
+    var g = cur.goals[i];
+    if (g.kind === 'clear' && bricksLeft()) return false;
+    if (g.kind === 'cores' && coresLeft > 0) return false;
+    if (g.kind === 'score' && score < g.value) return false;
+  }
+  return true;
+}
+function missionWin(){
+  state = 'done';
+  var st = 1;
+  if (lostLives === 0) st++;
+  if (score >= cur.scoreStar) st++;
+  var prev = missionStars(missionIndex);
+  if (st > prev) save.stars[missionIndex] = st;
+  if (missionIndex + 1 === save.unlocked && missionIndex + 1 < MISSIONS.length) save.unlocked = missionIndex + 2;
+  var pay = 20 + Math.round(score / 25) + st * 15;
+  save.coins += coinsRun + pay;
+  persist();
+  coinsRun = 0;
+  beep(880, 0.12, 0.05);
+  var sub = starString(st) + '\n' + (st === 3 ? 'Flawless run — full pay.' : 'Mission cleared.') +
+    '\n+' + pay + ' 🪙 mission pay';
+  var next = missionIndex + 1;
+  if (next < MISSIONS.length)
+    showOverlay('✅ ' + cur.name + ' cleared', sub, 'Next mission', function(){ startMission(next); }, 'Mission list', openCampaign);
+  else
+    showOverlay('🏆 City secured', sub + '\nYou cleared every Breaker Corps mission.', 'Mission list', openCampaign, 'Endless mode', startEndless);
+  hud();
+}
+function missionFail(reason){
+  state = 'done';
+  save.coins += coinsRun; persist(); coinsRun = 0;
+  beep(200, 0.3, 0.06);
+  showOverlay('💥 Mission failed', reason + '\nTry again — missions never cost you anything.',
+    'Retry', function(){ startMission(missionIndex); }, 'Mission list', openCampaign);
+  hud();
+}
+function endlessOver(){
+  state = 'done';
+  save.coins += coinsRun; persist(); coinsRun = 0;
+  var beat = score > best;
+  if (beat) { best = score; try { localStorage.setItem('bb_best', String(best)); } catch (e) {} }
+  showOverlay('💥 Out of lives',
+    'Endless run over at level ' + endlessLevel + ' with ' + pad(score) + ' points' + (beat ? ' — new best!' : ''),
+    'Run again', startEndless, 'Mission list', openCampaign);
+  hud();
+}
+function loseLife(){
+  lives--; lostLives++;
+  hud(); beep(160, 0.25, 0.06);
+  if (lives <= 0) return cur ? missionFail('You ran out of lives.') : endlessOver();
+  stickBalls();
+  toast('Ouch — ' + lives + ' ' + (lives === 1 ? 'life' : 'lives') + ' left');
+}
+function nextEndlessLevel(){
+  endlessLevel++;
+  score += 30 * (endlessLevel - 1);
+  buildBoard(null);
+  stickBalls();
+  balls[0].speed = Math.min(760, 300 + (endlessLevel - 1) * 40);
+  hud();
+  toast('Level ' + endlessLevel + ' — quicker and taller');
+}
+
+/* ---------------- hit / destroy ---------------- */
+function addCoins(n){ coinsRun += n; }
+function dropCapsule(x, y){
+  var chance = 0.12 + save.upg.drops * 0.04;
+  if (capsules.length >= 3 || Math.random() > chance) return;
+  var pool = ['wide', 'multi', 'slow', 'life'];
+  var t = pool[Math.floor(Math.random() * pool.length)];
+  if (t === 'life' && Math.random() > 0.3) t = 'multi';
+  capsules.push({ x: x, y: y, w: 26, h: 16, type: t });
+}
+function destroyBrick(k, chain){
+  var b = grid[k];
+  if (!b || b.hp <= 0) return;
+  var br = brickRect(k);
+  b.hp = 0; bricksBroken++;
+  var mult = elapsed < goldUntil ? 2 : 1;
+  var gain = (10 + (missionIndex + 1) * 3) * mult;
+  if (b.kind === 'gold') { gain *= 2; addCoins(4); }
+  else if (b.kind === 'core') { coresLeft = Math.max(0, coresLeft - 1); gain += 15; toast('Core destroyed — ' + coresLeft + ' left'); }
+  else addCoins(1);
+  score += gain;
+  if (b.kind === 'bomb') {
+    var r = Math.floor(k / cols), c = k % cols;
+    for (var rr = r - 1; rr <= r + 1; rr++) {
+      for (var cc = c - 1; cc <= c + 1; cc++) {
+        if (rr < 0 || cc < 0 || rr >= rows || cc >= cols) continue;
+        var nk = rr * cols + cc;
+        if (nk === k || !grid[nk] || grid[nk].hp <= 0) continue;
+        grid[nk].hp = 0; bricksBroken++;
+        score += (10 + (missionIndex + 1) * 3) * mult;
+        if (grid[nk].kind === 'core') { coresLeft = Math.max(0, coresLeft - 1); }
+        if (grid[nk].kind === 'gold') addCoins(4); else addCoins(1);
+        if (grid[nk].kind === 'bomb' && chain < 3) destroyBrick(nk, chain + 1);
+      }
+    }
+    beep(120, 0.2, 0.07);
+  }
+  if (!chain) dropCapsule(br.x + br.w / 2, br.y + br.h / 2);
+  beep(600 + (br.row * 55), 0.04, 0.035);
+  triggerEvent();
+  hud();
+}
+
+var eventsDone = 0;
+function triggerEvent(){
+  if (!cur || !cur.event) return;
+  var step = 18;
+  if (bricksBroken >= (eventsDone + 1) * step) {
+    eventsDone++;
+    if (cur.event === 'gold') {
+      goldUntil = elapsed + 8;
+      toast('💰 Gold rush — double score for 8 seconds');
+    } else if (cur.event === 'swarm') {
+      for (var i = 0; i < balls.length; i++) balls[i].speed = Math.min(820, balls[i].speed * 1.1);
+      toast('⚡ Speed surge — the board is running hot');
+    } else {
+      var n = 0, spots = shuffled(grid.length);
+      for (var s = 0; s < spots.length && n < 3; s++) {
+        var k = spots[s];
+        if (grid[k].hp > 0 && grid[k].kind === 'n') { grid[k].kind = 'gold'; n++; }
+      }
+      if (n) toast('🪙 Lucky strike — ' + n + ' bricks turned to gold');
+    }
+    beep(980, 0.1, 0.04);
+  }
+}
+
+function hitBrick(k, prevX, prevY){
+  var br = brickRect(k), b = grid[k];
+  b.hp--;
+  score += 5;
+  if (b.hp > 0) { beep(420, 0.03, 0.03); hud(); return; }
+  destroyBrick(k, 0);
+}
+
+/* ---------------- physics ---------------- */
 function launch(){
   if (!holding || state !== 'playing') return;
   var a = (Math.random() - 0.5) * 0.5;
-  ball.vx = Math.sin(a) * ball.speed;
-  ball.vy = -Math.cos(a) * ball.speed;
+  var sp = balls[0].speed;
+  balls[0].vx = Math.sin(a) * sp;
+  balls[0].vy = -Math.cos(a) * sp;
   holding = false;
   beep(620, 0.05);
 }
-
-function bounceOffPaddle(){
+function bounceOffPaddle(ball){
   var hit = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
   hit = Math.max(-1, Math.min(1, hit));
   var angle = hit * 1.05;
@@ -201,27 +609,7 @@ function bounceOffPaddle(){
   ball.y = paddle.y - ball.r - 0.5;
   beep(440, 0.04);
 }
-
-function hitBrick(k, prevX, prevY){
-  var br = brickRect(k);
-  grid[k]--;
-  score += 10 + (level - 1) * 2;
-  beep(660 + br.row * 60, 0.04, 0.035);
-  // reflect on the axis we came through
-  var wasAbove = prevY + ball.r <= br.y + 1;
-  var wasBelow = prevY - ball.r >= br.y + br.h - 1;
-  if (wasAbove || wasBelow) ball.vy = -ball.vy;
-  else ball.vx = -ball.vx;
-  // keep the speed constant
-  var sp = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy) || 1;
-  ball.vx = ball.vx / sp * ball.speed;
-  ball.vy = ball.vy / sp * ball.speed;
-  // nudge out of the brick so we don't double-hit
-  ball.y += ball.vy > 0 ? 1.2 : -1.2;
-  hud();
-}
-
-function physics(dt){
+function physics(ball, dt){
   var px = ball.x, py = ball.y;
   ball.x += ball.vx * dt;
   ball.y += ball.vy * dt;
@@ -232,22 +620,53 @@ function physics(dt){
 
   if (ball.vy > 0 && ball.y + ball.r >= paddle.y && ball.y - ball.r <= paddle.y + paddle.h &&
       ball.x >= paddle.x - 4 && ball.x <= paddle.x + paddle.w + 4) {
-    bounceOffPaddle();
+    bounceOffPaddle(ball);
   }
 
   for (var k = 0; k < grid.length; k++) {
-    if (grid[k] <= 0) continue;
+    if (!grid[k] || grid[k].hp <= 0) continue;
     var br = brickRect(k);
     var nx = Math.max(br.x, Math.min(ball.x, br.x + br.w));
     var ny = Math.max(br.y, Math.min(ball.y, br.y + br.h));
     var dx = ball.x - nx, dy = ball.y - ny;
-    if (dx * dx + dy * dy <= ball.r * ball.r) { hitBrick(k, px, py); break; }
+    if (dx * dx + dy * dy <= ball.r * ball.r) {
+      var wasAbove = py + ball.r <= br.y + 1;
+      var wasBelow = py - ball.r >= br.y + br.h - 1;
+      if (wasAbove || wasBelow) ball.vy = -ball.vy;
+      else ball.vx = -ball.vx;
+      var sp2 = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy) || 1;
+      ball.vx = ball.vx / sp2 * ball.speed;
+      ball.vy = ball.vy / sp2 * ball.speed;
+      ball.y += ball.vy > 0 ? 1.2 : -1.2;
+      hitBrick(k, px, py);
+      break;
+    }
   }
-
-  if (ball.y - ball.r > H) loseLife();
 }
 
-/* ---------- loop ---------- */
+function applyPower(type){
+  var info = POWER[type];
+  beep(900, 0.1, 0.05);
+  if (type === 'wide') {
+    paddle.w = Math.min(W * 0.42, paddle.w + 26);
+    toast('↔ ' + info.label);
+  } else if (type === 'multi') {
+    if (balls.length < 5) {
+      var src = balls[0] || newBall();
+      var extra = { x: src.x, y: src.y, vx: -(src.vx || 120), vy: -(src.vy || -260), r: 7, speed: src.speed };
+      balls.push(extra);
+      toast('⦿ ' + info.label + ' — three balls in play');
+    } else toast('⦿ More balls already in play');
+  } else if (type === 'slow') {
+    for (var i = 0; i < balls.length; i++) balls[i].speed = Math.max(230, balls[i].speed * 0.82);
+    toast('🐢 ' + info.label);
+  } else if (type === 'life') {
+    lives++; hud();
+    toast('❤ Extra life');
+  }
+}
+
+/* ---------------- loop ---------------- */
 function step(dt){
   if (state !== 'playing') return;
 
@@ -256,19 +675,48 @@ function step(dt){
   if (keys.right) paddle.x += kv;
   paddle.x = Math.max(0, Math.min(W - paddle.w, paddle.x));
 
-  if (holding) { stickBall(); return; }
-
-  var speed = Math.max(Math.abs(ball.vx), Math.abs(ball.vy));
-  var steps = Math.max(1, Math.ceil(speed * dt / 6));
-  var sdt = dt / steps;
-  for (var i = 0; i < steps; i++) {
-    if (state !== 'playing' || holding) break;
-    physics(sdt);
+  if (cur) {
+    elapsed += dt;
+    if (cur.limit && elapsed > cur.limit && !goalsMet()) return missionFail('Time ran out at ' + cur.limit + ' seconds.');
   }
-  if (state === 'playing' && !bricksLeft()) nextLevel();
+
+  for (var ci = capsules.length - 1; ci >= 0; ci--) {
+    var cap = capsules[ci];
+    cap.y += 130 * dt;
+    if (cap.y + cap.h >= paddle.y && cap.y <= paddle.y + paddle.h &&
+        cap.x + cap.w / 2 >= paddle.x && cap.x + cap.w / 2 <= paddle.x + paddle.w) {
+      applyPower(cap.type);
+      capsules.splice(ci, 1);
+      continue;
+    }
+    if (cap.y > H + 20) capsules.splice(ci, 1);
+  }
+
+  if (holding) { stickBalls(); balls[0].x = paddle.x + paddle.w / 2; return; }
+
+  for (var bi = balls.length - 1; bi >= 0; bi--) {
+    var ball = balls[bi];
+    if (!ball) continue;
+    var spd = Math.max(Math.abs(ball.vx), Math.abs(ball.vy));
+    var steps = Math.max(1, Math.ceil(spd * dt / 6));
+    var sdt = dt / steps;
+    for (var s = 0; s < steps; s++) {
+      if (state !== 'playing' || holding) break;
+      physics(ball, sdt);
+    }
+    if (ball.y - ball.r > H + 12) balls.splice(bi, 1);
+  }
+
+  if (!balls.length) { loseLife(); return; }
+  if (cur) {
+    if (goalsMet()) return missionWin();
+  } else if (!bricksLeft()) {
+    nextEndlessLevel();
+  }
+  hud();
 }
 
-/* ---------- draw ---------- */
+/* ---------------- draw ---------------- */
 function roundRect(x, y, w, h, r){
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -282,7 +730,8 @@ function draw(){
   ctx.clearRect(0, 0, W, H);
 
   for (var k = 0; k < grid.length; k++) {
-    if (grid[k] <= 0) continue;
+    var b = grid[k];
+    if (!b || b.hp <= 0) continue;
     var br = brickRect(k), c = COLORS[br.row % COLORS.length];
     var g = ctx.createLinearGradient(0, br.y, 0, br.y + br.h);
     g.addColorStop(0, c);
@@ -290,11 +739,32 @@ function draw(){
     ctx.fillStyle = g;
     roundRect(br.x, br.y, br.w, br.h, Math.min(5, br.h / 3));
     ctx.fill();
-    if (grid[k] > 1) {
-      ctx.fillStyle = 'rgba(255,255,255,.85)';
-      ctx.font = '700 ' + Math.round(br.h * 0.72) + 'px system-ui,sans-serif';
+
+    if (b.kind === 'core') {
+      ctx.fillStyle = 'rgba(255,255,255,.95)';
+      ctx.font = '800 ' + Math.round(br.h * 0.66) + 'px system-ui,sans-serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('2', br.x + br.w / 2, br.y + br.h / 2 + 1);
+      ctx.fillText('◆', br.x + br.w / 2, br.y + br.h / 2 + 1);
+    } else if (b.kind === 'gold') {
+      ctx.fillStyle = 'rgba(251,191,36,.95)';
+      ctx.fillRect(br.x + 3, br.y + br.h / 2 - 2, br.w - 6, 4);
+      ctx.strokeStyle = 'rgba(253,230,138,.95)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(br.x + 1, br.y + 1, br.w - 2, br.h - 2);
+    } else if (b.kind === 'bomb') {
+      ctx.fillStyle = 'rgba(15,23,42,.85)';
+      ctx.beginPath();
+      ctx.arc(br.x + br.w / 2, br.y + br.h / 2, Math.min(br.h, br.w) * 0.29, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fca5a5';
+      ctx.font = '800 ' + Math.round(br.h * 0.55) + 'px system-ui,sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('✸', br.x + br.w / 2, br.y + br.h / 2 + 1);
+    } else if (b.hp > 1) {
+      ctx.fillStyle = 'rgba(255,255,255,.85)';
+      ctx.font = '700 ' + Math.round(br.h * 0.66) + 'px system-ui,sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(b.hp), br.x + br.w / 2, br.y + br.h / 2 + 1);
     }
   }
 
@@ -304,20 +774,39 @@ function draw(){
   roundRect(paddle.x, paddle.y, paddle.w, paddle.h, 6);
   ctx.fill();
 
-  ctx.save();
-  ctx.shadowColor = '#fde68a'; ctx.shadowBlur = 14;
-  ctx.fillStyle = '#fff7cc';
-  ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
+  for (var ci = 0; ci < capsules.length; ci++) {
+    var cap = capsules[ci], info = POWER[cap.type];
+    ctx.fillStyle = info.colour;
+    roundRect(cap.x - cap.w / 2, cap.y, cap.w, cap.h, 8);
+    ctx.fill();
+    ctx.fillStyle = '#0b1220';
+    ctx.font = '800 12px system-ui,sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(info.icon, cap.x, cap.y + cap.h / 2 + 1);
+  }
 
-  ctx.fillStyle = 'rgba(255,255,255,.18)';
-  ctx.font = '700 12px system-ui,sans-serif';
-  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  for (var bi = 0; bi < balls.length; bi++) {
+    var ball = balls[bi];
+    if (!ball) continue;
+    ctx.save();
+    ctx.shadowColor = '#fde68a'; ctx.shadowBlur = 14;
+    ctx.fillStyle = '#fff7cc';
+    ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  if (elapsed < goldUntil) {
+    ctx.fillStyle = 'rgba(251,191,36,.13)';
+    ctx.fillRect(0, 0, W, H);
+  }
+
   if (state === 'paused') {
-    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(0,0,0,.5)';
+    ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = 'rgba(255,255,255,.9)';
     ctx.font = '800 20px system-ui,sans-serif';
-    ctx.fillText('Paused', W / 2, H / 2 - 10);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Paused', W / 2, H / 2);
   }
 }
 
@@ -330,19 +819,17 @@ function frame(t){
   requestAnimationFrame(frame);
 }
 
-/* ---------- input ---------- */
+/* ---------------- input ---------------- */
 function movePaddleTo(clientX){
   var r = stage.getBoundingClientRect();
   paddle.x = Math.max(0, Math.min(W - paddle.w, clientX - r.left - paddle.w / 2));
-  if (holding) stickBall();
+  if (holding) stickBalls();
 }
 stage.addEventListener('pointermove', function(e){ e.preventDefault(); movePaddleTo(e.clientX); }, { passive: false });
 stage.addEventListener('pointerdown', function(e){
   e.preventDefault();
   movePaddleTo(e.clientX);
-  if (state === 'ready' || state === 'over') { newRun(); return; }
-  if (state === 'paused') { state = 'playing'; hud(); return; }
-  launch();
+  if (state === 'playing') launch();
 }, { passive: false });
 
 addEventListener('keydown', function(e){
@@ -350,9 +837,9 @@ addEventListener('keydown', function(e){
   else if (e.key === 'ArrowRight') { keys.right = true; e.preventDefault(); }
   else if (e.key === ' ' || e.key === 'Enter') {
     e.preventDefault();
-    if (state === 'ready' || state === 'over') newRun();
-    else launch();
+    if (state === 'playing') launch();
   } else if (e.key === 'p' || e.key === 'P') togglePause();
+  else if (e.key === 'Escape') { if ($('camp').style.display === 'flex') $('campClose').onclick(); }
 });
 addEventListener('keyup', function(e){
   if (e.key === 'ArrowLeft') keys.left = false;
@@ -366,7 +853,8 @@ function togglePause(){
 }
 $('pauseBtn').onclick = function(){ if (state === 'playing' || state === 'paused') togglePause(); };
 $('muteBtn').onclick = function(){
-  muted = !muted; localStorage.setItem('bb_mute', muted ? '1' : '0');
+  muted = !muted;
+  try { localStorage.setItem('bb_mute', muted ? '1' : '0'); } catch (e) {}
   $('muteBtn').textContent = muted ? '🔇' : '🔊';
 };
 $('muteBtn').textContent = muted ? '🔇' : '🔊';
@@ -374,13 +862,18 @@ $('gamesBtn').onclick = function(){ location.href = 'index.html'; };
 
 addEventListener('resize', resize);
 addEventListener('orientationchange', function(){ setTimeout(resize, 200); });
+document.addEventListener('visibilitychange', function(){
+  if (document.hidden && state === 'playing') { state = 'paused'; hud(); }
+});
 
-/* ---------- boot ---------- */
+/* ---------------- boot ---------------- */
+buildBoard(MISSIONS[0]);
 resize();
-buildLevel();
-stickBall();
+stickBalls();
 hud();
-showOverlay('🧱 Brick Breaker', 'Clear every brick without losing your three lives. Each level adds another row and a bit more speed.', 'Start', function(){ newRun(); });
+state = 'menu';
+renderCampaign();
+$('camp').style.display = 'flex';
 requestAnimationFrame(frame);
 })();
 </script>

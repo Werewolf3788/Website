@@ -16,50 +16,144 @@
 <script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<title>Merge 2048</title>
+<title>Merge 2048: Fusion Lab</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
   html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
   #app{display:flex;flex-direction:column;height:100%}
-  #top{padding:8px 12px;font-size:.85rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a}
+  #top{padding:6px 12px;font-size:.82rem;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;background:#0f172a;line-height:1.5}
   #top button{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;padding:2px 4px}
-  #wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px}
-  #board{position:relative;width:min(92vw,64vh,440px);aspect-ratio:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:8px;background:#334155;padding:8px;border-radius:14px;touch-action:none}
-  .cell{background:#1e293b;border-radius:9px;display:flex;align-items:center;justify-content:center;position:relative}
+  #obj{padding:5px 12px;background:#111c33;border-bottom:1px solid #1e293b;font-size:.74rem;color:#cbd5e1;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
+  #objTitle{font-weight:800;color:#fbbf24}
+  #wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px;position:relative}
+  #board{position:relative;width:min(92vw,60vh,440px);aspect-ratio:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:8px;background:#334155;padding:8px;border-radius:14px;touch-action:none}
+  .cell{background:#1e293b;border-radius:9px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
   .tile{position:absolute;inset:0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:clamp(18px,7.4vw,34px);line-height:1;letter-spacing:-1px}
   .tile.small{font-size:clamp(14px,5.6vw,25px)}
   .tile.pop{animation:pop .14s ease-out}
   @keyframes pop{0%{transform:scale(.55)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
-  #bar{display:flex;gap:8px;justify-content:center;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0f172a}
-  #bar button{flex:1;max-width:170px;background:#334155;color:#e2e8f0;border:0;border-radius:12px;padding:12px 6px;font:inherit;font-weight:700;cursor:pointer}
+  #bar{display:flex;gap:8px;justify-content:center;padding:8px 10px 6px;background:#0f172a}
+  #bar button{flex:1;max-width:170px;background:#334155;color:#e2e8f0;border:0;border-radius:12px;padding:12px 6px;font:inherit;font-weight:700;cursor:pointer;font-size:.86rem}
   #bar button:disabled{opacity:.4}
-  #hint{background:#0f172a;color:#94a3b8;font-size:.76rem;text-align:center;padding:0 10px calc(8px + env(safe-area-inset-bottom))}
-  #ov{position:fixed;inset:0;z-index:20;background:#000c;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
+  #bar button.on{background:#f59e0b;color:#1f1300}
+  #hint{background:#0f172a;color:#94a3b8;font-size:.74rem;text-align:center;padding:0 10px calc(8px + env(safe-area-inset-bottom))}
+  #ov{position:fixed;inset:0;z-index:40;background:#000c;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:24px}
   #ov button{background:#22c55e;color:#04210f;font-weight:800;border:0;border-radius:10px;padding:12px 20px;font:inherit;cursor:pointer}
   #ov button.alt{background:#334155;color:#e2e8f0}
-  #ovT{font-size:1.6rem;font-weight:900} #ovS{color:#cbd5e1;max-width:420px}
+  #ovT{font-size:1.5rem;font-weight:900} #ovS{color:#cbd5e1;max-width:440px;white-space:pre-line;line-height:1.45;font-size:.92rem}
+  #camp{position:fixed;inset:0;z-index:30;background:#0b1220;display:none;flex-direction:column}
+  #campTop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;background:#0f172a;border-bottom:1px solid #1e293b;font-size:.86rem}
+  #campTop button{background:none;border:0;color:#e2e8f0;font:inherit;cursor:pointer;padding:4px 6px}
+  #campBody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 12px calc(20px + env(safe-area-inset-bottom))}
+  .mhead{margin:2px 0 10px;color:#94a3b8;font-size:.8rem;line-height:1.5}
+  .mrow{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:#111c33;border:1px solid #1e293b;border-radius:12px;padding:10px 12px;margin-bottom:8px;color:#e2e8f0;font:inherit;cursor:pointer}
+  .mrow.done{border-color:#22c55e66}
+  .mrow.lock{opacity:.42}
+  .mnum{width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:#1e293b;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem}
+  .mrow.done .mnum{background:#14532d;color:#86efac}
+  .mname{font-weight:700;font-size:.9rem}
+  .mobj{color:#94a3b8;font-size:.74rem;margin-top:2px}
+  .mstars{margin-left:auto;color:#fbbf24;letter-spacing:1px;font-size:.82rem;white-space:nowrap}
+  .shopB{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#111c33;border:1px solid #1e293b;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:.84rem}
+  .shopB button{background:#22c55e;color:#04210f;border:0;border-radius:9px;padding:8px 12px;font:inherit;font-weight:800;cursor:pointer}
+  .shopB button:disabled{background:#334155;color:#94a3b8}
+  .shopB small{display:block;color:#94a3b8;font-weight:400;font-size:.74rem;margin-top:2px}
+  .secTitle{font-weight:800;margin:16px 0 8px;color:#e2e8f0;font-size:.9rem}
+  #freeBtn{width:100%;background:#334155;color:#e2e8f0;border:0;border-radius:12px;padding:12px;font:inherit;font-weight:800;cursor:pointer;margin-top:4px}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="top">
-    <span>🔢 <b>Merge 2048</b></span>
-    <span>Score <b id="score">0</b> · Best <b id="best">0</b></span>
-    <span><button id="gamesBtn">☰ Games</button></span>
+    <span>🔢 <b>Fusion Lab</b></span>
+    <span>Score <b id="score">0</b> · Best <b id="best">0</b> · 🪙 <b id="coins">0</b> · ⭐ <b id="stars">0</b></span>
+    <span><button id="campBtn">🗺 Chapters</button> <button id="gamesBtn">☰ Games</button></span>
   </div>
+  <div id="obj"><span id="objTitle">Fusion Lab</span><span id="objList"></span></div>
   <div id="wrap"><div id="board"></div></div>
-  <div id="bar"><button id="undoBtn">↩ Undo</button><button id="newBtn">↺ New game</button></div>
-  <div id="hint">Swipe the board or use the arrow keys. Same numbers join into one bigger number.</div>
+  <div id="bar">
+    <button id="undoBtn">↩ Undo</button>
+    <button id="hammerBtn">🔨 0</button>
+    <button id="shuffleBtn">🎲 0</button>
+    <button id="newBtn">↺ Restart</button>
+  </div>
+  <div id="hint">Swipe the board or use the arrow keys. Same numbers join into one bigger number. Chain merges to trigger surges.</div>
 </div>
 <div id="ov"><div id="ovT"></div><div id="ovS"></div><button id="ovBtn"></button><button id="ovBtn2" class="alt" style="display:none"></button></div>
+<div id="camp">
+  <div id="campTop">
+    <span>🔢 <b>Fusion Lab</b> · 🪙 <b id="campCoins">0</b> · ⭐ <b id="campStars">0</b>/36</span>
+    <span><button id="campClose">✕ Close</button></span>
+  </div>
+  <div id="campBody">
+    <div class="mhead">Twelve chapters. Every chapter gives you a target tile and a move budget, and the lab pays extra for a tidy finish. Star ratings unlock the next chapter.</div>
+    <div id="chapterList"></div>
+    <div class="secTitle">🎒 Lab tools</div>
+    <div id="shop"></div>
+    <button id="freeBtn">♾ Free play — no target, no move limit</button>
+  </div>
+</div>
 <script>
 (function(){
 'use strict';
 var $ = function(id){ return document.getElementById(id); };
 var N = 4;
 var board = $('board');
+
+/* ---------------- save ---------------- */
+var SAVE = 'm2048_lab_v1';
+var save = { coins: 0, stars: {}, unlocked: 1, hammer: 1, shuffle: 1 };
+try {
+  var raw = localStorage.getItem(SAVE);
+  if (raw) {
+    var p = JSON.parse(raw);
+    if (p && typeof p === 'object') {
+      save.coins = p.coins || 0;
+      save.stars = p.stars || {};
+      save.unlocked = p.unlocked || 1;
+      save.hammer = typeof p.hammer === 'number' ? p.hammer : 1;
+      save.shuffle = typeof p.shuffle === 'number' ? p.shuffle : 1;
+    }
+  }
+} catch (e) {}
+function persist(){ try { localStorage.setItem(SAVE, JSON.stringify(save)); } catch (e) {} }
+function totalStars(){
+  var t = 0;
+  for (var k in save.stars) if (save.stars.hasOwnProperty(k)) t += save.stars[k];
+  return t;
+}
+
+var CHAPTERS = [
+  { name: 'First Light', story: 'The lab is a wreck and the reactor needs a spark. Slide the tiles and build a 32 to warm the core.',
+    target: 32, moves: 60, par: 40, scoreStar: 400 },
+  { name: 'Warm Engine', story: 'The reactor is awake. Push it to a 64 before the coolant runs dry.',
+    target: 64, moves: 60, par: 40, scoreStar: 900 },
+  { name: 'Gold Fever', story: 'Loose gold is stuck in the tiles. Reach 128 and the lab can pay for its own repairs.',
+    target: 128, moves: 70, par: 48, scoreStar: 1600 },
+  { name: 'Tight Squeeze', story: 'Power is rationed, so you only get 45 moves. A 128 in that budget is a real fusion.',
+    target: 128, moves: 45, par: 30, scoreStar: 1400 },
+  { name: 'Deep Current', story: 'The core is pulling harder now. Ride the merges to a 256.',
+    target: 256, moves: 90, par: 62, scoreStar: 3200 },
+  { name: 'Chain Reaction', story: 'Every merge feeds the next one. Chain them together and a surge will drop a free high tile.',
+    target: 256, moves: 70, par: 48, scoreStar: 3600 },
+  { name: 'Quake Alley', story: 'The floor is shaking the board apart. Keep it together and reach 512.',
+    target: 512, moves: 110, par: 78, scoreStar: 6000 },
+  { name: 'Blackout', story: 'Lights are down to emergency power. Reach 512 in 80 moves or the lab goes dark.',
+    target: 512, moves: 80, par: 56, scoreStar: 6400 },
+  { name: 'Cold Fusion', story: 'The reactor is running cold and slow. A 1024 tile is the only thing that will restart it.',
+    target: 1024, moves: 130, par: 96, scoreStar: 12000 },
+  { name: 'Overdrive', story: 'Overdrive is risky: 100 moves, and the core wants a 1024 out of it.',
+    target: 1024, moves: 100, par: 72, scoreStar: 12000 },
+  { name: 'Singularity', story: 'Almost there. Build 2048 with 160 moves and the lab is saved.',
+    target: 2048, moves: 160, par: 118, scoreStar: 24000 },
+  { name: 'The Core', story: 'Final run. 2048 in 130 moves, with the whole lab watching. Do it and the Fusion Lab is yours.',
+    target: 2048, moves: 130, par: 96, scoreStar: 26000 }
+];
+
 var g = [], score = 0, best = parseInt(localStorage.getItem('m2048_best') || '0', 10) || 0;
-var stack = [], popped = {}, won = false, over = false, keepPlaying = false;
+var stack = [], popped = {}, won = false, over = false;
+var cur = null, chapterIndex = -1, movesLeft = 0, movesUsed = 0;
+var combo = 0, hammerMode = false, coinsRun = 0, surged = {};
 
 var SKIN = {
   2:    ['#eee4da', '#776e65'],
@@ -78,11 +172,91 @@ function skin(v){ return SKIN[v] || ['#3c3a32', '#ffffff']; }
 
 function blank(){ var a = []; for (var i = 0; i < N * N; i++) a.push(0); return a; }
 
+/* ---------------- campaign UI ---------------- */
+function starString(n){ return '★★★'.slice(0, n) + '☆☆☆'.slice(0, 3 - n); }
+function chapterStars(i){ return save.stars[i] || 0; }
+function renderCampaign(){
+  var html = '';
+  for (var i = 0; i < CHAPTERS.length; i++) {
+    var c = CHAPTERS[i], st = chapterStars(i), locked = i + 1 > save.unlocked;
+    html += '<button class="mrow' + (st ? ' done' : '') + (locked ? ' lock' : '') + '" data-m="' + i + '">' +
+      '<span class="mnum">' + (locked ? '🔒' : (i + 1)) + '</span>' +
+      '<span><span class="mname">' + c.name + '</span>' +
+      '<span class="mobj">Reach ' + c.target + ' · ' + c.moves + ' moves' + '</span></span>' +
+      '<span class="mstars">' + starString(st) + '</span></button>';
+  }
+  $('chapterList').innerHTML = html;
+
+  var sh = '';
+  sh += '<div class="shopB"><span>🔨 Hammer <b>×' + save.hammer + '</b><small>Clear one tile of your choice</small></span>' +
+        '<button data-buy="hammer"' + (save.coins + coinsRun < 120 ? ' disabled' : '') + '>120 🪙</button></div>';
+  sh += '<div class="shopB"><span>🎲 Shuffle <b>×' + save.shuffle + '</b><small>Redistribute every tile on the board</small></span>' +
+        '<button data-buy="shuffle"' + (save.coins + coinsRun < 90 ? ' disabled' : '') + '>90 🪙</button></div>';
+  $('shop').innerHTML = sh;
+  $('campCoins').textContent = (save.coins + coinsRun).toLocaleString();
+  $('campStars').textContent = totalStars();
+}
+function openCampaign(){
+  renderCampaign();
+  $('camp').style.display = 'flex';
+}
+function hideCampaign(){ $('camp').style.display = 'none'; }
+
+$('chapterList').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-m]');
+  if (!b) return;
+  var i = +b.dataset.m;
+  if (i + 1 > save.unlocked) { flash('Finish the chapter before this one first'); return; }
+  var c = CHAPTERS[i];
+  var lines = [c.story, '',
+    'Target: build a ' + c.target + ' tile',
+    'Moves: ' + c.moves,
+    '',
+    '★ Reach ' + c.target + '   ★★ Finish inside ' + c.par + ' moves   ★★★ Score ' + c.scoreStar.toLocaleString() + '+',
+    'Best so far: ' + starString(chapterStars(i))];
+  showOverlay((i + 1) + '. ' + c.name, lines.join('\n'), 'Start chapter', function(){ startChapter(i); }, 'Chapter list', openCampaign);
+});
+$('shop').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-buy]');
+  if (!b) return;
+  var kind = b.dataset.buy, cost = kind === 'hammer' ? 120 : 90;
+  if (save.coins + coinsRun < cost) { flash('Not enough coins yet'); return; }
+  save.coins += coinsRun; coinsRun = 0;
+  save.coins -= cost;
+  save[kind] = (save[kind] || 0) + 1;
+  persist(); renderCampaign(); hud(); updateTools();
+  flash((kind === 'hammer' ? 'Hammer' : 'Shuffle') + ' bought');
+});
+$('campClose').onclick = function(){ hideCampaign(); };
+$('campBtn').onclick = openCampaign;
+$('freeBtn').onclick = function(){ startFree(); };
+
+function flash(msg){
+  $('hint').textContent = msg;
+  clearTimeout(flash.t);
+  flash.t = setTimeout(function(){ $('hint').textContent = 'Swipe the board or use the arrow keys. Same numbers join into one bigger number.'; }, 2200);
+}
+
+/* ---------------- game setup ---------------- */
 function newGame(){
-  g = blank(); score = 0; stack = []; popped = {}; won = false; over = false; keepPlaying = false;
+  g = blank(); score = 0; stack = []; popped = {}; won = false; over = false;
+  combo = 0; surged = {}; hammerMode = false;
   addTile(); addTile();
-  $('ov').style.display = 'none';
-  render(); hud();
+  hideOverlay(); hud(); render();
+}
+function startChapter(i){
+  cur = CHAPTERS[i]; chapterIndex = i;
+  movesLeft = cur.moves; movesUsed = 0; coinsRun = 0;
+  newGame();
+  hideCampaign();
+  flash((i + 1) + '. ' + cur.name + ' — build a ' + cur.target + ' tile');
+}
+function startFree(){
+  cur = null; chapterIndex = -1;
+  movesLeft = 0; movesUsed = 0; coinsRun = 0;
+  newGame();
+  hideCampaign();
+  flash('Free play — no target, no move limit');
 }
 
 function addTile(){
@@ -93,29 +267,56 @@ function addTile(){
   g[i] = Math.random() < 0.9 ? 2 : 4;
   popped[i] = true;
 }
+function addTileValue(v){
+  var free = [];
+  for (var i = 0; i < g.length; i++) if (!g[i]) free.push(i);
+  if (!free.length) return;
+  var i = free[Math.floor(Math.random() * free.length)];
+  g[i] = v;
+  popped[i] = true;
+}
 
 function hud(){
   $('score').textContent = score.toLocaleString();
   $('best').textContent = best.toLocaleString();
+  $('coins').textContent = (save.coins + coinsRun).toLocaleString();
+  $('stars').textContent = totalStars();
+  $('campCoins').textContent = (save.coins + coinsRun).toLocaleString();
+  $('campStars').textContent = totalStars();
   $('undoBtn').disabled = !stack.length;
+  var t = $('objTitle'), l = $('objList');
+  if (cur) {
+    t.textContent = (chapterIndex + 1) + '. ' + cur.name + ' — build ' + cur.target;
+    l.textContent = movesLeft + ' moves left' + (combo > 1 ? ' · combo ×' + combo : '') + ' · best ' + best.toLocaleString();
+  } else {
+    t.textContent = 'Free play';
+    l.textContent = 'Score ' + score.toLocaleString() + (combo > 1 ? ' · combo ×' + combo : '') + ' · best ' + best.toLocaleString();
+  }
+  updateTools();
+}
+function updateTools(){
+  $('hammerBtn').textContent = '🔨 ' + save.hammer + (hammerMode ? ' ✓' : '');
+  $('hammerBtn').classList.toggle('on', hammerMode);
+  $('shuffleBtn').textContent = '🎲 ' + save.shuffle;
+  $('shuffleBtn').disabled = save.shuffle <= 0;
 }
 
 function render(){
   var html = '';
   for (var i = 0; i < N * N; i++) {
     var v = g[i];
-    if (!v) { html += '<div class="cell"></div>'; continue; }
+    if (!v) { html += '<div class="cell" data-i="' + i + '"></div>'; continue; }
     var sk = skin(v), txt = String(v);
     var cls = 'tile' + (txt.length > 2 ? ' small' : '') + (popped[i] ? ' pop' : '');
-    html += '<div class="cell"><div class="' + cls + '" style="background:' + sk[0] + ';color:' + sk[1] + '">' + txt + '</div></div>';
+    html += '<div class="cell" data-i="' + i + '"><div class="' + cls + '" style="background:' + sk[0] + ';color:' + sk[1] + '">' + txt + '</div></div>';
   }
   board.innerHTML = html;
   popped = {};
 }
 
-/* one line slide/merge; dirs: 0 left, 1 right, 2 up, 3 down */
+/* ---------------- slide / merge ---------------- */
 function slide(dir){
-  var before = g.slice(), merges = {}, moved = false, prevScore = score;
+  var before = g.slice(), merges = {}, moved = false, prevScore = score, mergeCount = 0, biggest = 0;
   for (var line = 0; line < N; line++) {
     var idx = [];
     for (var k = 0; k < N; k++) {
@@ -135,6 +336,8 @@ function slide(dir){
         out.push(sum);
         score += sum;
         merges[idx[out.length - 1]] = true;
+        mergeCount++;
+        if (sum > biggest) biggest = sum;
         i++;
       } else out.push(vals[i]);
     }
@@ -144,7 +347,7 @@ function slide(dir){
       g[idx[i]] = nv;
     }
   }
-  return { moved: moved, merges: merges, before: before, prevScore: prevScore };
+  return { moved: moved, merges: merges, before: before, prevScore: prevScore, mergeCount: mergeCount, biggest: biggest };
 }
 
 function canMove(){
@@ -156,42 +359,135 @@ function canMove(){
   }
   return false;
 }
+function maxTile(){
+  var m = 0;
+  for (var i = 0; i < g.length; i++) if (g[i] > m) m = g[i];
+  return m;
+}
 
 function move(dir){
   if (over) return;
+  if (cur && movesLeft <= 0) return;
   var res = slide(dir);
   if (!res.moved) return;
-  stack.push({ g: res.before, score: res.prevScore });
+
+  stack.push({ g: res.before, score: res.prevScore, combo: combo, movesLeft: movesLeft, movesUsed: movesUsed });
+  if (stack.length > 30) stack.shift();
   popped = res.merges;
-  addTile();
-  render(); hud();
-  if (score > best) { best = score; try { localStorage.setItem('m2048_best', String(best)); } catch (e) {} hud(); }
-  if (!won && g.indexOf(2048) >= 0) {
-    won = true;
-    if (!keepPlaying) { showOverlay('🎉 You made 2048!', 'You can stop here or keep going for a bigger tile.', 'Keep playing', function(){ keepPlaying = true; }); return; }
+
+  if (res.mergeCount > 0) {
+    combo++;
+    coinsRun += res.mergeCount;
+    if (combo === 4 || combo === 8 || combo === 14) {
+      var bonus = combo >= 14 ? 16 : (combo >= 8 ? 8 : 4);
+      addTileValue(bonus);
+      flash('⚡ Surge! A ' + bonus + ' tile drops in — combo ×' + combo);
+    }
+  } else if (combo > 0) {
+    combo = 0;
   }
+
+  addTile();
+  if (cur) { movesLeft--; movesUsed++; }
+  render();
+  if (score > best) { best = score; try { localStorage.setItem('m2048_best', String(best)); } catch (e) {} }
+  hud();
+
+  if (cur && maxTile() >= cur.target) return chapterWin();
+  if (cur && movesLeft <= 0) return chapterFail('You used all ' + cur.moves + ' moves before building a ' + cur.target + '.');
   if (!canMove()) {
     over = true;
-    showOverlay('No moves left', 'Final score ' + score.toLocaleString() + ' · best ' + best.toLocaleString(), 'New game', newGame);
+    if (cur) return chapterFail('The board jammed with no moves left.');
+    showOverlay('No moves left', 'Final score ' + score.toLocaleString() + ' · best ' + best.toLocaleString(), 'New game', newGame, 'Chapter list', openCampaign);
   }
 }
+
+/* ---------------- chapter results ---------------- */
+function starStringFor(st){ return '★★★'.slice(0, st) + '☆☆☆'.slice(0, 3 - st); }
+function chapterWin(){
+  over = true;
+  var st = 1;
+  if (movesUsed <= cur.par) st++;
+  if (score >= cur.scoreStar) st++;
+  var prev = chapterStars(chapterIndex);
+  if (st > prev) {
+    save.stars[chapterIndex] = st;
+    if (st > (prev || 0)) save.hammer = (save.hammer || 0) + 1;
+  }
+  if (chapterIndex + 1 === save.unlocked && chapterIndex + 1 < CHAPTERS.length) save.unlocked = chapterIndex + 2;
+  var pay = 30 + Math.round(score / 60) + st * 20;
+  save.coins += coinsRun + pay;
+  coinsRun = 0;
+  persist(); hud();
+  var next = chapterIndex + 1;
+  var sub = starStringFor(st) + '\nBuilt a ' + cur.target + ' in ' + movesUsed + ' moves.' +
+    (st === 3 ? ' Tidy work — full pay.' : '') + '\n+' + pay + ' 🪙 paid by the lab' + (st > prev ? ' · +1 🔨' : '');
+  if (next < CHAPTERS.length)
+    showOverlay('✅ ' + cur.name + ' cleared', sub, 'Next chapter', function(){ startChapter(next); }, 'Chapter list', openCampaign);
+  else
+    showOverlay('🏆 Fusion Lab saved', sub + '\nEvery chapter cleared. Free play is yours.', 'Chapter list', openCampaign, 'Free play', startFree);
+}
+function chapterFail(reason){
+  over = true;
+  save.coins += coinsRun; coinsRun = 0;
+  persist(); hud();
+  showOverlay('💥 Chapter failed', reason + '\nNothing lost — go again whenever you like.',
+    'Retry', function(){ startChapter(chapterIndex); }, 'Chapter list', openCampaign);
+}
+
+/* ---------------- tools ---------------- */
 function undo(){
   if (!stack.length) return;
   var s = stack.pop();
   g = s.g.slice(); score = s.score; over = false;
+  combo = s.combo || 0;
+  if (cur) { movesLeft = s.movesLeft; movesUsed = s.movesUsed; }
   render(); hud();
 }
+function useHammer(i){
+  if (save.hammer <= 0) { flash('No hammers left — buy one in Chapters'); hammerMode = false; updateTools(); return; }
+  if (!g[i]) { flash('Pick a tile with a number in it'); return; }
+  g[i] = 0;
+  save.hammer--; hammerMode = false;
+  persist();
+  render(); hud();
+  flash('🔨 Tile cleared');
+  if (!canMove()) {
+    over = true;
+    if (cur) chapterFail('The board jammed with no moves left.');
+    else showOverlay('No moves left', 'Final score ' + score.toLocaleString(), 'New game', newGame, 'Chapter list', openCampaign);
+  }
+}
+function doShuffle(){
+  if (save.shuffle <= 0) { flash('No shuffles left — buy one in Chapters'); return; }
+  var vals = [];
+  for (var i = 0; i < g.length; i++) if (g[i]) vals.push(g[i]);
+  for (var k = vals.length - 1; k > 0; k--) {
+    var j = Math.floor(Math.random() * (k + 1));
+    var t = vals[k]; vals[k] = vals[j]; vals[j] = t;
+  }
+  var vi = 0;
+  for (var q = 0; q < g.length; q++) g[q] = vals[vi++] || 0;
+  save.shuffle--;
+  persist(); render(); hud();
+  flash('🎲 Tiles shuffled');
+}
 
+/* ---------------- overlays ---------------- */
 function showOverlay(t, s, btn, fn, btn2, fn2){
   $('ovT').textContent = t; $('ovS').textContent = s || '';
   $('ovBtn').textContent = btn;
-  $('ovBtn').onclick = function(){ $('ov').style.display = 'none'; fn(); };
-  if (btn2) { $('ovBtn2').style.display = ''; $('ovBtn2').textContent = btn2; $('ovBtn2').onclick = function(){ $('ov').style.display = 'none'; fn2(); }; }
-  else $('ovBtn2').style.display = 'none';
+  $('ovBtn').onclick = function(){ hideOverlay(); fn(); };
+  if (btn2) {
+    $('ovBtn2').style.display = '';
+    $('ovBtn2').textContent = btn2;
+    $('ovBtn2').onclick = function(){ hideOverlay(); fn2(); };
+  } else $('ovBtn2').style.display = 'none';
   $('ov').style.display = 'flex';
 }
+function hideOverlay(){ $('ov').style.display = 'none'; }
 
-/* ---------- input ---------- */
+/* ---------------- input ---------------- */
 var KEYMAP = { ArrowLeft: 0, ArrowRight: 1, ArrowUp: 2, ArrowDown: 3, a: 0, d: 1, w: 2, s: 3 };
 addEventListener('keydown', function(e){
   var d = KEYMAP[e.key];
@@ -200,23 +496,45 @@ addEventListener('keydown', function(e){
   move(d);
 });
 
-var sx = 0, sy = 0, tracking = false;
-board.addEventListener('pointerdown', function(e){ sx = e.clientX; sy = e.clientY; tracking = true; });
+var sx = 0, sy = 0, tracking = false, downCell = -1;
+board.addEventListener('pointerdown', function(e){
+  sx = e.clientX; sy = e.clientY; tracking = true;
+  var cell = e.target.closest('.cell');
+  downCell = cell ? +cell.dataset.i : -1;
+});
 board.addEventListener('pointerup', function(e){
   if (!tracking) return;
   tracking = false;
   var dx = e.clientX - sx, dy = e.clientY - sy;
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) {
+    if (hammerMode && downCell >= 0) useHammer(downCell);
+    return;
+  }
+  if (hammerMode) return;
   if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 1 : 0);
   else move(dy > 0 ? 3 : 2);
 });
 board.addEventListener('pointercancel', function(){ tracking = false; });
 
-$('newBtn').onclick = newGame;
+$('hammerBtn').onclick = function(){
+  if (save.hammer <= 0) { flash('No hammers left — buy one in Chapters'); return; }
+  hammerMode = !hammerMode;
+  updateTools();
+  if (hammerMode) flash('🔨 Tap a tile to clear it');
+};
+$('shuffleBtn').onclick = doShuffle;
+$('newBtn').onclick = function(){
+  if (cur) startChapter(chapterIndex); else startFree();
+};
 $('undoBtn').onclick = undo;
 $('gamesBtn').onclick = function(){ location.href = 'index.html'; };
 
-newGame();
+/* ---------------- boot ---------------- */
+cur = null; chapterIndex = -1;
+g = blank(); addTile(); addTile();
+render(); hud();
+$('camp').style.display = 'flex';
+renderCampaign();
 })();
 </script>
 </body>
