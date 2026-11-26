@@ -137,7 +137,7 @@ async function authorizeUrl(role, redirectUri, state) {
     return ID + "/authorize?" + p;
 }
 async function exchangeCode(code, redirectUri) {
-    const j = await tokenRequest({ grant_type: "authorization_code", code, redirect_uri });
+    const j = await tokenRequest({ grant_type: "authorization_code", code, redirect_uri: redirectUri });
     const me = await helix("GET", "/users", j.access_token);
     return { refresh: j.refresh_token, login: me.data && me.data[0] ? me.data[0].login : null };
 }
