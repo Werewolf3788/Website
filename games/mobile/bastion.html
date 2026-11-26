@@ -119,14 +119,58 @@ input.search{flex:1;background:#08204f;border:2px solid #38bdf8;border-radius:10
  .hex{width:96px;height:86px;font-size:10px;padding:4px 14px}
 }
 body.pad .touchOnly{display:none}
+
+/* ---------- world hub: places inside one game ---------- */
+#world{position:fixed;inset:0;z-index:80;display:none;background:radial-gradient(120% 90% at 50% 0%,#1b2b52,#0b1226 70%);color:#eaf2ff;padding:16px;overflow:auto}
+#world.on{display:block}
+#world .wt{display:flex;align-items:center;gap:10px;justify-content:space-between;max-width:940px;margin:0 auto 10px;flex-wrap:wrap}
+#world h2{margin:0;font-size:1.05rem}
+#world .purse{max-width:940px;margin:0 auto 14px;background:#132242;border:1px solid #2b4a86;border-radius:12px;padding:10px 12px;font-weight:800;font-size:.9rem}
+#world .purse b{color:#ffd45e;font-size:1.15rem}
+#world .purse span{font-weight:600;font-size:.72rem;color:#9fb6dd;display:block;margin-top:2px}
+#world .rooms{max-width:940px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+#world .room{background:#12203c;border:1px solid #2b4a86;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+#world .room .ic{font-size:1.9rem;line-height:1}
+#world .room b{font-size:.95rem}
+#world .room .sm{font-size:.72rem;color:#9fb6dd;line-height:1.35;flex:1}
+#world .room .pp{font-size:.7rem;color:#7ee0a1;font-weight:800}
+#world .room button{border:0;border-radius:10px;padding:9px;font:inherit;font-weight:900;background:#4ade80;color:#06240f;cursor:pointer}
+#room{position:fixed;inset:0;display:none;z-index:95;background:#0b1226;flex-direction:column}
+#room.on{display:flex}
+#roomBar{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#101c33;border-bottom:1px solid #2b4a86;flex-wrap:wrap}
+#roomBar b{font-size:.9rem}
+#roomBar .sm{font-size:.72rem;color:#7ee0a1;font-weight:800}
+#roomFrame{flex:1;border:0;width:100%;background:#150e22}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 <body>
 <div id="view"></div>
 
+<div id="world">
+  <div class="wt">
+    <h2>🏰 Your bastion</h2>
+    <div style="display:flex;gap:8px">
+      <a class="btn gray" href="./" style="padding:5px 10px;text-decoration:none;color:#fff">All games</a>
+      <button class="btn gray" id="worldClose" style="padding:5px 10px">Back to the yard</button>
+    </div>
+  </div>
+  <div class="purse">🪙 <b id="purseTotal">0</b><span>Total coin across every place. What you earn inside a place comes back to your bastion purse.</span></div>
+  <div class="rooms" id="rooms"></div>
+</div>
+
+<div id="room">
+  <div id="roomBar">
+    <button class="btn gray" id="roomBack" style="padding:5px 10px">⬅ Leave</button>
+    <b id="roomName"></b>
+    <span class="sm" id="roomEarn"></span>
+  </div>
+  <iframe id="roomFrame" title="activity"></iframe>
+</div>
+
+
 <div id="top">
-  <a class="pill" href="./" style="text-decoration:none;color:#fff">⬅ Hub</a>
+  <button class="pill" id="hubBtn" style="border:0;cursor:pointer;color:#fff;font:inherit">⬅ Hub</button>
   <div class="pill" id="cashPill" title="Your cash balance"><span class="coin"></span> <span style="font-size:.6em;opacity:.9">CASH</span> <span id="cash">0</span></div>
   <div class="pill" id="hpWrap">🏰 <div id="hpBar"><div id="hpFill"></div></div> <span id="hpTxt">20</span></div>
   <div class="pill">⚡ <button class="btn gray" id="spd" style="padding:2px 10px">x1</button></div>
@@ -1126,6 +1170,82 @@ loadLocal();buildBoard();resize();updHud();setHolding(null);frame();
 if(S.seenVersion!==VERSION){modal('🆕 What\'s new · v'+VERSION,'<ul style="margin:0;padding-left:18px;line-height:1.5">'+WHATS_NEW.map(x=>'<li>'+x+'</li>').join('')+'</ul>');S.seenVersion=VERSION;save();}
 initFirebase().catch(e=>console.warn('firebase',e));
 window.__bastion={cam,placeCam,get S(){return S},startRun,nextWave,tryPlace,setHolding,fuse,get enemies(){return enemies},get inBattle(){return inBattle},get waveNo(){return waveNo},get routes(){return routes}};
+</script>
+
+<script>
+/* ---------- one game: the bastion and the places inside it ---------- */
+(function(){
+  var ROOMS = [
+    { id:'nest',    ic:'🐣', n:'The Nest',      file:'merge-lair.html',   key:'mergelair_v2',    field:'coins', d:'Fuse two creatures of a kind into the next tier and hold the lair against the raids.' },
+    { id:'lab',     ic:'🧪', n:'Fusion Lab',    file:'merge.html',        key:'m2048_lab_v1',    field:'coins', d:'Slide numbered tiles, fuse them into bigger ones, work through the lab chapters.' },
+    { id:'street',  ic:'🛒', n:'Cart Street',   file:'idle-city.html',    key:'cityrush_v1',     field:'cash',  d:'Open the counter and serve a queue that never quite ends.' },
+    { id:'outpost', ic:'⚔️', n:'Tiles Outpost', file:'tiles-outpost.html',key:'tilesoutpost_v2', field:'gold',  d:'Turn-based skirmishes through two chapters beyond the sun gate.' },
+    { id:'mines',   ic:'💣', n:'Sweep Team',    file:'mines.html',        key:'ms_sweep_v1',     field:'coins', d:'Twelve clearing ops with drones, scans and a shrinking clock.' },
+    { id:'bricks',  ic:'🧱', n:'Breaker Corps', file:'bricks.html',       key:'bb_corps_v1',     field:'coins', d:'Twelve missions of brick, paddle and boss fights.' }
+  ];
+  function val(r){
+    try {
+      var d = JSON.parse(localStorage.getItem(r.key) || 'null');
+      if (!d) return 0;
+      var v = d[r.field];
+      return typeof v === 'number' && isFinite(v) ? Math.max(0, v) : 0;
+    } catch (e) { return 0; }
+  }
+  function yard(){ try { return (window.__bastion && __bastion.S && __bastion.S.cash) || 0; } catch (e) { return 0; } }
+  function fmt(n){ return Math.floor(n || 0).toLocaleString(); }
+  function total(){ var t = yard(); ROOMS.forEach(function(r){ t += val(r); }); return t; }
+
+  var open = null, snap = 0;
+
+  function render(){
+    document.getElementById('purseTotal').textContent = fmt(total());
+    var html = '';
+    ROOMS.forEach(function(r, i){
+      html += '<div class="room"><div class="ic">' + r.ic + '</div><b>' + r.n + '</b>' +
+        '<div class="sm">' + r.d + '</div>' +
+        '<div class="pp">🪙 ' + fmt(val(r)) + ' in there</div>' +
+        '<button data-r="' + i + '">Go there</button></div>';
+    });
+    var box = document.getElementById('rooms');
+    box.innerHTML = html;
+    Array.prototype.forEach.call(box.querySelectorAll('button[data-r]'), function(b){
+      b.onclick = function(){ enter(ROOMS[+b.getAttribute('data-r')]); };
+    });
+  }
+
+  function enter(r){
+    open = r; snap = val(r);
+    document.getElementById('roomName').textContent = r.ic + ' ' + r.n;
+    document.getElementById('roomEarn').textContent = '';
+    var f = document.getElementById('roomFrame');
+    f.src = r.file + (r.file.indexOf('?') < 0 ? '?from=bastion' : '');
+    document.getElementById('room').classList.add('on');
+  }
+
+  function leave(){
+    if (!open) return;
+    var r = open, gained = Math.max(0, val(r) - snap);
+    open = null;
+    document.getElementById('room').classList.remove('on');
+    document.getElementById('roomFrame').src = 'about:blank';
+    if (gained > 0) {
+      try {
+        if (window.__bastion && __bastion.S) {
+          __bastion.S.cash += gained;
+          if (typeof save === 'function') save(true);
+          if (typeof updHud === 'function') updHud();
+          if (typeof toast === 'function') toast('+' + fmt(gained) + ' from ' + r.n + ' added to your purse');
+        }
+      } catch (e) {}
+    }
+    render();
+  }
+
+  document.getElementById('hubBtn').onclick = function(){ render(); document.getElementById('world').classList.add('on'); };
+  document.getElementById('worldClose').onclick = function(){ document.getElementById('world').classList.remove('on'); };
+  document.getElementById('roomBack').onclick = leave;
+  window.__world = { enter: enter, leave: leave, total: total, ROOMS: ROOMS };
+})();
 </script>
 </body>
 </html>
