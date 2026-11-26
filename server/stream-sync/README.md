@@ -1,6 +1,7 @@
 # ww-stream-sync
 
 Render service that keeps the stream info in step with what you're playing on PlayStation.
+The PlayStation game + status set the Twitch title and category, that same title goes to YouTube and Kick, and YouTube / TikTok / Kick chat comes back into Twitch chat.
 
 While you're **live on Twitch** it checks every 30 seconds and:
 
