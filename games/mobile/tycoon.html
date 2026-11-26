@@ -25,8 +25,11 @@
   #top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
   #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
-  @media(min-width:860px){#main{max-width:none;width:90vw;padding-top:6px;grid-template-columns:minmax(0,min(calc(100vh - 52px),64%)) 1fr !important}
-    body.bigBoard #main{grid-template-columns:minmax(0,68%) 1fr !important}}
+  /* desktop: the board is the big part (about two thirds of the width), the info column beside it is narrower.
+     "Fit board to screen" shrinks the board so all of it fits the screen height without scrolling. */
+  @media(min-width:860px){#main{max-width:none;width:90vw;padding-top:6px;grid-template-columns:minmax(0,65fr) minmax(320px,35fr) !important}
+    body.fitBoard #main{grid-template-columns:minmax(0,min(calc(100vh - 52px),64%)) 1fr !important}
+    #play{position:sticky;top:6px;z-index:3;align-self:start}}   /* dice and buttons stay in view while you scroll the big board */
   /* wide screens: board + property cards on the left, dice and seats stacked on the right (as before) */
   @media(min-width:860px){
     #main{grid-template-columns:minmax(0,640px) 1fr;grid-template-areas:"board play" "board panel" "deeds panel";align-items:start}
@@ -130,7 +133,7 @@
 <div id="top">
   <span>🏙️ <b id="roomLabel">Monopoly</b> · 👥 <b id="count">1</b></span>
   <span>💵 <b id="bank">—</b> · 🏆 <b id="wins">0</b></span>
-  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="sizeBtn" title="Board size">⤢ Bigger board</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="sizeBtn" title="Board size">⤡ Fit board to screen</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
 </div>
 <div id="main">
   <div id="left">
@@ -813,9 +816,9 @@
   (function () { var b = document.getElementById('paceBtn'); if (!b) return; b.textContent = PACE_ICON[pace];
     b.onclick = function () { pace = pace === 'slow' ? 'normal' : pace === 'normal' ? 'fast' : 'slow'; try { localStorage.setItem('ww_bot_pace', pace); } catch (e) {} b.textContent = PACE_ICON[pace]; }; })();
   // board size: fit the screen height (default) or extra large (wider than the screen is tall, scroll to see it all)
-  (function () { var big = false; try { big = localStorage.getItem('ty_big') === '1'; } catch (e) {} var b = document.getElementById('sizeBtn');
-    function set() { document.body.classList.toggle('bigBoard', big); if (b) b.textContent = big ? '⤡ Fit board to screen' : '⤢ Bigger board'; }
-    set(); if (b) b.onclick = function () { big = !big; try { localStorage.setItem('ty_big', big ? '1' : '0'); } catch (e) {} set(); }; })();
+  (function () { var fit = false; try { fit = localStorage.getItem('ty_fit') === '1'; } catch (e) {} var b = document.getElementById('sizeBtn');
+    function set() { document.body.classList.toggle('fitBoard', fit); if (b) b.textContent = fit ? '⤢ Big board' : '⤡ Fit board to screen'; }
+    set(); if (b) b.onclick = function () { fit = !fit; try { localStorage.setItem('ty_fit', fit ? '1' : '0'); } catch (e) {} set(); }; })();
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
     if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
