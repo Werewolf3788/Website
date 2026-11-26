@@ -50,6 +50,8 @@
   .boss .ic{font-size:3.2rem;line-height:1}
   #toast{position:fixed;left:0;right:0;bottom:12px;text-align:center;pointer-events:none;z-index:10}
   #toast div{display:inline-block;background:#1b1129ee;border:1px solid #4c1d95;color:#fde68a;font-weight:700;padding:7px 13px;border-radius:999px;font-size:.76rem;margin-top:5px}
+  /* opened from inside Bastion: drop the lair's own bar, the Bastion bar above already shows the purse */
+  html.embed #top{display:none}
 </style>
 </head>
 <body>
@@ -78,6 +80,10 @@
 'use strict';
 var $ = function(id){ return document.getElementById(id); };
 var SAVE = 'mergelair_v2';
+/* opened from inside Bastion (?embed=1): no own top bar, and the gold here is the Bastion purse */
+var EMBED = /[?&]embed=1/.test(location.search);
+if (EMBED) document.documentElement.classList.add('embed');
+var gotCash = !EMBED;
 var TIERS = [
   { ic:'🥚', n:'Egg' }, { ic:'🐣', n:'Hatchling' }, { ic:'🦎', n:'Wyrmling' },
   { ic:'🐉', n:'Drake' }, { ic:'🐲', n:'Wyrm' }, { ic:'🔥', n:'Elder Dragon' }
@@ -113,7 +119,8 @@ function load(){
     if (Array.isArray(d.board) && d.board.length === N * N) S.board = d.board;
   } catch (e) {}
 }
-function save(){ try { localStorage.setItem(SAVE, JSON.stringify(S)); } catch (e) {} }
+function save(){ try { localStorage.setItem(SAVE, JSON.stringify(S)); } catch (e) {}
+  if (EMBED && gotCash) { try { parent.postMessage({ t:'bastion-purse', coins:S.coins }, '*'); } catch (e) {} } }
 function say(t){
   $('msg').textContent = t;
   clearTimeout(msgT);
@@ -304,6 +311,14 @@ $('throwBtn').onclick = function(){
   openRaid();
 };
 $('questBtn').onclick = openQuests;
+
+addEventListener('message', function(e){
+  var d = e.data || {};
+  if (d.t === 'bastion-cash' && EMBED && typeof d.cash === 'number' && isFinite(d.cash)) {
+    gotCash = true; S.coins = Math.max(0, Math.round(d.cash)); hud();
+  }
+});
+if (EMBED) { try { parent.postMessage({ t:'bastion-need-cash' }, '*'); } catch (e) {} }
 
 load();
 if (!S.board.some(function(x){ return x; })) {

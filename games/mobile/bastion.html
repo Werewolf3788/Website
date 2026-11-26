@@ -121,6 +121,21 @@ input.search{flex:1;background:#08204f;border:2px solid #38bdf8;border-radius:10
  .hex{width:96px;height:86px;font-size:10px;padding:4px 14px}
 }
 body.pad .touchOnly{display:none}
+/* the rest of the bastion opens under this same top bar */
+#world{position:fixed;left:0;right:0;bottom:0;top:var(--topH,54px);background:#08122af2;z-index:8;display:none;padding:16px;overflow:auto}
+#world.on{display:block}
+#world .wt{max-width:620px;margin:0 auto}
+#world .place{display:flex;gap:12px;align-items:center;background:#132a55;border:2px solid #2f5aa8;border-radius:14px;padding:11px 12px;margin-top:10px;cursor:pointer}
+#world .place:active{border-color:#fde047}
+#world .pi{font-size:1.9rem;line-height:1}
+#world .pn{font-weight:900}
+#world .ps{font-size:.72rem;opacity:.85;line-height:1.4;margin-top:2px}
+#world .pg{margin-left:auto;font-weight:900;color:#fde047;white-space:nowrap}
+#room{position:fixed;left:0;right:0;bottom:0;top:var(--topH,54px);z-index:4;background:#120b1c;display:none}
+#room.on{display:block}
+#room iframe{width:100%;height:100%;border:0;display:block;background:#120b1c}
+body.in-place #bottom,body.in-place #hint,body.in-place #drops{display:none}
+body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:none}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
@@ -130,9 +145,11 @@ body.pad .touchOnly{display:none}
 <div id="top">
   <a class="pill" href="./" style="text-decoration:none;color:#fff">⬅ Hub</a>
   <div class="pill" id="cashPill" title="Your cash balance"><span class="coin"></span> <span style="font-size:.6em;opacity:.9">CASH</span> <span id="cash">0</span></div>
+  <button class="pill" id="worldBtn" title="Places you can walk to">🧭 Places</button>
+  <button class="pill" id="leaveBtn" style="display:none;background:#7f1d1d;border-color:#ef4444">⬅ Leave</button>
   <div class="pill" id="hpWrap">🏰 <div id="hpBar"><div id="hpFill"></div></div> <span id="hpTxt">20</span></div>
-  <div class="pill">⚡ <button class="btn gray" id="spd" style="padding:2px 10px">x1</button></div>
-  <div class="pill"><button class="btn gray" id="pause" title="Pause / resume" style="padding:2px 10px">⏸</button></div>
+  <div class="pill" id="spdWrap">⚡ <button class="btn gray" id="spd" style="padding:2px 10px">x1</button></div>
+  <div class="pill" id="pauseWrap"><button class="btn gray" id="pause" title="Pause / resume" style="padding:2px 10px">⏸</button></div>
   <div class="pill" id="acct">Guest</div>
 </div>
 
@@ -160,6 +177,19 @@ body.pad .touchOnly{display:none}
     <button class="btn sq gray" id="rotR">⟳<span>Rotate</span></button>
   </div>
 </div>
+
+<!-- Places: everything you can walk to stays inside the same game -->
+<div id="world">
+  <div class="wt">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <h2 style="margin:0;font-size:1.05rem">🧭 Places you can go</h2>
+      <button class="btn gray" id="worldClose" style="padding:4px 10px">Close</button>
+    </div>
+    <div class="small" style="margin-top:6px">One castle, one purse. Whatever you earn out there comes back with you as cash.</div>
+    <div id="worldList"></div>
+  </div>
+</div>
+<div id="room"><iframe id="roomFrame" title="Place inside the bastion"></iframe></div>
 
 <!-- Inventory -->
 <div class="panel" id="inv">
@@ -1218,7 +1248,46 @@ function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(
 loadLocal();buildBoard();resize();updHud();setHolding(null);frame();
 if(S.seenVersion!==VERSION){modal('🆕 What\'s new · v'+VERSION,'<ul style="margin:0;padding-left:18px;line-height:1.5">'+WHATS_NEW.map(x=>'<li>'+x+'</li>').join('')+'</ul>');S.seenVersion=VERSION;save();}
 initFirebase().catch(e=>console.warn('firebase',e));
+/* ---------- places: the lair and the rest of the bastion, under the same top bar ---------- */
+const PLACES=[
+  {id:'nest',ic:'🪺',name:'The Nest',sub:'Merge creatures, raise dragons and raid the lair mouth. Everything you win here lands in your Bastion cash.',url:'merge-lair.html'}
+];
+let inPlace=null;
+function syncTopH(){const h=$('top').getBoundingClientRect().bottom;document.documentElement.style.setProperty('--topH',Math.max(44,Math.round(h))+'px');}
+function renderWorld(){
+  $('worldList').innerHTML=PLACES.map(p=>`<div class="place" data-place="${p.id}"><div class="pi">${p.ic}</div><div><div class="pn">${p.name}</div><div class="ps">${p.sub}</div></div><div class="pg">Enter →</div></div>`).join('')
+    +`<div class="place" data-place="board" style="background:#0e1f3d;border-color:#33507f"><div class="pi">🏰</div><div><div class="pn">Your board</div><div class="ps">Back to the towers, roads and waves outside the castle.</div></div><div class="pg">Return →</div></div>`;
+}
+function openWorld(){syncTopH();renderWorld();$('world').classList.add('on');}
+function closeWorld(){$('world').classList.remove('on');}
+function enterPlace(id){
+  if(id==='board'){closeWorld();leavePlace();return;}
+  const p=PLACES.find(x=>x.id===id);if(!p)return;
+  if(inPlace===id){closeWorld();return;}
+  closeWorld();inPlace=id;document.body.classList.add('in-place');$('leaveBtn').style.display='';
+  if(inBattle&&!paused)setPaused(true);
+  const f=$('roomFrame');f.src=p.url+'?embed=1';
+  f.onload=()=>{$('top').getBoundingClientRect();syncTopH();try{f.contentWindow.postMessage({t:'bastion-cash',cash:S.cash},'*');}catch(e){}};
+  syncTopH();$('room').classList.add('on');
+}
+function leavePlace(){
+  if(!inPlace)return;inPlace=null;$('room').classList.remove('on');$('roomFrame').src='about:blank';
+  document.body.classList.remove('in-place');$('leaveBtn').style.display='none';updHud();
+}
+$('worldBtn').onclick=openWorld;$('worldClose').onclick=closeWorld;
+$('leaveBtn').onclick=()=>{leavePlace();};
+$('worldList').onclick=e=>{const c=e.target.closest('[data-place]');if(c)enterPlace(c.dataset.place);};
+addEventListener('resize',syncTopH);
+addEventListener('message',e=>{
+  if(!inPlace||e.source!==$('roomFrame').contentWindow)return;
+  const d=e.data||{};
+  if(d.t==='bastion-purse'&&typeof d.coins==='number'&&isFinite(d.coins)){S.cash=Math.max(0,Math.round(d.coins));updHud();save(true);}
+  else if(d.t==='bastion-need-cash'){try{e.source.postMessage({t:'bastion-cash',cash:S.cash},'*');}catch(err){}}
+});
+syncTopH();
 window.__bastion={cam,placeCam,get S(){return S},startRun,nextWave,tryPlace,setHolding,fuse,get enemies(){return enemies},get inBattle(){return inBattle},get waveNo(){return waveNo},get routes(){return routes}};
+window.__places={openWorld,enterPlace,leavePlace,get inPlace(){return inPlace}};
+{const want=new URLSearchParams(location.search).get('place');if(want&&PLACES.some(p=>p.id===want))setTimeout(()=>enterPlace(want),250);}
 </script>
 </body>
 </html>
