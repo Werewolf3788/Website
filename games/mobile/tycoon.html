@@ -664,7 +664,9 @@
   $('soloBtn').onclick = function () { location.href = 'tycoon.html'; };
 
   function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
-  window.WW_BUSY = function () { return !!S && S.status === 'playing' && mySeat() >= 0; };   // js/autoupdate.js: no reload mid-game
+  // js/autoupdate.js: the whole game is kept on the server and you get your seat back, so an update can load mid-game;
+  // it only waits while dice are rolling (and for a few seconds after you last touched the screen)
+  window.WW_BUSY = function () { return !!rolling; };
   function isHost() { return !!S && !!me && S.hostUid === me.uid; }
   // A table only runs while a seated human is really here (tab visible and touched in the last 2 minutes).
   var lastAct = Date.now(), wasPaused = false;

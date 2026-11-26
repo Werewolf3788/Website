@@ -39,6 +39,10 @@
   var hubs = document.createElement('div'); hubs.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-top:10px';
   HUBS.forEach(function (h) { var a = document.createElement('a'); a.href = root + h.u; a.textContent = h.n; a.style.cssText = 'flex:1 1 auto;text-align:center;text-decoration:none;color:#cbd5e1;background:#0f172a;border-radius:10px;padding:9px 10px;font-size:.82rem'; hubs.appendChild(a); });
   box.appendChild(hubs);
+  var rl = document.createElement('button'); rl.textContent = '🔄 Reload (load the newest version)';
+  rl.style.cssText = 'margin-top:8px;width:100%;background:#0f172a;color:#86efac;border:2px solid #166534;border-radius:10px;padding:10px;font:inherit;font-weight:700;cursor:pointer';
+  rl.onclick = function () { try { var u = new URL(location.href); u.searchParams.set('v', Date.now().toString(36)); var go = function () { location.replace(u.toString()); }; var p = window.WW_BEFORE_RELOAD && window.WW_BEFORE_RELOAD(); if (p && p.then) p.then(go, go); else go(); } catch (e) { location.reload(); } };
+  box.appendChild(rl);
   var close = document.createElement('button'); close.textContent = 'Close';
   close.style.cssText = 'margin-top:12px;width:100%;background:#475569;color:#fff;border:0;border-radius:10px;padding:11px;font:inherit;cursor:pointer';
   box.appendChild(close); ov.appendChild(box); document.body.appendChild(ov);
