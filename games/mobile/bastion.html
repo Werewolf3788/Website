@@ -1220,7 +1220,7 @@ const sfxLast={};function sfx(type){const nowT=performance.now();if(sfxLast[type
   g.gain.setValueAtTime(type==='shot'||type==='laser'||type==='zap'?.025:type==='boom'?.12:.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+set[1]);o.start(t);o.stop(t+set[1]);}catch(e){}}
 
 /* ---------- save: Firestore (signed in) / this device (guest) ---------- */
-let fb=null,docRef=null,saveT=0,dirty=false,authUser=null,fbReady=false;
+let fb=null,docRef=null,saveT=0,dirty=false,authUser=null,fbReady=false,fbFailed=false;
 const APP=/[?&]app=1/.test(location.search);
 function save(now){S.updatedAt=Date.now();dirty=true;if(now)flush();}
 function snapshot(){const o=JSON.parse(JSON.stringify(S));return o;}
@@ -1240,18 +1240,17 @@ function signIn(){const p=new firebase.auth.GoogleAuthProvider();
     if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'))return firebase.auth().signInWithRedirect(p);
     toast('Sign-in problem: '+((e&&e.message)||e));});}
 $('acct').onclick=()=>{
-  if(!fbReady){toast(APP?'This app saves on this phone. Sign in on the website with the same account to sync.':'Still connecting — try again in a second.');return;}
+  if(!fbReady){if(!APP&&fbFailed){toast('Could not reach the sign-in service. Check your connection and reload.');return;}toast(APP?'This app saves on this phone. Sign in on the website with the same account to sync.':'Still connecting — try again in a second.');return;}
   if(authUser){if(confirm('Sign out? Your progress stays on your account.'))firebase.auth().signOut();return;}
   if(APP){toast('Google blocks sign-in inside apps, so this app saves on this phone. The website saves to your profile.');return;}
   signIn();};
 async function initFirebase(){
-  let cfg=null;
-  for(const u of ['/__/firebase/init.json','https://entertainment-71888.web.app/__/firebase/init.json']){
-    try{const r=await fetch(u);if(r.ok){cfg=await r.json();break;}}catch(e){}}
-  if(!cfg)return;
-  const v='10.12.2',base=`https://www.gstatic.com/firebasejs/${v}/`;
-  await loadScript(base+'firebase-app-compat.js');
-  await Promise.all(['auth','database','firestore'].map(m=>loadScript(base+`firebase-${m}-compat.js`)));
+  // same project settings and Firebase version as the rest of the site (js/common.js), so the sign-in is shared
+  // with every other page and works on GitHub Pages too (the old /__/firebase/init.json only exists on web.app)
+  const cfg={apiKey:"AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",authDomain:"entertainment-71888.firebaseapp.com",databaseURL:"https://entertainment-71888-default-rtdb.firebaseio.com",projectId:"entertainment-71888",storageBucket:"entertainment-71888.firebasestorage.app",messagingSenderId:"660524340277",appId:"1:660524340277:web:ef8f4ed04fa985a4f88d7c"};
+  const v='8.10.1',base=`https://www.gstatic.com/firebasejs/${v}/`;
+  await loadScript(base+'firebase-app.js');
+  await Promise.all(['auth','database','firestore'].map(m=>loadScript(base+`firebase-${m}.js`)));
   if(!firebase.apps.length)firebase.initializeApp(cfg);
   fbReady=true;
   try{firebase.firestore().enablePersistence({synchronizeTabs:true}).catch(()=>{});}catch(e){}
@@ -1307,7 +1306,7 @@ function frame(){requestAnimationFrame(frame);const raw=Math.min(clock.getDelta(
 /* ---------- boot ---------- */
 loadLocal();buildBoard();resize();updHud();setHolding(null);renderAutoFuse();frame();
 if(S.seenVersion!==VERSION){modal('🆕 What\'s new · v'+VERSION,'<ul style="margin:0;padding-left:18px;line-height:1.5">'+WHATS_NEW.map(x=>'<li>'+x+'</li>').join('')+'</ul>');S.seenVersion=VERSION;save();}
-initFirebase().catch(e=>console.warn('firebase',e));
+initFirebase().catch(e=>{fbFailed=true;console.warn('firebase',e);});
 /* ---------- places: the lair and the rest of the bastion, under the same top bar ---------- */
 const PLACES=[
   {id:'nest',ic:'🪺',name:'The Nest',sub:'Merge creatures, raise dragons and raid the lair mouth. Everything you win here lands in your Bastion cash.',url:'merge-lair.html'}
