@@ -24,13 +24,21 @@
   #hud{display:flex;gap:6px;align-items:center;justify-content:space-between;padding:8px 10px;font-size:.78rem;font-weight:800;background:#1d1430}
   .pill{background:#2a1d40;border-radius:999px;padding:5px 9px}
   #hud a{color:#fbcfe8;text-decoration:none}
-  #lane{position:relative;flex:1;min-height:0;overflow:hidden;background:linear-gradient(#1b1130,#2a1740 60%,#3b1f52)}
-  #lane:before{content:'';position:absolute;left:0;right:0;bottom:0;height:26%;background:repeating-linear-gradient(90deg,#241934 0 14px,#2b1e3e 14px 28px)}
-  #counter{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(#f59e0b,#b45309);box-shadow:3px 0 12px #0006}
-  .cust{position:absolute;top:38%;transform:translate(-50%,-50%);text-align:center;will-change:left;transition:opacity .25s;background:#ffffff1f;border-radius:14px;padding:4px 7px;box-shadow:0 4px 12px #0006}
-  .cust .who{font-size:2.1rem;line-height:1;filter:drop-shadow(0 3px 4px #0007)}
+  #lane{position:relative;flex:1;min-height:0;overflow:hidden;background:radial-gradient(120% 80% at 66% 6%,#4a2568 0%,#2a1740 54%,#180f2b 100%)}
+  #lane .glow{position:absolute;inset:0;background:radial-gradient(58% 42% at 60% 20%,#ffd9a02e,#0000 72%);pointer-events:none;z-index:4}
+  #lane .wall{position:absolute;left:0;right:0;top:0;height:35%;background:linear-gradient(#2f1c48,#261639 72%,#1f1232);border-bottom:3px solid #46295f;box-shadow:inset 0 -12px 26px #00000055}
+  #lane .shelf{position:absolute;top:15%;height:5px;border-radius:3px;background:#513470;box-shadow:0 3px 0 #241436,0 -13px 0 -3px #3c2456}
+  #lane .sign{position:absolute;left:19%;top:5%;background:#fbbf24;color:#3b1f05;font-weight:900;font-size:.58rem;letter-spacing:.3px;padding:3px 8px;border-radius:5px;box-shadow:0 4px 10px #00000080;transform:rotate(-2deg);z-index:2}
+  #lane .pave{position:absolute;left:0;right:0;bottom:0;height:68%;background:repeating-linear-gradient(90deg,#322348 0 36px,#2a1c3c 36px 72px),repeating-linear-gradient(0deg,#ffffff0d 0 1px,#0000 1px 28px),linear-gradient(#00000022,#00000055 78%);clip-path:polygon(0 100%,100% 100%,76% 0,20% 0)}
+  #lane .rug{position:absolute;left:33%;bottom:4%;width:34%;height:6%;border-radius:50%;background:#7c3aed2e;filter:blur(7px)}
+  #lane .adawn{position:absolute;left:0;top:20%;width:40px;height:13px;background:repeating-linear-gradient(135deg,#ef4444 0 7px,#fff7ed 7px 14px);border-radius:3px;box-shadow:0 5px 12px #00000090;z-index:3}
+  .prop{position:absolute;filter:drop-shadow(0 5px 7px #00000090);pointer-events:none;z-index:1}
+  #counter{position:absolute;left:0;top:22%;bottom:0;width:30px;background:linear-gradient(90deg,#6b431f,#c8873f 45%,#8a5626);box-shadow:5px 0 18px #00000090;border-right:2px solid #5b3416;z-index:3}
+  #counter:after{content:'';position:absolute;right:-7px;top:0;bottom:0;width:7px;background:#f5c469;opacity:.28}
+  .cust{position:absolute;top:38%;left:0;transform:translate(-50%,-50%);text-align:center;will-change:left,top;transition:opacity .25s;background:#ffffff17;border-radius:14px;padding:4px 7px;box-shadow:0 6px 16px #00000080,inset 0 1px 0 #ffffff26;z-index:5}
+  .cust .who{font-size:2.1rem;line-height:1;filter:drop-shadow(0 3px 4px #00000080)}
   .cust .ord{font-size:1rem;background:#fff2e2;border-radius:999px;padding:1px 5px;margin-top:2px;display:inline-block;color:#1d1430}
-  .cust .pat{width:38px;height:4px;background:#0006;border-radius:3px;margin:3px auto 0;overflow:hidden}
+  .cust .pat{width:38px;height:4px;background:#00000066;border-radius:3px;margin:3px auto 0;overflow:hidden}
   .cust .pat i{display:block;height:100%;background:#4ade80}
   .cust.gone{opacity:0;transform:translate(-50%,-160%) scale(.7)}
   .cust.angry .pat i{background:#ef4444}
@@ -66,9 +74,20 @@
     <a href="index.html">☰ Games</a>
   </div>
   <div id="lane">
+    <div class="wall"></div>
+    <div class="shelf" style="left:8%;right:8%"></div>
+    <div class="sign">OPEN · fresh daily</div>
+    <div class="pave"></div>
+    <div class="rug"></div>
+    <div class="adawn"></div>
     <div id="counter"></div>
+    <div class="prop" style="left:9%;bottom:5%;font-size:1.9rem">🪴</div>
+    <div class="prop" style="right:7%;bottom:15%;font-size:1.7rem">🪴</div>
+    <div class="prop" style="right:27%;bottom:4%;font-size:1.5rem">🪑</div>
+    <div class="prop" style="right:13%;top:37%;font-size:1.35rem">🪧</div>
     <div id="banner"></div>
     <div id="combo"></div>
+    <div class="glow"></div>
   </div>
   <div id="floor">
     <button data-o="🍋"><b>🍋</b>Lemonade</button>
@@ -160,26 +179,51 @@ function loop(now){
   G.spawnT -= dt;
   if (G.spawnT <= 0) { G.spawnT = d.gap / rate; spawn(d); }
 
-  var W = LANE.clientWidth;
   for (var i = G.custs.length - 1; i >= 0; i--) {
     var c = G.custs[i];
     if (c.state === 'served') { c.t += dt; if (c.t > 0.35) { c.el.remove(); G.custs.splice(i, 1); } continue; }
     if (c.state === 'angry') { c.t += dt; if (c.t > 0.6) { c.el.remove(); G.custs.splice(i, 1); } continue; }
-    c.x -= dt / c.speed;
+    if (c.x > 0.1) c.x = Math.max(0.1, c.x - dt / c.speed);
     c.pat -= dt;
-    c.el.style.left = (30 + c.x * (W - 70)) + 'px';
     var pct = Math.max(0, c.pat / c.maxPat * 100);
     c.el.querySelector('.pat i').style.width = pct + '%';
     c.el.classList.toggle('angry', pct < 30);
-    if (c.x <= 0.02 || c.pat <= 0) miss(c);
+    if (c.pat <= 0) miss(c);
   }
+  tidyQueue();
+  for (var q = 0; q < G.custs.length; q++) if (G.custs[q].state === 'walk') place(G.custs[q]);
   raf = requestAnimationFrame(loop);
+}
+
+var RAILS = [{ y: 0.49, s: 0.78 }, { y: 0.63, s: 0.92 }, { y: 0.78, s: 1.06 }];
+
+/* three lanes deep into the shop, and a queue where nobody stands inside anyone else */
+function place(c){
+  var r = RAILS[c.rail] || RAILS[0];
+  c.el.style.left = (36 + c.x * (LANE.clientWidth - 80)) + 'px';
+  c.el.style.top = (r.y * 100) + '%';
+  c.el.style.transform = 'translate(-50%,-50%) scale(' + r.s + ')';
+}
+function tidyQueue(){
+  for (var r = 0; r < RAILS.length; r++){
+    var line = [];
+    for (var i = 0; i < G.custs.length; i++){
+      var c = G.custs[i];
+      if (c.state === 'walk' && c.rail === r) line.push(c);
+    }
+    line.sort(function(a, b){ return a.x - b.x; });
+    for (var k = 1; k < line.length; k++) if (line[k].x < line[k-1].x + 0.115) line[k].x = line[k-1].x + 0.115;
+  }
 }
 
 function spawn(d){
   var orders = S.station3 ? ['🍋', '☕', '🍩'] : ['🍋', '☕', '🍩', '🍋'];
+  var load = [0, 0, 0];
+  G.custs.forEach(function(c){ if (c.state === 'walk') load[c.rail] = (load[c.rail] || 0) + 1; });
+  var rail = 0;
+  for (var r = 1; r < load.length; r++) if (load[r] < load[rail]) rail = r;
   var c = {
-    x: 1, speed: d.speed * (0.85 + Math.random() * 0.35),
+    x: 1.02 + Math.random() * 0.2, rail: rail, speed: d.speed * (0.85 + Math.random() * 0.35),
     order: orders[Math.floor(Math.random() * orders.length)],
     maxPat: (6 + Math.random() * 3) * (1 + S.slow * 0.18), state: 'walk', t: 0
   };
@@ -190,8 +234,9 @@ function spawn(d){
     '<div class="ord">' + c.order + '</div><div class="pat"><i style="width:100%"></i></div>';
   LANE.appendChild(el);
   c.el = el;
-  el.style.left = (30 + c.x * (LANE.clientWidth - 70)) + 'px';
   G.custs.push(c);
+  tidyQueue();
+  G.custs.forEach(function(k){ if (k.state === 'walk') place(k); });
 }
 
 function setBanner(t){
