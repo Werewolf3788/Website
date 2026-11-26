@@ -2,6 +2,16 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 59,
+   "date": "Nov 26",
+   "game": "all",
+   "items": [
+    "🧱 Brick Breaker is now a twelve-mission Breaker Corps campaign with relay cores, bomb bricks, power-ups, mission events and upgrades",
+    "🔢 Merge 2048 is now the Fusion Lab: twelve chapters with target tiles and move budgets, combo surges, hammers and shuffles",
+    "💣 Minefield is now Sweep Team: twelve clearance ops with supply crates, drone scans, sonar pings and star ratings"
+   ]
+  },
+  {
    "id": 58,
    "date": "Nov 25",
    "game": "all",
