@@ -1,0 +1,21 @@
+name: tmp-city-rush3
+on:
+  workflow_dispatch:
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply and commit
+        run: |
+          python3 -c "import base64,lzma;open('/tmp/p.patch','wb').write(lzma.decompress(base64.b64decode('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')))"
+          git apply /tmp/p.patch
+          git config user.name "City Rush"
+          git config user.email "noreply@example.com"
+          git add -A games/mobile
+          git commit -m "City Rush: proper shop floor, back wall and lit counter"
+          git push origin HEAD:main
