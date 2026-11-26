@@ -376,7 +376,7 @@ function invStat(key){const el=$('invStat');if(!el)return;
   el.innerHTML='<b>'+tierName(d,l)+'</b><small>'+quickStats(k,id,l)+'</small>'+nx;}
 function upgStat(k,l){const el=$('upgStat');if(!el)return;
   const u=k?UPG.find(x=>x.k===k):null;if(!u){el.innerHTML='';return;}
-  el.innerHTML='<b>'+u.ic+' '+u.name+' \u00b7 Lv '+l+'/'+u.max+'</b><small>'+u.fx(l)+' now</small>'+(l<u.max?'<small>\u2192 next Lv '+(l+1)+': '+u.fx(l+1)+'</small>':'');}
+  el.innerHTML='<b>'+u.ic+' '+u.name.replace('Tower ','')+' \u00b7 Lv '+l+'/'+u.max+'</b><small>'+u.fx(l)+' now</small>'+(l<u.max?'<small>\u2192 next Lv '+(l+1)+': '+u.fx(l+1)+'</small>':'');}
 let lastUpg=null;
 
 const ENEMY = {
