@@ -9,6 +9,7 @@ While you're **live on Twitch** it checks every 30 seconds and:
 |---|---|
 | Fixes the category to the PlayStation game (no more "Games + Demos") | Twitch, Kick |
 | Title = PlayStation game status (or game name) + `w/ @friend` for squad members in the same game | Twitch, YouTube, Kick |
+| Posts the new title as a chat message | YouTube, Kick |
 | Sets your tags (`base_tags`, plus `game_tags` for the current game) once per stream | Twitch |
 | Posts one "now live" alert | Discord webhook |
 | Relays YouTube, TikTok and Kick chat into Twitch chat (as your bot or your own account - your pick) | Twitch |
@@ -50,6 +51,7 @@ Written with starter values for the app owner on first run (`seed-owner.json`). 
 | `update_title` | `false` to leave the Twitch title alone |
 | `youtube_mode` | `same` (same title as Twitch), `base_plus_status` (`youtube_base | status`), or `off` |
 | `discord_live_alert` | `false` to skip the Discord alert |
+| `announce_title` | `false` to stop posting the title as a chat message in YouTube and Kick (it is posted once each time the title changes) |
 | `chat.youtube_channel_id`, `chat.tiktok_username` | chats to relay into Twitch (set by the setup page) |
 | `source` | `auto` (default: PlayStation when in a game there, otherwise copy the Twitch title + category to YouTube/Kick), `twitch` (always copy Twitch - PC/OBS streamers), `playstation` |
 | `title_format`, `mention_squad` | title shows `status` / `game_status` / `game`; add @friends in the same game |
@@ -68,6 +70,8 @@ Firebase keys can't contain `.` `#` `$` `[` `]` `/` - leave those characters out
 | `psn_npsso` | each streamer (optional) | already saved from Settings; without it the PlayStation database is used |
 | `discord_webhook` | each streamer (optional) | paste a Discord channel webhook URL |
 | `youtube_hook_url`, `youtube_hook_secret` | each streamer (optional) | printed by `setupStreamHook()` in StreamHook.gs; paste them into the setup page's owner box (or straight into Firebase) |
+
+The same hook also posts the title announcement into the YouTube live chat (`youtube_chat`). That needs the current StreamHook.gs (the one with `postYouTubeChat_`) redeployed as a new version, and the script's permissions approved again (`YouTube.LiveChatMessages.insert` needs `youtube.force-ssl`). Kick chat posting needs the `chat:write` permission, so a Kick account connected before that was added has to be reconnected on the setup page once.
 
 ## Render
 
