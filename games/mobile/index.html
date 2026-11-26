@@ -296,6 +296,7 @@
     if (user) { $('who').innerHTML = WW.avatarHtml(WW.avatar, user.displayName || user.email, 20) + ' ' + WW.esc(user.displayName || user.email); $('myCode').textContent = code || '--------'; }
   });
 </script>
+<script>window.WW_BUSY=function(){return false;};</script>
 <script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
 </body>
 </html>

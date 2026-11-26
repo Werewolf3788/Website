@@ -79,6 +79,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>document.write('<script src="js/common.js"><\/script>');</script>
 <script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/turnalert.js"><\/script>');</script>
 <script>
 (function () {
   'use strict';
@@ -216,6 +217,7 @@
   }
   function render() {
     if (!R || !R.state) return; var st = R.state, phase = st.phase, op = other(R, ME), placing = phase === 'place';
+    try { if (window.WWTurn) WWTurn.update(isMP && phase === 'battle' && st.turn === ME, muted); } catch (e) {}
     var iReady = !!(R.players && R.players[ME] && R.players[ME].ready), myFleet = placing && !iReady ? draft : (fleetOf(R, ME).length ? fleetOf(R, ME) : draft);
     var opShots = op ? shotsBy(R, op) : {}, myShots = shotsBy(R, ME), opFleet = op ? fleetOf(R, op) : [];
     var skip = hold ? hold.by + ':' + key(hold.r, hold.c) : '';

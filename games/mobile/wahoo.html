@@ -85,6 +85,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>document.write('<script src="js/common.js"><\/script>');</script>
 <script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/turnalert.js"><\/script>');</script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -201,6 +202,7 @@
   $('soloBtn').onclick = function () { location.href = 'wahoo.html'; };
 
   function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
+  window.WW_BUSY = function () { return !!S && S.status === 'playing' && mySeat() >= 0; };   // js/autoupdate.js: no reload mid-game
   function isHost() { return !!S && !!me && S.hostUid === me.uid; }
   // A table only runs while a seated human is really here (tab visible and touched in the last 2 minutes).
   var lastAct = Date.now(), wasPaused = false;
@@ -386,18 +388,19 @@
     if (WW.mode !== 'cloud' || !S) return false;
     return seated(S).some(function (p) { var st = seatOf(S, p); return st && !st.bot && st.uid !== me.uid && !!players[st.uid]; });
   }
-  function toBot(s, slot) { s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }
+  function toBot(s, slot) { var o = s.seats[slot] || {}, was = !o.bot ? o.uid : o.was; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; if (was) s.seats[slot].was = was; }   // remember who sat here so they get the seat back
   function humanCount(s) { return seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length; }
   function markStarted(s) { seated(s).forEach(function (p) { var st = seatOf(s, p); if (st && !st.bot) st.f = s.gid; }); }
   // Jumping into a table nobody else is playing restarts it; otherwise you take over a bot's seat in the running game.
   function sit(slot) {
-    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent();
+    var wasMine = !!S && seated(S).some(function (p) { var st = seatOf(S, p); return st && st.bot && st.was === me.uid; });
+    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent() && !wasMine;   // your own game is never restarted: you just get your seat back
     mutate(function (s) {
       var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
       for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
       if (!s.seats) s.seats = {};
       var others = seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length;
-      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false, avatar: WW.avatar || '', f: 0 };
+      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false, avatar: WW.avatar || '', f: (cur && cur.was === me.uid && s.status === 'playing') ? s.gid : 0 };
       if (!others) s.hostUid = me.uid;
       if (restart && s.status !== 'lobby') {
         for (var j = 0; j < 4; j++) { var oo = seatOf(s, j); if (oo && !oo.bot && oo.uid !== me.uid) toBot(s, j); }
@@ -435,6 +438,7 @@
   setInterval(reapAbsent, 10000);
   var staleChecked = false;
   function checkStale() {
+    staleChecked = true; return;   // games are never ended or reset on load: coming back (or a site update) picks up where you left off
     if (staleChecked || !S) return; staleChecked = true;
     setTimeout(function () {
       if (WW.mode !== 'cloud' || !S || S.status !== 'playing' || mySeat() < 0 || WW.now() - (S.t || 0) < 600000 || otherHumansPresent()) return;
@@ -501,6 +505,7 @@
 
   function dot(p) { return WW.shapeIcon(p, 16, COLORS[p]); }
   function render() {
+    try { var ms0 = mySeat(); if (window.WWTurn) WWTurn.update(!!S && S.status === 'playing' && ms0 >= 0 && (otherHumansPresent() || document.hidden) && S.turn === ms0, muted); } catch (e) {}
     var s = S; if (!s) return;
     if (pressing) { renderPending = true; return; }
     var ms = mySeat(), myTurn = s.status === 'playing' && ms === s.turn && !s.roll;
@@ -672,7 +677,9 @@
         autoSeatTried = true;
         for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (!st) { sit(i); break; } }
       }
-      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
+      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true;
+        var back = -1; for (var bi = 0; bi < 4; bi++) { var bs = seatOf(S, bi); if (bs && bs.bot && bs.was === me.uid) { back = bi; break; } }
+        if (back >= 0) { sit(back); say('Welcome back - you are in your seat again.'); } else say('Game in progress - tap a bot seat to jump in.'); }
       autoSeatTried = true; checkStale(); render(); tick(); recordStats(S); publishSoon();
     });
   }

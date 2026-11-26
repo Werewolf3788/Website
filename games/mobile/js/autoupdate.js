@@ -2,16 +2,17 @@
 // Installed apps and phone browsers don't always have a refresh button, so the page watches for a new deploy itself:
 // the deploy workflow writes version.json (the commit it shipped) at the site root, and this script checks it every
 // minute and whenever the app comes back to the screen. When it changes, the page reloads with the new version.
-//   - Not in the middle of something (and nobody touched the screen for a few seconds): reload straight away.
-//   - Busy (a game can set window.WW_BUSY = () => true, e.g. Bastion during a battle): show a small
-//     "Update ready" bar to tap, and reload by itself once the game is no longer busy.
+//   A page reloads by itself ONLY if it says it is safe: it sets window.WW_BUSY and that returns false
+//   (e.g. Bastion outside a battle, Monopoly / Wahoo when you are not in a running game, the hub). Every other
+//   page, and any game in progress, just shows a small "Update ready" bar to tap: an update never resets a game.
 //   - window.WW_BEFORE_RELOAD (optional, may return a promise): lets a game save before the reload.
 (function () {
   'use strict';
   var m = location.pathname.match(/^(.*\/)games\/mobile\//), root = m ? m[1] : '/';
   var URL_V = root + 'version.json', current = null, pending = null, lastInput = Date.now(), bar = null, reloading = false;
 
-  function busy() { try { return typeof window.WW_BUSY === 'function' && !!window.WW_BUSY(); } catch (e) { return false; } }
+  // no WW_BUSY on the page = we can't tell whether a game is running, so treat it as busy and never reload by ourselves
+  function busy() { try { return typeof window.WW_BUSY !== 'function' || !!window.WW_BUSY(); } catch (e) { return true; } }
   ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function (ev) { addEventListener(ev, function () { lastInput = Date.now(); }, { passive: true, capture: true }); });
 
   function check() {
