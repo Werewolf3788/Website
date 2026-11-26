@@ -713,11 +713,11 @@ function mobileHtml() {
     let line = '', bar = '';
     if (k === 'farm' || k === 'farm_mp') { line = `Level <b>${n(d.level)}</b> · $${n(d.coins)} · ${n(d.fields)} field${d.fields == 1 ? '' : 's'} · ${n(d.animals)} animals · ${n(d.harvested)} crops harvested`; if (d.achTotal) { const p = Math.round((d.ach || 0) / d.achTotal * 100); line += ` · 🏆 ${n(d.ach)}/${n(d.achTotal)} achievements`; bar = pctBar(p); } }
     else if (k === 'survive') { line = `🔌 Power Plant Lv<b>${n(d.pp)}</b> · ${n(d.zones)}/25 areas · ${n(d.buildings)} building levels · ${n(d.kills)} infected defeated · mission ${n(d.mission)}${d.heroes ? ' · ' + esc(d.heroes) : ''}${d.raids ? ' · ⚔️ ' + n(d.raids) + ' raided' : ''}`; bar = pctBar(Math.round((d.zones || 0) / 25 * 100)); }
-    else if (k === 'bastion' || d.kind === 'bastion') { line = `Best wave <b>${n(d.best)}</b> \u00b7 ${n(d.towers)} tower${d.towers == 1 ? '' : 's'} \u00b7 ${n(d.camps)} camp${d.camps == 1 ? '' : 's'} \u00b7 \ud83d\udcb0 ${n(d.cash)} \u00b7 ${n(d.kills)} kills${d.upg ? ' \u00b7 ' + n(d.upg) + ' upgrade levels' : ''}`;
+    else if (k === 'bastion' || d.kind === 'bastion') { line = `${d.stats && d.stats.level != null ? '🎖️ <b>Level ' + n(d.stats.level) + '</b> \u00b7 ' : ''}Best wave <b>${n(d.best)}</b> \u00b7 ${n(d.towers)} tower${d.towers == 1 ? '' : 's'} \u00b7 ${n(d.camps)} camp${d.camps == 1 ? '' : 's'} \u00b7 \ud83d\udcb0 ${n(d.cash)} \u00b7 ${n(d.kills)} kills${d.upg ? ' \u00b7 ' + n(d.upg) + ' upgrade levels' : ''}`;
       if (d.stats) { const st = d.stats, mins = v => { v = Math.round(v || 0); return Math.floor(v / 60) + ':' + String(v % 60).padStart(2, '0'); };
         const cells = [['💥 Damage', 'x' + st.dmg], ['🪙 Gold per kill', 'x' + st.gold], ['🍀 Luck (upgrades)', '+' + st.luck + '%'], ['🎯 Crit chance', '+' + st.crit + '%'], ['⚡ Crit damage', '+' + st.critd + '%'],
           ['⏩ Attack speed', '+' + st.aspd + '%'], ['📏 Range', '+' + st.range + ' tiles'], ['🏰 Castle health', n(st.castle)], ['🗺️ Board', st.board + ' x ' + st.board], ['🚩 Start wave', 'Wave ' + n(st.startWave)],
-          ['☠️ Total kills', n(st.kills)], ['🏆 Best wave', n(st.best)]];
+          ['☠️ Total kills', n(st.kills)], ['🏆 Best wave', n(st.best)], ['🎖️ Bastion level', 'Lv ' + n(st.level != null ? st.level : Math.floor((st.best || 0) / 50)) + ' · next at wave ' + n(((st.level != null ? st.level : Math.floor((st.best || 0) / 50)) + 1) * 50)]];
         let runsHtml = '';
         const rr = Array.isArray(st.recent) ? st.recent.filter(x => x && x.wave != null) : [];
         if (rr.length) {

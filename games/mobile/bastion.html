@@ -283,8 +283,10 @@ body.in-place #hpWrap,body.in-place #spdWrap,body.in-place #pauseWrap{display:no
    Bastion Builder — build-your-own tower defense
    Fuse 3 of the same item (same level) => one +1 item.
    ========================================================= */
-const VERSION = '1.3.0';
+const VERSION = '1.4.0';
 const WHATS_NEW = [
+  '🎖️ Bastion levels: every 50 waves of your best run is a level (wave 50 = Level 1, wave 100 = Level 2...). New levels are celebrated when you start your next battle.',
+  '🎨 The Friends tab shows each player in their own color, with their level.',
   '🎓 New tutorial for first-time players, and a ❓ Tutorial button to replay it any time.',
   '⬆ Upgrades now explain what each one does: tap a hex to read it, then Buy.',
   '📱 Inventory, Upgrades and the other panels fill the phone screen so you can see all your cards.',
@@ -930,6 +932,12 @@ window.buyUpg=k=>{const u=UPG.find(x=>x.k===k),l=U(k);if(l>=u.max)return;const c
 
 /* ---------- stats ---------- */
 let statTab='player';
+/* ---------- Bastion level: every 50 waves of your best run is one level (wave 50 = Lv 1, wave 100 = Lv 2, ...) ----------
+   A new level is celebrated when you start your next battle. */
+const LVL_WAVES=50;
+const bastionLevel=best=>Math.floor((best||0)/LVL_WAVES);
+function lvlCheck(){const lv=bastionLevel(S.best);if(lv>(S.lvlSeen||0)){const from=S.lvlSeen||0;S.lvlSeen=lv;save();sfx('rare');
+  modal('🎖️ Level up!',`<div style="text-align:center;font-size:44px;font-weight:900;color:#fde047;line-height:1.1">Level ${lv}</div><div class="small" style="text-align:center;margin:8px 0">You reached wave ${S.best}. ${from?'Up from level '+from+'. ':''}The next level comes at wave ${(lv+1)*LVL_WAVES}.</div><button class="btn green" style="width:100%" onclick="closePanel('modal')">Let's go</button>`);}}
 /* ---------- friends' Bastion stats (their saved summary, honouring each friend's own sharing setting) ---------- */
 let friendsData=null,friendsLoading=false,friendsAt=0;
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -940,29 +948,35 @@ async function loadFriendsStats(){
   try{const db=firebase.database(),fs=firebase.firestore();
     const emailKey=(authUser.email||authUser.uid).toLowerCase().replace('@','_at_').replace(/\./g,'_');
     const me=(await db.ref('users/'+emailKey).get()).val()||{},friends=me.friends||{},myCode=String(me.friend_code||'').toUpperCase();
-    const meRow=Object.assign({name:'You',code:myCode,you:true},{stats:statSummary()});
+    const meRow={name:'You',code:myCode,you:true,color:me.primary_color||me.game_color||'',stats:statSummary()};
     const rows=await Promise.all(Object.entries(friends).map(async([fk,fo])=>{fo=fo||{};const code=String(fo.friend_code||fk).toUpperCase();
       let prof={};try{const pk=(await db.ref('accounts/friend_codes/'+code).get()).val();
         const cands=typeof pk==='string'?[pk]:pk&&typeof pk==='object'?['user_key','userKey','email_key','emailKey','key','owner','uid','email'].map(f=>pk[f]).filter(x=>typeof x==='string'&&x):[];
         for(let c of cands){c=c.trim();if(c.includes('@'))c=c.toLowerCase().replace(/\./g,'_').replace('@','_at_');const v=(await db.ref('users/'+c).get()).val();if(v){prof=v;break;}}}catch(e){}
-      const name=prof.username||prof.display_name||fo.username||code,scope=prof.tracking_scope||'friends';
+      const name=prof.username||prof.display_name||fo.username||code,scope=prof.tracking_scope||'friends',color=prof.primary_color||prof.game_color||'';
       let ok=scope!=='private';if(scope==='close')ok=!!(prof.friends&&prof.friends[myCode]&&prof.friends[myCode].close_friend===true);
-      if(!ok)return {name,code,hidden:true};
+      if(!ok)return {name,code,color,hidden:true};
       try{const d=await fs.doc('user/'+code+'/platform/mobile/game/bastion').get();const pr=d.exists?(d.data()||{}).progress:null;
-        return {name,code,stats:pr&&(pr.stats||{best:pr.best,kills:pr.kills}),t:pr&&pr.t};}catch(e){return {name,code,err:true};}}));
+        return {name,code,color,stats:pr&&(pr.stats||{best:pr.best,kills:pr.kills}),t:pr&&pr.t};}catch(e){return {name,code,color,err:true};}}));
     friendsData=[meRow].concat(rows).sort((a,b)=>((b.stats&&b.stats.best)||-1)-((a.stats&&a.stats.best)||-1));friendsAt=Date.now();
   }catch(e){console.warn('friends stats',e);friendsData=[];}
   friendsLoading=false;if(statTab==='friends'&&$('stats').classList.contains('open'))renderStats();}
 function friendsHtml(){
   if(!authUser)return '<div class="small">Sign in to compare your Bastion stats with your friends and allies. Friends add each other with their friend codes on the site.</div>';
-  if(!friendsData)return '<div class="small">Loading your friends\u2019 bases…</div>';
+  if(!friendsData)return '<div class="small">Loading your friends’ bases…</div>';
   if(friendsData.length<2)return '<div class="small">No friends yet. Add friends with their friend code on your profile, and their Bastion stats show up here.</div>';
-  const f=v=>v==null?'–':fmt(v);
-  return `<div class="small" style="margin-bottom:6px">Ranked by best wave. Your stats are shared with friends unless you turn game tracking off in Settings.</div>
-  <div class="tw" style="font-weight:800;opacity:.8;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr"><span>Player</span><span>Best wave</span><span>Damage</span><span>Gold</span><span>Kills</span></div>`+
-  friendsData.map(r=>{const s=r.stats;return `<div class="tw" style="grid-template-columns:1.6fr 1fr 1fr 1fr 1fr"><span><b>${esc(r.name)}</b>${r.you?'':' <span class="small">'+esc(r.code)+'</span>'}</span>`+
-    (r.hidden?'<span class="small" style="grid-column:span 4">keeps their stats private</span>':!s?'<span class="small" style="grid-column:span 4">hasn\u2019t played Bastion yet</span>':
-    `<span>${f(s.best)}</span><span>${s.dmg?'x'+s.dmg:'–'}</span><span>${s.gold?'x'+s.gold:'–'}</span><span>${f(s.kills)}</span>`)+'</div>';}).join('');}
+  const f=v=>v==null?'–':fmt(v),cols='grid-template-columns:1.7fr .7fr .9fr .8fr .8fr .9fr';
+  const okCol=c=>{c=String(c||'').trim();if(!/^#([0-9a-f]{3}|[0-9a-f]{6})([0-9a-f]{2})?$/i.test(c))return '';   // player colour, lifted if too dark to read on the blue panel
+    let h=c.slice(1);if(h.length===3)h=h.split('').map(x=>x+x).join('');h=h.slice(0,6);let r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+    const lum=(.2126*r+.7152*g+.0722*b)/255;if(lum<.55){const t=Math.min(.7,(.55-lum)*1.6+.25);r=Math.round(r+(255-r)*t);g=Math.round(g+(255-g)*t);b=Math.round(b+(255-b)*t);}
+    return `rgb(${r},${g},${b})`;};
+  return `<div class="small" style="margin-bottom:6px">Ranked by best wave. Names and stats show in each player’s own color. Every 50 waves of your best run is one level.</div>
+  <div class="tw" style="font-weight:800;opacity:.8;${cols}"><span>Player</span><span>Level</span><span>Best wave</span><span>Damage</span><span>Gold</span><span>Kills</span></div>`+
+  friendsData.map(r=>{const s=r.stats,c=okCol(r.color),st=c?`color:${c};text-shadow:0 1px 2px #000,0 0 6px #0008`:'';
+    const lv=s?(s.level!=null?s.level:bastionLevel(s.best)):null;
+    return `<div class="tw" style="${cols};${c?`border-left:4px solid ${c};padding-left:6px;`:''}"><span style="${st}"><b>${c?`<i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${c};margin-right:5px;box-shadow:0 0 0 1px #fff8"></i>`:''}${esc(r.name)}</b>${r.you?'':' <span class="small" style="color:#cbd5e1;text-shadow:none">'+esc(r.code)+'</span>'}</span>`+
+    (r.hidden?'<span class="small" style="grid-column:span 5">keeps their stats private</span>':!s?'<span class="small" style="grid-column:span 5">hasn’t played Bastion yet</span>':
+    `<span style="${st};font-weight:900">Lv ${lv}</span><span style="${st}">${f(s.best)}</span><span style="${st}">${s.dmg?'x'+s.dmg:'–'}</span><span style="${st}">${s.gold?'x'+s.gold:'–'}</span><span style="${st}">${f(s.kills)}</span>`)+'</div>';}).join('');}
 
 $('statTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;statTab=b.dataset.k;[...$('statTabs').children].forEach(x=>x.classList.toggle('on',x===b));renderStats();};
 function renderStats(){const m=mult();let h='';
@@ -970,7 +984,7 @@ function renderStats(){const m=mult();let h='';
     h=`<div class="big3"><div style="background:linear-gradient(#ef4444,#b91c1c)"><small>DAMAGE</small>x${m.dmg.toFixed(2)}</div><div style="background:linear-gradient(#fbbf24,#d97706)"><small>GOLD</small>x${m.cash.toFixed(2)}</div><div style="background:linear-gradient(#4ade80,#16a34a)"><small>LUCK</small>+${((m.luck+runLuck)*100).toFixed(1)}%</div></div>
     ${[['Damage multiplier','x'+m.dmg.toFixed(2)],['Crit chance (on top of each tower)','+'+(m.crit*100).toFixed(1)+'%'],['Crit damage','+'+(m.critd*100).toFixed(0)+'%'],['Attack speed','+'+((m.aspd-1)*100).toFixed(0)+'%'],['Range','+'+m.range.toFixed(2)+' tiles'],
       ['Gold per kill','x'+m.cash.toFixed(2)],['Wave gold scaling','+6% per wave'],['Enemy HP per wave','+16% (compounds)'],['Enemy speed per wave','+0.6% (max +60%)'],['Luck from upgrades','+'+(m.luck*100).toFixed(0)+'%'],['Luck from waves (this run)','+'+(runLuck*100).toFixed(1)+'%'],['Legendary drops','wave 60+ · up to x10 with top spawners'],['Mythic drops','wave 100+ · up to x20 with top spawners'],
-      ['Castle health',m.castle],['Board',boardN()+' x '+boardN()],['Start wave','Wave '+m.startWave],['Total kills',fmt(S.totalKills)],['Best wave',S.best]].map(([a,b])=>`<div class="row"><span>${a}</span><b>${b}</b></div>`).join('')}`;}
+      ['Castle health',m.castle],['Board',boardN()+' x '+boardN()],['Start wave','Wave '+m.startWave],['Total kills',fmt(S.totalKills)],['Best wave',S.best],['Bastion level','Lv '+bastionLevel(S.best)+' · next at wave '+((bastionLevel(S.best)+1)*LVL_WAVES)]].map(([a,b])=>`<div class="row"><span>${a}</span><b>${b}</b></div>`).join('')}`;}
   else if(statTab==='tower'){const ts=[...cells.values()].filter(c=>c.k==='t');const agg={};
     ts.forEach(t=>{const k=t.id+'|'+t.l;agg[k]=agg[k]||{id:t.id,l:t.l,n:0,dmg:0,kills:0,execs:0};const a=agg[k];a.n++;a.dmg+=t.dmgDone;a.kills+=t.kills;a.execs+=t.execs;});
     const list=Object.values(agg).sort((a,b)=>b.dmg-a.dmg);const tot=list.reduce((s,a)=>s+a.dmg,0)||1;const secs=Math.max(1,runTime);
@@ -1001,7 +1015,7 @@ let run={kills:0,cash:0,dmg:0};
 const waveLuck=()=>inBattle?Math.min(4,waveNo*0.005*(1+Math.floor(waveNo/50)*0.2)):0;
 // how good a spawner is for legendary / mythic drops: 0 at a Forest camp, 1 at a Pirate Cove
 const hiFactor=cl=>Math.max(0,Math.min(1,(cl-1)/3.2));
-function startRun(){
+function startRun(){setTimeout(lvlCheck,400);
   if(![...routes.values()].some(r=>r))return toast('Connect a spawner camp to the castle with path tiles first!');
   inBattle=true;castleHp=mult().castle;waveNo=mult().startWave-1;runTime=0;run={kills:0,cash:0,dmg:0};setPaused(false);
   for(const c of cells.values()){c.dmgDone=0;c.kills=0;c.execs=0;c.cd=0;}
@@ -1328,7 +1342,7 @@ function statSummary(){try{const m=mult(),r=(S.runs||[]).slice(-10),avg=f=>r.len
   const seen=new Set(),best=[];for(const p of top){if(seen.has(p.id))continue;seen.add(p.id);best.push({ic:TOWERS[p.id].ic,name:TOWERS[p.id].name,lv:p.l+1});if(best.length>=3)break;}
   return {dmg:+m.dmg.toFixed(2),gold:+m.cash.toFixed(2),luck:Math.round(m.luck*1000)/10,crit:Math.round(m.crit*1000)/10,critd:Math.round(m.critd*100),
     aspd:Math.round((m.aspd-1)*100),range:+m.range.toFixed(2),castle:m.castle,board:boardN(),startWave:m.startWave,kills:S.totalKills||0,best:S.best||0,
-    avgWave:Math.round(avg('wave')),avgKills:Math.round(avg('kills')),avgTime:Math.round(avg('time')),avgDmg:Math.round(avg('dmg')),avgCash:Math.round(avg('cash')),runs:(S.runs||[]).length,topTowers:best,
+    avgWave:Math.round(avg('wave')),avgKills:Math.round(avg('kills')),avgTime:Math.round(avg('time')),avgDmg:Math.round(avg('dmg')),avgCash:Math.round(avg('cash')),level:bastionLevel(S.best),runs:(S.runs||[]).length,topTowers:best,
     recent:r.map(x=>({wave:x.wave||0,time:Math.round(x.time||0),kills:Math.round(x.kills||0),cash:Math.round(x.cash||0),dmg:Math.round(x.dmg||0),at:x.at||0}))};}catch(e){return null;}}
 /* ---------- live sync between your devices (signed in) ----------
    Every device can change the map, inventory and upgrades; the change reaches the others within a second or two.
