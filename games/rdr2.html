@@ -3,6 +3,7 @@
  * Project: Red Dead Online — Collector's Catalogue (Wheeler, Rawson & Co.)
  * File: games/rdr2.html
  * Data: public/games/rdr2.json  (CC0 — see LICENSE-DATA.md)
+ * Prices: public/games/rdr2-catalogue.csv (hand-entered)
  * Notes: Static page. No Rockstar API exists, so set values and item names come
  *        from the committed dataset. Ticks are kept in localStorage only.
  * ============================================================================ -->
@@ -534,6 +535,60 @@
         font-weight: 600;
     }
 
+    /* ---------- Hand-entered price list ---------- */
+
+    .price-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--paper-2); }
+
+    .price-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px 18px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+    }
+
+    .price-table { width: 100%; border-collapse: collapse; min-width: 460px; }
+
+    .price-table th {
+        font-size: 0.62rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        text-align: left;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--ink);
+        background: rgba(214, 197, 165, 0.4);
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .price-table td {
+        padding: 8px 12px;
+        border-bottom: 1px dotted var(--line-soft);
+        font-size: 0.94rem;
+        line-height: 1.4;
+        vertical-align: top;
+    }
+
+    .price-table tbody tr:last-child td { border-bottom: 0; }
+    .price-table th.num, .price-table td.num { text-align: right; white-space: nowrap; }
+    .price-table td.num { font-family: var(--display); font-size: 0.92rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .price-table td.num.is-blank { color: var(--ink-faint); }
+    .price-table .price-cat { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+    .price-table .price-note { display: block; font-size: 0.78rem; color: var(--ink-faint); font-style: italic; }
+
+    code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.84em;
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid var(--line-soft);
+        padding: 0 4px;
+        word-break: break-word;
+    }
+
     /* ---------- Empty departments ---------- */
 
     .empty {
@@ -608,6 +663,7 @@
         .lots { grid-template-columns: 1fr; }
         .catalogue-footer { padding: 14px 16px 18px; }
         .live { grid-template-columns: 1fr; padding: 11px 16px 12px; }
+        .price-table { min-width: 420px; }
     }
 </style>
 <link rel="stylesheet" href="../assets/ww-shell.css">
@@ -656,6 +712,7 @@
         Collector item names and set values are static game data compiled from the community Collector map project (public domain), CC0 like the rest of this site's game files. Rockstar publishes no public API for Red Dead Online, so this page cannot fetch live prices.
         <div class="footer-links">
             <a href="../public/games/rdr2.json">Catalogue data (rdr2.json)</a>
+            <a href="../public/games/rdr2-catalogue.csv">Price sheet (rdr2-catalogue.csv)</a>
             <a href="https://api.rdo.gg/cycles" target="_blank" rel="noopener">Today's collector cycle</a>
             <a href="https://api.rdo.gg/nazar" target="_blank" rel="noopener">Madam Nazar's location</a>
             <a href="https://api.rdo.gg/weekly" target="_blank" rel="noopener">Weekly request</a>
@@ -687,14 +744,23 @@
         heirlooms: 'heirloom', coins: 'coin'
     };
 
+    // Departments read from the hand-filled price sheet.
+    var CATALOGUE_URL = '../public/games/rdr2-catalogue.csv';
+    var PRICE_DEPARTMENTS = {
+        grocery: 'Grocery & Dry Goods',
+        clothing: 'Clothing',
+        sporting: 'Sporting Goods & Guns',
+        tonics: 'Drugs & Tonics'
+    };
+
     var DEPARTMENTS = [
         { id: 'collector', label: "Collector's Bag", glyph: '🔍', tag: 'Stocked', filled: true },
-        { id: 'grocery',   label: 'Grocery & Dry Goods', glyph: '🥫' },
-        { id: 'clothing',  label: 'Clothing', glyph: '🧥' },
-        { id: 'sporting',  label: 'Sporting Goods & Guns', glyph: '🔫' },
+        { id: 'grocery',   label: 'Grocery & Dry Goods', glyph: '🥫', priced: true },
+        { id: 'clothing',  label: 'Clothing', glyph: '🧥', priced: true },
+        { id: 'sporting',  label: 'Sporting Goods & Guns', glyph: '🔫', priced: true },
         { id: 'horses',    label: 'Horses', glyph: '🐎' },
         { id: 'roles',     label: 'Roles', glyph: '🎖️' },
-        { id: 'tonics',    label: 'Drugs & Tonics', glyph: '🧪' },
+        { id: 'tonics',    label: 'Drugs & Tonics', glyph: '🧪', priced: true },
         { id: 'emotes',    label: 'Emotes', glyph: '💬' },
         { id: 'supplies',  label: 'Goods & Supplies', glyph: '📦' }
     ];
@@ -713,8 +779,68 @@
 
     var pane = document.getElementById('pane');
     var railNav = document.getElementById('rail-nav');
-    var state = { data: null, done: loadDone(), active: 'collector' };
+    var state = { data: null, done: loadDone(), active: 'collector', prices: {} };
     var LIVE = { cycles: null, nazar: null };
+
+    /* ---------- price sheet ---------- */
+
+    function parseCsv(text) {
+        var rows = [], row = [], field = '', quoted = false;
+        for (var i = 0; i < text.length; i++) {
+            var ch = text.charAt(i);
+            if (quoted) {
+                if (ch === '"') {
+                    if (text.charAt(i + 1) === '"') { field += '"'; i++; }
+                    else { quoted = false; }
+                } else { field += ch; }
+            } else if (ch === '"') {
+                quoted = true;
+            } else if (ch === ',') {
+                row.push(field); field = '';
+            } else if (ch === '\n') {
+                row.push(field); rows.push(row); row = []; field = '';
+            } else if (ch !== '\r') {
+                field += ch;
+            }
+        }
+        if (field !== '' || row.length) { row.push(field); rows.push(row); }
+        return rows.filter(function (r) {
+            return r.some(function (cell) { return String(cell).trim() !== ''; });
+        });
+    }
+
+    function groupPrices(rows) {
+        var out = {};
+        if (!rows.length) return out;
+        var head = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
+        var iDept = head.indexOf('department'), iItem = head.indexOf('item');
+        var iCat = head.indexOf('category'), iPrice = head.indexOf('price');
+        var iUnit = head.indexOf('unit'), iNote = head.indexOf('note');
+        if (iDept < 0 || iItem < 0) return out;
+
+        for (var i = 1; i < rows.length; i++) {
+            var r = rows[i];
+            var dept = String(r[iDept] || '').trim().toLowerCase();
+            var item = String(r[iItem] || '').trim();
+            if (!item || !PRICE_DEPARTMENTS[dept]) continue;
+
+            var rawPrice = iPrice >= 0 ? String(r[iPrice] || '').trim().replace(/[^0-9.\-]/g, '') : '';
+            var price = rawPrice ? Number(rawPrice) : NaN;
+
+            (out[dept] = out[dept] || []).push({
+                name: item,
+                category: iCat >= 0 ? String(r[iCat] || '').trim() : '',
+                price: (rawPrice && !isNaN(price)) ? price : null,
+                unit: iUnit >= 0 ? String(r[iUnit] || '').trim() : '',
+                note: iNote >= 0 ? String(r[iNote] || '').trim() : ''
+            });
+        }
+        return out;
+    }
+
+    function priceRows(deptId) {
+        return state.prices[deptId] || [];
+    }
 
     /* ---------- storage ---------- */
 
@@ -816,13 +942,20 @@
 
     /* ---------- rail ---------- */
 
+    function railTagFor(dept) {
+        if (dept.filled) return dept.tag || '';
+        var listed = dept.priced ? priceRows(dept.id).length : 0;
+        return listed ? listed + ' listed' : '';
+    }
+
     function renderRail() {
         railNav.innerHTML = DEPARTMENTS.map(function (d) {
+            var tag = railTagFor(d);
             return '<button type="button" class="rail-btn" data-dept="' + d.id + '" aria-current="' +
                 (state.active === d.id ? 'true' : 'false') + '">' +
                 '<span class="rail-glyph" aria-hidden="true">' + d.glyph + '</span>' +
                 '<span class="rail-label">' + esc(d.label) + '</span>' +
-                (d.filled ? '<span class="rail-tag">' + esc(d.tag) + '</span>' : '') +
+                (tag ? '<span class="rail-tag">' + esc(tag) + '</span>' : '') +
                 '</button>';
         }).join('');
     }
@@ -848,7 +981,51 @@
         if (!state.data) return;
         var dept = DEPARTMENTS.filter(function (d) { return d.id === state.active; })[0] || DEPARTMENTS[0];
         if (dept.filled) { renderCollector(); }
+        else if (PRICE_DEPARTMENTS[dept.id]) { renderPriceList(dept); }
         else { renderEmpty(dept); }
+    }
+
+    function renderPriceList(dept) {
+        var rows = priceRows(dept.id);
+        var head = paneHead('Department', dept.label,
+            'Prices are entered by hand in public/games/rdr2-catalogue.csv — edit that file and reload to update the catalogue.');
+
+        if (!rows.length) {
+            pane.innerHTML = head +
+                '<div class="empty">' +
+                '<h3>No prices entered yet</h3>' +
+                '<p>This department reads from <code>public/games/rdr2-catalogue.csv</code>. Add one row per item with the columns <code>department, item, category, price, unit, note</code>.</p>' +
+                '<p><code>department</code> must be one of <code>grocery</code>, <code>tonics</code>, <code>sporting</code> or <code>clothing</code>. Price in dollars, numbers only.</p>' +
+                '<p>Example row: <code>grocery, Canned Beans, Canned Goods, 1.25, each,</code></p>' +
+                '</div>';
+            return;
+        }
+
+        var priced = rows.filter(function (r) { return r.price !== null; }).length;
+        var body = rows.map(function (r) {
+            var priceCell = r.price === null
+                ? '<td class="num is-blank">—</td>'
+                : '<td class="num">' + money(r.price) + '</td>';
+            return '<tr>' +
+                '<td>' + esc(r.name) + (r.note ? '<span class="price-note">' + esc(r.note) + '</span>' : '') + '</td>' +
+                '<td>' + (r.category ? '<span class="price-cat">' + esc(r.category) + '</span>' : '—') + '</td>' +
+                '<td>' + (r.unit ? esc(r.unit) : '—') + '</td>' +
+                priceCell +
+                '</tr>';
+        }).join('');
+
+        pane.innerHTML = head +
+            '<div class="price-summary">' +
+                '<span>' + rows.length + (rows.length === 1 ? ' item listed' : ' items listed') +
+                    (priced < rows.length ? ' · ' + (rows.length - priced) + ' without a price' : '') + '</span>' +
+                '<span>From <code>public/games/rdr2-catalogue.csv</code></span>' +
+            '</div>' +
+            '<div class="price-wrap">' +
+                '<table class="price-table">' +
+                    '<thead><tr><th>Item</th><th>Category</th><th>Unit</th><th class="num">Price</th></tr></thead>' +
+                    '<tbody>' + body + '</tbody>' +
+                '</table>' +
+            '</div>';
     }
 
     function renderEmpty(dept) {
@@ -1122,6 +1299,21 @@
             (checked ? ' Updated ' + esc(checked) + '.' : '');
     }
 
+    function loadCatalogue() {
+        fetch(CATALOGUE_URL, { cache: 'no-cache' })
+            .then(function (r) {
+                if (r.status === 404) return '';
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.text();
+            })
+            .then(function (text) {
+                state.prices = groupPrices(parseCsv(text || ''));
+                renderRail();
+                if (PRICE_DEPARTMENTS[state.active]) renderPane();
+            })
+            .catch(function () { state.prices = {}; });
+    }
+
     function loadLive() {
         var cycles = getJson(CYCLES_URL).then(function (d) { LIVE.cycles = d; }).catch(function () { LIVE.cycles = null; });
         var nazar = getJson(NAZAR_URL).then(function (d) { LIVE.nazar = d; }).catch(function () { LIVE.nazar = null; });
@@ -1137,6 +1329,7 @@
         renderPane();
         renderLive();
         loadLive();
+        loadCatalogue();
     }
 
     stampDate();
