@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+ * Project: Red Dead Online — Collector's Catalogue (Wheeler, Rawson & Co.)
+ * File: games/rdr2.html
+ * Data: public/games/rdr2.json  (CC0 — see LICENSE-DATA.md)
+ * Notes: Static page. No Rockstar API exists, so set values and item names come
+ *        from the committed dataset. Ticks are kept in localStorage only.
+ * ============================================================================ -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#1a1209">
+<title>Red Dead Online — Collector's Catalogue · Wheeler, Rawson &amp; Co.</title>
+<link id="dynamicFavicon" rel="icon" type="image/png" href="//raw.githubusercontent.com/Werewolf3788/Website/main/favicon.ico">
+<link rel="apple-touch-icon" href="//raw.githubusercontent.com/Werewolf3788/Website/main/favicon.png">
+<link rel="preconnect" href="//fonts.googleapis.com">
+<link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
+<link href="//fonts.googleapis.com/css2?family=Rye&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --ink: #2a1e14;
+        --ink-soft: #5c4633;
+        --ink-faint: #8a7458;
+        --paper: #efe6d0;
+        --paper-2: #f8f1de;
+        --paper-3: #e5d8ba;
+        --line: #c0ac8c;
+        --line-soft: #d6c5a5;
+        --stamp: #7d2b23;
+        --stamp-soft: #a1554b;
+        --gold: #96763e;
+        --green: #4a6134;
+        --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+        --display: 'Rye', Georgia, serif;
+        --tap: 44px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+        background-color: #17110b;
+        background-image:
+            radial-gradient(circle at 50% -10%, rgba(150, 118, 62, 0.22), transparent 55%),
+            radial-gradient(circle at 50% 120%, rgba(0, 0, 0, 0.65), transparent 60%);
+        color: var(--ink);
+        font-family: var(--serif);
+        font-size: 17px;
+        line-height: 1.55;
+        min-height: 100vh;
+        padding: 18px 12px 40px;
+    }
+
+    a { color: var(--stamp); }
+
+    .catalogue {
+        max-width: 1240px;
+        margin: 0 auto;
+        background-color: var(--paper);
+        background-image:
+            radial-gradient(ellipse at 12% 0%, rgba(255, 255, 255, 0.55), transparent 58%),
+            radial-gradient(ellipse at 88% 100%, rgba(120, 88, 48, 0.20), transparent 62%),
+            repeating-linear-gradient(0deg, rgba(96, 68, 36, 0.035) 0 1px, transparent 1px 4px);
+        border: 1px solid #3d2c1c;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) inset, 0 24px 60px rgba(0, 0, 0, 0.65);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .catalogue::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        box-shadow: inset 0 0 90px rgba(90, 62, 28, 0.30);
+    }
+
+    /* ---------- Masthead ---------- */
+
+    .masthead {
+        position: relative;
+        z-index: 1;
+        padding: 26px 26px 16px;
+        text-align: center;
+        border-bottom: 3px double var(--ink);
+    }
+
+    .masthead-est {
+        font-size: 0.72rem;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        font-weight: 600;
+    }
+
+    .masthead h1 {
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: clamp(1.25rem, 4.2vw, 2.35rem);
+        letter-spacing: 0.06em;
+        line-height: 1.15;
+        margin: 10px 0 6px;
+        color: var(--ink);
+    }
+
+    .masthead-sub {
+        font-style: italic;
+        font-size: 0.98rem;
+        color: var(--ink-soft);
+    }
+
+    .masthead-strip {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+    }
+
+    /* ---------- Layout ---------- */
+
+    .layout {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 232px minmax(0, 1fr);
+    }
+
+    /* ---------- Department rail ---------- */
+
+    .rail {
+        border-right: 1px solid var(--line);
+        padding: 22px 0 26px;
+        background: linear-gradient(180deg, rgba(214, 197, 165, 0.35), rgba(214, 197, 165, 0.05));
+    }
+
+    .rail-title {
+        font-size: 0.68rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        padding: 0 20px 10px;
+        font-weight: 600;
+    }
+
+    .rail-nav { display: flex; flex-direction: column; }
+
+    .rail-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: 0;
+        border-left: 3px solid transparent;
+        color: var(--ink-soft);
+        font-family: var(--serif);
+        font-size: 1rem;
+        line-height: 1.25;
+        padding: 10px 16px 10px 17px;
+        min-height: var(--tap);
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .rail-btn:hover { background: rgba(255, 255, 255, 0.4); color: var(--ink); }
+
+    .rail-btn .rail-glyph { font-size: 1rem; width: 20px; flex: 0 0 20px; text-align: center; opacity: 0.85; }
+    .rail-btn .rail-label { flex: 1 1 auto; }
+
+    .rail-btn .rail-tag {
+        font-size: 0.6rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        border: 1px solid var(--line-soft);
+        border-radius: 2px;
+        padding: 1px 5px;
+        white-space: nowrap;
+    }
+
+    .rail-btn[aria-current="true"] {
+        background: var(--paper-2);
+        border-left-color: var(--stamp);
+        color: var(--ink);
+        font-weight: 600;
+    }
+
+    .rail-btn[aria-current="true"] .rail-tag { color: var(--stamp); border-color: var(--stamp-soft); }
+
+    .rail-note {
+        margin: 20px 16px 0;
+        padding: 12px 12px 13px;
+        border-top: 1px solid var(--line);
+        font-size: 0.82rem;
+        line-height: 1.45;
+        color: var(--ink-faint);
+        font-style: italic;
+    }
+
+    /* ---------- Main pane ---------- */
+
+    .pane { padding: 24px 26px 34px; min-width: 0; }
+
+    .pane-head { border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 18px; }
+
+    .pane-kicker {
+        font-size: 0.68rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        font-weight: 600;
+    }
+
+    .pane-head h2 {
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: clamp(1.15rem, 3vw, 1.7rem);
+        letter-spacing: 0.03em;
+        margin: 6px 0 8px;
+    }
+
+    .pane-lede { font-size: 0.97rem; color: var(--ink-soft); max-width: 68ch; }
+
+    /* ---------- Ledger strip ---------- */
+
+    .ledger {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        border: 1px solid var(--line);
+        background: var(--paper-2);
+        margin-bottom: 16px;
+    }
+
+    .ledger-cell { padding: 12px 14px; border-right: 1px solid var(--line-soft); }
+    .ledger-cell:last-child { border-right: 0; }
+
+    .ledger-label {
+        font-size: 0.62rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        font-weight: 600;
+    }
+
+    .ledger-value {
+        font-family: var(--display);
+        font-size: clamp(1rem, 2.6vw, 1.28rem);
+        color: var(--ink);
+        line-height: 1.3;
+    }
+
+    .ledger-value small { font-family: var(--serif); font-size: 0.72rem; color: var(--ink-faint); }
+
+    .meter-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .meter {
+        flex: 1 1 220px;
+        height: 12px;
+        background: var(--paper-3);
+        border: 1px solid var(--line);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .meter > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--gold), var(--stamp));
+        transition: width 0.3s ease;
+    }
+
+    .meter-text { font-size: 0.85rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+    .btn {
+        font-family: var(--serif);
+        font-size: 0.85rem;
+        background: transparent;
+        color: var(--ink-soft);
+        border: 1px solid var(--line);
+        padding: 7px 12px;
+        min-height: 36px;
+        cursor: pointer;
+        letter-spacing: 0.05em;
+    }
+
+    .btn:hover { border-color: var(--stamp); color: var(--stamp); background: rgba(255, 255, 255, 0.45); }
+
+    /* ---------- Lot cards ---------- */
+
+    .lots {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+        gap: 14px;
+    }
+
+    .lot {
+        background: var(--paper-2);
+        border: 1px solid var(--line);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 2px 8px rgba(90, 62, 28, 0.12);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .lot.is-complete { border-color: var(--green); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 0 0 1px rgba(74, 97, 52, 0.35); }
+
+    .lot-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: 0;
+        border-bottom: 1px solid var(--line-soft);
+        padding: 12px 13px;
+        cursor: pointer;
+        font-family: var(--serif);
+        color: var(--ink);
+        min-height: var(--tap);
+    }
+
+    .lot-head:hover { background: rgba(255, 255, 255, 0.55); }
+
+    .lot-glyph { font-size: 1.35rem; line-height: 1.2; }
+
+    .lot-titles { flex: 1 1 auto; min-width: 0; }
+
+    .lot-name {
+        display: block;
+        font-weight: 600;
+        font-size: 1.02rem;
+        line-height: 1.28;
+        letter-spacing: 0.01em;
+    }
+
+    .lot-meta {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--ink-faint);
+        margin-top: 3px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .lot-tally {
+        font-family: var(--display);
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .lot.is-complete .lot-tally { color: var(--green); }
+
+    .lot-body { padding: 12px 13px 14px; }
+
+    .lot-desc { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.45; margin-bottom: 10px; }
+
+    .lot-desc:empty { display: none; }
+
+    .lot-bar { height: 5px; background: var(--paper-3); border: 1px solid var(--line-soft); margin-bottom: 11px; overflow: hidden; }
+    .lot-bar > span { display: block; height: 100%; width: 0%; background: var(--gold); transition: width 0.25s ease; }
+    .lot.is-complete .lot-bar > span { background: var(--green); }
+
+    .item-list { list-style: none; }
+
+    .item {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        padding: 6px 0;
+        border-top: 1px dotted var(--line-soft);
+        font-size: 0.92rem;
+        cursor: pointer;
+        min-height: 34px;
+    }
+
+    .item:first-child { border-top: 0; }
+
+    .item input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        margin-top: 3px;
+        flex: 0 0 18px;
+        border: 1px solid var(--ink-faint);
+        background: #fffdf6;
+        display: inline-grid;
+        place-content: center;
+        cursor: pointer;
+    }
+
+    .item input[type="checkbox"]::after {
+        content: "✕";
+        font-size: 0.8rem;
+        line-height: 1;
+        color: var(--stamp);
+        transform: scale(0);
+        transition: transform 0.12s ease;
+    }
+
+    .item input[type="checkbox"]:checked::after { transform: scale(1); }
+    .item input[type="checkbox"]:checked + .item-text { color: var(--ink-faint); text-decoration: line-through; }
+
+    .item-text { flex: 1 1 auto; line-height: 1.35; }
+
+    .item-note {
+        display: inline-block;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        border: 1px solid var(--line-soft);
+        padding: 0 4px;
+        margin-left: 4px;
+        vertical-align: 1px;
+        white-space: nowrap;
+    }
+
+    .lot-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+    .lot-actions .btn { flex: 1 1 0; font-size: 0.78rem; min-height: 32px; padding: 5px 8px; }
+
+    .lot-stamp {
+        margin-top: 11px;
+        border: 1px double var(--green);
+        color: var(--green);
+        font-size: 0.7rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 5px 6px;
+        font-weight: 600;
+    }
+
+    /* ---------- Empty departments ---------- */
+
+    .empty {
+        border: 1px dashed var(--line);
+        background: rgba(255, 255, 255, 0.3);
+        padding: 26px 22px;
+        max-width: 62ch;
+    }
+
+    .empty h3 { font-family: var(--display); font-weight: 400; font-size: 1rem; margin-bottom: 8px; }
+    .empty p { font-size: 0.92rem; color: var(--ink-soft); }
+    .empty p + p { margin-top: 9px; }
+
+    /* ---------- Footer ---------- */
+
+    .catalogue-footer {
+        position: relative;
+        z-index: 1;
+        border-top: 3px double var(--ink);
+        padding: 16px 26px 20px;
+        font-size: 0.78rem;
+        color: var(--ink-faint);
+        line-height: 1.6;
+    }
+
+    .catalogue-footer strong { color: var(--ink-soft); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.7rem; }
+    .catalogue-footer a { color: var(--stamp); text-decoration: none; border-bottom: 1px dotted var(--stamp-soft); }
+    .catalogue-footer a:hover { color: var(--ink); }
+    .footer-links { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+
+    .notice {
+        border: 1px solid var(--stamp-soft);
+        background: rgba(125, 43, 35, 0.07);
+        color: var(--ink-soft);
+        padding: 12px 14px;
+        margin-bottom: 22px;
+        font-size: 0.9rem;
+    }
+
+    .visually-hidden {
+        position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip: rect(0 0 0 0); white-space: nowrap;
+    }
+
+    /* ---------- Responsive ---------- */
+
+    @media (max-width: 860px) {
+        body { padding: 10px 8px 26px; font-size: 16px; }
+        .masthead { padding: 20px 16px 12px; }
+        .layout { grid-template-columns: 1fr; }
+        .rail { border-right: 0; border-bottom: 1px solid var(--line); padding: 12px 0 8px; }
+        .rail-title { padding: 0 16px 6px; }
+        .rail-nav { flex-direction: row; overflow-x: auto; gap: 6px; padding: 0 12px 8px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+        .rail-btn {
+            width: auto;
+            flex: 0 0 auto;
+            border-left: 0;
+            border-bottom: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.35);
+            border: 1px solid var(--line-soft);
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .rail-btn[aria-current="true"] { border-bottom-color: var(--stamp); border-color: var(--stamp-soft); }
+        .rail-btn .rail-tag { display: none; }
+        .rail-note { margin: 4px 16px 6px; border-top: 0; padding-top: 4px; font-size: 0.76rem; }
+        .pane { padding: 18px 16px 26px; }
+        .ledger { grid-template-columns: 1fr; }
+        .ledger-cell { border-right: 0; border-bottom: 1px solid var(--line-soft); }
+        .ledger-cell:last-child { border-bottom: 0; }
+        .lots { grid-template-columns: 1fr; }
+        .catalogue-footer { padding: 14px 16px 18px; }
+    }
+</style>
+<link rel="stylesheet" href="../assets/ww-shell.css">
+<script src="../assets/menu-sheet.js"></script>
+<style id="ww-reserve">html:not(.ww-bar-ready) body::before{content:"";display:block;height:60px}</style>
+<script defer src="../assets/ww-shell.js"></script>
+</head>
+<body>
+<div class="catalogue">
+
+    <header class="masthead">
+        <div class="masthead-est">Est. 1898 · General Merchants &amp; Outfitters</div>
+        <h1>Wheeler, Rawson &amp; Co.</h1>
+        <div class="masthead-sub">Catalogue of Goods for the Collector — Red Dead Online</div>
+        <div class="masthead-strip">
+            <span>Catalogue No. 17</span>
+            <span>Madam Nazar's Collections</span>
+            <span id="masthead-date">—</span>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="rail" aria-label="Catalogue departments">
+            <p class="rail-title">Departments</p>
+            <nav class="rail-nav" id="rail-nav"></nav>
+            <p class="rail-note">Prices and item names are printed from the tracker's own catalogue file. Your ticks are kept on this device, not on a Rockstar account.</p>
+        </aside>
+
+        <main class="pane" id="pane" aria-live="polite">
+            <p class="pane-lede">Opening the catalogue…</p>
+        </main>
+    </div>
+
+    <footer class="catalogue-footer">
+        <strong>Provenance</strong><br>
+        Collector item names and set values are static game data compiled from the community Collector map project (public domain), CC0 like the rest of this site's game files. Rockstar publishes no public API for Red Dead Online, so this page cannot fetch live prices.
+        <div class="footer-links">
+            <a href="../public/games/rdr2.json">Catalogue data (rdr2.json)</a>
+            <a href="https://api.rdo.gg/cycles" target="_blank" rel="noopener">Today's collector cycle</a>
+            <a href="https://api.rdo.gg/nazar" target="_blank" rel="noopener">Madam Nazar's location</a>
+            <a href="https://api.rdo.gg/weekly" target="_blank" rel="noopener">Weekly request</a>
+        </div>
+        <div class="footer-links" style="margin-top:10px;">
+            Unofficial fan tracker. Not affiliated with or endorsed by Rockstar Games.
+        </div>
+    </footer>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var STORE_KEY = 'ww.rdr2.collector.v1';
+    var DATA_URL = '../public/games/rdr2.json';
+
+    var DEPARTMENTS = [
+        { id: 'collector', label: "Collector's Bag", glyph: '🔍', tag: 'Stocked', filled: true },
+        { id: 'grocery',   label: 'Grocery & Dry Goods', glyph: '🥫' },
+        { id: 'clothing',  label: 'Clothing', glyph: '🧥' },
+        { id: 'sporting',  label: 'Sporting Goods & Guns', glyph: '🔫' },
+        { id: 'horses',    label: 'Horses', glyph: '🐎' },
+        { id: 'roles',     label: 'Roles', glyph: '🎖️' },
+        { id: 'tonics',    label: 'Drugs & Tonics', glyph: '🧪' },
+        { id: 'emotes',    label: 'Emotes', glyph: '💬' },
+        { id: 'supplies',  label: 'Goods & Supplies', glyph: '📦' }
+    ];
+
+    var GLYPHS = {
+        flowers: '🌼', bottles: '🍾', eggs: '🥚', arrowheads: '🏹', heirlooms: '🪶',
+        coins: '🪙', fossils_coastal: '🦴', fossils_oceanic: '🐚', fossils_megafauna: '🦣',
+        tarot_cups: '🏆', tarot_swords: '⚔️', tarot_wands: '🪄', tarot_pentacles: '🪙',
+        jewelry_bracelets: '📿', jewelry_earrings: '💎', jewelry_necklaces: '📿', jewelry_rings: '💍'
+    };
+
+    var COLLECTION_GLYPHS = {
+        'American Wild Flowers': '🌼', 'Antique Bottles': '🍾', 'Bird Eggs': '🥚',
+        'Arrowheads': '🏹', 'Family Heirlooms': '🪶', 'Coins': '🪙'
+    };
+
+    var pane = document.getElementById('pane');
+    var railNav = document.getElementById('rail-nav');
+    var state = { data: null, done: loadDone(), active: 'collector', summary: null };
+
+    /* ---------- storage ---------- */
+
+    function loadDone() {
+        try {
+            var raw = localStorage.getItem(STORE_KEY);
+            var list = raw ? JSON.parse(raw) : [];
+            return new Set(Array.isArray(list) ? list : []);
+        } catch (e) { return new Set(); }
+    }
+
+    function saveDone() {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(Array.from(state.done))); } catch (e) {}
+    }
+
+    /* ---------- helpers ---------- */
+
+    function money(n) {
+        var v = Number(n) || 0;
+        return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function collections() {
+        if (!state.data || !state.data.collectibles) return [];
+        return Object.keys(state.data.collectibles).map(function (key) {
+            var c = state.data.collectibles[key];
+            return {
+                key: key,
+                name: c.quest_name || key,
+                total: Number(c.total_count) || (c.items ? c.items.length : 0),
+                value: Number(c.set_value) || 0,
+                description: c.description || '',
+                items: Array.isArray(c.items) ? c.items : []
+            };
+        });
+    }
+
+    function countOf(col) {
+        return col.items.filter(function (it) { return state.done.has(it.id); }).length;
+    }
+
+    function isComplete(col) {
+        return col.items.length > 0 && countOf(col) === col.items.length;
+    }
+
+    function glyphFor(key, name) {
+        return GLYPHS[key] || COLLECTION_GLYPHS[name] || '🔍';
+    }
+
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) {
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+        });
+    }
+
+    /* ---------- rail ---------- */
+
+    function renderRail() {
+        railNav.innerHTML = DEPARTMENTS.map(function (d) {
+            return '<button type="button" class="rail-btn" data-dept="' + d.id + '" aria-current="' +
+                (state.active === d.id ? 'true' : 'false') + '">' +
+                '<span class="rail-glyph" aria-hidden="true">' + d.glyph + '</span>' +
+                '<span class="rail-label">' + esc(d.label) + '</span>' +
+                (d.filled ? '<span class="rail-tag">' + esc(d.tag) + '</span>' : '') +
+                '</button>';
+        }).join('');
+    }
+
+    railNav.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-dept]');
+        if (!btn) return;
+        state.active = btn.getAttribute('data-dept');
+        renderRail();
+        renderPane();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* ---------- panes ---------- */
+
+    function paneHead(kicker, title, lede) {
+        return '<div class="pane-head"><div class="pane-kicker">' + esc(kicker) + '</div>' +
+            '<h2>' + esc(title) + '</h2>' +
+            (lede ? '<p class="pane-lede">' + esc(lede) + '</p>' : '') + '</div>';
+    }
+
+    function renderPane() {
+        if (!state.data) return;
+        var dept = DEPARTMENTS.filter(function (d) { return d.id === state.active; })[0] || DEPARTMENTS[0];
+        if (dept.filled) { renderCollector(); }
+        else { renderEmpty(dept); }
+    }
+
+    function renderEmpty(dept) {
+        pane.innerHTML = paneHead('Department', dept.label, '') +
+            '<div class="empty">' +
+            '<h3>No stock recorded</h3>' +
+            '<p>This department of the catalogue is reserved but not filled in yet. Only the Collector\'s Bag has data in the tracker file at the moment.</p>' +
+            '<p>Rockstar\'s own catalogue sits behind a signed-in Social Club session, so any prices printed here would have to be entered by hand.</p>' +
+            '</div>';
+    }
+
+    function renderCollector() {
+        var cols = collections();
+        var totalItems = cols.reduce(function (a, c) { return a + c.items.length; }, 0);
+        var totalValue = cols.reduce(function (a, c) { return a + c.value; }, 0);
+
+        pane.innerHTML =
+            paneHead('Department', "Collector's Bag",
+                'Madam Nazar pays out for a whole set, not for single finds. Tick what you are carrying and the ledger works out which sets are ready to hand in.') +
+            '<div class="ledger" role="group" aria-label="Collector ledger">' +
+                '<div class="ledger-cell"><div class="ledger-label">Collectibles found</div>' +
+                    '<div class="ledger-value"><span id="stat-items">0</span> <small>/ ' + totalItems + '</small></div></div>' +
+                '<div class="ledger-cell"><div class="ledger-label">Complete sets</div>' +
+                    '<div class="ledger-value"><span id="stat-sets">0</span> <small>/ ' + cols.length + '</small></div></div>' +
+                '<div class="ledger-cell"><div class="ledger-label">Set value earned</div>' +
+                    '<div class="ledger-value"><span id="stat-value">$0.00</span> <small>of ' + money(totalValue) + '</small></div></div>' +
+            '</div>' +
+            '<div class="meter-row">' +
+                '<div class="meter" role="progressbar" aria-label="Collector progress" aria-valuemin="0" aria-valuemax="' + totalItems + '" aria-valuenow="0" id="meter"><span id="meter-fill"></span></div>' +
+                '<div class="meter-text" id="meter-text">0% of the catalogue found</div>' +
+                '<button type="button" class="btn" id="reset-btn">Reset all ticks</button>' +
+            '</div>' +
+            '<div class="lots" id="lots"></div>';
+
+        var lots = document.getElementById('lots');
+        lots.innerHTML = cols.map(lotHtml).join('');
+
+        lots.addEventListener('change', onLotChange);
+        lots.addEventListener('click', onLotClick);
+        document.getElementById('reset-btn').addEventListener('click', onReset);
+
+        updateSummary();
+        cols.forEach(function (col) { updateLot(col.key); });
+    }
+
+    function lotHtml(col) {
+        var glyph = glyphFor(col.key, col.name);
+        var items = col.items.map(function (it) {
+            var note = it.location ? '<span class="item-note">' + esc(it.location) + '</span>' : '';
+            return '<li><label class="item">' +
+                '<input type="checkbox" data-item="' + esc(it.id) + '" data-set="' + esc(col.key) + '"' +
+                (state.done.has(it.id) ? ' checked' : '') + '>' +
+                '<span class="item-text">' + esc(it.name || it.id) + note + '</span>' +
+                '</label></li>';
+        }).join('');
+
+        return '<section class="lot" id="lot-' + esc(col.key) + '" data-set="' + esc(col.key) + '">' +
+            '<button type="button" class="lot-head" data-toggle="' + esc(col.key) + '" aria-expanded="false" aria-controls="lot-body-' + esc(col.key) + '">' +
+                '<span class="lot-glyph" aria-hidden="true">' + glyph + '</span>' +
+                '<span class="lot-titles">' +
+                    '<span class="lot-name">' + esc(col.name) + '</span>' +
+                    '<span class="lot-meta">' + col.items.length + ' items · ' + money(col.value) + ' for the set</span>' +
+                '</span>' +
+                '<span class="lot-tally" data-tally>0/' + col.items.length + '</span>' +
+            '</button>' +
+            '<div class="lot-body" id="lot-body-' + esc(col.key) + '" hidden>' +
+                (col.description ? '<p class="lot-desc">' + esc(col.description) + '</p>' : '') +
+                '<div class="lot-bar" aria-hidden="true"><span data-bar></span></div>' +
+                '<ul class="item-list">' + items + '</ul>' +
+                '<div class="lot-actions">' +
+                    '<button type="button" class="btn" data-all="' + esc(col.key) + '">Mark set found</button>' +
+                    '<button type="button" class="btn" data-none="' + esc(col.key) + '">Clear set</button>' +
+                '</div>' +
+                '<div class="lot-stamp" data-stamp hidden>Set complete — ready for Madam Nazar</div>' +
+            '</div>' +
+            '</section>';
+    }
+
+    /* ---------- interactions ---------- */
+
+    function onLotChange(e) {
+        var input = e.target;
+        if (!input.matches || !input.matches('input[data-item]')) return;
+        var id = input.getAttribute('data-item');
+        if (input.checked) { state.done.add(id); } else { state.done.delete(id); }
+        saveDone();
+        updateLot(input.getAttribute('data-set'));
+        updateSummary();
+    }
+
+    function onLotClick(e) {
+        var toggle = e.target.closest('[data-toggle]');
+        if (toggle) {
+            var key = toggle.getAttribute('data-toggle');
+            var body = document.getElementById('lot-body-' + key);
+            var open = body.hidden;
+            body.hidden = !open;
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            return;
+        }
+
+        var allBtn = e.target.closest('[data-all]');
+        if (allBtn) {
+            var allKey = allBtn.getAttribute('data-all');
+            var col = collections().filter(function (c) { return c.key === allKey; })[0];
+            if (!col) return;
+            col.items.forEach(function (it) { state.done.add(it.id); });
+            saveDone();
+            syncSetInputs(allKey, true);
+            updateLot(allKey);
+            updateSummary();
+            return;
+        }
+
+        var noneBtn = e.target.closest('[data-none]');
+        if (noneBtn) {
+            var noneKey = noneBtn.getAttribute('data-none');
+            var col2 = collections().filter(function (c) { return c.key === noneKey; })[0];
+            if (!col2) return;
+            col2.items.forEach(function (it) { state.done.delete(it.id); });
+            saveDone();
+            syncSetInputs(noneKey, false);
+            updateLot(noneKey);
+            updateSummary();
+            return;
+        }
+    }
+
+    function onReset() {
+        if (!state.done.size) return;
+        if (!window.confirm('Clear every tick in the Collector\'s Bag? This only affects this device.')) return;
+        state.done.clear();
+        saveDone();
+        document.querySelectorAll('input[data-item]').forEach(function (el) { el.checked = false; });
+        collections().forEach(function (col) { updateLot(col.key); });
+        updateSummary();
+    }
+
+    function syncSetInputs(key, checked) {
+        document.querySelectorAll('#lot-' + key + ' input[data-item]').forEach(function (el) { el.checked = checked; });
+    }
+
+    /* ---------- updates ---------- */
+
+    function updateLot(key) {
+        var col = collections().filter(function (c) { return c.key === key; })[0];
+        var lot = document.getElementById('lot-' + key);
+        if (!col || !lot) return;
+
+        var found = countOf(col);
+        var complete = found === col.items.length && col.items.length > 0;
+        var pct = col.items.length ? (found / col.items.length) * 100 : 0;
+
+        lot.classList.toggle('is-complete', complete);
+
+        var tally = lot.querySelector('[data-tally]');
+        if (tally) tally.textContent = found + '/' + col.items.length;
+
+        var bar = lot.querySelector('[data-bar]');
+        if (bar) bar.style.width = pct + '%';
+
+        var stamp = lot.querySelector('[data-stamp]');
+        if (stamp) stamp.hidden = !complete;
+
+        var head = lot.querySelector('.lot-head');
+        if (head) {
+            head.setAttribute('aria-label', col.name + ' — ' + found + ' of ' + col.items.length + ' items found' + (complete ? ', set complete' : ''));
+        }
+    }
+
+    function updateSummary() {
+        var cols = collections();
+        var totalItems = cols.reduce(function (a, c) { return a + c.items.length; }, 0);
+        var found = cols.reduce(function (a, c) { return a + countOf(c); }, 0);
+        var sets = cols.filter(isComplete).length;
+        var earned = cols.filter(isComplete).reduce(function (a, c) { return a + c.value; }, 0);
+        var pct = totalItems ? Math.round((found / totalItems) * 100) : 0;
+
+        var sItems = document.getElementById('stat-items');
+        var sSets = document.getElementById('stat-sets');
+        var sValue = document.getElementById('stat-value');
+        if (sItems) sItems.textContent = found;
+        if (sSets) sSets.textContent = sets;
+        if (sValue) sValue.textContent = money(earned);
+
+        var fill = document.getElementById('meter-fill');
+        if (fill) fill.style.width = pct + '%';
+
+        var meter = document.getElementById('meter');
+        if (meter) meter.setAttribute('aria-valuenow', String(found));
+
+        var text = document.getElementById('meter-text');
+        if (text) text.textContent = pct + '% of the catalogue found';
+    }
+
+    /* ---------- boot ---------- */
+
+    function stampDate() {
+        var el = document.getElementById('masthead-date');
+        if (!el) return;
+        try {
+            el.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        } catch (e) { el.textContent = ''; }
+    }
+
+    function fail(message) {
+        pane.innerHTML = paneHead('Department', "Collector's Bag", '') +
+            '<div class="notice">' + esc(message) + '</div>';
+    }
+
+    function boot(data) {
+        state.data = data;
+        renderRail();
+        renderPane();
+    }
+
+    stampDate();
+    renderRail();
+
+    if (!window.fetch) {
+        fail('This browser cannot load the catalogue data.');
+        return;
+    }
+
+    fetch(DATA_URL, { cache: 'no-cache' })
+        .then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
+        .then(boot)
+        .catch(function (err) {
+            fail('The catalogue file could not be loaded (' + err.message + '). It lives at public/games/rdr2.json next to this page.');
+        });
+})();
+</script>
+</body>
+</html>
