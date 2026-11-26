@@ -28,6 +28,10 @@
   .wrap{padding:10px}
   h2{font-size:1rem;margin:14px 0 8px}
   .story{background:#122033;border-left:3px solid #38bdf8;border-radius:8px;padding:9px 11px;font-size:.8rem;line-height:1.45;color:#cbd5e1;margin-bottom:10px}
+  .chap{margin:16px 0 8px;padding:10px 11px;border-radius:12px;background:linear-gradient(90deg,#132a3f,#111c2e);border:1px solid #24425f}
+  .chap h3{margin:0;font-size:.8rem;color:#93c5fd;letter-spacing:.5px;text-transform:uppercase}
+  .chap p{margin:4px 0 0;font-size:.74rem;color:#94a3b8;line-height:1.45}
+  .chap.locked{opacity:.55}
   .card{background:#111c2e;border:1px solid #1e293b;border-radius:12px;padding:10px;margin-bottom:8px}
   .card.locked{opacity:.45}
   .mrow{display:flex;align-items:center;gap:10px}
@@ -98,7 +102,28 @@ var MISSIONS = [
   { n:9, name:'Beneath the Temple', story:'The stair under the altar goes further down than the temple is tall. Something down there is breathing in time with the stones.', foes:[{n:'Stone Sentry',ic:'🗿',hp:95,atk:12},{n:'Stone Sentry',ic:'🗿',hp:95,atk:12}], turnLimit:8, gold:64 },
   { n:10, name:'The Behemoth', story:'Boss: it walked out of the dust at the head of the horde. Sarge says it has no eyes, only a mouth, and that Leila should not miss.', boss:true, foes:[{n:'Dust Behemoth',ic:'🦏',hp:230,atk:18,cleave:true},{n:'Horde Runner',ic:'👺',hp:44,atk:8}], turnLimit:10, gold:95 },
   { n:11, name:'The Long Night', story:'They come in waves now, all night, and the gate will not hold another one. Hold the line until the sky changes.', foes:[{n:'Night Raider',ic:'🌑',hp:80,atk:13},{n:'Night Raider',ic:'🌑',hp:80,atk:13},{n:'Howler',ic:'🐺',hp:55,atk:10}], turnLimit:9, gold:75 },
-  { n:12, name:'Keeper of the Sun Gate', story:'Boss: the gate itself has a keeper, and the keeper has been waiting for a squad worth the walk. Beat it, and the road east opens for good.', boss:true, foes:[{n:'Sun Gate Keeper',ic:'☀️',hp:320,atk:21,cleave:true},{n:'Gate Sentinel',ic:'🗿',hp:90,atk:12}], turnLimit:12, gold:140 }
+  { n:12, name:'Keeper of the Sun Gate', story:'Boss: the gate itself has a keeper, and the keeper has been waiting for a squad worth the walk. Beat it, and the road east opens for good.', boss:true, foes:[{n:'Sun Gate Keeper',ic:'☀️',hp:320,atk:21,cleave:true},{n:'Gate Sentinel',ic:'🗿',hp:90,atk:12}], turnLimit:12, gold:140 },
+  { n:13, name:'Beyond the Gate', story:'Past the Sun Gate the road runs into white ash and the air tastes of iron. Your first night east, something walks the edge of the firelight and never quite comes in.', foes:[{n:'Ridge Stalker',ic:'🐆',hp:120,atk:14},{n:'Ash Hound',ic:'🐕',hp:95,atk:13}], turnLimit:6, gold:85 },
+  { n:14, name:'The Salt Flats', story:'Nothing grows for a day in any direction, and the only water for two more is held by salt-diggers who have decided that outsiders pay in blood.', foes:[{n:'Salt Digger',ic:'⛏️',hp:105,atk:13},{n:'Salt Digger',ic:'⛏️',hp:105,atk:13},{n:'Brine Hound',ic:'🐕',hp:85,atk:12}], turnLimit:7, gold:92 },
+  { n:15, name:'The Broken Caravan', story:'A merchant caravan lies cut open across the road, wagons still loaded. Whatever did it is still here — and it is wearing the driver\'s coat.', foes:[{n:'Wagon Ghoul',ic:'🧟',hp:175,atk:16},{n:'Wagon Ghoul',ic:'🧟',hp:175,atk:16}], turnLimit:8, gold:105 },
+  { n:16, name:'Wall of Dust', story:'The storm arrives like a wall and brings company: dust-runners that hunt by sound. Stand still and they lose you. Move, and all of them come at once.', foes:[{n:'Dust Runner',ic:'🦂',hp:150,atk:17},{n:'Dust Runner',ic:'🦂',hp:150,atk:17},{n:'Dust Runner',ic:'🦂',hp:150,atk:17}], turnLimit:8, gold:118 },
+  { n:17, name:'The Glass Tower', story:'A tower of fused glass stands where a town used to be. Its keepers still walk the floors after all these years, and they do not like the sound of boots.', foes:[{n:'Glass Keeper',ic:'🔷',hp:160,atk:18},{n:'Glass Keeper',ic:'🔷',hp:160,atk:18},{n:'Shard Wisp',ic:'🕯️',hp:110,atk:14}], turnLimit:8, gold:130 },
+  { n:18, name:'The Hollow King', story:'Boss: he ruled the ash country before the gate was ever built and never noticed that he died. His court still kneels in the dust, waiting for someone to kneel back.', boss:true, foes:[{n:'The Hollow King',ic:'👑',hp:340,atk:20,cleave:true},{n:'Hollow Courtier',ic:'💀',hp:125,atk:15},{n:'Hollow Courtier',ic:'💀',hp:125,atk:15}], turnLimit:11, gold:190 },
+  { n:19, name:'The Drowned Road', story:'The eastern road disappears into a black lake, and everything that drowned on it still walks the bottom, carts and all.', foes:[{n:'Drowned Carter',ic:'🧟',hp:210,atk:20},{n:'Drowned Carter',ic:'🧟',hp:210,atk:20}], turnLimit:9, gold:160 },
+  { n:20, name:'The Iron Choir', story:'A choir in iron masks sings in the ruins to keep something asleep. Silence the singers and it wakes. Leave them and the road stays shut forever.', foes:[{n:'Chorister',ic:'🎭',hp:170,atk:19},{n:'Chorister',ic:'🎭',hp:170,atk:19},{n:'Bell Warden',ic:'🔔',hp:200,atk:20}], turnLimit:9, gold:172 },
+  { n:21, name:'The Last Lantern', story:'One lantern burns at the end of the world, kept by a hermit who has not spoken in years. She has been holding the dark off this road for you — and the dark has noticed.', foes:[{n:'Lantern Wraith',ic:'👻',hp:240,atk:21},{n:'Dark Hand',ic:'🖐️',hp:155,atk:18}], turnLimit:9, gold:185 },
+  { n:22, name:'Storm Front', story:'The storm has a front line now, and it is marching east behind storm-herders with copper hooks. Break the herders and the weather goes with them.', foes:[{n:'Storm Herder',ic:'⚡',hp:225,atk:23},{n:'Storm Herder',ic:'⚡',hp:225,atk:23}], turnLimit:10, gold:200 },
+  { n:23, name:'The Ninth Gate', story:'Eight gates are behind you. The ninth is the last thing between the squad and the far coast, and its sentinels have never been beaten.', foes:[{n:'Gate Sentinel',ic:'🗿',hp:205,atk:22},{n:'Gate Sentinel',ic:'🗿',hp:205,atk:22},{n:'Gate Sentinel',ic:'🗿',hp:205,atk:22}], turnLimit:11, gold:225 },
+  { n:24, name:'The Dawnless', story:'Boss: past the ninth gate there is no sunrise — only the thing that ate it, coiled around the horizon. End the campaign here, or the ash road goes on forever.', boss:true, foes:[{n:'The Dawnless',ic:'🌑',hp:380,atk:22,cleave:true},{n:'Dusk Herald',ic:'🕯️',hp:150,atk:17},{n:'Dusk Herald',ic:'🕯️',hp:150,atk:17}], turnLimit:14, gold:340 }
+];
+
+var CHAPTERS = [
+  { title:'Chapter I · The Road East', from:1, to:12,
+    story:'The outpost holds the only road east. Twelve missions stand between your three survivors and the Sun Gate — and nothing moves out here unless you move it.',
+    locked:'' },
+  { title:'Chapter II · Beyond the Sun Gate', from:13, to:24,
+    story:'The gate is open, but the road east runs into ash country where the dead kept their kingdom. Twelve more missions to the far coast — and something out there ate the sunrise.',
+    locked:'Clear the Sun Gate to open the road east.' }
 ];
 
 var S = { gold:30, potions:2, mission:1, stars:{}, heroes:{}, wins:0 };
@@ -129,24 +154,28 @@ function upCost(h){ return { gold: 18 + (S.heroes[h.id] - 1) * 14 }; }
 function hud(){
   $('t-gold').textContent = S.gold;
   $('t-potions').textContent = S.potions;
-  $('t-mission').textContent = 'Mission ' + S.mission;
+  $('t-mission').textContent = 'Mission ' + Math.min(S.mission, MISSIONS.length);
 }
 
 /* ---------------- mission select ---------------- */
 function viewMissions(){
   hud();
   var html = '<div class="home"><a href="#" id="toHeroes">🪖 Squad</a></div>';
-  html += '<div class="story">The outpost holds the only road east. Twelve missions stand between your three survivors and the Sun Gate — and nothing moves out here unless you move it.</div>';
-  html += '<div class="res"><div><b>' + teamPower() + '</b>squad power</div><div><b>' + Object.keys(S.stars).length + '</b>missions cleared</div><div><b>' + S.wins + '</b>battles won</div></div>';
+  html += '<div class="story">Two chapters, twenty-four missions. The outpost holds the road east, the Sun Gate opens it, and the far coast is still out there in the ash.</div>';
+  html += '<div class="res"><div><b>' + teamPower() + '</b>squad power</div><div><b>' + Object.keys(S.stars).length + '/' + MISSIONS.length + '</b>missions cleared</div><div><b>' + S.wins + '</b>battles won</div></div>';
   if (S.ambush) html += '<div class="card" style="border-color:#f59e0b"><div class="mrow"><div class="num">⚡</div><div class="g"><div class="nm">Wandering horde</div><div class="sm">A tougher wave is passing the outpost. Double gold if you break it.</div></div><button id="ambushBtn">Fight</button></div></div>';
-  MISSIONS.forEach(function(m){
-    var cleared = S.stars[m.n] > 0, open = m.n <= S.mission, st = S.stars[m.n] || 0;
-    html += '<div class="card' + (open ? '' : ' locked') + '"><div class="mrow"><div class="num">' + (m.boss ? '💀' : m.n) + '</div>' +
-      '<div class="g"><div class="nm">' + m.name + (m.boss ? ' · boss' : '') + '</div>' +
-      '<div class="sm">' + (cleared ? 'Cleared' : open ? 'Ready' : 'Locked') + ' · ' + m.gold + ' gold · limit ' + m.turnLimit + ' turns</div>' +
-      '<div class="stars">' + '★'.repeat(st) + '☆'.repeat(3 - st) + '</div></div>' +
-      (open ? '<button data-m="' + m.n + '"' + (cleared ? ' class="alt"' : '') + '>' + (cleared ? 'Replay' : 'Start') + '</button>' : '') +
-      '</div></div>';
+  CHAPTERS.forEach(function(c){
+    var chapOpen = S.mission >= c.from;
+    html += '<div class="chap' + (chapOpen ? '' : ' locked') + '"><h3>' + c.title + '</h3><p>' + (chapOpen ? c.story : c.locked) + '</p></div>';
+    MISSIONS.filter(function(m){ return m.n >= c.from && m.n <= c.to; }).forEach(function(m){
+      var cleared = S.stars[m.n] > 0, open = m.n <= S.mission, st = S.stars[m.n] || 0;
+      html += '<div class="card' + (open ? '' : ' locked') + '"><div class="mrow"><div class="num">' + (m.boss ? '💀' : m.n) + '</div>' +
+        '<div class="g"><div class="nm">' + m.name + (m.boss ? ' · boss' : '') + '</div>' +
+        '<div class="sm">' + (cleared ? 'Cleared' : open ? 'Ready' : 'Locked') + ' · ' + m.gold + ' gold · limit ' + m.turnLimit + ' turns</div>' +
+        '<div class="stars">' + '★'.repeat(st) + '☆'.repeat(3 - st) + '</div></div>' +
+        (open ? '<button data-m="' + m.n + '"' + (cleared ? ' class="alt"' : '') + '>' + (cleared ? 'Replay' : 'Start') + '</button>' : '') +
+        '</div></div>';
+    });
   });
   $('main').innerHTML = html;
   $('toHeroes').onclick = function(e){ e.preventDefault(); viewHeroes(); };
@@ -188,7 +217,7 @@ function viewHeroes(){
 var B = null;
 
 function startBattle(n, ambush){
-  var m = ambush ? MISSIONS[Math.min(S.mission, 12) - 1] : MISSIONS.filter(function(x){ return x.n === n; })[0];
+  var m = ambush ? MISSIONS[Math.min(S.mission, MISSIONS.length) - 1] : MISSIONS.filter(function(x){ return x.n === n; })[0];
   var mul = ambush ? 1.45 : 1, goldMul = ambush ? 2 : (S.stars[n] ? 0.5 : 1);
   B = {
     m: m, n: n, ambush: !!ambush, turn: 1, limit: m.turnLimit + (ambush ? 1 : 0),
@@ -348,21 +377,21 @@ function finishWin(){
   S.gold += B.gain;
   if (!B.ambush) {
     S.stars[m.n] = Math.max(S.stars[m.n] || 0, B.stars);
-    if (m.n === S.mission && S.mission < 12) S.mission++;
+    if (m.n === S.mission && S.mission <= MISSIONS.length) S.mission++;
   }
   S.wins++;
   S.ambush = !B.ambush && S.wins % 2 === 0;
   save();
-  toast('+' + B.gain + ' gold');
+  toast('+' + B.gain + ' gold' + (S.mission === 13 ? ' · Chapter II unlocked' : ''));
   B = null;
-  if (S.mission > 12) viewVictory(); else viewMissions();
+  if (S.mission > MISSIONS.length) viewVictory(); else viewMissions();
 }
 
 function viewVictory(){
   hud();
-  $('main').innerHTML = '<div class="story"><b>The Sun Gate is open.</b><br>Forty years of dust, one squad, and a road that finally runs east. The outpost will hold — but there are other roads, and other things walking them.</div>' +
-    '<div class="res"><div><b>' + S.wins + '</b>battles won</div><div><b>' + Object.keys(S.stars).length + '/12</b>cleared</div><div><b>' + teamPower() + '</b>power</div></div>' +
-    '<div class="card"><div class="mrow"><div class="g"><div class="nm">Keep playing</div><div class="sm">Replay missions for gold, level the squad and take the three-star runs.</div></div></div></div>' +
+  $('main').innerHTML = '<div class="story"><b>The ash road is quiet.</b><br>From the broken gate to the far coast, across a dead king\'s court and a sun that never came up. The squad walks into daylight that is theirs. The outpost will hold — and the road goes on.</div>' +
+    '<div class="res"><div><b>' + S.wins + '</b>battles won</div><div><b>' + Object.keys(S.stars).length + '/' + MISSIONS.length + '</b>cleared</div><div><b>' + teamPower() + '</b>power</div></div>' +
+    '<div class="card"><div class="mrow"><div class="g"><div class="nm">Keep playing</div><div class="sm">Replay missions for gold, level the squad and take the three-star runs on all twenty-four.</div></div></div></div>' +
     '<div class="acts"><button id="againBtn">Back to missions</button></div>';
   $('againBtn').onclick = viewMissions;
 }

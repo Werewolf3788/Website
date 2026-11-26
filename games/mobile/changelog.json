@@ -2,6 +2,14 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 60,
+   "date": "Nov 26",
+   "game": "all",
+   "items": [
+    "🏛️ Tiles Outpost continues past the Sun Gate: a second chapter with twelve new missions, from the Salt Flats and the Glass Tower to the Hollow King and the Dawnless at the end of the ash road"
+   ]
+  },
+  {
    "id": 59,
    "date": "Nov 26",
    "game": "all",
