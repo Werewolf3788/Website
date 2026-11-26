@@ -68,6 +68,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0}
 .card.sel{outline:3px solid #fff;outline-offset:2px}
 .card .lv{position:absolute;top:3px;left:3px;background:var(--gold);color:#3b2300;font-size:12px;font-weight:900;border-radius:6px;padding:0 5px}
 .card .ct{position:absolute;bottom:3px;right:6px;font-size:12px;font-weight:900}
+.card .need{position:absolute;top:3px;right:4px;font-size:10px;font-weight:900;color:#c7d6ff;opacity:.85}
+.card .nm{font-size:8.5px}
 .card .nm{position:absolute;bottom:3px;left:5px;font-size:9px;font-weight:700;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.9}
 .card .rdy{position:absolute;top:3px;right:4px;font-size:11px;color:var(--green);font-weight:900}
 .r-common{border-color:var(--common)}.r-uncommon{border-color:var(--uncommon)}.r-rare{border-color:var(--rare)}.r-epic{border-color:var(--epic)}.r-legendary{border-color:var(--legendary)}.r-mythic{border-color:var(--mythic)}
@@ -119,58 +121,14 @@ input.search{flex:1;background:#08204f;border:2px solid #38bdf8;border-radius:10
  .hex{width:96px;height:86px;font-size:10px;padding:4px 14px}
 }
 body.pad .touchOnly{display:none}
-
-/* ---------- world hub: places inside one game ---------- */
-#world{position:fixed;inset:0;z-index:80;display:none;background:radial-gradient(120% 90% at 50% 0%,#1b2b52,#0b1226 70%);color:#eaf2ff;padding:16px;overflow:auto}
-#world.on{display:block}
-#world .wt{display:flex;align-items:center;gap:10px;justify-content:space-between;max-width:940px;margin:0 auto 10px;flex-wrap:wrap}
-#world h2{margin:0;font-size:1.05rem}
-#world .purse{max-width:940px;margin:0 auto 14px;background:#132242;border:1px solid #2b4a86;border-radius:12px;padding:10px 12px;font-weight:800;font-size:.9rem}
-#world .purse b{color:#ffd45e;font-size:1.15rem}
-#world .purse span{font-weight:600;font-size:.72rem;color:#9fb6dd;display:block;margin-top:2px}
-#world .rooms{max-width:940px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-#world .room{background:#12203c;border:1px solid #2b4a86;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
-#world .room .ic{font-size:1.9rem;line-height:1}
-#world .room b{font-size:.95rem}
-#world .room .sm{font-size:.72rem;color:#9fb6dd;line-height:1.35;flex:1}
-#world .room .pp{font-size:.7rem;color:#7ee0a1;font-weight:800}
-#world .room button{border:0;border-radius:10px;padding:9px;font:inherit;font-weight:900;background:#4ade80;color:#06240f;cursor:pointer}
-#room{position:fixed;inset:0;display:none;z-index:95;background:#0b1226;flex-direction:column}
-#room.on{display:flex}
-#roomBar{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#101c33;border-bottom:1px solid #2b4a86;flex-wrap:wrap}
-#roomBar b{font-size:.9rem}
-#roomBar .sm{font-size:.72rem;color:#7ee0a1;font-weight:800}
-#roomFrame{flex:1;border:0;width:100%;background:#150e22}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 <body>
 <div id="view"></div>
 
-<div id="world">
-  <div class="wt">
-    <h2>🏰 Your bastion</h2>
-    <div style="display:flex;gap:8px">
-      <a class="btn gray" href="./" style="padding:5px 10px;text-decoration:none;color:#fff">All games</a>
-      <button class="btn gray" id="worldClose" style="padding:5px 10px">Back to the yard</button>
-    </div>
-  </div>
-  <div class="purse">🪙 <b id="purseTotal">0</b><span>Total coin across every place. What you earn inside a place comes back to your bastion purse.</span></div>
-  <div class="rooms" id="rooms"></div>
-</div>
-
-<div id="room">
-  <div id="roomBar">
-    <button class="btn gray" id="roomBack" style="padding:5px 10px">⬅ Leave</button>
-    <b id="roomName"></b>
-    <span class="sm" id="roomEarn"></span>
-  </div>
-  <iframe id="roomFrame" title="activity"></iframe>
-</div>
-
-
 <div id="top">
-  <button class="pill" id="hubBtn" style="border:0;cursor:pointer;color:#fff;font:inherit">⬅ Hub</button>
+  <a class="pill" href="./" style="text-decoration:none;color:#fff">⬅ Hub</a>
   <div class="pill" id="cashPill" title="Your cash balance"><span class="coin"></span> <span style="font-size:.6em;opacity:.9">CASH</span> <span id="cash">0</span></div>
   <div class="pill" id="hpWrap">🏰 <div id="hpBar"><div id="hpFill"></div></div> <span id="hpTxt">20</span></div>
   <div class="pill">⚡ <button class="btn gray" id="spd" style="padding:2px 10px">x1</button></div>
@@ -312,6 +270,58 @@ const CAMPS = {
 };
 const KINDS = {t:TOWERS,p:PATHS,s:CAMPS,r:TRAPS};
 const KIND_NAME = {t:'Tower',p:'Path',s:'Spawner',r:'Trap'};
+
+/* ---------- every kind gets its own ladder: names, icons and what it looks like ---------- */
+const TIER_NUM = ['', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+const EVO = {
+  crossbow:['🏹','🎯','🦅'], cannon:['💣','🧨','💥'], frost:['❄️','🧊','🌬️'], gatling:['⚙️','🌀','🔩'],
+  missile:['🚀','🛸','☄️'], mortar:['🎯','💥','🌋'], flak:['🔫','💢','✈️'], laser:['🔆','🔷','🌈'],
+  coil:['⚡','🌩️','🔋'], scales:['⚖️','🔱','✨'], gate:['🐉','🔥','🐲'],
+  spikes:['📌','🪝','⚔️'], tar:['⚫','🕳️','🛢️'],
+  forest:['🌲','🌳','🏞️'], barracks:['🏠','🏘️','🏰'], bandit:['🏴','🏴‍☠️','🦹'], goblin:['👺','👹','🔥'],
+  saloon:['🍺','🍻','🥃'], crypt:['⚰️','💀','☠️'], military:['🎖️','🪖','🛡️'], pirate:['🏴‍☠️','⚓','🦜']
+};
+const LOOK = {
+  crossbow:'A wooden post with a stacked bow on top; a small archer figure turns to face whatever is closest.',
+  cannon:'A short iron barrel on a stone plinth. It lobs one shell at a time and the shell bursts in a small circle on the ground.',
+  frost:'A pale blue crystal spire standing in a ring of ice, with cold mist curling around its base. Anything it hits walks slower and turns frosty.',
+  gatling:'A brass drum of six barrels on a tripod. It spins up while firing, so the shots come out as a stream.',
+  missile:'Four rockets in a steel rack. They lift off with a smoke trail and land as a splash where the enemy was.',
+  mortar:'A fat olive-green tube angled at the sky, sitting in a sandbag pit. Shells arc high and land with a big dust ring.',
+  flak:'Twin anti-air barrels on a swivel mount. It never aims at the ground — only at wings, and the bursts are wide.',
+  laser:'A pink crystal lens on a tripod. It fires a thin, near-solid beam instead of bolts, so the damage is a steady stream.',
+  coil:'A copper coil between three prongs, with lightning crawling between them. Arcs jump from enemy to enemy down the line.',
+  scales:'A floating golden balance that tips as it fires and flashes white when the killing blow lands.',
+  gate:'A dragon-carved gate with a burning maw. Fire drips from its mouth and whatever it hits keeps burning for a while.',
+  spikes:'A low iron mat of spikes laid flat on the ground — easy to miss until the first enemy crosses it.',
+  tar:'A glossy black pool sunk into the ground. Enemies slow to a crawl wading through it.',
+  forest:'A small wooden camp with a pine tree and a campfire. The tamest camp: cheap enemies, plain drops.',
+  barracks:'A squat stone barracks with a banner. Trains soldiers, so the enemies are tougher and the loot is a step up.',
+  bandit:'A red-and-black bandit tent with a loot pile outside. Something better always seems to drop here.',
+  goblin:'A goblin camp of scrap and spears. Goblins are fast and the drops lean towards rarer gear.',
+  saloon:'A wooden saloon with swinging doors. Outlaws wander out of it and drop better than soldiers.',
+  crypt:'A stone crypt half sunk into the ground. Undead come out of it slowly, but they carry rarer things.',
+  military:'A sandbagged military base with a watchtower. The hardest ordinary camp: armoured enemies, the best common drops.',
+  pirate:'A cove with a beached boat and a black flag. Pirates bring the best drops of any camp.',
+  road:'A packed dirt track laid tile by tile. It never fuses — you need lots of it, and the Road slow upgrade makes it meaner.',
+  stone:'Paved stone blocks. Quieter looking than dirt and slightly slower to walk on.'
+};
+Object.keys(KINDS).forEach(function(k){
+  Object.keys(KINDS[k]).forEach(function(id){
+    var d = KINDS[k][id];
+    d.id = id; d.evo = EVO[id] || null; d.look = LOOK[id] || '';
+  });
+});
+function tierName(d, l){ return d.name + (l ? ' ' + (TIER_NUM[l] || ('+' + l)) : ''); }
+function tierIcon(d, l){ return d.evo ? d.evo[Math.min(l, d.evo.length - 1)] : d.ic; }
+function quickStats(k, id, l){
+  var d = defOf(k, id);
+  if (k === 't') { var t = towerStats(id, l); return t.dmg.toFixed(0) + ' dmg · ' + t.rate.toFixed(1) + '/s · ' + t.range.toFixed(1) + ' range'; }
+  if (k === 's') { var c = CAMPS[id]; return 'luck x' + (c.luck * (1 + l * 0.1)).toFixed(2) + ' · enemy hp x' + c.hp.toFixed(2); }
+  if (k === 'r') return (d.dmg * Math.pow(1.15, l) * mult().dmg).toFixed(0) + ' dmg per cross' + (d.slow ? ' · ' + (d.slow * 100) + '% slow' : '');
+  return (+(((d.base || 0) + U('road') * .03) * 100).toFixed(0)) + '% slow';
+}
+
 const MAX_LVL = 10;
 
 const ENEMY = {
@@ -675,19 +685,23 @@ function fuseBox(k,id,l){if(k==='p')return `<div class="small" style="margin-top
   return `<div style="display:flex;align-items:center;gap:8px;margin-top:8px"><div><b>${Math.min(have,3)}/3 → +${l+1}</b><div class="small">${have>=3?'Ready to fuse!':'Need '+(3-have)+' more in inventory'}</div></div>
   <button class="btn gold" ${have>=3?'':'disabled'} onclick="fuse('${keyOf(k,id,l)}')">FUSE</button></div>`;}
 function showInfoInv(key){const {k,id,l}=parseKey(key);const d=defOf(k,id);
-  $('infoName').innerHTML=`${d.ic} ${d.name}${l?' +'+l:''}`;
-  $('infoBody').innerHTML=`<div class="t-${d.r}" style="font-weight:800;text-transform:capitalize">${d.r} ${KIND_NAME[k]}</div>
-  <div class="small" style="margin:4px 0 8px">${d.desc||''}</div>${statRows(k,id,l)}${fuseBox(k,id,l)}
+  $('infoName').innerHTML=`${tierIcon(d,l)} ${tierName(d,l)}`;
+  $('infoBody').innerHTML=`<div class="t-${d.r}" style="font-weight:800;text-transform:capitalize">${d.r} ${KIND_NAME[k]}${l?' · level '+(l+1):' · level 1'}</div>
+  <div style="font-weight:800;margin:6px 0 2px">${quickStats(k,id,l)}</div>
+  <div class="small" style="margin:4px 0 8px">${d.desc||''}</div>
+  ${d.look?`<div class="small" style="margin:0 0 8px;color:#c7d6ff"><b>Placed:</b> ${d.look}</div>`:''}${statRows(k,id,l)}${fuseBox(k,id,l)}
   <div style="display:flex;gap:6px;margin-top:10px"><button class="btn green" style="flex:1" onclick="setHolding('${key}');closePanel('info');if(innerWidth<700)closePanel('inv')">Place on board</button></div>`;
   openPanel('info');}
 let selectedRec=null;
 function showInfoPlaced(rec){selectedRec=rec;const d=defOf(rec.k,rec.id);
-  $('infoName').innerHTML=`${d.ic} ${d.name}${rec.l?' +'+rec.l:''}`;
+  $('infoName').innerHTML=`${tierIcon(d,rec.l)} ${tierName(d,rec.l)}`;
   let extra='';if(rec.k==='t'){extra=`<div class="row"><span>Damage this run</span><b>${fmt(rec.dmgDone)}</b></div><div class="row"><span>Kills this run</span><b>${rec.kills}</b></div>`;
     const s=towerStats(rec.id,rec.l);rangeRing.scale.set(s.range,s.range,1);rangeRing.position.set(rec.x,.05,rec.y);rangeRing.visible=true;}
   if(rec.k==='s'){const r=routes.get(ck(rec.x,rec.y));extra=`<div class="row"><span>Road to castle</span><b style="color:${r?'#4ade80':'#f87171'}">${r?'Connected':'No path!'}</b></div>`;}
-  $('infoBody').innerHTML=`<div class="t-${d.r}" style="font-weight:800;text-transform:capitalize">${d.r} ${KIND_NAME[rec.k]} · placed</div>
-  <div class="small" style="margin:4px 0 8px">${d.desc||''}</div>${statRows(rec.k,rec.id,rec.l)}${extra}
+  $('infoBody').innerHTML=`<div class="t-${d.r}" style="font-weight:800;text-transform:capitalize">${d.r} ${KIND_NAME[rec.k]} · placed${rec.l?' · level '+(rec.l+1):''}</div>
+  <div style="font-weight:800;margin:6px 0 2px">${quickStats(rec.k,rec.id,rec.l)}</div>
+  <div class="small" style="margin:4px 0 8px">${d.desc||''}</div>
+  ${d.look?`<div class="small" style="margin:0 0 8px;color:#c7d6ff"><b>Placed:</b> ${d.look}</div>`:''}${statRows(rec.k,rec.id,rec.l)}${extra}
   <div class="small" style="margin-top:8px">To fuse a placed item, pick it up first — it goes back to your inventory.</div>
   <button class="btn red" style="width:100%;margin-top:8px" id="pickBtn">Pick up</button>`;
   $('pickBtn').onclick=()=>pickUp(rec);openPanel('info');}
@@ -695,14 +709,14 @@ function showInfoPlaced(rec){selectedRec=rec;const d=defOf(rec.k,rec.id);
 /* ---------- fusion ---------- */
 function fuse(key,quiet){const {k,id,l}=parseKey(key);if(k==='p')return false;if((S.inv[key]||0)<3||l>=MAX_LVL)return false;
   invAdd(k,id,l,-3);invAdd(k,id,l+1,1);
-  if(!quiet){sfx('fuse');toast(`✨ Fused 3 ${defOf(k,id).name} → <b>+${l+1}</b>`);
+  if(!quiet){sfx('fuse');toast(`✨ Fused 3 ${tierName(defOf(k,id),l)} → <b>${tierName(defOf(k,id),l+1)}</b>`);
     if(holding===key&&!S.inv[key])setHolding(null);renderInv();showInfoInv(keyOf(k,id,l+1));save();}
   return true;}
 window.fuse=fuse;window.setHolding=setHolding;
 function fuseAll(){let n=0,again=true;
   while(again){again=false;for(const key of Object.keys(S.inv).sort((a,b)=>parseKey(a).l-parseKey(b).l)){
     if(parseKey(key).k!==invTab)continue;while(fuse(key,true)){n++;again=true;}}}
-  if(n){sfx('fuse');toast(`✨ Fused ${n} time${n>1?'s':''}`);}else toast('Nothing has 3 of the same yet.');
+  if(n){sfx('fuse');toast(`✨ Fused ${n} time${n>1?'s':''}`);}else toast('Nothing here has 3 copies at the <b>same level</b>. A Cannon and a Cannon II are different items — the corner chip shows how many of that exact one you have.');
   setHolding(holding);renderInv();save();}
 
 /* ---------- inventory UI ---------- */
@@ -711,7 +725,9 @@ function renderInv(){updateCaps();const q=$('invSearch').value.toLowerCase();
   const keys=Object.keys(S.inv).filter(k=>{const p=parseKey(k);return p.k===invTab&&defOf(p.k,p.id)&&defOf(p.k,p.id).name.toLowerCase().includes(q);})
     .sort((a,b)=>{const A=parseKey(a),B=parseKey(b);return RAR.indexOf(defOf(B.k,B.id).r)-RAR.indexOf(defOf(A.k,A.id).r)||A.id.localeCompare(B.id)||A.l-B.l;});
   $('invGrid').innerHTML=keys.length?keys.map(key=>{const {k,id,l}=parseKey(key);const d=defOf(k,id);const n=S.inv[key];
-    return `<div class="card r-${d.r}${holding===key?' sel':''}" data-key="${key}">${l?`<span class="lv">+${l}</span>`:''}${n>=3&&l<MAX_LVL&&k!=='p'?'<span class="rdy">FUSE!</span>':''}${d.ic}<span class="nm">${d.name}</span><span class="ct">x${n}</span></div>`;}).join('')
+    const canFuse = k!=='p' && l<MAX_LVL;
+    const tag = !canFuse ? '' : (n>=3 ? '<span class="rdy">FUSE!</span>' : `<span class="need">${n}/3</span>`);
+    return `<div class="card r-${d.r}${holding===key?' sel':''}" data-key="${key}" title="${tierName(d,l)} — ${quickStats(k,id,l)}">${l?`<span class="lv">Lv ${l+1}</span>`:''}${tag}${tierIcon(d,l)}<span class="nm">${tierName(d,l)}</span><span class="ct">x${n}</span></div>`;}).join('')
     :`<div class="small">Nothing here yet. Enemies drop these in battle${invTab==='s'?' — or buy camps in the Spawner Shop':''}.</div>`;}
 $('invGrid').onclick=e=>{const c=e.target.closest('.card');if(!c)return;setHolding(c.dataset.key);renderInv();showInfoInv(c.dataset.key);};
 $('invTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;invTab=b.dataset.k;[...$('invTabs').children].forEach(x=>x.classList.toggle('on',x===b));renderInv();};
@@ -1170,82 +1186,6 @@ loadLocal();buildBoard();resize();updHud();setHolding(null);frame();
 if(S.seenVersion!==VERSION){modal('🆕 What\'s new · v'+VERSION,'<ul style="margin:0;padding-left:18px;line-height:1.5">'+WHATS_NEW.map(x=>'<li>'+x+'</li>').join('')+'</ul>');S.seenVersion=VERSION;save();}
 initFirebase().catch(e=>console.warn('firebase',e));
 window.__bastion={cam,placeCam,get S(){return S},startRun,nextWave,tryPlace,setHolding,fuse,get enemies(){return enemies},get inBattle(){return inBattle},get waveNo(){return waveNo},get routes(){return routes}};
-</script>
-
-<script>
-/* ---------- one game: the bastion and the places inside it ---------- */
-(function(){
-  var ROOMS = [
-    { id:'nest',    ic:'🐣', n:'The Nest',      file:'merge-lair.html',   key:'mergelair_v2',    field:'coins', d:'Fuse two creatures of a kind into the next tier and hold the lair against the raids.' },
-    { id:'lab',     ic:'🧪', n:'Fusion Lab',    file:'merge.html',        key:'m2048_lab_v1',    field:'coins', d:'Slide numbered tiles, fuse them into bigger ones, work through the lab chapters.' },
-    { id:'street',  ic:'🛒', n:'Cart Street',   file:'idle-city.html',    key:'cityrush_v1',     field:'cash',  d:'Open the counter and serve a queue that never quite ends.' },
-    { id:'outpost', ic:'⚔️', n:'Tiles Outpost', file:'tiles-outpost.html',key:'tilesoutpost_v2', field:'gold',  d:'Turn-based skirmishes through two chapters beyond the sun gate.' },
-    { id:'mines',   ic:'💣', n:'Sweep Team',    file:'mines.html',        key:'ms_sweep_v1',     field:'coins', d:'Twelve clearing ops with drones, scans and a shrinking clock.' },
-    { id:'bricks',  ic:'🧱', n:'Breaker Corps', file:'bricks.html',       key:'bb_corps_v1',     field:'coins', d:'Twelve missions of brick, paddle and boss fights.' }
-  ];
-  function val(r){
-    try {
-      var d = JSON.parse(localStorage.getItem(r.key) || 'null');
-      if (!d) return 0;
-      var v = d[r.field];
-      return typeof v === 'number' && isFinite(v) ? Math.max(0, v) : 0;
-    } catch (e) { return 0; }
-  }
-  function yard(){ try { return (window.__bastion && __bastion.S && __bastion.S.cash) || 0; } catch (e) { return 0; } }
-  function fmt(n){ return Math.floor(n || 0).toLocaleString(); }
-  function total(){ var t = yard(); ROOMS.forEach(function(r){ t += val(r); }); return t; }
-
-  var open = null, snap = 0;
-
-  function render(){
-    document.getElementById('purseTotal').textContent = fmt(total());
-    var html = '';
-    ROOMS.forEach(function(r, i){
-      html += '<div class="room"><div class="ic">' + r.ic + '</div><b>' + r.n + '</b>' +
-        '<div class="sm">' + r.d + '</div>' +
-        '<div class="pp">🪙 ' + fmt(val(r)) + ' in there</div>' +
-        '<button data-r="' + i + '">Go there</button></div>';
-    });
-    var box = document.getElementById('rooms');
-    box.innerHTML = html;
-    Array.prototype.forEach.call(box.querySelectorAll('button[data-r]'), function(b){
-      b.onclick = function(){ enter(ROOMS[+b.getAttribute('data-r')]); };
-    });
-  }
-
-  function enter(r){
-    open = r; snap = val(r);
-    document.getElementById('roomName').textContent = r.ic + ' ' + r.n;
-    document.getElementById('roomEarn').textContent = '';
-    var f = document.getElementById('roomFrame');
-    f.src = r.file + (r.file.indexOf('?') < 0 ? '?from=bastion' : '');
-    document.getElementById('room').classList.add('on');
-  }
-
-  function leave(){
-    if (!open) return;
-    var r = open, gained = Math.max(0, val(r) - snap);
-    open = null;
-    document.getElementById('room').classList.remove('on');
-    document.getElementById('roomFrame').src = 'about:blank';
-    if (gained > 0) {
-      try {
-        if (window.__bastion && __bastion.S) {
-          __bastion.S.cash += gained;
-          if (typeof save === 'function') save(true);
-          if (typeof updHud === 'function') updHud();
-          if (typeof toast === 'function') toast('+' + fmt(gained) + ' from ' + r.n + ' added to your purse');
-        }
-      } catch (e) {}
-    }
-    render();
-  }
-
-  document.getElementById('hubBtn').onclick = function(){ render(); document.getElementById('world').classList.add('on'); };
-  document.getElementById('worldClose').onclick = function(){ document.getElementById('world').classList.remove('on'); };
-  document.getElementById('roomBack').onclick = leave;
-  window.__world = { enter: enter, leave: leave, total: total, ROOMS: ROOMS };
-})();
 </script>
 </body>
 </html>
