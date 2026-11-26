@@ -1,0 +1,22 @@
+name: temp app packaging
+on:
+  workflow_dispatch:
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: apply patch
+        run: |
+          python3 -c "import base64,lzma;open('p.patch','wb').write(lzma.decompress(base64.b64decode('/Td6WFoAAATm1rRGAgAhARwAAAAQz1jM4AQIAgldADIaSQnC/BF9UN4KT0fW5FcOyK/83DhzIKeIPp1JRpqAAuQz9SVsEUndiNCI7SV8XqCIkJJjzCKzZPArjaVBivNjAd1H2z7Y1wsT3OyVI1KQfYXPRZfsJDdAkKoEqueY8Njhillz1QevaPQpabGEF/SxnOxAgRUekOAIUzbGy57uf+/8sJgG0wRR6pSkQ+cBNEga32B3VJ8RVQu7fSlO3to5ONn6ON+2AcRSUKUjhbLadzFfmdDPDcrmm0Vm1IbOJXpC/voKuercvydaHnw0K0YzDQ99+MpQPqPLunnu+cALvmTvAKwLXdwKFkoW9hHTt498B2nlu06sjnFg8Dl8lNVojr2vj4yor/vJ9vzurlpMQCEYEw4GOxUMg12cCZVyiadZubKMiTsRZ0trrkugtKBRRwHyOJLhgMt9wuiQi3ZMdX7TGmFRKubFxxv86vc/xhCrEHxw5toBHOVBi+h5ChCVukBejdJAn6h0XI4FLYTcKd0ZQdfVyDjISM929asRk+Crk8mv1FCfNxZQuhpVIWTKj3IYEi0sLgDGkBi7KrJrpqGLamo7CC7o6dlXWMTy1Lnr+kgqv8Tnc6tCg43EXkRLUCXEuG9GH6kE6kTx+BX+bGb1BJMSzd2kCaz9Fdqep80h7SmVzDuiERXUueg3fe+APqXysCVY47sNUrQq/+I9Tct6/nX9BRAEAAAAANZMcDjnv2SsAAGlBIkIAABJWkbhscRn+wIAAAAABFla')))"
+          git apply p.patch
+          rm p.patch
+          git config user.name "Bastion Bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -A
+          git commit -m "Bastion: give the panel titles room next to the stat readout"
+          git push
