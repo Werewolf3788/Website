@@ -752,7 +752,11 @@ function fuseAll(){let n=0,again=true;
 let invTab='t';
 function renderInv(){updateCaps();const q=$('invSearch').value.toLowerCase();
   const keys=Object.keys(S.inv).filter(k=>{const p=parseKey(k);return p.k===invTab&&defOf(p.k,p.id)&&defOf(p.k,p.id).name.toLowerCase().includes(q);})
-    .sort((a,b)=>{const A=parseKey(a),B=parseKey(b);return RAR.indexOf(defOf(B.k,B.id).r)-RAR.indexOf(defOf(A.k,A.id).r)||A.id.localeCompare(B.id)||A.l-B.l;});
+    // one block per weapon (rarest families first), and inside a weapon the highest level sits at the front
+    .sort((a,b)=>{const A=parseKey(a),B=parseKey(b);
+      return RAR.indexOf(defOf(B.k,B.id).r)-RAR.indexOf(defOf(A.k,A.id).r)
+        ||defOf(A.k,A.id).name.localeCompare(defOf(B.k,B.id).name)
+        ||B.l-A.l;});
   $('invGrid').innerHTML=keys.length?keys.map(key=>{const {k,id,l}=parseKey(key);const d=defOf(k,id);const n=S.inv[key];
     const canFuse = k!=='p' && l<MAX_LVL;
     const tag = !canFuse ? '' : (n>=3 ? '<span class="rdy">FUSE!</span>' : `<span class="need">${n}/3</span>`);
