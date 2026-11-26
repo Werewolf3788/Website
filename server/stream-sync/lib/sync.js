@@ -90,7 +90,10 @@ async function announceTitle(key, cfg, sec, m, title) {
     }
     if (!Object.keys(out).length) return null;
     /* Remember it once one of them took it: if both failed, the next pass tries again. */
-    if (Object.values(out).some((v) => /^ok/i.test(String(v)))) m.announced = t;
+    if (Object.values(out).some((v) => /^ok/i.test(String(v)))) {
+        m.announced = t;
+        chat.remember(key, text);   /* posted as us, so the echo from YouTube / Kick is not relayed */
+    }
     log(key, "announced title: " + JSON.stringify(out));
     return out;
 }
@@ -123,7 +126,7 @@ async function runUser({ key, cfg, user }) {
         }
     }
 
-    chat.start(key, { cfg, broadcasterId });
+    chat.start(key, { cfg, broadcasterId, sec });
 
     const out = { live: true, stream_id: s.id, twitch_category: s.game_name, checked_at: Date.now() };
     /* auto (default): the PlayStation game + status drive the Twitch title and

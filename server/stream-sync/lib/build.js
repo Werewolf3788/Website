@@ -148,6 +148,11 @@ function announceText(title, max = ANNOUNCE_MAX) {
     return t ? clip("\u{1F534} " + t, max) : "";
 }
 
+/** Fingerprint used to recognise a line this service posted when a platform hands it back. */
+function echoKey(text) {
+    return normName(text).slice(0, 200);
+}
+
 /** Twitch tag rules: 1-25 chars, letters/numbers only, max 10, no duplicates. */
 function cleanTags(list) {
     const seen = new Set(), out = [];
@@ -175,5 +180,5 @@ function emailKey(email) {
 module.exports = {
     TWITCH_TITLE_MAX, YOUTUBE_TITLE_MAX, KICK_TITLE_MAX, ANNOUNCE_MAX,
     cleanName, normName, similarity, pickCategory, searchTermFor, overrideFor,
-    readPresence, sameGame, squadInGame, buildTitle, announceText, cleanTags, sameTags, clip, emailKey
+    readPresence, sameGame, squadInGame, buildTitle, announceText, echoKey, cleanTags, sameTags, clip, emailKey
 };
