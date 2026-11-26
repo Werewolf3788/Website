@@ -174,3 +174,66 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
     else wire();
 })();
+
+/* Game switcher row for the Red Dead Online catalogue (games/rdr2.html).
+   That page is a standalone catalogue and has none of the ledger's pill bar, so
+   the same games are printed above it, read from the live games catalog in
+   Firebase so a newly synced game turns up here without editing the page. */
+(function () {
+    'use strict';
+    if (!/\/games\/rdr2(?:\.html)?\/?$/i.test(location.pathname)) return;
+
+    var CATALOG_URL = 'https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games_catalog.json';
+    var CSS = [
+        '.game-pills{max-width:1240px;margin:0 auto 14px;display:flex;align-items:center;gap:8px;overflow-x:auto;padding:0 2px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}',
+        '.game-pills:empty{display:none}',
+        '.game-pill{flex:0 0 auto;display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border:1px solid #6d5640;border-radius:999px;background:rgba(239,230,208,.94);color:#2a1e14;font-family:"EB Garamond",Georgia,serif;font-size:.95rem;letter-spacing:.02em;text-decoration:none;white-space:nowrap}',
+        '.game-pill:hover{background:#f8f1de;border-color:#a1554b}',
+        '.game-pill[aria-current="true"]{background:#7d2b23;border-color:#4f1a14;color:#f8f1de;font-weight:600}'
+    ].join('\n');
+
+    // Links keep working on the GitHub Pages copy (/Website/...) as well as on Firebase.
+    function siteLink(path) {
+        if (/\.github\.io$/i.test(location.hostname)) {
+            var seg = location.pathname.split('/')[1];
+            return (seg ? '/' + seg : '') + path;
+        }
+        return path;
+    }
+
+    function mount() {
+        var card = document.querySelector('.catalogue');
+        if (!card || document.getElementById('gamePills')) return;
+
+        var style = document.createElement('style');
+        style.textContent = CSS;
+        document.head.appendChild(style);
+
+        var bar = document.createElement('nav');
+        bar.className = 'game-pills';
+        bar.id = 'gamePills';
+        bar.setAttribute('aria-label', 'Choose a game');
+        card.parentNode.insertBefore(bar, card);
+
+        fetch(CATALOG_URL, { cache: 'no-store' })
+            .then(function (res) { return res.ok ? res.json() : null; })
+            .then(function (catalog) {
+                if (!catalog || typeof catalog !== 'object') return;
+                Object.keys(catalog).sort().forEach(function (key) {
+                    var data = catalog[key] || {};
+                    var here = key.toLowerCase() === 'rdr2';
+                    var pill = document.createElement('a');
+                    pill.className = 'game-pill';
+                    pill.setAttribute('data-game-key', key);
+                    pill.href = here ? siteLink('/games/rdr2') : siteLink('/games/all?game=' + encodeURIComponent(key));
+                    if (here) pill.setAttribute('aria-current', 'true');
+                    pill.textContent = String(data.title || data.game || key.toUpperCase());
+                    bar.appendChild(pill);
+                });
+            })
+            .catch(function () { /* the catalogue still works without the switcher */ });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
+    else mount();
+})();
