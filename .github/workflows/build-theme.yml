@@ -1,0 +1,54 @@
+name: build-theme
+
+# One-off builder: rebuilds overlay/stream_overlay_theme.json from Playstation/psn.json,
+# commits it, and removes these temporary files.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Build overlay/stream_overlay_theme.json
+        run: |
+          set -euo pipefail
+          if [ ! -f .theme-build/gen_themes.py.gz.b64 ]; then
+            echo "No payload present; nothing to do."
+            exit 0
+          fi
+          base64 -d .theme-build/gen_themes.py.gz.b64 | gunzip > /tmp/gen_themes.py
+          sed -i "s|^PSN = .*|PSN = 'Playstation/psn.json'|; s|^OUT = .*|OUT = 'overlay/stream_overlay_theme.json'|" /tmp/gen_themes.py
+          grep -E "^(PSN|OUT) = " /tmp/gen_themes.py
+          python3 /tmp/gen_themes.py
+          echo "d69a98ff0d331800228c79aadfed47e6b1f9fa8d957e97c4c7df327076f6fb2f  overlay/stream_overlay_theme.json" | sha256sum -c -
+          python3 -c "import json;d=json.load(open('overlay/stream_overlay_theme.json',encoding='utf-8'));print('games',len(d['games']),'byName',len(d['byName']))"
+          rm -rf .theme-build .github/workflows/build-theme.yml
+
+      - name: Commit
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          cat > /tmp/message.txt <<'EOF'
+          overlay: add stream_overlay_theme.json with per-game overlay palettes
+
+          247 PlayStation games keyed by commId, a byName index for name lookups, and a
+          default theme. Each entry carries 16 color roles, a 3-stop gradient, an 8-color
+          swatch palette and an edge effect in the game-themes.js schema.
+          EOF
+          git commit -F /tmp/message.txt
+          git push origin HEAD:main
