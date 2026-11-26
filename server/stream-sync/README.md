@@ -73,7 +73,7 @@ Firebase keys can't contain `.` `#` `$` `[` `]` `/` - leave those characters out
 
 Env vars: `FIREBASE_SERVICE_ACCOUNT` (service-account JSON for **entertainment-71888**, same as ww-discord-auth - needed to read your locked secrets and save sign-ins while nobody is on the page), `STREAM_SYNC_APP_OWNER_KEY`, `PUBLIC_URL`, `STATE_SECRET`, optional `SETUP_PAGE_URL`.
 
-Pages: `/setup` (redirects to the site page), `/status` (last pass, JSON), `/wake`, `/health`, `POST /webhooks/kick`.
+Pages: `/setup` (redirects to the site page), `/status?key=<your user key>` (last pass for that user only, JSON; no key returns nothing), `/wake`, `/health`, `POST /webhooks/kick`. The user key is the email with `.` -> `_` and `@` -> `_at_`, the same one used under `users/{key}`.
 
 Twitch redirect URL: `https://ww-stream-sync.onrender.com/auth/twitch/callback`
 Kick redirect URL: `https://ww-stream-sync.onrender.com/auth/kick/callback`
