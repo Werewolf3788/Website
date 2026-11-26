@@ -364,8 +364,11 @@
     var mine = !st.bot && st.uid === me.uid, auto = false;
     if (!mine) {
       if (!isDriver()) return;
-      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid];
-      var idle = WW.now() - (s.t || 0) > 60000;
+      // only play a person's turn when they have really gone (left over 90 s ago), never because their page is reloading
+      if (!st.bot && st.uid === me.uid) return;
+      var present = WW.mode !== 'cloud' || !!players[st.uid];
+      var away = !st.bot && !present && !!st.gone && WW.now() - st.gone > 90000;
+      var idle = !st.bot && !present && WW.now() - (s.t || 0) > 300000;
       auto = st.bot || away || idle;
       if (!auto) return;
     }
@@ -375,7 +378,7 @@
     function mark() { acted = { k: key, t: now }; }
     if (!s.roll) { if (auto) { mark(); setTimeout(function () { spinThen(actRoll); }, st.bot ? 800 : 300); } return; }
     if (!L.length) { mark(); setTimeout(actPass, 1100); return; }
-    if (L.length === 1) { mark(); setTimeout(function () { actMove(L[0].i); }, mine ? 650 : 900); return; }
+    if (L.length === 1) { if (mine) return; mark(); setTimeout(function () { actMove(L[0].i); }, 900); return; }   // your own move is always yours to make
     if (auto) { mark(); setTimeout(function () { actMove(botPick(s, L)); }, 1000); }
   }
   setInterval(tick, 2000);
