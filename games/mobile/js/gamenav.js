@@ -7,6 +7,7 @@
     { n: 'Wahoo', i: '🎲', d: 'Race your pegs around the board', u: 'games/mobile/wahoo.html', k: 'wahoo' },
     { n: 'Monopoly', i: '🏙️', d: 'Buy, trade and build properties', u: 'games/mobile/tycoon.html', k: 'tycoon' },
     { n: 'Frogger', i: '🐸', d: 'Hop across traffic, up to 8 players', u: 'games/mobile/frogger.html', k: 'frogger' },
+    { n: 'Ironhold', i: '❖', d: 'Merge-and-grind island strategy: build, merge, research, train, explore', u: 'games/mobile/ironhold.html', k: 'ironhold' },
     { n: 'Werewolf Wings', i: '🛩️', d: '3D flight: rings, mail runs and landings over Howl Island', u: 'games/mobile/flight.html', k: 'flight' },
     { n: 'Werewolf Racing', i: '🏎️', d: '3D car racing, up to 8 friends + bots', u: 'games/mobile/race.html', k: 'race' },
     { n: 'Tile Match', i: '🀄', d: 'Mahjong-style tile matching: clear the board, no paywall', u: 'games/mobile/mahjong.html', k: 'mahjong' },

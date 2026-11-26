@@ -157,6 +157,11 @@
   <div class="muted">3D flight game over Howl Island: take off from Werewolf Field, fly ring courses through the mountain passes, carry the mail to the Pine Ridge strip and grease the landing. Chase or cockpit view with lit instruments, day or sunset. Keyboard + mouse, touch or a PS5/Xbox controller. Best ring-run times go on the leaderboard.</div>
   <div class="row"><button id="playFlight">Fly</button></div>
 </div>
+<div class="card">
+  <h2 style="margin:0 0 4px">❖ Ironhold</h2>
+  <div class="muted">Merge-and-grind frontier strategy: build on three islands, merge two matching structures into the next level, research three linked ceilings, train and combine Army, Navy and Air troops, scout the fogged frontier for gear and bring friends into your banner. No shop. Sign in and your command follows you to every device.</div>
+  <div class="row"><button id="playIronhold">Command</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 </div>
 
@@ -203,6 +208,7 @@
   $('playSurv').onclick = function () { location.href = 'survive.html'; };
   $('playBastion').onclick = function () { location.href = 'bastion.html'; };
   $('playFlight').onclick = function () { location.href = 'flight.html'; };
+  $('playIronhold').onclick = function () { location.href = 'ironhold.html'; };
   $('playFrog').onclick = function () { location.href = 'frogger.html'; };
   $('playShip').onclick = function () { location.href = 'battleship.html'; };
   $('hostShip').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'battleship.html?room=' + encodeURIComponent(c); };

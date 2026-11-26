@@ -1,0 +1,24 @@
+{
+  "name": "Ironhold — Frontier Command",
+  "short_name": "Ironhold",
+  "description": "A merge-and-grind frontier war game. No shop, no VIP, no packages — only the time you put in.",
+  "start_url": "/games/mobile/ironhold",
+  "scope": "/games/mobile/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080d11",
+  "theme_color": "#080d11",
+  "categories": [
+    "games",
+    "strategy"
+  ],
+  "icons": [
+    {
+      "src": "/Images/ironhold-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "id": "/games/mobile/ironhold"
+}
