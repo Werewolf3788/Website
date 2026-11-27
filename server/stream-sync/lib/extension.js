@@ -18,14 +18,14 @@
 
 const crypto = require("crypto");
 const express = require("express");
-const { buildCard, sameCard, effectiveTier, trackerEntry } = require("./extcard");
+const { buildCard, sameCard, effectiveTier, trackerEntry, cleanLook } = require("./extcard");
 const { normName, cleanName } = require("./build");
 
 const DAY = 86400000, MIN = 60000;
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", CODE_RE = /^WOLF-[A-HJ-NP-Z2-9]{8}$/;
 const OFFLINE_CHECK_MS = 5 * MIN, SAVE_EVERY_MS = 5 * MIN, TICK_GAP_MS = 55000;
 const HEARTBEAT_MS = 10 * MIN, MIN_PUSH_GAP_MS = MIN, CREDIT_EVERY_MS = 30 * DAY;
-const PLATFORMS = ["playstation", "steam", "xbox", "mobile", "pc"];
+const PLATFORMS = ["ps", "playstation", "steam", "xbox", "mobile", "pc"];   // "ps" = Game Companion, "playstation" = PSN sync
 const EVENT_TYPES = [["stream.online", "1"], ["stream.offline", "1"], ["channel.update", "2"],
     ["channel.shared_chat.begin", "1"], ["channel.shared_chat.update", "1"], ["channel.shared_chat.end", "1"]];
 
@@ -92,14 +92,23 @@ function createExtension(deps) {
                 q.docs.map((g) => trackerEntry(g.id, p, g.data()))
                     .filter(Boolean)
                     .sort((a, b) => b.at - a.at || a.name.localeCompare(b.name))
-                    .forEach((g) => games.push({ id: g.id, name: g.name, platform: g.platform, facts: g.facts }));
+                    .forEach((g) => games.push({ id: g.id, name: g.name, platform: g.platform === "ps" ? "playstation" : g.platform, facts: g.facts }));
             }
-            return games;
+            // the same PlayStation game can be saved by the Game Companion ("ps") and the PSN sync: keep the fuller one
+            const seen = new Map();
+            games.forEach((g, i) => { const k = g.platform + ":" + g.name.toLowerCase().replace(/[^a-z0-9]/g, ""), j = seen.get(k);
+                if (j === undefined) seen.set(k, i); else if (g.facts.length > games[j].facts.length) { games[j] = g; games[i] = null; } else games[i] = null; });
+            return games.filter(Boolean);
         });
     }
-    async function readTracker(code) {
-        const games = await readGames(code), per = {};
-        return { code, games: games.filter((g) => (per[g.platform] = (per[g.platform] || 0) + 1) <= 8).map((g) => ({ id: g.id, name: g.name, platform: g.platform, summary: g.facts.slice(0, 3) })) };
+    // the card's tracker: the game being played first (that's the one viewers see), then the most recent ones
+    const gkey = (x) => String(x || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const sameGame = (a, b) => { a = gkey(a); b = gkey(b); return a.length > 3 && b.length > 3 && (a.indexOf(b) >= 0 || b.indexOf(a) >= 0); };
+    async function readTracker(code, playing) {
+        const games = (await readGames(code)).slice(), per = {};
+        games.sort((a, b) => (sameGame(b.name, playing) ? 1 : 0) - (sameGame(a.name, playing) ? 1 : 0));
+        return { code, games: games.filter((g, i) => (sameGame(g.name, playing) && i < 2) || (per[g.platform] = (per[g.platform] || 0) + 1) <= 6).slice(0, 12)
+            .map((g) => ({ id: g.id, name: g.name, platform: g.platform, summary: g.facts.slice(0, 4) })) };
     }
     async function friendsInGame(d, myTitle) {
         if (!d.userKey || !myTitle) return [];
@@ -147,7 +156,7 @@ function createExtension(deps) {
             const viewers = live ? Number(s.viewer_count || 0) : 0;
             const startedAt = live ? Date.parse(s.started_at) || t : null;
             const psn = pass.tier >= 3 ? await psnNow(d.psnOnlineId) : null;
-            const tracker = pass.tier >= 2 && d.friendCode ? await readTracker(d.friendCode) : null;
+            const tracker = pass.tier >= 2 && d.friendCode ? await readTracker(d.friendCode, (psn && psn.title) || info.game_name) : null;
             let allies = [];
             if (pass.tier >= 2 && live) allies = allies.concat(await sharedAllies(cid));
             if (pass.tier >= 3 && live && psn) allies = allies.concat(await friendsInGame(d, psn.title));
@@ -162,7 +171,7 @@ function createExtension(deps) {
 
             const card = buildCard({ tier: pass.tier, founder: pass.founder, live, startedAt,
                 twitch: { login, display: user.display_name || login, avatar: user.profile_image_url || "", title: info.title || "", gameName: info.game_name || "", gameBoxArt: await boxArt(info.game_id) },
-                psn, tracker, allies, watermark: await watermark(), wmAt: st.wmAt, creditAt });
+                psn, tracker, allies, watermark: await watermark(), wmAt: st.wmAt, creditAt, look: d.look || null });
 
             const changed = !sameCard(card, d.lastCard);
             const gap = t - Number(d.lastPush || 0);
@@ -261,9 +270,20 @@ function createExtension(deps) {
                 patch.friendCode = String((await store.get("users/" + u.key + "/friend_code")) || "").toUpperCase() || null;
                 patch.psnOnlineId = (await store.get("users/" + u.key + "/psn_username")) || null;
             }
+            const look = cleanLook(req.body.look); if (look) patch.look = look;
             await chRef(d.id).set(patch, { merge: true });
             runChannel(d.id, true).catch(() => {});
             res.json({ paired: true, login: d.data().login, friendCode: patch.friendCode || null });
+        });
+
+        // Overlay Studio sends the overlay's colors/font when it's saved, so the extension keeps matching the overlay
+        app.post("/ext/look", form, async (req, res) => {
+            if (limited(req)) return res.status(429).json({ error: "Too many tries. Wait a minute." });
+            let u; try { u = await store.userFromIdToken(req.body && req.body.idToken); } catch (e) { return res.status(401).json({ error: "Sign in again." }); }
+            const look = cleanLook(req.body.look); if (!look) return res.status(400).json({ error: "No look." });
+            const q = await fs().collection("ext_channels").where("userKey", "==", u.key).get();
+            for (const doc of q.docs) { await chRef(doc.id).set({ look }, { merge: true }); runChannel(doc.id, true).catch(() => {}); }
+            res.json({ channels: q.docs.length });
         });
 
         // The streamer's browser-source overlay asks when to show the credit, so it shows at the same moment as the

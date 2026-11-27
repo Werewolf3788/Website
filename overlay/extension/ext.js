@@ -14,8 +14,22 @@
   function draw() {
     root.innerHTML = st.card ? R.renderCard(st.card, { mobile: mobile, allyIndex: st.ally }) : '<p class="ww-wait">Waiting for the stream…</p>';
   }
+  // match the streamer's overlay: colors, corners, glow and font from Overlay Studio
+  var fontNow = '';
+  function applyLook(look) {
+    var v = R.lookVars(look), el = document.documentElement;
+    ['--ww-accent', '--ww-accent2', '--ww-panel', '--ww-text', '--ww-radius', '--ww-font', '--ww-glow'].forEach(function (k) { if (v[k]) el.style.setProperty(k, v[k]); else el.style.removeProperty(k); });
+    var f = look && v['--ww-font'] ? look.font : '';
+    if (f && f !== fontNow) {
+      fontNow = f;
+      var l = document.createElement('link'); l.rel = 'stylesheet';
+      l.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(f).replace(/%20/g, '+') + ':wght@400;700;800&display=swap';
+      document.head.appendChild(l);
+    }
+  }
   function take(card) {
     if (!card || !card.me) return;
+    applyLook(card.look);
     if (st.card && (card.allies || []).length !== (st.card.allies || []).length) st.ally = 0;
     st.card = card; draw(); checkMarks();
   }

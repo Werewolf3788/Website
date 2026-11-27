@@ -278,6 +278,7 @@
           <p class="hint" style="margin:0 0 .5rem"><b>Werewolf Twitch extension</b> — your game, poster and (with a pass) tracker and allies show <b>on top of your stream</b> for viewers on the Twitch website and app, no OBS needed. Install it from your Twitch Creator Dashboard → Extensions, open its settings, and enter the pair code it shows here.</p>
           <div class="link"><input type="text" id="extCode" placeholder="Pair code, e.g. WOLF-K7Q2M9XD" maxlength="13" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm main" id="extFind" type="button">Find</button></div>
           <div id="extStatus" class="hint" style="margin-top:.5rem"></div>
+          <p class="hint" style="margin:.5rem 0 0">The extension uses this overlay's colors, font, corners and glow. Changed your look? <button class="btn sm" id="extLookBtn" type="button">Update extension look</button> (saving your overlay updates it too).</p>
           <p class="hint" style="margin:.5rem 0 0">Greyed-out parts on the left (chat box, alerts and the other video pieces) only work in OBS/Streamlabs. <b>Sign in</b> before pairing to show your game tracker (Tier 2) and PlayStation info (Tier 3).</p>
         </div>
         <div style="margin-top:0.625rem;display:none" id="seBox">
@@ -568,7 +569,7 @@
         rememberSave({ id: j.id, key: j.key, name: data.name, channel: chan() });
         try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch (e) {}
         history.replaceState(null, '', '#s=' + j.id + '&k=' + j.key);
-        makeLinks(); toast('Saved! Your OBS links stay the same.');
+        makeLinks(); toast('Saved! Your OBS links stay the same.'); sendLook(true);
       });
     }).catch(function (e) { toast(e && e.message ? e.message : 'Save failed — the server may be waking up, try again'); })
       .then(function () { btn.disabled = false; stateLine(); });
@@ -607,11 +608,23 @@
       $('#extPair').onclick = function () { extPair(code); };
     }).catch(function () { st.innerHTML = 'The server is waking up — try again in a minute.'; });
   }
+  // the overlay's look, sent to the extension so it matches (colors, font, corners, glow, box see-through)
+  function extLook() { return JSON.stringify({ accent: cfg.accent, accent2: cfg.accent2, panel: cfg.panel, text: cfg.text, font: cfg.font, panelOpacity: cfg.panelOpacity, radius: cfg.radius, glow: !!cfg.glow }); }
+  function sendLook(quiet) {
+    var u = siteUser();
+    if (!u) { if (!quiet) toast('Sign in first, then update the extension look'); return Promise.resolve(); }
+    return u.getIdToken().then(function (tok) {
+      return fetch(SYNC + '/ext/look', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ idToken: tok, look: extLook() }) });
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!quiet) toast(j.channels ? 'Extension look updated, viewers see it within a minute' : (j.error || 'Pair the extension first'));
+    }).catch(function () { if (!quiet) toast('The server is waking up, try again in a minute'); });
+  }
+  $('#extLookBtn').addEventListener('click', function () { sendLook(false); });
   function extPair(code) {
     var st = $('#extStatus'), u = siteUser();
     st.innerHTML = 'Pairing…';
     (u ? u.getIdToken() : Promise.resolve('')).then(function (tok) {
-      var body = { code: code }; if (tok) body.idToken = tok;
+      var body = { code: code, look: extLook() }; if (tok) body.idToken = tok;
       return fetch(SYNC + '/ext/pair', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body) });
     }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
       if (!x.ok) { st.innerHTML = esc(x.j.error || 'Could not pair.'); return; }
