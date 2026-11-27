@@ -163,8 +163,10 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors }) {
         patch.lifetimePaid = T.money(parseFloat(d.lifetimePaid || 0) + parseFloat(extra.paid || 0));
         if (extra.agreement) patch.agreement = extra.agreement;
       } else {
-        const old = tiers[tier] || {};
-        if (!old.lifetime) tiers[tier] = { until: Math.max(Date.now(), Number(old.until || 0)) + T.TERM_DAYS[term] * DAY };
+        const old = tiers[tier] || {}, add = T.TERM_DAYS[term] * DAY;
+        if (!old.lifetime) tiers[tier] = { until: Math.max(Date.now(), Number(old.until || 0)) + add };
+        // time left on lower tiers is kept: it starts counting again after this higher tier's time
+        Object.keys(tiers).forEach(function (k) { const e = tiers[k]; if (Number(k) < tier && e && !e.lifetime && Number(e.until) > Date.now()) e.until = Number(e.until) + add; });
       }
       patch.tiers = tiers;
       const eff = T.effectiveTier({ tiers }, Date.now(), false);

@@ -52,6 +52,7 @@ const ALLY_CAP = '5.00';
 const CURRENCY = 'USD';
 const DAY = 86400000;
 const CLAIM_LIFE = 14 * DAY;   // an unpaid claim stays usable for two weeks
+const FOUNDER_HOLD = DAY;      // a Founder spot is held for a day; then it goes back to the pool and the code stops working
 const money = v => (Math.round(parseFloat(v) * 100) / 100).toFixed(2);
 const cents = v => Math.round(parseFloat(v) * 100);
 const PAY_ORIGINS = ['https://entertainment-71888.web.app', 'https://entertainment-71888.firebaseapp.com', 'https://werewolf3788.github.io'];
@@ -148,8 +149,15 @@ function mountBmc(app, { admin, overlay }) {
     const open = await fs().collection('bmc_claims').where('term', '==', 'founder').where('status', '==', 'waiting').get();
     const dead = open.docs.filter(x => (x.data().expires || 0) < Date.now());
     if (!dead.length) return false;
-    for (const x of dead) await x.ref.set({ status: 'expired', updated: Date.now() }, { merge: true });
-    await fs().runTransaction(async t => { const m = await t.get(meta); t.set(meta, { taken: Math.max(0, Number((m.exists && m.data().taken) || 0) - dead.length) }, { merge: true }); });
+    // release each one atomically: only the request that flips it from waiting to expired gives its spot back
+    for (const x of dead) {
+      await fs().runTransaction(async t => {
+        const c = await t.get(x.ref); if (!c.exists || c.data().status !== 'waiting') return;
+        const m = await t.get(meta);
+        t.set(x.ref, { status: 'expired', updated: Date.now() }, { merge: true });
+        t.set(meta, { taken: Math.max(0, Number((m.exists && m.data().taken) || 0) - 1) }, { merge: true });
+      });
+    }
     return tryTake();
   }
 
@@ -190,7 +198,13 @@ function mountBmc(app, { admin, overlay }) {
         if (term === 'founder' && String(b.agree) !== '1') return res.status(400).json({ error: 'Tick the box to agree to the Founder lifetime terms first.' });
         const q = await overlay.quote(b.platform, b.channel, tier, term);
         if (q.error) return res.status(q.status || 400).json({ error: q.error });
-        if (term === 'founder' && !(await takeFounderSlot())) return res.status(409).json({ error: 'All 25 Founder spots are taken. Full lifetime is still available.' });
+        if (term === 'founder') {
+          // one open Founder claim per account: clicking again gives the same code back (no hoarding spots)
+          const open = await fs().collection('bmc_claims').where('account', '==', q.id).where('term', '==', 'founder').where('status', '==', 'waiting').get();
+          const mine = open.docs.map(x => x.data()).find(x => x.tier === q.tier && (x.expires || 0) > Date.now());
+          if (mine) return res.json({ claim: mine.id, price: mine.price, name: mine.name, url: mine.url, page: BMC_PAGE });
+          if (!(await takeFounderSlot())) return res.status(409).json({ error: 'All 25 Founder spots are taken right now. Full lifetime is still available.' });
+        }
         claim = { kind, account: q.id, label: q.label, tier: q.tier, term: q.term, days: q.days, name: q.name, price: q.price,
           url: linkFor('pass_t' + q.tier + '_' + q.term) };
         if (term === 'founder') claim.agreement = { terms: TERMS_VERSION, at: Date.now() };
@@ -199,7 +213,7 @@ function mountBmc(app, { admin, overlay }) {
       let id = '';
       for (let i = 0; i < 5 && !id; i++) {
         const tryId = newClaimId();
-        try { await fs().collection('bmc_claims').doc(tryId).create(Object.assign(claim, { id: tryId, email, status: 'waiting', created: Date.now(), expires: Date.now() + CLAIM_LIFE })); id = tryId; } catch (e) { /* taken, try another */ }
+        try { await fs().collection('bmc_claims').doc(tryId).create(Object.assign(claim, { id: tryId, email, status: 'waiting', created: Date.now(), expires: Date.now() + (claim.term === 'founder' ? FOUNDER_HOLD : CLAIM_LIFE) })); id = tryId; } catch (e) { /* taken, try another */ }
       }
       if (!id) return res.status(500).json({ error: 'Could not start the purchase. Try again.' });
       res.json({ claim: id, price: claim.price, name: claim.name, url: claim.url, page: BMC_PAGE });
@@ -231,6 +245,7 @@ function mountBmc(app, { admin, overlay }) {
   async function grant(claimDoc, ev) {
     const c = claimDoc.data(), id = c.id, ref = claimDoc.ref;
     if (c.status === 'paid') return { already: true };
+    if (c.status === 'expired') return { expired: true };   // a Founder code whose spot went to someone else
     if (cents(ev.amount) + 1 < cents(c.price) || ev.currency !== CURRENCY) {
       await ref.set({ status: 'short', paid: ev.amount, event: ev.id, updated: Date.now() }, { merge: true });
       return { short: true };
@@ -279,9 +294,9 @@ function mountBmc(app, { admin, overlay }) {
         return res.send('unmatched');
       }
       const r = await grant(doc, ev);
-      if (r.short || r.already) await fs().collection('bmc_unmatched').doc(eid).set({ type: ev.type, amount: ev.amount, email: ev.email, name: ev.name, note: ev.note, item: ev.item, claim: doc.id,
-        reason: r.short ? 'paid less than ' + doc.data().price : 'this code was already paid for (second payment?)', at: Date.now() });
-      await fs().collection('bmc_events').doc(eid).set({ claim: doc.id, result: r.ok ? 'granted' : r.short ? 'short' : 'already' }, { merge: true });
+      if (r.short || r.already || r.expired) await fs().collection('bmc_unmatched').doc(eid).set({ type: ev.type, amount: ev.amount, email: ev.email, name: ev.name, note: ev.note, item: ev.item, claim: doc.id,
+        reason: r.short ? 'paid less than ' + doc.data().price : r.expired ? 'Founder code expired and its spot was given to someone else - refund or give a spot by hand' : 'this code was already paid for (second payment?)', at: Date.now() });
+      await fs().collection('bmc_events').doc(eid).set({ claim: doc.id, result: r.ok ? 'granted' : r.short ? 'short' : r.expired ? 'expired' : 'already' }, { merge: true });
       res.send('ok');
     } catch (e) {
       console.error('[bmc webhook]', e && e.message);

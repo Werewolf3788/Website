@@ -104,7 +104,7 @@ test('switching tiers keeps the time left on the old one', async () => {
     const r = await h.post('/bmc/claim', { kind: 'overlay', platform: 'twitch', channel: 'keeper', tier: '2', term: 'month' });
     await h.hook({ type: 'extra_purchase.created', event_id: 'e5', data: { amount: 10, support_note: r.j.claim } }, 'sekret');
     const d = h.store['overlay_pro/keeper'];
-    assert.ok(d.tiers[1].until > Date.now() + 19 * DAY, 'tier 1 time untouched');
+    assert.ok(d.tiers[1].until > Date.now() + 50 * DAY, 'tier 1 time is pushed back by the tier 2 month (kept, not burned)');
     assert.ok(d.tiers[2].until > Date.now() + 30 * DAY);
   } finally { h.srv.close(); }
 });
@@ -115,5 +115,31 @@ test('plans route lists tiers and founder spots left', async () => {
     const r = await h.get('/overlay/plans?channel=smallguy&platform=twitch');
     assert.strictEqual(r.j.tiers[2].month, '10.00');
     assert.strictEqual(r.j.founderLeft, 22);
+  } finally { h.srv.close(); }
+});
+
+test('same account gets its open founder claim back (no spot hoarding)', async () => {
+  const h = boot({ 'ext_meta/founders': { taken: 0 } });
+  try {
+    const a = await h.post('/bmc/claim', { kind: 'overlay', platform: 'twitch', channel: 'clicker', tier: '1', term: 'founder', agree: '1' });
+    const b = await h.post('/bmc/claim', { kind: 'overlay', platform: 'twitch', channel: 'clicker', tier: '1', term: 'founder', agree: '1' });
+    assert.strictEqual(b.j.claim, a.j.claim);
+    assert.strictEqual(h.store['ext_meta/founders'].taken, 1);
+  } finally { h.srv.close(); }
+});
+
+test('founder spot is held 24 hours, then released and the old code is not honoured', async () => {
+  const h = boot({ 'ext_meta/founders': { taken: 24 } });
+  try {
+    const a = await h.post('/bmc/claim', { kind: 'overlay', platform: 'twitch', channel: 'slowpay', tier: '1', term: 'founder', agree: '1' });
+    const c = h.store['bmc_claims/' + a.j.claim];
+    assert.ok(c.expires - c.created <= DAY, 'held for at most a day');
+    h.store['bmc_claims/' + a.j.claim].expires = Date.now() - 1;   // a day later, unpaid
+    const b = await h.post('/bmc/claim', { kind: 'overlay', platform: 'twitch', channel: 'nextbuyer', tier: '1', term: 'founder', agree: '1' });
+    assert.ok(b.j.claim, 'the released spot goes to the next buyer');
+    assert.strictEqual(h.store['ext_meta/founders'].taken, 25);
+    await h.hook({ type: 'extra_purchase.created', event_id: 'late', data: { amount: 99, support_note: a.j.claim } }, 'sekret');
+    assert.ok(!h.store['overlay_pro/slowpay'], 'no 26th founder');
+    assert.ok(h.store['bmc_unmatched/late'], 'late payment kept for Kevin');
   } finally { h.srv.close(); }
 });
