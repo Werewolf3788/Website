@@ -61,3 +61,12 @@ test("non-Twitch channels (no uptime/viewers) still get the watermark on a timer
     const r = run(Array.from({ length: 25 }, () => ({ uptime: undefined, viewers: undefined })), { tier: 0 });
     assert.strictEqual(r.shown.length, 1);
 });
+
+test("serverShow shows each server mark once, only while fresh", () => {
+    const seen = new Set();
+    assert.strictEqual(W.serverShow({ wmAt: 5000 }, 6000, seen), "wm");
+    assert.strictEqual(W.serverShow({ wmAt: 5000 }, 7000, seen), null, "already shown");
+    assert.strictEqual(W.serverShow({ creditAt: 9000 }, 9500, seen), "credit");
+    assert.strictEqual(W.serverShow({ wmAt: 1000 }, 1000 + 61000, new Set()), null, "too old");
+    assert.strictEqual(W.serverShow(null, 1, new Set()), null);
+});

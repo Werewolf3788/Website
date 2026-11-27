@@ -327,3 +327,27 @@ test("allies get the monthly credit, the owner's own channel never does", async 
         assert.ok(!o.pushes.some((p) => p.card.credit), "owner's channel never shows it");
     } finally { close(o); }
 });
+
+test("mark endpoint gives the browser overlay the same watermark moment as the extension", async () => {
+    const h = setup({ rand: 0 });
+    try {
+        await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        for (let i = 0; i < 25 && !h.F.s["ext_channels/999"].wmAt; i++) { h.st.now += 60000; await h.ext.tick(); }
+        const at = h.F.s["ext_channels/999"].wmAt;
+        assert.ok(at);
+        const m = await h.get("/ext/mark/streamer");
+        assert.strictEqual(m.s, 200);
+        assert.strictEqual(m.j.wmAt, at);
+        assert.strictEqual(m.j.wmAt, h.pushes.at(-1).card.wmAt, "same moment the extension got");
+        assert.strictEqual((await h.get("/ext/mark/nobody_here")).s, 404, "overlay-only streamers use their own timer");
+    } finally { close(h); }
+});
+
+test("mark endpoint reports a fresh founder credit", async () => {
+    const h = setup({ fs: { "overlay_pro/streamer": { tiers: { 1: { lifetime: true, founder: true } } } }, viewers: 3 });
+    try {
+        await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        const m = await h.get("/ext/mark/streamer");
+        assert.strictEqual(m.j.creditAt, h.F.s["ext_channels/999"].lastCreditAt);
+    } finally { close(h); }
+});

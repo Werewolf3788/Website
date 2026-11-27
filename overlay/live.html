@@ -663,6 +663,18 @@
       setTimeout(function () { w.classList.add('leave'); setTimeout(function () { w.remove(); }, 550); }, 12000);
     });
   }
+  var SYNC = 'https://ww-stream-sync.onrender.com', markSeen = new Set(), useServer = null, useServerAt = 0, markTimer = null;
+  function pollMark() {
+    var c = chan(); if (!c) return;
+    fetch(SYNC + '/ext/mark/' + encodeURIComponent(c) + '?v=' + Date.now()).then(function (r) {
+      if (r.status === 404) { useServer = false; useServerAt = Date.now(); if (markTimer) { clearInterval(markTimer); markTimer = null; } return null; }
+      return r.ok ? r.json() : null;
+    }).then(function (j) {
+      if (!j) return;
+      useServer = true; useServerAt = Date.now();
+      if (WWClock.serverShow(j, Date.now(), markSeen)) showWatermark();
+    }).catch(function () { /* server asleep or offline: keep the last answer */ });
+  }
   function clockKey() { var a = acct(); return 'ww_wm_clock_' + a.platform + ':' + a.name; }
   function loadClock() { try { return JSON.parse(localStorage.getItem(clockKey())) || WWClock.fresh(Math.random); } catch (e) { return WWClock.fresh(Math.random); } }
   function saveClock(st) { try { localStorage.setItem(clockKey(), JSON.stringify(st)); } catch (e) {} }
@@ -672,6 +684,12 @@
     Promise.all(tw ? [getText('uptime'), getText('viewercount')] : [Promise.resolve(undefined), Promise.resolve(undefined)]).then(function (r) {
       var uptime = r[0] === undefined ? undefined : WWClock.parseUptime(r[0]);
       var v = r[1] === undefined ? undefined : parseInt(String(r[1]).replace(/,/g, ''), 10);
+      // streams that also use the Werewolf Twitch extension: the server's clock decides, so this QR card
+      // shows at the same moment as the extension's tappable credit
+      if (tw && uptime !== null && uptime !== undefined) {
+        if (useServer === null || Date.now() - useServerAt > 10 * 60000) pollMark();
+        if (useServer) { if (!markTimer) markTimer = setInterval(pollMark, 15000); return; }
+      } else if (markTimer) { clearInterval(markTimer); markTimer = null; }
       var out = WWClock.step(loadClock(), { now: Date.now(), uptime: uptime, viewers: isNaN(v) ? (uptime === undefined ? undefined : 0) : v,
         tier: pass.tier, founder: pass.founder, ally: pass.ally, owner: pass.owner, rand: Math.random });
       saveClock(out.state);

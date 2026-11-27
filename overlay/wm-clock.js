@@ -35,5 +35,13 @@
     st.lastTick = o.now; st.lastLive = live;
     return { state: st, show: show };
   }
-  return { fresh: fresh, step: step, parseUptime: parseUptime, target: target };
+  // channels that also use the Twitch extension: the server's clock decides (same moment as the extension)
+  function serverShow(mark, now, seen) {
+    if (!mark) return null;
+    var fresh = function (at) { return at && now - at < 60000 && now - at > -60000 && !seen.has(at); };
+    if (fresh(mark.wmAt)) { seen.add(mark.wmAt); return 'wm'; }
+    if (fresh(mark.creditAt)) { seen.add(mark.creditAt); return 'credit'; }
+    return null;
+  }
+  return { fresh: fresh, step: step, parseUptime: parseUptime, target: target, serverShow: serverShow };
 }));

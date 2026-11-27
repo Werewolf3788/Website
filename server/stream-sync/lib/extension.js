@@ -10,6 +10,7 @@
  *   GET  /ext/pair/:code        Overlay Studio -> { login, paired }
  *   POST /ext/pair              Overlay Studio (code, idToken?) -> links the site account (friend code, PSN); the code then changes
  *   GET  /ext/more/:channelId   viewers' "View more" (server-cached tracker, so Firestore isn't read per viewer)
+ *   GET  /ext/mark/:login       the streamer's browser overlay: when to show the credit (same moment as the extension)
  *   POST /webhooks/twitch-eventsub   stream.online/offline, channel.update, channel.shared_chat.*
  * Watermark (free tier): after a random 20-40 min of live time since the last one (live time carries over
  * between streams), only while 2+ viewers. Founder lifetime: once per 30 days, at 5+ min uptime with 2+ viewers. */
@@ -39,6 +40,7 @@ function createExtension(deps) {
     const OWNER = () => process.env.STREAM_SYNC_APP_OWNER_KEY || "";
     const cache = new Map();   // key -> { at, v }
     const mem = new Map();     // channelId -> watermark clock + check times (saved to Firestore only now and then)
+    const loginIndex = new Map();   // twitch login -> channelId (for the browser overlay's /ext/mark)
     let lastTickRun = 0;
     const hits = new Map();    // ip -> { at, n }   simple rate limit for the pairing routes
     function limited(req) {
@@ -142,6 +144,7 @@ function createExtension(deps) {
             const info = live ? s : (await twitch.channel(cid)) || {};
             const user = (await twitchUser(cid)) || {};
             const login = String(user.login || d.login || "").toLowerCase();   // follows Twitch renames
+            if (login) loginIndex.set(login, String(cid));
             const pass = await passFor(Object.assign({}, d, { login }));
             const viewers = live ? Number(s.viewer_count || 0) : 0;
             const startedAt = live ? Date.parse(s.started_at) || t : null;
@@ -263,6 +266,19 @@ function createExtension(deps) {
             await chRef(d.id).set(patch, { merge: true });
             runChannel(d.id, true).catch(() => {});
             res.json({ paired: true, login: d.data().login, friendCode: patch.friendCode || null });
+        });
+
+        // The streamer's browser-source overlay asks when to show the credit, so it shows at the same moment as the
+        // extension's (one clock). 404 = this channel doesn't use the extension: the overlay keeps its own timer.
+        app.get("/ext/mark/:login", async (req, res) => {
+            const login = String(req.params.login || "").toLowerCase();
+            if (!/^[a-z0-9_]{3,25}$/.test(login)) return res.status(404).json({});
+            let cid = loginIndex.get(login);
+            if (!cid) cid = await cached("mark-login:" + login, 10 * MIN, async () => { const q = await fs().collection("ext_channels").where("login", "==", login).get(); return q.docs[0] ? q.docs[0].id : null; });
+            if (!cid) return res.status(404).json({});
+            const m = mem.get(cid) || {}, t = now();
+            res.setHeader("Cache-Control", "no-store");
+            res.json({ live: !!m.lastLive, wmAt: m.wmAt || null, creditAt: m.lastCreditAt && t - m.lastCreditAt < 2 * MIN ? m.lastCreditAt : null });
         });
 
         // "View more" for viewers: the streamer's tracker from the server's 10-minute cache (never Firestore per viewer)
