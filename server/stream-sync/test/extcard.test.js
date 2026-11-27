@@ -146,7 +146,22 @@ test("game companion progress: collectibles, missions, medals", () => {
     assert.strictEqual(e.name, "Tom Clancys Ghost Recon Wildlands");
     assert.deepStrictEqual(e.facts.slice(0, 5), ["Trophies 12/60 (20%)", "Collectibles 3/5", "Missions 2/3", "Medals 1/2", "Campaign rank 40"]);
     assert.ok(e.facts.includes("Skill level 28"));
-    assert.ok(e.facts.includes("Rebel ops 2/3"));
+    assert.ok(!e.facts.includes("Rebel ops 2/3"), "per-group lines left out (too busy)");
     // a tracker that was opened but nothing done yet is still "no progress"
     assert.strictEqual(trackerEntry("Halfdead", "ps", { collectibles: { g: { items: { a: { collected: false } } } }, missions: { m1: { completed: false } }, ranks: { collectibles: 0 } }), null);
+});
+
+test("overlay layout (logo, now playing, poster, title) is copied safely", () => {
+    const l = cleanLook({ accent: "#112233", layout: { brand: { on: true, pos: "br", name: "Wolf<b>", tag: "x" }, game: { on: true, pos: "br", prefix: "Now playing" }, poster: { on: true, pos: "bl", size: 900 }, title: { on: false, pos: "zz" }, chat: { on: true } } });
+    assert.deepStrictEqual(l.layout, { brand: { on: true, pos: "br", name: "Wolf<b>", tag: "x" }, game: { on: true, pos: "br", prefix: "Now playing" }, poster: { on: true, pos: "bl", size: 200 }, title: { on: false, pos: "tl" } });
+    const c = buildCard(base({}));
+    assert.strictEqual(c.me.title, tw.title, "the stream title rides along for the overlay layer");
+});
+
+test("game profile (Wildlands style) comes from the game's tracker file", () => {
+    const def = { name: "Tom Clancy's Ghost Recon Wildlands", title: "My Wildlands profile", groups: [{ name: "Combat", fields: [{ id: "longshot", name: "Longest shot", unit: " m" }, { id: "favweapon", name: "Favorite weapon", unit: "" }, { id: "precision", name: "Precision", unit: "%" }] }] };
+    const e = trackerEntry("wildlands", "ps", { wallet: { level: 26, pf_longshot: "307", pf_favweapon: "MP7 Cartel" }, collectibles: { m1__x: { quest_name: "Mission 1 — x", items: { a: { collected: true } } } } }, def);
+    assert.strictEqual(e.name, "Tom Clancy's Ghost Recon Wildlands");
+    assert.deepStrictEqual(e.profile, { title: "Wildlands profile", level: 26, groups: [{ name: "Combat", rows: [["Longest shot", "307 m"], ["Favorite weapon", "MP7 Cartel"]] }] });
+    assert.ok(!e.facts.some((f) => /Mission 1/.test(f)), "no per-mission collectible lines");
 });

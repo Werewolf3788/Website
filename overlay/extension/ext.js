@@ -11,7 +11,9 @@
   var toggle = document.getElementById('wwToggle');
   function ga(name) { try { if (window.gtag) gtag('event', name, { view: mobile ? 'mobile' : 'overlay' }); } catch (e) {} }
 
+  var layer = document.getElementById('wwLayer');
   function draw() {
+    if (layer) layer.innerHTML = st.card ? R.renderLayer(st.card, st.card.look) : '';
     root.innerHTML = st.card ? R.renderCard(st.card, { mobile: mobile, allyIndex: st.ally }) : '<p class="ww-wait">Waiting for the stream…</p>';
   }
   // match the streamer's overlay: colors, corners, glow and font from Overlay Studio
