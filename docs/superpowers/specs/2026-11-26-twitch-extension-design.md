@@ -70,9 +70,12 @@ Lifetime options: see Decided §5.
 ### Watermark (Free tier)
 - Kevin's **current Twitch profile picture + "werewolf3788"**, looked up from Twitch about once a day (follows picture
   changes; tied to his account ID so a rename doesn't break it).
-- About **75% visible**, for ~10 seconds at every **30 minutes of stream uptime** (0:30, 1:00, 1:30 … from Twitch's
-  `started_at`, so every viewer sees it at the same moment; never while offline), at a **random spot around the
-  edges/corners** — never the centre and never over Twitch's player buttons.
+- About **75% visible** for ~10 seconds, at a **random spot around the edges/corners** — never the centre and never over
+  Twitch's player buttons.
+- **When (Kevin):** after a **random 20–40 minutes of live time** since the last one. Live time **carries over between
+  streams**, so ending at 29 min and restarting doesn't dodge it. It only shows while Twitch's viewer count is **2 or
+  more**; if fewer are watching it waits until there are. The server picks the moment and sends it in the card, so every
+  viewer sees it at the same time. Never while offline.
 - Tapping opens Kevin's site. **No current game, no Buy Me a Coffee, no QR code in the extension** (Twitch review).
 - Overlay Studio's browser-source overlay (free) uses the same picture + handle, and may add a Buy Me a Coffee QR code.
 
@@ -132,8 +135,9 @@ Lifetime options: see Decided §5.
    - Founder terms must be shown on the buy button + pricing page, and agreed with a checkbox before the claim code is
      issued; the agreement (terms version + time) is saved with the claim. Short terms page on the site.
    - Never add the monthly credit to anyone who didn't agree to it.
-   - Founder credit timing (Kevin): calendar-based — the first stream **30+ days** after the last credit shows it once, at
-     **5 minutes of uptime**; missed months don't pile up; streams shorter than 5 minutes wait for the next one.
+   - Founder credit timing (Kevin): calendar-based — the first stream **30+ days** after the last credit shows it once,
+     at **5 minutes of uptime or later, once the viewer count is 2+**; missed months don't pile up; if it doesn't get
+     shown, it waits for the next stream.
    - Upgrades credit what was paid (Tier 1 lifetime → Tier 3 lifetime pays the difference); monthly/yearly buyers keep
      their remaining time when they switch.
 
