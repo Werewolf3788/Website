@@ -143,6 +143,19 @@ test("view more uses the site's game files for names and profiles", async () => 
     } finally { close(h); }
 });
 
+test("a friend code saved as an object still finds the friend, and a bad one doesn't freeze the card", async () => {
+    const h = setup({ rtdb: { "users/kev/friends": { RAY1: {}, ODD1: {} }, "accounts/friend_codes/RAY1": { user_key: "ray", created: 5 }, "users/ray/friend_code": "RAY1",
+        "accounts/friend_codes/ODD1": { note: "x", n: 2 } } });
+    try {
+        const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
+        h.st.now += 61000; await h.ext.tick();
+        assert.deepStrictEqual(h.pushes.at(-1).card.allies.map((a) => a.login), ["raymystyro"]);
+        h.st.title = "Far Cry 5"; h.st.now += 6 * 60000; await h.ext.tick();
+        assert.strictEqual(h.pushes.at(-1).card.me.game, "Far Cry 5", "the card keeps following the stream");
+    } finally { close(h); }
+});
+
 test("ally owner friend gets tier 3: psn first and same-title friend becomes ally", async () => {
     const h = setup();
     try {
