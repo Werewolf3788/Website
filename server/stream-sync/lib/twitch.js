@@ -142,4 +142,4 @@ async function exchangeCode(code, redirectUri) {
     return { refresh: j.refresh_token, login: me.data && me.data[0] ? me.data[0].login : null };
 }
 
-module.exports = { appCreds, userToken, forgetUserToken, userId, stream, channel, searchCategories, categoryByName, updateChannel, sendChat, authorizeUrl, exchangeCode };
+module.exports = { helix, appToken, appCreds, userToken, forgetUserToken, userId, stream, channel, searchCategories, categoryByName, updateChannel, sendChat, authorizeUrl, exchangeCode };
