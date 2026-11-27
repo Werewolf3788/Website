@@ -123,3 +123,30 @@ test("games with no progress are left out", () => {
     assert.strictEqual(trackerEntry("tycoon", "mobile", { save: '{"played":1,"updatedAt":1795680276656}', saveAt: 1795680276656 }), null);
     assert.strictEqual(trackerEntry("survive3_prev", "mobile", { best: 5 }), null);
 });
+
+const { cleanLook } = require("../lib/extcard");
+test("overlay look is copied safely onto the card", () => {
+    const l = cleanLook({ accent: "#ff5f1f", accent2: "#FFD700", panel: "#0b0b10", text: "#ffffff", font: "Orbitron", panelOpacity: 82, radius: 12, glow: true, channel: "x" });
+    assert.deepStrictEqual(l, { accent: "#ff5f1f", accent2: "#ffd700", panel: "#0b0b10", text: "#ffffff", font: "Orbitron", panelOpacity: 82, radius: 12, glow: true });
+    assert.deepStrictEqual(cleanLook({ accent: "red;}body{x", font: "Comic</style>", panelOpacity: 500, radius: -4 }), { panelOpacity: 100, radius: 0, glow: false });
+    assert.strictEqual(cleanLook(null), null);
+    assert.strictEqual(cleanLook("{\"accent\":\"#112233\"}").accent, "#112233");
+    const c = buildCard(base({ look: cleanLook({ accent: "#112233" }) }));
+    assert.strictEqual(c.look.accent, "#112233");
+});
+
+test("game companion progress: collectibles, missions, medals", () => {
+    const v = { gameId: "TomClancysGhostReconWildlands", platform: "ps", trophies_earned: 12, trophies_total: 60, trophies_percent: 20,
+        ranks: { collectibles: 3, skill_level: 28 }, campaignRank: 40,
+        collectibles: { medals__rebel: { quest_name: "Rebel ops", total: 3, items: { a: { collected: true }, b: { collected: true }, c: { collected: false } } },
+            skills: { items: { s1: { collected: true }, s2: { collected: false } } } },
+        missions: { m1: { completed: true }, m2: { completed: false }, m3: { completed: true } },
+        medals: { x: { earned: true }, y: { earned: false } }, wallet: { credits: 0, level: 1 } };
+    const e = trackerEntry("TomClancysGhostReconWildlands", "ps", v);
+    assert.strictEqual(e.name, "Tom Clancys Ghost Recon Wildlands");
+    assert.deepStrictEqual(e.facts.slice(0, 5), ["Trophies 12/60 (20%)", "Collectibles 3/5", "Missions 2/3", "Medals 1/2", "Campaign rank 40"]);
+    assert.ok(e.facts.includes("Skill level 28"));
+    assert.ok(e.facts.includes("Rebel ops 2/3"));
+    // a tracker that was opened but nothing done yet is still "no progress"
+    assert.strictEqual(trackerEntry("Halfdead", "ps", { collectibles: { g: { items: { a: { collected: false } } } }, missions: { m1: { completed: false } }, ranks: { collectibles: 0 } }), null);
+});

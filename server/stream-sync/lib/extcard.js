@@ -34,6 +34,21 @@ function me(input) {
     return Object.assign(out, { game: tw.gameName || "", status: tw.title || "", poster: out.avatar, source: "avatar" });
 }
 
+// ---- the streamer's overlay look (from Overlay Studio), so the extension matches their overlay ----
+const FONTS = ["Inter", "Roboto", "Montserrat", "Poppins", "Oswald", "Bebas Neue", "Rajdhani", "Orbitron", "Press Start 2P", "Bangers", "Permanent Marker", "Russo One", "Teko"];
+const clamp = (n, lo, hi, d) => { n = Math.round(Number(n)); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
+function cleanLook(l) {
+    if (typeof l === "string") { try { l = JSON.parse(l); } catch (e) { return null; } }
+    if (!l || typeof l !== "object") return null;
+    const out = {};
+    ["accent", "accent2", "panel", "text"].forEach((k) => { if (/^#[0-9a-f]{6}$/i.test(String(l[k] || ""))) out[k] = String(l[k]).toLowerCase(); });
+    if (FONTS.indexOf(l.font) >= 0) out.font = l.font;
+    out.panelOpacity = clamp(l.panelOpacity, 0, 100, 82);
+    out.radius = clamp(l.radius, 0, 30, 12);
+    out.glow = l.glow === true;
+    return out;
+}
+
 function buildCard(input) {
     const tier = input.tier || 0;
     const allies = tier < 2 ? [] : (input.allies || []).filter((a) => a.via === "shared" || (tier >= 3 && a.via === "psn"))
@@ -45,7 +60,7 @@ function buildCard(input) {
         me: me(input), allies,
         wm: wmOn && input.watermark ? { img: input.watermark.img, name: input.watermark.name, secs: 10, opacity: 0.75 } : null,
         wmAt: tier === 0 && input.live ? input.wmAt || null : null,
-        credit, foot: FOOT
+        credit, foot: FOOT, look: input.look || null
     };
     return fit(card);
 }
@@ -89,27 +104,43 @@ function prettyName(id, v) {
 }
 const words = (k) => { const s = String(k).replace(/[_-]+/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase().trim(); return s.charAt(0).toUpperCase() + s.slice(1); };
 const num = (n) => Math.round(Number(n)).toLocaleString("en-US");
+const vals = (o) => (o && typeof o === "object" ? Object.values(o).filter((x) => x && typeof x === "object") : []);
+const msOf = (t) => (t && typeof t.toMillis === "function" ? t.toMillis() : Number(t) || 0);
+const OBJ_KEYS = ["ranks", "collectibles", "missions", "medals", "wallet"];
 function trackerEntry(id, platform, v) {
     v = v || {};
     if (/_prev$/i.test(String(id))) return null;
     const by = {}; Object.keys(v).forEach((k) => { by[norm(k)] = k; });
-    const facts = [], used = new Set();
+    const facts = [], extra = [];
+    let progress = false;
+    const xy = (label, got, total) => { if (total > 0) { facts.push(label + " " + got + "/" + total); if (got > 0) progress = true; } };
+    // trophies / achievements
     const earned = Number(v[by.trophiesearned]), total = Number(v[by.trophiestotal]);
     if (earned > 0 && total > 0) {
         const pct = Number(v[by.trophiespercent]);
-        facts.push("Trophies " + earned + "/" + total + (pct > 0 ? " (" + Math.round(pct) + "%)" : ""));
+        facts.push("Trophies " + earned + "/" + total + (pct > 0 ? " (" + Math.round(pct) + "%)" : "")); progress = true;
     }
-    ["trophiesearned", "trophiestotal", "trophiespercent"].forEach((k) => used.add(k));
+    // Game Companion checklists: collectibles, missions, medals
+    const groups = vals(v.collectibles).map((g) => {
+        const items = vals(g.items), got = items.length ? items.filter((i) => i.collected).length : Number(g.count) || 0;
+        return { label: g.quest_name || g.label || g.name || "", got, total: Math.max(items.length, Number(g.total) || 0) };
+    }).filter((g) => g.total > 0);
+    xy("Collectibles", groups.reduce((a, g) => a + g.got, 0), groups.reduce((a, g) => a + g.total, 0));
+    const ms = vals(v.missions); xy("Missions", ms.filter((m) => m.completed).length, ms.length);
+    const md = vals(v.medals); xy("Medals", md.filter((m) => m.earned).length, md.length);
+    groups.filter((g) => g.label && g.got > 0).sort((a, b) => b.total - a.total).slice(0, 4).forEach((g) => extra.push(clip(g.label, 30) + " " + g.got + "/" + g.total));
+    if (v.ranks && typeof v.ranks === "object") Object.keys(v.ranks).forEach((k) => { const n = Number(v.ranks[k]); if (norm(k) !== "collectibles" && n > 0 && n < 1e11) { extra.push(words(k) + " " + num(n)); progress = true; } });
+    if (v.wallet && typeof v.wallet === "object" && Number(v.wallet.level) > 1) { facts.push("Level " + num(v.wallet.level)); progress = true; }
+    // other plain stats (best score, kills, rank...)
     Object.keys(v).forEach((k) => {
         const n = norm(k), val = v[k];
-        if (used.has(n) || HIDE.test(n) || n.startsWith("trophies")) return;
-        if (typeof val === "number") { if (val > 0 && val < 1e11) facts.push(words(k) + " " + num(val)); }
-        else if (val === true) facts.push(words(k));
+        if (HIDE.test(n) || n.startsWith("trophies") || OBJ_KEYS.indexOf(n) >= 0) return;
+        if (typeof val === "number") { if (val > 0 && val < 1e11) { facts.push(words(k) + " " + num(val)); progress = true; } }
+        else if (val === true) { facts.push(words(k)); progress = true; }
         else if (typeof val === "string" && val && val.length <= 30 && !/^(yes|no|true|false|0)$/i.test(val) && !/^[[{]/.test(val)) facts.push(words(k) + ": " + val);
     });
-    if (!facts.length) return null;
-    const trophyFirst = facts.slice(0, 8);
-    return { id: String(id), name: prettyName(id, v), platform, facts: trophyFirst, at: Number(v.updatedAt || v.saveAt || 0) || 0 };
+    if (!progress) return null;
+    return { id: String(id), name: prettyName(id, v), platform, facts: facts.concat(extra).slice(0, 8), at: msOf(v.updatedAt) || msOf(v.saveAt) };
 }
 
-module.exports = { trackerEntry, prettyName, buildCard, cardSize, sameCard, effectiveTier, FOOT, MAX_BYTES };
+module.exports = { cleanLook, trackerEntry, prettyName, buildCard, cardSize, sameCard, effectiveTier, FOOT, MAX_BYTES };

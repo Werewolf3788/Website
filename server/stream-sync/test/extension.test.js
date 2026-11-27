@@ -99,6 +99,38 @@ test("pair links friend code and psn", async () => {
     } finally { close(h); }
 });
 
+test("the extension uses the overlay's look", async () => {
+    const h = setup();
+    try {
+        const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok", look: JSON.stringify({ accent: "#a855f7", font: "Orbitron" }) });
+        assert.strictEqual(h.F.s["ext_channels/999"].look.accent, "#a855f7");
+        // saving the overlay later updates every channel this account paired
+        assert.strictEqual((await h.post("/ext/look", { idToken: "bad", look: "{}" })).s, 401);
+        const r = await h.post("/ext/look", { idToken: "kevtok", look: JSON.stringify({ accent: "#38bdf8", radius: 4 }) });
+        assert.strictEqual(r.j.channels, 1);
+        assert.strictEqual(h.F.s["ext_channels/999"].look.accent, "#38bdf8");
+        h.st.now += 61000; await h.ext.tick();
+        assert.strictEqual(h.pushes.at(-1).card.look.accent, "#38bdf8");
+    } finally { close(h); }
+});
+
+test("card tracker shows the game being played, from the Game Companion", async () => {
+    const h = setup({ fs: {
+        "user/KEV1/platform/ps/game/TomClancysGhostReconWildlands": { trophies_earned: 12, trophies_total: 60, trophies_percent: 20, missions: { a: { completed: true }, b: { completed: false } } },
+        "user/KEV1/platform/playstation/game/TomClancysGhostReconWildlands": { "trophies earned": 12, "trophies total": 60 },
+        "user/KEV1/platform/steam/game/FarCry5": { trophies_earned: 3, trophies_total: 50, updatedAt: 5 } } });
+    try {
+        const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
+        h.st.now += 61000; await h.ext.tick();
+        const t = h.pushes.at(-1).card.me.tracker;
+        assert.strictEqual(t.games[0].name, "Tom Clancys Ghost Recon Wildlands");
+        assert.deepStrictEqual(t.games[0].summary, ["Trophies 12/60 (20%)", "Missions 1/2"]);
+        assert.strictEqual(t.games.filter((g) => /Wildlands/.test(g.name)).length, 1, "Game Companion and PSN copies merged");
+    } finally { close(h); }
+});
+
 test("ally owner friend gets tier 3: psn first and same-title friend becomes ally", async () => {
     const h = setup();
     try {

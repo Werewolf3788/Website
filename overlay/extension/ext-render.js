@@ -88,5 +88,21 @@
     return out;
   }
 
-  return { escapeHtml: escapeHtml, renderCard: renderCard, renderMark: renderMark, creditSpot: creditSpot, shouldShowMark: shouldShowMark, parseFirestoreDocs: parseFirestoreDocs, renderMore: renderMore, SITE: SITE };
+  // the streamer's overlay look (colors, font, corners, glow) -> CSS variables for ext.css
+  var HEX = /^#[0-9a-f]{6}$/i;
+  function lookVars(l) {
+    var v = {}; if (!l) return v;
+    if (HEX.test(l.accent || '')) { v['--ww-accent'] = l.accent; if (l.glow) v['--ww-glow'] = '0 0 14px ' + l.accent + '99'; }
+    if (HEX.test(l.accent2 || '')) v['--ww-accent2'] = l.accent2;
+    if (HEX.test(l.text || '')) v['--ww-text'] = l.text;
+    if (HEX.test(l.panel || '')) {
+      var n = parseInt(l.panel.slice(1), 16), o = Math.min(100, Math.max(0, Number(l.panelOpacity == null ? 88 : l.panelOpacity))) / 100;
+      v['--ww-panel'] = 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + Math.max(o, 0.6) + ')';
+    }
+    if (l.radius != null && isFinite(l.radius)) v['--ww-radius'] = Math.min(30, Math.max(0, Number(l.radius))) + 'px';
+    if (/^[A-Za-z0-9 ]{2,30}$/.test(l.font || '')) v['--ww-font'] = "'" + l.font + "',Inter,system-ui,sans-serif";
+    return v;
+  }
+
+  return { lookVars: lookVars, escapeHtml: escapeHtml, renderCard: renderCard, renderMark: renderMark, creditSpot: creditSpot, shouldShowMark: shouldShowMark, parseFirestoreDocs: parseFirestoreDocs, renderMore: renderMore, SITE: SITE };
 }));
