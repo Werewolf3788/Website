@@ -25,12 +25,52 @@
   #top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
   #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
+  /* desktop: the board is the big part (about two thirds of the width), the info column beside it is narrower.
+     "Fit board to screen" shrinks the board so all of it fits the screen height without scrolling. */
+  @media(min-width:860px){#main{max-width:none;width:90vw;padding-top:6px;grid-template-columns:minmax(0,65fr) minmax(320px,35fr) !important}
+    body.fitBoard #main{grid-template-columns:minmax(0,min(calc(100vh - 46px),66%)) 1fr !important;padding-top:4px;padding-bottom:4px}
+  }
+  /* desktop table layout: dice, turn and buy / build buttons sit in the green middle of the board,
+     and "My properties" moves to the top of the right-hand column */
+  body.tableLayout #main{grid-template-areas:"board panel" "deeds panel" !important}
+  body.tableLayout #centerArea #play{position:absolute;inset:0;margin:0;overflow:auto;pointer-events:auto;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4%}
+  body.tableLayout #centerArea #play #turn{justify-content:center;font-size:1.25rem}
+  body.tableLayout #centerArea #play #dice{justify-content:center;flex-wrap:wrap}
+  body.tableLayout #centerArea #play #msg{flex:0 0 100%;max-height:none;font-size:1rem;text-align:center}
+  body.tableLayout #centerArea #play #acts{justify-content:center}
+  body.tableLayout #centerArea #play #acts,body.tableLayout #centerArea #play #buildList{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:620px}
+  body.tableLayout #centerArea #play .offer{text-align:left}
+  body.tableLayout #centerArea.showCard #play{visibility:hidden}
+  body.tableLayout .bLogo{display:none}
+  body.tableLayout #centerArea #play .die{width:76px;height:76px;padding:10px;border-radius:16px}
+  body.tableLayout #centerArea #play .die.sd{font-size:38px}
+  body.tableLayout #centerArea #play button{font-size:1.05rem;padding:11px 16px}
+  body.tableLayout #panel #mine{margin-bottom:12px}
+  body.tableLayout #panel{position:sticky;top:6px;max-height:calc(100vh - 12px);overflow:auto}
   /* wide screens: board + property cards on the left, dice and seats stacked on the right (as before) */
   @media(min-width:860px){
     #main{grid-template-columns:minmax(0,640px) 1fr;grid-template-areas:"board play" "board panel" "deeds panel";align-items:start}
     #left{display:contents} #boardWrap{grid-area:board} #play{grid-area:play;margin-top:0} #deeds{grid-area:deeds} #panel{grid-area:panel}
   }
-  #boardWrap{width:100%}
+  #boardWrap{width:100%;position:relative}
+  /* the selected / landed-on property card sits in the green middle of the board */
+  #centerArea{position:absolute;left:9.5%;top:9.5%;width:81%;height:81%;pointer-events:none}
+  #centerArea #mine{position:absolute;inset:0;overflow:auto;padding:2.5%;pointer-events:auto;font-size:.8rem;scrollbar-width:thin}
+  #centerArea #mine:empty{display:none;pointer-events:none}
+  #centerArea #mine:not(:empty){background:#134e4a;border-radius:4px}   /* covers the MONOPOLY lettering while your cards are showing */
+  #centerArea #mine .mineHd{font-weight:800;font-size:.95rem;margin:0 0 6px;color:#fde68a;text-shadow:0 1px 2px #0008}
+  #centerArea #mine .mineEmpty{height:100%;display:flex;align-items:flex-end;justify-content:center;text-align:center;color:#cbd5e1;font-size:.8rem;padding-bottom:6%}
+  #centerArea #mine .grp{background:rgba(15,23,42,.82)}
+  #centerCard{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:2%}
+  #centerCard:empty{display:none}
+  #centerArea.showCard #mine{visibility:hidden}
+  #centerCard .cc{pointer-events:auto;position:relative;width:min(340px,100%);max-height:100%;overflow:auto;border-radius:12px;box-shadow:0 8px 26px rgba(0,0,0,.55),0 0 0 2px rgba(255,255,255,.15);background:#1e293b;animation:ccIn .18s ease-out}
+  #centerCard .cc .deed.big{margin:0}
+  #centerCard .ccx{position:absolute;right:4px;top:4px;z-index:2;width:26px;height:26px;padding:0;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-weight:800;font-size:.85rem;line-height:26px}
+  #centerCard .cchere{font-size:.72rem;color:#cbd5e1;padding:4px 34px 0 8px;background:#1e293b}
+  @media(min-width:860px){#centerCard .cc{width:min(460px,100%)} #centerCard .deed.big{font-size:1rem} #centerCard .deed .band{font-size:1.05rem;padding:9px 36px 9px 12px} #centerCard .deed .body{padding:8px 12px} #centerCard .cchere{font-size:.8rem}}
+  @keyframes ccIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+  @media(max-width:520px){#centerArea #mine{font-size:.66rem} #centerArea #mine button{padding:4px 6px;font-size:.66rem} #centerArea #mine .mineHd{font-size:.8rem} #centerCard .cc{font-size:.9em} #centerCard .deed.big{font-size:.74rem} #centerCard .deed .band{font-size:.78rem;padding:5px 30px 5px 8px} #centerCard .deed button{padding:5px 6px;font-size:.72rem}}
   #board{display:block;width:100%;height:auto;border-radius:12px;background:#0b1220}
   #board text{font-family:system-ui,sans-serif;pointer-events:none}
   .tok{transition:transform .35s ease-in-out}
@@ -110,21 +150,21 @@
 <div id="top">
   <span>🏙️ <b id="roomLabel">Monopoly</b> · 👥 <b id="count">1</b></span>
   <span>💵 <b id="bank">—</b> · 🏆 <b id="wins">0</b></span>
-  <span><button id="snd" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="sizeBtn" title="Board size">⤢ Big board</button> · <button id="newGameBtn" title="End this game and start a new one" style="display:none">🆕 New game</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
 </div>
 <div id="main">
   <div id="left">
-    <div id="boardWrap"><svg id="board" viewBox="0 0 110 110"></svg></div>
+    <div id="boardWrap"><svg id="board" viewBox="0 0 110 110"></svg><div id="centerArea"><div id="mine"></div><div id="centerCard"></div></div></div>
     <div id="play">
       <div id="banner" style="display:none"></div>
       <div id="turn"></div>
       <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><button class="die sd off" id="d3" aria-label="Speed die" title="Speed die"></button><div id="msg"></div></div>
       <div id="sdnote"></div>
+      <div id="hourly" class="muted" style="font-size:.78rem;margin:2px 0 4px;display:none"></div>
       <div id="acts"></div>
       <div id="buildList"></div>
     </div>
     <div id="deeds">
-      <div id="mine"></div>
       <div id="landed" style="margin-top:10px"></div>
       <div class="muted" style="margin-top:10px">Everything that is owned (all players) · tap a card to find it on the board</div>
       <div id="ownedDeeds" class="deeds"></div>
@@ -138,7 +178,7 @@
     </div>
     <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
     <div id="log"></div>
-    <div class="muted" style="margin-top:10px"><b>Classic or Speed Die:</b> the host picks before the game starts. Speed Die adds a third die once you have passed Start. Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 3 houses and then a hotel once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, your houses are sold and properties mortgaged automatically before you go bankrupt. The blue Speed Die joins your two white dice once you have passed or landed on Start: 1, 2 or 3 is added to your move; Mr. Monopoly moves you on again to the next property nobody owns (or, if everything is owned, to the next one an opponent owns, and you pay rent); the Bus lets you move just the first white die, just the second, or both added together; and three of a kind (1-1-1, 2-2-2 or 3-3-3) lets you jump to any space on the board. Only the white dice count as doubles and the Speed Die is not used while you are in jail. Doubles roll again, but a second set of doubles in a row goes to jail. When you land on a Surprise or Community Fund space you can follow the card or ignore it. In jail you can pay $50 bail or try for doubles. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
+    <div class="muted" style="margin-top:10px"><b>Classic or Speed Die:</b> the host picks before the game starts. Speed Die adds a third die once you have passed Start. Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on (if you pass, or cannot afford it, it goes to auction and everyone can bid), collect rent, and build up to 3 houses and then a hotel once you own a whole colour. On your turn you can trade properties and money with another player, sell houses back for half their cost, mortgage a property for half its price (no rent while mortgaged; paying it off costs 10% more) or sell it back to the bank for 60%. If you cannot pay a bill, the game waits while you raise the money your way: sell houses, mortgage or sell properties, or trade. Then pay, or declare bankruptcy. (Bots raise money automatically, and so does a player who has left the table.) The blue Speed Die joins your two white dice once you have passed or landed on Start: 1, 2 or 3 is added to your move; Mr. Monopoly moves you on again to the next property nobody owns (or, if everything is owned, to the next one an opponent owns, and you pay rent); the Bus lets you move just the first white die, just the second, or both added together; and three of a kind (1-1-1, 2-2-2 or 3-3-3) lets you jump to any space on the board. Only the white dice count as doubles and the Speed Die is not used while you are in jail. Doubles roll again, but a second set of doubles in a row goes to jail. Surprise and Community Fund cards that pay or cost money (or send you to jail) apply to everyone, bots included; a card that moves you can be followed or ignored. In jail you can pay $50 bail or try for doubles. Rents rise by 25% every 4 rounds in long games. Every 30 minutes a game lasts, each player still in (not bots) gets a $1,000 bonus to keep it going. Last player standing wins. Tap the dice, shake your phone or press Space to roll. A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
   </div>
 </div>
 <div id="tradeDlg"><div id="tradeBox"></div></div>
@@ -163,6 +203,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>document.write('<script src="js/common.js"><\/script>');</script>
 <script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/turnalert.js"><\/script>');</script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -244,7 +285,41 @@
   function setOf(i) { var sp = SP[i], a = []; if (sp.t === 'prop') return group(sp.g); SP.forEach(function (x, j) { if (x.t === sp.t) a.push(j); }); return a; }
   function setHasHouses(s, i) { return SP[i].t === 'prop' && group(SP[i].g).some(function (j) { return housesOf(s, j) > 0; }); }
   function mgValue(i) { return Math.floor(SP[i].p / 2); } function unmgCost(i) { return Math.ceil(SP[i].p * 0.55); } function bankValue(i) { return Math.floor(SP[i].p * 0.6); }
-  function manageOk(s) { return s.status === 'playing' && (s.phase === 'roll' || s.phase === 'end'); }
+  function manageOk(s) { return s.status === 'playing' && (s.phase === 'roll' || s.phase === 'end' || s.phase === 'debt'); }
+  // a bill was put on hold during this move: the turn waits in the 'debt' phase until it is paid or the player goes bankrupt
+  function allOwned(s) { for (var i = 0; i < 40; i++) { var t = SP[i].t; if ((t === 'prop' || t === 'rail' || t === 'util') && ownerOf(s, i) < 0) return false; } return true; }
+  function markAllOwned(s) { if (s.status === 'playing' && s.allOwned !== s.gid && s.own && allOwned(s)) { s.allOwned = s.gid; addLog(s, '🏁 Every property is now owned! From here on it is trading, building and collecting rent.'); } }
+  function holdForDebt(s) { if (s.debt && s.debt.length && s.phase !== 'debt' && s.status === 'playing') { s.debtPrev = s.phase; s.phase = 'debt'; } }
+  function doPayDebt(s) {
+    if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, q = plOf(s, p), tot = debtTotal(s);
+    if (q.cash < tot) return false;
+    var list = s.debt; delete s.debt; delete s.debtP;
+    list.forEach(function (d) { payNow(s, p, d.to, d.amt); });
+    addLog(s, '✅ ' + NAMES[p] + ' paid $' + tot + '.');
+    s.phase = s.debtPrev || 'end'; delete s.debtPrev; return true;
+  }
+  // declaring bankruptcy puts you OUT of the game straight away: houses go back to the bank for half price, then all
+  // your cash and properties go to whoever you owe (to the bank if you owe the bank). You never take another turn.
+  function goBankrupt(s, p, to) {
+    var q = plOf(s, p);
+    for (var i = 0; i < 40; i++) if (ownerOf(s, i) === p && housesOf(s, i)) { q.cash += housesOf(s, i) * Math.floor(SP[i].p / 4); delete s.hs[i]; }
+    if (to >= 0 && plOf(s, to) && !plOf(s, to).bankrupt) plOf(s, to).cash += q.cash; else s.pot = (s.pot | 0) + q.cash;
+    for (i = 0; i < 40; i++) if (ownerOf(s, i) === p) { if (to >= 0 && plOf(s, to) && !plOf(s, to).bankrupt) s.own[i] = to; else { delete s.own[i]; delete s.mg[i]; } }
+    q.cash = 0; q.bankrupt = true; q.jail = 0;
+    addLog(s, '💀 ' + NAMES[p] + ' declared bankruptcy and is out of the game' + (to >= 0 ? '. ' + NAMES[to] + ' takes everything.' : '.'));
+    checkWin(s);
+  }
+  function doBankrupt(s) {
+    if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, list = s.debt; delete s.debt; delete s.debtP; delete s.debtPrev;
+    var to = -1; for (var k = 0; k < list.length; k++) if (list[k].to >= 0) { to = list[k].to; break; }
+    goBankrupt(s, p, to);
+    if (s.status === 'playing') advance(s); else s.phase = 'end';
+    return true;
+  }
+  function doDebtAuto(s) {   // only for a player who has left the table: sell up automatically like before
+    if (s.phase !== 'debt' || !s.debt) return false; var p = s.debtP, tot = debtTotal(s);
+    raiseCash(s, p, tot); if (plOf(s, p).cash >= tot) return doPayDebt(s); return doBankrupt(s);
+  }
   function rentOf(s, i, sum) {
     var sp = SP[i], o = ownerOf(s, i), base, h;
     if (sp.t === 'rail') base = RAIL_RENT[Math.min(3, countOwned(s, o, 'rail') - 1)];
@@ -273,7 +348,20 @@
     var a = alive(s);
     if (a.length <= 1 && s.status === 'playing') { s.status = 'done'; s.winner = a.length ? a[0] : s.turn; addLog(s, NAMES[s.winner] + ' wins the game!'); }
   }
+  function isPerson(s, p) { var st = seatOf(s, p); return !!st && !st.bot; }
+  function debtTotal(s) { return (s.debt || []).reduce(function (a, d) { return a + d.amt; }, 0); }
   function pay(s, from, to, amt) {
+    var f = plOf(s, from);
+    // a person who cannot pay is never sold up automatically: the bill is put on hold and THEY choose what to
+    // mortgage, sell or trade (or declare bankruptcy). Only bots raise cash automatically.
+    if (isPerson(s, from) && s.status === 'playing' && (f.cash < amt || (s.debt && s.debt.length && s.debtP === from))) {
+      if (!s.debt) s.debt = []; s.debtP = from; s.debt.push({ to: to, amt: amt });
+      addLog(s, '💸 ' + NAMES[from] + ' owes $' + amt + (to >= 0 ? ' to ' + NAMES[to] : '') + ' but only has $' + f.cash + '. Raise the money: sell houses, mortgage or trade.');
+      return true;
+    }
+    return payNow(s, from, to, amt);
+  }
+  function payNow(s, from, to, amt) {
     var f = plOf(s, from);
     if (f.cash < amt) raiseCash(s, from, amt);
     if (f.cash >= amt) { f.cash -= amt; if (to >= 0) plOf(s, to).cash += amt; else s.pot = (s.pot | 0) + amt; return true; }
@@ -352,7 +440,10 @@
     else if ((sp.t === 'chance' || sp.t === 'chest') && !nocard) {
       var deck = sp.t === 'chance' ? SURPRISE : FUND, c = deck[cr % 12];
       addLog(s, nm + ' - ' + (sp.t === 'chance' ? 'Surprise: ' : 'Community Fund: ') + c.x);
-      s.phase = 'card'; s.card = { k: c.k, v: c.v | 0, to: c.to === undefined ? -1 : c.to, x: c.x, d: sp.t === 'chance' ? 'Surprise' : 'Community Fund' };   // the player decides: follow it or ignore it
+      // money and jail cards apply to everyone, bots and people alike (bots used to skip every card that cost them money);
+      // only cards that move you are a choice: follow it or ignore it
+      if (c.k === 'move' || c.k === 'back') { s.phase = 'card'; s.card = { k: c.k, v: c.v | 0, to: c.to === undefined ? -1 : c.to, x: c.x, d: sp.t === 'chance' ? 'Surprise' : 'Community Fund' }; }
+      else applyCard(s, p, { k: c.k, v: c.v | 0, to: c.to === undefined ? -1 : c.to }, cr);
     }
   }
   function applyCard(s, p, c, cr) {
@@ -536,6 +627,7 @@
   }
   function botAct(s) {
     var p = s.turn, q = plOf(s, p), b;
+    if (s.phase === 'debt') return { k: 'debt' };
     if (s.phase === 'bus' && s.bus) {
       var bb = s.bus[0], bs = -1e9; s.bus.forEach(function (n) { var dest = (q.pos + n) % 40, sc = spaceScore(s, p, dest) + (dest < q.pos ? 100 : 0); if (sc > bs) { bs = sc; bb = n; } });
       return { k: 'bus', v: bb };
@@ -571,13 +663,13 @@
     s.pl = {}; s.own = {}; s.hs = {};
     seated(s).forEach(function (p) { s.pl[p] = { pos: 0, cash: 1500, jail: 0, bankrupt: false, sp: 0 }; });
     s.status = 'playing'; s.turn = seated(s)[0]; s.phase = 'roll'; s.dice = [0, 0]; s.dc = 0; s.again = false; s.pend = -1; s.winner = -1; s.rd = 0; s.pot = 0; s.sd = 0; s.mr = 0; delete s.card; delete s.bus;
-    s.gid = (s.gid | 0) + 1; s.log = []; addLog(s, 'Game on! ' + NAMES[s.turn] + ' goes first.');
+    s.gid = (s.gid | 0) + 1; s.log = []; s.gt0 = WW.now(); s.hb = 0; addLog(s, 'Game on! ' + NAMES[s.turn] + ' goes first.');
   }
 
   // ---------- session
   var me = null, myName = 'Player', cloudCode = null, stateRef = null, presenceRef = null, roomRefG = null;
   var beat = null;
-  var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0, sel = -1, showBuild = false, lastSelKey = '', pubTimer = null;
+  var ccHidden = -2, selManual = false; var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0, sel = -1, showBuild = false, lastSelKey = '', pubTimer = null;
   var emotes = {}, emoSeen = {}, lastEmo = 0, ac = null, shakeOn = false, lastShake = 0;
   var EMOS = ['👍', '😂', '😮', '😡', '🎉'];
 
@@ -588,6 +680,9 @@
   $('soloBtn').onclick = function () { location.href = 'tycoon.html'; };
 
   function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
+  // js/autoupdate.js: the whole game is kept on the server and you get your seat back, so an update can load mid-game;
+  // it only waits while dice are rolling (and for a few seconds after you last touched the screen)
+  window.WW_BUSY = function () { return !!rolling; };
   function isHost() { return !!S && !!me && S.hostUid === me.uid; }
   // A table only runs while a seated human is really here (tab visible and touched in the last 2 minutes).
   var lastAct = Date.now(), wasPaused = false;
@@ -631,6 +726,7 @@
       if (!cur) return cur;
       var s = JSON.parse(JSON.stringify(cur)); norm(s);
       if (fn(s) === false) return;
+      holdForDebt(s); markAllOwned(s);
       s.rid = (s.rid | 0) + 1; s.t = firebase.database.ServerValue.TIMESTAMP;
       return s;
     });
@@ -650,6 +746,7 @@
   function actPropose(t) { turnAct(function (s) { return doPropose(s, t); }); }
   function actTradeAnswer(yes) { seatAct(function (s) { return s.trade ? s.trade.to : -1; }, function (s) { return doTradeAnswer(s, yes); }); }
   function actTradeCancel() { seatAct(function (s) { return s.trade ? s.trade.from : -1; }, doTradeCancel); }
+  function actPayDebt() { turnAct(doPayDebt); } function actBankrupt() { turnAct(doBankrupt); } function actDebtAuto() { turnAct(doDebtAuto); }
   function actBail() { turnAct(doBail); } function actBuild(i) { turnAct(function (s) { return doBuild(s, i); }); }
 
   // ---------- dice, sound
@@ -745,30 +842,78 @@
     if (a.k === 'roll') spinThen(actRoll); else if (a.k === 'buy') actBuy(); else if (a.k === 'pass') actPass();
     else if (a.k === 'end') actEnd(); else if (a.k === 'bail') actBail(); else if (a.k === 'build') actBuild(a.i);
     else if (a.k === 'bid') actBid(a.v); else if (a.k === 'drop') actDrop(); else if (a.k === 'unmort') actUnmort(a.i);
-    else if (a.k === 'bus') actBus(a.v); else if (a.k === 'any') actAny(a.i); else if (a.k === 'card') actCard(a.v);
+    else if (a.k === 'bus') actBus(a.v); else if (a.k === 'any') actAny(a.i); else if (a.k === 'card') actCard(a.v); else if (a.k === 'debt') actDebtAuto();
   }
+  // ---------- bot speed (🐢 button): how long bots wait between moves so people can follow along
+  var PACES = { slow: 3.2, normal: 2.2, fast: 1 }, PACE_ICON = { slow: '🐢 Slow bots', normal: '🚶 Normal bots', fast: '🐇 Fast bots' };
+  var pace = 'normal'; try { pace = localStorage.getItem('ww_bot_pace') || 'normal'; } catch (e) {} if (!PACES[pace]) pace = 'normal';
+  function bd(ms) { return Math.round(ms * PACES[pace]); }
+  (function () { var b = document.getElementById('paceBtn'); if (!b) return; b.textContent = PACE_ICON[pace];
+    b.onclick = function () { pace = pace === 'slow' ? 'normal' : pace === 'normal' ? 'fast' : 'slow'; try { localStorage.setItem('ww_bot_pace', pace); } catch (e) {} b.textContent = PACE_ICON[pace]; }; })();
+  // board size: fit the screen height (default) or extra large (wider than the screen is tall, scroll to see it all)
+  (function () { var fit = true; try { fit = localStorage.getItem('ty_fit') !== '0'; } catch (e) {} var b = document.getElementById('sizeBtn');
+    function set() { document.body.classList.toggle('fitBoard', fit); if (b) b.textContent = fit ? '⤢ Big board' : '⤡ Fit board to screen'; }
+    set(); if (b) b.onclick = function () { fit = !fit; try { localStorage.setItem('ty_fit', fit ? '1' : '0'); } catch (e) {} set(); }; })();
+  // move the play controls into the board middle and "My properties" to the right on wide screens; phones keep the stacked layout
+  function placeLayout() {
+    var wide = innerWidth >= 860, play = $('play'), mine = $('mine'), ca = $('centerArea'), panel = $('panel'), bw = $('boardWrap');
+    if (!play || !mine || !ca || !panel) return;
+    document.body.classList.toggle('tableLayout', wide);
+    if (wide) { if (play.parentNode !== ca) ca.insertBefore(play, ca.firstChild); if (mine.parentNode !== panel) panel.insertBefore(mine, panel.firstChild); }
+    else { if (play.parentNode !== bw.parentNode) bw.parentNode.insertBefore(play, bw.nextSibling); if (mine.parentNode !== ca) ca.insertBefore(mine, ca.firstChild); }
+  }
+  placeLayout(); addEventListener('resize', placeLayout);
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
     if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
     if (s.trade && isDriver()) {       // bots answer trade offers; an offer to someone who has left is turned down
       var ts = seatOf(s, s.trade.to), tk = 'trade:' + s.rid;
-      if (ts && (ts.bot || (WW.mode === 'cloud' && !players[ts.uid])) && acted.k !== tk) { acted = { k: tk, t: Date.now() }; var yes = !!ts.bot && botLikesTrade(s, s.trade); setTimeout(function () { actTradeAnswer(yes); }, 1500); return; }
+      if (ts && (ts.bot || (WW.mode === 'cloud' && !players[ts.uid] && ts.gone && WW.now() - ts.gone > 90000)) && acted.k !== tk) { acted = { k: tk, t: Date.now() }; var yes = !!ts.bot && botLikesTrade(s, s.trade); setTimeout(function () { actTradeAnswer(yes); }, bd(1500)); return; }
     }
     var inAu = s.phase === 'auction' && !!s.au;
     var st = seatOf(s, actorSeat(s)); if (!st) return;
     var mine = !st.bot && st.uid === me.uid, auto = false;
     if (!mine) {
       if (!isDriver()) return;
-      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid], idle = WW.now() - (s.t || 0) > (inAu ? 30000 : 90000);
+      // a person's turn is only played for them when they have really gone (left the table over 90 s ago),
+      // never because their page is reloading or they are thinking. Present players only get nudged in auctions.
+      if (!st.bot && st.uid === me.uid) return;
+      var present = WW.mode !== 'cloud' || !!players[st.uid];
+      var away = !st.bot && !present && !!st.gone && WW.now() - st.gone > 90000;
+      var idle = !st.bot && (present ? (inAu && WW.now() - (s.t || 0) > 60000) : WW.now() - (s.t || 0) > 300000);
       auto = st.bot || away || idle; if (!auto) return;
     }
     var key = s.rid + ':' + actorSeat(s) + ':' + s.phase, now = Date.now();
-    if (acted.k === key && now - acted.t < 4000) return;
+    if (acted.k === key && now - acted.t < bd(1000) + 3500) return;
     function mark() { acted = { k: key, t: now }; }
     if (mine) return;      // your own turn never ends by itself: there may be building, trading or selling to do
-    var a = (inAu && !st.bot) ? { k: 'drop' } : botAct(s); mark(); setTimeout(function () { perform(a); }, a.k === 'roll' ? 800 : 1000);
+    var a = (inAu && !st.bot) ? { k: 'drop' } : botAct(s); mark(); setTimeout(function () { perform(a); }, bd(a.k === 'roll' ? 800 : 1000));
   }
   setInterval(tick, 2000);
+
+  // ---------- long-game bonus: every 30 minutes a game runs, each player still in (people, not bots) gets $1,000,
+  // so long games keep going. Rents still rise every 4 rounds, so games still finish. The driver device pays it out.
+  var HOUR = 1800000, BONUS = 1000;   // every 30 minutes
+  function hourlyDue(s) { return s && s.status === 'playing' && s.gt0 && WW.now() - s.gt0 >= ((s.hb | 0) + 1) * HOUR; }
+  function payHourly() {
+    if (!S || !me || !hourlyDue(S) || !isDriver()) return;
+    mutate(function (s) {
+      if (!hourlyDue(s)) return false;
+      s.hb = (s.hb | 0) + 1; var got = [];
+      alive(s).forEach(function (p) { var st = seatOf(s, p); if (st && !st.bot) { plOf(s, p).cash += BONUS; got.push(NAMES[p]); } });
+      addLog(s, '⏰ ' + (s.hb * 30 >= 60 ? (s.hb * 30 / 60) + ' hour' + (s.hb * 30 > 60 ? 's' : '') : '30 minutes') + ' of play! ' + (got.length === 1 ? got[0] + ' gets +$1,000 to keep the game going.' : got.length ? got.join(', ') + ' each get +$1,000 to keep the game going.' : 'No players left to pay.'));
+    });
+  }
+  function showHourly() {
+    var el = $('hourly'); if (!el) return;
+    if (!S || S.status !== 'playing' || !S.gt0) { el.style.display = 'none'; return; }
+    var left = ((S.hb | 0) + 1) * HOUR - (WW.now() - S.gt0), m = Math.max(0, Math.ceil(left / 60000));
+    el.style.display = '';
+    el.innerHTML = '⏰ Long-game bonus: <b>+$1,000</b> to every player (not bots) in ' + (m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : m + ' min') + (S.hb ? ' · paid ' + S.hb + 'x so far' : '');
+    el.style.color = m <= 10 ? '#fde047' : '';
+  }
+  setInterval(function () { payHourly(); showHourly(); }, 15000);
+  setTimeout(showHourly, 1500);
 
   // ---------- lobby actions
 
@@ -777,18 +922,19 @@
     if (WW.mode !== 'cloud' || !S) return false;
     return seated(S).some(function (p) { var st = seatOf(S, p); return st && !st.bot && st.uid !== me.uid && !!players[st.uid]; });
   }
-  function toBot(s, slot) { s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }
+  function toBot(s, slot) { var o = s.seats[slot] || {}, was = !o.bot ? o.uid : o.was; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; if (was) s.seats[slot].was = was; }   // remember who sat here so they get the seat back
   function humanCount(s) { return seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length; }
   function markStarted(s) { seated(s).forEach(function (p) { var st = seatOf(s, p); if (st && !st.bot) st.f = s.gid; }); }
   // Jumping into a table nobody else is playing restarts it; otherwise you take over a bot's seat in the running game.
   function sit(slot) {
-    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent();
+    var wasMine = !!S && seated(S).some(function (p) { var st = seatOf(S, p); return st && st.bot && st.was === me.uid; });
+    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent() && !wasMine;   // your own game is never restarted: you just get your seat back
     mutate(function (s) {
       var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
       for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
       if (!s.seats) s.seats = {};
       var others = seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length;
-      s.seats[slot] = { uid: me.uid, name: myName, bot: false, avatar: WW.avatar || '', f: 0 };
+      s.seats[slot] = { uid: me.uid, name: myName, bot: false, avatar: WW.avatar || '', f: (cur && cur.was === me.uid && s.status === 'playing') ? s.gid : 0 };
       if (!others) s.hostUid = me.uid;
       if (restart && s.status !== 'lobby') {
         for (var j = 0; j < 4; j++) { var oo = seatOf(s, j); if (oo && !oo.bot && oo.uid !== me.uid) toBot(s, j); }
@@ -826,6 +972,7 @@
   setInterval(reapAbsent, 10000);
   var staleChecked = false;
   function checkStale() {
+    staleChecked = true; return;   // games are never ended or reset on load: coming back (or a site update) picks up where you left off
     if (staleChecked || !S) return; staleChecked = true;
     setTimeout(function () {
       if (WW.mode !== 'cloud' || !S || S.status !== 'playing' || mySeat() < 0 || WW.now() - (S.t || 0) < 600000 || otherHumansPresent()) return;
@@ -839,16 +986,64 @@
   function addBot(slot) { mutate(function (s) { if (s.status !== 'lobby' || seatOf(s, slot) || s.hostUid !== me.uid) return false; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
   function fillBots() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid) return false; for (var i = 0; i < 4; i++) if (!seatOf(s, i)) s.seats[i] = { uid: 'bot' + i, name: NAMES[i] + ' Bot', bot: true }; }); }
   function removeBot(slot) { mutate(function (s) { var c = seatOf(s, slot); if (s.status !== 'lobby' || !c || !c.bot || s.hostUid !== me.uid) return false; delete s.seats[slot]; }); }
-  function resetToLobby(s) { s.status = 'lobby'; s.pl = {}; s.own = {}; s.hs = {}; s.winner = -1; s.log = []; s.msg = ''; s.pot = 0; s.phase = 'roll'; s.dice = [0, 0]; s.pend = -1; s.sd = 0; s.mr = 0; delete s.card; delete s.bus; }
+  function resetToLobby(s) { delete s.debt; delete s.debtP; delete s.debtPrev; delete s.trade; delete s.au; s.hb = 0; delete s.gt0; s.status = 'lobby'; s.pl = {}; s.own = {}; s.hs = {}; s.winner = -1; s.log = []; s.msg = ''; s.pot = 0; s.phase = 'roll'; s.dice = [0, 0]; s.pend = -1; s.sd = 0; s.mr = 0; delete s.card; delete s.bus; }
   function beginGame(s) { startState(s); markStarted(s); }
   function setMode(m) { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || (m !== 'classic' && m !== 'speed')) return false; s.mode = m; }); }
   function startGame() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false; beginGame(s); }); }
+  // host: end the running game and go back to the table setup (same seats, bots stay) to start a fresh one
+  function newGame() {
+    if (!S || !me || !isHost() || S.status === 'lobby') return;
+    var others = otherHumansPresent();
+    if (!confirm(S.status === 'playing' ? 'Start a new game? The current game ends' + (others ? ' for everyone at the table' : '') + ' and nobody wins it.' : 'Set up a new game?')) return;
+    mutate(function (s) { if (s.hostUid !== me.uid || s.status === 'lobby') return false; resetToLobby(s); s.msg = 'New game - pick Classic or Speed Die, then start.'; });
+  }
+  (function () { var b = document.getElementById('newGameBtn'); if (b) b.onclick = newGame; })();
+  var allSeen = -1;
+  function allOwnedAlert(s) {
+    var mine = 0, ms = mySeat(); for (var i = 0; i < 40; i++) if (ownerOf(s, i) === ms) mine++;
+    var body = 'All 28 properties are owned. You have ' + mine + '. Time to trade and build!';
+    try { if (window.WWTurn && !muted) WWTurn.chime(false); } catch (e) {}
+    try { if (navigator.vibrate) navigator.vibrate([200, 80, 200, 80, 200]); } catch (e) {}
+    var b = $('banner'); if (b) { b.style.display = ''; b.textContent = '🏁 ' + body; setTimeout(function () { if (S && S.status === 'playing') b.style.display = 'none'; }, 12000); }
+    try {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        var show = function () { try { var n = new Notification('🏁 Monopoly: every property is owned', { body: body, tag: 'ty-allowned', renotify: true }); n.onclick = function () { focus(); n.close(); }; } catch (e) {} };
+        if (navigator.serviceWorker && navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(function (r) { r.showNotification('🏁 Monopoly: every property is owned', { body: body, tag: 'ty-allowned', renotify: true, icon: '../../icons/icon-192.png', data: { url: location.href } }); }).catch(show);
+        else show();
+      } else if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(function () {});
+    } catch (e) {}
+  }
   function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; resetToLobby(s); }); }
 
   // ---------- drawing
   var tokEls = [];
-  function cellStatic(i) {
-    var sp = SP[i], rc = cellRC(i), x = rc[0] * 10, y = rc[1] * 10, corner = (i % 10 === 0);
+  // the part of a cell that is not the colour band (where the owner's picture and the name go)
+  function cellArea(i) {
+    var sp = SP[i], rc = cellRC(i), x = rc[0] * 10, y = rc[1] * 10;
+    if (sp.t !== 'prop') return { x: x, y: y, w: 10, h: 10 };
+    if (rc[1] === 10) return { x: x, y: y + 2.8, w: 10, h: 7.2 };
+    if (rc[1] === 0) return { x: x, y: y, w: 10, h: 7.2 };
+    if (rc[0] === 0) return { x: x, y: y, w: 7.2, h: 10 };
+    return { x: x + 2.8, y: y, w: 7.2, h: 10 };
+  }
+  // where the writing goes: the cell minus the colour band and the owner's colour strip on the outer edge
+  function textArea(i) {
+    var a = cellArea(i), rc = cellRC(i), o = 1.6;
+    if (rc[1] === 10) return { x: a.x, y: a.y, w: a.w, h: a.h - o };
+    if (rc[1] === 0) return { x: a.x, y: a.y + o, w: a.w, h: a.h - o };
+    if (rc[0] === 0) return { x: a.x + o, y: a.y, w: a.w - o, h: a.h };
+    return { x: a.x, y: a.y, w: a.w - o, h: a.h };
+  }
+  function fitSize(txt, w, max) { return Math.min(max, (w * .94) / (Math.max(1, String(txt).length) * .6)).toFixed(2); }
+  function nameLines(n) {   // short space name in up to two lines that fit a cell
+    var w = String(n).replace(/\s*\(.*\)$/, '').split(/\s+/), a = [], cur = '';
+    w.forEach(function (x) { if (!cur) cur = x; else if ((cur + ' ' + x).length <= 9) cur += ' ' + x; else { a.push(cur); cur = x; } });
+    if (cur) a.push(cur);
+    if (a.length > 2) a = [a[0], a.slice(1).join(' ')];
+    return a.map(function (l) { return l.length > 10 ? l.slice(0, 9) + '…' : l; });
+  }
+  function cellStatic(i) {   // background + colour band (pictures of owners go on top of this, the writing above them)
+    var sp = SP[i], rc = cellRC(i), x = rc[0] * 10, y = rc[1] * 10;
     var fill = '#f1f5f9'; if (i === 0) fill = '#bbf7d0'; else if (i === 10) fill = '#fed7aa'; else if (i === 20) fill = '#fef08a'; else if (i === 30) fill = '#fecaca';
     var h = '<g data-c="' + i + '" style="cursor:pointer"><rect x="' + x + '" y="' + y + '" width="10" height="10" fill="' + fill + '" stroke="#475569" stroke-width=".25"/>';
     if (sp.t === 'prop') {
@@ -856,14 +1051,29 @@
       if (rc[1] === 10) { by = y; } else if (rc[1] === 0) { by = y + 7.2; } else if (rc[0] === 0) { bx = x + 7.2; bw = 2.8; bh = 10; by = y; } else { bw = 2.8; bh = 10; }
       h += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" fill="' + sp.c + '" stroke="#0f172a" stroke-width=".15"/>';
     }
-    if (sp.i) h += '<text x="' + (x + 5) + '" y="' + (y + (corner ? 6.6 : 5.4)) + '" text-anchor="middle" font-size="' + (corner ? 5.5 : 3.8) + '">' + sp.i + '</text>';
-    if (sp.p) h += '<text x="' + (x + 5) + '" y="' + (y + (sp.t === 'prop' ? 7 : 9)) + '" text-anchor="middle" font-size="2.4" font-weight="700" fill="#0f172a">$' + sp.p + '</text>';
+    return h + '</g>';
+  }
+  function cellText(i) {
+    var sp = SP[i], rc = cellRC(i), x = rc[0] * 10, y = rc[1] * 10, corner = (i % 10 === 0), h = '<g data-c="' + i + '" style="cursor:pointer">';
+    var halo = ' stroke="#fff" stroke-width=".45" paint-order="stroke" stroke-linejoin="round"';
+    if (sp.t === 'prop') {
+      var a = textArea(i), cx = a.x + a.w / 2, L = nameLines(sp.n), lh = Math.min(1.75, (a.h - 2.4) / Math.max(1, L.length)), top = a.y + (a.h - (L.length * lh + 2.2)) / 2 + 1.25;
+      L.forEach(function (l, k) { h += '<text x="' + cx + '" y="' + (top + k * lh) + '" text-anchor="middle" font-size="' + fitSize(l, a.w, 1.55) + '" font-weight="700" fill="#0f172a"' + halo + '>' + WW.esc(l) + '</text>'; });
+      h += '<text x="' + cx + '" y="' + (top + L.length * lh + 1.2) + '" text-anchor="middle" font-size="' + fitSize('$' + sp.p, a.w, 2.1) + '" font-weight="800" fill="#0f172a"' + halo + '>$' + sp.p + '</text>';
+    } else {
+      if (sp.i) h += '<text x="' + (x + 5) + '" y="' + (y + (corner ? 6.6 : 5.0)) + '" text-anchor="middle" font-size="' + (corner ? 5.5 : 3.4) + '">' + sp.i + '</text>';
+      var ta = textArea(i), tcx = ta.x + ta.w / 2;
+      if (sp.p) h += '<text x="' + tcx + '" y="' + (ta.y + ta.h - .8) + '" text-anchor="middle" font-size="1.9" font-weight="800" fill="#0f172a"' + halo + '>$' + sp.p + '</text>';
+      if (sp.p && !corner) h += '<text x="' + tcx + '" y="' + (ta.y + 1.7) + '" text-anchor="middle" font-size="' + fitSize(nameLines(sp.n)[0], ta.w, 1.4) + '" font-weight="700" fill="#0f172a"' + halo + '>' + WW.esc(nameLines(sp.n)[0]) + '</text>';
+    }
     return h + '</g>';
   }
   function buildBoard() {
     var h = '<rect width="110" height="110" fill="#0b1220"/><rect x="10" y="10" width="90" height="90" fill="#134e4a"/>';
     for (var i = 0; i < 40; i++) h += cellStatic(i);
-    h += '<text x="55" y="48" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">MONO</text><text x="55" y="58" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">POLY</text>';
+    h += '<g id="ownLayer" pointer-events="none"></g>';
+    for (i = 0; i < 40; i++) h += cellText(i);
+    h += '<g class="bLogo"><text x="55" y="48" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">MONO</text><text x="55" y="58" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">POLY</text></g>';
     h += '<rect id="siren" x="10" y="10" width="90" height="90" fill="#ef4444" opacity="0" pointer-events="none"/><text id="sirenTxt" x="55" y="84" text-anchor="middle" font-size="6" font-weight="800" fill="#fff" stroke="#000" stroke-width=".3" opacity="0"></text>';
     h += '<g id="dyn"></g><g id="toks"></g><g id="emoLayer"></g><g id="selLayer"></g>';
     $('board').innerHTML = h;
@@ -875,10 +1085,21 @@
     }
     $('board').addEventListener('click', function (e) {
       var c = e.target.closest ? e.target.closest('[data-c]') : null; if (!c) return;
-      sel = +c.dataset.c; renderInfo(); if (S && S.phase === 'any') render();
+      ccHidden = -2; selManual = true; sel = +c.dataset.c; renderInfo(); if (S && S.phase === 'any') render();
     });
   }
   var OFF = [[-2.3, -2.3], [2.3, -2.3], [-2.3, 2.3], [2.3, 2.3]];
+  // each owned property shows its owner's profile picture (bots and players without one: a tint of their colour)
+  function ownLayer(s) {
+    var h = '';
+    for (var i = 0; i < 40; i++) {
+      if (!SP[i].p) continue; var o = ownerOf(s, i); if (o < 0) continue;
+      var a = cellArea(i), st = seatOf(s, o), av = st && !st.bot && st.avatar ? String(st.avatar) : '';
+      h += '<rect x="' + a.x + '" y="' + a.y + '" width="' + a.w + '" height="' + a.h + '" fill="' + COLORS[o] + '" opacity="' + (av ? .25 : .3) + '"/>';
+      if (/^https:\/\//.test(av)) h += '<image href="' + WW.esc(av) + '" x="' + a.x + '" y="' + a.y + '" width="' + a.w + '" height="' + a.h + '" preserveAspectRatio="xMidYMid slice" opacity=".55"/>';
+    }
+    return h;
+  }
   function dyn(s) {
     var h = '', i, k;
     for (i = 0; i < 40; i++) {
@@ -977,26 +1198,35 @@
       });
       h += '</div>';
     }
-    el.innerHTML = '<div style="font-weight:800">🗂️ My properties' + (total ? ' (' + total + ')' : '') + ' · 💵 $' + q.cash + '</div>' + (total ? (can ? '' : '<div class="muted">Build, sell, mortgage and trade buttons appear here on your turn.</div>') + h : '<div class="muted" style="margin-top:4px">You do not own anything yet. Land on a property to buy it, or win one at auction.</div>');
+    el.innerHTML = '<div class="mineHd">🗂️ My properties' + (total ? ' (' + total + ')' : '') + ' · 💵 $' + q.cash + '</div>' + (total ? (can ? '' : '<div class="muted">Build, sell, mortgage and trade buttons appear here on your turn.</div>') + h : '<div class="muted" style="margin-top:4px">You do not own anything yet. Land on a property to buy it, or win one at auction.</div>');
   }
   function renderInfo() {
     var s = S; if (!s) return; renderMine(s);
-    if (sel < 0) { $('landed').innerHTML = '<div class="plain muted">Tap any space on the board to see its card.</div>'; }
-    else {
-      var q = s.status === 'playing' ? plOf(s, s.turn) : null, here = q && q.pos === sel;
-      $('landed').innerHTML = '<div class="muted" style="margin-bottom:4px">' + (here ? '📍 ' + NAMES[s.turn] + ' is on this space' : 'Selected space') + '</div>' + deedHtml(s, sel, true);
-      var rc = cellRC(sel);
-      $('selLayer').innerHTML = '<rect x="' + (rc[0] * 10 + .2) + '" y="' + (rc[1] * 10 + .2) + '" width="9.6" height="9.6" fill="none" stroke="#fff" stroke-width=".6" stroke-dasharray="1.2 .8"/>';
-    }
+    // your properties fill the green middle of the board; a space you TAP pops its card over them (✕ goes back),
+    // and the space a player just landed on shows under the board as before
+    var q = s.status === 'playing' ? plOf(s, s.turn) : null, here = q && q.pos === sel;
+    var showCard = sel >= 0 && selManual && ccHidden !== sel;
+    if (showCard) {
+      $('centerCard').innerHTML = '<div class="cc"><button class="ccx" id="ccClose" title="Back to my properties">✕</button><div class="cchere">' + (here ? '📍 ' + NAMES[s.turn] + ' is on this space' : 'Selected space') + '</div>' + deedHtml(s, sel, true) + '</div>';
+      $('ccClose').onclick = function (e) { e.stopPropagation(); ccHidden = sel; selManual = false; renderInfo(); };
+    } else $('centerCard').innerHTML = '';
+    $('centerArea').classList.toggle('showCard', showCard);
+    if (sel >= 0 && !selManual) $('landed').innerHTML = '<div class="muted" style="margin-bottom:4px">' + (here ? '📍 ' + NAMES[s.turn] + ' is on this space' : 'Selected space') + '</div>' + deedHtml(s, sel, true);
+    else $('landed').innerHTML = '<div class="plain muted">Tap any space on the board to see its card.</div>';
+    if (sel >= 0) { var rc = cellRC(sel); $('selLayer').innerHTML = '<rect x="' + (rc[0] * 10 + .2) + '" y="' + (rc[1] * 10 + .2) + '" width="9.6" height="9.6" fill="none" stroke="#fff" stroke-width=".6" stroke-dasharray="1.2 .8"/>'; }
+    else $('selLayer').innerHTML = '';
     var a = []; for (var i = 0; i < 40; i++) if (SP[i].p && ownerOf(s, i) >= 0) a.push(i);
     a.sort(function (x, y) { return ownerOf(s, x) - ownerOf(s, y) || x - y; });
     $('ownedDeeds').innerHTML = a.length ? a.map(function (i) { return deedHtml(s, i, false); }).join('') : '<div class="muted">Nothing bought yet.</div>';
   }
 
   function render() {
+    try { showHourly(); } catch (e) {}
+    try { var ngb = $('newGameBtn'); if (ngb) ngb.style.display = (S && S.status !== 'lobby' && isHost()) ? '' : 'none'; } catch (e) {}
+    try { var ms0 = mySeat(); if (window.WWTurn) WWTurn.update(!!S && S.status === 'playing' && ms0 >= 0 && (otherHumansPresent() || document.hidden) && (actorSeat(S) === ms0 || (S.trade && S.trade.to === ms0)), muted); } catch (e) {}
     var s = S; if (!s) return;
     if (pressing) { renderPending = true; return; }
-    var ms = mySeat(), playing = s.status === 'playing', myTurn = playing && ms === s.turn, p, i;
+    var ms = mySeat(), playing = s.status === 'playing', myOut = ms >= 0 && s.pl && plOf(s, ms) && plOf(s, ms).bankrupt, myTurn = playing && ms === s.turn && !myOut, p, i;
     for (p = 0; p < 4; p++) {
       var q = plOf(s, p), g = tokEls[p];
       if (!playing && s.status !== 'done' || !q || q.bankrupt || !seatOf(s, p)) { g.style.display = 'none'; continue; }
@@ -1004,6 +1234,7 @@
       g.style.transform = 'translate(' + (rc[0] * 10 + 5 + OFF[p][0]) + 'px,' + (rc[1] * 10 + 5 + OFF[p][1]) + 'px)';
     }
     $('dyn').innerHTML = s.pl ? dyn(s) : '';
+    var ol = $('ownLayer'); if (ol) { var ok = s.pl ? ownLayer(s) : ''; if (ol.getAttribute('data-k') !== ok.length + ':' + ok.slice(-60)) { ol.innerHTML = ok; ol.setAttribute('data-k', ok.length + ':' + ok.slice(-60)); } }
     var eo = '', best = null;
     for (p = 0; p < 4; p++) { var em = emotes && emotes[p]; if (em && seatOf(s, p) && WW.now() - (em.t || 0) < 4000 && (!best || em.t > best.t)) best = { e: em.e, t: em.t, p: p }; }
     if (best) eo = '<circle cx="42" cy="67" r="2.2" fill="' + COLORS[best.p] + '" stroke="#fff" stroke-width=".5"/><text class="emoB" x="55" y="69" text-anchor="middle" dominant-baseline="central" font-size="11">' + best.e + '</text>';
@@ -1018,12 +1249,13 @@
     }
     var mq = (ms >= 0 && s.pl) ? plOf(s, ms) : null, bk = $('bank'), bt = mq ? '$' + mq.cash : '—';
     if (bk.textContent !== bt) { bk.textContent = bt; bk.classList.remove('bankpulse'); void bk.offsetWidth; bk.classList.add('bankpulse'); }
-    if (q0) { var sk = s.turn + ':' + q0.pos; if (sk !== lastSelKey) { lastSelKey = sk; sel = q0.pos; } }
+    if (q0) { var sk = s.turn + ':' + q0.pos; if (sk !== lastSelKey) { ccHidden = -2; selManual = false; lastSelKey = sk; sel = q0.pos; } }
     if (playing) { $('turn').innerHTML = dot(s.turn) + (myTurn ? 'Your turn' : (cs ? cs.name : NAMES[s.turn]) + '’s turn'); say(s.msg || ''); }
     else if (s.status === 'lobby') { $('turn').textContent = 'Get ready'; say('Pick your seat, add bots or invite friends, then start.'); }
     else { $('turn').innerHTML = dot(s.winner) + NAMES[s.winner] + ' won'; say(s.msg || ''); }
+    if (s.allOwned && s.allOwned === s.gid && allSeen !== s.gid && (s.status === 'playing') && mySeat() >= 0) { allSeen = s.gid; allOwnedAlert(s); }
     var ban = $('banner');
-    if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else ban.style.display = 'none';
+    if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else if (!/^🏁/.test(ban.textContent)) ban.style.display = 'none';
     // actions
     var a = '', bl = '', tr = playing ? s.trade : null, au = playing && s.phase === 'auction' ? s.au : null;
     if (tr && ms === tr.to) a += '<div class="offer">🤝 <b>Trade offer from ' + NAMES[tr.from] + '</b>' + tradeCards(s, tr) + '<div style="margin-top:6px;display:flex;gap:8px"><button class="go" data-a="tradeyes">Accept</button><button data-a="tradeno">Decline</button></div></div>';
@@ -1043,6 +1275,13 @@
       a += '</select><button class="go" data-a="any">Go there</button>';
     } else if (myTurn && s.phase === 'card' && s.card) {
       a += '<div class="offer" style="width:100%">🃏 <b>' + s.card.d + ':</b> ' + s.card.x + '<div style="margin-top:6px;display:flex;gap:8px"><button class="go" data-a="cardyes">Follow the card</button><button data-a="cardno">Ignore it</button></div></div>';
+    } else if (myTurn && s.phase === 'debt' && s.debt) {
+      var owe = debtTotal(s), have = q0.cash, short = Math.max(0, owe - have);
+      a += '<div class="offer" style="width:100%;border-color:#ef4444">💸 <b>You owe $' + owe + '</b>' + (s.debt.length === 1 && s.debt[0].to >= 0 ? ' to ' + NAMES[s.debt[0].to] : '') + ' and have <b>$' + have + '</b>.' +
+        (short ? ' You need <b>$' + short + ' more</b>. Raise it your way: sell houses, mortgage or sell properties in <b>My properties</b>, or trade with another player.' : ' You have enough now.') + '</div>';
+      a += '<button class="go" data-a="paydebt"' + (short ? ' disabled' : '') + '>Pay $' + owe + '</button>';
+      if (alive(s).length > 1 && !s.trade) a += '<button data-a="trade">🤝 Trade</button>';
+      a += '<button data-a="bankrupt" style="background:#7f1d1d">Declare bankruptcy</button>';
     } else if (myTurn) {
       var can = buildable(s, s.turn);
       if (s.phase === 'roll') { a += '<button class="go" data-a="roll">🎲 Roll dice</button>'; if (q0.jail > 0 && q0.cash >= 50) a += '<button data-a="bail">Pay $50 bail</button>'; }
@@ -1052,6 +1291,7 @@
       if (manageOk(s) && !s.trade && alive(s).length > 1) a += '<button data-a="trade">🤝 Trade</button>';
       if (showBuild && can.length && (s.phase === 'roll' || s.phase === 'end')) can.forEach(function (j) { bl += '<button data-a="build" data-i="' + j + '">' + (housesOf(s, j) >= HOTEL - 1 ? '🏨 Hotel' : '🏠 House ' + (housesOf(s, j) + 1)) + ' · ' + SP[j].n + ' · $' + Math.floor(SP[j].p / 2) + '</button>'; });
     } else if (playing) a += '<span class="muted">Waiting for ' + (cs ? cs.name : NAMES[s.turn]) + (s.phase === 'card' && s.card ? ' (deciding about a card: ' + s.card.x + ')' : s.phase === 'any' ? ' (picking any space)' : s.phase === 'bus' ? ' (choosing a bus move)' : '') + '…</span>';
+    if (myOut && playing) { a = '<span class="muted">💀 You are bankrupt and out of this game. You can keep watching, or the host can start a 🆕 New game.</span>'; bl = ''; }
     $('acts').innerHTML = a; $('buildList').innerHTML = bl;
     // seats
     var h = '';
@@ -1096,10 +1336,10 @@
     renderInfo();
   }
 
-  $('main').addEventListener('change', function (e) { if (e.target && e.target.id === 'anySel') { sel = +e.target.value; renderInfo(); } });
+  $('main').addEventListener('change', function (e) { if (e.target && e.target.id === 'anySel') { ccHidden = -2; selManual = true; sel = +e.target.value; renderInfo(); } });
   $('main').addEventListener('click', function (e) {
     var dc = e.target.closest ? e.target.closest('.deed[data-c], #mine .n[data-c]') : null;
-    if (dc && !(e.target.closest('button'))) { sel = +dc.dataset.c; renderInfo(); if (S && S.phase === 'any') render(); return; }
+    if (dc && !(e.target.closest('button'))) { ccHidden = -2; selManual = true; sel = +dc.dataset.c; renderInfo(); if (S && S.phase === 'any') render(); return; }
     var eb = e.target.closest ? e.target.closest('button[data-e]') : null;
     if (eb) {
       var ms = mySeat(); if (ms < 0 || !roomRefG || Date.now() - lastEmo < 800) return;
@@ -1113,7 +1353,7 @@
     else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
     else if (a === 'bus') actBus(+b.dataset.v); else if (a === 'any') actAny(sel); else if (a === 'cardyes') actCard(true); else if (a === 'cardno') actCard(false);
     else if (a === 'mode') setMode(b.dataset.v);
-    else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail();
+    else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail(); else if (a === 'paydebt') actPayDebt(); else if (a === 'bankrupt') { if (confirm('Declare bankruptcy? You are out of the game and what you own goes to whoever you owe.')) actBankrupt(); }
     else if (a === 'togglebuild') { showBuild = !showBuild; render(); } else if (a === 'build') actBuild(+b.dataset.i);
     else if (a === 'sellh') actSellH(+b.dataset.i); else if (a === 'mort') actMort(+b.dataset.i); else if (a === 'unmort') actUnmort(+b.dataset.i);
     else if (a === 'sellp') { if (confirm('Sell ' + SP[+b.dataset.i].n + ' back to the bank for $' + bankValue(+b.dataset.i) + '? (Mortgaging gives $' + mgValue(+b.dataset.i) + ' and you keep it.)')) actSellP(+b.dataset.i); }
@@ -1257,7 +1497,9 @@
         autoSeatTried = true;
         for (var i = 0; i < 4; i++) { if (!seatOf(S, i)) { sit(i); break; } }
       }
-      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
+      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true;
+        var back = -1; for (var bi = 0; bi < 4; bi++) { var bs = seatOf(S, bi); if (bs && bs.bot && bs.was === me.uid) { back = bi; break; } }
+        if (back >= 0) { sit(back); say('Welcome back - you are in your seat again.'); } else say('Game in progress - tap a bot seat to jump in.'); }
       autoSeatTried = true; checkStale(); render(); tick(); recordStats(S); publishSoon();
     });
   }
@@ -1271,5 +1513,6 @@
   });
 })();
 </script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
 </body>
 </html>

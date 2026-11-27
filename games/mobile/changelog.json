@@ -2,6 +2,85 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 63,
+   "date": "Nov 26",
+   "game": "survive",
+   "items": [
+    "☕ The Shop now uses Buy Me a Coffee instead of PayPal: pick a pack, get a code, pay on Buy Me a Coffee with the code in the message, and the pack is added on its own. Your game and past purchases are untouched"
+   ]
+  },
+  {
+   "id": 62,
+   "date": "Nov 26",
+   "game": "all",
+   "items": [
+    "❖ New game: Ironhold - merge-and-grind island strategy. Build, merge matching structures, research, train troops and explore the frontier. Sign in and your game saves to your account, so it follows you to every device"
+   ]
+  },
+  {
+   "id": 61,
+   "date": "Nov 26",
+   "game": "all",
+   "items": [
+    "🛩️ New game: Werewolf Wings - fly the Skyrunner over Howl Island: ring runs through the mountain passes, a mail run to Pine Ridge and a landing challenge, in chase or cockpit view"
+   ]
+  },
+  {
+   "id": 60,
+   "date": "Nov 26",
+   "game": "all",
+   "items": [
+    "🏛️ Tiles Outpost continues past the Sun Gate: a second chapter with twelve new missions, from the Salt Flats and the Glass Tower to the Hollow King and the Dawnless at the end of the ash road"
+   ]
+  },
+  {
+   "id": 59,
+   "date": "Nov 26",
+   "game": "all",
+   "items": [
+    "🧱 Brick Breaker is now a twelve-mission Breaker Corps campaign with relay cores, bomb bricks, power-ups, mission events and upgrades",
+    "🔢 Merge 2048 is now the Fusion Lab: twelve chapters with target tiles and move budgets, combo surges, hammers and shuffles",
+    "💣 Minefield is now Sweep Team: twelve clearance ops with supply crates, drone scans, sonar pings and star ratings"
+   ]
+  },
+  {
+   "id": 58,
+   "date": "Nov 25",
+   "game": "all",
+   "items": [
+    "🚚 City Rush replaces the old idle city — serve a live queue across six districts, with rush hours and upgrades",
+    "🏛️ Tiles Outpost is now a twelve-mission story campaign with turn-based battles and star ratings",
+    "🐉 Merge Lair got story quests and boss raids, and the nest refills every time you merge"
+   ]
+  },
+  {
+   "id": 57,
+   "date": "Nov 25",
+   "game": "all",
+   "items": [
+    "🏛️ New game: Tiles Outpost - build a grid camp, train three heroes and clear expedition stages for loot"
+   ]
+  },
+  {
+   "id": 56,
+   "date": "Nov 25",
+   "game": "all",
+   "items": [
+    "🏙️ New game: Idle City — tap and build a skyline that keeps earning while you're away, with upgrades and offline cash",
+    "🐉 New game: Merge Lair — lay eggs, merge three of a kind and work your way up to Elder Dragons"
+   ]
+  },
+  {
+   "id": 55,
+   "date": "Nov 25",
+   "game": "all",
+   "items": [
+    "🧱 New game: Brick Breaker — paddle, ball and endless brick levels, with your best score saved",
+    "🔢 New game: Merge 2048 — slide the tiles, join matching numbers, and chase 2048 and beyond",
+    "💣 New game: Minefield — classic mine hunting on Easy, Medium and Hard, with best times saved"
+   ]
+  },
+  {
    "id": 54,
    "date": "Nov 22",
    "game": "recon",

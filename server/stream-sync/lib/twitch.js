@@ -102,9 +102,16 @@ async function categoryByName(name) {
     return (j.data || []).map((c) => ({ id: c.id, name: c.name, box: c.box_art_url }));
 }
 
-async function updateChannel(key, broadcasterId, patch) {
+/** Names the account and role that is missing, for whichever site user hit it. */
+function notConnected(role, login) {
+    const name = String(login || "").replace(/^@/, "").trim();
+    const what = role === "bot" ? "chat bot account" : "broadcaster account";
+    return `Twitch ${what}${name ? " " + name : ""} is not connected - connect the ${role} account on /setup`;
+}
+
+async function updateChannel(key, broadcasterId, patch, login) {
     const tok = await userToken(key, "broadcaster");
-    if (!tok) throw new Error("werewolf (broadcaster) Twitch account not connected - open /setup");
+    if (!tok) throw new Error(notConnected("broadcaster", login));
     await helix("PATCH", "/channels?broadcaster_id=" + broadcasterId, tok, patch);
 }
 

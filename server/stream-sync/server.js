@@ -103,7 +103,16 @@ const app = express();
 app.get("/", (req, res) => res.type("text").send("ww-stream-sync running. Last pass: " + (last.at || "not yet")));
 app.get("/health", (req, res) => { res.set("Access-Control-Allow-Origin", "*"); res.json({ ok: true }); });
 app.get("/wake", (req, res) => { res.type("text").send("awake"); if (!running) tick(); });
-app.get("/status", (req, res) => res.json(last));
+
+/* The last pass, for one user only. The results are keyed by the email-derived user key
+ * (raykevin71888_at_gmail_com and so on), so returning all of them listed every user's
+ * address, title and chat state to anyone who opened the URL. ?key=<your user key> now
+ * returns that one entry, and no key returns nothing about anybody. */
+app.get("/status", (req, res) => {
+    const key = String(req.query.key || "").trim();
+    const mine = key && last.results && last.results[key];
+    res.json({ at: last.at || null, results: mine ? { [key]: mine } : {} });
+});
 
 /* ---- Setup ----
  * The setup page lives on the website (signed in with the site's Firebase login):

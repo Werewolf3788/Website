@@ -1139,9 +1139,24 @@ function go(over, replace) {
 addEventListener('popstate', () => { closeModal('detail-modal', true); resetSeo(); readUrl(); render(); });
 
 /* ---------------- detail view ---------------- */
+function amazonSearch(m) {
+  // Titles with no Amazon product link still get a tagged Amazon search so the page can earn.
+  const q = [m.title, m.year].filter(Boolean).join(' ');
+  return 'https://www.amazon.com/s?k=' + encodeURIComponent(q) + '&i=movies-tv&tag=' + CFG.amazonTag;
+}
 function storeUrl(m, s) {
-  let u = m.links[s.key]; if (!u) return '';
-  if (s.key === 'amazon') { if (!/tag=/.test(u) && !/amzn\.to/.test(u)) u += (u.includes('?') ? '&' : '?') + 'tag=' + CFG.amazonTag; return u; }
+  let u = m.links[s.key];
+  if (s.key === 'amazon') {
+    if (!u) return amazonSearch(m);
+    if (!/tag=/.test(u)) {
+      // Short links (link.amazon, amzn.to, a.co) already carry the store id, and Amazon errors out when a tag is appended.
+      let host = '';
+      try { host = new URL(/^\/\//.test(u) ? 'https:' + u : u).hostname; } catch (e) { host = ''; }
+      if (!host || /(^|\.)amazon\.[a-z.]+$/i.test(host)) u += (u.includes('?') ? '&' : '?') + 'tag=' + CFG.amazonTag;
+    }
+    return u;
+  }
+  if (!u) return '';
   try { const x = new URL(u); x.searchParams.set('utm_source', 'werewolf_cinema'); x.searchParams.set('utm_medium', 'referral'); x.searchParams.set('utm_campaign', 'cinema_library'); x.searchParams.set('utm_content', (m.id || m.key)); return x.toString(); } catch (e) { return u; }
 }
 function sourceLink(m) {
@@ -1167,8 +1182,11 @@ function streamTagsHtml(m) {
 function detailHtml(m) {
   const meta = [m.rating ? `<span class="chip-rating">${esc(m.rating)}</span>` : '', m.year, m.runtime, m.edition].filter(Boolean);
   const src = sourceLink(m);
-  const stores = STORES.filter(s => m.links[s.key] && s.key !== 'disney').sort((a, b) => (b.key === state.store) - (a.key === state.store));
-  const buyNote = s => s.key === 'amazon' ? (m.onPrime ? 'Included with Prime · Affiliate link' : 'Affiliate link') : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store';
+  // Amazon is offered on every title: a real product link when the sheet has one, otherwise a tagged search.
+  const amazonDirect = !!m.links.amazon;
+  const stores = STORES.filter(s => s.key !== 'disney' && (m.links[s.key] || (s.key === 'amazon' && !m.onPrime)))
+    .sort((a, b) => ((b.key === state.store) - (a.key === state.store)) || ((a.key === 'amazon' && !amazonDirect) ? 1 : 0) - ((b.key === 'amazon' && !amazonDirect) ? 1 : 0));
+  const buyNote = s => s.key === 'amazon' ? (m.onPrime ? 'Included with Prime · Affiliate link' : amazonDirect ? 'Affiliate link' : 'Find on Amazon · Affiliate link') : s.key === 'justwatch' ? 'See all options' : s.key === 'google' && m.familyShare ? 'Family Library shared' : s.key === 'youtube' && m.ytFree ? 'Free with ads' : s.key === 'moviesanywhere' ? 'Syncs to linked stores' : 'Open in store';
   const buy = stores.map(s => `<a href="${esc(storeUrl(m, s))}" target="_blank" rel="${s.key === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${s.key}" class="${[s.key === state.store ? 'hl' : '', s.img ? 'has-img' : ''].join(' ').trim()}" aria-label="${esc(s.label)}: ${esc(buyNote(s))}">
       ${s.img
         ? `<span class="art${s.key === 'amazon' && !m.onPrime ? ' fit' : ''}" style="background:${s.key === 'amazon' ? '#1a98ff' : '#0b0b10'}"><img src="${s.key === 'amazon' && m.onPrime ? 'Images/stores/prime-free.webp' : s.img}" alt="${esc(s.key === 'amazon' && m.onPrime ? 'Prime Video' : s.label)}" loading="lazy" onerror="this.closest('a').classList.remove('has-img');this.parentNode.outerHTML='<span class=&quot;logo&quot; style=&quot;background:${s.color};color:${s.ink}&quot;>${esc(s.short)}</span><span>${esc(s.label)}</span>'"></span><span class="cap"><small>${esc(buyNote(s))}</small><span class="arr">↗</span></span>`
@@ -1193,7 +1211,7 @@ function detailHtml(m) {
       <div class="d-actions">${stores[0] ? `<a class="btn btn-primary" href="${esc(storeUrl(m, stores[0]))}" target="_blank" rel="${stores[0].key === 'amazon' ? 'sponsored noopener' : 'noopener'}" data-out="${stores[0].key}">${ICON.play}Watch on ${esc(stores[0].label)}</a>` : ''}
         <button class="btn btn-ghost" type="button" data-share>${ICON.share}Share</button></div>
     </div></div>
-  ${buy ? `<div class="d-section"><h3>Where to watch</h3><div class="buy">${buy}</div>${m.links.amazon ? '<p class="disclose">Amazon links are affiliate links: Werewolf3788 earns from qualifying purchases. Other store links are not affiliate links.</p>' : ''}</div>` : ''}
+  ${buy ? `<div class="d-section"><h3>Where to watch</h3><div class="buy">${buy}</div><p class="disclose">Amazon links are affiliate links: Werewolf3788 earns from qualifying purchases. Other store links are not affiliate links.</p></div>` : ''}
   ${streamTagsHtml(m)}
   ${sameColl.length ? `<div class="d-section"><h3>More in ${esc(m.collection)}</h3><div class="row">${sameColl.slice(0, 20).map(card).join('')}</div></div>` : ''}
   ${similar.length ? `<div class="d-section"><h3>More like this</h3><div class="row">${similar.map(card).join('')}</div></div>` : ''}`;

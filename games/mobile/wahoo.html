@@ -26,6 +26,7 @@
   #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
   @media(min-width:860px){#main{grid-template-columns:minmax(0,640px) 1fr;align-items:start}}
+  @media(min-width:860px){#main{max-width:none;width:90vw;grid-template-columns:minmax(0,min(calc(100vh - 70px),60%)) 1fr} #boardWrap{max-width:none}}
   #boardWrap{width:100%;max-width:640px;margin:0 auto;touch-action:manipulation}
   #board{display:block;width:100%;height:auto;border-radius:14px;background:#0b1220;touch-action:none}
   .ghost{cursor:pointer;animation:pulse .9s infinite;transform-box:fill-box;transform-origin:center}
@@ -63,7 +64,7 @@
 <div id="top">
   <span>🎲 <b id="roomLabel">Wahoo</b> · 👥 <b id="count">1</b></span>
   <span>🏆 <b id="wins">0</b></span>
-  <span><button id="snd" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="paceBtn" title="How fast the bots play">🚶 Normal bots</button> · <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span>
 </div>
 <div id="main">
   <div id="boardWrap"><svg id="board" viewBox="0 0 15 15"></svg></div>
@@ -85,6 +86,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>document.write('<script src="js/common.js"><\/script>');</script>
 <script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/turnalert.js"><\/script>');</script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -201,6 +203,9 @@
   $('soloBtn').onclick = function () { location.href = 'wahoo.html'; };
 
   function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
+  // js/autoupdate.js: the whole game is kept on the server and you get your seat back, so an update can load mid-game;
+  // it only waits while dice are rolling (and for a few seconds after you last touched the screen)
+  window.WW_BUSY = function () { return !!rolling; };
   function isHost() { return !!S && !!me && S.hostUid === me.uid; }
   // A table only runs while a seated human is really here (tab visible and touched in the last 2 minutes).
   var lastAct = Date.now(), wasPaused = false;
@@ -355,6 +360,12 @@
   });
 
   // drives bots, away players, forced passes and single-choice moves
+  // ---------- bot speed (🐢 button): how long bots wait between moves so people can follow along
+  var PACES = { slow: 3.2, normal: 2.2, fast: 1 }, PACE_ICON = { slow: '🐢 Slow bots', normal: '🚶 Normal bots', fast: '🐇 Fast bots' };
+  var pace = 'normal'; try { pace = localStorage.getItem('ww_bot_pace') || 'normal'; } catch (e) {} if (!PACES[pace]) pace = 'normal';
+  function bd(ms) { return Math.round(ms * PACES[pace]); }
+  (function () { var b = document.getElementById('paceBtn'); if (!b) return; b.textContent = PACE_ICON[pace];
+    b.onclick = function () { pace = pace === 'slow' ? 'normal' : pace === 'normal' ? 'fast' : 'slow'; try { localStorage.setItem('ww_bot_pace', pace); } catch (e) {} b.textContent = PACE_ICON[pace]; }; })();
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
     if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
@@ -362,19 +373,22 @@
     var mine = !st.bot && st.uid === me.uid, auto = false;
     if (!mine) {
       if (!isDriver()) return;
-      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid];
-      var idle = WW.now() - (s.t || 0) > 60000;
+      // only play a person's turn when they have really gone (left over 90 s ago), never because their page is reloading
+      if (!st.bot && st.uid === me.uid) return;
+      var present = WW.mode !== 'cloud' || !!players[st.uid];
+      var away = !st.bot && !present && !!st.gone && WW.now() - st.gone > 90000;
+      var idle = !st.bot && !present && WW.now() - (s.t || 0) > 300000;
       auto = st.bot || away || idle;
       if (!auto) return;
     }
     var key = s.rid + ':' + s.turn + ':' + s.roll, now = Date.now();
-    if (acted.k === key && now - acted.t < 4000) return;
+    if (acted.k === key && now - acted.t < bd(1000) + 3500) return;
     var L = s.roll ? legal(s, s.turn, s.roll) : [];
     function mark() { acted = { k: key, t: now }; }
-    if (!s.roll) { if (auto) { mark(); setTimeout(function () { spinThen(actRoll); }, st.bot ? 800 : 300); } return; }
-    if (!L.length) { mark(); setTimeout(actPass, 1100); return; }
-    if (L.length === 1) { mark(); setTimeout(function () { actMove(L[0].i); }, mine ? 650 : 900); return; }
-    if (auto) { mark(); setTimeout(function () { actMove(botPick(s, L)); }, 1000); }
+    if (!s.roll) { if (auto) { mark(); setTimeout(function () { spinThen(actRoll); }, bd(st.bot ? 800 : 300)); } return; }
+    if (!L.length) { mark(); setTimeout(actPass, bd(1100)); return; }
+    if (L.length === 1) { if (mine) return; mark(); setTimeout(function () { actMove(L[0].i); }, bd(900)); return; }   // your own move is always yours to make
+    if (auto) { mark(); setTimeout(function () { actMove(botPick(s, L)); }, bd(1000)); }
   }
   setInterval(tick, 2000);
 
@@ -386,18 +400,19 @@
     if (WW.mode !== 'cloud' || !S) return false;
     return seated(S).some(function (p) { var st = seatOf(S, p); return st && !st.bot && st.uid !== me.uid && !!players[st.uid]; });
   }
-  function toBot(s, slot) { s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }
+  function toBot(s, slot) { var o = s.seats[slot] || {}, was = !o.bot ? o.uid : o.was; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; if (was) s.seats[slot].was = was; }   // remember who sat here so they get the seat back
   function humanCount(s) { return seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length; }
   function markStarted(s) { seated(s).forEach(function (p) { var st = seatOf(s, p); if (st && !st.bot) st.f = s.gid; }); }
   // Jumping into a table nobody else is playing restarts it; otherwise you take over a bot's seat in the running game.
   function sit(slot) {
-    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent();
+    var wasMine = !!S && seated(S).some(function (p) { var st = seatOf(S, p); return st && st.bot && st.was === me.uid; });
+    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent() && !wasMine;   // your own game is never restarted: you just get your seat back
     mutate(function (s) {
       var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
       for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
       if (!s.seats) s.seats = {};
       var others = seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length;
-      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false, avatar: WW.avatar || '', f: 0 };
+      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false, avatar: WW.avatar || '', f: (cur && cur.was === me.uid && s.status === 'playing') ? s.gid : 0 };
       if (!others) s.hostUid = me.uid;
       if (restart && s.status !== 'lobby') {
         for (var j = 0; j < 4; j++) { var oo = seatOf(s, j); if (oo && !oo.bot && oo.uid !== me.uid) toBot(s, j); }
@@ -435,6 +450,7 @@
   setInterval(reapAbsent, 10000);
   var staleChecked = false;
   function checkStale() {
+    staleChecked = true; return;   // games are never ended or reset on load: coming back (or a site update) picks up where you left off
     if (staleChecked || !S) return; staleChecked = true;
     setTimeout(function () {
       if (WW.mode !== 'cloud' || !S || S.status !== 'playing' || mySeat() < 0 || WW.now() - (S.t || 0) < 600000 || otherHumansPresent()) return;
@@ -501,6 +517,7 @@
 
   function dot(p) { return WW.shapeIcon(p, 16, COLORS[p]); }
   function render() {
+    try { var ms0 = mySeat(); if (window.WWTurn) WWTurn.update(!!S && S.status === 'playing' && ms0 >= 0 && (otherHumansPresent() || document.hidden) && S.turn === ms0, muted); } catch (e) {}
     var s = S; if (!s) return;
     if (pressing) { renderPending = true; return; }
     var ms = mySeat(), myTurn = s.status === 'playing' && ms === s.turn && !s.roll;
@@ -672,7 +689,9 @@
         autoSeatTried = true;
         for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (!st) { sit(i); break; } }
       }
-      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
+      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true;
+        var back = -1; for (var bi = 0; bi < 4; bi++) { var bs = seatOf(S, bi); if (bs && bs.bot && bs.was === me.uid) { back = bi; break; } }
+        if (back >= 0) { sit(back); say('Welcome back - you are in your seat again.'); } else say('Game in progress - tap a bot seat to jump in.'); }
       autoSeatTried = true; checkStale(); render(); tick(); recordStats(S); publishSoon();
     });
   }
@@ -686,5 +705,6 @@
   });
 })();
 </script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
 </body>
 </html>

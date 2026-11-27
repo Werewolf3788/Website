@@ -7,6 +7,8 @@
     { n: 'Wahoo', i: '🎲', d: 'Race your pegs around the board', u: 'games/mobile/wahoo.html', k: 'wahoo' },
     { n: 'Monopoly', i: '🏙️', d: 'Buy, trade and build properties', u: 'games/mobile/tycoon.html', k: 'tycoon' },
     { n: 'Frogger', i: '🐸', d: 'Hop across traffic, up to 8 players', u: 'games/mobile/frogger.html', k: 'frogger' },
+    { n: 'Ironhold', i: '❖', d: 'Merge-and-grind island strategy: build, merge, research, train, explore', u: 'games/mobile/ironhold.html', k: 'ironhold' },
+    { n: 'Werewolf Wings', i: '🛩️', d: '3D flight: rings, mail runs and landings over Howl Island', u: 'games/mobile/flight.html', k: 'flight' },
     { n: 'Werewolf Racing', i: '🏎️', d: '3D car racing, up to 8 friends + bots', u: 'games/mobile/race.html', k: 'race' },
     { n: 'Tile Match', i: '🀄', d: 'Mahjong-style tile matching: clear the board, no paywall', u: 'games/mobile/mahjong.html', k: 'mahjong' },
     { n: 'Tile Survival', i: '🏚️', d: '3D survival base: gather, build, clear fog, fight with heroes', u: 'games/mobile/survive.html', k: 'survive' },
@@ -38,6 +40,10 @@
   var hubs = document.createElement('div'); hubs.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-top:10px';
   HUBS.forEach(function (h) { var a = document.createElement('a'); a.href = root + h.u; a.textContent = h.n; a.style.cssText = 'flex:1 1 auto;text-align:center;text-decoration:none;color:#cbd5e1;background:#0f172a;border-radius:10px;padding:9px 10px;font-size:.82rem'; hubs.appendChild(a); });
   box.appendChild(hubs);
+  var rl = document.createElement('button'); rl.textContent = '🔄 Reload (load the newest version)';
+  rl.style.cssText = 'margin-top:8px;width:100%;background:#0f172a;color:#86efac;border:2px solid #166534;border-radius:10px;padding:10px;font:inherit;font-weight:700;cursor:pointer';
+  rl.onclick = function () { try { var u = new URL(location.href); u.searchParams.set('v', Date.now().toString(36)); var go = function () { location.replace(u.toString()); }; var p = window.WW_BEFORE_RELOAD && window.WW_BEFORE_RELOAD(); if (p && p.then) p.then(go, go); else go(); } catch (e) { location.reload(); } };
+  box.appendChild(rl);
   var close = document.createElement('button'); close.textContent = 'Close';
   close.style.cssText = 'margin-top:12px;width:100%;background:#475569;color:#fff;border:0;border-radius:10px;padding:11px;font:inherit;cursor:pointer';
   box.appendChild(close); ov.appendChild(box); document.body.appendChild(ov);

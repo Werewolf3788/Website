@@ -52,9 +52,9 @@
   canvas{display:block;width:100%;border-radius:14px;background:#081a1e;touch-action:none}
   /* desktop: about 80% of the screen, side menu + columns; phones keep one stacked column */
   @media (min-width:900px){
-    header,main{width:80vw;margin:0 auto}
+    header,main{width:90vw;margin:0 auto}
     header{border-radius:0 0 16px 16px}
-    .shell{width:80vw;margin:0 auto;display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:start}
+    .shell{width:90vw;margin:0 auto;display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:start}
     .shell nav{flex-direction:column;position:sticky;top:76px;overflow:visible;padding:12px 0}
     .shell nav button{text-align:left;border-radius:12px;padding:10px 14px}
     .shell main{width:auto;padding:12px 0 40px}
@@ -842,5 +842,6 @@
   setTimeout(function () { if ($('v-breathe').classList.contains('on')) drawBreathe(null); }, 50);
 })();
 </script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
 </body>
 </html>

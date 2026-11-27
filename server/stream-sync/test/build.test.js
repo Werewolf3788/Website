@@ -9,7 +9,7 @@ test("Wildlands PSN name matches the Twitch category, not Games + Demos", () => 
         { id: "496000", name: "Tom Clancy's Ghost Recon: Wildlands" },
         { id: "512710", name: "Tom Clancy's Ghost Recon Breakpoint" }
     ];
-    const pick = B.pickCategory("Tom Clancy's Ghost Recon® Wildlands", list, {});
+    const pick = B.pickCategory("Tom Clancy's Ghost Recon\u00AE Wildlands", list, {});
     assert.strictEqual(pick.id, "496000");
 });
 
@@ -19,12 +19,12 @@ test("no confident match returns null", () => {
 
 test("override wins", () => {
     const list = [{ id: "1", name: "Far Cry 5" }, { id: "2", name: "Far Cry New Dawn" }];
-    assert.strictEqual(B.pickCategory("FAR CRY® 5 Gold Edition", list, { "Far Cry 5 Gold Edition": "Far Cry New Dawn" }).id, "2");
+    assert.strictEqual(B.pickCategory("FAR CRY\u00AE 5 Gold Edition", list, { "Far Cry 5 Gold Edition": "Far Cry New Dawn" }).id, "2");
 });
 
 test("presence parsing", () => {
     const p = B.readPresence({ basicPresence: { primaryPlatformInfo: { onlineStatus: "online", platform: "PS5" },
-        gameTitleInfoList: [{ npTitleId: "CUSA05410_00", titleName: "Tom Clancy's Ghost Recon® Wildlands", gameStatus: "Chapter 1 the Past" }] } });
+        gameTitleInfoList: [{ npTitleId: "CUSA05410_00", titleName: "Tom Clancy's Ghost Recon\u00AE Wildlands", gameStatus: "Chapter 1 the Past" }] } });
     assert.deepStrictEqual([p.online, p.title, p.status], [true, "Tom Clancy's Ghost Recon Wildlands", "Chapter 1 the Past"]);
     assert.strictEqual(B.readPresence({ basicPresence: { primaryPlatformInfo: { onlineStatus: "offline" } } }).online, false);
 });
@@ -53,6 +53,13 @@ test("tags follow Twitch rules", () => {
     assert.strictEqual(B.cleanTags(Array.from({ length: 15 }, (_, i) => "t" + i)).length, 10);
 });
 
+test("announcement text fits YouTube live chat", () => {
+    assert.strictEqual(B.announceText("Chapter 2"), "\u{1F534} Chapter 2");
+    assert.strictEqual(B.announceText("Tom Clancy's Ghost Recon\u00AE Wildlands"), "\u{1F534} Tom Clancy's Ghost Recon Wildlands");
+    assert.strictEqual(B.announceText(""), "");
+    assert.ok(B.announceText("x".repeat(300)).length <= 190);
+});
+
 test("email key matches database rules", () => {
     assert.strictEqual(B.emailKey("RayKevin71888@gmail.com"), "raykevin71888_at_gmail_com");
 });
@@ -65,7 +72,7 @@ test("OAuth state signing", () => {
 });
 
 test("title formats", () => {
-    const a = { status: "Chapter 2", game: "Ghost Recon® Wildlands", mentions: ["ray"] };
+    const a = { status: "Chapter 2", game: "Ghost Recon\u00AE Wildlands", mentions: ["ray"] };
     assert.strictEqual(B.buildTitle({ ...a }), "Chapter 2 w/ @ray");
     assert.strictEqual(B.buildTitle({ ...a, format: "game_status" }), "Ghost Recon Wildlands - Chapter 2 w/ @ray");
     assert.strictEqual(B.buildTitle({ ...a, format: "game" }), "Ghost Recon Wildlands w/ @ray");

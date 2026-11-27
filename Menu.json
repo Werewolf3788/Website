@@ -66,6 +66,12 @@
     "image": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1110/f3560662d08ec4f5efee22247ea7981b244ec5ea52cfd01e.png"
   },
   {
+    "name": "Red Dead Online — Collector",
+    "group": "Game",
+    "url": "#/games/rdr2",
+    "image": ""
+  },
+  {
     "name": "Movies",
     "group": "Entertainment",
     "url": "#/movies",

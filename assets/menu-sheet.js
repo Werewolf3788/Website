@@ -18,7 +18,7 @@
     if (window.wwMenuData) return;
 
     const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv';
-    const CACHE_KEY = 'ww_menu_sheet_v2';   // v2: own-site links follow the site you're on
+    const CACHE_KEY = 'ww_menu_sheet_v3';   // v3: link and picture columns are read by what the cells hold
 
     // ---- CSV parser (handles quotes, commas and line breaks inside cells)
     function parseCsv(text) {
@@ -64,24 +64,50 @@
     const sanitizeKey = (s) => String(s || '').trim().replace(/[.$#\[\]\/]/g, '')
         .replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
 
+    const looksLikeImage = (v) => /\.(png|jpe?g|webp|gif|avif|svg)(?:[?#]|$)/i.test(v) || /^data:image\//i.test(v);
+
     function buildMenu(rows) {
         if (!rows.length) return {};
         const head = rows[0].map(h => String(h || '').toLowerCase());
+        const body = rows.slice(1);
         const col = (re, fallback) => { const i = head.findIndex(h => re.test(h)); return i >= 0 ? i : fallback; };
-        const cName = col(/^name/, 0), cGroup = col(/^group/, 1), cUrl = col(/url/, 2),
-              cImg = col(/^image/, 3), cTag = col(/^tag/, 5);
+        const cName = col(/^name/, 0), cGroup = col(/^group/, 1), cTag = col(/^tag/, 5);
+        const cellsAt = (i) => (i >= 0 ? body.map(r => String(r[i] || '').trim()).filter(Boolean) : []);
+        const pictureShare = (i) => { const c = cellsAt(i); return c.length ? c.filter(looksLikeImage).length / c.length : 0; };
+
+        /* The sheet has more than one "Url with UTM" column and one of them holds the
+         * poster pictures, so the link column and the picture column are chosen by what
+         * the cells look like rather than by their position. Reading them by position
+         * once pointed the links at the pictures: a menu item opened a poster instead of
+         * the page. */
+        const linkColumns = head.map((h, i) => i).filter(i => /^url|link|href/.test(head[i]));
+        const cUrl = (linkColumns.length ? linkColumns : [2]).reduce((best, i) => (pictureShare(i) < pictureShare(best) ? i : best));
+
+        let cImg = head.findIndex(h => /image|poster|thumb|photo/.test(h));
+        if (cImg < 0 || pictureShare(cImg) === 0) {
+            cImg = head.map((h, i) => i)
+                .filter(i => i !== cUrl && i !== cName && i !== cGroup)
+                .reduce((best, i) => (pictureShare(i) > pictureShare(best) ? i : best), -1);
+            if (pictureShare(cImg) === 0) cImg = -1;                          // nothing holds pictures: leave it empty
+        }
+
         const now = new Date().toISOString();
         const out = {};
-        rows.slice(1).forEach((r, i) => {
+        body.forEach((r, i) => {
             const rowNumber = i + 2;
             const name = String(r[cName] || '').trim();
             if (!name || name.startsWith('#')) return;                       // blank / commented rows
             const group = String(r[cGroup] || '').trim();
+            let image = String(r[cImg] || '').trim();
             let url = String(r[cUrl] || '').trim();
+            if (looksLikeImage(url)) {                                       // a poster is never a menu link
+                if (!image) image = url;
+                url = '';
+            }
             if (url.startsWith('#REF') || /ref!/i.test(url)) url = '';         // formula errors
             if (url && !/^(https?:)?\/\//i.test(url) && !url.startsWith('#') && !url.startsWith('.') && !url.startsWith('/')) url = 'https://' + url;
             url = siteUrl(url);
-            const item = { title: name, url, image: String(r[cImg] || '').trim(), tag: String(r[cTag] || '').trim(),
+            const item = { title: name, url, image, tag: String(r[cTag] || '').trim(),
                            group: group || 'Standalone', rowNumber, updatedAt: now };
             const g = group.toLowerCase();
             if (!g || g === 'home' || g === 'none' || g === 'standalone') {
@@ -122,4 +148,168 @@
         .then(data => ({ ok: true, status: 200, json: async () => data }))
         .catch(e => ({ ok: false, status: 503, json: async () => null }));
     window.wwMenuParse = (csvText) => buildMenu(parseCsv(csvText));   // for testing
+})();
+
+/* Game pill shortcuts (the pill bar on games/all).
+   The RDR2 pill opens the Wheeler, Rawson & Co. shop catalogue instead of the
+   collector-role checklist. Add more games here if they get a page of their own.
+   games/Universal.js rebuilds the pills, so this listens on the bar itself
+   rather than on the individual pills. */
+(function () {
+    var PILL_LINKS = { rdr2: '/games/rdr2.html' };
+    function wire() {
+        var bar = document.getElementById('gamePillsContainer');
+        if (!bar || bar.getAttribute('data-pill-links') === '1') return;
+        bar.setAttribute('data-pill-links', '1');
+        bar.addEventListener('click', function (e) {
+            var pill = e.target && e.target.closest ? e.target.closest('.game-pill') : null;
+            if (!pill) return;
+            var dest = PILL_LINKS[String(pill.getAttribute('data-game-key') || '').toLowerCase()];
+            if (!dest) return;
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = dest;
+        }, true);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
+    else wire();
+})();
+
+/* Game switcher row for the Red Dead Online catalogue (games/rdr2.html).
+   That page is a standalone catalogue and has none of the ledger's pill bar, so
+   the same games are printed above it, read from the live games catalog in
+   Firebase so a newly synced game turns up here without editing the page. */
+(function () {
+    'use strict';
+    if (!/\/games\/rdr2(?:\.html)?\/?$/i.test(location.pathname)) return;
+
+    var CATALOG_URL = 'https://entertainment-71888-default-rtdb.firebaseio.com/platforms/games_catalog.json';
+    var CSS = [
+        '.game-pills{max-width:1240px;margin:0 auto 14px;display:flex;align-items:center;gap:8px;overflow-x:auto;padding:0 2px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}',
+        '.game-pills:empty{display:none}',
+        '.game-pill{flex:0 0 auto;display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border:1px solid #6d5640;border-radius:999px;background:rgba(239,230,208,.94);color:#2a1e14;font-family:"EB Garamond",Georgia,serif;font-size:.95rem;letter-spacing:.02em;text-decoration:none;white-space:nowrap}',
+        '.game-pill:hover{background:#f8f1de;border-color:#a1554b}',
+        '.game-pill[aria-current="true"]{background:#7d2b23;border-color:#4f1a14;color:#f8f1de;font-weight:600}'
+    ].join('\n');
+
+    // Links keep working on the GitHub Pages copy (/Website/...) as well as on Firebase.
+    function siteLink(path) {
+        if (/\.github\.io$/i.test(location.hostname)) {
+            var seg = location.pathname.split('/')[1];
+            return (seg ? '/' + seg : '') + path;
+        }
+        return path;
+    }
+
+    function mount() {
+        var card = document.querySelector('.catalogue');
+        if (!card || document.getElementById('gamePills')) return;
+
+        var style = document.createElement('style');
+        style.textContent = CSS;
+        document.head.appendChild(style);
+
+        var bar = document.createElement('nav');
+        bar.className = 'game-pills';
+        bar.id = 'gamePills';
+        bar.setAttribute('aria-label', 'Choose a game');
+        card.parentNode.insertBefore(bar, card);
+
+        fetch(CATALOG_URL, { cache: 'no-store' })
+            .then(function (res) { return res.ok ? res.json() : null; })
+            .then(function (catalog) {
+                if (!catalog || typeof catalog !== 'object') return;
+                Object.keys(catalog).sort().forEach(function (key) {
+                    var data = catalog[key] || {};
+                    var here = key.toLowerCase() === 'rdr2';
+                    var pill = document.createElement('a');
+                    pill.className = 'game-pill';
+                    pill.setAttribute('data-game-key', key);
+                    pill.href = here ? siteLink('/games/rdr2') : siteLink('/games/all?game=' + encodeURIComponent(key));
+                    if (here) pill.setAttribute('aria-current', 'true');
+                    pill.textContent = String(data.title || data.game || key.toUpperCase());
+                    bar.appendChild(pill);
+                });
+            })
+            .catch(function () { /* the catalogue still works without the switcher */ });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
+    else mount();
+})();
+
+/* Weather-matched backdrop for the Red Dead Online catalogue. The sky behind
+   the page follows the live weather at the real-world town behind a frontier
+   location, the way the "Real Weather and Real Time Sync" mod drives the game.
+   Kept in its own file so no other page pays for it. */
+(function () {
+    'use strict';
+    if (!/\/games\/rdr2(?:\.html)?\/?$/i.test(location.pathname)) return;
+    if (document.getElementById('wwRdr2Weather')) return;
+
+    var path = '/assets/rdr2-weather.js';
+    if (/\.github\.io$/i.test(location.hostname)) {
+        var seg = location.pathname.split('/')[1];
+        if (seg) path = '/' + seg + path;
+    }
+
+    var script = document.createElement('script');
+    script.id = 'wwRdr2Weather';
+    script.src = path;
+    script.defer = true;
+    document.head.appendChild(script);
+})();
+
+/* The way out to Rockstar's own store (games/rdr2.html). The online catalogue
+   is a signed-in Rockstar app, so this can only ever be a plain outbound link:
+   nothing on this site can read a player's account, their wallet or their cart.
+   It means a player can restock from a phone instead of riding to a shop. */
+(function () {
+    'use strict';
+    if (!/\/games\/rdr2(?:\.html)?\/?$/i.test(location.pathname)) return;
+
+    var STORE_URL = 'https://socialclub.rockstargames.com/games/rdr2/catalogue/online/';
+    var CSS = [
+        '.store-callout{position:relative;z-index:1;padding:14px 26px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(248,241,222,.92),rgba(229,216,186,.6))}',
+        '.store-kicker{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}',
+        '.store-title{font-family:var(--display);font-weight:400;font-size:1.05rem;line-height:1.3;margin:4px 0 6px;color:var(--ink)}',
+        '.store-lede{font-size:.9rem;line-height:1.5;color:var(--ink-soft);max-width:70ch}',
+        '.store-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin-top:11px}',
+        '.store-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;border:1px solid #4f1a14;background:#7d2b23;color:#f8f1de;font-family:var(--serif);font-size:.95rem;letter-spacing:.03em;text-decoration:none}',
+        '.store-btn:hover{background:#5f1f19;color:#fff8e6}',
+        '.store-btn:focus-visible{outline:2px solid #96763e;outline-offset:2px}',
+        '.store-note{font-size:.76rem;line-height:1.45;color:var(--ink-faint);font-style:italic}',
+        '@media (max-width:860px){.store-callout{padding:12px 16px 14px}.store-actions{gap:8px}.store-btn{flex:1 1 100%}}'
+    ].join('\n');
+
+    function mount() {
+        var card = document.querySelector('.catalogue');
+        var band = card && card.querySelector('.live');
+        if (!card || !band || document.getElementById('wwStoreCallout')) return;
+
+        var style = document.createElement('style');
+        style.textContent = CSS;
+        document.head.appendChild(style);
+
+        var box = document.createElement('section');
+        box.className = 'store-callout';
+        box.id = 'wwStoreCallout';
+        box.setAttribute('aria-labelledby', 'wwStoreTitle');
+        box.innerHTML =
+            '<p class="store-kicker">Open all hours</p>' +
+            '<h2 class="store-title" id="wwStoreTitle">Wheeler, Rawson &amp; Co. — the real store, on your phone</h2>' +
+            '<p class="store-lede">Rockstar\u2019s own online catalogue is the same shelf the shops in game show, at the ' +
+                'prices this page cannot print. Order from it while you are out and the goods reach your character ' +
+                'the next time you saddle up.</p>' +
+            '<p class="store-actions">' +
+                '<a class="store-btn" href="' + STORE_URL + '" target="_blank" rel="noopener">Open the online catalogue</a>' +
+                '<span class="store-note">Sign in with the Rockstar account your Red Dead Online character is on. ' +
+                    'Your ticks on this page stay on this device.</span>' +
+            '</p>';
+
+        card.insertBefore(box, band);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
+    else mount();
 })();

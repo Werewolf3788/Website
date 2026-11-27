@@ -4,7 +4,7 @@
 //   - Web Push notifications sent by .github/workflows/send-push.yml
 // Bump CACHE_NAME when the app shell files change.
 // ============================================================================
-const CACHE_NAME = 'ww-shell-v5';
+const CACHE_NAME = 'ww-shell-v6';
 const SHELL = [
     './',
     'index.html',
@@ -52,7 +52,7 @@ self.addEventListener('fetch', (event) => {
     if (url.pathname.includes('/__/')) return; // Firebase sign-in helper pages
 
     event.respondWith(
-        fetch(req)
+        fetch(req, { cache: 'no-cache' })
             .then((res) => {
                 if (res && res.status === 200 && res.type === 'basic') {
                     const copy = res.clone();

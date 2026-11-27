@@ -47,7 +47,7 @@ async function discordLiveAlert(key, sec, cfg, s, gameName) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             username: "Stream Alert",
-            content: cfg.discord_message || `🔴 ${cfg.twitch_login} is live! ${url}`,
+            content: cfg.discord_message || `\u{1F534} ${cfg.twitch_login} is live! ${url}`,
             embeds: [{ title: s.title || "Live on Twitch", url, description: `**Playing:** ${gameName || s.game_name || "?"}`, color: 9520895, image: art ? { url: art } : undefined, timestamp: new Date().toISOString() }]
         })
     }).catch((e) => log(key, "Discord alert failed: " + e.message));
@@ -61,6 +61,41 @@ async function youtubeTitle(key, sec, title) {
         body: JSON.stringify({ type: "youtube_title", secret: sec.youtube_hook_secret, title })
     });
     return (await r.text()).slice(0, 120);
+}
+
+async function youtubeChat(sec, text) {
+    const r = await fetch(sec.youtube_hook_url, {
+        method: "POST", redirect: "follow",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "youtube_chat", secret: sec.youtube_hook_secret, text })
+    });
+    return (await r.text()).slice(0, 120);
+}
+
+/* The Twitch title, posted as a chat message in YouTube and Kick when it changes.
+ * m.announced remembers the last line that went out, so the same title is never
+ * posted twice; a new title (or a new stream) posts again. Off with
+ * stream_sync.announce_title = false. */
+async function announceTitle(key, cfg, sec, m, title) {
+    const t = String(title || "").trim();
+    if (cfg.announce_title === false || !t || t === m.announced) return null;
+    const text = B.announceText(t);
+    if (!text) return null;
+    const out = {};
+    if (sec.youtube_hook_url && sec.youtube_hook_secret) {
+        try { out.youtube = await youtubeChat(sec, text); } catch (e) { out.youtube = "error: " + e.message; }
+    }
+    if (sec.kick_refresh && cfg.kick_user_id) {
+        try { out.kick = await kick.sendChat(key, cfg.kick_user_id, text); } catch (e) { out.kick = "error: " + e.message; }
+    }
+    if (!Object.keys(out).length) return null;
+    /* Remember it once one of them took it: if both failed, the next pass tries again. */
+    if (Object.values(out).some((v) => /^ok/i.test(String(v)))) {
+        m.announced = t;
+        chat.remember(key, text);   /* posted as us, so the echo from YouTube / Kick is not relayed */
+    }
+    log(key, "announced title: " + JSON.stringify(out));
+    return out;
 }
 
 async function runUser({ key, cfg, user }) {
@@ -79,7 +114,7 @@ async function runUser({ key, cfg, user }) {
     const sec = await store.secrets(key);
     if (!m || m.streamId !== s.id) {
         const prev = await store.state(key);
-        m = { live: true, streamId: s.id, firstPsnCheckPending: true, title: null, tagsDone: false, yt: null, kickTitle: null, kickCat: null };
+        m = { live: true, streamId: s.id, firstPsnCheckPending: true, title: null, tagsDone: false, yt: null, kickTitle: null, kickCat: null, announced: null };
         mem.set(key, m);
         if (prev.alerted_stream_id !== s.id) {
             await discordLiveAlert(key, sec, cfg, s);
@@ -91,20 +126,32 @@ async function runUser({ key, cfg, user }) {
         }
     }
 
-    chat.start(key, { cfg, broadcasterId });
+    chat.start(key, { cfg, broadcasterId, sec });
+
+    const out = { live: true, stream_id: s.id, twitch_category: s.game_name, checked_at: Date.now() };
+    /* auto (default): the PlayStation game + status drive the Twitch title and
+     * category, and that same title goes to YouTube and Kick. `twitch` copies
+     * whatever is set on Twitch out instead (PC / OBS), `playstation` only
+     * touches Twitch. */
+    const source = cfg.source || "auto";
+    if (source === "twitch") {
+        out.mode = "copy Twitch";
+        await copyTwitchToOthers(key, cfg, sec, broadcasterId, m, out);
+        out.chat = chat.status(key);
+        await store.saveState(key, out);
+        return out;
+    }
 
     const squad = cfg.squad || {};
     const myTag = cfg.psn_online_id || (user && (user.psn_username || user.psn_online_id)) || null;
     const snap = await psn.snapshot(key, cfg, myTag, Object.keys(squad), m.firstPsnCheckPending).catch((e) => ({ error: e.message }));
     m.firstPsnCheckPending = false;
-    const out = { live: true, stream_id: s.id, twitch_category: s.game_name, checked_at: Date.now() };
-    const source = cfg.source || "auto";   // auto: PlayStation when in a game there, otherwise copy Twitch
     if (!snap || snap.error) out.psn = snap ? "PSN error: " + snap.error : "no PlayStation data (no psn_npsso and no psn_online_id)";
     const me = snap && !snap.error ? snap.me : null;
     if (me) { out.psn_source = snap.source; out.psn_game = me.title || null; out.psn_status = me.status || null; }
-    if (source === "twitch" || !me || !me.online || !me.title) {
+    if (!me || !me.online || !me.title) {
         if (source === "playstation") { await store.saveState(key, out); return out; }
-        /* PC / OBS streamers (or not on PlayStation right now): whatever is set on Twitch goes to YouTube and Kick */
+        /* Not in a PlayStation game right now: whatever is set on Twitch goes to YouTube and Kick */
         out.mode = "copy Twitch";
         await copyTwitchToOthers(key, cfg, sec, broadcasterId, m, out);
         out.chat = chat.status(key);
@@ -122,7 +169,9 @@ async function runUser({ key, cfg, user }) {
     const patch = {};
     const cat = await twitchCategory(me.title, overrides);
     out.category_match = cat ? cat.name : "no match for " + me.title;
-    const ch = await twitch.channel(broadcasterId);
+    /* A failed Twitch read must not stop the YouTube / Kick updates below:
+     * the pass still sends the title out and retries Twitch next time. */
+    const ch = await twitch.channel(broadcasterId).catch((e) => { out.twitch_read_error = e.message; return null; });
     if (cat && ch && String(ch.game_id) !== String(cat.id)) patch.game_id = cat.id;   // always correct the category (fixes "Games + Demos")
 
     const fmt = { format: cfg.title_format || "status" };
@@ -140,6 +189,10 @@ async function runUser({ key, cfg, user }) {
     }
     if (!out.twitch_error) { m.title = title; if (tags.length) m.tagsDone = true; }
     out.title = title;
+
+    /* The title as a chat announcement in YouTube and Kick (skipped when it hasn't changed) */
+    const ann = await announceTitle(key, cfg, sec, m, title);
+    if (ann) out.announce = ann;
 
     /* YouTube (title only) */
     const ytMode = cfg.youtube_mode || "same";
@@ -195,6 +248,10 @@ async function copyTwitchToOthers(key, cfg, sec, broadcasterId, m, out) {
             if (Object.keys(kp).length) { await kick.updateChannel(key, kp); if (kp.stream_title) m.kickTitle = kTitle; if (kc) m.kickCat = kc.id; out.kick = "updated"; }
         } catch (e) { out.kick = "error: " + e.message; }
     }
+
+    /* Copying Twitch: the title that is already live is what gets announced */
+    const ann = await announceTitle(key, cfg, sec, m, ch.title);
+    if (ann) out.announce = ann;
 }
 
 module.exports = { runUser };

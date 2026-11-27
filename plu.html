@@ -23,6 +23,9 @@
 :root{color-scheme:light dark;--bg:light-dark(#f4f7f1,#0f1a12);--field:light-dark(#1f5c34,#163f25);--card:light-dark(#fff,#18261b);--ink:light-dark(#14201a,#e9f1ea);--mute:light-dark(#5b6b60,#9fb2a4);--line:light-dark(#dbe4d8,#2a3b2e);--acc:#e2452b;--good:light-dark(#1f7a3e,#5fd08a)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,input,a,.mcard,.item,.qpic{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+input{-webkit-user-select:text;user-select:text}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip}
 header{background:var(--field);color:#fff;padding:18px max(4vw,14px) 14px;position:sticky;top:0;z-index:5;box-shadow:0 2px 10px #0003}
 h1{font:700 30px/1.05 "Barlow Condensed",sans-serif;margin:0 0 10px;text-wrap:balance}
@@ -71,6 +74,32 @@ main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
 .say.talking{background:var(--acc);color:#fff;border-color:var(--acc)}
 #sayhint{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);max-width:min(92vw,420px);background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;font-size:15px;opacity:0;pointer-events:none;transition:.2s;z-index:50;text-align:center}#sayhint.show{opacity:1;transform:translate(-50%,0)}
 .qrow{display:flex;align-items:center;justify-content:center;gap:10px}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:560px;margin:0 auto}
+.mcard{aspect-ratio:3/4;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;align-content:center;gap:3px;padding:6px;cursor:pointer;overflow:hidden;font:600 14px Barlow;transition:border-color .15s}
+.mcard .qm{font:700 34px 'Barlow Condensed';color:var(--mute)}
+.mcard.up{border-color:var(--acc)}
+.mcard.done{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--card));cursor:default}
+.mcard .cbig{font:700 clamp(20px,6.5vw,30px)/1 'Barlow Condensed',sans-serif;color:var(--acc);white-space:nowrap}
+.mcard .pic{width:100%;height:auto;aspect-ratio:1;background:#fff;border-radius:8px;border:0;display:grid;place-items:center;overflow:hidden}
+.mcard .pic img{max-width:100%;max-height:100%;object-fit:contain}
+.mcard .nm{font-size:12px;line-height:1.15;text-align:center}
+.mcard .noimg{font-size:34px}
+.boardmsg{max-width:560px;margin:0 auto;text-align:center;font-weight:600}
+.regwrap{display:grid;grid-template-columns:1fr 240px;gap:14px;max-width:620px;margin:0 auto;align-items:start}
+.counter{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;text-align:center;box-shadow:0 6px 24px #0001}
+.counter .qpic{margin-top:8px}
+.regdisp{font:700 40px/1 "Barlow Condensed",sans-serif;letter-spacing:.08em;color:var(--acc);margin-top:12px;min-height:42px;border-top:1px dashed var(--line);padding-top:12px;white-space:nowrap}
+.regdisp.empty{color:var(--mute)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pad button{min-height:58px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:700 24px "Barlow Condensed",sans-serif;cursor:pointer;padding:0}
+.pad button[data-k=ok]{background:var(--field);color:#fff;border-color:var(--field);font:600 16px Barlow}
+.pad button[data-k=del]{font:600 20px Barlow}
+.pad button:active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.receipt{list-style:none;padding:0;max-width:560px;margin:16px auto 0;display:grid;gap:6px}
+.receipt li{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:14px}
+.receipt .pic{width:44px;height:40px;border-radius:6px}
+.receipt b{font:700 20px "Barlow Condensed",sans-serif;color:var(--acc)}
+@media(max-width:620px){.regwrap{grid-template-columns:1fr}.pad button{min-height:54px}}
 /* hide Google Translate's banner/tooltips so the page looks the same in any language */
 .goog-te-banner-frame,.skiptranslate>iframe,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip{display:none!important}body{top:0!important}
 @media(max-width:600px){h1{font-size:24px}.code{font-size:30px}}
@@ -78,7 +107,7 @@ main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
 </style></head><body>
 <header>
   <h1>Produce PLU codes</h1>
-  <div class="row modes"><button id="mLook" aria-pressed="true">Look up</button><button id="mPrac" aria-pressed="false">Practice</button></div>
+  <div class="row modes"><button id="mLook" aria-pressed="true">Look up</button><button id="mPrac" aria-pressed="false">Practice</button><button id="mGame" aria-pressed="false">Match game</button><button id="mReg" aria-pressed="false">Register</button></div>
   <div id="lookBar" style="margin-top:10px"><input type="search" id="q" placeholder="Type a name or a code…" autocomplete="off"></div>
   <div class="chips" id="chips"></div>
 </header>
@@ -89,6 +118,33 @@ main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
     <div class="card" id="card"></div>
     <div class="stats"><span>Streak <b id="sStreak">0</b></span><span>Right <b id="sRight">0</b></span><span>Missed <b id="sMiss">0</b></span></div>
     <p class="foot">Ones you miss come back more often. Pick a section above to practice just that sheet.</p>
+  </section>
+  <section id="game" hidden>
+    <p class="boardmsg" id="gstat">Flip two cards — a code and the produce it belongs to.</p>
+    <div class="board" id="board"></div>
+    <div class="stats"><span>Pairs <b id="gPairs">0/0</b></span><span>Moves <b id="gMoves">0</b></span><span>Time <b id="gTime">0:00</b></span><span>Best <b id="gBest">—</b></span></div>
+    <div class="row" style="max-width:560px;margin:18px auto 0"><button class="btn" id="gNew">New board</button></div>
+    <p class="foot">Six pairs at a time. Your best time stays on this device. Pick a section above to play just that sheet.</p>
+  </section>
+  <section id="reg" hidden>
+    <div class="regwrap">
+      <div class="counter">
+        <div class="cat" id="rWho">Customer 1</div>
+        <div class="qpic" id="rPic"></div>
+        <div class="q" id="rName">—</div>
+        <div class="regdisp empty" id="rDisp">—</div>
+      </div>
+      <div class="pad" id="rPad">
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+        <button data-k="del">⌫</button><button data-k="0">0</button><button data-k="ok">Enter</button>
+      </div>
+    </div>
+    <p class="fb" id="rFb"></p>
+    <div class="stats"><span>Customers <b id="rCust">0</b></span><span>Items rung <b id="rItems">0</b></span><span>Accuracy <b id="rAcc">—</b></span><span>Best streak <b id="rBest">0</b></span></div>
+    <ul class="receipt" id="rList"></ul>
+    <p class="foot">A customer sets their produce on the counter — type its code and hit Enter. A miss tells you the right code and the item stays until you get it.</p>
   </section>
   <p class="foot">Copied from the 8 store sheets, handwritten codes included. "—" means the sheet has no code for that item.</p>
 </main>
@@ -139,10 +195,12 @@ const ICO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 const sayBtn=(d,w='')=>`<button class="say notranslate" translate="no" data-say="${d.i}" data-what="${w}" aria-label="Say it out loud">${ICO}</button>`;
 const $=id=>document.getElementById(id),esc=x=>x.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 let sec=-1,mode='look',sub='type',cur=null,streak=0,right=0,miss=0,locked=false;
+let G=null,gtick=null,gpeek=null;
+let R=null,RS={cust:0,items:0,right:0,tries:0,streak:0,best:0};
 let weak={};try{weak=JSON.parse(localStorage.getItem('pluWeak')||'{}')}catch(e){}
 const save=()=>{try{localStorage.setItem('pluWeak',JSON.stringify(weak))}catch(e){}};
 const chips=()=>{$('chips').innerHTML=['All',...S].map((n,k)=>`<button data-s="${k-1}" aria-pressed="${k===sec+1}">${esc(n)}</button>`).join('')};chips();
-$('chips').onclick=e=>{const b=e.target.closest('button');if(!b)return;sec=+b.dataset.s;for(const x of $('chips').children)x.setAttribute('aria-pressed',x===b);mode==='look'?draw():next()};
+$('chips').onclick=e=>{const b=e.target.closest('button');if(!b)return;sec=+b.dataset.s;for(const x of $('chips').children)x.setAttribute('aria-pressed',x===b);mode==='look'?draw():mode==='game'?newGame():mode==='reg'?newCustomer():next()};
 function draw(){
   const q=$('q').value.trim().toLowerCase();
   const list=D.filter(d=>(sec<0||d.s===sec)&&(!q||d.n.toLowerCase().includes(q)||d.c.startsWith(q)||d.t.toLowerCase().includes(q)));
@@ -150,8 +208,8 @@ function draw(){
   $('grid').innerHTML=list.length?list.map(d=>`<div class="item"><span class="pic">${img(d)}</span><div><span class="code notranslate${d.c?'':' none'}" translate="no">${d.c||'—'}</span><div class="name">${esc(d.n)}</div><div class="note">${esc(d.t||S[d.s])}</div></div>${sayBtn(d)}</div>`).join(''):'<p class="empty">Nothing matches that. Try part of the name, like "pom" or "mango".</p>';
 }
 $('q').oninput=draw;
-function setMode(m){mode=m;$('mLook').setAttribute('aria-pressed',m==='look');$('mPrac').setAttribute('aria-pressed',m==='prac');$('look').hidden=m!=='look';$('lookBar').hidden=m!=='look';$('prac').hidden=m!=='prac';m==='prac'?next():draw()}
-$('mLook').onclick=()=>setMode('look');$('mPrac').onclick=()=>setMode('prac');
+function setMode(m){mode=m;if(m!=='game'){clearInterval(gtick);clearInterval(gpeek)}$('mLook').setAttribute('aria-pressed',m==='look');$('mPrac').setAttribute('aria-pressed',m==='prac');$('mGame').setAttribute('aria-pressed',m==='game');$('mReg').setAttribute('aria-pressed',m==='reg');$('look').hidden=m!=='look';$('lookBar').hidden=m!=='look';$('prac').hidden=m!=='prac';$('game').hidden=m!=='game';$('reg').hidden=m!=='reg';m==='game'?newGame():m==='reg'?startReg():m==='prac'?next():draw()}
+$('mLook').onclick=()=>setMode('look');$('mPrac').onclick=()=>setMode('prac');$('mGame').onclick=()=>setMode('game');$('mReg').onclick=()=>setMode('reg');
 function setSub(m){sub=m;$('sType').setAttribute('aria-pressed',m==='type');$('sPick').setAttribute('aria-pressed',m==='pick');next()}
 $('sType').onclick=()=>setSub('type');$('sPick').onclick=()=>setSub('pick');
 const pool=()=>D.filter(d=>d.c&&(sec<0||d.s===sec));
@@ -207,6 +265,128 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(
 
 draw();
 
+/* Match game: flip a code card and the produce it belongs to.
+   Six pairs from the chosen sheet, best time kept on the device. */
+const gBest=()=>{try{return +(localStorage.getItem('pluMatchBest')||0)}catch(e){return 0}};
+const mmss=ms=>{const s=Math.round(ms/1000);return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)};
+function gStats(){
+  if(!G)return;
+  $('gPairs').textContent=Object.keys(G.done).length+'/'+G.picks.length;
+  $('gMoves').textContent=G.moves;
+  $('gTime').textContent=mmss(G.t0?Date.now()-G.t0:0);
+  const b=gBest();$('gBest').textContent=b?mmss(b):'—';
+}
+function newGame(){
+  clearInterval(gtick);clearInterval(gpeek);
+  const p=pool();if(!p.length)return;
+  const picks=shuffle(p.slice()).slice(0,Math.min(6,p.length));
+  G={picks:picks,deck:shuffle(picks.reduce((a,_,k)=>{a.push({k:k,kind:'code'},{k:k,kind:'item'});return a},[])),open:[],done:{},moves:0,lock:true,t0:0};
+  // show every card first, then hide them, so you never have to flip blind
+  $('board').innerHTML=G.deck.map((c,i)=>`<button class="mcard up" data-i="${i}" aria-label="Card">${gFace(c)}</button>`).join('');
+  gStats();gtick=setInterval(gStats,500);
+  let left=4;
+  const peekMsg=()=>{$('gstat').textContent='Look at the board — hiding in '+left+'…'};
+  peekMsg();
+  gpeek=setInterval(()=>{
+    left--;
+    if(left>0){peekMsg();return}
+    clearInterval(gpeek);
+    document.querySelectorAll('.mcard').forEach(el=>{el.classList.remove('up');el.innerHTML='<span class="qm">?</span>';el.setAttribute('aria-label','Hidden card')});
+    G.lock=false;G.t0=Date.now();
+    $('gstat').textContent='Flip two cards — a code and the produce it belongs to.';
+    gStats();
+  },1000);
+}
+function gFace(card){
+  const it=G.picks[card.k];
+  if(card.kind==='code')return `<span class="cbig notranslate" translate="no">${esc(it.c)}</span>`;
+  return `<span class="pic">${img(it)}</span><span class="nm">${esc(it.n)}</span>`;
+}
+$('board').onclick=e=>{
+  const b=e.target.closest('.mcard');if(!b||!G||G.lock)return;
+  const i=+b.dataset.i,card=G.deck[i];
+  if(b.classList.contains('up')||G.done[card.k])return;
+  b.classList.add('up');b.innerHTML=gFace(card);G.open.push(i);
+  if(G.open.length<2)return;
+  const a=G.deck[G.open[0]],d=G.deck[G.open[1]];G.moves++;
+  const cell=x=>document.querySelector(`.mcard[data-i="${x}"]`);
+  if(a.k===d.k&&a.kind!==d.kind){
+    G.done[a.k]=1;G.open.forEach(x=>cell(x).classList.add('done'));G.open=[];gStats();
+    if(Object.keys(G.done).length===G.picks.length){
+      clearInterval(gtick);
+      const ms=Date.now()-G.t0,best=gBest();let line=G.moves+' moves in '+mmss(ms);
+      if(!best||ms<best){try{localStorage.setItem('pluMatchBest',String(ms))}catch(e){}line+=' · new best!'}
+      else line+=' · best '+mmss(best);
+      $('gstat').textContent='Board cleared 🎉 '+line;
+      gStats();
+    }
+  }else{
+    G.lock=true;const open=G.open.slice();G.open=[];
+    setTimeout(()=>{open.forEach(x=>{const el=cell(x);if(!el)return;el.classList.remove('up');el.innerHTML='<span class="qm">?</span>'});G.lock=false},750);
+  }
+};
+$('gNew').onclick=newGame;
+
+/* Register: a customer sets produce on the counter and you type its code.
+   The item waits until you get it right, so a miss teaches the code. */
+const rSet=(k,v)=>{const e=$(k);if(e)e.textContent=v};
+function rStats(){rSet('rCust',RS.cust);rSet('rItems',RS.items);rSet('rAcc',RS.tries?Math.round(RS.right/RS.tries*100)+'%':'—');rSet('rBest',RS.best)}
+function rShow(){const d=$('rDisp');if(!d)return;const t=R&&R.typed?R.typed:'—';d.textContent=t;d.className='regdisp'+(R&&R.typed?'':' empty')}
+function startReg(){if(!R||R.i>=R.bag.length)newCustomer();else rItem()}
+function newCustomer(){
+  const p=pool();if(!p.length)return;
+  const n=Math.min(3+Math.floor(Math.random()*2),p.length);
+  R={bag:shuffle(p.slice()).slice(0,n),i:0,typed:'',lock:false};
+  RS.cust++;$('rList').innerHTML='';rStats();rItem();
+}
+function rItem(){
+  if(!R)return;
+  const it=R.bag[R.i];if(!it)return rDone();
+  R.typed='';R.lock=false;rShow();
+  $('rWho').textContent='Customer '+RS.cust+' · item '+(R.i+1)+' of '+R.bag.length;
+  $('rPic').innerHTML=img(it);
+  $('rName').textContent=it.n;
+  const fb=$('rFb');fb.className='fb';fb.textContent='';
+}
+function rKey(k){
+  if(!R||R.lock)return;
+  if(k==='del'){R.typed=R.typed.slice(0,-1);rShow();return}
+  if(k==='ok'){rEnter();return}
+  if(R.typed.length<5){R.typed+=k;rShow()}
+}
+function rEnter(){
+  if(!R)return;
+  const it=R.bag[R.i];if(!it||!R.typed)return;
+  RS.tries++;const fb=$('rFb');
+  if(R.typed===it.c){
+    RS.right++;RS.items++;RS.streak++;RS.best=Math.max(RS.best,RS.streak);
+    fb.className='fb ok';fb.textContent='✓ '+it.c+' '+it.n+' — rung';
+    $('rList').insertAdjacentHTML('afterbegin','<li><span class="pic">'+img(it)+'</span><span>'+esc(it.n)+'</span><b>'+esc(it.c)+'</b></li>');
+    R.i++;R.lock=true;rStats();
+    setTimeout(()=>{if(!R)return;R.lock=false;R.i>=R.bag.length?rDone():rItem()},650);
+  }else{
+    RS.streak=0;fb.className='fb no';fb.textContent=it.n+' is '+it.c;
+    R.typed='';rShow();rStats();
+  }
+}
+function rDone(){
+  if(!R)return;
+  $('rWho').textContent='Customer '+RS.cust+' served ✓';
+  $('rName').textContent='Next customer…';
+  $('rPic').innerHTML='';
+  const fb=$('rFb');fb.className='fb ok';fb.textContent='Basket done — here comes the next one.';
+  R.lock=true;
+  setTimeout(()=>{if(mode==='reg'){R=null;newCustomer()}},1500);
+}
+$('rPad').onclick=e=>{const b=e.target.closest('button');if(b)rKey(b.dataset.k)};
+document.addEventListener('keydown',e=>{
+  if(mode!=='reg'||!R)return;
+  const t=e.target;if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))return;
+  if(/^[0-9]$/.test(e.key)){rKey(e.key);e.preventDefault()}
+  else if(e.key==='Backspace'){rKey('del');e.preventDefault()}
+  else if(e.key==='Enter'){rKey('ok');e.preventDefault()}
+});
+
 /* Live list: reads the "PLU" tab of the Enson Market PLU Codes Google Sheet so the manager can edit it.
    Uses the last good copy if the sheet can't be reached, and the built-in list as a final fallback. */
 const SHEET='https://docs.google.com/spreadsheets/d/1rTzjhimtnN6D9OEuXSSwg6g0wfu6brEZNSsK_gBmpoo/gviz/tq?tqx=out:csv&headers=1&sheet=PLU';
@@ -221,7 +401,7 @@ function useRows(R){const h=R[0].map(x=>x.trim().toLowerCase());const col=k=>h.i
     const sn=(si<0?'':(r[si]||'')).trim()||'Other';let k=secs.indexOf(sn);if(k<0){secs.push(sn);k=secs.length-1}
     out.push({i:out.length,s:k,c,n,t:ti<0?'':(r[ti]||'').trim(),p:pi<0?'':(r[pi]||'').trim()})}
   if(out.length<10)return false;S=secs;D=out;return true}
-function applyLive(R){if(!useRows(R))return false;if(sec>=S.length)sec=-1;chips();mode==='look'?draw():next();return true}
+function applyLive(R){if(!useRows(R))return false;if(sec>=S.length)sec=-1;chips();mode==='look'?draw():mode==='game'?newGame():mode==='reg'?newCustomer():next();return true}
 try{const c=localStorage.getItem('pluSheet');if(c)applyLive(JSON.parse(c))}catch(e){}
 fetch(SHEET,{cache:'no-store'}).then(r=>r.ok?r.text():Promise.reject()).then(t=>{const R=parseCSV(t);if(applyLive(R)){try{localStorage.setItem('pluSheet',JSON.stringify(R))}catch(e){}}}).catch(()=>{});
 }

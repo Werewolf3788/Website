@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#120b1c">
+<title>Merge Lair</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;min-height:100%;background:#120b1c;color:#f4e8ff;font-family:system-ui,sans-serif}
+  #top{position:sticky;top:0;z-index:4;display:flex;gap:6px;align-items:center;justify-content:space-between;padding:8px 10px;background:#1b1129;font-size:.78rem;font-weight:800}
+  .pill{background:#2b1c3f;border-radius:999px;padding:5px 9px}
+  #top a{color:#f0abfc;text-decoration:none}
+  .wrap{padding:10px}
+  #board{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;background:#1b1129;border:1px solid #3b2a55;border-radius:14px;padding:6px}
+  .cell{aspect-ratio:1;border-radius:8px;background:#241736;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.5rem;border:1px solid #33224a;position:relative}
+  .cell.sel{outline:2px solid #fbbf24;background:#3a2540}
+  .cell .t{position:absolute;bottom:1px;right:3px;font-size:8px;font-weight:900;color:#fcd34d}
+  .cell.empty{background:#1d122c;border-style:dashed;border-color:#2b1c3f}
+  #bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
+  button{font:inherit;font-weight:800;border:0;border-radius:11px;padding:11px 6px;font-size:.76rem;background:#a855f7;color:#1a0b2a;cursor:pointer}
+  button.alt{background:#33224a;color:#e9d5ff}
+  button:disabled{background:#2a1c3d;color:#6b5b83}
+  #msg{min-height:20px;font-size:.76rem;color:#d8b4fe;margin:8px 0 2px;line-height:1.4}
+  .card{background:#1b1129;border:1px solid #3b2a55;border-radius:12px;padding:10px;margin-bottom:8px}
+  .nm{font-weight:800;font-size:.86rem}
+  .sm{font-size:.71rem;color:#c4b5fd;line-height:1.45;margin-top:3px}
+  .bar{height:8px;background:#0e0817;border-radius:5px;overflow:hidden;margin:6px 0}
+  .bar i{display:block;height:100%;background:#ef4444;transition:width .2s}
+  #sheet{position:fixed;inset:0;background:#0b0713f5;padding:16px;overflow:auto;display:none;z-index:9}
+  #sheet.on{display:block}
+  #sheet h2{margin:0 0 8px;font-size:1.1rem;color:#fbbf24}
+  #sheet p{font-size:.82rem;line-height:1.55;color:#e9d5ff;margin:0 0 12px}
+  .quest{background:#1b1129;border:1px solid #3b2a55;border-radius:12px;padding:9px;margin-bottom:7px;font-size:.76rem}
+  .quest.done{border-color:#22c55e;color:#86efac}
+  .quest.now{border-color:#fbbf24;box-shadow:0 0 0 1px #fbbf2455}
+  .boss{text-align:center;background:radial-gradient(circle at 50% 30%,#3b1220,#1b0c16);border:1px solid #7f1d1d;border-radius:14px;padding:14px}
+  .boss .ic{font-size:3.2rem;line-height:1}
+  #toast{position:fixed;left:0;right:0;bottom:12px;text-align:center;pointer-events:none;z-index:10}
+  #toast div{display:inline-block;background:#1b1129ee;border:1px solid #4c1d95;color:#fde68a;font-weight:700;padding:7px 13px;border-radius:999px;font-size:.76rem;margin-top:5px}
+  /* opened from inside Bastion: drop the lair's own bar, the Bastion bar above already shows the purse */
+  html.embed #top{display:none}
+  html.embed .wrap{max-width:560px;margin:0 auto;padding:12px 12px 26px}
+  html.embed #board{gap:5px}
+</style>
+</head>
+<body>
+<div id="top">
+  <span class="pill">🪙 <b id="coins">0</b></span>
+  <span class="pill">🪺 <b id="charges">3</b></span>
+  <span class="pill" id="tierPill">best: Egg</span>
+  <a href="index.html">☰ Games</a>
+</div>
+<div class="wrap">
+  <div id="raidInfo"></div>
+  <div id="board"></div>
+  <div id="msg"></div>
+  <div id="bar">
+    <button id="layBtn">🥚 Lay egg</button>
+    <button id="throwBtn" class="alt">⚔️ Raid</button>
+    <button id="questBtn" class="alt">📜 Quests</button>
+  </div>
+  <div class="card" style="margin-top:10px"><div class="nm">How it works</div>
+    <div class="sm">Tap a creature, then tap another of the same kind — the two fuse into the next tier. Every merge refills one nest charge, so keep merging. Raids: tap a creature while raiding to hurl it at the boss.</div></div>
+</div>
+<div id="sheet"></div>
+<div id="toast"></div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var SAVE = 'mergelair_v2';
+/* opened from inside Bastion (?embed=1): no own top bar, and the gold here is the Bastion purse */
+var EMBED = /[?&]embed=1/.test(location.search);
+if (EMBED) document.documentElement.classList.add('embed');
+var gotCash = !EMBED;
+var TIERS = [
+  { ic:'🥚', n:'Egg' }, { ic:'🐣', n:'Hatchling' }, { ic:'🦎', n:'Wyrmling' },
+  { ic:'🐉', n:'Drake' }, { ic:'🐲', n:'Wyrm' }, { ic:'🔥', n:'Elder Dragon' }
+];
+var N = 6;
+var DMG = [3, 7, 16, 32, 60, 120];
+var QUESTS = [
+  { id:1, t:'Make five merges', story:'The nest is cold and there is one egg in it. Merge what you have, keep the bloodline moving, and the lair will wake up around you.', goal:function(){ return S.merges >= 5; }, prog:function(){ return Math.min(S.merges, 5) + '/5 merges'; } },
+  { id:2, t:'Hatch a Wyrmling', story:'Something in the dark shifted when the first Hatchlings clawed out. A Wyrmling would be proof the lair still remembers how to make dragons.', goal:function(){ return S.bestTier >= 2; }, prog:function(){ return 'best creature: ' + TIERS[S.bestTier].n; } },
+  { id:3, t:'Break the first raider', story:'A scavenger captain has camped at the mouth of the lair with a crowbar and a grudge. Throw something at him.', goal:function(){ return S.raids >= 1; }, prog:function(){ return S.raids + '/1 raid won'; } },
+  { id:4, t:'Reach a Drake', story:'The lair has three chambers and only one of them is warm. A Drake will do nicely for the second.', goal:function(){ return S.bestTier >= 3; }, prog:function(){ return 'best creature: ' + TIERS[S.bestTier].n; } },
+  { id:5, t:'Fifteen merges deep', story:'Every scale you fuse teaches the nest something. Fifteen merges in and the eggs start coming out heavier.', goal:function(){ return S.merges >= 15; }, prog:function(){ return Math.min(S.merges, 15) + '/15 merges'; } },
+  { id:6, t:'Win the second raid', story:'Word travels. A wyrm-hunter is coming up the tunnel with nets and a very long spear. Send him back down it.', goal:function(){ return S.raids >= 2; }, prog:function(){ return S.raids + '/2 raids won'; } },
+  { id:7, t:'Raise an Elder Dragon', story:'The old carvings on the wall show a creature with wings wide enough to fill the chamber. Nothing has matched that in a hundred years — until now.', goal:function(){ return S.bestTier >= 5; }, prog:function(){ return 'best creature: ' + TIERS[S.bestTier].n; } },
+  { id:8, t:'End the siege', story:'They have brought everything they have to the lair mouth. One last fight, and the mountain belongs to the nest again.', goal:function(){ return S.raids >= 3; }, prog:function(){ return S.raids + '/3 raids won'; } }
+];
+var BOSSES = [
+  { n:'Scavenger Captain', ic:'🪓', hp:45, smashEvery:3, story:'A crowbar, a lantern, and far too much confidence.' },
+  { n:'Wyrm Hunter', ic:'🗡️', hp:150, smashEvery:3, story:'Net, spear, and a map of every tunnel in the mountain.' },
+  { n:'The Siege Marshal', ic:'🏰', hp:300, smashEvery:2, story:'Every raider for fifty miles, and a battering ram pointed at your nest.' }
+];
+
+var S = { coins:20, charges:3, merges:0, bestTier:0, raids:0, board:[], sel:-1, raid:null, throwing:false, quest:0 };
+var msgT = null;
+
+function blank(){ var a = []; for (var i = 0; i < N * N; i++) a.push(null); return a; }
+function load(){
+  S.board = blank();
+  try {
+    var d = JSON.parse(localStorage.getItem(SAVE) || 'null');
+    if (!d) return;
+    ['coins','charges','merges','bestTier','raids'].forEach(function(k){ if (typeof d[k] === 'number') S[k] = d[k]; });
+    if (Array.isArray(d.board) && d.board.length === N * N) S.board = d.board;
+  } catch (e) {}
+}
+function save(){ try { localStorage.setItem(SAVE, JSON.stringify(S)); } catch (e) {}
+  if (EMBED && gotCash) { try { parent.postMessage({ t:'bastion-purse', coins:S.coins }, '*'); } catch (e) {} } }
+function say(t){
+  $('msg').textContent = t;
+  clearTimeout(msgT);
+}
+function toast(t){
+  var box = $('toast'); box.innerHTML = '';
+  var d = document.createElement('div'); d.textContent = t; box.appendChild(d);
+  setTimeout(function(){ d.remove(); }, 1900);
+}
+
+function hud(){
+  $('coins').textContent = S.coins;
+  $('charges').textContent = S.charges;
+  $('tierPill').textContent = 'best: ' + TIERS[S.bestTier].n;
+  $('layBtn').textContent = S.charges > 0 ? '🥚 Lay egg (' + S.charges + ')' : '🥚 No charges — merge!';
+  $('layBtn').disabled = S.charges <= 0;
+  $('throwBtn').textContent = S.raid ? '⚔️ Raid in progress' : '⚔️ Raid';
+}
+
+function render(){
+  hud();
+  var ri = $('raidInfo');
+  if (ri) {
+    if (S.raid) {
+      var pct = Math.max(0, S.raid.hp / S.raid.max * 100);
+      var until = S.raid.boss.smashEvery - (S.raid.throws % S.raid.boss.smashEvery);
+      ri.innerHTML = '<div class="card" style="border-color:#ef4444"><div class="nm">' + S.raid.boss.ic + ' ' + S.raid.boss.n + ' · ' + Math.max(0, S.raid.hp) + ' / ' + S.raid.max + ' HP</div>' +
+        '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="sm">Tap a creature to hurl it. ' + until + ' throw' + (until === 1 ? '' : 's') + ' until it smashes one of yours.</div></div>';
+    } else ri.innerHTML = '';
+  }
+  var board = $('board');
+  var html = '';
+  for (var i = 0; i < S.board.length; i++) {
+    var it = S.board[i];
+    if (!it) { html += '<div class="cell empty" data-i="' + i + '"></div>'; continue; }
+    html += '<div class="cell' + (S.sel === i ? ' sel' : '') + '" data-i="' + i + '">' + TIERS[it.t].ic +
+      '<span class="t">' + it.t + '</span></div>';
+  }
+  board.innerHTML = html;
+  [].forEach.call(board.children, function(el){ el.onclick = function(){ tapTile(+el.dataset.i); }; });
+}
+
+function tapTile(i){
+  if (S.raid) return hurl(i);
+  var it = S.board[i];
+  if (!it) return;
+  if (S.sel === i) { S.sel = -1; render(); return; }
+  if (S.sel < 0) { S.sel = i; say(TIERS[it.t].n + ' selected — tap another ' + TIERS[it.t].n + ' to fuse them.'); render(); return; }
+  var a = S.board[S.sel];
+  if (!a) { S.sel = -1; return render(); }
+  if (a.t !== it.t) { say('Those are different creatures. Match the same tier.'); S.sel = i; render(); return; }
+  if (it.t >= TIERS.length - 1) { say('Elder Dragons are the top of the line — sell them or hurl them at a boss.'); S.sel = -1; return render(); }
+  doMerge(S.sel, i);
+}
+
+function doMerge(a, b){
+  var tier = S.board[a].t;
+  [a, b].forEach(function(k){ S.board[k] = null; });
+  S.board[a] = { t: tier + 1 };
+  S.merges++;
+  S.charges = Math.min(5, S.charges + 1);
+  var coins = 3 + (tier + 1) * 4;
+  S.coins += coins;
+  if (tier + 1 > S.bestTier) { S.bestTier = tier + 1; toast('First ' + TIERS[tier + 1].n + '!'); }
+  S.sel = -1;
+  say('Two ' + TIERS[tier].n + 's fused into a ' + TIERS[tier + 1].n + ' · +' + coins + ' gold · +1 nest charge');
+  checkQuests();
+  save(); render();
+}
+
+function layEgg(){
+  if (S.charges <= 0) return;
+  var free = [];
+  for (var i = 0; i < S.board.length; i++) if (!S.board[i]) free.push(i);
+  if (!free.length) { say('The board is full — merge or sell something first.'); return; }
+  S.charges--;
+  var spot = free[Math.floor(Math.random() * free.length)];
+  var bonus = Math.random() < 0.12 && S.bestTier >= 2 ? { t: Math.min(2, S.bestTier) } : { t: 0 };
+  S.board[spot] = bonus;
+  S.sel = -1;
+  say(bonus.t > 0 ? 'The nest surprises you: a ' + TIERS[bonus.t].n + '.' : 'An egg rolls out of the nest.');
+  save(); render();
+}
+
+/* ---------------- raids ---------------- */
+function openRaid(){
+  var idx = Math.min(S.raids, BOSSES.length - 1);
+  var boss = BOSSES[idx];
+  var creatures = S.board.filter(function(x){ return x; }).length;
+  var hitFor = S.board.reduce(function(a, x){ return a + (x ? DMG[x.t] : 0); }, 0);
+  showSheet('<h2>Raid ' + (idx + 1) + ': ' + boss.n + '</h2><p>' + boss.story + '</p>' +
+    '<div class="boss"><div class="ic">' + boss.ic + '</div><div class="nm">' + boss.n + '</div>' +
+    '<div class="bar"><i style="width:100%"></i></div><div class="sm">' + boss.hp + ' HP · smashes a creature every ' + boss.smashEvery + ' throws</div></div>' +
+    '<p style="margin-top:12px;font-size:.8rem">Tap your creatures on the board to hurl them. Your whole nest can hit for <b>' + hitFor + '</b> right now, and the boss has <b>' + boss.hp + '</b>. You lose when the board is empty and the boss is still standing.</p>' +
+    '<button class="big" id="startRaid" style="width:100%;background:#ef4444;color:#fff;border:0;border-radius:12px;padding:13px;font-weight:900" ' + (creatures < 3 ? 'disabled' : '') + '>' +
+    (creatures < 3 ? 'Need at least 3 creatures' : 'Begin the raid') + '</button><button id="closeRaid" class="alt" style="width:100%;margin-top:8px">Not yet</button>');
+  $('closeRaid').onclick = hideSheet;
+  var b = $('startRaid');
+  if (b) b.onclick = function(){ hideSheet(); S.raid = { hp: boss.hp, max: boss.hp, boss: boss, throws: 0, idx: idx }; S.sel = -1; render(); say('Raid started — tap creatures to hurl them at ' + boss.n + '.'); };
+}
+
+function hurl(i){
+  var it = S.board[i];
+  if (!it) return;
+  var dmg = DMG[it.t];
+  S.board[i] = null;
+  S.raid.hp -= dmg;
+  S.raid.throws++;
+  if (S.raid.hp <= 0) {
+    var idx = S.raid.idx;
+    S.raid = null;
+    S.raids++;
+    S.coins += 30 + idx * 25;
+    S.charges = Math.min(5, S.charges + 2);
+    S.bestTier = Math.max(S.bestTier, 2);
+    save(); render();
+    toast('Raid won! +' + (30 + idx * 25) + ' gold');
+    say('The ' + BOSSES[idx].n + ' goes down. The nest is yours again.');
+    checkQuests(); if (S.raids >= BOSSES.length) finale();
+    return;
+  }
+  if (S.raid.throws % S.raid.boss.smashEvery === 0) smash();
+  if (!S.board.some(function(x){ return x; })) {
+    var boss = S.raid.boss;
+    S.raid = null;
+    save(); render();
+    say('Nothing left to throw. ' + boss.n + ' laughs and walks away — build the nest back up and try again.');
+    return;
+  }
+  save(); render();
+}
+
+function smash(){
+  var filled = [];
+  S.board.forEach(function(x, i){ if (x) filled.push(i); });
+  if (!filled.length) return;
+  var pick = filled[Math.floor(Math.random() * filled.length)];
+  var t = S.board[pick].t;
+  S.board[pick] = null;
+  say('The ' + S.raid.boss.n + ' smashes a ' + TIERS[t].n + '.');
+}
+
+/* ---------------- quests ---------------- */
+function questIndex(){
+  for (var i = 0; i < QUESTS.length; i++) if (!QUESTS[i].goal()) return i;
+  return QUESTS.length;
+}
+function checkQuests(){
+  var i = questIndex();
+  if (i > S.quest) {
+    S.quest = i;
+    var q = QUESTS[Math.min(i, QUESTS.length - 1)];
+    S.coins += 15 + i * 6;
+    toast('Quest cleared — ' + q.t);
+    if (i >= QUESTS.length) setTimeout(finale, 700);
+  }
+  save();
+}
+function finale(){
+  if (S.raids < BOSSES.length) return;
+  showSheet('<h2>The lair is quiet</h2><p>Three raids broken, an Elder Dragon in the warm chamber, and nothing left at the mouth of the mountain but abandoned spears.</p>' +
+    '<p style="font-size:.82rem">The nest keeps going: raise a second Elder, bank gold, and take the raids again for sport.</p>' +
+    '<button id="closeFin" style="width:100%;border:0;border-radius:12px;padding:13px;font-weight:900;background:#a855f7;color:#1a0b2a">Back to the nest</button>');
+  $('closeFin').onclick = hideSheet;
+}
+
+function openQuests(){
+  var now = questIndex();
+  var html = '<h2>Quests</h2>';
+  QUESTS.forEach(function(q, i){
+    var done = q.goal(), cls = done ? ' done' : (i === now ? ' now' : '');
+    html += '<div class="quest' + cls + '"><b>' + (done ? '✓ ' : (i === now ? '▶ ' : '· ')) + q.t + '</b>' +
+      (i === now ? '<div class="sm" style="margin-top:4px">' + q.story + '</div>' : '') +
+      '<div class="sm" style="margin-top:3px">' + q.prog() + '</div></div>';
+  });
+  html += '<button id="closeQ" style="width:100%;margin-top:8px">Close</button>';
+  showSheet(html);
+  $('closeQ').onclick = hideSheet;
+}
+
+function showSheet(html){ $('sheet').innerHTML = html; $('sheet').classList.add('on'); }
+function hideSheet(){ $('sheet').classList.remove('on'); }
+
+$('layBtn').onclick = layEgg;
+$('throwBtn').onclick = function(){
+  if (S.raid) { say('Already raiding — throw a creature!'); return; }
+  openRaid();
+};
+$('questBtn').onclick = openQuests;
+
+addEventListener('message', function(e){
+  var d = e.data || {};
+  if (d.t === 'bastion-cash' && EMBED && typeof d.cash === 'number' && isFinite(d.cash)) {
+    gotCash = true; S.coins = Math.max(0, Math.round(d.cash)); hud();
+  }
+});
+if (EMBED) { try { parent.postMessage({ t:'bastion-need-cash' }, '*'); } catch (e) {} }
+
+load();
+if (!S.board.some(function(x){ return x; })) {
+  S.board[14] = { t:0 }; S.board[15] = { t:0 }; S.board[20] = { t:0 }; S.board[21] = { t:0 };
+}
+render();
+checkQuests();
+if (S.raids >= BOSSES.length) say('All three raids are broken. The lair is yours — keep merging for the fun of it.');
+else say('Tap a creature, then another of the same kind to fuse them.');
+})();
+</script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
+</body>
+</html>

@@ -1,0 +1,452 @@
+{
+  "schema_version": 1,
+  "game": "Red Dead Redemption 2",
+  "gameId": "RDR2",
+  "mode": "Red Dead Online (Multiplayer)",
+  "commId": "NPWR09309_00",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR09309_00",
+      "note": "Red Dead Redemption 2 trophy list. Red Dead Online content lives under the same list (no separate Online trophy set)."
+    },
+    "xbox": {
+      "note": "Same achievements as PlayStation; no separate Online list."
+    },
+    "steam": {
+      "appId": "1174180",
+      "url": "https://store.steampowered.com/app/1174180/"
+    },
+    "pc": {
+      "note": "Red Dead Online uses the same Rockstar account as console. Collector progress is per-character, not per-platform."
+    }
+  },
+  "image_url": "",
+  "crossplay": false,
+  "focus_note": "Red Dead Online only - this file tracks the Collector role (Madam Nazar's 17 collections, 184 collectible items). It does not track the single-player story. There is no Rockstar public API, so item names and set values are static game data and the only live thing a site can pull is the daily Collector cycle / Madam Nazar location (see live_data).",
+  "lastUpdated": "2026-11-26",
+  "live_data": {
+    "note": "Rockstar does not publish a developer API and issues no API keys for RDR2/RDO. Everything below is community-maintained and needs no key.",
+    "endpoints": [
+      {
+        "id": "cycles",
+        "url": "https://api.rdo.gg/cycles",
+        "returns": "Yesterday / today / tomorrow cycle number per collectible category. Cycles roll over at 00:00 UTC.",
+        "used_for": "Which cycle the fixed spawns are on right now - lets the tracker show today's locations instead of guessing."
+      },
+      {
+        "id": "nazar",
+        "url": "https://api.rdo.gg/nazar",
+        "returns": "Current Madam Nazar location.",
+        "used_for": "Where to hand in completed sets and buy Collector maps."
+      },
+      {
+        "id": "weekly",
+        "url": "https://api.rdo.gg/weekly",
+        "returns": "This week's Collector weekly request and its item keys.",
+        "used_for": "Bonus-XP weekly checklist item."
+      },
+      {
+        "id": "map_cycles_static",
+        "url": "https://raw.githubusercontent.com/jeanropke/RDR2CollectorsMap/master/data/cycles.json",
+        "returns": "Static cycle definitions (which item sits in which cycle slot).",
+        "used_for": "Mapping a cycle number to the item that spawns today."
+      },
+      {
+        "id": "map_locations",
+        "url": "https://raw.githubusercontent.com/jeanropke/RDR2CollectorsMap/master/data/items.json",
+        "returns": "Every spawn marker (lat/lng per cycle) for every item key.",
+        "used_for": "Plotting spawn points. Keys here match the item ids in this file."
+      }
+    ],
+    "no_key_note": "RDO.GG asks for no key and has no auth. If they ever add rate limits, cache /cycles for 24h rather than calling per page view."
+  },
+  "metrics": [
+    {
+      "id": "metric_collections",
+      "icon": "\ud83d\udce6",
+      "label": "Collections",
+      "current": 0,
+      "total": 17,
+      "step": 1
+    },
+    {
+      "id": "metric_items",
+      "icon": "\ud83d\udd0d",
+      "label": "Collectibles",
+      "current": 0,
+      "total": 184,
+      "step": 1
+    },
+    {
+      "id": "metric_set_value",
+      "icon": "\ud83d\udcb0",
+      "label": "Full Set Value",
+      "current": 0,
+      "total": 4848.5,
+      "step": 1
+    }
+  ],
+  "collectibles": {
+    "flowers": {
+      "quest_name": "American Wild Flowers",
+      "total_count": 9,
+      "set_value": 155.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "Picked by hand, no tools needed. All nine flower types spawn in the open world on fixed spots that rotate daily between cycles. Blood Flower and Agarita only spawn at night, so check after dark if they are the ones you are missing.",
+      "items": [
+        { "id": "provision_wldflwr_agarita", "name": "Agarita", "region": "", "location": "Night only", "guide": "" },
+        { "id": "provision_wldflwr_bitterweed", "name": "Bitterweed", "region": "", "location": "", "guide": "" },
+        { "id": "provision_wldflwr_blood_flower", "name": "Blood Flower", "region": "", "location": "Night only", "guide": "" },
+        { "id": "provision_wldflwr_cardinal_flower", "name": "Cardinal Flower", "region": "", "location": "", "guide": "" },
+        { "id": "provision_wldflwr_chocolate_daisy", "name": "Chocolate Daisy", "region": "", "location": "", "guide": "" },
+        { "id": "provision_wldflwr_creek_plum", "name": "Creek Plum", "region": "", "location": "", "guide": "" },
+        { "id": "provision_wldflwr_texas_blue_bonnet", "name": "Texas Bluebonnet", "region": "", "location": "", "guide": "" },
+        { "id": "provision_wldflwr_wild_rhubarb", "name": "Wild Rhubarb", "region": "", "location": "", "guide": "" },
+        { "id": "provision_wldflwr_wisteria", "name": "Wisteria", "region": "", "location": "", "guide": "" }
+      ]
+    },
+    "bottles": {
+      "quest_name": "Antique Alcohol Bottles",
+      "total_count": 9,
+      "set_value": 160.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "Found inside buildings, crates, cupboards and shacks - no tools. Nine bottles, all on fixed cycle-based spots. This is normally the first set a new Collector finishes because the spots are so easy to reach.",
+      "items": [
+        { "id": "consumable_carib_rum", "name": "Caribbean Rum", "region": "", "location": "", "guide": "" },
+        { "id": "consumable_cognac", "name": "Cognac", "region": "", "location": "", "guide": "" },
+        { "id": "consumable_cyprus_brandy", "name": "Cyprus Brandy", "region": "", "location": "", "guide": "" },
+        { "id": "consumable_irish_whiskey", "name": "Irish Whiskey", "region": "", "location": "", "guide": "" },
+        { "id": "consumable_londry_gin", "name": "London Dry Gin", "region": "", "location": "", "guide": "" },
+        { "id": "consumable_oldtom_gin", "name": "Old Tom Gin", "region": "", "location": "", "guide": "" },
+        { "id": "consumable_plymouth_gin", "name": "Plymouth Gin", "region": "", "location": "", "guide": "" },
+        { "id": "consumable_scotch_whiskey", "name": "Scotch Whiskey", "region": "", "location": "", "guide": "" },
+        { "id": "consumable_tenn_whiskey", "name": "Tennessee Whiskey", "region": "", "location": "", "guide": "" }
+      ]
+    },
+    "eggs": {
+      "quest_name": "Bird Eggs",
+      "total_count": 9,
+      "set_value": 182.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "Nine eggs in nests. No tools - you shoot the nest or climb/shoot the tree, then pick the egg up. Nests respawn fast, so a full egg run is one of the quickest sets to farm.",
+      "items": [
+        { "id": "provision_duck_egg", "name": "Duck Egg", "region": "", "location": "Ground nest", "guide": "" },
+        { "id": "provision_eagle_egg", "name": "Eagle Egg", "region": "", "location": "High nest", "guide": "" },
+        { "id": "provision_egret_egg", "name": "Egret Egg", "region": "", "location": "Tree nest", "guide": "" },
+        { "id": "provision_goose_egg", "name": "Goose Egg", "region": "", "location": "Ground nest", "guide": "" },
+        { "id": "provision_hawk_egg", "name": "Hawk Egg", "region": "", "location": "High nest", "guide": "" },
+        { "id": "provision_heron_egg", "name": "Heron Egg", "region": "", "location": "Tree nest", "guide": "" },
+        { "id": "provision_loon_egg", "name": "Loon Egg", "region": "", "location": "Tree nest", "guide": "" },
+        { "id": "provision_spoonbill_egg", "name": "Spoonbill Egg", "region": "", "location": "Tree nest", "guide": "" },
+        { "id": "provision_vulture_egg", "name": "Vulture Egg", "region": "", "location": "High nest", "guide": "" }
+      ]
+    },
+    "arrowheads": {
+      "quest_name": "Arrowheads",
+      "total_count": 12,
+      "set_value": 289,
+      "region": "Red Dead Online - Collector role",
+      "description": "Twelve arrowheads. Shovel required; some spots also want the metal detector out. Dig spots show as disturbed earth once you are close, and the detector pings before that.",
+      "items": [
+        { "id": "provision_arrowhead_agate", "name": "Agate Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_bone", "name": "Bone Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_chipped", "name": "Chipped Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_crude", "name": "Crude Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_feldspar", "name": "Feldspar Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_flint", "name": "Flint Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_obsidian", "name": "Obsidian Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_quartz", "name": "Quartz Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_raw", "name": "Raw Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_rough", "name": "Rough Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_slate", "name": "Slate Arrowhead", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_arrowhead_splintered", "name": "Splintered Arrowhead", "region": "", "location": "Dig spot", "guide": "" }
+      ]
+    },
+    "heirlooms": {
+      "quest_name": "Family Heirlooms",
+      "total_count": 15,
+      "set_value": 292.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "Fifteen heirlooms, mostly combs, brushes and hairpins. Shovel required for the buried ones; the rest sit in chests and on shelves in houses and homesteads.",
+      "items": [
+        { "id": "provision_hrlm_brush_boar", "name": "Boar Bristle Brush", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_brush_ebony", "name": "Ebony Brush", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_brush_goathair", "name": "Goat Hair Brush", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_brush_horsehair", "name": "Horsehair Brush", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_brush_rosewood", "name": "Rosewood Brush", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_brush_rosewood_ng", "name": "Rosewood Brush (Variant)", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_comb_boxwood", "name": "Boxwood Comb", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_comb_cherrywood", "name": "Cherrywood Comb", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_comb_ivory", "name": "Ivory Comb", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_comb_tortoiseshell", "name": "Tortoiseshell Comb", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_hrlm_hairpin_ebony", "name": "Ebony Hairpin", "region": "", "location": "Buried", "guide": "" },
+        { "id": "provision_hrlm_hairpin_ivory", "name": "Ivory Hairpin", "region": "", "location": "Buried", "guide": "" },
+        { "id": "provision_hrlm_hairpin_jade", "name": "Jade Hairpin", "region": "", "location": "Buried", "guide": "" },
+        { "id": "provision_hrlm_hairpin_metal", "name": "Metal Hairpin", "region": "", "location": "Buried", "guide": "" },
+        { "id": "provision_hrlm_hairpin_wooden", "name": "Wooden Hairpin", "region": "", "location": "Buried", "guide": "" }
+      ]
+    },
+    "coins": {
+      "quest_name": "Coins",
+      "total_count": 15,
+      "set_value": 540,
+      "region": "Red Dead Online - Collector role",
+      "description": "The most valuable collection in the role at $540 a set. Fifteen coins, all buried - shovel plus metal detector. Coin dig sites are the ones most often camped by other players, so check the detector ping early.",
+      "items": [
+        { "id": "provision_coin_1700_ny_tkn", "name": "1700 New Yorke Token", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1787_cent_tkn", "name": "1787 Cent Token", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1789_pny", "name": "1789 Penny", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1792_lib_qtr", "name": "1792 Liberty Quarter", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1792_nickel", "name": "1792 Nickel", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1792_qtr", "name": "1792 Quarter", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1794_slv_dlr", "name": "1794 Silver Dollar", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1795_hlf_eag", "name": "1795 Half Eagle", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1796_hlf_pny", "name": "1796 Half Penny", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1797_gld_eag", "name": "1797 Gold Eagle", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1798_slv_dlr", "name": "1798 Silver Dollar", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1800_five_dlr", "name": "1800 Five Dollar", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1800_gld_dlr", "name": "1800 Gold Dollar", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1800_gld_qtr", "name": "1800 Gold Quarter", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "provision_coin_1800_hlf_dime", "name": "1800 Half Dime", "region": "", "location": "Dig spot", "guide": "" }
+      ]
+    },
+    "fossils_coastal": {
+      "quest_name": "Fossils: Coastal",
+      "total_count": 7,
+      "set_value": 217,
+      "region": "Red Dead Online - Collector role",
+      "description": "One of three fossil sets. Coastal fossils are the ones found on the coastline and around the bayou lowlands. Shovel required; several spots also need the metal detector.",
+      "items": [
+        { "id": "collector_fossil_bivalve", "name": "Bivalve Fossil", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_brachiopod", "name": "Brachiopod Fossil", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_cephalopod", "name": "Cephalopod Fossil", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_coral", "name": "Coral Fossil", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_neo", "name": "Neolithic Fossil", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_pet_wood", "name": "Petrified Wood", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_stone", "name": "Stone Fossil", "region": "", "location": "Dig spot", "guide": "" }
+      ]
+    },
+    "fossils_oceanic": {
+      "quest_name": "Fossils: Oceanic",
+      "total_count": 7,
+      "set_value": 288.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "Second fossil set. Oceanic fossils sit further inland than you would expect - mostly the open plains and rockier ground. Shovel required.",
+      "items": [
+        { "id": "collector_fossil_pet_wood_rainbow", "name": "Rainbow Petrified Wood", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_pet_wood_yellow_cat", "name": "Yellow Cat Petrified Wood", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_sea_lily", "name": "Sea Lily Fossil", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_sea_scorpion", "name": "Sea Scorpion Fossil", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_trilobite_crypto", "name": "Cryptolithus Trilobite", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_trilobite_iso", "name": "Isotelus Trilobite", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_tully_monster", "name": "Tully Monster Fossil", "region": "", "location": "Dig spot", "guide": "" }
+      ]
+    },
+    "fossils_megafauna": {
+      "quest_name": "Fossils: Megafauna",
+      "total_count": 6,
+      "set_value": 321,
+      "region": "Red Dead Online - Collector role",
+      "description": "Third and highest-paying fossil set. Teeth, claws and horns from big animals. Shovel required.",
+      "items": [
+        { "id": "collector_fossil_brow_horn", "name": "Brow Horn", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_tail_spike", "name": "Tail Spike", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_toe_claw", "name": "Toe Claw", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_tooth_mega", "name": "Megalodon Tooth", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_tooth_serrated", "name": "Serrated Tooth", "region": "", "location": "Dig spot", "guide": "" },
+        { "id": "collector_fossil_tooth_trex", "name": "Tyrannosaurus Tooth", "region": "", "location": "Dig spot", "guide": "" }
+      ]
+    },
+    "tarot_cups": {
+      "quest_name": "Tarot Cards: Suit of Cups",
+      "total_count": 14,
+      "set_value": 240.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "Ace through King of Cups. No tools - cards sit on tables, crates, barrels and ledges in buildings and camps. Tarot spawns are the densest in the role, so a cards-only run fills the bag fast.",
+      "items": [
+        { "id": "document_card_ace_cups", "name": "Ace of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_two_cups", "name": "Two of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_three_cups", "name": "Three of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_four_cups", "name": "Four of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_five_cups", "name": "Five of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_six_cups", "name": "Six of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_seven_cups", "name": "Seven of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_eight_cups", "name": "Eight of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_nine_cups", "name": "Nine of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_ten_cups", "name": "Ten of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_page_cups", "name": "Page of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_knight_cups", "name": "Knight of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_queen_cups", "name": "Queen of Cups", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_king_cups", "name": "King of Cups", "region": "", "location": "", "guide": "" }
+      ]
+    },
+    "tarot_swords": {
+      "quest_name": "Tarot Cards: Suit of Swords",
+      "total_count": 14,
+      "set_value": 286.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "Ace through King of Swords. No tools, same spawn style as the other suits. Anything marked as a random tarot spot anywhere on the map can drop a Swords card.",
+      "items": [
+        { "id": "document_card_ace_swords", "name": "Ace of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_two_swords", "name": "Two of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_three_swords", "name": "Three of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_four_swords", "name": "Four of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_five_swords", "name": "Five of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_six_swords", "name": "Six of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_seven_swords", "name": "Seven of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_eight_swords", "name": "Eight of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_nine_swords", "name": "Nine of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_ten_swords", "name": "Ten of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_page_swords", "name": "Page of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_knight_swords", "name": "Knight of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_queen_swords", "name": "Queen of Swords", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_king_swords", "name": "King of Swords", "region": "", "location": "", "guide": "" }
+      ]
+    },
+    "tarot_wands": {
+      "quest_name": "Tarot Cards: Suit of Wands",
+      "total_count": 14,
+      "set_value": 239,
+      "region": "Red Dead Online - Collector role",
+      "description": "Ace through King of Wands. No tools. Wands cards turn up in the same containers and random tarot spots as the other three suits.",
+      "items": [
+        { "id": "document_card_ace_wands", "name": "Ace of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_two_wands", "name": "Two of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_three_wands", "name": "Three of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_four_wands", "name": "Four of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_five_wands", "name": "Five of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_six_wands", "name": "Six of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_seven_wands", "name": "Seven of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_eight_wands", "name": "Eight of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_nine_wands", "name": "Nine of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_ten_wands", "name": "Ten of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_page_wands", "name": "Page of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_knight_wands", "name": "Knight of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_queen_wands", "name": "Queen of Wands", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_king_wands", "name": "King of Wands", "region": "", "location": "", "guide": "" }
+      ]
+    },
+    "tarot_pentacles": {
+      "quest_name": "Tarot Cards: Suit of Pentacles",
+      "total_count": 14,
+      "set_value": 287,
+      "region": "Red Dead Online - Collector role",
+      "description": "Ace through King of Pentacles. No tools. The most valuable tarot suit, mostly because the Ace, Queen and King are rarer in random spawns.",
+      "items": [
+        { "id": "document_card_ace_pentacles", "name": "Ace of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_two_pentacles", "name": "Two of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_three_pentacles", "name": "Three of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_four_pentacles", "name": "Four of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_five_pentacles", "name": "Five of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_six_pentacles", "name": "Six of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_seven_pentacles", "name": "Seven of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_eight_pentacles", "name": "Eight of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_nine_pentacles", "name": "Nine of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_ten_pentacles", "name": "Ten of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_page_pentacles", "name": "Page of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_knight_pentacles", "name": "Knight of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_queen_pentacles", "name": "Queen of Pentacles", "region": "", "location": "", "guide": "" },
+        { "id": "document_card_king_pentacles", "name": "King of Pentacles", "region": "", "location": "", "guide": "" }
+      ]
+    },
+    "jewelry_bracelets": {
+      "quest_name": "Lost Jewelry: Bracelets",
+      "total_count": 8,
+      "set_value": 271.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "No tools. Bracelets come out of chests, lockboxes and the odd jewelry box inside houses. Lost Jewelry sets are the slowest to finish because several pieces only come from random spots rather than a guaranteed dig.",
+      "items": [
+        { "id": "provision_jewelry_carved_bracelet", "name": "Carved Bracelet", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_dmnd_bngle_bracelet", "name": "Diamond Bangle Bracelet", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_gld_bngle_bracelet", "name": "Gold Bangle Bracelet", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_grnet_bracelet", "name": "Garnet Bracelet", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_pearl_bracelet", "name": "Pearl Bracelet", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_sphr_bngle_bracelet", "name": "Sapphire Bangle Bracelet", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_sphr_bracelet", "name": "Sapphire Bracelet", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_turquoise_bracelet", "name": "Turquoise Bracelet", "region": "", "location": "Container", "guide": "" }
+      ]
+    },
+    "jewelry_earrings": {
+      "quest_name": "Lost Jewelry: Earrings",
+      "total_count": 11,
+      "set_value": 364.5,
+      "region": "Red Dead Online - Collector role",
+      "description": "No tools, chests and lockboxes. Eleven earrings makes this the biggest jewelry set, and a couple of the diamond pieces are random-spot only.",
+      "items": [
+        { "id": "provision_jewelry_coral_dngl_earring", "name": "Coral Dangle Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_dmnd_pendt_earring", "name": "Diamond Pendant Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_drop_earring", "name": "Drop Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_elk_tooth_earring", "name": "Elk Tooth Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_emerald_earring", "name": "Emerald Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_grnet_post_earring", "name": "Garnet Post Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_pearl_earring", "name": "Pearl Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_qn_dmnd_earring", "name": "Queen Diamond Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_rudy_dngl_earring", "name": "Ruby Dangle Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_turq_stud_earring", "name": "Turquoise Stud Earring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_wht_dmnd_earring", "name": "White Diamond Earring", "region": "", "location": "Container", "guide": "" }
+      ]
+    },
+    "jewelry_necklaces": {
+      "quest_name": "Lost Jewelry: Necklaces",
+      "total_count": 9,
+      "set_value": 335,
+      "region": "Red Dead Online - Collector role",
+      "description": "No tools. Necklaces sit in chests and jewelry boxes; the Gold Pendant and Black Pearl necklaces are the ones people get stuck on.",
+      "items": [
+        { "id": "provision_jewelry_amethyst_necklace", "name": "Amethyst Necklace", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_blck_pearl_necklace", "name": "Black Pearl Necklace", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_gld_cross_necklace", "name": "Gold Cross Necklace", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_gld_pearl_necklace", "name": "Gold Pearl Necklace", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_gld_pendt_necklace", "name": "Gold Pendant Necklace", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_mthr_pearl_necklace", "name": "Mother of Pearl Necklace", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_porcelain_necklace", "name": "Porcelain Necklace", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_slvr_pearl_necklace", "name": "Silver Pearl Necklace", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_topaz_necklace", "name": "Topaz Necklace", "region": "", "location": "Container", "guide": "" }
+      ]
+    },
+    "jewelry_rings": {
+      "quest_name": "Lost Jewelry: Rings",
+      "total_count": 11,
+      "set_value": 378,
+      "region": "Red Dead Online - Collector role",
+      "description": "No tools. Rings are the best-paying jewelry set at $378. Several are random-spot only, so check every container on your route rather than only the marked ones.",
+      "items": [
+        { "id": "provision_jewelry_coral_ring", "name": "Coral Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_emerald_ring", "name": "Emerald Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_french_dmnd_ring", "name": "French Diamond Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_moon_ring", "name": "Moon Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_onyx_ring", "name": "Onyx Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_pearl_ring", "name": "Pearl Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_pers_turq_ring", "name": "Persian Turquoise Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_topaz_ring", "name": "Topaz Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_turquoise_ring", "name": "Turquoise Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_whtgld_dmnd_ring", "name": "White Gold Diamond Ring", "region": "", "location": "Container", "guide": "" },
+        { "id": "provision_jewelry_ylwgld_dmnd_ring", "name": "Yellow Gold Diamond Ring", "region": "", "location": "Container", "guide": "" }
+      ]
+    }
+  },
+  "trophies": [],
+  "reference": {
+    "why_no_api": {
+      "answer": "Rockstar does not offer a public API, developer portal or API key for Red Dead Redemption 2 / Red Dead Online. Their backend (scapi.rockstargames.com) is internal, authenticated with a Rockstar account session, and undocumented. Any trackers built on it are scraping a logged-in session, which breaks whenever Rockstar changes the client - that is not something to put on a public site.",
+      "what_to_use_instead": "The community data above: the RDO.GG API for daily cycles / Madam Nazar / weekly request, and Jean Ropke's map data for spawn coordinates. Both need no key and are maintained actively."
+    },
+    "how_the_role_works": {
+      "unlock": "Buy the Collector's Bag from Madam Nazar (or the Roles menu once you have enough gold/tokens) to unlock the role.",
+      "cycles": "Collectible spawns rotate on a daily cycle. Cycles flip at 00:00 UTC. Pull /cycles once a day and cache it - do not call it per page view.",
+      "set_value": "Selling a complete set to Madam Nazar pays far more than selling the individual pieces, plus role XP. Total across all 17 collections is $4,848.50.",
+      "random_spots": "Not every item has a guaranteed spawn every cycle. Items that do not appear on a fixed spot can still drop from the role's random dig sites, chests and lockboxes - that is why some sets take days.",
+      "map_sell_note": "Madam Nazar moves daily; her location comes from /nazar. Collector maps sold by her mark a small set of nearby spawns for that cycle."
+    },
+    "data_provenance": {
+      "items": "The 184 item ids, collection membership and set sell values are game data taken from the community RDR2 Collectors Map dataset (jeanropke/RDR2CollectorsMap, released under the Unlicense). Item ids are the game's own keys, so they line up with the spawn data in items.json.",
+      "names": "Display names are derived from those item keys. A handful of fossil and heirloom names may differ slightly from the in-game wording - fix them here if you spot one.",
+      "cross_check": "Verify against the in-game Collector bag menu or jeanropke's map before treating a name as final."
+    },
+    "todo": {
+      "wiring": "This file is data only. To surface it on the site: add a games/rdr2.html page (clone an existing game page), set its data-game to rdr2, and add an entry to Menu.json under group Game with url #/games/rdr2.",
+      "live_cycle_fetch": "Add a fetch of https://api.rdo.gg/cycles on page load and store the cycle number next to today's collectibles.",
+      "trophies": "RDR2 Online has no separate trophy list, so trophies[] is empty. If you want the online achievements cross-referenced, attach trophyIds from the PSN skeleton for the RDR2 list (NPWR09309_00)."
+    }
+  }
+}

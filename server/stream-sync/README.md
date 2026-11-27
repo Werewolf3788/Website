@@ -1,6 +1,7 @@
 # ww-stream-sync
 
 Render service that keeps the stream info in step with what you're playing on PlayStation.
+The PlayStation game + status set the Twitch title and category, that same title goes to YouTube and Kick, and YouTube / TikTok / Kick chat comes back into Twitch chat.
 
 While you're **live on Twitch** it checks every 30 seconds and:
 
@@ -8,9 +9,10 @@ While you're **live on Twitch** it checks every 30 seconds and:
 |---|---|
 | Fixes the category to the PlayStation game (no more "Games + Demos") | Twitch, Kick |
 | Title = PlayStation game status (or game name) + `w/ @friend` for squad members in the same game | Twitch, YouTube, Kick |
+| Posts the new title as a chat message | YouTube, Kick |
 | Sets your tags (`base_tags`, plus `game_tags` for the current game) once per stream | Twitch |
 | Posts one "now live" alert | Discord webhook |
-| Relays YouTube, TikTok and Kick chat into Twitch chat (as your bot or your own account - your pick) | Twitch |
+| Relays YouTube, TikTok and Kick chat into the other places (as your bot or your own account - your pick) | Twitch, YouTube, Kick |
 
 PlayStation limits how often its API can be called, so the live PSN check is rationed: once when the stream starts, then at most once every `psn_poll_minutes` (default 5), only while live, using your own NPSSO. In between (and if PSN says "too many requests") it reuses the last answer or reads the PlayStation database that the 21-minute GitHub sync writes. Set `psn_poll_minutes` to `0` to never call PSN from here and use only the database.
 
@@ -26,7 +28,9 @@ Sign in with the site login, then connect: Twitch (streaming account), Twitch ch
 
 Twitch and Kick sign-ins go through this service (`POST /connect/twitch|kick` with the site sign-in token) because they need the app secret; the callback saves the login to the user who started it.
 
-The site owner (`OWNER_KEY` in setup.html) also gets an **App keys** box for the Twitch/Kick client ID + secret.
+The site owner (`OWNER_KEY` in setup.html) also gets an **App keys** box for the Twitch/Kick client ID + secret and for the YouTube title hook (`youtube_hook_url` / `youtube_hook_secret`, the two lines `setupStreamHook()` prints).
+
+Chat is fanned out and never loops: a message goes to every place except the one it came from, and each line the service posts is remembered for a few minutes, so the copy YouTube or Kick hands back is dropped rather than sent around again. The streamer, the chat bot and the platform's own account are never repeated either. TikTok can be read but not posted to, so TikTok chat goes out to the other three.
 
 Kick chat uses Kick's official chat events: set the webhook URL `https://ww-stream-sync.onrender.com/webhooks/kick` on the Kick app (kick.com/settings/developer) and turn webhooks on. Each streamer is subscribed when they connect Kick.
 
@@ -49,6 +53,7 @@ Written with starter values for the app owner on first run (`seed-owner.json`). 
 | `update_title` | `false` to leave the Twitch title alone |
 | `youtube_mode` | `same` (same title as Twitch), `base_plus_status` (`youtube_base | status`), or `off` |
 | `discord_live_alert` | `false` to skip the Discord alert |
+| `announce_title` | `false` to stop posting the title as a chat message in YouTube and Kick (it is posted once each time the title changes) |
 | `chat.youtube_channel_id`, `chat.tiktok_username` | chats to relay into Twitch (set by the setup page) |
 | `source` | `auto` (default: PlayStation when in a game there, otherwise copy the Twitch title + category to YouTube/Kick), `twitch` (always copy Twitch - PC/OBS streamers), `playstation` |
 | `title_format`, `mention_squad` | title shows `status` / `game_status` / `game`; add @friends in the same game |
@@ -66,13 +71,15 @@ Firebase keys can't contain `.` `#` `$` `[` `]` `/` - leave those characters out
 | `twitch_broadcaster_refresh`, `twitch_bot_refresh`, `kick_refresh` | each streamer | saved by the setup page sign-ins |
 | `psn_npsso` | each streamer (optional) | already saved from Settings; without it the PlayStation database is used |
 | `discord_webhook` | each streamer (optional) | paste a Discord channel webhook URL |
-| `youtube_hook_url`, `youtube_hook_secret` | each streamer (optional) | printed by `setupStreamHook()` in StreamHook.gs |
+| `youtube_hook_url`, `youtube_hook_secret` | each streamer (optional) | printed by `setupStreamHook()` in StreamHook.gs; paste them into the setup page's owner box (or straight into Firebase) |
+
+The same hook also posts the title announcement into the YouTube live chat (`youtube_chat`). That needs the current StreamHook.gs (the one with `postYouTubeChat_`) redeployed as a new version, and the script's permissions approved again (`YouTube.LiveChatMessages.insert` needs `youtube.force-ssl`). Kick chat posting needs the `chat:write` permission, so a Kick account connected before that was added has to be reconnected on the setup page once.
 
 ## Render
 
 Env vars: `FIREBASE_SERVICE_ACCOUNT` (service-account JSON for **entertainment-71888**, same as ww-discord-auth - needed to read your locked secrets and save sign-ins while nobody is on the page), `STREAM_SYNC_APP_OWNER_KEY`, `PUBLIC_URL`, `STATE_SECRET`, optional `SETUP_PAGE_URL`.
 
-Pages: `/setup` (redirects to the site page), `/status` (last pass, JSON), `/wake`, `/health`, `POST /webhooks/kick`.
+Pages: `/setup` (redirects to the site page), `/status?key=<your user key>` (last pass for that user only, JSON; no key returns nothing), `/wake`, `/health`, `POST /webhooks/kick`. The user key is the email with `.` -> `_` and `@` -> `_at_`, the same one used under `users/{key}`.
 
 Twitch redirect URL: `https://ww-stream-sync.onrender.com/auth/twitch/callback`
 Kick redirect URL: `https://ww-stream-sync.onrender.com/auth/kick/callback`

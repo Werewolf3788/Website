@@ -22,7 +22,7 @@
   *{box-sizing:border-box} body{margin:0 auto;font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;padding:16px;max-width:560px}
   /* desktop: use about 80% of the screen width, cards side by side; phones keep one column */
   @media (min-width:900px){
-    body{max-width:none;width:80vw}
+    body{max-width:none;width:90vw}
     .top,.games,.bottom{display:grid;gap:0 16px;align-items:start}
     .top{grid-template-columns:2fr 1fr} .top #nowCard[style*="none"]+#authCard{grid-column:1/-1}
     .games{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));align-items:stretch}
@@ -117,7 +117,58 @@
   <div class="muted">For rough days: light a lantern with slow breathing, find the fireflies to ground yourself, stack a cairn to cool off, gentle memory games, a <b>reasons jar</b>, your own plan for hard moments, and one-tap texts to <b>your people</b>. Everything you put in it stays <b>private on your device</b>. Nothing is uploaded or shown to friends.</div>
   <div class="row"><button id="playCalm">Open</button></div>
 </div>
+  <div class="card">
+  <h2 style="margin:0 0 4px">🏰 Bastion Builder</h2>
+  <div class="muted">3D tower defense: place spawner camps, build your own road to the castle, and defend it with towers and traps through endless waves. Enemies drop towers, paths and traps. Get <b>3 of the same</b>, open Inventory and hit <b>Fuse</b> to make a <b>+1</b>. Upgrade board, spawner shop, full stats and run history. Works with a PS5/Xbox controller. Saves to your account.</div>
+  <div class="row"><button id="playBastion">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🧱 Brick Breaker</h2>
+  <div class="muted">A twelve-mission Breaker Corps campaign: relay cores to smash, bomb bricks that blow up their neighbours, gold bricks, falling power-ups and missions with real objectives, time limits and star ratings. Spend coins on paddle, heart and drop upgrades, then take on endless mode.</div>
+  <div class="row"><button id="brickBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🔢 Merge 2048</h2>
+  <div class="muted">Twelve Fusion Lab chapters, each with a target tile and a move budget. Chain merges to trigger surges that drop free high tiles, spend coins on hammers and shuffles, and chase three stars per chapter. Free play is there when you just want to build.</div>
+  <div class="row"><button id="mergeBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">💣 Minefield</h2>
+  <div class="muted">Twelve clearance operations: supply crates to recover, drone scans that clear a 3×3 patch, sonar pings that open safe pockets, target times and clean-flag star ratings. Easy, Medium and Hard free play are still here too.</div>
+  <div class="row"><button id="minesBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🚚 City Rush</h2>
+  <div class="muted">Six districts, one cart. Customers queue up with an order and their patience is running out — tap the right counter, keep the streak alive, then spend your cash on upgrades between districts. Rush hours double everything.</div>
+  <div class="row"><button id="idleCityBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🐉 Merge Lair</h2>
+  <div class="muted">Merge three of a kind to raise bigger creatures, then raid the bosses camped at the lair mouth by hurling them. Eight story quests, three bosses, and the nest refills every time you merge — no waiting.</div>
+  <div class="row"><button id="mergeLairBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🏛️ Tiles Outpost</h2>
+  <div class="muted">A two-chapter story campaign with turn-based squad battles. Twenty-four missions from the broken gate to the Sun Gate and on into the ash country beyond — pick attacks, abilities and potions, level your three survivors between fights, replay missions for stars and break the bosses at the Sun Gate, the Hollow King and the Dawnless.</div>
+  <div class="row"><button id="tilesOutpostBtn">Play</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🛩️ Werewolf Wings</h2>
+  <div class="muted">3D flight game over Howl Island: take off from Werewolf Field, fly ring courses through the mountain passes, carry the mail to the Pine Ridge strip and grease the landing. Chase or cockpit view with lit instruments, day or sunset. Keyboard + mouse, touch or a PS5/Xbox controller. Best ring-run times go on the leaderboard.</div>
+  <div class="row"><button id="playFlight">Fly</button></div>
+</div>
+<div class="card">
+  <h2 style="margin:0 0 4px">❖ Ironhold</h2>
+  <div class="muted">Merge-and-grind frontier strategy: build on three islands, merge two matching structures into the next level, research three linked ceilings, train and combine Army, Navy and Air troops, scout the fogged frontier for gear and bring friends into your banner. No shop. Sign in and your command follows you to every device.</div>
+  <div class="row"><button id="playIronhold">Command</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
+</div>
+
+<div class="card" style="border:1px solid #f59e0b;background:#1c1917">
+  <h2 style="margin:0 0 4px;font-size:1.05rem">☕ Support the site</h2>
+  <div class="muted">Every game here is free, and it stays free. If you'd like to help with the hosting and server bills, you can buy me a coffee — it goes straight back into the site and the next round of games.</div>
+  <div class="row"><a href="https://buymeacoffee.com/raykevin71b" target="_blank" rel="noopener" style="background:#ffdd00;color:#0f172a;font-weight:800;border-radius:10px;padding:12px 16px;text-decoration:none">☕ Buy me a coffee</a></div>
 </div>
 
 <div class="bottom">
@@ -155,6 +206,9 @@
   $('playMj').onclick = function () { location.href = 'mahjong.html'; };
   $('playCalm').onclick = function () { location.href = 'calm.html'; };
   $('playSurv').onclick = function () { location.href = 'survive.html'; };
+  $('playBastion').onclick = function () { location.href = 'bastion.html'; };
+  $('playFlight').onclick = function () { location.href = 'flight.html'; };
+  $('playIronhold').onclick = function () { location.href = 'ironhold.html'; };
   $('playFrog').onclick = function () { location.href = 'frogger.html'; };
   $('playShip').onclick = function () { location.href = 'battleship.html'; };
   $('hostShip').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'battleship.html?room=' + encodeURIComponent(c); };
@@ -185,7 +239,13 @@
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'tycoon.html?room=' + encodeURIComponent(c);
   };
-  // ---- leaderboard
+  $('brickBtn').onclick = function () { location.href = 'bricks.html'; };
+  $('mergeBtn').onclick = function () { location.href = 'merge.html'; };
+  $('minesBtn').onclick = function () { location.href = 'mines.html'; };
+  $('idleCityBtn').onclick = function () { location.href = 'idle-city.html'; };
+  $('mergeLairBtn').onclick = function () { location.href = 'bastion.html?place=nest'; };
+  $('tilesOutpostBtn').onclick=function(){location.href='tiles-outpost.html'};
+// ---- leaderboard
   var LGAMES = [['all', 'All games'], ['wahoo', '🎲 Wahoo'], ['tycoon', '🏙️ Monopoly'], ['frogger', '🐸 Frogger'], ['race', '🏎️ Racing'], ['battleship', '🚢 Battleship']], leadTab = 'all', leadData = null;
   var BEST = { frogger: ['Best solo', function (v) { return v + ' crossed'; }, false], battleship: ['Fewest shots', function (v) { return v + ' shots'; }, true], race: ['Best lap', function (v) { var t = v / 1000, m = Math.floor(t / 60); return m + ':' + (t % 60).toFixed(1).padStart(4, '0'); }, true] };
   function drawLeaders() {
@@ -242,5 +302,7 @@
     if (user) { $('who').innerHTML = WW.avatarHtml(WW.avatar, user.displayName || user.email, 20) + ' ' + WW.esc(user.displayName || user.email); $('myCode').textContent = code || '--------'; }
   });
 </script>
+<script>window.WW_BUSY=function(){return false;};</script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
 </body>
 </html>

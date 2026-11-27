@@ -6,7 +6,7 @@
  *   - design is packed into the link (overlay-core.js), nothing stored, no sign-in
  *   - Twitch info comes from the username they type (overlay/live.html)
  *   - free overlays show a "made at" banner once an hour; $5/month or $50/year removes it
- *     (PayPal, checked on ww-discord-auth /overlay/...)
+ *     (paid on Buy Me a Coffee, matched by ww-discord-auth /bmc/... with a claim code)
  * ========================================================================== -->
 <html lang="en">
 <head>
@@ -14,6 +14,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#070709">
 <title>Overlay Studio | Make your own stream overlay</title>
+<!-- Google Analytics (same tags as the rest of the site) -->
+<script async src="//www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Z9M5LXQ5XN');
+  gtag('config', 'G-CTYHDF4MSD');
+</script>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="assets/ww-shell.css">
 <script defer src="assets/ww-shell.js"></script>
@@ -24,7 +33,7 @@
   :root{--bg:#070709;--panel:#14141c;--panel2:#1c1c27;--line:rgba(255,255,255,.1);--text:#e8ecf3;--mute:#9aa4b2;--accent:#ff5f1f;--ok:#10b981}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;min-height:100vh}
-  .wrap{width:80vw;margin:0 auto;padding:1.5rem 0 1rem}
+  .wrap{width:90vw;margin:0 auto;padding:1.5rem 0 1rem}
   @media (max-width:1100px){.wrap{width:auto;padding:1rem 0.75rem 5.625rem}}
   h1{margin:0;font-size:1.875rem;font-weight:900} h1 span{color:var(--accent)}
   .sub{color:var(--mute);margin:0.375rem 0 1.375rem}
@@ -43,7 +52,7 @@
   .body{padding:0.25rem 1rem 1rem;display:flex;flex-direction:column;gap:0.75rem}
   label.f{display:flex;flex-direction:column;gap:0.375rem;font-size:0.8125rem;font-weight:700;color:var(--mute)}
   .row{display:flex;gap:0.625rem;flex-wrap:wrap}.row>*{flex:1;min-width:7.5rem}
-  input[type=text],input[type=url],input[type=number],select,textarea{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);
+  input[type=text],input[type=url],input[type=email],input[type=number],select,textarea{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);
     border-radius:0.5625rem;padding:0.625rem 0.75rem;font:600 0.875rem Inter,sans-serif;outline:none}
   input:focus,select:focus,textarea:focus{border-color:var(--accent)}
   textarea{min-height:4rem;resize:vertical}
@@ -280,8 +289,8 @@
           <button class="plan" data-plan="year"><b id="pYear">$50</b><small>per year · 2 months free</small></button>
         </div>
         <p class="hint" id="tierNote" style="margin:0.5rem 0 0">Twitch Affiliates and Partners: $8/month or $80/year.</p>
-        <div id="paypalBox" style="margin-top:0.75rem;min-height:2.875rem"></div>
-        <p class="hint" style="margin:0.375rem 0 0">Pay once per month or year (it doesn't auto-renew). Buying again while active adds the time on.</p>
+        <div id="checkoutBox" style="margin-top:0.75rem;min-height:2.875rem"></div>
+        <p class="hint" style="margin:0.375rem 0 0">Paid on Buy Me a Coffee. Pay once per month or year (it doesn't auto-renew). Buying again while active adds the time on.</p>
       </div>
     </div>
   </div>
@@ -304,8 +313,8 @@
       <button class="plan" data-pplan="year" type="button"><b id="ppYear">$50</b><small>per year · 2 months free</small></button>
     </div>
     <p class="hint" id="payNote" style="margin:.5rem 0 0">Twitch Affiliates and Partners: $8/month or $80/year.</p>
-    <div id="payPaypal" style="margin-top:.75rem;min-height:2.875rem"></div>
-    <p class="hint" style="margin:.5rem 0 0">Pay once per month or year (it doesn't auto-renew). Paying while still active adds the time on to the end.</p>
+    <div id="payCheckout" style="margin-top:.75rem;min-height:2.875rem"></div>
+    <p class="hint" style="margin:.5rem 0 0">Paid on Buy Me a Coffee. Pay once per month or year (it doesn't auto-renew). Paying while still active adds the time on to the end.</p>
   </div>
 </div>
 
@@ -634,7 +643,7 @@
     }, 600);
   }
 
-  /* ---------- remove watermark (PayPal via ww-discord-auth) ---------- */
+  /* ---------- remove watermark (Buy Me a Coffee, checked on ww-discord-auth /bmc/...) ---------- */
   var plan = 'month', ppLoaded = false;
   // prices depend on the channel: Twitch Affiliates/Partners pay a bit more (server checks with Twitch)
   var priceInfo = null;
@@ -664,49 +673,61 @@
     return fetch(AUTH + path, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(data) })
       .then(function (r) { return r.json(); });
   }
-  // PayPal SDK is loaded once; buttons can be drawn in several places (right panel + Pay or renew window)
-  var sdkPromise = null;
-  function paypalSDK() {
-    if (sdkPromise) return sdkPromise;
-    sdkPromise = fetch(AUTH + '/overlay/plans').then(function (r) { return r.json(); }).then(function (j) {
-      if (!j.clientId) throw { off: true };
-      return new Promise(function (ok, bad) {
-        var sc = document.createElement('script');
-        sc.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(j.clientId) + '&currency=USD&intent=capture';
-        sc.onload = function () { ok(window.paypal); }; sc.onerror = function () { bad({}); };
-        document.head.appendChild(sc);
-      });
-    });
-    sdkPromise.catch(function () { sdkPromise = null; });
-    return sdkPromise;
-  }
+  // Buy Me a Coffee checkout. Buttons can be drawn in several places (right panel + Pay or renew window).
+  // The server gives a claim code; the buyer types it in the Buy Me a Coffee message, the payment webhook
+  // matches it, and this box sees the pass appear (polls /bmc/claim/:id).
   // getAcct() -> { platform, name } to pay for, getPlan() -> 'month' | 'year', done() after a successful payment
   function payButtons(sel, getAcct, getPlan, done) {
-    var box = $(sel);
-    box.innerHTML = '<span class="hint">Loading checkout… (can take a few seconds the first time)</span>';
-    return paypalSDK().then(function (pp) {
-      box.innerHTML = '';
-      pp.Buttons({
-        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
-        createOrder: function () {
-          var a = getAcct();
-          if (!C.accountOk(a)) { toast('Type your streaming username first'); return Promise.reject(new Error('no channel')); }
-          return post('/overlay/create', { channel: a.name, platform: a.platform, plan: getPlan() }).then(function (j) { if (!j.id) { toast(j.error || 'Could not start'); throw new Error(j.error || 'Could not start'); } return j.id; });
-        },
-        onApprove: function (d) {
-          return post('/overlay/capture', { orderId: d.orderID }).then(function (j) {
-            if (j.ok) { toast('Thank you! Paid until ' + new Date(j.until).toLocaleDateString() + '.'); done && done(j); } else toast(j.error || 'Payment not confirmed');
-          });
-        },
-        onError: function (err) { if (String(err && err.message) !== 'no channel') toast('PayPal had a problem — try again'); }
-      }).render(sel);
-    }).catch(function (e) {
-      box.innerHTML = '<span class="hint">' + (e && e.off ? 'Payments aren\'t switched on yet — check back soon.' : 'Checkout is waking up — try again in a minute.') + '</span>';
+    var box = $(sel), poll = null;
+    box.innerHTML = '<label class="f" style="margin:0">E-mail you\'ll pay with <span class="hint">(optional — matches your payment if you forget the code)</span>' +
+      '<input type="email" class="bmcEmail" placeholder="you@example.com" autocomplete="email"></label>' +
+      '<button class="btn bmcGo" type="button" style="margin-top:.5rem;width:100%;background:#ffdd00;color:#0f0f0f;font-weight:800"><i class="fa-solid fa-mug-hot"></i> Pay with Buy Me a Coffee</button>' +
+      '<div class="bmcStep" style="margin-top:.625rem;display:none"></div>';
+    var go = box.querySelector('.bmcGo'), step = box.querySelector('.bmcStep');
+    function watch(id) {
+      clearInterval(poll); var tries = 0;
+      poll = setInterval(function () {
+        if (++tries > 360 || !document.body.contains(step)) return clearInterval(poll);   // stop after ~30 minutes
+        if (document.hidden) return;
+        fetch(AUTH + '/bmc/claim/' + id).then(function (r) { return r.json(); }).then(function (j) {
+          if (j.status === 'paid') {
+            clearInterval(poll);
+            step.innerHTML = '<span class="tag">Payment received — thank you!</span> <span class="hint">No watermark' + (j.until ? ' until ' + new Date(j.until).toLocaleDateString() : '') + '.</span>';
+            toast('Thank you! Paid until ' + new Date(j.until).toLocaleDateString() + '.'); done && done(j);
+          } else if (j.status === 'short') {
+            clearInterval(poll);
+            step.innerHTML += '<p class="hint" style="color:#fbbf24">We got a payment for code ' + esc(id) + ', but it was less than ' + money(j.price) + '. Message werewolf with your Buy Me a Coffee receipt.</p>';
+          }
+        }).catch(function () {});
+      }, 5000);
+    }
+    go.addEventListener('click', function () {
+      var a = getAcct();
+      if (!C.accountOk(a)) { toast('Type your streaming username first'); return; }
+      go.disabled = true; go.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Getting your code… (can take a few seconds the first time)';
+      post('/bmc/claim', { kind: 'overlay', channel: a.name, platform: a.platform, plan: getPlan(), email: box.querySelector('.bmcEmail').value.trim() }).then(function (j) {
+        go.disabled = false; go.innerHTML = '<i class="fa-solid fa-mug-hot"></i> Get a new code';
+        if (!j.claim) { toast(j.error || 'Could not start'); step.style.display = 'block'; step.innerHTML = '<span class="hint">' + esc(j.error || 'Could not start — try again.') + '</span>'; return; }
+        step.style.display = 'block';
+        step.innerHTML = '<div class="hint" style="margin-bottom:.375rem"><b>1.</b> Your code:</div>' +
+          '<div class="link"><input type="text" readonly value="' + esc(j.claim) + '" style="font-weight:800;letter-spacing:.08em;text-align:center"><button class="btn sm bmcCopy" type="button">Copy</button></div>' +
+          '<div class="hint" style="margin:.5rem 0 .375rem"><b>2.</b> On Buy Me a Coffee, buy <b>' + esc(j.name) + '</b> (<b>' + money(j.price) + '</b>) and paste the code in the message box.</div>' +
+          '<a class="btn" href="' + esc(j.url) + '" target="_blank" rel="noopener" style="width:100%;justify-content:center;background:#ffdd00;color:#0f0f0f;font-weight:800"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Buy Me a Coffee</a>' +
+          '<div class="hint" style="margin-top:.5rem"><i class="fa-solid fa-spinner fa-spin"></i> Waiting for your payment… keep this page open, it updates on its own.</div>';
+        step.querySelector('.bmcCopy').addEventListener('click', function () {
+          var inp = step.querySelector('input'); inp.select();
+          (navigator.clipboard ? navigator.clipboard.writeText(j.claim) : Promise.reject()).then(function () { toast('Code copied'); }, function () { document.execCommand('copy'); toast('Code copied'); });
+        });
+        watch(j.claim);
+      }).catch(function () {
+        go.disabled = false; go.innerHTML = '<i class="fa-solid fa-mug-hot"></i> Pay with Buy Me a Coffee';
+        toast('Checkout is waking up — try again in a minute.');
+      });
     });
   }
-  function loadPayPal() {
+  function loadCheckout() {
     if (ppLoaded) return; ppLoaded = true;
-    payButtons('#paypalBox', acct, function () { return plan; }, function () { checkPro(); });
+    payButtons('#checkoutBox', acct, function () { return plan; }, function () { checkPro(); });
   }
 
   /* ---------- "Already have an overlay? Pay or renew" window ---------- */
@@ -738,7 +759,7 @@
     if (!$('#payUser').value && C.accountOk(a)) { $('#payUser').value = C.accountLabel(a); payPlat = a.platform; }
     $$('#payPlat button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === payPlat); });
     $('#payModal').hidden = false; payRefresh();
-    if (!$('#payPaypal').children.length) payButtons('#payPaypal', payAcct, function () { return payPlan; }, function () { payRefresh(); checkPro(); });
+    if (!$('#payCheckout').children.length) payButtons('#payCheckout', payAcct, function () { return payPlan; }, function () { payRefresh(); checkPro(); });
   }
   $('#payPill').addEventListener('click', openPay);
   $('#payClose').addEventListener('click', function () { $('#payModal').hidden = true; });
@@ -757,10 +778,10 @@
   });
   if (/[#&]pay\b/.test(location.hash)) setTimeout(openPay, 300);   // link straight to it: /overlay-studio#pay
 
-  // load PayPal only when the box is visible (keeps the page fast)
+  // draw the checkout only when the box is visible (keeps the page fast)
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (en, ob) { if (en[0].isIntersecting) { loadPayPal(); ob.disconnect(); } }).observe($('#proBox'));
-  } else loadPayPal();
+    new IntersectionObserver(function (en, ob) { if (en[0].isIntersecting) { loadCheckout(); ob.disconnect(); } }).observe($('#proBox'));
+  } else loadCheckout();
 
   /* ---------- desktop scrolling: settings first, then the right side ---------- */
   var gridEl = $('.grid'), leftEl = $('.left'), rightEl = $('.right');

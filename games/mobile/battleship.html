@@ -24,7 +24,7 @@
   #top button,#top a{color:#e2e8f0;background:none;border:0;font:inherit;cursor:pointer;text-decoration:none;padding:0 2px}
   #status{text-align:center;font-weight:800;font-size:1.05rem;padding:8px 10px 2px;min-height:2em}
   #call{text-align:center;color:#fde68a;font-weight:700;min-height:1.5em;padding:0 10px 4px;text-shadow:0 1px 4px #000}
-  #main{display:flex;gap:18px;justify-content:center;align-items:flex-start;flex-wrap:wrap;padding:4px 8px 16px;width:100%;max-width:80vw;margin:0 auto}
+  #main{display:flex;gap:18px;justify-content:center;align-items:flex-start;flex-wrap:wrap;padding:4px 8px 16px;width:100%;max-width:90vw;margin:0 auto}
   @media(max-width:899px){#main{max-width:none}}
   .side{display:flex;flex-direction:column;align-items:center;gap:6px}
   .side h3{margin:0;font-size:.9rem;color:#94a3b8;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
@@ -79,6 +79,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>document.write('<script src="js/common.js"><\/script>');</script>
 <script>document.write('<script src="js/gamenav.js"><\/script>');</script>
+<script>document.write('<script src="js/turnalert.js"><\/script>');</script>
 <script>
 (function () {
   'use strict';
@@ -216,6 +217,7 @@
   }
   function render() {
     if (!R || !R.state) return; var st = R.state, phase = st.phase, op = other(R, ME), placing = phase === 'place';
+    try { if (window.WWTurn) WWTurn.update(isMP && phase === 'battle' && st.turn === ME, muted); } catch (e) {}
     var iReady = !!(R.players && R.players[ME] && R.players[ME].ready), myFleet = placing && !iReady ? draft : (fleetOf(R, ME).length ? fleetOf(R, ME) : draft);
     var opShots = op ? shotsBy(R, op) : {}, myShots = shotsBy(R, ME), opFleet = op ? fleetOf(R, op) : [];
     var skip = hold ? hold.by + ':' + key(hold.r, hold.c) : '';
@@ -375,5 +377,6 @@
   window.__bship = { get R() { return R; }, get draft() { return draft; }, fire: function (r, c) { apply(function (room) { return doFire(room, ME, r, c); }); }, cpuMove: cpuMove };
 })();
 </script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
 </body>
 </html>

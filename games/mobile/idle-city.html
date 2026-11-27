@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (G-JDNSLD3GFE) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JDNSLD3GFE');
+</script>
+<meta name="google-adsense-account" content="ca-pub-2509348249117288">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2509348249117288"
+     crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#150e22">
+<title>City Rush</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#150e22;color:#fff2e2;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  #app{display:flex;flex-direction:column;height:100%}
+  #hud{display:flex;gap:6px;align-items:center;justify-content:space-between;padding:8px 10px;font-size:.78rem;font-weight:800;background:#1d1430}
+  .pill{background:#2a1d40;border-radius:999px;padding:5px 9px}
+  #hud a{color:#fbcfe8;text-decoration:none}
+  #lane{position:relative;flex:1;min-height:0;overflow:hidden;background:linear-gradient(#3a2260,#2b1746 40%,#1e1135)}
+  #lane .glow{position:absolute;inset:0;background:radial-gradient(58% 40% at 44% 26%,#ffd9a026,#0000 74%);pointer-events:none;z-index:4}
+  #lane .wall{position:absolute;left:0;right:0;top:0;height:37%;background:linear-gradient(#47295f,#38205a 66%,#2c1947)}
+  #lane .win{position:absolute;left:27%;right:6%;top:4%;height:24%;border-radius:5px;background:linear-gradient(#ffd9a04d,#8ec5ff24);box-shadow:0 0 26px #ffd9a030,inset 0 0 0 3px #6e4c98;overflow:hidden}
+  #lane .win:before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,#0000 0 32%,#00000038 32% 33.6%)}
+  #lane .bulb{position:absolute;width:9px;height:9px;border-radius:50%;background:#ffe9b0;box-shadow:0 0 16px 6px #ffd07a4d}
+  #lane .ledge{position:absolute;left:0;right:0;top:33.4%;height:3.6%;background:linear-gradient(#5f3d88,#43296a);box-shadow:0 7px 16px #00000073}
+  #lane .pave{position:absolute;left:-8%;right:-8%;top:37%;bottom:0;background-image:repeating-conic-gradient(#4b3469 0% 25%,#3c2856 0% 50%);background-size:62px 62px;clip-path:polygon(12% 0,88% 0,100% 100%,0 100%);box-shadow:inset 0 22px 32px #00000059}
+  #lane .pool{position:absolute;left:3%;top:43%;width:46%;height:32%;background:radial-gradient(closest-side,#ffd9a040,#ffd9a000 74%);filter:blur(6px);pointer-events:none}
+  #lane .rug{position:absolute;left:27%;bottom:5%;width:36%;height:8%;border-radius:50%;background:#7c3aed33;filter:blur(9px)}
+  #lane .adawn{position:absolute;left:0;top:30.5%;width:44px;height:14px;background:repeating-linear-gradient(135deg,#ef4444 0 7px,#fff7ed 7px 14px);border-radius:0 4px 4px 0;box-shadow:0 6px 14px #00000080;z-index:3}
+  .prop{position:absolute;filter:drop-shadow(0 5px 8px #000000a0);pointer-events:none;z-index:1}
+  #lane .sign{position:absolute;left:7%;top:24%;background:#fbbf24;color:#3b1f05;font-weight:900;font-size:.58rem;padding:3px 8px;border-radius:5px;box-shadow:0 4px 10px #00000080;transform:rotate(-2deg);z-index:3}
+  #counter{position:absolute;left:0;top:34%;bottom:0;width:32px;background:linear-gradient(90deg,#5e3a1a,#b8783a 42%,#7f4c20);box-shadow:6px 0 20px #00000094;border-right:2px solid #4a2c12;z-index:3}
+  #counter:before{content:'';position:absolute;left:0;right:-8px;top:0;height:7px;background:#f5c469;opacity:.42}
+  .cust{position:absolute;top:38%;left:0;transform:translate(-50%,-50%);text-align:center;will-change:left,top;transition:opacity .25s;background:#ffffff17;border-radius:14px;padding:4px 7px;box-shadow:0 6px 16px #00000080,inset 0 1px 0 #ffffff26;z-index:5}
+  .cust .who{font-size:2.1rem;line-height:1;filter:drop-shadow(0 3px 4px #00000080)}
+  .cust .ord{font-size:1rem;background:#fff2e2;border-radius:999px;padding:1px 5px;margin-top:2px;display:inline-block;color:#1d1430}
+  .cust .pat{width:38px;height:4px;background:#00000066;border-radius:3px;margin:3px auto 0;overflow:hidden}
+  .cust .pat i{display:block;height:100%;background:#4ade80}
+  .cust.gone{opacity:0;transform:translate(-50%,-160%) scale(.7)}
+  .cust.angry .pat i{background:#ef4444}
+  #banner{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#fbbf24;color:#3b1f05;font-weight:900;font-size:.72rem;padding:4px 10px;border-radius:999px;opacity:0;transition:opacity .2s}
+  #banner.on{opacity:1}
+  #combo{position:absolute;right:8px;top:8px;font-weight:900;color:#fda4af;font-size:.8rem}
+  #floor{background:#1d1430;padding:8px 8px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  #floor button{border:0;border-radius:14px;padding:10px 4px;font:inherit;font-weight:900;font-size:.72rem;color:#1d1430;background:#fcd34d;display:flex;flex-direction:column;align-items:center;gap:2px}
+  #floor button b{font-size:1.5rem}
+  #floor button:active{transform:scale(.96)}
+  #floor button.off{filter:grayscale(1) brightness(.6)}
+  #foot{display:flex;gap:6px;padding:8px;background:#1d1430}
+  #foot button{flex:1;border:0;border-radius:10px;padding:9px;font:inherit;font-weight:800;font-size:.74rem;background:#3b2a55;color:#e9d5ff}
+  #sheet{position:absolute;inset:0;background:#150e22f2;padding:16px;overflow:auto;display:none;z-index:6}
+  #sheet.on{display:block}
+  #sheet h2{margin:0 0 6px;font-size:1.15rem;color:#fbbf24}
+  #sheet p{margin:0 0 12px;font-size:.85rem;line-height:1.5;color:#e9d5ff}
+  .up{display:flex;align-items:center;gap:10px;background:#241832;border:1px solid #3b2a55;border-radius:12px;padding:10px;margin-bottom:8px}
+  .up .g{flex:1}
+  .up .nm{font-weight:800;font-size:.85rem}
+  .up .sm{font-size:.7rem;color:#c4b5fd;margin-top:2px}
+  .up button{border:0;border-radius:9px;padding:8px 10px;font:inherit;font-weight:900;font-size:.74rem;background:#4ade80;color:#04210f}
+  .up button:disabled{background:#3b2a55;color:#8b7aa8}
+  .big{width:100%;border:0;border-radius:12px;padding:13px;font:inherit;font-weight:900;background:#fbbf24;color:#3b1f05;font-size:.9rem}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hud">
+    <span class="pill">💰 <b id="cash">0</b></span>
+    <span class="pill" id="goal">0 / 16</span>
+    <span class="pill">❤️ <b id="lives">3</b></span>
+    <a href="index.html">☰ Games</a>
+  </div>
+  <div id="lane">
+    <div class="wall"></div>
+    <div class="win"></div>
+    <div class="bulb" style="left:31%;top:6%"></div>
+    <div class="bulb" style="left:50%;top:5%"></div>
+    <div class="bulb" style="left:69%;top:6%"></div>
+    <div class="ledge"></div>
+    <div class="pave"></div>
+    <div class="pool"></div>
+    <div class="rug"></div>
+    <div class="adawn"></div>
+    <div id="counter"></div>
+    <div class="prop" style="left:11%;bottom:5%;font-size:1.9rem">🪴</div>
+    <div class="prop" style="right:8%;bottom:22%;font-size:1.7rem">🪴</div>
+    <div class="prop" style="right:29%;bottom:7%;font-size:1.5rem">🪑</div>
+    <div class="prop" style="right:15%;top:40%;font-size:1.3rem">🪧</div>
+    <div class="sign">OPEN · fresh daily</div>
+    <div id="banner"></div>
+    <div id="combo"></div>
+    <div class="glow"></div>
+  </div>
+  <div id="floor">
+    <button data-o="🍋"><b>🍋</b>Lemonade</button>
+    <button data-o="☕"><b>☕</b>Café</button>
+    <button data-o="🍩"><b>🍩</b>Bakery</button>
+  </div>
+  <div id="foot">
+    <button id="pauseBtn">⏸ Pause</button>
+    <button id="restartBtn">↻ Restart district</button>
+  </div>
+  <div id="sheet"></div>
+</div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var LANE = $('lane'), SHEET = $('sheet');
+var SAVE = 'cityrush_v1';
+
+var DISTRICTS = [
+  { n:'Lemonade Lane', goal:14, speed:15, gap:1.5, tip:3, who:['🧍','👩','🧑‍🦱'],
+    story:'You borrow a folding table, a jug and a bag of lemons. One corner, one afternoon, and the first customer is already walking over.' },
+  { n:'Old Market', goal:20, speed:12.5, gap:1.25, tip:4, who:['🧑‍🌾','👴','🧕'],
+    story:'The market crowd is bigger and pickier. Keep the queue moving and the traders will start talking about the kid with the cart.' },
+  { n:'Riverside Walk', goal:26, speed:11, gap:1.1, tip:5, who:['🚶','👨‍🦰','👵'],
+    story:'A food cart licence, a proper awning, and joggers who order three things at once. Riverside does not wait for anyone.' },
+  { n:'Station Row', goal:32, speed:9.5, gap:0.95, tip:6, who:['🧑‍💼','👩‍💻','🧑‍🎓'],
+    story:'Commuters. Ninety seconds between trains and no patience at all. This is where a cart becomes a name.' },
+  { n:'Uptown Terrace', goal:40, speed:8.2, gap:0.85, tip:8, who:['🎩','👗','🕴️'],
+    story:'Uptown money, uptown manners, uptown queue. Rent is brutal, but one good afternoon here pays for the whole month.' },
+  { n:'Grand Plaza', goal:48, speed:7, gap:0.72, tip:10, who:['🎉','🧑‍🚀','👑'],
+    story:'The plaza is packed for the festival and your little cart is the only thing open. Keep serving — this is the shift they will remember.' }
+];
+
+var S = { district:0, cash:0, best:0, doubleTip:0, extraLife:0, slow:0, station3:true };
+var G = null, raf = 0, last = 0;
+
+function load(){
+  try {
+    var d = JSON.parse(localStorage.getItem(SAVE) || 'null');
+    if (d) for (var k in S) if (typeof d[k] === 'number') S[k] = d[k];
+  } catch (e) {}
+}
+function save(){ try { localStorage.setItem(SAVE, JSON.stringify(S)); } catch (e) {} }
+function money(n){ S.cash += n; $('cash').textContent = Math.floor(S.cash); }
+
+/* ---------------- district flow ---------------- */
+function district(){ return DISTRICTS[Math.min(S.district, DISTRICTS.length - 1)]; }
+
+function showSheet(html){ SHEET.innerHTML = html; SHEET.classList.add('on'); }
+function hideSheet(){ SHEET.classList.remove('on'); }
+
+function intro(){
+  pause();
+  var d = district();
+  showSheet('<h2>District ' + (S.district + 1) + ' — ' + d.n + '</h2><p>' + d.story + '</p>' +
+    '<p style="font-size:.78rem;color:#c4b5fd">Serve ' + d.goal + ' customers before you lose all three hearts. Tap the right counter for each order — wrong counter breaks your streak.</p>' +
+    '<button class="big" id="beginBtn">Open the counter</button>');
+  $('beginBtn').onclick = function(){ hideSheet(); startDistrict(); };
+}
+
+function startDistrict(){
+  LANE.querySelectorAll('.cust').forEach(function(c){ c.remove(); });
+  var d = district();
+  G = { goal: d.goal, served: 0, lives: 3 + S.extraLife, combo: 0, spawnT: 0.6, custs: [], running: true,
+        rush: 0, nextRush: 14, elapsed: 0, over: false };
+  $('lives').textContent = G.lives;
+  $('goal').textContent = '0 / ' + G.goal;
+  $('combo').textContent = '';
+  last = performance.now();
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(loop);
+}
+
+function pause(){ if (G) G.running = false; cancelAnimationFrame(raf); }
+
+function loop(now){
+  if (!G || !G.running) return;
+  var dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  G.elapsed += dt;
+  if (G.rush > 0) { G.rush -= dt; if (G.rush <= 0) setBanner(''); }
+  if (G.elapsed >= G.nextRush) {
+    G.rush = 7; G.nextRush += 22;
+    setBanner('⚡ RUSH HOUR — double customers, double tips');
+  }
+  var d = district();
+  var rate = (G.rush > 0 ? 2.1 : 1) * (1 + S.district * 0.05);
+  G.spawnT -= dt;
+  if (G.spawnT <= 0) { G.spawnT = d.gap / rate; spawn(d); }
+
+  for (var i = G.custs.length - 1; i >= 0; i--) {
+    var c = G.custs[i];
+    if (c.state === 'served') { c.t += dt; if (c.t > 0.35) { c.el.remove(); G.custs.splice(i, 1); } continue; }
+    if (c.state === 'angry') { c.t += dt; if (c.t > 0.6) { c.el.remove(); G.custs.splice(i, 1); } continue; }
+    if (c.x > 0.1) c.x = Math.max(0.1, c.x - dt / c.speed);
+    c.pat -= dt;
+    var pct = Math.max(0, c.pat / c.maxPat * 100);
+    c.el.querySelector('.pat i').style.width = pct + '%';
+    c.el.classList.toggle('angry', pct < 30);
+    if (c.pat <= 0) miss(c);
+  }
+  tidyQueue();
+  for (var q = 0; q < G.custs.length; q++) if (G.custs[q].state === 'walk') place(G.custs[q]);
+  raf = requestAnimationFrame(loop);
+}
+
+var RAILS = [{ y: 0.49, s: 0.78 }, { y: 0.63, s: 0.92 }, { y: 0.78, s: 1.06 }];
+
+/* three lanes deep into the shop, and a queue where nobody stands inside anyone else */
+function place(c){
+  var r = RAILS[c.rail] || RAILS[0];
+  c.el.style.left = (36 + c.x * (LANE.clientWidth - 80)) + 'px';
+  c.el.style.top = (r.y * 100) + '%';
+  c.el.style.transform = 'translate(-50%,-50%) scale(' + r.s + ')';
+}
+function tidyQueue(){
+  for (var r = 0; r < RAILS.length; r++){
+    var line = [];
+    for (var i = 0; i < G.custs.length; i++){
+      var c = G.custs[i];
+      if (c.state === 'walk' && c.rail === r) line.push(c);
+    }
+    line.sort(function(a, b){ return a.x - b.x; });
+    for (var k = 1; k < line.length; k++) if (line[k].x < line[k-1].x + 0.115) line[k].x = line[k-1].x + 0.115;
+  }
+}
+
+function spawn(d){
+  var orders = S.station3 ? ['🍋', '☕', '🍩'] : ['🍋', '☕', '🍩', '🍋'];
+  var load = [0, 0, 0];
+  G.custs.forEach(function(c){ if (c.state === 'walk') load[c.rail] = (load[c.rail] || 0) + 1; });
+  var rail = 0;
+  for (var r = 1; r < load.length; r++) if (load[r] < load[rail]) rail = r;
+  var c = {
+    x: 1.02 + Math.random() * 0.2, rail: rail, speed: d.speed * (0.85 + Math.random() * 0.35),
+    order: orders[Math.floor(Math.random() * orders.length)],
+    maxPat: (6 + Math.random() * 3) * (1 + S.slow * 0.18), state: 'walk', t: 0
+  };
+  c.pat = c.maxPat;
+  var el = document.createElement('div');
+  el.className = 'cust';
+  el.innerHTML = '<div class="who">' + d.who[Math.floor(Math.random() * d.who.length)] + '</div>' +
+    '<div class="ord">' + c.order + '</div><div class="pat"><i style="width:100%"></i></div>';
+  LANE.appendChild(el);
+  c.el = el;
+  G.custs.push(c);
+  tidyQueue();
+  G.custs.forEach(function(k){ if (k.state === 'walk') place(k); });
+}
+
+function setBanner(t){
+  var b = $('banner');
+  b.textContent = t;
+  b.classList.toggle('on', !!t);
+}
+
+function serve(order){
+  if (!G || !G.running || G.over) return;
+  var pick = null;
+  G.custs.forEach(function(c){
+    if (c.state !== 'walk' || c.order !== order) return;
+    if (!pick || c.x < pick.x) pick = c;
+  });
+  if (!pick) { breakCombo(); flash(order, false); return; }
+  G.combo++;
+  var mult = Math.min(3, 1 + G.combo * 0.12);
+  var d = district();
+  var tip = Math.round((d.tip + S.doubleTip) * mult * (G.rush > 0 ? 2 : 1));
+  money(tip); pick.state = 'served'; pick.el.classList.add('gone');
+  pick.t = 0;
+  pick.el.querySelector('.ord').textContent = '+' + tip;
+  G.served++;
+  $('goal').textContent = G.served + ' / ' + G.goal;
+  $('combo').textContent = G.combo > 1 ? 'x' + G.combo + ' streak' : '';
+  flash(order, true);
+  if (G.served >= G.goal) clearDistrict();
+}
+
+function flash(order, good){
+  var b = document.querySelector('#floor button[data-o="' + order + '"]');
+  if (!b) return;
+  b.style.background = good ? '#4ade80' : '#ef4444';
+  setTimeout(function(){ b.style.background = '#fcd34d'; }, 120);
+}
+
+function breakCombo(){
+  if (G.combo > 2) setBanner('Streak lost');
+  G.combo = 0;
+  $('combo').textContent = '';
+}
+
+function miss(c){
+  if (c.state !== 'walk') return;
+  c.state = 'angry';
+  c.t = 0;
+  c.el.classList.add('gone');
+  c.el.querySelector('.ord').textContent = '😤';
+  G.combo = 0;
+  $('combo').textContent = '';
+  G.lives--;
+  $('lives').textContent = Math.max(0, G.lives);
+  if (G.lives <= 0) loseDistrict();
+}
+
+function clearDistrict(){
+  G.over = true; G.running = false;
+  pause();
+  save();
+  var bonus = 20 + S.district * 25;
+  money(bonus);
+  setTimeout(function(){
+    if (S.district >= DISTRICTS.length - 1) return ending();
+    showSheet('<h2>District cleared — ' + district().n + '</h2>' +
+      '<p>' + G.served + ' served, ' + bonus + ' bonus cash. Time for a proper upgrade before the next street.</p>' +
+      '<div id="ups"></div><button class="big" id="nextBtn">Next district</button>');
+    renderUpgrades();
+    $('nextBtn').onclick = function(){
+      S.district = Math.min(DISTRICTS.length - 1, S.district + 1);
+      S.best = Math.max(S.best, S.district);
+      save(); hideSheet(); intro();
+    };
+  }, 260);
+}
+
+function loseDistrict(){
+  G.over = true; G.running = false;
+  pause();
+  save();
+  setTimeout(function(){
+    showSheet('<h2>Closing early</h2><p>The last customer walked off and the street emptied out. Nothing is lost — the cart is still yours, and the district will be just as busy in a minute.</p>' +
+      '<button class="big" id="retryBtn">Try the district again</button>');
+    $('retryBtn').onclick = function(){ hideSheet(); intro(); };
+  }, 300);
+}
+
+var UPGRADES = [
+  { k:'doubleTip', nm:'Better ingredients', sm:'+2 cash on every serve', cost:function(){ return 45 + S.doubleTip * 40; } },
+  { k:'extraLife', nm:'Charm offensive', sm:'One more heart in every district', cost:function(){ return 70 + S.extraLife * 60; }, max:2 },
+  { k:'slow', nm:'Comfier seating', sm:'Customers wait a bit longer', cost:function(){ return 50 + S.slow * 45; }, max:3 }
+];
+
+function renderUpgrades(){
+  var html = '';
+  UPGRADES.forEach(function(u, i){
+    var maxed = u.max && S[u.k] >= u.max;
+    var c = u.cost();
+    html += '<div class="up"><div class="g"><div class="nm">' + u.nm + (maxed ? ' · maxed' : '') + '</div><div class="sm">' + u.sm + '</div></div>' +
+      '<button data-u="' + i + '"' + (maxed || S.cash < c ? ' disabled' : '') + '>' + (maxed ? '✓' : c + ' 💰') + '</button></div>';
+  });
+  $('ups').innerHTML = html;
+  [].forEach.call($('ups').querySelectorAll('[data-u]'), function(b){
+    b.onclick = function(){
+      var u = UPGRADES[+b.dataset.u], c = u.cost();
+      if (S.cash < c) return;
+      S.cash -= c; S[u.k]++;
+      money(0); save(); renderUpgrades();
+    };
+  });
+}
+
+function ending(){
+  showSheet('<h2>The plaza is yours</h2><p>Six districts, one folding table, and a queue that wraps the fountain. The city knows the cart now — and the cart knows what it is doing.</p>' +
+    '<p style="font-size:.8rem">Keep playing: restart the plaza for a better score, or go back and take every district again with all the upgrades.</p>' +
+    '<button class="big" id="againBtn">Back to Lemonade Lane</button>');
+  $('againBtn').onclick = function(){ S.district = 0; save(); hideSheet(); intro(); };
+}
+
+$('floor').addEventListener('click', function(e){
+  var b = e.target.closest('button');
+  if (b && G && G.running) serve(b.dataset.o);
+});
+$('pauseBtn').onclick = function(){
+  if (!G) return intro();
+  if (G.running) { pause(); $('pauseBtn').textContent = '▶ Resume'; }
+  else { G.running = true; last = performance.now(); $('pauseBtn').textContent = '⏸ Pause'; raf = requestAnimationFrame(loop); }
+};
+$('restartBtn').onclick = function(){ intro(); };
+document.addEventListener('visibilitychange', function(){ if (document.hidden) { pause(); if (G) $('pauseBtn').textContent = '▶ Resume'; } });
+
+load();
+$('cash').textContent = Math.floor(S.cash);
+$('lives').textContent = 3 + S.extraLife;
+intro();
+})();
+</script>
+<script>(function(){var m=location.pathname.match(/^(.*\/)games\/mobile/),s=document.createElement('script');s.src=(m?m[1]:'/')+'games/mobile/js/autoupdate.js';document.head.appendChild(s);})();</script>
+</body>
+</html>

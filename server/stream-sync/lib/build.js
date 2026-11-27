@@ -6,11 +6,11 @@ const TWITCH_TITLE_MAX = 140;
 const YOUTUBE_TITLE_MAX = 100;
 const KICK_TITLE_MAX = 140;
 
-/** "Tom Clancy's Ghost Recon® Wildlands" -> "Tom Clancy's Ghost Recon Wildlands" */
+/** "Tom Clancy's Ghost Recon (R) Wildlands" -> "Tom Clancy's Ghost Recon Wildlands" */
 function cleanName(s) {
     return String(s || "")
-        .replace(/[®™©℠]/g, "")
-        .replace(/[’‘`]/g, "'")
+        .replace(/[\u00AE\u2122\u00A9\u2120]/g, "")
+        .replace(/[\u2019\u2018`]/g, "'")
         .replace(/\s+/g, " ")
         .trim();
 }
@@ -122,7 +122,7 @@ function squadInGame(me, squad, friends) {
 function clip(s, max) {
     s = String(s || "");
     if (s.length <= max) return s;
-    return s.slice(0, Math.max(0, max - 1)).trimEnd() + "…";
+    return s.slice(0, Math.max(0, max - 1)).trimEnd() + "\u2026";
 }
 
 /** Title from the PlayStation game + status, never longer than max.
@@ -137,6 +137,20 @@ function buildTitle({ status, game, mentions = [], max = TWITCH_TITLE_MAX, base 
     let tail = mentions.length ? " w/ " + mentions.map((m) => "@" + m).join(" ") : "";
     if (tail.length > max / 2 && mentions.length > 1) tail = ` w/ @${mentions[0]} +${mentions.length - 1}`;
     return clip(main, max - tail.length) + tail;
+}
+
+/** YouTube live chat accepts 200 characters, so keep the announcement under that. */
+const ANNOUNCE_MAX = 190;
+
+/** The line posted in YouTube and Kick chat when the stream title changes. */
+function announceText(title, max = ANNOUNCE_MAX) {
+    const t = cleanName(title);
+    return t ? clip("\u{1F534} " + t, max) : "";
+}
+
+/** Fingerprint used to recognise a line this service posted when a platform hands it back. */
+function echoKey(text) {
+    return normName(text).slice(0, 200);
 }
 
 /** Twitch tag rules: 1-25 chars, letters/numbers only, max 10, no duplicates. */
@@ -164,7 +178,7 @@ function emailKey(email) {
 }
 
 module.exports = {
-    TWITCH_TITLE_MAX, YOUTUBE_TITLE_MAX, KICK_TITLE_MAX,
+    TWITCH_TITLE_MAX, YOUTUBE_TITLE_MAX, KICK_TITLE_MAX, ANNOUNCE_MAX,
     cleanName, normName, similarity, pickCategory, searchTermFor, overrideFor,
-    readPresence, sameGame, squadInGame, buildTitle, cleanTags, sameTags, clip, emailKey
+    readPresence, sameGame, squadInGame, buildTitle, announceText, echoKey, cleanTags, sameTags, clip, emailKey
 };

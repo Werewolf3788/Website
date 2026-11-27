@@ -10,7 +10,8 @@
      (they need the app secret), which saves the logins to user_secrets/<you>.
    - YouTube sign-in finds your channel in the browser and saves it to your settings.
    - TikTok name, "post chat as", PSN name and options are saved straight to Firebase.
-   - The site owner also gets a box for the Twitch/Kick app keys (saved to their user_secrets).
+   - The site owner also gets a box for the Twitch/Kick app keys and the YouTube title hook
+     (saved to their user_secrets).
   Nothing secret is shown on this page, only whether it's connected.
 -->
 <style>
@@ -60,7 +61,7 @@ pre{background:#0f0d18;border:1px solid var(--line);border-radius:10px;padding:1
     <section class="card">
       <h2><span class="dot" style="background:var(--tw)"></span>Twitch (streaming account)</h2>
       <p class="hint">Changes your category, title and tags. Sign in with the account you stream on.</p>
-      <div class="state" id="twState">…</div>
+      <div class="state" id="twState">...</div>
       <div class="row"><button class="tw" data-connect="twitch" data-role="broadcaster">Connect Twitch</button>
         <button class="ghost" data-remove="twitch_broadcaster_refresh" data-login="twitch_login">Remove</button></div>
     </section>
@@ -68,7 +69,7 @@ pre{background:#0f0d18;border:1px solid var(--line);border-radius:10px;padding:1
     <section class="card">
       <h2><span class="dot" style="background:var(--tw)"></span>Twitch chat bot (optional)</h2>
       <p class="hint">Posts the outside chats into your Twitch chat. Log out of your main account on twitch.tv first, or Twitch will sign that one in again.</p>
-      <div class="state" id="botState">…</div>
+      <div class="state" id="botState">...</div>
       <div class="row"><button class="tw" data-connect="twitch" data-role="bot">Connect bot</button>
         <button class="ghost" data-remove="twitch_bot_refresh" data-login="bot_login">Remove</button></div>
     </section>
@@ -83,23 +84,23 @@ pre{background:#0f0d18;border:1px solid var(--line);border-radius:10px;padding:1
     <section class="card">
       <h2><span class="dot" style="background:var(--yt)"></span>YouTube</h2>
       <p class="hint">Sign in with the Google account that owns your YouTube channel. It only reads which channel is yours, then your live chat is relayed.</p>
-      <div class="state" id="ytState">…</div>
+      <div class="state" id="ytState">...</div>
       <div class="row"><button class="yt" id="ytBtn">Sign in with YouTube</button>
         <button class="ghost" id="ytRemove">Remove</button></div>
-      <div class="row"><input type="text" id="ytId" placeholder="or paste your channel ID (UC…)"><button id="ytSave">Save</button></div>
+      <div class="row"><input type="text" id="ytId" placeholder="or paste your channel ID (UC...)"><button id="ytSave">Save</button></div>
     </section>
 
     <section class="card">
       <h2><span class="dot" style="background:var(--tt)"></span>TikTok</h2>
       <p class="hint">TikTok has no sign-in for live chat, so just your TikTok name. Chat is read from your public live page.</p>
-      <div class="state" id="ttState">…</div>
+      <div class="state" id="ttState">...</div>
       <div class="row"><input type="text" id="ttName" placeholder="your TikTok name (no @)"><button class="tt" id="ttSave">Save</button></div>
     </section>
 
     <section class="card">
       <h2><span class="dot" style="background:var(--kick)"></span>Kick (optional)</h2>
       <p class="hint">Sets your Kick title and category and relays Kick chat to Twitch.</p>
-      <div class="state" id="kickState">…</div>
+      <div class="state" id="kickState">...</div>
       <div class="row"><button class="kick" data-connect="kick">Connect Kick</button>
         <button class="ghost" data-remove="kick_refresh" data-login="kick_login">Remove</button></div>
     </section>
@@ -122,8 +123,9 @@ pre{background:#0f0d18;border:1px solid var(--line);border-radius:10px;padding:1
       <div class="row"><span class="hint">Title shows</span>
         <select id="optFmt"><option value="status">game status (e.g. Chapter 2: The Past)</option><option value="game_status">game name - game status</option><option value="game">game name only</option></select></div>
       <label class="opt"><input type="checkbox" id="optMention"> Add @friends playing the same game with me</label>
-      <p class="hint">Title right now: <b id="titlePreview">…</b></p>
+      <p class="hint">Title right now: <b id="titlePreview">...</b></p>
       <label class="opt"><input type="checkbox" id="optDiscord"> Discord "now live" alert</label>
+      <label class="opt"><input type="checkbox" id="optAnnounce"> Post my title as a chat message on YouTube and Kick</label>
       <div class="row"><span class="hint">YouTube title</span>
         <select id="optYt"><option value="same">same as Twitch</option><option value="base_plus_status">my YouTube title + status</option><option value="off">leave alone</option></select></div>
     </section>
@@ -131,13 +133,16 @@ pre{background:#0f0d18;border:1px solid var(--line);border-radius:10px;padding:1
     <section class="card" id="ownerCard">
       <h2>App keys (site owner)</h2>
       <p class="hint">From dev.twitch.tv and kick.com/settings/developer. Saved to your private secrets; never shown again.</p>
-      <div class="state" id="ownState">…</div>
+      <div class="state" id="ownState">...</div>
       <input type="text" id="twCid" placeholder="Twitch Client ID">
       <input type="password" id="twSec" placeholder="Twitch Client Secret">
       <input type="text" id="kCid" placeholder="Kick Client ID (optional)">
       <input type="password" id="kSec" placeholder="Kick Client Secret (optional)">
+      <p class="hint">YouTube titles are changed by the Apps Script hook. Paste the two lines <code>setupStreamHook()</code> printed: <code>youtube_hook_url</code> and <code>youtube_hook_secret</code>. Without them YouTube titles are left alone.</p>
+      <input type="text" id="ytHookUrl" placeholder="YouTube hook URL (https://script.google.com/macros/s/.../exec)">
+      <input type="password" id="ytHookSecret" placeholder="YouTube hook secret (never shown again)">
       <button id="ownSave">Save app keys</button>
-      <p class="hint">Redirect URLs: <code>…onrender.com/auth/twitch/callback</code>, <code>…/auth/kick/callback</code>. Kick webhook URL: <code>…/webhooks/kick</code></p>
+      <p class="hint">Redirect URLs: <code>...onrender.com/auth/twitch/callback</code>, <code>.../auth/kick/callback</code>. Kick webhook URL: <code>.../webhooks/kick</code></p>
     </section>
 
     <section class="card wide">
@@ -166,7 +171,7 @@ const keyOf = (u) => u.email ? u.email.toLowerCase().replace(/\./g, "_").replace
 let K = null, S = {}, SEC = {};
 
 function banner(msg, bad) { const b = $("banner"); b.textContent = msg; b.className = bad ? "err" : "good"; }
-const on = (ok, yes, no) => ok ? `<span class="ok">✔ ${yes}</span>` : `<span class="bad">✖ ${no}</span>`;
+const on = (ok, yes, no) => ok ? `<span class="ok">\u2714 ${yes}</span>` : `<span class="bad">\u2716 ${no}</span>`;
 
 /* The free Render service sleeps. Wake it early, and make Connect wait until it really answers:
    if the sign-in is sent while it's still starting, Render reloads the page and the sign-in is lost. */
@@ -222,7 +227,8 @@ async function load() {
   $("ytState").innerHTML = on(chat.youtube_channel_id, "Channel: " + (chat.youtube_channel_title || chat.youtube_channel_id), "Not set");
   $("ttState").innerHTML = on(chat.tiktok_username, "@" + chat.tiktok_username, "Not set");
   $("kickState").innerHTML = on(SEC.kick_refresh, "Connected" + (S.kick_login ? " as " + S.kick_login : ""), "Not connected");
-  $("ownState").innerHTML = on(SEC.twitch_client_id && SEC.twitch_client_secret, "Twitch app keys saved", "Twitch app keys missing") + "<br>" + on(SEC.kick_client_id && SEC.kick_client_secret, "Kick app keys saved", "Kick app keys not added");
+  $("ownState").innerHTML = on(SEC.twitch_client_id && SEC.twitch_client_secret, "Twitch app keys saved", "Twitch app keys missing") + "<br>" + on(SEC.kick_client_id && SEC.kick_client_secret, "Kick app keys saved", "Kick app keys not added") + "<br>" + on(SEC.youtube_hook_url && SEC.youtube_hook_secret, "YouTube title hook saved", "YouTube title hook missing");
+  $("ytHookUrl").value = SEC.youtube_hook_url || "";   // the URL isn't secret, the secret is never shown
   document.querySelectorAll('input[name=postAs]').forEach((r) => r.checked = r.value === (chat.post_as || "bot"));
   $("ytId").value = chat.youtube_channel_id || "";
   $("ttName").value = chat.tiktok_username || "";
@@ -231,6 +237,7 @@ async function load() {
   $("optEnabled").checked = S.enabled === true;
   $("optTitle").checked = S.update_title !== false;
   $("optDiscord").checked = S.discord_live_alert !== false;
+  $("optAnnounce").checked = S.announce_title !== false;
   $("optYt").value = S.youtube_mode || "same";
   $("optFmt").value = S.title_format || "status";
   $("optSource").value = S.source || "auto";
@@ -245,7 +252,7 @@ async function preview() {
   if (!tag) { $("titlePreview").textContent = "(add your PSN name)"; return; }
   try {
     const [g, st] = await Promise.all(["currentGame", "gameStatus"].map((f) => fetch(PSN_DB + encodeURIComponent(tag) + "/" + f + ".json").then((r) => r.json())));
-    const clean = (x) => String(x || "").replace(/[™®©]/g, "").replace(/\s+/g, " ").trim();
+    const clean = (x) => String(x || "").replace(/[\u2122\u00AE\u00A9]/g, "").replace(/\s+/g, " ").trim();
     const gm = /^dashboard$/i.test(clean(g)) ? "" : clean(g), sts = clean(st), f = $("optFmt").value;
     const main = f === "game" ? gm : f === "game_status" ? (gm && sts && !sts.toLowerCase().includes(gm.toLowerCase()) ? gm + " - " + sts : sts || gm) : sts || gm;
     const squad = Object.values(S.squad || {});
@@ -261,9 +268,9 @@ async function save(obj, msg) {
 
 /* Twitch / Kick: hand off to the Render service with a fresh site sign-in */
 document.querySelectorAll("[data-connect]").forEach((b) => b.onclick = async () => {
-  b.disabled = true; b.textContent = "Waking up the sync service…";
+  b.disabled = true; b.textContent = "Waking up the sync service...";
   await awake();   // if it couldn't be confirmed, go anyway: the service sends you back with a message if it wasn't ready
-  b.textContent = "Opening…";
+  b.textContent = "Opening...";
   const f = $("connectForm");
   f.action = `${SYNC}/connect/${b.dataset.connect}`;
   f.id_token.value = await auth.currentUser.getIdToken(true);
@@ -318,16 +325,20 @@ $("psnPoll").onchange = () => save({ psn_poll_minutes: Number($("psnPoll").value
 $("optEnabled").onchange = (e) => save({ enabled: e.target.checked }, e.target.checked ? "Stream Sync is on." : "Stream Sync is off.");
 $("optTitle").onchange = (e) => save({ update_title: e.target.checked });
 $("optDiscord").onchange = (e) => save({ discord_live_alert: e.target.checked });
+$("optAnnounce").onchange = (e) => save({ announce_title: e.target.checked }, e.target.checked ? "Your title will be posted in YouTube and Kick chat when it changes." : "Title announcements are off.");
 $("optYt").onchange = (e) => save({ youtube_mode: e.target.value });
 $("optSource").onchange = (e) => save({ source: e.target.value }, "Saved where your game info comes from.");
 $("optFmt").onchange = (e) => save({ title_format: e.target.value }, "Title format saved.");
 $("optMention").onchange = (e) => save({ mention_squad: e.target.checked });
 
+const OWNER_FIELDS = [["twCid", "twitch_client_id"], ["twSec", "twitch_client_secret"], ["kCid", "kick_client_id"], ["kSec", "kick_client_secret"], ["ytHookUrl", "youtube_hook_url"], ["ytHookSecret", "youtube_hook_secret"]];
 $("ownSave").onclick = async () => {
   const add = {};
-  [["twCid", "twitch_client_id"], ["twSec", "twitch_client_secret"], ["kCid", "kick_client_id"], ["kSec", "kick_client_secret"]].forEach(([id, f]) => { const v = $(id).value.trim(); if (v) add[f] = v; });
+  // trimmed on purpose: a trailing space/newline in the hook secret makes every title call come back "denied"
+  OWNER_FIELDS.forEach(([id, f]) => { const v = $(id).value.trim(); if (v) add[f] = v; });
   if (!Object.keys(add).length) return banner("Paste at least one key first.", true);
-  try { await db.ref(`user_secrets/${K}`).update(add); ["twCid", "twSec", "kCid", "kSec"].forEach((id) => $(id).value = ""); banner("App keys saved."); await load(); }
+  if (add.youtube_hook_url && !/^https:\/\/\S+$/.test(add.youtube_hook_url)) return banner("The YouTube hook URL must be the https://.../exec link, with no spaces.", true);
+  try { await db.ref(`user_secrets/${K}`).update(add); OWNER_FIELDS.forEach(([id]) => $(id).value = ""); banner("Keys saved."); await load(); }
   catch (e) { banner(e.message, true); }
 };
 </script>

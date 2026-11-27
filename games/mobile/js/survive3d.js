@@ -894,24 +894,19 @@ function publishPub() {
   const ups = Object.keys(BD).filter(id => st.b[id].up).map(id => { const u = st.b[id].up; return { id: id, k: id + '_' + u.to, n: BD[id].n, i: BD[id].i, to: u.to, end: u.end, total: u.total, c: Object.keys(u.h || {}).length }; });
   try { WW.roomRef('survive', code).child('pub').set({ name: WW.nick || String((WW.user && WW.user.displayName) || 'Survivor').split(' ')[0], pp: lvl('pp'), zones: st.stats.zones, ups: ups, w: { b: st.b, zones: st.zones, heroes: st.heroes, paid: st.paid || {}, bw: st.bossWins || {}, lay: st.lay || {} }, res: { wood: Math.floor(st.res.wood), food: Math.floor(st.res.food), metal: Math.floor(st.res.metal) }, at: NOW() }); } catch (e) {}   // w = enough of the settlement for friends to walk around it
 }
-// ------------------------------------------------------------ shop: real-money packs, paid through PayPal
-// The page never decides that a purchase went through. The ww-discord-auth server (server/discord-auth/paypal.js)
-// captures the order with PayPal itself, checks it's COMPLETED for the right price and player, and only then writes the
-// grant to Firestore: user/{CODE}/platform/mobile/game/survive3_shop/orders/{orderId}. Each order is added to the save
-// once (st.orders remembers which). Orders that were paid but not confirmed (closed tab, lost signal) are retried on load.
+// ------------------------------------------------------------ shop: real-money packs, paid on Buy Me a Coffee
+// The page never decides that a purchase went through. It gets a claim code from the ww-discord-auth server
+// (server/discord-auth/bmc.js); the player pays on Buy Me a Coffee with that code in the message, the payment webhook
+// checks the amount and writes the grant to Firestore: user/{CODE}/platform/mobile/game/survive3_shop/orders/{orderId}.
+// Each order is added to the save once (st.orders remembers which). Paid orders are picked up whenever the game loads,
+// and while the shop is waiting for a payment.
 const PAY_URL = 'https://ww-discord-auth.onrender.com', PEND_KEY = 'ts3_pay_pend';
-let shopCfg = null, ppLoaded = null, shopSel = 'survive_2000', myPrices = null;
+let shopCfg = null, shopSel = 'survive_2000', myPrices = null, shopWait = null;
 async function shopConfig() { if (shopCfg && shopCfg.packs) return shopCfg; try { shopCfg = await (await fetch(PAY_URL + '/pay/config')).json(); } catch (e) { shopCfg = null; } return shopCfg; }
 async function idTok() { try { return WW && WW.user ? await WW.user.getIdToken() : ''; } catch (e) { return ''; } }
 async function payPost(path, body) {
   const r = await fetch(PAY_URL + path, { method: 'POST', body: new URLSearchParams(body) }); const j = await r.json().catch(() => ({}));
   if (!r.ok || j.error) throw new Error(j.error || ('Shop error ' + r.status)); return j;
-}
-function loadPayPal(cid) {
-  if (ppLoaded) return ppLoaded;
-  ppLoaded = new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(cid) + '&currency=USD&intent=capture&components=buttons';
-    sc.onload = () => res(window.paypal); sc.onerror = () => { ppLoaded = null; rej(new Error('PayPal didn’t load. Check your connection and try again.')); }; document.head.appendChild(sc); });
-  return ppLoaded;
 }
 const pendList = () => { try { return JSON.parse(localStorage.getItem(PEND_KEY)) || []; } catch (e) { return []; } };
 const pendSet = l => { try { localStorage.setItem(PEND_KEY, JSON.stringify(l)); } catch (e) {} };
@@ -923,23 +918,17 @@ function grantOrder(id, g) {   // add a paid order's resources to YOUR settlemen
   if (tour) tour.S && Object.keys(g.res).forEach(k => { st.res[k] = (st.res[k] || 0) + (+g.res[k] || 0); tour.S[k] = (tour.S[k] || 0) + (+g.res[k] || 0); });   // visiting: it's yours, not part of the trip's split
   sfx(784, .2, .08); sfx(1046, .35, .08, .15); toast('📦 Thank you! ' + (g.name || 'Pack'), 7000);
   persist(); cloudSave(); hud();
-  // a receipt that stays on screen until closed, so it's clear PayPal approved it
-  show('<h3>✅ Payment approved by PayPal</h3>' + (shopCfg && shopCfg.mode === 'sandbox' ? '<div class="muted" style="color:#fde68a">Test mode: no real money was charged.</div>' : '') +
-    '<div class="row"><div class="g"><b>📦 ' + escH(g.name || 'Pack') + (g.price ? ' · $' + escH(g.price) : '') + '</b><div class="muted">Added to your settlement: ' + (Object.keys(g.res).length ? costTxt(g.res) : '') + (+g.boostPlayMs > 0 ? ' 🔥 Overdrive +' + fmt(g.boostPlayMs / 1000) + ' of play time (+50% production)' : '') + '</div><div class="muted">PayPal order <b>' + escH(id) + '</b> · ' + new Date().toLocaleString() + '</div></div></div>' +
+  // a receipt that stays on screen until closed, so it's clear the payment went through
+  show('<h3>✅ Payment received</h3>' + (shopCfg && shopCfg.mode === 'sandbox' ? '<div class="muted" style="color:#fde68a">Test mode: no real money was charged.</div>' : '') +
+    '<div class="row"><div class="g"><b>📦 ' + escH(g.name || 'Pack') + (g.price ? ' · $' + escH(g.price) : '') + '</b><div class="muted">Added to your settlement: ' + (Object.keys(g.res).length ? costTxt(g.res) : '') + (+g.boostPlayMs > 0 ? ' 🔥 Overdrive +' + fmt(g.boostPlayMs / 1000) + ' of play time (+50% production)' : '') + '</div><div class="muted">Order <b>' + escH(id) + '</b> · ' + new Date().toLocaleString() + '</div></div></div>' +
     '<div class="muted">Thank you for supporting the game! Your purchases are listed in 🛒 Shop.</div>');
   return true;
-}
-async function confirmOrder(id) {
-  const j = await payPost('/pay/capture', { idToken: await idTok(), orderId: id });
-  pendSet(pendList().filter(x => x !== id));
-  if (j.grant) grantOrder(id, j.grant); else await claimShop();
-  return j;
 }
 async function claimShop() {   // pick up every paid order (also ones bought on another device)
   if (!WW || WW.mode !== 'cloud' || !WW.user || !WW.friendCode || !WW.mobileDoc) return;
   try { const d = await WW.mobileDoc('survive3_shop'); if (!d) return; const q = await d.collection('orders').get(); q.forEach(o => grantOrder(o.id, o.data())); } catch (e) { console.warn('shop claim', e && (e.code || e.message)); }
 }
-async function shopStartup() { for (const id of pendList()) { try { await confirmOrder(id); } catch (e) { console.warn('pending order', id, e.message); } } claimShop(); }
+async function shopStartup() { if (pendList().length) pendSet([]); claimShop(); }   // (old PayPal retry list is no longer used)
 async function shopPanel(note) {
   if (tour) return toast('🛒 Go home to open the shop');
   let h = '<h3>🛒 Shop</h3>' + (note ? '<div class="muted" style="color:#fde68a">' + escH(note) + '</div>' : '');
@@ -956,17 +945,41 @@ async function shopPanel(note) {
       (on ? '<span class="muted">✔ Selected</span>' : '<button class="b alt" data-a="shopsel" data-id="' + id + '">Choose</button>') + '</div>'; }).join('');
   const rc = ((tour ? tour.home : st).receipts || []).slice().reverse();
   const hist = rc.length ? '<div class="row"><div class="g"><b>🧾 Your purchases</b>' + rc.map(r => '<div class="muted">✅ ' + new Date(r.at).toLocaleDateString() + ' · ' + escH(r.name) + (r.price ? ' $' + escH(r.price) : '') + (r.test ? ' (test)' : '') + ' · order ' + escH(r.id) + '</div>').join('') + '</div></div>' : '';
-  if (!cfg.clientId) return show(h + hist + '<div class="row muted">The shop isn’t open yet. Check back soon!</div>');
-  const S = packs[shopSel];
-  show(h + (cfg.mode === 'sandbox' ? '<div class="muted" style="color:#fde68a">Test mode: no real money is charged.</div>' : '') + '<div style="margin-top:8px"><b>Buy ' + escH(S.icon || '') + ' ' + escH(S.name) + ' for $' + escH(price(shopSel)) + '</b></div><div id="ppBtns" style="margin-top:6px;min-height:50px;background:#fff;border-radius:10px;padding:8px"></div><div class="muted" style="margin-top:6px">Payments are handled securely by PayPal (PayPal or card). Sales are final; if something goes wrong, message werewolf.</div>' + hist);
-  try {
-    const pp = await loadPayPal(cfg.clientId), box = $('ppBtns'); if (!box) return; const pack = shopSel;
-    pp.Buttons({ style: { layout: 'vertical', shape: 'pill', label: 'pay' },
-      createOrder: async () => (await payPost('/pay/create', { idToken: await idTok(), pack: pack })).id,
-      onApprove: async d => { pendSet(pendList().concat(d.orderID)); closeSheet(); toast('⏳ Confirming your payment with PayPal…', 9000); try { await confirmOrder(d.orderID); } catch (e) { shopPanel(e.message + ' (it will be checked again next time you open the game)'); } },
-      onCancel: () => toast('Purchase cancelled'),
-      onError: e => shopPanel('PayPal: ' + ((e && e.message) || 'something went wrong')) }).render(box);
-  } catch (e) { shopPanel(e.message); }
+  if (!cfg.open) return show(h + hist + '<div class="row muted">The shop isn’t open yet. Check back soon!</div>');
+  const S = packs[shopSel], mail = (myPrices && myPrices.email) || '';
+  show(h + '<div style="margin-top:8px"><b>Buy ' + escH(S.icon || '') + ' ' + escH(S.name) + ' for $' + escH(price(shopSel)) + '</b></div>' +
+    '<div id="bmcBuy" style="margin-top:6px"><div class="muted">E-mail you’ll pay with (matches your payment if you forget the code):</div><input id="bmcMail" type="email" value="' + escH(mail) + '" style="width:100%;margin:4px 0 6px" placeholder="you@example.com">' +
+    '<button class="b" id="bmcGo" style="width:100%;background:#ffdd00;color:#0f0f0f;font-weight:800">☕ Pay with Buy Me a Coffee</button><div id="bmcStep"></div></div>' +
+    '<div class="muted" style="margin-top:6px">Payments are handled by Buy Me a Coffee. Sales are final; if something goes wrong, message werewolf.</div>' + '<div class="muted" style="margin-top:10px;padding-top:8px;border-top:1px solid #ffffff1a;text-align:center">☕ Everything else here is free — <a href="https://buymeacoffee.com/raykevin71b" target="_blank" rel="noopener" style="color:#fde68a;font-weight:800">buy me a coffee</a></div>' + hist);
+  const go = $('bmcGo'), pack = shopSel; if (!go) return;
+  go.onclick = async () => {
+    go.disabled = true; go.textContent = '⏳ Getting your code…';
+    try {
+      const j = await payPost('/bmc/claim', { kind: 'pack', idToken: await idTok(), pack: pack, email: ($('bmcMail') || {}).value || '' });
+      go.disabled = false; go.textContent = '☕ Get a new code';
+      const step = $('bmcStep'); if (!step) return;
+      step.innerHTML = '<div class="row"><div class="g"><b>1. Your code: <span style="font-size:1.25em;letter-spacing:.08em;color:#fde68a;user-select:all">' + escH(j.claim) + '</span></b>' +
+        '<div class="muted">2. On Buy Me a Coffee, buy <b>' + escH(j.name) + (j.price !== S.price ? ' (ally price item)' : '') + '</b> for <b>$' + escH(j.price) + '</b> and paste the code in the message box.</div>' +
+        '<div class="muted" id="bmcState">⏳ Waiting for your payment… you can keep playing, it’s added as soon as it arrives.</div></div>' +
+        '<button class="b alt" id="bmcCopy">Copy code</button></div>' +
+        '<a class="b" href="' + escH(j.url) + '" target="_blank" rel="noopener" style="display:block;text-align:center;background:#ffdd00;color:#0f0f0f;font-weight:800;text-decoration:none">Open Buy Me a Coffee ↗</a>';
+      const cp = $('bmcCopy'); if (cp) cp.onclick = () => { try { navigator.clipboard.writeText(j.claim).then(() => toast('Code copied')); } catch (e) {} };
+      shopWatch(j.claim);
+    } catch (e) { go.disabled = false; go.textContent = '☕ Pay with Buy Me a Coffee'; toast('🛒 ' + e.message, 6000); }
+  };
+}
+// after getting a code, check every few seconds (up to 30 minutes) until the payment arrives, then add it to the save
+function shopWatch(claim) {
+  clearInterval(shopWait); let n = 0;
+  shopWait = setInterval(async () => {
+    if (++n > 360) return clearInterval(shopWait);
+    if (document.hidden) return;
+    try {
+      const j = await (await fetch(PAY_URL + '/bmc/claim/' + claim)).json();
+      if (j.status === 'paid') { clearInterval(shopWait); if (j.grant && j.orderId) grantOrder(j.orderId, j.grant); else claimShop(); }
+      else if (j.status === 'short') { clearInterval(shopWait); const el = $('bmcState'); if (el) el.innerHTML = '<span style="color:#fca5a5">A payment came in for ' + escH(claim) + ' but it was less than $' + escH(j.price) + '. Message werewolf with your receipt.</span>'; }
+    } catch (e) {}
+  }, 5000);
 }
 function alliesPanel(note) {
   let h = '<h3>🤝 Allies</h3><div class="muted">Your friends show up below. Visit one to <b>help</b> their upgrade timers, and they can help yours (' + MAX_HELPS + ' helps per upgrade, each cuts ~15%). Help theirs back and earn ' + RES.wood + '15 (10 a day). While you play on your own map, each ally gets ' + Math.round(sharePct((shareAllies || []).length) * 100 || 5) + '% of what you gather (5% with one ally, down to 1% each with five or more).</div>' + (note ? '<div class="muted" style="color:#fde68a">' + note + '</div>' : '');
