@@ -104,6 +104,11 @@
   .plans{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem}
   .plan{border:2px solid var(--line);border-radius:0.75rem;padding:0.75rem;cursor:pointer;background:var(--panel2);text-align:center;color:var(--text);font-family:Inter}
   .plan.on{border-color:var(--accent)} .plan b{display:block;font-size:1.5rem} .plan small{color:var(--mute)}
+  .tierPick .plans.tiers{grid-template-columns:repeat(3,1fr)} .tierPick .plans.terms{grid-template-columns:repeat(4,1fr);margin-top:.5rem}
+  .tierPick .plan b{font-size:1.15rem} .tierPick .plan small{display:block;font-size:.78rem;line-height:1.25}
+  .tierPick .plan[disabled]{opacity:.45;cursor:not-allowed}
+  .tierPick .fagree{display:flex;gap:.5rem;align-items:flex-start;margin:.625rem 0 0;color:var(--text)} .tierPick .fagree input{margin-top:.2rem;width:auto}
+  .lockline{margin:.5rem 0 0} @media (max-width:640px){.tierPick .plans.terms{grid-template-columns:1fr 1fr}}
   .tag{display:inline-block;padding:2px 0.5rem;border-radius:6.1875rem;font-size:0.6875rem;font-weight:800;background:var(--ok);color:#03140d}
   /* desktop: settings (left) and preview/links (right) scroll on their own; the page itself fits the screen */
   @media (min-width:1101px){
@@ -282,15 +287,12 @@
       </div>
 
       <div class="preview pro" id="proBox">
-        <div class="pv-top"><b><i class="fa-solid fa-crown" style="color:#ffd700"></i> Go Pro: no watermark + Match my game</b><span id="proStatus"></span></div>
-        <p class="hint" style="margin:0 0 0.625rem">Free overlays show a small “Overlay made at …” banner once an hour. A pass hides it for your Twitch channel — all of your overlay links, right away — and unlocks <b>Match my game</b>: colors and edge effects that change with the game you're streaming.</p>
-        <div class="plans">
-          <button class="plan on" data-plan="month"><b id="pMonth">$5</b><small>per month</small></button>
-          <button class="plan" data-plan="year"><b id="pYear">$50</b><small>per year · 2 months free</small></button>
-        </div>
-        <p class="hint" id="tierNote" style="margin:0.5rem 0 0">Twitch Affiliates and Partners: $8/month or $80/year.</p>
+        <div class="pv-top"><b><i class="fa-solid fa-crown" style="color:#ffd700"></i> Werewolf pass: no watermark + more</b><span id="proStatus"></span></div>
+        <p class="hint" style="margin:0 0 0.625rem">Free overlays show a small “Overlay made at …” banner once an hour. A pass hides it for your channel — all of your overlay links <b>and</b> the Werewolf Twitch extension — and unlocks <b>Match my game</b>.</p>
+        <div class="tierPick" id="pickMain"></div>
+        <p class="hint lockline"><i class="fa-solid fa-lock"></i> Locked-in prices — they never go up. One pass covers Overlay Studio and the Werewolf Twitch extension.</p>
         <div id="checkoutBox" style="margin-top:0.75rem;min-height:2.875rem"></div>
-        <p class="hint" style="margin:0.375rem 0 0">Paid on Buy Me a Coffee. Pay once per month or year (it doesn't auto-renew). Buying again while active adds the time on.</p>
+        <p class="hint" style="margin:0.375rem 0 0">Paid on Buy Me a Coffee. Monthly and yearly don't auto-renew; buying again while active adds the time on.</p>
       </div>
     </div>
   </div>
@@ -308,11 +310,8 @@
       <input type="text" id="payUser" placeholder="e.g. twitch.tv/your_channel" autocomplete="off" autocapitalize="off" spellcheck="false">
     </label>
     <div id="payStatus" class="twcard" style="margin-top:.75rem;display:none"></div>
-    <div class="plans" style="margin-top:.75rem">
-      <button class="plan on" data-pplan="month" type="button"><b id="ppMonth">$5</b><small>per month</small></button>
-      <button class="plan" data-pplan="year" type="button"><b id="ppYear">$50</b><small>per year · 2 months free</small></button>
-    </div>
-    <p class="hint" id="payNote" style="margin:.5rem 0 0">Twitch Affiliates and Partners: $8/month or $80/year.</p>
+    <div class="tierPick" id="pickPay" style="margin-top:.75rem"></div>
+    <p class="hint lockline"><i class="fa-solid fa-lock"></i> Locked-in prices — they never go up. One pass covers Overlay Studio and the Werewolf Twitch extension.</p>
     <div id="payCheckout" style="margin-top:.75rem;min-height:2.875rem"></div>
     <p class="hint" style="margin:.5rem 0 0">Paid on Buy Me a Coffee. Pay once per month or year (it doesn't auto-renew). Paying while still active adds the time on to the end.</p>
   </div>
@@ -475,7 +474,7 @@
       return;
     }
     if (b.id === 'testAlert') { pv.contentWindow.postMessage({ type: 'overlay-alert' }, location.origin); return; }
-    if (b.id === 'testWm') { pv.contentWindow.postMessage({ type: 'overlay-wm', month: priceInfo && priceInfo.plans && priceInfo.plans.month ? priceInfo.plans.month.price : '' }, location.origin); return; }
+    if (b.id === 'testWm') { pv.contentWindow.postMessage({ type: 'overlay-wm', month: TIERS[1].month }, location.origin); return; }
     if (b.dataset.copy) {
       var inp = $('#' + b.dataset.copy); inp.select();
       (navigator.clipboard ? navigator.clipboard.writeText(inp.value) : Promise.reject()).then(function () { toast('Link copied!'); }, function () { document.execCommand('copy'); toast('Link copied!'); });
@@ -492,7 +491,6 @@
     if (b.id === 'saveBtn') { doSave(); return; }
     if (b.dataset.open) { var x = mine().filter(function (m) { return m.id === b.dataset.open; })[0]; openSaved(b.dataset.open, x && x.key); return; }
     if (b.id === 'resetBtn') { if (confirm('Start over with a blank overlay? (Your saved overlays stay saved.)')) { cfg = C.clone(C.DEFAULTS); saved = null; savedCode = ''; $('#saveName').value = ''; history.replaceState(null, '', location.pathname); fill(); changed(); lookupTwitch(); renderMine(); } return; }
-    if (b.dataset.plan) { $$('.plan').forEach(function (x) { x.classList.toggle('on', x === b); }); plan = b.dataset.plan; return; }
   });
 
   /* ---------- preview + links ---------- */
@@ -644,29 +642,60 @@
   }
 
   /* ---------- remove watermark (Buy Me a Coffee, checked on ww-discord-auth /bmc/...) ---------- */
-  var plan = 'month', ppLoaded = false;
-  // prices depend on the channel: Twitch Affiliates/Partners pay a bit more (server checks with Twitch)
-  var priceInfo = null;
+  var ppLoaded = false;
+  // Tiers and prices come from the server (tiers.js); these are the locked prices, used until it answers.
+  var TIERS = { 1: { month: '5.00', year: '50.00', lifetime: '125.00', founder: '99.00' }, 2: { month: '10.00', year: '100.00', lifetime: '250.00', founder: '199.00' }, 3: { month: '20.00', year: '200.00', lifetime: '500.00', founder: '399.00' } };
+  var TIER_INFO = { 1: 'No watermark', 2: '+ game tracker &amp; allies (site account)', 3: '+ live PlayStation game &amp; same-game allies' };
+  var TERM_INFO = { month: 'per month', year: 'per year · 2 months free', lifetime: 'Lifetime · one payment', founder: 'Founder lifetime' };
+  var founderLeft = null;
   function money(v) { v = parseFloat(v); return '$' + (v % 1 ? v.toFixed(2) : v); }
-  function updatePrices() {
-    var a = acct(), c = a.name, q = C.accountOk(a) ? '?channel=' + encodeURIComponent(c) + '&platform=' + a.platform : '';
+  // A tier x term picker. info = { lifetimePaid, current } for the account being paid for.
+  // -> { get() -> { tier, term, agree }, setInfo(info), onChange(fn) }
+  function makePicker(el) {
+    var st = { tier: 1, term: 'month', agree: false }, info = { lifetimePaid: 0, current: null }, subs = [];
+    function price(t, term) { var p = parseFloat(TIERS[t][term]); if (term === 'lifetime' || term === 'founder') p = Math.max(0, p - (parseFloat(info.lifetimePaid) || 0)); return p; }
+    function draw() {
+      if (st.term === 'founder' && founderLeft === 0) st.term = 'lifetime';
+      var paidLife = parseFloat(info.lifetimePaid) || 0;
+      el.innerHTML = '<div class="plans tiers">' + [1, 2, 3].map(function (t) {
+          return '<button type="button" class="plan' + (st.tier === t ? ' on' : '') + '" data-tier="' + t + '"><b>Tier ' + t + '</b><small>' + TIER_INFO[t] + '</small></button>'; }).join('') + '</div>' +
+        '<div class="plans terms">' + ['month', 'year', 'lifetime', 'founder'].map(function (term) {
+          var off = term === 'founder' && founderLeft === 0;
+          return '<button type="button" class="plan' + (st.term === term ? ' on' : '') + '" data-term="' + term + '"' + (off ? ' disabled' : '') + '><b>' + money(price(st.tier, term)) + '</b><small>' + TERM_INFO[term] +
+            (term === 'founder' ? (founderLeft === 0 ? ' · sold out' : founderLeft != null ? ' · ' + founderLeft + ' left' : ' · first 25') : '') +
+            ((term === 'lifetime' || term === 'founder') && paidLife ? ' · pay the difference' : '') + '</small></button>'; }).join('') + '</div>' +
+        (st.term === 'founder' ? '<label class="hint fagree"><input type="checkbox" class="agreeBox"' + (st.agree ? ' checked' : '') + '> <span>I agree that a small werewolf3788 credit shows on my stream about once a month (for a few seconds, once viewers are in). <a href="overlay-terms.html" target="_blank" rel="noopener">Founder lifetime terms</a></span></label>' : '');
+      subs.forEach(function (fn) { fn(st); });
+    }
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b || b.disabled) return;
+      if (b.dataset.tier) st.tier = +b.dataset.tier; else if (b.dataset.term) { st.term = b.dataset.term; } else return;
+      draw();
+    });
+    el.addEventListener('change', function (e) { if (e.target.classList.contains('agreeBox')) { st.agree = e.target.checked; subs.forEach(function (fn) { fn(st); }); } });
+    draw();
+    return { get: function () { return st; }, setInfo: function (i) { info = i || info; draw(); }, onChange: function (fn) { subs.push(fn); fn(st); }, redraw: draw };
+  }
+  var pickMain = makePicker($('#pickMain')), pickPay = makePicker($('#pickPay'));
+  function plansFor(a) {
+    var q = a && C.accountOk(a) ? '?channel=' + encodeURIComponent(a.name) + '&platform=' + a.platform : '';
     return fetch(AUTH + '/overlay/plans' + q).then(function (r) { return r.json(); }).then(function (j) {
-      priceInfo = j; if (!j.plans || !j.plans.month) return j;
-      $('#pMonth').textContent = money(j.plans.month.price); $('#pYear').textContent = money(j.plans.year.price);
-      var e = j.prices && j.prices.earner, st = j.prices && j.prices.standard;
-      $('#tierNote').innerHTML = !q ? 'Twitch Affiliates and Partners: ' + money(e.month) + '/month or ' + money(e.year) + '/year.'
-        : j.tier === 'earner' ? '<span class="tag" style="background:#a855f7;color:#fff">Twitch ' + (j.broadcasterType === 'partner' ? 'Partner' : 'Affiliate') + '</span> Affiliate &amp; Partner pricing for twitch.tv/' + esc(c) + '.'
-        : 'Price for ' + esc(C.accountLabel(a)) + '.' + (a.platform === 'twitch' ? ' (Twitch Affiliates and Partners: ' + money(e.month) + '/month.)' : '');
-      return j;
-    }).catch(function () { return null; });
+      if (j.tiers) TIERS = j.tiers; if (typeof j.founderLeft === 'number') founderLeft = j.founderLeft; return j;
+    });
+  }
+  function updatePrices() {
+    return plansFor(acct()).then(function (j) { pickMain.setInfo({ lifetimePaid: j.lifetimePaid, current: j.current }); pickPay.redraw(); return j; }).catch(function () { return null; });
+  }
+  function passText(j) {
+    if (!j || !j.tier) return '';
+    return 'Tier ' + j.tier + (j.ally && !j.pro ? ' (Werewolf ally)' : j.lifetime ? (j.founder ? ' · Founder lifetime' : ' · Lifetime') : j.until ? ' until ' + new Date(j.until).toLocaleDateString() : '');
   }
   function checkPro() {
     var a = acct(), st = $('#proStatus');
     updatePrices();
     if (!C.accountOk(a)) { st.innerHTML = ''; return; }
     fetch(AUTH + '/overlay/pro/' + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); }).then(function (j) {
-      st.innerHTML = j.pro ? '<span class="tag">Pro (no watermark + Match my game) until ' + new Date(j.until).toLocaleDateString() + '</span>'
-        : j.ally ? '<span class="tag">Werewolf ally: Match my game unlocked</span>' : '<span class="hint">Free version</span>';
+      st.innerHTML = j.tier ? '<span class="tag">' + esc(passText(j)) + '</span>' : '<span class="hint">Free version</span>';
     }).catch(function () { st.innerHTML = ''; });
   }
   function post(path, data) {
@@ -676,14 +705,15 @@
   // Buy Me a Coffee checkout. Buttons can be drawn in several places (right panel + Pay or renew window).
   // The server gives a claim code; the buyer types it in the Buy Me a Coffee message, the payment webhook
   // matches it, and this box sees the pass appear (polls /bmc/claim/:id).
-  // getAcct() -> { platform, name } to pay for, getPlan() -> 'month' | 'year', done() after a successful payment
-  function payButtons(sel, getAcct, getPlan, done) {
+  // getAcct() -> { platform, name } to pay for, picker = makePicker(...) (tier, term, agree), done() after a successful payment
+  function payButtons(sel, getAcct, picker, done) {
     var box = $(sel), poll = null;
     box.innerHTML = '<label class="f" style="margin:0">E-mail you\'ll pay with <span class="hint">(optional — matches your payment if you forget the code)</span>' +
       '<input type="email" class="bmcEmail" placeholder="you@example.com" autocomplete="email"></label>' +
       '<button class="btn bmcGo" type="button" style="margin-top:.5rem;width:100%;background:#ffdd00;color:#0f0f0f;font-weight:800"><i class="fa-solid fa-mug-hot"></i> Pay with Buy Me a Coffee</button>' +
       '<div class="bmcStep" style="margin-top:.625rem;display:none"></div>';
     var go = box.querySelector('.bmcGo'), step = box.querySelector('.bmcStep');
+    picker.onChange(function (st) { go.disabled = st.term === 'founder' && !st.agree; go.title = go.disabled ? 'Tick the Founder terms box first' : ''; });
     function watch(id) {
       clearInterval(poll); var tries = 0;
       poll = setInterval(function () {
@@ -692,8 +722,9 @@
         fetch(AUTH + '/bmc/claim/' + id).then(function (r) { return r.json(); }).then(function (j) {
           if (j.status === 'paid') {
             clearInterval(poll);
-            step.innerHTML = '<span class="tag">Payment received — thank you!</span> <span class="hint">No watermark' + (j.until ? ' until ' + new Date(j.until).toLocaleDateString() : '') + '.</span>';
-            toast('Thank you! Paid until ' + new Date(j.until).toLocaleDateString() + '.'); done && done(j);
+            var life = j.until > 32000000000000;
+            step.innerHTML = '<span class="tag">Payment received — thank you!</span> <span class="hint">' + (life ? 'Lifetime pass is on.' : 'Paid until ' + new Date(j.until).toLocaleDateString() + '.') + '</span>';
+            toast(life ? 'Thank you! Lifetime pass is on.' : 'Thank you! Paid until ' + new Date(j.until).toLocaleDateString() + '.'); done && done(j);
           } else if (j.status === 'short') {
             clearInterval(poll);
             step.innerHTML += '<p class="hint" style="color:#fbbf24">We got a payment for code ' + esc(id) + ', but it was less than ' + money(j.price) + '. Message werewolf with your Buy Me a Coffee receipt.</p>';
@@ -705,7 +736,9 @@
       var a = getAcct();
       if (!C.accountOk(a)) { toast('Type your streaming username first'); return; }
       go.disabled = true; go.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Getting your code… (can take a few seconds the first time)';
-      post('/bmc/claim', { kind: 'overlay', channel: a.name, platform: a.platform, plan: getPlan(), email: box.querySelector('.bmcEmail').value.trim() }).then(function (j) {
+      var sel = picker.get();
+      if (sel.term === 'founder' && !sel.agree) { toast('Tick the Founder terms box first'); return; }
+      post('/bmc/claim', { kind: 'overlay', channel: a.name, platform: a.platform, tier: sel.tier, term: sel.term, agree: sel.agree ? '1' : '', email: box.querySelector('.bmcEmail').value.trim() }).then(function (j) {
         go.disabled = false; go.innerHTML = '<i class="fa-solid fa-mug-hot"></i> Get a new code';
         if (!j.claim) { toast(j.error || 'Could not start'); step.style.display = 'block'; step.innerHTML = '<span class="hint">' + esc(j.error || 'Could not start — try again.') + '</span>'; return; }
         step.style.display = 'block';
@@ -727,11 +760,11 @@
   }
   function loadCheckout() {
     if (ppLoaded) return; ppLoaded = true;
-    payButtons('#checkoutBox', acct, function () { return plan; }, function () { checkPro(); });
+    payButtons('#checkoutBox', acct, pickMain, function () { checkPro(); });
   }
 
   /* ---------- "Already have an overlay? Pay or renew" window ---------- */
-  var payPlat = 'twitch', payPlan = 'month', payT = null;
+  var payPlat = 'twitch', payT = null;
   function payAcct() { return C.parseAccount($('#payUser').value, payPlat); }
   function payRefresh() {
     var a = payAcct(), st = $('#payStatus'), P = C.PLATFORMS[a.platform];
@@ -745,12 +778,11 @@
       fetch(AUTH + '/overlay/pro/' + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); })
     ]).then(function (r) {
       var pl = r[0], pro = r[1];
-      if (pl.plans && pl.plans.month) { $('#ppMonth').textContent = money(pl.plans.month.price); $('#ppYear').textContent = money(pl.plans.year.price); }
+      if (pl.tiers) TIERS = pl.tiers; if (typeof pl.founderLeft === 'number') founderLeft = pl.founderLeft;
+      pickPay.setInfo({ lifetimePaid: pl.lifetimePaid, current: pl.current });
       if (a.platform === 'twitch' && pl.found === false) { st.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> Couldn\'t find ' + esc(C.accountLabel(a)) + ' — check the spelling.'; return; }
-      $('#payNote').innerHTML = pl.tier === 'earner' ? '<span class="tag" style="background:#a855f7;color:#fff">Twitch ' + (pl.broadcasterType === 'partner' ? 'Partner' : 'Affiliate') + '</span> Affiliate &amp; Partner pricing.'
-        : a.platform === 'twitch' && pl.prices ? 'Twitch Affiliates and Partners: ' + money(pl.prices.earner.month) + '/month or ' + money(pl.prices.earner.year) + '/year.' : 'Same price for every ' + P.label + ' channel.';
       st.innerHTML = '<i class="' + P.icon + '" style="font-size:1.6rem;color:var(--accent)"></i><div><b>' + esc(C.accountLabel(a)) + '</b><br>' +
-        (pro.pro ? '<span class="tag">Paid until ' + new Date(pro.until).toLocaleDateString() + '</span> <span class="hint">Paying now adds the time on.</span>'
+        (pro.tier ? '<span class="tag">' + esc(passText(pro)) + '</span> <span class="hint">Paying now adds the time on (or upgrades).</span>'
                  : '<span class="hint">' + (pro.until ? 'Pass ended ' + new Date(pro.until).toLocaleDateString() + ' — watermark is showing.' : 'Not paid yet — watermark shows once an hour.') + '</span>') + '</div>';
     }).catch(function () { st.innerHTML = '<span class="hint">The payment server is waking up — give it a few seconds.</span>'; setTimeout(payRefresh, 8000); });
   }
@@ -759,7 +791,7 @@
     if (!$('#payUser').value && C.accountOk(a)) { $('#payUser').value = C.accountLabel(a); payPlat = a.platform; }
     $$('#payPlat button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === payPlat); });
     $('#payModal').hidden = false; payRefresh();
-    if (!$('#payCheckout').children.length) payButtons('#payCheckout', payAcct, function () { return payPlan; }, function () { payRefresh(); checkPro(); });
+    if (!$('#payCheckout').children.length) payButtons('#payCheckout', payAcct, pickPay, function () { payRefresh(); checkPro(); });
   }
   $('#payPill').addEventListener('click', openPay);
   $('#payClose').addEventListener('click', function () { $('#payModal').hidden = true; });
@@ -771,10 +803,6 @@
     payPlat = b.dataset.v; $$('#payPlat button').forEach(function (x) { x.classList.toggle('on', x === b); });
     var a = payAcct(); if (a.name) $('#payUser').value = C.PLATFORMS[payPlat].host + a.name;
     payRefresh();
-  });
-  $('#payModal').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-pplan]'); if (!b) return;
-    payPlan = b.dataset.pplan; $$('[data-pplan]').forEach(function (x) { x.classList.toggle('on', x === b); });
   });
   if (/[#&]pay\b/.test(location.hash)) setTimeout(openPay, 300);   // link straight to it: /overlay-studio#pay
 
