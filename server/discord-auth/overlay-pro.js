@@ -2,19 +2,17 @@
  * Overlay Studio "Remove watermark" passes (mounted on ww-discord-auth next to the game shop)
  *
  *   GET  /overlay/pro/:channel           -> { pro, until }   is this Twitch channel paid up? (the live overlay asks)
- *   GET  /overlay/plans                  -> { clientId, currency, plans }
- *   POST /overlay/create  channel, plan  -> { id }            PayPal order for that plan's fixed price
- *   POST /overlay/capture orderId        -> { ok, until }
- *        Captured with PayPal by the server; only COMPLETED payments for the exact price count, each order once.
+ *   GET  /overlay/plans                  -> { currency, tier, plans }
+ *   Paying happens on Buy Me a Coffee (bmc.js): the page gets a claim code from POST /bmc/claim (kind=overlay),
+ *   and when the payment webhook arrives bmc.js calls grantPass() below.
  *        Firestore:  overlay_pro/{channel}   { until, plan, orders[], payer, updated }
- *                    purchases/{orderId}     ledger row (create() fails on reuse = no double credit)
+ *                    purchases/bmc_{claim}   ledger row (create() fails on reuse = no double credit)
  *        Buying again while still paid adds the time on to the end.
  *
  * Passes are paid up front (not auto-renewing): month = 31 days, year = 365 days.
  * Price depends on the channel: Twitch Affiliates/Partners pay the 'earner' price (checked with Twitch by the server,
  * using twitch_client_id / twitch_client_secret from the Key Vault). See PRICES below.
  * No sign-in needed - the pass belongs to the Twitch channel typed in the Overlay Studio.
- * Uses the same PayPal keys as the game shop (Key Vault: paypal_client_id, paypal_secret, paypal_mode).
  * ========================================================================== */
 'use strict';
 
@@ -46,7 +44,7 @@ const okId = id => /^([a-z]+:)?[a-z0-9_.-]{3,30}$/.test(String(id || ''));
 
 const SITE_ORIGINS = ['https://entertainment-71888.web.app', 'https://entertainment-71888.firebaseapp.com', 'https://werewolf3788.github.io'];
 
-function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
+function mountOverlayPro(app, { admin, fetchFn, cors: baseCors }) {
   const fs = () => admin.firestore();
   const cors = (req, res) => {   // the site's own origins always allowed, plus whatever the server already allows
     const o = req.headers.origin;
@@ -125,69 +123,42 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
   });
 
   app.get('/overlay/plans', async (req, res) => {
-    cors(req, res); const k = await paypal.keys();
+    cors(req, res);
     const a = account(req.query.platform, req.query.channel); let info = { tier: 'standard', type: '', found: !!a };
     if (a && a.platform === 'twitch') { try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check that channel with Twitch. Try again.' }); } }
     const plans = {}; Object.keys(PLAN_DAYS).forEach(id => { plans[id] = plan(info.tier, id); });
-    res.json({ clientId: k.id && k.secret ? k.id : '', currency: CURRENCY, mode: k.mode, tier: info.tier, broadcasterType: info.type, found: info.found,
+    res.json({ provider: 'bmc', currency: CURRENCY, tier: info.tier, broadcasterType: info.type, found: info.found,
       platform: a ? a.platform : '', account: a ? a.label : '', plans, prices: PRICES });
   });
 
-  app.post('/overlay/create', async (req, res) => {
-    cors(req, res);
-    try {
-      const b = req.body || {}, a = account(b.platform, b.channel), planId = String(b.plan || '');
-      if (!a) return res.status(400).json({ error: 'Type your streaming username first.' });
-      if (!PLAN_DAYS[planId]) return res.status(400).json({ error: 'Pick monthly or yearly.' });
-      const ch = a.id;
-      let info = { tier: 'standard', found: true };
-      if (a.platform === 'twitch') {
-        try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check your channel with Twitch. Try again.' }); }
-        if (!info.found) return res.status(400).json({ error: 'Couldn’t find twitch.tv/' + a.name + ' - check the spelling.' });
-      }
-      const P = plan(info.tier, planId);
-      const k = await paypal.keys(); if (!k.id || !k.secret) return res.status(503).json({ error: 'Payments aren’t set up yet.' });
-      const r = await paypal.papi(k, '/v2/checkout/orders', { intent: 'CAPTURE',
-        purchase_units: [{ reference_id: 'overlay_' + planId, custom_id: 'overlay|' + ch + '|' + planId + '|' + P.price + '|' + info.tier, description: (P.name + ' for ' + a.label).slice(0, 127), amount: { currency_code: CURRENCY, value: P.price } }],
-        application_context: { brand_name: 'Werewolf Overlay Studio', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW' } });
-      if (r.status >= 300 || !r.json || !r.json.id) { console.error('[overlay create]', r.status, JSON.stringify(r.json)); return res.status(502).json({ error: 'PayPal could not start the order.' }); }
-      res.json({ id: r.json.id });
-    } catch (e) { console.error('[overlay create]', e && e.message); res.status(500).json({ error: 'Could not start the order.' }); }
-  });
-
-  app.post('/overlay/capture', async (req, res) => {
-    cors(req, res);
-    try {
-      const orderId = String((req.body && req.body.orderId) || ''); if (!/^[A-Z0-9]{8,32}$/.test(orderId)) return res.status(400).json({ error: 'Bad order.' });
-      const k = await paypal.keys(); if (!k.id || !k.secret) return res.status(503).json({ error: 'Payments aren’t set up yet.' });
-      const ledger = fs().collection('purchases').doc(orderId);
-      const had = await ledger.get();
-      if (had.exists) { const pd = await fs().collection('overlay_pro').doc(had.data().channel || '_').get(); return res.json({ ok: true, already: true, until: pd.exists ? pd.data().until : 0 }); }
-
-      let r = await paypal.papi(k, '/v2/checkout/orders/' + orderId + '/capture');
-      if (r.status === 422 && r.json && JSON.stringify(r.json).indexOf('ORDER_ALREADY_CAPTURED') >= 0)
-        r = { status: 200, json: await fetchFn(k.api + '/v2/checkout/orders/' + orderId, { headers: { Authorization: 'Bearer ' + await paypal.token(k) } }).then(x => x.json()) };
-      const o = r.json || {}, pu = (o.purchase_units || [])[0] || {}, cap = (((pu.payments || {}).captures) || [])[0] || {};
-      const [tag, ch, planId, want, tierRaw] = String(pu.custom_id || cap.custom_id || '').split('|'), tier = tierRaw || 'standard', P = plan(tier, planId), amt = cap.amount || pu.amount || {};
-      if (o.status !== 'COMPLETED' || cap.status !== 'COMPLETED') return res.status(402).json({ error: 'PayPal hasn’t completed this payment (' + (cap.status || o.status || r.status) + ').' });
-      if (tag !== 'overlay' || !P || !okId(ch)) return res.status(400).json({ error: 'That isn’t an overlay order.' });
-      if (amt.currency_code !== CURRENCY || money(amt.value) !== money(P.price) || want !== P.price) return res.status(402).json({ error: 'Payment amount doesn’t match.' });
-
-      const row = { kind: 'overlay', channel: ch, plan: planId, tier, price: money(amt.value), currency: CURRENCY, capture: cap.id || '', payer: ((o.payer || {}).email_address) || '', mode: k.mode, at: Date.now() };
-      try { await ledger.create(row); } catch (e) { return res.json({ ok: true, already: true }); }   // recorded already: credit once only
-
-      const ref = fs().collection('overlay_pro').doc(ch);
-      const until = await fs().runTransaction(async t => {
-        const cur = await t.get(ref), d = cur.exists ? cur.data() : {};
-        const start = Math.max(Date.now(), Number(d.until || 0));
-        const next = start + P.days * DAY;
-        t.set(ref, { channel: ch, platform: ch.indexOf(':') > 0 ? ch.split(':')[0] : 'twitch', name: ch.split(':').pop(), until: next, plan: planId, tier, payer: row.payer, updated: Date.now(), orders: (d.orders || []).concat(orderId).slice(-50) }, { merge: true });
-        return next;
-      });
-      proCache.delete(ch);
-      console.log('[overlay] paid', ch, planId, orderId);
-      res.json({ ok: true, until });
-    } catch (e) { console.error('[overlay capture]', e && e.message); res.status(500).json({ error: 'Could not confirm the payment. If you were charged, message the site owner with your PayPal receipt.' }); }
-  });
+  // ---- used by bmc.js (Buy Me a Coffee) ----
+  // price for an account + plan, checked with Twitch for Affiliate/Partner pricing
+  async function quote(platform, channel, planId) {
+    const a = account(platform, channel);
+    if (!a) return { error: 'Type your streaming username first.' };
+    if (!PLAN_DAYS[planId]) return { error: 'Pick monthly or yearly.' };
+    let info = { tier: 'standard', found: true };
+    if (a.platform === 'twitch') {
+      try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return { status: 502, error: 'Could not check your channel with Twitch. Try again.' }; }
+      if (!info.found) return { error: 'Couldn’t find twitch.tv/' + a.name + ' - check the spelling.' };
+    }
+    const P = plan(info.tier, planId);
+    return { id: a.id, label: a.label, plan: planId, tier: info.tier, days: P.days, name: P.name + ' for ' + a.label, price: P.price };
+  }
+  // add the pass time (on top of any time left). ref = ledger id, for the history list.
+  async function grantPass(ch, planId, tier, ref, payer) {
+    const days = PLAN_DAYS[planId] || 0; if (!okId(ch) || !days) throw new Error('bad pass');
+    const doc = fs().collection('overlay_pro').doc(ch);
+    const until = await fs().runTransaction(async t => {
+      const cur = await t.get(doc), d = cur.exists ? cur.data() : {};
+      const start = Math.max(Date.now(), Number(d.until || 0));
+      const next = start + days * DAY;
+      t.set(doc, { channel: ch, platform: ch.indexOf(':') > 0 ? ch.split(':')[0] : 'twitch', name: ch.split(':').pop(), until: next, plan: planId, tier, payer: payer || '', updated: Date.now(), orders: (d.orders || []).concat(ref).slice(-50) }, { merge: true });
+      return next;
+    });
+    proCache.delete(ch);
+    return until;
+  }
+  return { quote, grantPass };
 }
 module.exports = { mountOverlayPro, PLANS };

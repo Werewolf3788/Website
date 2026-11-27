@@ -2,6 +2,14 @@
  "_comment": "What's new: shown once to each player after an update. Newest first. id must go up by 1 with every new entry. game = page name without .html (farm, race, tycoon ...) or all.",
  "entries": [
   {
+   "id": 63,
+   "date": "Nov 26",
+   "game": "survive",
+   "items": [
+    "☕ The Shop now uses Buy Me a Coffee instead of PayPal: pick a pack, get a code, pay on Buy Me a Coffee with the code in the message, and the pack is added on its own. Your game and past purchases are untouched"
+   ]
+  },
+  {
    "id": 62,
    "date": "Nov 26",
    "game": "all",

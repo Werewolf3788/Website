@@ -120,8 +120,8 @@ function createApp(deps) {
 
   app.get('/health', (_req, res) => res.send('ok'));
   require('./bridge').mountBridge(app, { admin, fetchFn, cors });   // Discord server channels in the site messenger
-  const paypal = require('./paypal').mountPayPal(app, { admin, fetchFn });   // PayPal shop for the mobile games (/pay/...)
-  require('./overlay-pro').mountOverlayPro(app, { admin, fetchFn, cors, paypal });   // Overlay Studio watermark passes (/overlay/...)
+  const overlay = require('./overlay-pro').mountOverlayPro(app, { admin, fetchFn, cors });   // Overlay Studio watermark passes (/overlay/...)
+  require('./bmc').mountBmc(app, { admin, overlay });   // Buy Me a Coffee payments: game shop + overlay passes (/pay/..., /bmc/...)
   require('./overlay-save').mountOverlaySave(app, { admin, fetchFn, cors });   // Overlay Studio saves -> GitHub (/overlay/save, /overlay/get)
 
   app.get('/login', async (req, res) => {
