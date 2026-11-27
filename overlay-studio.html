@@ -241,7 +241,7 @@
             <button data-v="live">Live</button><button data-v="starting">Starting</button><button data-v="brb">BRB</button><button data-v="ending">Ending</button>
           </div>
         </div>
-        <div class="screen"><div class="pvbg bg-check" id="pvbg"></div><iframe id="pv" title="Overlay preview" src="overlay/live.html?demo=1"></iframe></div>
+        <div class="screen"><div class="pvbg bg-check" id="pvbg"></div><iframe id="pv" title="Overlay preview" src="overlay/live.html?demo=1"></iframe><iframe id="pvExt" title="Twitch extension preview" src="overlay/ext-preview.html" style="display:none"></iframe></div>
         <div class="pv-top" style="margin:0.625rem 0 0">
           <div class="seg" id="pvbgSeg"><button data-v="game">Game</button><button data-v="check">See-through</button><button data-v="dark">Dark</button></div>
           <button class="btn sm" id="testAlert"><i class="fa-solid fa-bell"></i> Test alert</button>
@@ -488,6 +488,7 @@
       return;
     }
     if (b.id === 'testAlert') { pv.contentWindow.postMessage({ type: 'overlay-alert' }, location.origin); return; }
+    if (b.id === 'testWm' && use === 'ext') { $('#pvExt').contentWindow.postMessage({ type: 'ext-mark' }, location.origin); return; }
     if (b.id === 'testWm') { pv.contentWindow.postMessage({ type: 'overlay-wm', month: TIERS[1].month }, location.origin); return; }
     if (b.dataset.copy) {
       var inp = $('#' + b.dataset.copy); inp.select();
@@ -513,6 +514,7 @@
     clearTimeout(tmr);
     tmr = setTimeout(function () {
       if (pvReady) pv.contentWindow.postMessage({ type: 'overlay-cfg', cfg: cfg }, location.origin);
+      if (typeof sendExtPreview === 'function') sendExtPreview();
       try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch (e) {}
       makeLinks();
     }, 120);
@@ -586,6 +588,12 @@
     $('#obsHow').style.display = use === 'obs' ? '' : 'none';
     $('#seBox').style.display = use === 'se' ? '' : 'none';
     $('#extBox').style.display = use === 'ext' ? '' : 'none';
+    // Twitch extension: the preview shows what viewers see on Twitch instead of the OBS overlay
+    $('#pv').style.display = use === 'ext' ? 'none' : '';
+    $('#pvExt').style.display = use === 'ext' ? '' : 'none';
+    $('#sceneSeg').style.visibility = use === 'ext' ? 'hidden' : '';
+    $('#testAlert').style.display = use === 'ext' ? 'none' : '';
+    sendExtPreview();
     $$('#saveName, #saveBtn, #saveHint').forEach(function (x) { (x.closest('.link') || x).style.display = use === 'ext' ? 'none' : ''; });
     // the extension can show the game, poster and your name/picture; everything else is video-only
     $$('#elements > details[data-el]').forEach(function (d) { d.classList.toggle('ext-off', use === 'ext' && EXT_OK.indexOf(d.dataset.el) < 0); });
@@ -615,6 +623,16 @@
       layout: { brand: pick('brand', function (e) { return { name: e.name || '', tag: e.tag || '' }; }), game: pick('game', function (e) { return { prefix: e.prefix || '' }; }),
         poster: pick('poster', function (e) { return { size: e.size || 100 }; }), title: pick('title') } });
   }
+  // the Twitch extension preview (overlay/ext-preview.html): same drawing code as the real extension
+  var twInfo = null;
+  function sendExtPreview() {
+    var f = $('#pvExt'); if (!f || !f.contentWindow) return;
+    var t = twInfo || { name: chan() || 'your_channel', avatar: '', game: 'Tom Clancy\'s Ghost Recon Wildlands', title: 'Your stream title shows here' };
+    var me = { name: t.name, login: t.name, avatar: t.avatar, game: t.game || 'Just Chatting', status: t.title, title: t.title, poster: t.avatar, source: 'twitch',
+      tracker: { code: 'DEMO', games: [{ id: 'demo', name: t.game || 'Your game', platform: 'playstation', summary: ['Trophies 27/73 (37%)', 'Collectibles 12/68', 'Missions 18/36'] }] } };
+    f.contentWindow.postMessage({ type: 'ext-preview', look: JSON.parse(extLook()), card: { v: 1, live: true, me: me, allies: [], foot: 'Track your own games at entertainment-71888.web.app' } }, location.origin);
+  }
+  window.addEventListener('message', function (e) { if (e.origin === location.origin && e.data && e.data.type === 'ext-preview-ready') sendExtPreview(); });
   function sendLook(quiet) {
     var u = siteUser();
     if (!u) { if (!quiet) toast('Sign in first, then update the extension look'); return Promise.resolve(); }
@@ -698,8 +716,9 @@
     if (!/^[a-z0-9_]{3,25}$/.test(c)) { card.style.display = 'none'; checkPro(); return; }
     lt = setTimeout(function () {
       var g = function (p) { return fetch('https://decapi.me/twitch/' + p + '/' + c).then(function (r) { return r.text(); }).catch(function () { return ''; }); };
-      Promise.all([g('avatar'), g('game'), g('followcount')]).then(function (r) {
+      Promise.all([g('avatar'), g('game'), g('followcount'), g('title')]).then(function (r) {
         var bad = function (t) { return !t || /error|not found|no user|invalid/i.test(t); };
+        twInfo = { name: c, avatar: bad(r[0]) ? '' : r[0], game: bad(r[1]) ? '' : r[1], title: bad(r[3]) ? '' : r[3] }; sendExtPreview();
         if (bad(r[0])) { card.style.display = 'flex'; card.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> Couldn\'t find twitch.tv/' + esc(c) + ' — check the spelling.'; return; }
         card.style.display = 'flex';
         card.innerHTML = '<img src="' + esc(r[0]) + '" alt=""><div><b>twitch.tv/' + esc(c) + '</b><br><span class="hint">' +
