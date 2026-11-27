@@ -97,3 +97,14 @@ test("view more groups games by platform", () => {
     assert.ok(h.indexOf("PlayStation") < h.indexOf("Far Cry 5") && h.indexOf("Mobile games") < h.indexOf("Bastion"));
     assert.match(h, /Trophies 27\/73 \(37%\)/);
 });
+
+test("look turns into css variables", () => {
+    const v = R.lookVars({ accent: "#ff5f1f", accent2: "#ffd700", panel: "#0b0b10", text: "#ffffff", font: "Orbitron", panelOpacity: 82, radius: 12, glow: true });
+    assert.strictEqual(v["--ww-accent"], "#ff5f1f");
+    assert.strictEqual(v["--ww-panel"], "rgba(11,11,16,0.82)");
+    assert.strictEqual(v["--ww-radius"], "12px");
+    assert.match(v["--ww-font"], /^'Orbitron',/);
+    assert.match(v["--ww-glow"], /#ff5f1f/);
+    assert.deepStrictEqual(R.lookVars(null), {});
+    assert.strictEqual(R.lookVars({ accent: "red;}" })["--ww-accent"], undefined);
+});
