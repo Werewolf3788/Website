@@ -1,4 +1,4 @@
-name: Deploy to Firebase Hosting & GitHub Pages
+name: Deploy to Firebase Hosting
 
 on:
   push:
@@ -21,10 +21,11 @@ on:
       - completed
   workflow_dispatch:
 
+# GitHub Pages (werewolf3788.github.io/Website) is the test site and always shows the Claude-Test
+# branch (GitHub builds it from that branch). main only goes to Firebase, so merging to main never
+# overwrites the test site.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   firebase:
@@ -57,43 +58,3 @@ jobs:
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_WEBSITE }}
 
-  pages:
-    name: Deploy to GitHub Pages (overlays)
-    runs-on: ubuntu-latest
-    concurrency:
-      group: "pages"
-      cancel-in-progress: false
-    if: ${{ github.event.workflow_run == null || github.event.workflow_run.conclusion == 'success' }}
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy_try.outputs.page_url || steps.deploy_retry.outputs.page_url }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Stamp version.json (open game pages reload themselves when this changes)
-        run: printf '{"v":"%s","at":"%s"}\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > version.json
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      # GitHub sometimes can't find the artifact it was just given ("No artifacts named github-pages"):
-      # wait a moment and try once more before calling the deploy failed
-      - name: Deploy to GitHub Pages
-        id: deploy_try
-        continue-on-error: true
-        uses: actions/deploy-pages@v4
-
-      - name: Wait before retrying
-        if: steps.deploy_try.outcome == 'failure'
-        run: sleep 30
-
-      - name: Deploy to GitHub Pages (retry)
-        id: deploy_retry
-        if: steps.deploy_try.outcome == 'failure'
-        uses: actions/deploy-pages@v4
