@@ -49,6 +49,7 @@ main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
 .code.none{color:var(--mute);font-size:22px}
 .name{font-weight:600;font-size:17px;line-height:1.2}
 .note{color:var(--mute);font-size:13px;line-height:1.3}
+.price{font-weight:600;font-size:14px;margin-top:2px}
 .empty{padding:40px 0;text-align:center;color:var(--mute)}
 .card{max-width:560px;margin:10px auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;text-align:center;box-shadow:0 6px 24px #0001}
 .cat{color:var(--mute);font-size:14px}
@@ -205,7 +206,7 @@ function draw(){
   const q=$('q').value.trim().toLowerCase();
   const list=D.filter(d=>(sec<0||d.s===sec)&&(!q||d.n.toLowerCase().includes(q)||d.c.startsWith(q)||d.t.toLowerCase().includes(q)));
   $('count').textContent=list.length+(list.length===1?' item':' items');
-  $('grid').innerHTML=list.length?list.map(d=>`<div class="item"><span class="pic">${img(d)}</span><div><span class="code notranslate${d.c?'':' none'}" translate="no">${d.c||'—'}</span><div class="name">${esc(d.n)}</div><div class="note">${esc(d.t||S[d.s])}</div></div>${sayBtn(d)}</div>`).join(''):'<p class="empty">Nothing matches that. Try part of the name, like "pom" or "mango".</p>';
+  $('grid').innerHTML=list.length?list.map(d=>`<div class="item"><span class="pic">${img(d)}</span><div><span class="code notranslate${d.c?'':' none'}" translate="no">${d.c||'—'}</span><div class="name">${esc(d.n)}</div><div class="note">${esc(d.t||S[d.s])}</div>${d.pr?`<div class="price">${esc(d.pr)}</div>`:''}</div>${sayBtn(d)}</div>`).join(''):'<p class="empty">Nothing matches that. Try part of the name, like "pom" or "mango".</p>';
 }
 $('q').oninput=draw;
 function setMode(m){mode=m;if(m!=='game'){clearInterval(gtick);clearInterval(gpeek)}$('mLook').setAttribute('aria-pressed',m==='look');$('mPrac').setAttribute('aria-pressed',m==='prac');$('mGame').setAttribute('aria-pressed',m==='game');$('mReg').setAttribute('aria-pressed',m==='reg');$('look').hidden=m!=='look';$('lookBar').hidden=m!=='look';$('prac').hidden=m!=='prac';$('game').hidden=m!=='game';$('reg').hidden=m!=='reg';m==='game'?newGame():m==='reg'?startReg():m==='prac'?next():draw()}
@@ -395,11 +396,11 @@ function parseCSV(t){const R=[];let row=[],f='',q=false;for(let i=0;i<t.length;i
   else if(ch=='"')q=true;else if(ch==','){row.push(f);f=''}else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;row.push(f);R.push(row);row=[];f=''}else f+=ch}
   if(f||row.length){row.push(f);R.push(row)}return R}
 function useRows(R){const h=R[0].map(x=>x.trim().toLowerCase());const col=k=>h.indexOf(k);
-  const ci=col('code'),ni=col('name'),si=col('section'),ti=col('note'),pi=col('picture');if(ni<0)return false;
+  const ci=col('code'),ni=col('name'),si=col('section'),ti=col('note'),pi=col('picture'),pri=col('price');if(ni<0)return false;
   const secs=[...S],out=[];
   for(const r of R.slice(1)){const n=(r[ni]||'').trim();if(!n)continue;let c=(ci<0?'':(r[ci]||'')).trim().replace(/\.0+$/,'');
     const sn=(si<0?'':(r[si]||'')).trim()||'Other';let k=secs.indexOf(sn);if(k<0){secs.push(sn);k=secs.length-1}
-    out.push({i:out.length,s:k,c,n,t:ti<0?'':(r[ti]||'').trim(),p:pi<0?'':(r[pi]||'').trim()})}
+    out.push({i:out.length,s:k,c,n,t:ti<0?'':(r[ti]||'').trim(),p:pi<0?'':(r[pi]||'').trim(),pr:pri<0?'':(r[pri]||'').trim()})}
   if(out.length<10)return false;S=secs;D=out;return true}
 function applyLive(R){if(!useRows(R))return false;if(sec>=S.length)sec=-1;chips();mode==='look'?draw():mode==='game'?newGame():mode==='reg'?newCustomer():next();return true}
 try{const c=localStorage.getItem('pluSheet');if(c)applyLive(JSON.parse(c))}catch(e){}
