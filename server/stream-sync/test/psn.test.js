@@ -52,3 +52,16 @@ test("rate-limited -> database, and no retry until the window passes", async () 
     assert.strictEqual(s2.source, "firebase");
     failNext = false;
 });
+
+test("a failed check keeps the last live status instead of the old database one", async () => {
+    failNext = false;
+    const a = await psn.snapshot("k4", {}, "me", [], true);
+    assert.strictEqual(a.me.status, "Live status");
+    failNext = true;
+    const b = await psn.snapshot("k4", {}, "me", [], true);
+    assert.strictEqual(b.source, "psn");
+    assert.strictEqual(b.me.status, "Live status");
+    const c = await psn.snapshot("k4", {}, "me", [], false);
+    assert.strictEqual(c.me.status, "Live status");
+    failNext = false;
+});
