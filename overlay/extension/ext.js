@@ -5,9 +5,8 @@
   'use strict';
   var R = window.WWRender, T = window.Twitch && window.Twitch.ext;
   var mobile = document.body.classList.contains('mobile');
-  var FIRESTORE = 'https://firestore.googleapis.com/v1/projects/entertainment-71888/databases/(default)/documents/user/';
-  var PLATFORMS = ['playstation', 'steam', 'xbox', 'mobile', 'pc'];
-  var st = { card: null, ally: 0, seen: new Set(), credited: new Set() };
+  var SYNC = 'https://ww-stream-sync.onrender.com';
+  var st = { card: null, ally: 0, seen: new Set(), credited: new Set(), channelId: '', more: null };
   var root = document.getElementById('ww'), panel = document.getElementById('wwPanel'), mark = document.getElementById('wwMark'), more = document.getElementById('wwMore');
   var toggle = document.getElementById('wwToggle');
   function ga(name) { try { if (window.gtag) gtag('event', name, { view: mobile ? 'mobile' : 'overlay' }); } catch (e) {} }
@@ -37,15 +36,15 @@
   }
   setInterval(checkMarks, 5000);
 
-  function loadMore(code) {
+  // "View more": the streamer's tracker from the server's cache (one request per viewer, kept for 5 minutes)
+  function loadMore() {
     ga('ext_view_more');
-    more.innerHTML = '<button type="button" class="ww-more ww-close">✕ Close</button><p>Loading…</p>'; more.classList.add('open');
-    Promise.all(PLATFORMS.map(function (p) {
-      return fetch(FIRESTORE + encodeURIComponent(code) + '/platform/' + p + '/game?pageSize=50').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
-    })).then(function (lists) {
-      var docs = []; lists.forEach(function (j) { docs = docs.concat(R.parseFirestoreDocs(j)); });
-      more.innerHTML = '<button type="button" class="ww-more ww-close">✕ Close</button>' + R.renderMore(docs);
-    });
+    var close = '<button type="button" class="ww-more ww-close">✕ Close</button>';
+    more.classList.add('open');
+    if (st.more && Date.now() - st.more.at < 300000) { more.innerHTML = close + R.renderMore(st.more.games); return; }
+    more.innerHTML = close + '<p>Loading…</p>';
+    fetch(SYNC + '/ext/more/' + encodeURIComponent(st.channelId)).then(function (r) { return r.ok ? r.json() : { games: [] }; }).catch(function () { return { games: [] }; })
+      .then(function (j) { st.more = { at: Date.now(), games: j.games || [] }; more.innerHTML = close + R.renderMore(st.more.games); });
   }
 
   document.addEventListener('click', function (e) {
@@ -66,5 +65,5 @@
     if (b && b.content) { try { take(JSON.parse(b.content)); } catch (e) {} }
   });
   T.listen('broadcast', function (target, type, msg) { try { take(JSON.parse(msg)); } catch (e) {} });
-  T.onAuthorized(function () { ga('ext_load'); });
+  T.onAuthorized(function (auth) { st.channelId = String(auth.channelId || ''); ga('ext_load'); });
 }());

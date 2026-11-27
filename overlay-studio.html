@@ -270,7 +270,7 @@
         <p class="hint" id="obsHow" style="margin:0.75rem 0 0"><b>How to add it:</b> in OBS or Streamlabs add a <b>Browser Source</b>, paste the link, set Width <b>1920</b> and Height <b>1080</b>. Tick “Refresh browser when scene becomes active” so the Starting Soon countdown restarts. Change something here later? Copy the new link and paste it over the old one.</p>
         <div style="margin-top:0.625rem;display:none" id="extBox">
           <p class="hint" style="margin:0 0 .5rem"><b>Werewolf Twitch extension</b> — your game, poster and (with a pass) tracker and allies show <b>on top of your stream</b> for viewers on the Twitch website and app, no OBS needed. Install it from your Twitch Creator Dashboard → Extensions, open its settings, and enter the pair code it shows here.</p>
-          <div class="link"><input type="text" id="extCode" placeholder="Pair code, e.g. WOLF-4821" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm main" id="extFind" type="button">Find</button></div>
+          <div class="link"><input type="text" id="extCode" placeholder="Pair code, e.g. WOLF-K7Q2M9XD" maxlength="13" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm main" id="extFind" type="button">Find</button></div>
           <div id="extStatus" class="hint" style="margin-top:.5rem"></div>
           <p class="hint" style="margin:.5rem 0 0">Greyed-out parts on the left (chat box, alerts and the other video pieces) only work in OBS/Streamlabs. <b>Sign in</b> before pairing to show your game tracker (Tier 2) and PlayStation info (Tier 3).</p>
         </div>
@@ -590,7 +590,7 @@
   function siteUser() { try { var a = (window.WW && WW.auth) || (window.firebase && firebase.auth && firebase.auth()); return a && a.currentUser; } catch (e) { return null; } }
   function extFind() {
     var code = $('#extCode').value.trim().toUpperCase(), st = $('#extStatus');
-    if (!/^WOLF-\d{4}$/.test(code)) { st.innerHTML = 'The code looks like WOLF-1234.'; return; }
+    if (!/^WOLF-[A-Z0-9]{8}$/.test(code)) { st.innerHTML = 'The code looks like WOLF-K7Q2M9XD (it\'s on the extension\'s settings page on Twitch).'; return; }
     st.innerHTML = 'Checking… (the server can take up to a minute to wake up)';
     fetch(SYNC + '/ext/pair/' + code).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
       if (!x.ok) { st.innerHTML = esc(x.j.error || 'Unknown code.'); return; }

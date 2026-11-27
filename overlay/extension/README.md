@@ -2,7 +2,7 @@
 
 Pages Twitch hosts for the extension. All data comes from `ww-stream-sync` (see `server/stream-sync/README.md`):
 the server pushes each channel's card through Twitch, so viewers never call Firebase or Render (except "View more",
-which reads the streamer's public tracker from Firestore when tapped).
+which asks `ww-stream-sync` for the streamer's tracker; the server reads Firestore at most once per 10 minutes).
 
 | File | What |
 |---|---|
@@ -20,7 +20,7 @@ Twitch doesn't allow inline scripts in extensions, so every script is its own fi
 2. **Extension types:** Video - Fullscreen (overlay) and Mobile. **Video Overlay viewer path:** `video_overlay.html`,
    **Mobile viewer path:** `mobile.html`, **Config path:** `config.html`.
 3. **Capabilities:** Configuration service = *Extension Configuration Service* (broadcaster segment), and add these to
-   **Allowlist for URL Fetching Domains:** `https://ww-stream-sync.onrender.com`, `https://firestore.googleapis.com`,
+   **Allowlist for URL Fetching Domains:** `https://ww-stream-sync.onrender.com`,
    `https://www.google-analytics.com`, `https://www.googletagmanager.com`; **Allowlist for Image Domains:**
    `https://static-cdn.jtvnw.net`, `https://image.api.playstation.com`, `https://psnobj.prod.dl.playstation.net`.
 4. **Extension Settings → Client ID + Secret:** paste them into the Keys sheet rows `twitch_ext_client_id` and

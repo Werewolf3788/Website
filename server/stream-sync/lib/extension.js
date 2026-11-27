@@ -8,7 +8,8 @@
  * Routes:
  *   POST /ext/register          extension config page (broadcaster JWT) -> { pairCode, paired, login }
  *   GET  /ext/pair/:code        Overlay Studio -> { login, paired }
- *   POST /ext/pair              Overlay Studio (code, idToken?) -> links the site account (friend code, PSN)
+ *   POST /ext/pair              Overlay Studio (code, idToken?) -> links the site account (friend code, PSN); the code then changes
+ *   GET  /ext/more/:channelId   viewers' "View more" (server-cached tracker, so Firestore isn't read per viewer)
  *   POST /webhooks/twitch-eventsub   stream.online/offline, channel.update, channel.shared_chat.*
  * Watermark (free tier): after a random 20-40 min of live time since the last one (live time carries over
  * between streams), only while 2+ viewers. Founder lifetime: once per 30 days, at 5+ min uptime with 2+ viewers. */
@@ -20,6 +21,8 @@ const { buildCard, sameCard, effectiveTier } = require("./extcard");
 const { normName, cleanName } = require("./build");
 
 const DAY = 86400000, MIN = 60000;
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", CODE_RE = /^WOLF-[A-HJ-NP-Z2-9]{8}$/;
+const OFFLINE_CHECK_MS = 5 * MIN, SAVE_EVERY_MS = 5 * MIN, TICK_GAP_MS = 55000;
 const HEARTBEAT_MS = 10 * MIN, MIN_PUSH_GAP_MS = MIN, CREDIT_EVERY_MS = 30 * DAY;
 const PLATFORMS = ["playstation", "steam", "xbox", "mobile", "pc"];
 const EVENT_TYPES = [["stream.online", "1"], ["stream.offline", "1"], ["channel.update", "2"],
@@ -35,6 +38,14 @@ function createExtension(deps) {
     const chRef = (cid) => fs().collection("ext_channels").doc(String(cid));
     const OWNER = () => process.env.STREAM_SYNC_APP_OWNER_KEY || "";
     const cache = new Map();   // key -> { at, v }
+    const mem = new Map();     // channelId -> watermark clock + check times (saved to Firestore only now and then)
+    let lastTickRun = 0;
+    const hits = new Map();    // ip -> { at, n }   simple rate limit for the pairing routes
+    function limited(req) {
+        const ip = String(req.ip || req.headers["x-forwarded-for"] || "?"), t = now(), h = hits.get(ip);
+        if (!h || t - h.at > MIN) { hits.set(ip, { at: t, n: 1 }); return false; }
+        return ++h.n > 20;
+    }
     async function cached(key, ms, fn) {
         const c = cache.get(key); if (c && now() - c.at < ms) return c.v;
         const v = await fn(); cache.set(key, { at: now(), v }); return v;
@@ -46,7 +57,10 @@ function createExtension(deps) {
     const boxArt = (gid) => gid ? cached("game:" + gid, DAY, async () => (((await twitch.helix("GET", "/games?id=" + encodeURIComponent(gid))).data || [])[0] || {}).box_art_url || "") : "";
     async function psnNow(tag) {
         if (!tag) return null;
-        const g = await store.psnCard(tag);
+        return cached("psnme:" + tag, 45000, () => psnRead(tag));
+    }
+    async function psnRead(tag) {
+        const g = await store.psnCard(tag, { strict: true });   // throws if the PlayStation database can't be reached
         if (!g || !g.online || !g.currentGame || /dashboard/i.test(g.currentGame)) return null;
         return { title: cleanName(g.currentGame), status: g.gameStatus ? String(g.gameStatus) : "", poster: g.currentGameArt || g.posterArt || "" };
     }
@@ -60,25 +74,30 @@ function createExtension(deps) {
     }
     async function passFor(d) {
         const ally = !!(d.friendCode && (await allySet()).has(String(d.friendCode).toUpperCase()));
-        const p = d.login ? await fs().collection("overlay_pro").doc(d.login).get() : { exists: false };
-        const paid = effectiveTier(p.exists ? p.data() : null, now(), false);
+        const doc = d.login ? await cached("pass:" + d.login, 5 * MIN, async () => { const p = await fs().collection("overlay_pro").doc(d.login).get(); return p.exists ? p.data() : null; }) : null;
+        const paid = effectiveTier(doc, now(), false);
         return ally && paid.tier < 3 ? Object.assign(effectiveTier(null, 0, true), { founder: false }) : paid;
     }
-    // public tracker summary: a few games per platform, each with up to 3 short facts
-    function readTracker(code) {
-        return cached("tracker:" + code, 10 * MIN, async () => {
+    // the streamer's public tracker, read at most once per 10 minutes no matter how many viewers there are.
+    // Used for the card (3 facts per game) and for "View more" (/ext/more, up to 8 facts).
+    function readGames(code) {
+        return cached("games:" + code, 10 * MIN, async () => {
             const games = [];
             for (const p of PLATFORMS) {
-                const q = await fs().collection("user").doc(code).collection("platform").doc(p).collection("game").get();
-                q.docs.slice(0, 8).forEach((g) => {
+                const q = await fs().collection("user").doc(code).collection("platform").doc(p).collection("game").limit(25).get();
+                q.docs.forEach((g) => {
                     const v = g.data() || {};
-                    const facts = Object.keys(v).filter((k) => !/^(name|title|updatedAt|art|image|poster.*|.*Url|id)$/i.test(k) && (typeof v[k] === "number" || (typeof v[k] === "string" && v[k].length < 40)))
-                        .slice(0, 3).map((k) => k.replace(/[_-]+/g, " ") + ": " + v[k]);
-                    games.push({ id: g.id, name: String(v.name || v.title || g.id), platform: p, summary: facts });
+                    const facts = Object.keys(v).filter((k) => !/^(name|title|updatedAt|art|image|poster.*|.*Url|id)$/i.test(k) && (typeof v[k] === "number" || typeof v[k] === "boolean" || (typeof v[k] === "string" && v[k].length < 40)))
+                        .slice(0, 8).map((k) => k.replace(/[_-]+/g, " ") + ": " + (v[k] === true ? "yes" : v[k] === false ? "no" : v[k]));
+                    games.push({ id: g.id, name: String(v.name || v.title || g.id), platform: p, facts });
                 });
             }
-            return { code, games };
+            return games;
         });
+    }
+    async function readTracker(code) {
+        const games = await readGames(code), per = {};
+        return { code, games: games.filter((g) => (per[g.platform] = (per[g.platform] || 0) + 1) <= 8).map((g) => ({ id: g.id, name: g.name, platform: g.platform, summary: g.facts.slice(0, 3) })) };
     }
     async function friendsInGame(d, myTitle) {
         if (!d.userKey || !myTitle) return [];
@@ -112,11 +131,16 @@ function createExtension(deps) {
     async function runChannel(cid, force) {
         const ref = chRef(cid), snap = await ref.get(); if (!snap.exists) return null;
         const d = snap.data(), t = now();
+        const m = mem.get(cid) || { wmLiveSec: Number(d.wmLiveSec || 0), wmTargetSec: Number(d.wmTargetSec || 0), wmAt: d.wmAt || null, lastCreditAt: d.lastCreditAt || 0,
+            lastTickAt: d.lastTickAt || 0, lastLive: !!d.live, lastCheck: 0, lastSave: d.lastSave || 0 };
+        // offline channels are only checked every 5 minutes (EventSub stream.online wakes them right away)
+        if (!force && !m.lastLive && m.lastCheck && t - m.lastCheck < OFFLINE_CHECK_MS) return null;
         try {
             const s = await twitch.stream(cid), live = !!s;
             const info = live ? s : (await twitch.channel(cid)) || {};
             const user = (await twitchUser(cid)) || {};
-            const pass = await passFor(d);
+            const login = String(user.login || d.login || "").toLowerCase();   // follows Twitch renames
+            const pass = await passFor(Object.assign({}, d, { login }));
             const viewers = live ? Number(s.viewer_count || 0) : 0;
             const startedAt = live ? Date.parse(s.started_at) || t : null;
             const psn = pass.tier >= 3 ? await psnNow(d.psnOnlineId) : null;
@@ -126,34 +150,44 @@ function createExtension(deps) {
             if (pass.tier >= 3 && live && psn) allies = allies.concat(await friendsInGame(d, psn.title));
 
             // watermark clock (free tier): live seconds since the last one, carried across streams
-            const st = { wmLiveSec: Number(d.wmLiveSec || 0), wmTargetSec: Number(d.wmTargetSec || 0) || wmTarget(rand), wmAt: d.wmAt || null, lastCreditAt: d.lastCreditAt || 0 };
-            if (live && d.lastLive && d.lastTickAt) st.wmLiveSec += Math.min(t - d.lastTickAt, 2 * MIN) / 1000;
-            if (pass.tier === 0 && live && st.wmLiveSec >= st.wmTargetSec && viewers >= 2) { st.wmAt = t; st.wmLiveSec = 0; st.wmTargetSec = wmTarget(rand); }
+            const st = { wmLiveSec: m.wmLiveSec, wmTargetSec: m.wmTargetSec || wmTarget(rand), wmAt: m.wmAt, lastCreditAt: m.lastCreditAt };
+            if (live && m.lastLive && m.lastTickAt) st.wmLiveSec += Math.min(t - m.lastTickAt, 2 * MIN) / 1000;
+            let mark = false;
+            if (pass.tier === 0 && live && st.wmLiveSec >= st.wmTargetSec && viewers >= 2) { st.wmAt = t; st.wmLiveSec = 0; st.wmTargetSec = wmTarget(rand); mark = true; }
             let creditAt = null;
-            if (pass.tier >= 1 && pass.founder && live && viewers >= 2 && (t - startedAt) >= 5 * MIN && t - st.lastCreditAt >= CREDIT_EVERY_MS) { creditAt = t; st.lastCreditAt = t; }
+            if (pass.tier >= 1 && pass.founder && live && viewers >= 2 && (t - startedAt) >= 5 * MIN && t - st.lastCreditAt >= CREDIT_EVERY_MS) { creditAt = t; st.lastCreditAt = t; mark = true; }
 
             const card = buildCard({ tier: pass.tier, founder: pass.founder, live, startedAt,
-                twitch: { login: user.login || d.login, display: user.display_name || d.login, avatar: user.profile_image_url || "", title: info.title || "", gameName: info.game_name || "", gameBoxArt: await boxArt(info.game_id) },
+                twitch: { login, display: user.display_name || login, avatar: user.profile_image_url || "", title: info.title || "", gameName: info.game_name || "", gameBoxArt: await boxArt(info.game_id) },
                 psn, tracker, allies, watermark: await watermark(), wmAt: st.wmAt, creditAt });
 
             const changed = !sameCard(card, d.lastCard);
             const gap = t - Number(d.lastPush || 0);
-            const send = force || (changed && gap >= MIN_PUSH_GAP_MS) || (live && gap >= HEARTBEAT_MS);
-            const patch = Object.assign({ live, startedAt, viewers, lastTickAt: t, lastLive: live }, st);
+            // a new watermark/credit always goes out at once (viewers only show it while it's fresh)
+            const send = force || mark || (changed && gap >= MIN_PUSH_GAP_MS) || (live && gap >= HEARTBEAT_MS);
+            const patch = Object.assign({ live, startedAt, viewers }, st);
             if (send) { await extapi.pushCard(cid, card); await extapi.saveCard(cid, card); patch.lastCard = card; patch.lastPush = t; }
-            await ref.set(patch, { merge: true });
+            mem.set(cid, Object.assign({}, st, { lastTickAt: t, lastLive: live, lastCheck: t, lastSave: m.lastSave }));
+            // write only when something changed (or every 5 min while live, to keep the watermark clock)
+            const save = send || mark || live !== !!d.live || login !== d.login || startedAt !== (d.startedAt || null) || (live && t - m.lastSave >= SAVE_EVERY_MS);
+            if (save) {
+                if (login && login !== d.login) patch.login = login;
+                patch.lastTickAt = t; patch.lastLive = live; patch.lastSave = t;
+                await ref.set(patch, { merge: true });
+                mem.get(cid).lastSave = t;
+            }
             return card;
-        } catch (e) { log(cid, "kept last card: " + e.message); return null; }
+        } catch (e) { log(cid, "kept last card: " + e.message); m.lastCheck = t; mem.set(cid, m); return null; }
     }
 
     async function tick() {
+        if (now() - lastTickRun < TICK_GAP_MS) return;   // the server ticks every 30 s; channels are updated once a minute
+        lastTickRun = now();
         let docs = [];
         try { docs = (await fs().collection("ext_channels").get()).docs; } catch (e) { console.warn("[ext] list failed: " + e.message); return; }
         for (const doc of docs) await runChannel(doc.id, false);
     }
-    async function anyLive() {
-        try { return (await fs().collection("ext_channels").where("live", "==", true).get()).docs.length > 0; } catch (e) { return false; }
-    }
+    async function anyLive() { for (const v of mem.values()) if (v.lastLive) return true; return false; }
 
     // ---------- EventSub ----------
     async function eventSecret() {
@@ -209,13 +243,15 @@ function createExtension(deps) {
         });
 
         app.get("/ext/pair/:code", async (req, res) => {
+            if (limited(req)) return res.status(429).json({ error: "Too many tries. Wait a minute." });
             const d = await byCode(req.params.code); if (!d) return res.status(404).json({ error: "Unknown code." });
             res.json({ login: d.data().login, paired: !!d.data().userKey });
         });
 
         app.post("/ext/pair", form, async (req, res) => {
+            if (limited(req)) return res.status(429).json({ error: "Too many tries. Wait a minute." });
             const d = await byCode(req.body && req.body.code); if (!d) return res.status(404).json({ error: "Unknown code. Open the extension's settings on Twitch to see yours." });
-            const patch = { paired: true };
+            const patch = { paired: true, pairCode: await newPairCode() };   // a code works once; the config page shows the new one
             if (req.body.idToken) {
                 let u; try { u = await store.userFromIdToken(req.body.idToken); } catch (e) { return res.status(401).json({ error: "Sign in again, then pair." }); }
                 patch.userKey = u.key;
@@ -225,6 +261,18 @@ function createExtension(deps) {
             await chRef(d.id).set(patch, { merge: true });
             runChannel(d.id, true).catch(() => {});
             res.json({ paired: true, login: d.data().login, friendCode: patch.friendCode || null });
+        });
+
+        // "View more" for viewers: the streamer's tracker from the server's 10-minute cache (never Firestore per viewer)
+        app.get("/ext/more/:cid", async (req, res) => {
+            const cid = String(req.params.cid || "");
+            try {
+                const o = /^\d{1,20}$/.test(cid) ? await chRef(cid).get() : { exists: false }; if (!o.exists) return res.status(404).json({ error: "Not set up." });
+                const d = o.data(), pass = await passFor(d);
+                if (pass.tier < 2 || !d.friendCode) return res.status(404).json({ error: "No tracker." });
+                res.setHeader("Cache-Control", "public, max-age=300");
+                res.json({ games: (await readGames(d.friendCode)).map((g) => ({ id: g.id, name: g.name, platform: g.platform, facts: g.facts })) });
+            } catch (e) { res.status(500).json({ error: "Try again in a minute." }); }
         });
 
         app.post("/webhooks/twitch-eventsub", express.raw({ type: "*/*", limit: "64kb" }), async (req, res) => {
@@ -243,19 +291,19 @@ function createExtension(deps) {
         });
     }
     async function byCode(code) {
-        code = String(code || "").trim().toUpperCase(); if (!/^WOLF-\d{4}$/.test(code)) return null;
+        code = String(code || "").trim().toUpperCase(); if (!CODE_RE.test(code)) return null;
         const q = await fs().collection("ext_channels").where("pairCode", "==", code).get();
         return q.docs[0] || null;
     }
     async function newPairCode() {
         for (let i = 0; i < 20; i++) {
-            const c = "WOLF-" + String(crypto.randomInt(0, 10000)).padStart(4, "0");
+            let c = "WOLF-"; for (let k = 0; k < 8; k++) c += CODE_CHARS[crypto.randomInt(0, CODE_CHARS.length)];
             if (!(await byCode(c))) return c;
         }
         throw new Error("no free pair code");
     }
 
-    return { mount, tick, runChannel, anyLive };
+    return { mount, tick, runChannel, anyLive, _forget: () => cache.clear() };
 }
 
 module.exports = { createExtension, wmTarget };
