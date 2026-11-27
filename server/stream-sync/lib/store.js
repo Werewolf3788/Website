@@ -18,6 +18,7 @@ function db() {
     }
     return admin.database();
 }
+function fs() { db(); return admin.firestore(); }   // Firestore (extension channels, passes, trackers)
 
 async function get(path) { return (await db().ref(path).once("value")).val(); }
 async function update(path, obj) { await db().ref(path).update(obj); }
@@ -81,7 +82,7 @@ async function psnAccountId(onlineId) {
 }
 
 /** The few player-card fields the GitHub PSN sync writes (public read). */
-const CARD_FIELDS = ["online", "currentGame", "currentGameId", "commId", "gameStatus", "lastUpdated"];
+const CARD_FIELDS = ["online", "currentGame", "currentGameId", "commId", "gameStatus", "lastUpdated", "currentGameArt"];
 async function psnCard(onlineId) {
     for (const tag of [onlineId, String(onlineId).toLowerCase()]) {
         try {
@@ -96,4 +97,4 @@ async function psnCard(onlineId) {
     return null;
 }
 
-module.exports = { psnCard, db, get, update, set, enabledUsers, secrets, saveSecret, saveState, state, saveSettings, userFromIdToken, userByKickId, userByLogin, psnAccountId };
+module.exports = { psnCard, fs, db, get, update, set, enabledUsers, secrets, saveSecret, saveState, state, saveSettings, userFromIdToken, userByKickId, userByLogin, psnAccountId };

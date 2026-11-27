@@ -85,3 +85,20 @@ Twitch redirect URL: `https://ww-stream-sync.onrender.com/auth/twitch/callback`
 Kick redirect URL: `https://ww-stream-sync.onrender.com/auth/kick/callback`
 
 Tests: `npm test`.
+
+## Werewolf Twitch extension (`lib/extension.js`, `lib/extcard.js`, `lib/extapi.js`)
+
+This service also runs the Werewolf Twitch extension (front end: `overlay/extension/`). For every channel that installed it,
+it builds a small **card** (game, status, poster, profile picture, tracker, allies, watermark) and pushes it to that
+channel's viewers through Twitch Extension PubSub, and saves it in Twitch's broadcaster config so new viewers see it at
+once. Viewers never call this service or Firebase.
+
+- Tiers come from Firestore `overlay_pro/{twitch login}` (same passes as Overlay Studio, see `server/discord-auth/tiers.js`);
+  allies (owner's friends list) are Tier 3.
+- `POST /ext/register` — the extension's config page (broadcaster token) registers the channel and gets its pair code.
+- `GET /ext/pair/:code`, `POST /ext/pair` — Overlay Studio links the channel to a site account (friend code, PSN name).
+- `POST /webhooks/twitch-eventsub` — stream.online/offline, channel.update, channel.shared_chat.* (also wakes Render).
+  Its secret `twitch_eventsub_secret` is created and saved to the owner's Key Vault the first time.
+- Keys (Keys sheet → `user_secrets/{STREAM_SYNC_APP_OWNER_KEY}`): `twitch_ext_client_id`, `twitch_ext_secret` (base64),
+  `twitch_ext_owner_id`.
+- Firestore `ext_channels/{channelId}` holds pairing, the last card and the watermark clock.
