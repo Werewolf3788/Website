@@ -252,7 +252,7 @@
       <div class="preview">
         <div class="pv-top"><b><i class="fa-solid fa-link" style="color:var(--accent)"></i> Get your overlay</b><span id="saveState"></span></div>
         <label class="f" style="margin-bottom:.75rem">Where will you use it?
-          <div class="seg" id="useSeg"><button data-v="obs"><i class="fa-solid fa-display"></i> OBS / Streamlabs (link)</button><button data-v="se"><i class="fa-solid fa-code"></i> StreamElements (code)</button><button data-v="ext"><i class="fa-brands fa-twitch"></i> Twitch extension</button></div>
+          <div class="seg" id="useSeg"><button data-v="obs"><i class="fa-solid fa-display"></i> OBS / Streamlabs (link)</button><button data-v="ls"><i class="fa-solid fa-gamepad"></i> Lightstream (console)</button><button data-v="se"><i class="fa-solid fa-code"></i> StreamElements (code)</button><button data-v="ext"><i class="fa-brands fa-twitch"></i> Twitch extension</button></div>
         </label>
         <div class="link" style="margin-bottom:0.625rem">
           <input type="text" id="saveName" placeholder="Name this overlay (e.g. Wildlands nights)" maxlength="60">
@@ -268,6 +268,12 @@
           <div class="link"><input type="text" readonly id="editLink"><button class="btn sm" data-copy="editLink"><i class="fa-regular fa-copy"></i></button></div>
         </div>
         <p class="hint" id="obsHow" style="margin:0.75rem 0 0"><b>How to add it:</b> in OBS or Streamlabs add a <b>Browser Source</b>, paste the link, set Width <b>1920</b> and Height <b>1080</b>. Tick “Refresh browser when scene becomes active” so the Starting Soon countdown restarts. Change something here later? Copy the new link and paste it over the old one.</p>
+        <div class="hint" id="lsHow" style="margin:0.75rem 0 0;display:none">
+          <p style="margin:0 0 .5rem"><b>Streaming straight from your console?</b> Lightstream adds this overlay to your stream in the cloud — <b>no OBS, no capture card, no PC</b>. Go live from your Xbox or PlayStation and Lightstream puts your overlay on top (check Lightstream's list of supported consoles; overlays need a paid Lightstream plan).</p>
+          <p style="margin:0 0 .5rem"><b>How to add it:</b> save your overlay above and copy its link. In Lightstream Studio click <b>Add Layer → 3rd Party Integrations → Browser Source</b>, paste the link, and stretch the layer to fill the canvas.</p>
+          <a class="btn sm" href="https://studio.golightstream.com/invite?mwr=4b016016" target="_blank" rel="noopener sponsored" style="background:#ffdd00;color:#0f0f0f;font-weight:800"><i class="fa-solid fa-tag"></i> Try Lightstream — 25% off your first month</a>
+          <p style="margin:.375rem 0 0;font-size:.85em">That's werewolf's referral link: you get 25% off your first month, and werewolf may get a referral reward from Lightstream.</p>
+        </div>
         <div style="margin-top:0.625rem;display:none" id="extBox">
           <p class="hint" style="margin:0 0 .5rem"><b>Werewolf Twitch extension</b> — your game, poster and (with a pass) tracker and allies show <b>on top of your stream</b> for viewers on the Twitch website and app, no OBS needed. Install it from your Twitch Creator Dashboard → Extensions, open its settings, and enter the pair code it shows here.</p>
           <div class="link"><input type="text" id="extCode" placeholder="Pair code, e.g. WOLF-K7Q2M9XD" maxlength="13" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm main" id="extFind" type="button">Find</button></div>
@@ -574,7 +580,8 @@
   try { use = localStorage.getItem(USE) || 'obs'; } catch (e) {}
   function showUse() {
     $$('#useSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === use); });
-    $('#obsOnly').style.display = use === 'obs' ? '' : 'none';
+    $('#obsOnly').style.display = use === 'obs' || use === 'ls' ? '' : 'none';
+    $('#lsHow').style.display = use === 'ls' ? '' : 'none';
     $('#obsHow').style.display = use === 'obs' ? '' : 'none';
     $('#seBox').style.display = use === 'se' ? '' : 'none';
     $('#extBox').style.display = use === 'ext' ? '' : 'none';
