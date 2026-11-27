@@ -101,3 +101,25 @@ test("effectiveTier matches the pass server", () => {
     assert.strictEqual(effectiveTier(null, now, true).tier, 3);
     assert.strictEqual(effectiveTier({ tiers: { 2: { lifetime: true, founder: true } } }, now, false).founder, true);
 });
+
+const { trackerEntry, prettyName } = require("../lib/extcard");
+test("tracker names read like game names", () => {
+    assert.strictEqual(prettyName("FarCry5", {}), "Far Cry 5");
+    assert.strictEqual(prettyName("CODBlackOpsII", {}), "COD Black Ops II");
+    assert.strictEqual(prettyName("theHunterCalloftheWildTM", {}), "The Hunter Callofthe Wild");
+    assert.strictEqual(prettyName("x", { name: "Ghost Recon Wildlands" }), "Ghost Recon Wildlands");
+});
+test("tracker shows trophies and stats, not save data", () => {
+    assert.deepStrictEqual(trackerEntry("FarCry5", "playstation", { "trophies earned": 27, "trophies percent": 37, "trophies total": 73 }).facts, ["Trophies 27/73 (37%)"]);
+    assert.deepStrictEqual(trackerEntry("SniperEliteResistance", "steam", { campaignRankSource: "psn", gameId: "SniperEliteResistance", carrySlots: 6, platform: "steam", campaignRank: 40, trophies_earned: 28, trophies_percent: 39, trophies_total: 71 }).facts, ["Trophies 28/71 (39%)", "Campaign rank 40"]);
+    const b = trackerEntry("bastion", "mobile", { v: 2, cash: 21390.416768531268, autoFuse: "yes", best: 36, totalKills: 6442, seenVersion: "1.1.2", rev: 798, by: "vywygurc" });
+    assert.strictEqual(b.name, "Bastion");
+    assert.deepStrictEqual(b.facts, ["Cash 21,390", "Best 36", "Total kills 6,442"]);
+});
+test("games with no progress are left out", () => {
+    assert.strictEqual(trackerEntry("Blender", "steam", {}), null);
+    assert.strictEqual(trackerEntry("SniperElite4", "steam", { carrySlots: 6, "trophies percent": 0, platform: "steam", "trophies total": 0, gameId: "SniperElite4", "trophies earned": 0 }), null);
+    assert.strictEqual(trackerEntry("survive3", "mobile", { saveAt: 1795508575997 }), null);
+    assert.strictEqual(trackerEntry("tycoon", "mobile", { save: '{"played":1,"updatedAt":1795680276656}', saveAt: 1795680276656 }), null);
+    assert.strictEqual(trackerEntry("survive3_prev", "mobile", { best: 5 }), null);
+});

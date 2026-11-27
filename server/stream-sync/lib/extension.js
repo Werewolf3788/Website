@@ -18,7 +18,7 @@
 
 const crypto = require("crypto");
 const express = require("express");
-const { buildCard, sameCard, effectiveTier } = require("./extcard");
+const { buildCard, sameCard, effectiveTier, trackerEntry } = require("./extcard");
 const { normName, cleanName } = require("./build");
 
 const DAY = 86400000, MIN = 60000;
@@ -88,13 +88,11 @@ function createExtension(deps) {
         return cached("games:" + code, 10 * MIN, async () => {
             const games = [];
             for (const p of PLATFORMS) {
-                const q = await fs().collection("user").doc(code).collection("platform").doc(p).collection("game").limit(25).get();
-                q.docs.forEach((g) => {
-                    const v = g.data() || {};
-                    const facts = Object.keys(v).filter((k) => !/^(name|title|updatedAt|art|image|poster.*|.*Url|id)$/i.test(k) && (typeof v[k] === "number" || typeof v[k] === "boolean" || (typeof v[k] === "string" && v[k].length < 40)))
-                        .slice(0, 8).map((k) => k.replace(/[_-]+/g, " ") + ": " + (v[k] === true ? "yes" : v[k] === false ? "no" : v[k]));
-                    games.push({ id: g.id, name: String(v.name || v.title || g.id), platform: p, facts });
-                });
+                const q = await fs().collection("user").doc(code).collection("platform").doc(p).collection("game").limit(60).get();
+                q.docs.map((g) => trackerEntry(g.id, p, g.data()))
+                    .filter(Boolean)
+                    .sort((a, b) => b.at - a.at || a.name.localeCompare(b.name))
+                    .forEach((g) => games.push({ id: g.id, name: g.name, platform: g.platform, facts: g.facts }));
             }
             return games;
         });
