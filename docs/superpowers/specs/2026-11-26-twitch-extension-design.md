@@ -1,6 +1,6 @@
 # Werewolf Twitch Extension — design
 
-Date: 2026-11-26 · Owner: Kevin (werewolf3788) · Repo: Werewolf3788/Website
+Status: **approved by Kevin 2026-11-26** · Date: 2026-11-26 · Owner: Kevin (werewolf3788) · Repo: Werewolf3788/Website
 
 ## Why
 
@@ -60,11 +60,12 @@ are PSN friends or show status to Anyone).
 | 2 | site account + friend code | + tracker, View more, Stream Together allies | $10 | $100 |
 | 3 | friend code + PSN ID/NPSSO | + live PlayStation info, same-game allies | $20 | $200 |
 
+Lifetime options: see Decided §5.
+
 - Yearly = 10× monthly (2 months free), like Overlay Studio today.
 - Paid on Buy Me a Coffee with the claim-code system already built (`server/discord-auth/bmc.js`); passes add time on top,
   stored in `overlay_pro/{account}` with a new `tier` field. Existing Overlay Studio passes count as Tier 1.
-- **Allies (Kevin's friends list) get Tier 3 free**, like Overlay Studio's free "Match my game" for allies. *(Claude's call — confirm.)*
-- Twitch Affiliate/Partner price bump that Overlay Studio uses ($8/$80) — *open, see below.*
+- **Allies (Kevin's friends list) get Tier 3 free.** One price for everyone (no Affiliate/Partner bump).
 
 ### Watermark (Free tier)
 - Kevin's **current Twitch profile picture + "werewolf3788"**, looked up from Twitch about once a day (follows picture
@@ -114,12 +115,24 @@ are PSN friends or show status to Anyone).
 - Upload the zip Claude builds, add test channels (werewolf3788, terrdog420, raymystyro, Phoenix_Darkfire), then submit for review.
 - Make the Buy Me a Coffee shop items for the tiers.
 
-## Open — Kevin decides
-1. ~~Prices~~ — **decided: $5 / $10 / $20 monthly, $50 / $100 / $200 yearly** (Kevin: Lightstream basic is $8/mo or $88/yr
-   and its 720p Gamer plan is $25/mo, so Tier 3 at $20 is still below it).
-2. **Tier 2 paid vs free-with-watermark:** charging for the tracker means fewer site sign-ups (the promotion goal).
-3. **Affiliate/Partner pricing** for the tiers like Overlay Studio's $8/$80, or one price for everyone?
-4. **Allies free at Tier 3** — OK?
+## Decided (Kevin, 2026-11-26)
+1. **Prices locked for life:** $5 / $10 / $20 monthly, $50 / $100 / $200 yearly. They never go up; say so on the pricing page.
+   (Kevin: Lightstream basic is $8/mo or $88/yr, its 720p Gamer plan $25/mo.)
+2. **Tier 2 stays paid.**
+3. **One price for everyone** — no Affiliate/Partner bump. This replaces Overlay Studio's old $8/$80 earner price.
+4. **Allies (Kevin's friends list) get Tier 3 free.**
+5. **Lifetime passes (optional, one payment, "for the lifetime of the service"):**
+
+   | | Tier 1 | Tier 2 | Tier 3 | Watermark |
+   |---|---|---|---|---|
+   | Founder lifetime (first 25 buyers) | $99 | $199 | $399 | small werewolf3788 credit **once a month** (~10 s) |
+   | Full lifetime | $125 | $250 | $500 | none, ever |
+
+   - Founder terms must be shown on the buy button + pricing page, and agreed with a checkbox before the claim code is
+     issued; the agreement (terms version + time) is saved with the claim. Short terms page on the site.
+   - Never add the monthly credit to anyone who didn't agree to it.
+   - Upgrades credit what was paid (Tier 1 lifetime → Tier 3 lifetime pays the difference); monthly/yearly buyers keep
+     their remaining time when they switch.
 
 ## Left to the builder
 File layout inside `overlay/extension/`, card JSON shape, exact poll/heartbeat timing within Twitch limits, carousel UI,
