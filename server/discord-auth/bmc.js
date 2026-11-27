@@ -2,7 +2,7 @@
  * Buy Me a Coffee payments (mounted on ww-discord-auth)   -   replaced PayPal, Nov 2026
  *
  * Everything that costs money on the site is bought on Buy Me a Coffee (buymeacoffee.com/raykevin71b):
- *   - Overlay Studio passes (no watermark + Match my game)
+ *   - Werewolf passes, Tiers 1-3 (tiers.js): Overlay Studio + the Twitch extension
  *   - Survive3D shop packs (games/mobile)
  *
  * How a purchase is matched to the right person:
@@ -26,12 +26,14 @@
 'use strict';
 const crypto = require('crypto');
 const express = require('express');
+const { FOUNDER_LIMIT, TERMS_VERSION } = require('./tiers');
 
 const BMC_PAGE = 'https://buymeacoffee.com/raykevin71b';
 const BMC_SHOP = BMC_PAGE + '/extras';
 // Optional direct links to each Buy Me a Coffee item (paste them here once they're made). Missing ones open the shop.
+// Passes: pass_t{1|2|3}_{month|year|lifetime|founder}   (one pass covers Overlay Studio + the Twitch extension)
 const ITEM_LINKS = {
-  // overlay_month_standard: '', overlay_year_standard: '', overlay_month_earner: '', overlay_year_earner: '',
+  // pass_t1_month: '', pass_t1_year: '', pass_t1_lifetime: '', pass_t1_founder: '', ... pass_t3_founder: '',
   // survive_starter: '', survive_2000: '', survive_vault: '', survive_gems: '', survive_coal: '', survive_overdrive: '', ally_pack: ''
 };
 
@@ -133,6 +135,24 @@ function mountBmc(app, { admin, overlay }) {
   }
   const linkFor = id => ITEM_LINKS[id] || BMC_SHOP;
 
+  // Founder lifetime: 25 spots, counted when a claim is made (so a buyer holding a code always gets it).
+  // Unpaid Founder claims give their spot back once they expire.
+  async function takeFounderSlot() {
+    const meta = fs().collection('ext_meta').doc('founders');
+    const tryTake = () => fs().runTransaction(async t => {
+      const m = await t.get(meta), taken = Number((m.exists && m.data().taken) || 0);
+      if (taken >= FOUNDER_LIMIT) return false;
+      t.set(meta, { taken: taken + 1, updated: Date.now() }, { merge: true }); return true;
+    });
+    if (await tryTake()) return true;
+    const open = await fs().collection('bmc_claims').where('term', '==', 'founder').where('status', '==', 'waiting').get();
+    const dead = open.docs.filter(x => (x.data().expires || 0) < Date.now());
+    if (!dead.length) return false;
+    for (const x of dead) await x.ref.set({ status: 'expired', updated: Date.now() }, { merge: true });
+    await fs().runTransaction(async t => { const m = await t.get(meta); t.set(meta, { taken: Math.max(0, Number((m.exists && m.data().taken) || 0) - dead.length) }, { merge: true }); });
+    return tryTake();
+  }
+
   // ---------------- game shop ----------------
   app.get('/pay/config', async (req, res) => {
     cors(req, res);
@@ -165,11 +185,15 @@ function mountBmc(app, { admin, overlay }) {
         claim = { kind, code: me.code, uid: me.uid, pack: packId, game: P.game, name: P.name, price, ally: price !== money(P.price) ? 1 : 0,
           url: linkFor(price !== money(P.price) ? 'ally_pack' : packId) };
       } else if (kind === 'overlay') {
-        if (!overlay) return res.status(503).json({ error: 'Overlay passes aren’t available right now.' });
-        const q = await overlay.quote(b.platform, b.channel, String(b.plan || ''));
+        if (!overlay) return res.status(503).json({ error: 'Passes aren’t available right now.' });
+        const term = String(b.term || b.plan || ''), tier = Number(b.tier || 1);   // (plan = older pages: month/year at Tier 1)
+        if (term === 'founder' && String(b.agree) !== '1') return res.status(400).json({ error: 'Tick the box to agree to the Founder lifetime terms first.' });
+        const q = await overlay.quote(b.platform, b.channel, tier, term);
         if (q.error) return res.status(q.status || 400).json({ error: q.error });
-        claim = { kind, account: q.id, label: q.label, plan: q.plan, tier: q.tier, days: q.days, name: q.name, price: q.price,
-          url: linkFor('overlay_' + q.plan + '_' + q.tier) };
+        if (term === 'founder' && !(await takeFounderSlot())) return res.status(409).json({ error: 'All 25 Founder spots are taken. Full lifetime is still available.' });
+        claim = { kind, account: q.id, label: q.label, tier: q.tier, term: q.term, days: q.days, name: q.name, price: q.price,
+          url: linkFor('pass_t' + q.tier + '_' + q.term) };
+        if (term === 'founder') claim.agreement = { terms: TERMS_VERSION, at: Date.now() };
       } else return res.status(400).json({ error: 'Unknown purchase.' });
 
       let id = '';
@@ -214,7 +238,7 @@ function mountBmc(app, { admin, overlay }) {
     const ledger = fs().collection('purchases').doc('bmc_' + id);
     const row = { kind: c.kind, claim: id, price: c.price, paid: ev.amount, currency: CURRENCY, event: ev.id, payer: ev.email, provider: 'bmc', at: Date.now() };
     if (c.kind === 'pack') Object.assign(row, { code: c.code, uid: c.uid || '', pack: c.pack, game: c.game, ally: c.ally || 0 });
-    else Object.assign(row, { channel: c.account, plan: c.plan, tier: c.tier });
+    else Object.assign(row, { channel: c.account, tier: c.tier || 1, term: c.term || c.plan });
     try { await ledger.create(row); } catch (e) { return { already: true }; }   // recorded already: pay out once only
 
     if (c.kind === 'pack') {
@@ -224,9 +248,9 @@ function mountBmc(app, { admin, overlay }) {
       await ref.set({ status: 'paid', paid: ev.amount, event: ev.id, orderId, grant: g, updated: Date.now() }, { merge: true });
       console.log('[bmc] pack paid', c.code, c.pack, id);
     } else {
-      const until = await overlay.grantPass(c.account, c.plan, c.tier, 'bmc_' + id, ev.email);
+      const until = await overlay.grantPass(c.account, c.tier || 1, c.term || c.plan, 'bmc_' + id, ev.email, { agreement: c.agreement || null, paid: c.price });
       await ref.set({ status: 'paid', paid: ev.amount, event: ev.id, until, updated: Date.now() }, { merge: true });
-      console.log('[bmc] overlay paid', c.account, c.plan, id);
+      console.log('[bmc] pass paid', c.account, 'tier', c.tier, c.term, id);
     }
     return { ok: true };
   }

@@ -4,7 +4,15 @@
   "private": true,
   "description": "Sign in with Discord for the Werewolf site: Discord OAuth -> Firebase custom token",
   "main": "server.js",
-  "engines": { "node": ">=18" },
-  "scripts": { "start": "node server.js" },
-  "dependencies": { "express": "^4.19.2", "firebase-admin": "^12.6.0" }
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test --test-force-exit test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "firebase-admin": "^12.6.0"
+  }
 }

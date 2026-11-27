@@ -10,22 +10,15 @@
  *        Buying again while still paid adds the time on to the end.
  *
  * Passes are paid up front (not auto-renewing): month = 31 days, year = 365 days.
- * Price depends on the channel: Twitch Affiliates/Partners pay the 'earner' price (checked with Twitch by the server,
- * using twitch_client_id / twitch_client_secret from the Key Vault). See PRICES below.
+ * Tiers, terms and prices: tiers.js (same price for everyone). Twitch channels are still checked with Twitch
+ * (twitch_client_id / twitch_client_secret from the Key Vault) so a typo'd name can't be paid for.
  * No sign-in needed - the pass belongs to the Twitch channel typed in the Overlay Studio.
  * ========================================================================== */
 'use strict';
 
-// ---- PRICES (change them here) ----
-//   standard = regular streamers;  earner = Twitch Affiliates and Partners (they're making money from streaming)
-const PRICES = {
-  standard: { month: '5.00', year: '50.00' },
-  earner:   { month: '8.00', year: '80.00' }
-};
-const PLAN_DAYS = { month: 31, year: 365 };
-const PLAN_NAME = { month: 'Overlay Studio - 1 month, no watermark', year: 'Overlay Studio - 1 year, no watermark' };
-function plan(tier, id) { const p = (PRICES[tier] || {})[id]; return p ? { name: PLAN_NAME[id], price: p, days: PLAN_DAYS[id] } : null; }
-const PLANS = PRICES;   // kept for anything that imported it
+// ---- Prices: tiers.js (locked for life, one price for everyone; one pass covers Overlay Studio + the Twitch extension) ----
+const T = require('./tiers');
+const LIFETIME_UNTIL = 32503680000000;   // year 3000: what old readers of overlay_pro.until see for a lifetime pass
 const CURRENCY = 'USD';
 const DAY = 86400000;
 const money = v => (Math.round(parseFloat(v) * 100) / 100).toFixed(2);
@@ -104,61 +97,85 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors }) {
     return allies.set;
   }
 
-  // /overlay/pro/:name?platform=twitch|youtube|kick  -> { pro, until, tier, month, year, ally, games }
-  //   ally  = this Twitch channel belongs to the owner or someone on his friends list
+  // /overlay/pro/:name?platform=twitch|youtube|kick
+  //   -> { pro, until, tier (0-3), lifetime, founder, ally, games, account }
+  //   pro   = any paid tier (no watermark), kept for older overlays
+  //   ally  = this Twitch channel belongs to the owner or someone on his friends list (Tier 3 free)
   //   games = "Match my game" is unlocked (paid pass OR ally)
   app.get('/overlay/pro/:channel', async (req, res) => {
     cors(req, res);
-    const a = account(req.query.platform, req.params.channel); if (!a) return res.json({ pro: false });
+    const a = account(req.query.platform, req.params.channel); if (!a) return res.json({ pro: false, tier: 0 });
     const hit = proCache.get(a.id); if (hit && Date.now() - hit.at < 5 * 60000) return res.json(hit.body);
     try {
       const d = await fs().collection('overlay_pro').doc(a.id).get();
-      const until = d.exists ? Number(d.data().until || 0) : 0;
-      let tier = 'standard'; if (a.platform === 'twitch') { try { tier = (await channelTier(a.name)).tier; } catch (e) { /* Twitch unreachable: regular price */ } }
       let ally = false; if (a.platform === 'twitch') { try { ally = (await allyChannels()).has(a.name); } catch (e) { /* keep false */ } }
-      const pro = until > Date.now();
-      const body = { pro, until, tier, month: PRICES[tier].month, year: PRICES[tier].year, account: a.label, ally, games: pro || ally };
+      const paid = T.effectiveTier(d.exists ? d.data() : null, Date.now(), false), eff = ally && paid.tier < 3 ? T.effectiveTier(null, 0, true) : paid;
+      const body = { pro: paid.tier >= 1, until: paid.lifetime ? LIFETIME_UNTIL : paid.until, tier: eff.tier, lifetime: paid.lifetime, founder: paid.founder,
+        account: a.label, ally, games: paid.tier >= 1 || ally };
       proCache.set(a.id, { at: Date.now(), body }); res.json(body);
-    } catch (e) { console.error('[overlay pro]', e && e.message); res.json({ pro: false }); }
+    } catch (e) { console.error('[overlay pro]', e && e.message); res.json({ pro: false, tier: 0 }); }
   });
 
+  async function founderLeft() {
+    try { const m = await fs().collection('ext_meta').doc('founders').get(); return Math.max(0, T.FOUNDER_LIMIT - Number((m.exists && m.data().taken) || 0)); } catch (e) { return 0; }
+  }
+  // /overlay/plans?channel&platform -> { tiers, founderLeft, current: { tier, lifetime, until }, lifetimePaid, found }
   app.get('/overlay/plans', async (req, res) => {
     cors(req, res);
-    const a = account(req.query.platform, req.query.channel); let info = { tier: 'standard', type: '', found: !!a };
-    if (a && a.platform === 'twitch') { try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check that channel with Twitch. Try again.' }); } }
-    const plans = {}; Object.keys(PLAN_DAYS).forEach(id => { plans[id] = plan(info.tier, id); });
-    res.json({ provider: 'bmc', currency: CURRENCY, tier: info.tier, broadcasterType: info.type, found: info.found,
-      platform: a ? a.platform : '', account: a ? a.label : '', plans, prices: PRICES });
+    const a = account(req.query.platform, req.query.channel); let found = !!a;
+    if (a && a.platform === 'twitch') { try { found = (await channelTier(a.name)).found; } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check that channel with Twitch. Try again.' }); } }
+    let doc = null; if (a) { try { const d = await fs().collection('overlay_pro').doc(a.id).get(); doc = d.exists ? d.data() : null; } catch (e) {} }
+    const cur = T.effectiveTier(doc, Date.now(), false);
+    res.json({ provider: 'bmc', currency: CURRENCY, tiers: T.TIERS, founderLeft: await founderLeft(), found,
+      platform: a ? a.platform : '', account: a ? a.label : '', current: cur, lifetimePaid: (doc && doc.lifetimePaid) || '0.00' });
   });
 
   // ---- used by bmc.js (Buy Me a Coffee) ----
-  // price for an account + plan, checked with Twitch for Affiliate/Partner pricing
-  async function quote(platform, channel, planId) {
+  // quote(platform, channel, tier 1-3, term month|year|lifetime|founder) -> { id, label, tier, term, days, name, price } | { error }
+  async function quote(platform, channel, tier, term) {
     const a = account(platform, channel);
+    tier = Number(tier);
     if (!a) return { error: 'Type your streaming username first.' };
-    if (!PLAN_DAYS[planId]) return { error: 'Pick monthly or yearly.' };
-    let info = { tier: 'standard', found: true };
+    if (!T.okTier(tier)) return { error: 'Pick Tier 1, 2 or 3.' };
+    if (!T.okTerm(term)) return { error: 'Pick monthly, yearly or lifetime.' };
     if (a.platform === 'twitch') {
-      try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return { status: 502, error: 'Could not check your channel with Twitch. Try again.' }; }
+      let info; try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return { status: 502, error: 'Could not check your channel with Twitch. Try again.' }; }
       if (!info.found) return { error: 'Couldn’t find twitch.tv/' + a.name + ' - check the spelling.' };
     }
-    const P = plan(info.tier, planId);
-    return { id: a.id, label: a.label, plan: planId, tier: info.tier, days: P.days, name: P.name + ' for ' + a.label, price: P.price };
+    const d = await fs().collection('overlay_pro').doc(a.id).get(), doc = d.exists ? d.data() : null;
+    const has = T.effectiveTier(doc, Date.now(), false);
+    if ((term === 'lifetime' || term === 'founder') && has.lifetime && has.tier >= tier) return { error: 'You already have lifetime at this tier or higher.' };
+    const price = T.priceFor(tier, term, doc);
+    return { id: a.id, label: a.label, tier, term, days: T.TERM_DAYS[term] || 0, name: 'Werewolf ' + T.TIER_NAME[tier] + ' - ' + T.TERM_NAME[term] + ' for ' + a.label, price };
   }
-  // add the pass time (on top of any time left). ref = ledger id, for the history list.
-  async function grantPass(ch, planId, tier, ref, payer) {
-    const days = PLAN_DAYS[planId] || 0; if (!okId(ch) || !days) throw new Error('bad pass');
+  // grantPass(account, tier, term, ref, payer, { agreement, paid }) -> until (LIFETIME_UNTIL for lifetime)
+  //   month/year add time to THAT tier (time left on other tiers is kept); lifetime/founder mark the tier lifetime.
+  async function grantPass(ch, tier, term, ref, payer, extra) {
+    tier = Number(tier); extra = extra || {};
+    if (!okId(ch) || !T.okTier(tier) || !T.okTerm(term)) throw new Error('bad pass');
     const doc = fs().collection('overlay_pro').doc(ch);
     const until = await fs().runTransaction(async t => {
       const cur = await t.get(doc), d = cur.exists ? cur.data() : {};
-      const start = Math.max(Date.now(), Number(d.until || 0));
-      const next = start + days * DAY;
-      t.set(doc, { channel: ch, platform: ch.indexOf(':') > 0 ? ch.split(':')[0] : 'twitch', name: ch.split(':').pop(), until: next, plan: planId, tier, payer: payer || '', updated: Date.now(), orders: (d.orders || []).concat(ref).slice(-50) }, { merge: true });
-      return next;
+      const tiers = d.tiers || (Number(d.until) ? { 1: { until: Number(d.until) } } : {});
+      const patch = { channel: ch, platform: ch.indexOf(':') > 0 ? ch.split(':')[0] : 'twitch', name: ch.split(':').pop(), payer: payer || '', updated: Date.now(), orders: (d.orders || []).concat(ref).slice(-50) };
+      if (term === 'lifetime' || term === 'founder') {
+        tiers[tier] = { lifetime: true, founder: term === 'founder' };
+        patch.lifetimePaid = T.money(parseFloat(d.lifetimePaid || 0) + parseFloat(extra.paid || 0));
+        if (extra.agreement) patch.agreement = extra.agreement;
+      } else {
+        const old = tiers[tier] || {};
+        if (!old.lifetime) tiers[tier] = { until: Math.max(Date.now(), Number(old.until || 0)) + T.TERM_DAYS[term] * DAY };
+      }
+      patch.tiers = tiers;
+      const eff = T.effectiveTier({ tiers }, Date.now(), false);
+      patch.until = eff.lifetime ? LIFETIME_UNTIL : eff.until;   // for older readers
+      patch.tier = eff.tier;
+      t.set(doc, patch, { merge: true });
+      return patch.until;
     });
     proCache.delete(ch);
     return until;
   }
   return { quote, grantPass };
 }
-module.exports = { mountOverlayPro, PLANS };
+module.exports = { mountOverlayPro };
