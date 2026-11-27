@@ -108,7 +108,8 @@
   .tierPick .plan b{font-size:1.15rem} .tierPick .plan small{display:block;font-size:.78rem;line-height:1.25}
   .tierPick .plan[disabled]{opacity:.45;cursor:not-allowed}
   .tierPick .fagree{display:flex;gap:.5rem;align-items:flex-start;margin:.625rem 0 0;color:var(--text)} .tierPick .fagree input{margin-top:.2rem;width:auto}
-  .lockline{margin:.5rem 0 0} @media (max-width:640px){.tierPick .plans.terms{grid-template-columns:1fr 1fr}}
+  .lockline{margin:.5rem 0 0}
+  #elements > details.ext-off{opacity:.45} #elements > details.ext-off .sp::after{content:' — only works in OBS/Streamlabs';font-size:.8em;color:var(--mute);font-weight:400} @media (max-width:640px){.tierPick .plans.terms{grid-template-columns:1fr 1fr}}
   .tag{display:inline-block;padding:2px 0.5rem;border-radius:6.1875rem;font-size:0.6875rem;font-weight:800;background:var(--ok);color:#03140d}
   /* desktop: settings (left) and preview/links (right) scroll on their own; the page itself fits the screen */
   @media (min-width:1101px){
@@ -251,7 +252,7 @@
       <div class="preview">
         <div class="pv-top"><b><i class="fa-solid fa-link" style="color:var(--accent)"></i> Get your overlay</b><span id="saveState"></span></div>
         <label class="f" style="margin-bottom:.75rem">Where will you use it?
-          <div class="seg" id="useSeg"><button data-v="obs"><i class="fa-solid fa-display"></i> OBS / Streamlabs (link)</button><button data-v="se"><i class="fa-solid fa-code"></i> StreamElements (code)</button></div>
+          <div class="seg" id="useSeg"><button data-v="obs"><i class="fa-solid fa-display"></i> OBS / Streamlabs (link)</button><button data-v="se"><i class="fa-solid fa-code"></i> StreamElements (code)</button><button data-v="ext"><i class="fa-brands fa-twitch"></i> Twitch extension</button></div>
         </label>
         <div class="link" style="margin-bottom:0.625rem">
           <input type="text" id="saveName" placeholder="Name this overlay (e.g. Wildlands nights)" maxlength="60">
@@ -267,6 +268,12 @@
           <div class="link"><input type="text" readonly id="editLink"><button class="btn sm" data-copy="editLink"><i class="fa-regular fa-copy"></i></button></div>
         </div>
         <p class="hint" id="obsHow" style="margin:0.75rem 0 0"><b>How to add it:</b> in OBS or Streamlabs add a <b>Browser Source</b>, paste the link, set Width <b>1920</b> and Height <b>1080</b>. Tick “Refresh browser when scene becomes active” so the Starting Soon countdown restarts. Change something here later? Copy the new link and paste it over the old one.</p>
+        <div style="margin-top:0.625rem;display:none" id="extBox">
+          <p class="hint" style="margin:0 0 .5rem"><b>Werewolf Twitch extension</b> — your game, poster and (with a pass) tracker and allies show <b>on top of your stream</b> for viewers on the Twitch website and app, no OBS needed. Install it from your Twitch Creator Dashboard → Extensions, open its settings, and enter the pair code it shows here.</p>
+          <div class="link"><input type="text" id="extCode" placeholder="Pair code, e.g. WOLF-4821" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm main" id="extFind" type="button">Find</button></div>
+          <div id="extStatus" class="hint" style="margin-top:.5rem"></div>
+          <p class="hint" style="margin:.5rem 0 0">Greyed-out parts on the left (chat box, alerts and the other video pieces) only work in OBS/Streamlabs. <b>Sign in</b> before pairing to show your game tracker (Tier 2) and PlayStation info (Tier 3).</p>
+        </div>
         <div style="margin-top:0.625rem;display:none" id="seBox">
           <p class="hint" style="margin:0 0 0.5rem"><b>How to add it:</b> in your StreamElements overlay (1920×1080): <b>+ → Static / Custom → Custom widget</b> → <b>Open editor</b>. Paste each box below into the matching tab (HTML, CSS, JS), click <b>Done</b>, then set the widget to <b>X 0, Y 0, Width 1920, Height 1080</b> and save. Replace the example code that’s already in each tab (Ctrl+A, then paste). Follows and tips will pop up too.</p>
           <div class="link" style="margin-bottom:0.375rem"><span>Screen</span><select id="seScene"><option value="live">Live overlay</option><option value="starting">Starting soon</option><option value="brb">Be right back</option><option value="ending">Ending</option></select></div>
@@ -391,7 +398,7 @@
     return '';
   }
   $('#elements').innerHTML = ELEMENTS.map(function (e) {
-    return '<details class="card"><summary><span class="ic"><i class="' + e.icon + '"></i></span><span class="sp">' + esc(e.name) + '</span>' +
+    return '<details class="card" data-el="' + e.k + '"><summary><span class="ic"><i class="' + e.icon + '"></i></span><span class="sp">' + esc(e.name) + '</span>' +
       '<label class="sw" onclick="event.stopPropagation()"><input type="checkbox" data-k="' + e.k + '.on"><span></span></label><i class="fa-solid fa-chevron-down chev"></i></summary><div class="body">' +
       (e.nopos ? '' : '<div class="posrow"><div class="pos" data-pos="' + e.k + '.pos">' + C.POSITIONS.map(function (p) { return '<button type="button" data-v="' + p + '" title="' + POSN[p] + '"></button>'; }).join('') + '</div><span data-posname="' + e.k + '.pos"></span></div>') +
       e.fields.map(fieldHTML).join('') + '</div></details>';
@@ -570,7 +577,43 @@
     $('#obsOnly').style.display = use === 'obs' ? '' : 'none';
     $('#obsHow').style.display = use === 'obs' ? '' : 'none';
     $('#seBox').style.display = use === 'se' ? '' : 'none';
+    $('#extBox').style.display = use === 'ext' ? '' : 'none';
+    $$('#saveName, #saveBtn, #saveHint').forEach(function (x) { (x.closest('.link') || x).style.display = use === 'ext' ? 'none' : ''; });
+    // the extension can show the game, poster and your name/picture; everything else is video-only
+    $$('#elements > details[data-el]').forEach(function (d) { d.classList.toggle('ext-off', use === 'ext' && EXT_OK.indexOf(d.dataset.el) < 0); });
   }
+  var EXT_OK = ['brand', 'game', 'poster', 'gameTheme'];
+  if (/[#&]extension\b/.test(location.hash)) use = 'ext';
+
+  /* ---------- Twitch extension pairing (ww-stream-sync /ext/pair) ---------- */
+  var SYNC = 'https://ww-stream-sync.onrender.com';
+  function siteUser() { try { var a = (window.WW && WW.auth) || (window.firebase && firebase.auth && firebase.auth()); return a && a.currentUser; } catch (e) { return null; } }
+  function extFind() {
+    var code = $('#extCode').value.trim().toUpperCase(), st = $('#extStatus');
+    if (!/^WOLF-\d{4}$/.test(code)) { st.innerHTML = 'The code looks like WOLF-1234.'; return; }
+    st.innerHTML = 'Checking… (the server can take up to a minute to wake up)';
+    fetch(SYNC + '/ext/pair/' + code).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+      if (!x.ok) { st.innerHTML = esc(x.j.error || 'Unknown code.'); return; }
+      st.innerHTML = '<b>twitch.tv/' + esc(x.j.login) + '</b> ' + (x.j.paired ? '<span class="tag">Paired</span> ' : '') +
+        '<button class="btn sm main" id="extPair" type="button">' + (x.j.paired ? 'Pair again' : 'Pair') + '</button>' +
+        (siteUser() ? '' : ' <span class="hint">(not signed in: Twitch info only)</span>');
+      $('#extPair').onclick = function () { extPair(code); };
+    }).catch(function () { st.innerHTML = 'The server is waking up — try again in a minute.'; });
+  }
+  function extPair(code) {
+    var st = $('#extStatus'), u = siteUser();
+    st.innerHTML = 'Pairing…';
+    (u ? u.getIdToken() : Promise.resolve('')).then(function (tok) {
+      var body = { code: code }; if (tok) body.idToken = tok;
+      return fetch(SYNC + '/ext/pair', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body) });
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+      if (!x.ok) { st.innerHTML = esc(x.j.error || 'Could not pair.'); return; }
+      st.innerHTML = '<span class="tag">Paired</span> twitch.tv/' + esc(x.j.login) + (x.j.friendCode ? ' with friend code ' + esc(x.j.friendCode) : ' (Twitch info only — sign in and pair again to add your tracker)') + '. Your viewers see it within a minute.';
+      toast('Paired with twitch.tv/' + x.j.login);
+    }).catch(function () { st.innerHTML = 'The server is waking up — try again in a minute.'; });
+  }
+  $('#extFind').addEventListener('click', extFind);
+  $('#extCode').addEventListener('keydown', function (e) { if (e.key === 'Enter') extFind(); });
   document.addEventListener('click', function (e) {
     var b = e.target.closest('#useSeg button'); if (!b) return;
     use = b.dataset.v; try { localStorage.setItem(USE, use); } catch (x) {} showUse();
