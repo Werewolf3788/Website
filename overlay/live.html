@@ -17,6 +17,7 @@
 <link id="font-link" rel="stylesheet" href="">
 <script src="overlay-core.js"></script>
 <script src="game-themes.js"></script>
+<script src="wm-clock.js"></script>
 <style>
   *{box-sizing:border-box}
   :root{color-scheme:normal}
@@ -143,11 +144,12 @@
   .clear-boxes .panel,.clear-boxes .msg,.clear-boxes .msg .t,.clear-boxes .ticker,.clear-boxes .alert{box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
   .clear-boxes .scene h1,.clear-boxes .panel,.clear-boxes .msg{text-shadow:0 0 4px #000,0 0 2px #000,1px 1px 0 #000}
   .no-anim *{animation:none!important;transition:none!important}
-  /* watermark (free overlays, once an hour) */
-  .wm{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:16px;
-    padding:14px 26px;border-radius:16px;background:rgba(10,10,14,.92);border:2px solid #ff5f1f;color:#fff;
-    font:800 24px Inter,Roboto,sans-serif;box-shadow:0 0 30px rgba(255,95,31,.6);white-space:nowrap;animation:alIn .6s ease}
-  .wm i{color:#ff5f1f;font-size:30px} .wm small{display:block;font-weight:600;font-size:17px;color:#ffd7c4}
+  /* "Overlay by werewolf3788" credit (free overlays every 20-40 live minutes; Founder/allies once a month) */
+  .wm{position:absolute;z-index:60;display:flex;align-items:center;gap:16px;opacity:.75;
+    padding:14px 16px 14px 14px;border-radius:20px;background:rgba(10,10,14,.92);border:3px solid #ff5f1f;color:#fff;
+    font:800 30px Inter,Roboto,sans-serif;box-shadow:0 0 30px rgba(255,95,31,.6);white-space:nowrap;animation:alIn .6s ease}
+  .wm .av{width:84px;height:84px;border-radius:50%;border:3px solid #ff5f1f} .wm .qr{width:180px;height:180px;background:#fff;border-radius:10px;padding:6px}
+  .wm small{display:block;font-weight:900;font-size:36px;color:#ffd166;margin-top:6px;letter-spacing:.01em}
   .wm.leave{animation:alOut .5s ease forwards}
   .hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:20px 30px;font:700 22px Inter,sans-serif;
     color:#fff;background:rgba(0,0,0,.75);border-radius:12px;text-align:center}
@@ -625,34 +627,81 @@
     if (k === 'follow') alert('follow', 'NewFriend', 'just followed', '');
   }
 
-  /* ---------------- watermark (free overlays) ----------------
-   * Every hour (first one 2 minutes after the overlay loads) a banner shows where the overlay was made.
-   * Channels with a paid pass ($5/month, $50/year) never see it. The paid list lives on the
-   * site's login server (Firestore overlay_pro/{channel}); a page can't mark itself paid. */
+  /* ---------------- "Overlay by werewolf3788" credit ----------------
+   * Free overlays: after a random 20-40 minutes of live time (carried over restarts, kept in localStorage),
+   * only while 2+ people watch. Founder lifetime passes and Werewolf allies: once a month, 5+ minutes in.
+   * Other paid tiers never. Rules: wm-clock.js (same as the Twitch extension). Who has a pass is decided by
+   * the site's login server (Firestore overlay_pro/{channel}); a page can't mark itself paid.
+   * Viewers can't tap a video, so it shows a QR code + bit.ly/ww-overlay (both open Overlay Studio). */
   var PRO_API = 'https://ww-discord-auth.onrender.com/overlay/pro/';
-  var STUDIO_URL = location.origin + location.pathname.replace(/overlay\/live(\.html)?$/, 'overlay-studio');
-  var isPro = false, gamesOk = false, proChecked = '', monthPrice = '5';
+  var SHORT = 'bit.ly/ww-overlay', OWNER_TW = 'werewolf3788';
+  var QR = location.pathname.replace(/overlay\/live(\.html)?$/, '') + 'Images/ww-overlay-qr.svg';
+  var isPro = false, gamesOk = false, proChecked = '', pass = { tier: 0, founder: false, ally: false, owner: false }, ownerAvatar = '';
   function checkPro() {
     var a = acct(), c = a.platform + ':' + a.name; if (!C.accountOk(a) || DEMO) { isPro = false; return Promise.resolve(); }
     return fetch(PRO_API + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); })
-      .then(function (j) { isPro = !!(j && j.pro); gamesOk = !!(j && (j.games || j.pro)); proChecked = c; if (j && j.month) monthPrice = String(parseFloat(j.month)); }).catch(function () { /* keep last answer */ });
+      .then(function (j) {
+        isPro = !!(j && j.pro); gamesOk = !!(j && (j.games || j.pro)); proChecked = c;
+        pass = { tier: Number(j && j.tier) || 0, founder: !!(j && j.founder), ally: !!(j && j.ally), owner: !!(j && j.owner) };
+      }).catch(function () { /* keep last answer */ });
   }
+  function ownerPic() {
+    if (ownerAvatar) return Promise.resolve(ownerAvatar);
+    return fetch('https://decapi.me/twitch/avatar/' + OWNER_TW).then(function (r) { return r.ok ? r.text() : ''; })
+      .then(function (t) { t = (t || '').trim(); if (/^https:\/\//.test(t)) ownerAvatar = t; return ownerAvatar; }).catch(function () { return ''; });
+  }
+  // corners and side edges only: never the middle of the screen, never the bottom (player controls)
+  var SPOTS = [{ left: '2%', top: '3%' }, { right: '2%', top: '3%' }, { left: '2%', top: '36%' }, { right: '2%', top: '36%' }];
   function showWatermark() {
     var old = stage.querySelector('.wm'); if (old) old.remove();
-    var w = el('div', 'wm', '<i class="fa-solid fa-wand-magic-sparkles"></i><div>Overlay made at ' +
-      esc(STUDIO_URL.replace(/^https?:\/\//, '')) + '<small>Make your own free • remove this from $' + esc(monthPrice) + '/month</small></div>');
-    stage.appendChild(w);
-    setTimeout(function () { w.classList.add('leave'); setTimeout(function () { w.remove(); }, 550); }, 12000);
-  }
-  function watermarkTick() {
-    var was = gamesOk;
-    checkPro().then(function () {
-      if (!isPro) showWatermark();
-      if (was !== gamesOk && cfg.gameTheme && cfg.gameTheme.on) render();   // pass started/ran out: turn game themes on/off
+    ownerPic().then(function (pic) {
+      var w = el('div', 'wm', (pic ? '<img class="av" src="' + esc(pic) + '" alt="">' : '') +
+        '<div>🐺 Overlay by werewolf3788<small>' + SHORT + '</small></div><img class="qr" src="' + esc(QR) + '" alt="">');
+      var p = SPOTS[Math.floor(Math.random() * SPOTS.length)];
+      Object.keys(p).forEach(function (k) { w.style[k] = p[k]; });
+      stage.appendChild(w);
+      setTimeout(function () { w.classList.add('leave'); setTimeout(function () { w.remove(); }, 550); }, 12000);
     });
   }
+  var SYNC = 'https://ww-stream-sync.onrender.com', markSeen = new Set(), useServer = null, useServerAt = 0, markTimer = null;
+  function pollMark() {
+    var c = chan(); if (!c) return;
+    fetch(SYNC + '/ext/mark/' + encodeURIComponent(c) + '?v=' + Date.now()).then(function (r) {
+      if (r.status === 404) { useServer = false; useServerAt = Date.now(); if (markTimer) { clearInterval(markTimer); markTimer = null; } return null; }
+      return r.ok ? r.json() : null;
+    }).then(function (j) {
+      if (!j) return;
+      useServer = true; useServerAt = Date.now();
+      if (WWClock.serverShow(j, Date.now(), markSeen)) showWatermark();
+    }).catch(function () { /* server asleep or offline: keep the last answer */ });
+  }
+  function clockKey() { var a = acct(); return 'ww_wm_clock_' + a.platform + ':' + a.name; }
+  function loadClock() { try { return JSON.parse(localStorage.getItem(clockKey())) || WWClock.fresh(Math.random); } catch (e) { return WWClock.fresh(Math.random); } }
+  function saveClock(st) { try { localStorage.setItem(clockKey(), JSON.stringify(st)); } catch (e) {} }
+  function clockTick() {
+    if (!C.accountOk(acct())) return;
+    var tw = chan();
+    Promise.all(tw ? [getText('uptime'), getText('viewercount')] : [Promise.resolve(undefined), Promise.resolve(undefined)]).then(function (r) {
+      var uptime = r[0] === undefined ? undefined : WWClock.parseUptime(r[0]);
+      var v = r[1] === undefined ? undefined : parseInt(String(r[1]).replace(/,/g, ''), 10);
+      // streams that also use the Werewolf Twitch extension: the server's clock decides, so this QR card
+      // shows at the same moment as the extension's tappable credit
+      if (tw && uptime !== null && uptime !== undefined) {
+        if (useServer === null || Date.now() - useServerAt > 10 * 60000) pollMark();
+        if (useServer) { if (!markTimer) markTimer = setInterval(pollMark, 15000); return; }
+      } else if (markTimer) { clearInterval(markTimer); markTimer = null; }
+      var out = WWClock.step(loadClock(), { now: Date.now(), uptime: uptime, viewers: isNaN(v) ? (uptime === undefined ? undefined : 0) : v,
+        tier: pass.tier, founder: pass.founder, ally: pass.ally, owner: pass.owner, rand: Math.random });
+      saveClock(out.state);
+      if (out.show) showWatermark();
+    });
+  }
+  function passTick() {
+    var was = gamesOk;
+    checkPro().then(function () { if (was !== gamesOk && cfg.gameTheme && cfg.gameTheme.on) render(); });   // pass started/ran out: turn game themes on/off
+  }
   if (!DEMO) {
-    setTimeout(function () { watermarkTick(); setInterval(watermarkTick, 3600000); }, 120000);
+    setTimeout(function () { passTick(); setInterval(passTick, 10 * 60000); clockTick(); setInterval(clockTick, 60000); }, 5000);
   }
 
   /* ---------------- start ---------------- */
@@ -690,7 +739,7 @@
     if (e.origin !== location.origin || !e.data) return;
     if (e.data.type === 'overlay-cfg') apply(e.data.cfg);
     if (e.data.type === 'overlay-alert') testAlert(e.data.kind);
-    if (e.data.type === 'overlay-wm') { if (e.data.month) monthPrice = String(parseFloat(e.data.month)); showWatermark(); }
+    if (e.data.type === 'overlay-wm') showWatermark();
   });
 
   function broken(msg) { apply({}); stage.appendChild(el('div', 'hint', msg || 'This overlay link looks broken.<br>Make a new one in the Overlay Studio.')); }

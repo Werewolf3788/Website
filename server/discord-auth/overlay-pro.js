@@ -2,32 +2,23 @@
  * Overlay Studio "Remove watermark" passes (mounted on ww-discord-auth next to the game shop)
  *
  *   GET  /overlay/pro/:channel           -> { pro, until }   is this Twitch channel paid up? (the live overlay asks)
- *   GET  /overlay/plans                  -> { clientId, currency, plans }
- *   POST /overlay/create  channel, plan  -> { id }            PayPal order for that plan's fixed price
- *   POST /overlay/capture orderId        -> { ok, until }
- *        Captured with PayPal by the server; only COMPLETED payments for the exact price count, each order once.
+ *   GET  /overlay/plans                  -> { currency, tier, plans }
+ *   Paying happens on Buy Me a Coffee (bmc.js): the page gets a claim code from POST /bmc/claim (kind=overlay),
+ *   and when the payment webhook arrives bmc.js calls grantPass() below.
  *        Firestore:  overlay_pro/{channel}   { until, plan, orders[], payer, updated }
- *                    purchases/{orderId}     ledger row (create() fails on reuse = no double credit)
+ *                    purchases/bmc_{claim}   ledger row (create() fails on reuse = no double credit)
  *        Buying again while still paid adds the time on to the end.
  *
  * Passes are paid up front (not auto-renewing): month = 31 days, year = 365 days.
- * Price depends on the channel: Twitch Affiliates/Partners pay the 'earner' price (checked with Twitch by the server,
- * using twitch_client_id / twitch_client_secret from the Key Vault). See PRICES below.
+ * Tiers, terms and prices: tiers.js (same price for everyone). Twitch channels are still checked with Twitch
+ * (twitch_client_id / twitch_client_secret from the Key Vault) so a typo'd name can't be paid for.
  * No sign-in needed - the pass belongs to the Twitch channel typed in the Overlay Studio.
- * Uses the same PayPal keys as the game shop (Key Vault: paypal_client_id, paypal_secret, paypal_mode).
  * ========================================================================== */
 'use strict';
 
-// ---- PRICES (change them here) ----
-//   standard = regular streamers;  earner = Twitch Affiliates and Partners (they're making money from streaming)
-const PRICES = {
-  standard: { month: '5.00', year: '50.00' },
-  earner:   { month: '8.00', year: '80.00' }
-};
-const PLAN_DAYS = { month: 31, year: 365 };
-const PLAN_NAME = { month: 'Overlay Studio - 1 month, no watermark', year: 'Overlay Studio - 1 year, no watermark' };
-function plan(tier, id) { const p = (PRICES[tier] || {})[id]; return p ? { name: PLAN_NAME[id], price: p, days: PLAN_DAYS[id] } : null; }
-const PLANS = PRICES;   // kept for anything that imported it
+// ---- Prices: tiers.js (locked for life, one price for everyone; one pass covers Overlay Studio + the Twitch extension) ----
+const T = require('./tiers');
+const LIFETIME_UNTIL = 32503680000000;   // year 3000: what old readers of overlay_pro.until see for a lifetime pass
 const CURRENCY = 'USD';
 const DAY = 86400000;
 const money = v => (Math.round(parseFloat(v) * 100) / 100).toFixed(2);
@@ -46,7 +37,7 @@ const okId = id => /^([a-z]+:)?[a-z0-9_.-]{3,30}$/.test(String(id || ''));
 
 const SITE_ORIGINS = ['https://entertainment-71888.web.app', 'https://entertainment-71888.firebaseapp.com', 'https://werewolf3788.github.io'];
 
-function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
+function mountOverlayPro(app, { admin, fetchFn, cors: baseCors }) {
   const fs = () => admin.firestore();
   const cors = (req, res) => {   // the site's own origins always allowed, plus whatever the server already allows
     const o = req.headers.origin;
@@ -85,7 +76,7 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
   // ---- Allies: the owner's friends list (users/{owner}/friends) gets "Match my game" free ----
   // friend code -> accounts/friend_codes/{CODE} -> user key -> users/{key}/twitch_username
   // Kept as a set of lower-case Twitch names, rebuilt at most every 10 minutes.
-  let allies = { at: 0, set: new Set() };
+  let allies = { at: 0, set: new Set(), owner: '' };
   async function allyChannels() {
     if (Date.now() - allies.at < 10 * 60000) return allies.set;
     const owner = process.env.DISCORD_APP_OWNER_KEY, db = admin.database(), set = new Set();
@@ -101,93 +92,94 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors, paypal }) {
         const t = cleanChan((await db.ref('users/' + k + '/twitch_username').once('value')).val() || '');
         if (okChan(t)) set.add(t);
       }));
-      allies = { at: Date.now(), set };
+      let ownerName = ''; if (owner) { try { ownerName = cleanChan((await db.ref('users/' + owner + '/twitch_username').once('value')).val() || ''); } catch (e) {} }
+      allies = { at: Date.now(), set, owner: ownerName };
     } catch (e) { console.error('[overlay allies]', e && e.message); }
     return allies.set;
   }
 
-  // /overlay/pro/:name?platform=twitch|youtube|kick  -> { pro, until, tier, month, year, ally, games }
-  //   ally  = this Twitch channel belongs to the owner or someone on his friends list
+  // /overlay/pro/:name?platform=twitch|youtube|kick
+  //   -> { pro, until, tier (0-3), lifetime, founder, ally, games, account }
+  //   pro   = any paid tier (no watermark), kept for older overlays
+  //   ally  = this Twitch channel belongs to the owner or someone on his friends list (Tier 3 free)
   //   games = "Match my game" is unlocked (paid pass OR ally)
   app.get('/overlay/pro/:channel', async (req, res) => {
     cors(req, res);
-    const a = account(req.query.platform, req.params.channel); if (!a) return res.json({ pro: false });
+    const a = account(req.query.platform, req.params.channel); if (!a) return res.json({ pro: false, tier: 0 });
     const hit = proCache.get(a.id); if (hit && Date.now() - hit.at < 5 * 60000) return res.json(hit.body);
     try {
       const d = await fs().collection('overlay_pro').doc(a.id).get();
-      const until = d.exists ? Number(d.data().until || 0) : 0;
-      let tier = 'standard'; if (a.platform === 'twitch') { try { tier = (await channelTier(a.name)).tier; } catch (e) { /* Twitch unreachable: regular price */ } }
-      let ally = false; if (a.platform === 'twitch') { try { ally = (await allyChannels()).has(a.name); } catch (e) { /* keep false */ } }
-      const pro = until > Date.now();
-      const body = { pro, until, tier, month: PRICES[tier].month, year: PRICES[tier].year, account: a.label, ally, games: pro || ally };
+      let ally = false, isOwner = false;
+      if (a.platform === 'twitch') { try { ally = (await allyChannels()).has(a.name); isOwner = !!allies.owner && allies.owner === a.name; } catch (e) { /* keep false */ } }
+      const paid = T.effectiveTier(d.exists ? d.data() : null, Date.now(), false), eff = ally && paid.tier < 3 ? T.effectiveTier(null, 0, true) : paid;
+      const body = { pro: paid.tier >= 1, until: paid.lifetime ? LIFETIME_UNTIL : paid.until, tier: eff.tier, lifetime: paid.lifetime, founder: paid.founder,
+        account: a.label, ally, owner: isOwner, games: paid.tier >= 1 || ally };
       proCache.set(a.id, { at: Date.now(), body }); res.json(body);
-    } catch (e) { console.error('[overlay pro]', e && e.message); res.json({ pro: false }); }
+    } catch (e) { console.error('[overlay pro]', e && e.message); res.json({ pro: false, tier: 0 }); }
   });
 
+  async function founderLeft() {
+    try { const m = await fs().collection('ext_meta').doc('founders').get(); return Math.max(0, T.FOUNDER_LIMIT - Number((m.exists && m.data().taken) || 0)); } catch (e) { return 0; }
+  }
+  // /overlay/plans?channel&platform -> { tiers, founderLeft, current: { tier, lifetime, until }, lifetimePaid, found }
   app.get('/overlay/plans', async (req, res) => {
-    cors(req, res); const k = await paypal.keys();
-    const a = account(req.query.platform, req.query.channel); let info = { tier: 'standard', type: '', found: !!a };
-    if (a && a.platform === 'twitch') { try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check that channel with Twitch. Try again.' }); } }
-    const plans = {}; Object.keys(PLAN_DAYS).forEach(id => { plans[id] = plan(info.tier, id); });
-    res.json({ clientId: k.id && k.secret ? k.id : '', currency: CURRENCY, mode: k.mode, tier: info.tier, broadcasterType: info.type, found: info.found,
-      platform: a ? a.platform : '', account: a ? a.label : '', plans, prices: PRICES });
+    cors(req, res);
+    const a = account(req.query.platform, req.query.channel); let found = !!a;
+    if (a && a.platform === 'twitch') { try { found = (await channelTier(a.name)).found; } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check that channel with Twitch. Try again.' }); } }
+    let doc = null; if (a) { try { const d = await fs().collection('overlay_pro').doc(a.id).get(); doc = d.exists ? d.data() : null; } catch (e) {} }
+    const cur = T.effectiveTier(doc, Date.now(), false);
+    res.json({ provider: 'bmc', currency: CURRENCY, tiers: T.TIERS, founderLeft: await founderLeft(), found,
+      platform: a ? a.platform : '', account: a ? a.label : '', current: cur, lifetimePaid: (doc && doc.lifetimePaid) || '0.00' });
   });
 
-  app.post('/overlay/create', async (req, res) => {
-    cors(req, res);
-    try {
-      const b = req.body || {}, a = account(b.platform, b.channel), planId = String(b.plan || '');
-      if (!a) return res.status(400).json({ error: 'Type your streaming username first.' });
-      if (!PLAN_DAYS[planId]) return res.status(400).json({ error: 'Pick monthly or yearly.' });
-      const ch = a.id;
-      let info = { tier: 'standard', found: true };
-      if (a.platform === 'twitch') {
-        try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return res.status(502).json({ error: 'Could not check your channel with Twitch. Try again.' }); }
-        if (!info.found) return res.status(400).json({ error: 'Couldn’t find twitch.tv/' + a.name + ' - check the spelling.' });
+  // ---- used by bmc.js (Buy Me a Coffee) ----
+  // quote(platform, channel, tier 1-3, term month|year|lifetime|founder) -> { id, label, tier, term, days, name, price } | { error }
+  async function quote(platform, channel, tier, term) {
+    const a = account(platform, channel);
+    tier = Number(tier);
+    if (!a) return { error: 'Type your streaming username first.' };
+    if (!T.okTier(tier)) return { error: 'Pick Tier 1, 2 or 3.' };
+    if (!T.okTerm(term)) return { error: 'Pick monthly, yearly or lifetime.' };
+    if (a.platform === 'twitch') {
+      let info; try { info = await channelTier(a.name); } catch (e) { console.error('[overlay tier]', e && e.message); return { status: 502, error: 'Could not check your channel with Twitch. Try again.' }; }
+      if (!info.found) return { error: 'Couldn’t find twitch.tv/' + a.name + ' - check the spelling.' };
+    }
+    const d = await fs().collection('overlay_pro').doc(a.id).get(), doc = d.exists ? d.data() : null;
+    const has = T.effectiveTier(doc, Date.now(), false);
+    if ((term === 'lifetime' || term === 'founder') && has.lifetime && has.tier >= tier) return { error: 'You already have lifetime at this tier or higher.' };
+    const price = T.priceFor(tier, term, doc);
+    return { id: a.id, label: a.label, tier, term, days: T.TERM_DAYS[term] || 0, name: 'Werewolf ' + T.TIER_NAME[tier] + ' - ' + T.TERM_NAME[term] + ' for ' + a.label, price };
+  }
+  // grantPass(account, tier, term, ref, payer, { agreement, paid }) -> until (LIFETIME_UNTIL for lifetime)
+  //   month/year add time to THAT tier (time left on other tiers is kept); lifetime/founder mark the tier lifetime.
+  async function grantPass(ch, tier, term, ref, payer, extra) {
+    tier = Number(tier); extra = extra || {};
+    if (!okId(ch) || !T.okTier(tier) || !T.okTerm(term)) throw new Error('bad pass');
+    const doc = fs().collection('overlay_pro').doc(ch);
+    const until = await fs().runTransaction(async t => {
+      const cur = await t.get(doc), d = cur.exists ? cur.data() : {};
+      const tiers = d.tiers || (Number(d.until) ? { 1: { until: Number(d.until) } } : {});
+      const patch = { channel: ch, platform: ch.indexOf(':') > 0 ? ch.split(':')[0] : 'twitch', name: ch.split(':').pop(), payer: payer || '', updated: Date.now(), orders: (d.orders || []).concat(ref).slice(-50) };
+      if (term === 'lifetime' || term === 'founder') {
+        tiers[tier] = { lifetime: true, founder: term === 'founder' };
+        patch.lifetimePaid = T.money(parseFloat(d.lifetimePaid || 0) + parseFloat(extra.paid || 0));
+        if (extra.agreement) patch.agreement = extra.agreement;
+      } else {
+        const old = tiers[tier] || {}, add = T.TERM_DAYS[term] * DAY;
+        if (!old.lifetime) tiers[tier] = { until: Math.max(Date.now(), Number(old.until || 0)) + add };
+        // time left on lower tiers is kept: it starts counting again after this higher tier's time
+        Object.keys(tiers).forEach(function (k) { const e = tiers[k]; if (Number(k) < tier && e && !e.lifetime && Number(e.until) > Date.now()) e.until = Number(e.until) + add; });
       }
-      const P = plan(info.tier, planId);
-      const k = await paypal.keys(); if (!k.id || !k.secret) return res.status(503).json({ error: 'Payments aren’t set up yet.' });
-      const r = await paypal.papi(k, '/v2/checkout/orders', { intent: 'CAPTURE',
-        purchase_units: [{ reference_id: 'overlay_' + planId, custom_id: 'overlay|' + ch + '|' + planId + '|' + P.price + '|' + info.tier, description: (P.name + ' for ' + a.label).slice(0, 127), amount: { currency_code: CURRENCY, value: P.price } }],
-        application_context: { brand_name: 'Werewolf Overlay Studio', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW' } });
-      if (r.status >= 300 || !r.json || !r.json.id) { console.error('[overlay create]', r.status, JSON.stringify(r.json)); return res.status(502).json({ error: 'PayPal could not start the order.' }); }
-      res.json({ id: r.json.id });
-    } catch (e) { console.error('[overlay create]', e && e.message); res.status(500).json({ error: 'Could not start the order.' }); }
-  });
-
-  app.post('/overlay/capture', async (req, res) => {
-    cors(req, res);
-    try {
-      const orderId = String((req.body && req.body.orderId) || ''); if (!/^[A-Z0-9]{8,32}$/.test(orderId)) return res.status(400).json({ error: 'Bad order.' });
-      const k = await paypal.keys(); if (!k.id || !k.secret) return res.status(503).json({ error: 'Payments aren’t set up yet.' });
-      const ledger = fs().collection('purchases').doc(orderId);
-      const had = await ledger.get();
-      if (had.exists) { const pd = await fs().collection('overlay_pro').doc(had.data().channel || '_').get(); return res.json({ ok: true, already: true, until: pd.exists ? pd.data().until : 0 }); }
-
-      let r = await paypal.papi(k, '/v2/checkout/orders/' + orderId + '/capture');
-      if (r.status === 422 && r.json && JSON.stringify(r.json).indexOf('ORDER_ALREADY_CAPTURED') >= 0)
-        r = { status: 200, json: await fetchFn(k.api + '/v2/checkout/orders/' + orderId, { headers: { Authorization: 'Bearer ' + await paypal.token(k) } }).then(x => x.json()) };
-      const o = r.json || {}, pu = (o.purchase_units || [])[0] || {}, cap = (((pu.payments || {}).captures) || [])[0] || {};
-      const [tag, ch, planId, want, tierRaw] = String(pu.custom_id || cap.custom_id || '').split('|'), tier = tierRaw || 'standard', P = plan(tier, planId), amt = cap.amount || pu.amount || {};
-      if (o.status !== 'COMPLETED' || cap.status !== 'COMPLETED') return res.status(402).json({ error: 'PayPal hasn’t completed this payment (' + (cap.status || o.status || r.status) + ').' });
-      if (tag !== 'overlay' || !P || !okId(ch)) return res.status(400).json({ error: 'That isn’t an overlay order.' });
-      if (amt.currency_code !== CURRENCY || money(amt.value) !== money(P.price) || want !== P.price) return res.status(402).json({ error: 'Payment amount doesn’t match.' });
-
-      const row = { kind: 'overlay', channel: ch, plan: planId, tier, price: money(amt.value), currency: CURRENCY, capture: cap.id || '', payer: ((o.payer || {}).email_address) || '', mode: k.mode, at: Date.now() };
-      try { await ledger.create(row); } catch (e) { return res.json({ ok: true, already: true }); }   // recorded already: credit once only
-
-      const ref = fs().collection('overlay_pro').doc(ch);
-      const until = await fs().runTransaction(async t => {
-        const cur = await t.get(ref), d = cur.exists ? cur.data() : {};
-        const start = Math.max(Date.now(), Number(d.until || 0));
-        const next = start + P.days * DAY;
-        t.set(ref, { channel: ch, platform: ch.indexOf(':') > 0 ? ch.split(':')[0] : 'twitch', name: ch.split(':').pop(), until: next, plan: planId, tier, payer: row.payer, updated: Date.now(), orders: (d.orders || []).concat(orderId).slice(-50) }, { merge: true });
-        return next;
-      });
-      proCache.delete(ch);
-      console.log('[overlay] paid', ch, planId, orderId);
-      res.json({ ok: true, until });
-    } catch (e) { console.error('[overlay capture]', e && e.message); res.status(500).json({ error: 'Could not confirm the payment. If you were charged, message the site owner with your PayPal receipt.' }); }
-  });
+      patch.tiers = tiers;
+      const eff = T.effectiveTier({ tiers }, Date.now(), false);
+      patch.until = eff.lifetime ? LIFETIME_UNTIL : eff.until;   // for older readers
+      patch.tier = eff.tier;
+      t.set(doc, patch, { merge: true });
+      return patch.until;
+    });
+    proCache.delete(ch);
+    return until;
+  }
+  return { quote, grantPass };
 }
-module.exports = { mountOverlayPro, PLANS };
+module.exports = { mountOverlayPro };
