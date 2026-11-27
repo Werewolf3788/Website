@@ -6,7 +6,7 @@
  *   - design is packed into the link (overlay-core.js), nothing stored, no sign-in
  *   - Twitch info comes from the username they type (overlay/live.html)
  *   - free overlays show a "made at" banner once an hour; $5/month or $50/year removes it
- *     (PayPal, checked on ww-discord-auth /overlay/...)
+ *     (paid on Buy Me a Coffee, matched by ww-discord-auth /bmc/... with a claim code)
  * ========================================================================== -->
 <html lang="en">
 <head>
@@ -14,6 +14,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#070709">
 <title>Overlay Studio | Make your own stream overlay</title>
+<!-- Google Analytics (same tags as the rest of the site) -->
+<script async src="//www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Z9M5LXQ5XN');
+  gtag('config', 'G-CTYHDF4MSD');
+</script>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="assets/ww-shell.css">
 <script defer src="assets/ww-shell.js"></script>
@@ -43,7 +52,7 @@
   .body{padding:0.25rem 1rem 1rem;display:flex;flex-direction:column;gap:0.75rem}
   label.f{display:flex;flex-direction:column;gap:0.375rem;font-size:0.8125rem;font-weight:700;color:var(--mute)}
   .row{display:flex;gap:0.625rem;flex-wrap:wrap}.row>*{flex:1;min-width:7.5rem}
-  input[type=text],input[type=url],input[type=number],select,textarea{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);
+  input[type=text],input[type=url],input[type=email],input[type=number],select,textarea{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);
     border-radius:0.5625rem;padding:0.625rem 0.75rem;font:600 0.875rem Inter,sans-serif;outline:none}
   input:focus,select:focus,textarea:focus{border-color:var(--accent)}
   textarea{min-height:4rem;resize:vertical}
@@ -95,6 +104,12 @@
   .plans{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem}
   .plan{border:2px solid var(--line);border-radius:0.75rem;padding:0.75rem;cursor:pointer;background:var(--panel2);text-align:center;color:var(--text);font-family:Inter}
   .plan.on{border-color:var(--accent)} .plan b{display:block;font-size:1.5rem} .plan small{color:var(--mute)}
+  .tierPick .plans.tiers{grid-template-columns:repeat(3,1fr)} .tierPick .plans.terms{grid-template-columns:repeat(4,1fr);margin-top:.5rem}
+  .tierPick .plan b{font-size:1.15rem} .tierPick .plan small{display:block;font-size:.78rem;line-height:1.25}
+  .tierPick .plan[disabled]{opacity:.45;cursor:not-allowed}
+  .tierPick .fagree{display:flex;gap:.5rem;align-items:flex-start;margin:.625rem 0 0;color:var(--text)} .tierPick .fagree input{margin-top:.2rem;width:auto}
+  .lockline{margin:.5rem 0 0}
+  #elements > details.ext-off{opacity:.45} #elements > details.ext-off .sp::after{content:' — only works in OBS/Streamlabs';font-size:.8em;color:var(--mute);font-weight:400} @media (max-width:640px){.tierPick .plans.terms{grid-template-columns:1fr 1fr}}
   .tag{display:inline-block;padding:2px 0.5rem;border-radius:6.1875rem;font-size:0.6875rem;font-weight:800;background:var(--ok);color:#03140d}
   /* desktop: settings (left) and preview/links (right) scroll on their own; the page itself fits the screen */
   @media (min-width:1101px){
@@ -226,7 +241,7 @@
             <button data-v="live">Live</button><button data-v="starting">Starting</button><button data-v="brb">BRB</button><button data-v="ending">Ending</button>
           </div>
         </div>
-        <div class="screen"><div class="pvbg bg-check" id="pvbg"></div><iframe id="pv" title="Overlay preview" src="overlay/live.html?demo=1"></iframe></div>
+        <div class="screen"><div class="pvbg bg-check" id="pvbg"></div><iframe id="pv" title="Overlay preview" src="overlay/live.html?demo=1"></iframe><iframe id="pvExt" title="Twitch extension preview" src="overlay/ext-preview.html" style="display:none"></iframe></div>
         <div class="pv-top" style="margin:0.625rem 0 0">
           <div class="seg" id="pvbgSeg"><button data-v="game">Game</button><button data-v="check">See-through</button><button data-v="dark">Dark</button></div>
           <button class="btn sm" id="testAlert"><i class="fa-solid fa-bell"></i> Test alert</button>
@@ -237,7 +252,7 @@
       <div class="preview">
         <div class="pv-top"><b><i class="fa-solid fa-link" style="color:var(--accent)"></i> Get your overlay</b><span id="saveState"></span></div>
         <label class="f" style="margin-bottom:.75rem">Where will you use it?
-          <div class="seg" id="useSeg"><button data-v="obs"><i class="fa-solid fa-display"></i> OBS / Streamlabs (link)</button><button data-v="se"><i class="fa-solid fa-code"></i> StreamElements (code)</button></div>
+          <div class="seg" id="useSeg"><button data-v="obs"><i class="fa-solid fa-display"></i> OBS / Streamlabs (link)</button><button data-v="ls"><i class="fa-solid fa-gamepad"></i> Lightstream (console)</button><button data-v="se"><i class="fa-solid fa-code"></i> StreamElements (code)</button><button data-v="ext"><i class="fa-brands fa-twitch"></i> Twitch extension</button></div>
         </label>
         <div class="link" style="margin-bottom:0.625rem">
           <input type="text" id="saveName" placeholder="Name this overlay (e.g. Wildlands nights)" maxlength="60">
@@ -253,6 +268,19 @@
           <div class="link"><input type="text" readonly id="editLink"><button class="btn sm" data-copy="editLink"><i class="fa-regular fa-copy"></i></button></div>
         </div>
         <p class="hint" id="obsHow" style="margin:0.75rem 0 0"><b>How to add it:</b> in OBS or Streamlabs add a <b>Browser Source</b>, paste the link, set Width <b>1920</b> and Height <b>1080</b>. Tick “Refresh browser when scene becomes active” so the Starting Soon countdown restarts. Change something here later? Copy the new link and paste it over the old one.</p>
+        <div class="hint" id="lsHow" style="margin:0.75rem 0 0;display:none">
+          <p style="margin:0 0 .5rem"><b>Streaming straight from your console?</b> Lightstream adds this overlay to your stream in the cloud — <b>no OBS, no capture card, no PC</b>. Go live from your Xbox or PlayStation and Lightstream puts your overlay on top (check Lightstream's list of supported consoles; overlays need a paid Lightstream plan).</p>
+          <p style="margin:0 0 .5rem"><b>How to add it:</b> save your overlay above and copy its link. In Lightstream Studio click <b>Add Layer → 3rd Party Integrations → Browser Source</b>, paste the link, and stretch the layer to fill the canvas.</p>
+          <a class="btn sm" href="https://studio.golightstream.com/invite?mwr=4b016016" target="_blank" rel="noopener sponsored" style="background:#ffdd00;color:#0f0f0f;font-weight:800"><i class="fa-solid fa-tag"></i> Try Lightstream — 25% off your first month</a>
+          <p style="margin:.375rem 0 0;font-size:.85em">That's werewolf's referral link: you get 25% off your first month, and werewolf may get a referral reward from Lightstream.</p>
+        </div>
+        <div style="margin-top:0.625rem;display:none" id="extBox">
+          <p class="hint" style="margin:0 0 .5rem"><b>Werewolf Twitch extension</b> — your game, poster and (with a pass) tracker and allies show <b>on top of your stream</b> for viewers on the Twitch website and app, no OBS needed. Install it from your Twitch Creator Dashboard → Extensions, open its settings, and enter the pair code it shows here.</p>
+          <div class="link"><input type="text" id="extCode" placeholder="Pair code, e.g. WOLF-K7Q2M9XD" maxlength="13" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm main" id="extFind" type="button">Find</button></div>
+          <div id="extStatus" class="hint" style="margin-top:.5rem"></div>
+          <p class="hint" style="margin:.5rem 0 0">The extension shows this overlay's logo &amp; name, Now playing, Twitch poster and stream title in the same spots, with the same colors, font, corners and glow. Changed your look? <button class="btn sm" id="extLookBtn" type="button">Update extension look</button> (saving your overlay updates it too).</p>
+          <p class="hint" style="margin:.5rem 0 0">Greyed-out parts on the left (chat box, alerts and the other video pieces) only work in OBS/Streamlabs. <b>Sign in</b> before pairing to show your game tracker (Tier 2) and PlayStation info (Tier 3).</p>
+        </div>
         <div style="margin-top:0.625rem;display:none" id="seBox">
           <p class="hint" style="margin:0 0 0.5rem"><b>How to add it:</b> in your StreamElements overlay (1920×1080): <b>+ → Static / Custom → Custom widget</b> → <b>Open editor</b>. Paste each box below into the matching tab (HTML, CSS, JS), click <b>Done</b>, then set the widget to <b>X 0, Y 0, Width 1920, Height 1080</b> and save. Replace the example code that’s already in each tab (Ctrl+A, then paste). Follows and tips will pop up too.</p>
           <div class="link" style="margin-bottom:0.375rem"><span>Screen</span><select id="seScene"><option value="live">Live overlay</option><option value="starting">Starting soon</option><option value="brb">Be right back</option><option value="ending">Ending</option></select></div>
@@ -273,15 +301,12 @@
       </div>
 
       <div class="preview pro" id="proBox">
-        <div class="pv-top"><b><i class="fa-solid fa-crown" style="color:#ffd700"></i> Go Pro: no watermark + Match my game</b><span id="proStatus"></span></div>
-        <p class="hint" style="margin:0 0 0.625rem">Free overlays show a small “Overlay made at …” banner once an hour. A pass hides it for your Twitch channel — all of your overlay links, right away — and unlocks <b>Match my game</b>: colors and edge effects that change with the game you're streaming.</p>
-        <div class="plans">
-          <button class="plan on" data-plan="month"><b id="pMonth">$5</b><small>per month</small></button>
-          <button class="plan" data-plan="year"><b id="pYear">$50</b><small>per year · 2 months free</small></button>
-        </div>
-        <p class="hint" id="tierNote" style="margin:0.5rem 0 0">Twitch Affiliates and Partners: $8/month or $80/year.</p>
-        <div id="paypalBox" style="margin-top:0.75rem;min-height:2.875rem"></div>
-        <p class="hint" style="margin:0.375rem 0 0">Pay once per month or year (it doesn't auto-renew). Buying again while active adds the time on.</p>
+        <div class="pv-top"><b><i class="fa-solid fa-crown" style="color:#ffd700"></i> Werewolf pass: no watermark + more</b><span id="proStatus"></span></div>
+        <p class="hint" style="margin:0 0 0.625rem">Free overlays show a small “Overlay made at …” banner once an hour. A pass hides it for your channel — all of your overlay links <b>and</b> the Werewolf Twitch extension — and unlocks <b>Match my game</b>.</p>
+        <div class="tierPick" id="pickMain"></div>
+        <p class="hint lockline"><i class="fa-solid fa-lock"></i> Locked-in prices — they never go up. One pass covers Overlay Studio and the Werewolf Twitch extension.</p>
+        <div id="checkoutBox" style="margin-top:0.75rem;min-height:2.875rem"></div>
+        <p class="hint" style="margin:0.375rem 0 0">Paid on Buy Me a Coffee. Monthly and yearly don't auto-renew; buying again while active adds the time on.</p>
       </div>
     </div>
   </div>
@@ -299,13 +324,10 @@
       <input type="text" id="payUser" placeholder="e.g. twitch.tv/your_channel" autocomplete="off" autocapitalize="off" spellcheck="false">
     </label>
     <div id="payStatus" class="twcard" style="margin-top:.75rem;display:none"></div>
-    <div class="plans" style="margin-top:.75rem">
-      <button class="plan on" data-pplan="month" type="button"><b id="ppMonth">$5</b><small>per month</small></button>
-      <button class="plan" data-pplan="year" type="button"><b id="ppYear">$50</b><small>per year · 2 months free</small></button>
-    </div>
-    <p class="hint" id="payNote" style="margin:.5rem 0 0">Twitch Affiliates and Partners: $8/month or $80/year.</p>
-    <div id="payPaypal" style="margin-top:.75rem;min-height:2.875rem"></div>
-    <p class="hint" style="margin:.5rem 0 0">Pay once per month or year (it doesn't auto-renew). Paying while still active adds the time on to the end.</p>
+    <div class="tierPick" id="pickPay" style="margin-top:.75rem"></div>
+    <p class="hint lockline"><i class="fa-solid fa-lock"></i> Locked-in prices — they never go up. One pass covers Overlay Studio and the Werewolf Twitch extension.</p>
+    <div id="payCheckout" style="margin-top:.75rem;min-height:2.875rem"></div>
+    <p class="hint" style="margin:.5rem 0 0">Paid on Buy Me a Coffee. Pay once per month or year (it doesn't auto-renew). Paying while still active adds the time on to the end.</p>
   </div>
 </div>
 
@@ -383,7 +405,7 @@
     return '';
   }
   $('#elements').innerHTML = ELEMENTS.map(function (e) {
-    return '<details class="card"><summary><span class="ic"><i class="' + e.icon + '"></i></span><span class="sp">' + esc(e.name) + '</span>' +
+    return '<details class="card" data-el="' + e.k + '"><summary><span class="ic"><i class="' + e.icon + '"></i></span><span class="sp">' + esc(e.name) + '</span>' +
       '<label class="sw" onclick="event.stopPropagation()"><input type="checkbox" data-k="' + e.k + '.on"><span></span></label><i class="fa-solid fa-chevron-down chev"></i></summary><div class="body">' +
       (e.nopos ? '' : '<div class="posrow"><div class="pos" data-pos="' + e.k + '.pos">' + C.POSITIONS.map(function (p) { return '<button type="button" data-v="' + p + '" title="' + POSN[p] + '"></button>'; }).join('') + '</div><span data-posname="' + e.k + '.pos"></span></div>') +
       e.fields.map(fieldHTML).join('') + '</div></details>';
@@ -466,7 +488,8 @@
       return;
     }
     if (b.id === 'testAlert') { pv.contentWindow.postMessage({ type: 'overlay-alert' }, location.origin); return; }
-    if (b.id === 'testWm') { pv.contentWindow.postMessage({ type: 'overlay-wm', month: priceInfo && priceInfo.plans && priceInfo.plans.month ? priceInfo.plans.month.price : '' }, location.origin); return; }
+    if (b.id === 'testWm' && use === 'ext') { $('#pvExt').contentWindow.postMessage({ type: 'ext-mark' }, location.origin); return; }
+    if (b.id === 'testWm') { pv.contentWindow.postMessage({ type: 'overlay-wm', month: TIERS[1].month }, location.origin); return; }
     if (b.dataset.copy) {
       var inp = $('#' + b.dataset.copy); inp.select();
       (navigator.clipboard ? navigator.clipboard.writeText(inp.value) : Promise.reject()).then(function () { toast('Link copied!'); }, function () { document.execCommand('copy'); toast('Link copied!'); });
@@ -483,7 +506,6 @@
     if (b.id === 'saveBtn') { doSave(); return; }
     if (b.dataset.open) { var x = mine().filter(function (m) { return m.id === b.dataset.open; })[0]; openSaved(b.dataset.open, x && x.key); return; }
     if (b.id === 'resetBtn') { if (confirm('Start over with a blank overlay? (Your saved overlays stay saved.)')) { cfg = C.clone(C.DEFAULTS); saved = null; savedCode = ''; $('#saveName').value = ''; history.replaceState(null, '', location.pathname); fill(); changed(); lookupTwitch(); renderMine(); } return; }
-    if (b.dataset.plan) { $$('.plan').forEach(function (x) { x.classList.toggle('on', x === b); }); plan = b.dataset.plan; return; }
   });
 
   /* ---------- preview + links ---------- */
@@ -492,6 +514,7 @@
     clearTimeout(tmr);
     tmr = setTimeout(function () {
       if (pvReady) pv.contentWindow.postMessage({ type: 'overlay-cfg', cfg: cfg }, location.origin);
+      if (typeof sendExtPreview === 'function') sendExtPreview();
       try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch (e) {}
       makeLinks();
     }, 120);
@@ -548,7 +571,7 @@
         rememberSave({ id: j.id, key: j.key, name: data.name, channel: chan() });
         try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch (e) {}
         history.replaceState(null, '', '#s=' + j.id + '&k=' + j.key);
-        makeLinks(); toast('Saved! Your OBS links stay the same.');
+        makeLinks(); toast('Saved! Your OBS links stay the same.'); sendLook(true);
       });
     }).catch(function (e) { toast(e && e.message ? e.message : 'Save failed — the server may be waking up, try again'); })
       .then(function () { btn.disabled = false; stateLine(); });
@@ -560,10 +583,80 @@
   try { use = localStorage.getItem(USE) || 'obs'; } catch (e) {}
   function showUse() {
     $$('#useSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === use); });
-    $('#obsOnly').style.display = use === 'obs' ? '' : 'none';
+    $('#obsOnly').style.display = use === 'obs' || use === 'ls' ? '' : 'none';
+    $('#lsHow').style.display = use === 'ls' ? '' : 'none';
     $('#obsHow').style.display = use === 'obs' ? '' : 'none';
     $('#seBox').style.display = use === 'se' ? '' : 'none';
+    $('#extBox').style.display = use === 'ext' ? '' : 'none';
+    // Twitch extension: the preview shows what viewers see on Twitch instead of the OBS overlay
+    $('#pv').style.display = use === 'ext' ? 'none' : '';
+    $('#pvExt').style.display = use === 'ext' ? '' : 'none';
+    $('#sceneSeg').style.visibility = use === 'ext' ? 'hidden' : '';
+    $('#testAlert').style.display = use === 'ext' ? 'none' : '';
+    sendExtPreview();
+    $$('#saveName, #saveBtn, #saveHint').forEach(function (x) { (x.closest('.link') || x).style.display = use === 'ext' ? 'none' : ''; });
+    // the extension can show the game, poster and your name/picture; everything else is video-only
+    $$('#elements > details[data-el]').forEach(function (d) { d.classList.toggle('ext-off', use === 'ext' && EXT_OK.indexOf(d.dataset.el) < 0); });
   }
+  var EXT_OK = ['brand', 'game', 'poster', 'title', 'gameTheme'];
+  if (/[#&]extension\b/.test(location.hash)) use = 'ext';
+
+  /* ---------- Twitch extension pairing (ww-stream-sync /ext/pair) ---------- */
+  var SYNC = 'https://ww-stream-sync.onrender.com';
+  function siteUser() { try { var a = (window.WW && WW.auth) || (window.firebase && firebase.auth && firebase.auth()); return a && a.currentUser; } catch (e) { return null; } }
+  function extFind() {
+    var code = $('#extCode').value.trim().toUpperCase(), st = $('#extStatus');
+    if (!/^WOLF-[A-Z0-9]{8}$/.test(code)) { st.innerHTML = 'The code looks like WOLF-K7Q2M9XD (it\'s on the extension\'s settings page on Twitch).'; return; }
+    st.innerHTML = 'Checking… (the server can take up to a minute to wake up)';
+    fetch(SYNC + '/ext/pair/' + code).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+      if (!x.ok) { st.innerHTML = esc(x.j.error || 'Unknown code.'); return; }
+      st.innerHTML = '<b>twitch.tv/' + esc(x.j.login) + '</b> ' + (x.j.paired ? '<span class="tag">Paired</span> ' : '') +
+        '<button class="btn sm main" id="extPair" type="button">' + (x.j.paired ? 'Pair again' : 'Pair') + '</button>' +
+        (siteUser() ? '' : ' <span class="hint">(not signed in: Twitch info only)</span>');
+      $('#extPair').onclick = function () { extPair(code); };
+    }).catch(function () { st.innerHTML = 'The server is waking up — try again in a minute.'; });
+  }
+  // the overlay's look, sent to the extension so it matches (colors, font, corners, glow, box see-through)
+  function extLook() {
+    var pick = function (k, extra) { var e = cfg[k] || {}; return Object.assign({ on: !!e.on, pos: e.pos }, extra ? extra(e) : {}); };
+    return JSON.stringify({ accent: cfg.accent, accent2: cfg.accent2, panel: cfg.panel, text: cfg.text, font: cfg.font, panelOpacity: cfg.panelOpacity, radius: cfg.radius, glow: !!cfg.glow,
+      layout: { brand: pick('brand', function (e) { return { name: e.name || '', tag: e.tag || '' }; }), game: pick('game', function (e) { return { prefix: e.prefix || '' }; }),
+        poster: pick('poster', function (e) { return { size: e.size || 100 }; }), title: pick('title') } });
+  }
+  // the Twitch extension preview (overlay/ext-preview.html): same drawing code as the real extension
+  var twInfo = null;
+  function sendExtPreview() {
+    var f = $('#pvExt'); if (!f || !f.contentWindow) return;
+    var t = twInfo || { name: chan() || 'your_channel', avatar: '', game: 'Tom Clancy\'s Ghost Recon Wildlands', title: 'Your stream title shows here' };
+    var me = { name: t.name, login: t.name, avatar: t.avatar, game: t.game || 'Just Chatting', status: t.title, title: t.title, poster: t.avatar, source: 'twitch',
+      tracker: { code: 'DEMO', games: [{ id: 'demo', name: t.game || 'Your game', platform: 'playstation', summary: ['Trophies 27/73 (37%)', 'Collectibles 12/68', 'Missions 18/36'] }] } };
+    f.contentWindow.postMessage({ type: 'ext-preview', look: JSON.parse(extLook()), card: { v: 1, live: true, me: me, allies: [], foot: 'Track your own games at entertainment-71888.web.app' } }, location.origin);
+  }
+  window.addEventListener('message', function (e) { if (e.origin === location.origin && e.data && e.data.type === 'ext-preview-ready') sendExtPreview(); });
+  function sendLook(quiet) {
+    var u = siteUser();
+    if (!u) { if (!quiet) toast('Sign in first, then update the extension look'); return Promise.resolve(); }
+    return u.getIdToken().then(function (tok) {
+      return fetch(SYNC + '/ext/look', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ idToken: tok, look: extLook() }) });
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!quiet) toast(j.channels ? 'Extension look updated, viewers see it within a minute' : (j.error || 'Pair the extension first'));
+    }).catch(function () { if (!quiet) toast('The server is waking up, try again in a minute'); });
+  }
+  $('#extLookBtn').addEventListener('click', function () { sendLook(false); });
+  function extPair(code) {
+    var st = $('#extStatus'), u = siteUser();
+    st.innerHTML = 'Pairing…';
+    (u ? u.getIdToken() : Promise.resolve('')).then(function (tok) {
+      var body = { code: code, look: extLook() }; if (tok) body.idToken = tok;
+      return fetch(SYNC + '/ext/pair', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body) });
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+      if (!x.ok) { st.innerHTML = esc(x.j.error || 'Could not pair.'); return; }
+      st.innerHTML = '<span class="tag">Paired</span> twitch.tv/' + esc(x.j.login) + (x.j.friendCode ? ' with friend code ' + esc(x.j.friendCode) : ' (Twitch info only — sign in and pair again to add your tracker)') + '. Your viewers see it within a minute.';
+      toast('Paired with twitch.tv/' + x.j.login);
+    }).catch(function () { st.innerHTML = 'The server is waking up — try again in a minute.'; });
+  }
+  $('#extFind').addEventListener('click', extFind);
+  $('#extCode').addEventListener('keydown', function (e) { if (e.key === 'Enter') extFind(); });
   document.addEventListener('click', function (e) {
     var b = e.target.closest('#useSeg button'); if (!b) return;
     use = b.dataset.v; try { localStorage.setItem(USE, use); } catch (x) {} showUse();
@@ -623,8 +716,9 @@
     if (!/^[a-z0-9_]{3,25}$/.test(c)) { card.style.display = 'none'; checkPro(); return; }
     lt = setTimeout(function () {
       var g = function (p) { return fetch('https://decapi.me/twitch/' + p + '/' + c).then(function (r) { return r.text(); }).catch(function () { return ''; }); };
-      Promise.all([g('avatar'), g('game'), g('followcount')]).then(function (r) {
+      Promise.all([g('avatar'), g('game'), g('followcount'), g('title')]).then(function (r) {
         var bad = function (t) { return !t || /error|not found|no user|invalid/i.test(t); };
+        twInfo = { name: c, avatar: bad(r[0]) ? '' : r[0], game: bad(r[1]) ? '' : r[1], title: bad(r[3]) ? '' : r[3] }; sendExtPreview();
         if (bad(r[0])) { card.style.display = 'flex'; card.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> Couldn\'t find twitch.tv/' + esc(c) + ' — check the spelling.'; return; }
         card.style.display = 'flex';
         card.innerHTML = '<img src="' + esc(r[0]) + '" alt=""><div><b>twitch.tv/' + esc(c) + '</b><br><span class="hint">' +
@@ -634,83 +728,130 @@
     }, 600);
   }
 
-  /* ---------- remove watermark (PayPal via ww-discord-auth) ---------- */
-  var plan = 'month', ppLoaded = false;
-  // prices depend on the channel: Twitch Affiliates/Partners pay a bit more (server checks with Twitch)
-  var priceInfo = null;
+  /* ---------- remove watermark (Buy Me a Coffee, checked on ww-discord-auth /bmc/...) ---------- */
+  var ppLoaded = false;
+  // Tiers and prices come from the server (tiers.js); these are the locked prices, used until it answers.
+  var TIERS = { 1: { month: '5.00', year: '50.00', lifetime: '125.00', founder: '99.00' }, 2: { month: '10.00', year: '100.00', lifetime: '250.00', founder: '199.00' }, 3: { month: '20.00', year: '200.00', lifetime: '500.00', founder: '399.00' } };
+  var TIER_INFO = { 1: 'No watermark', 2: '+ game tracker &amp; allies (site account)', 3: '+ live PlayStation game &amp; same-game allies' };
+  var TERM_INFO = { month: 'per month', year: 'per year · 2 months free', lifetime: 'Lifetime · one payment', founder: 'Founder lifetime' };
+  var founderLeft = null;
   function money(v) { v = parseFloat(v); return '$' + (v % 1 ? v.toFixed(2) : v); }
-  function updatePrices() {
-    var a = acct(), c = a.name, q = C.accountOk(a) ? '?channel=' + encodeURIComponent(c) + '&platform=' + a.platform : '';
+  // A tier x term picker. info = { lifetimePaid, current } for the account being paid for.
+  // -> { get() -> { tier, term, agree }, setInfo(info), onChange(fn) }
+  function makePicker(el) {
+    var st = { tier: 1, term: 'month', agree: false }, info = { lifetimePaid: 0, current: null }, subs = [];
+    function price(t, term) { var p = parseFloat(TIERS[t][term]); if (term === 'lifetime' || term === 'founder') p = Math.max(0, p - (parseFloat(info.lifetimePaid) || 0)); return p; }
+    function draw() {
+      if (st.term === 'founder' && founderLeft === 0) st.term = 'lifetime';
+      var paidLife = parseFloat(info.lifetimePaid) || 0;
+      el.innerHTML = '<div class="plans tiers">' + [1, 2, 3].map(function (t) {
+          return '<button type="button" class="plan' + (st.tier === t ? ' on' : '') + '" data-tier="' + t + '"><b>Tier ' + t + '</b><small>' + TIER_INFO[t] + '</small></button>'; }).join('') + '</div>' +
+        '<div class="plans terms">' + ['month', 'year', 'lifetime', 'founder'].map(function (term) {
+          var off = term === 'founder' && founderLeft === 0;
+          return '<button type="button" class="plan' + (st.term === term ? ' on' : '') + '" data-term="' + term + '"' + (off ? ' disabled' : '') + '><b>' + money(price(st.tier, term)) + '</b><small>' + TERM_INFO[term] +
+            (term === 'founder' ? (founderLeft === 0 ? ' · sold out' : founderLeft != null ? ' · ' + founderLeft + ' left' : ' · first 25') : '') +
+            ((term === 'lifetime' || term === 'founder') && paidLife ? ' · pay the difference' : '') + '</small></button>'; }).join('') + '</div>' +
+        (st.term === 'founder' ? '<label class="hint fagree"><input type="checkbox" class="agreeBox"' + (st.agree ? ' checked' : '') + '> <span>I agree that a small werewolf3788 credit shows on my stream about once a month (for a few seconds, once viewers are in). <a href="overlay-terms.html" target="_blank" rel="noopener">Founder lifetime terms</a></span></label>' : '');
+      subs.forEach(function (fn) { fn(st); });
+    }
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b || b.disabled) return;
+      if (b.dataset.tier) st.tier = +b.dataset.tier; else if (b.dataset.term) { st.term = b.dataset.term; } else return;
+      draw();
+    });
+    el.addEventListener('change', function (e) { if (e.target.classList.contains('agreeBox')) { st.agree = e.target.checked; subs.forEach(function (fn) { fn(st); }); } });
+    draw();
+    return { get: function () { return st; }, setInfo: function (i) { info = i || info; draw(); }, onChange: function (fn) { subs.push(fn); fn(st); }, redraw: draw };
+  }
+  var pickMain = makePicker($('#pickMain')), pickPay = makePicker($('#pickPay'));
+  function plansFor(a) {
+    var q = a && C.accountOk(a) ? '?channel=' + encodeURIComponent(a.name) + '&platform=' + a.platform : '';
     return fetch(AUTH + '/overlay/plans' + q).then(function (r) { return r.json(); }).then(function (j) {
-      priceInfo = j; if (!j.plans || !j.plans.month) return j;
-      $('#pMonth').textContent = money(j.plans.month.price); $('#pYear').textContent = money(j.plans.year.price);
-      var e = j.prices && j.prices.earner, st = j.prices && j.prices.standard;
-      $('#tierNote').innerHTML = !q ? 'Twitch Affiliates and Partners: ' + money(e.month) + '/month or ' + money(e.year) + '/year.'
-        : j.tier === 'earner' ? '<span class="tag" style="background:#a855f7;color:#fff">Twitch ' + (j.broadcasterType === 'partner' ? 'Partner' : 'Affiliate') + '</span> Affiliate &amp; Partner pricing for twitch.tv/' + esc(c) + '.'
-        : 'Price for ' + esc(C.accountLabel(a)) + '.' + (a.platform === 'twitch' ? ' (Twitch Affiliates and Partners: ' + money(e.month) + '/month.)' : '');
-      return j;
-    }).catch(function () { return null; });
+      if (j.tiers) TIERS = j.tiers; if (typeof j.founderLeft === 'number') founderLeft = j.founderLeft; return j;
+    });
+  }
+  function updatePrices() {
+    return plansFor(acct()).then(function (j) { pickMain.setInfo({ lifetimePaid: j.lifetimePaid, current: j.current }); pickPay.redraw(); return j; }).catch(function () { return null; });
+  }
+  function passText(j) {
+    if (!j || !j.tier) return '';
+    return 'Tier ' + j.tier + (j.ally && !j.pro ? ' (Werewolf ally)' : j.lifetime ? (j.founder ? ' · Founder lifetime' : ' · Lifetime') : j.until ? ' until ' + new Date(j.until).toLocaleDateString() : '');
   }
   function checkPro() {
     var a = acct(), st = $('#proStatus');
     updatePrices();
     if (!C.accountOk(a)) { st.innerHTML = ''; return; }
     fetch(AUTH + '/overlay/pro/' + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); }).then(function (j) {
-      st.innerHTML = j.pro ? '<span class="tag">Pro (no watermark + Match my game) until ' + new Date(j.until).toLocaleDateString() + '</span>'
-        : j.ally ? '<span class="tag">Werewolf ally: Match my game unlocked</span>' : '<span class="hint">Free version</span>';
+      st.innerHTML = j.tier ? '<span class="tag">' + esc(passText(j)) + '</span>' : '<span class="hint">Free version</span>';
     }).catch(function () { st.innerHTML = ''; });
   }
   function post(path, data) {
     return fetch(AUTH + path, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(data) })
       .then(function (r) { return r.json(); });
   }
-  // PayPal SDK is loaded once; buttons can be drawn in several places (right panel + Pay or renew window)
-  var sdkPromise = null;
-  function paypalSDK() {
-    if (sdkPromise) return sdkPromise;
-    sdkPromise = fetch(AUTH + '/overlay/plans').then(function (r) { return r.json(); }).then(function (j) {
-      if (!j.clientId) throw { off: true };
-      return new Promise(function (ok, bad) {
-        var sc = document.createElement('script');
-        sc.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(j.clientId) + '&currency=USD&intent=capture';
-        sc.onload = function () { ok(window.paypal); }; sc.onerror = function () { bad({}); };
-        document.head.appendChild(sc);
+  // Buy Me a Coffee checkout. Buttons can be drawn in several places (right panel + Pay or renew window).
+  // The server gives a claim code; the buyer types it in the Buy Me a Coffee message, the payment webhook
+  // matches it, and this box sees the pass appear (polls /bmc/claim/:id).
+  // getAcct() -> { platform, name } to pay for, picker = makePicker(...) (tier, term, agree), done() after a successful payment
+  function payButtons(sel, getAcct, picker, done) {
+    var box = $(sel), poll = null;
+    box.innerHTML = '<label class="f" style="margin:0">E-mail you\'ll pay with <span class="hint">(optional — matches your payment if you forget the code)</span>' +
+      '<input type="email" class="bmcEmail" placeholder="you@example.com" autocomplete="email"></label>' +
+      '<button class="btn bmcGo" type="button" style="margin-top:.5rem;width:100%;background:#ffdd00;color:#0f0f0f;font-weight:800"><i class="fa-solid fa-mug-hot"></i> Pay with Buy Me a Coffee</button>' +
+      '<div class="bmcStep" style="margin-top:.625rem;display:none"></div>';
+    var go = box.querySelector('.bmcGo'), step = box.querySelector('.bmcStep');
+    picker.onChange(function (st) { go.disabled = st.term === 'founder' && !st.agree; go.title = go.disabled ? 'Tick the Founder terms box first' : ''; });
+    function watch(id) {
+      clearInterval(poll); var tries = 0;
+      poll = setInterval(function () {
+        if (++tries > 360 || !document.body.contains(step)) return clearInterval(poll);   // stop after ~30 minutes
+        if (document.hidden) return;
+        fetch(AUTH + '/bmc/claim/' + id).then(function (r) { return r.json(); }).then(function (j) {
+          if (j.status === 'paid') {
+            clearInterval(poll);
+            var life = j.until > 32000000000000;
+            step.innerHTML = '<span class="tag">Payment received — thank you!</span> <span class="hint">' + (life ? 'Lifetime pass is on.' : 'Paid until ' + new Date(j.until).toLocaleDateString() + '.') + '</span>';
+            toast(life ? 'Thank you! Lifetime pass is on.' : 'Thank you! Paid until ' + new Date(j.until).toLocaleDateString() + '.'); done && done(j);
+          } else if (j.status === 'short') {
+            clearInterval(poll);
+            step.innerHTML += '<p class="hint" style="color:#fbbf24">We got a payment for code ' + esc(id) + ', but it was less than ' + money(j.price) + '. Message werewolf with your Buy Me a Coffee receipt.</p>';
+          }
+        }).catch(function () {});
+      }, 5000);
+    }
+    go.addEventListener('click', function () {
+      var a = getAcct();
+      if (!C.accountOk(a)) { toast('Type your streaming username first'); return; }
+      go.disabled = true; go.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Getting your code… (can take a few seconds the first time)';
+      var sel = picker.get();
+      if (sel.term === 'founder' && !sel.agree) { toast('Tick the Founder terms box first'); return; }
+      post('/bmc/claim', { kind: 'overlay', channel: a.name, platform: a.platform, tier: sel.tier, term: sel.term, agree: sel.agree ? '1' : '', email: box.querySelector('.bmcEmail').value.trim() }).then(function (j) {
+        go.disabled = false; go.innerHTML = '<i class="fa-solid fa-mug-hot"></i> Get a new code';
+        if (!j.claim) { toast(j.error || 'Could not start'); step.style.display = 'block'; step.innerHTML = '<span class="hint">' + esc(j.error || 'Could not start — try again.') + '</span>'; return; }
+        step.style.display = 'block';
+        step.innerHTML = '<div class="hint" style="margin-bottom:.375rem"><b>1.</b> Your code:</div>' +
+          '<div class="link"><input type="text" readonly value="' + esc(j.claim) + '" style="font-weight:800;letter-spacing:.08em;text-align:center"><button class="btn sm bmcCopy" type="button">Copy</button></div>' +
+          '<div class="hint" style="margin:.5rem 0 .375rem"><b>2.</b> On Buy Me a Coffee, buy <b>' + esc(j.name) + '</b> (<b>' + money(j.price) + '</b>) and paste the code in the message box.</div>' +
+          '<a class="btn" href="' + esc(j.url) + '" target="_blank" rel="noopener" style="width:100%;justify-content:center;background:#ffdd00;color:#0f0f0f;font-weight:800"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Buy Me a Coffee</a>' +
+          '<div class="hint" style="margin-top:.5rem"><i class="fa-solid fa-spinner fa-spin"></i> Waiting for your payment… keep this page open, it updates on its own.</div>';
+        step.querySelector('.bmcCopy').addEventListener('click', function () {
+          var inp = step.querySelector('input'); inp.select();
+          (navigator.clipboard ? navigator.clipboard.writeText(j.claim) : Promise.reject()).then(function () { toast('Code copied'); }, function () { document.execCommand('copy'); toast('Code copied'); });
+        });
+        watch(j.claim);
+      }).catch(function () {
+        go.disabled = false; go.innerHTML = '<i class="fa-solid fa-mug-hot"></i> Pay with Buy Me a Coffee';
+        toast('Checkout is waking up — try again in a minute.');
       });
     });
-    sdkPromise.catch(function () { sdkPromise = null; });
-    return sdkPromise;
   }
-  // getAcct() -> { platform, name } to pay for, getPlan() -> 'month' | 'year', done() after a successful payment
-  function payButtons(sel, getAcct, getPlan, done) {
-    var box = $(sel);
-    box.innerHTML = '<span class="hint">Loading checkout… (can take a few seconds the first time)</span>';
-    return paypalSDK().then(function (pp) {
-      box.innerHTML = '';
-      pp.Buttons({
-        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
-        createOrder: function () {
-          var a = getAcct();
-          if (!C.accountOk(a)) { toast('Type your streaming username first'); return Promise.reject(new Error('no channel')); }
-          return post('/overlay/create', { channel: a.name, platform: a.platform, plan: getPlan() }).then(function (j) { if (!j.id) { toast(j.error || 'Could not start'); throw new Error(j.error || 'Could not start'); } return j.id; });
-        },
-        onApprove: function (d) {
-          return post('/overlay/capture', { orderId: d.orderID }).then(function (j) {
-            if (j.ok) { toast('Thank you! Paid until ' + new Date(j.until).toLocaleDateString() + '.'); done && done(j); } else toast(j.error || 'Payment not confirmed');
-          });
-        },
-        onError: function (err) { if (String(err && err.message) !== 'no channel') toast('PayPal had a problem — try again'); }
-      }).render(sel);
-    }).catch(function (e) {
-      box.innerHTML = '<span class="hint">' + (e && e.off ? 'Payments aren\'t switched on yet — check back soon.' : 'Checkout is waking up — try again in a minute.') + '</span>';
-    });
-  }
-  function loadPayPal() {
+  function loadCheckout() {
     if (ppLoaded) return; ppLoaded = true;
-    payButtons('#paypalBox', acct, function () { return plan; }, function () { checkPro(); });
+    payButtons('#checkoutBox', acct, pickMain, function () { checkPro(); });
   }
 
   /* ---------- "Already have an overlay? Pay or renew" window ---------- */
-  var payPlat = 'twitch', payPlan = 'month', payT = null;
+  var payPlat = 'twitch', payT = null;
   function payAcct() { return C.parseAccount($('#payUser').value, payPlat); }
   function payRefresh() {
     var a = payAcct(), st = $('#payStatus'), P = C.PLATFORMS[a.platform];
@@ -724,12 +865,11 @@
       fetch(AUTH + '/overlay/pro/' + encodeURIComponent(a.name) + '?platform=' + a.platform).then(function (r) { return r.json(); })
     ]).then(function (r) {
       var pl = r[0], pro = r[1];
-      if (pl.plans && pl.plans.month) { $('#ppMonth').textContent = money(pl.plans.month.price); $('#ppYear').textContent = money(pl.plans.year.price); }
+      if (pl.tiers) TIERS = pl.tiers; if (typeof pl.founderLeft === 'number') founderLeft = pl.founderLeft;
+      pickPay.setInfo({ lifetimePaid: pl.lifetimePaid, current: pl.current });
       if (a.platform === 'twitch' && pl.found === false) { st.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> Couldn\'t find ' + esc(C.accountLabel(a)) + ' — check the spelling.'; return; }
-      $('#payNote').innerHTML = pl.tier === 'earner' ? '<span class="tag" style="background:#a855f7;color:#fff">Twitch ' + (pl.broadcasterType === 'partner' ? 'Partner' : 'Affiliate') + '</span> Affiliate &amp; Partner pricing.'
-        : a.platform === 'twitch' && pl.prices ? 'Twitch Affiliates and Partners: ' + money(pl.prices.earner.month) + '/month or ' + money(pl.prices.earner.year) + '/year.' : 'Same price for every ' + P.label + ' channel.';
       st.innerHTML = '<i class="' + P.icon + '" style="font-size:1.6rem;color:var(--accent)"></i><div><b>' + esc(C.accountLabel(a)) + '</b><br>' +
-        (pro.pro ? '<span class="tag">Paid until ' + new Date(pro.until).toLocaleDateString() + '</span> <span class="hint">Paying now adds the time on.</span>'
+        (pro.tier ? '<span class="tag">' + esc(passText(pro)) + '</span> <span class="hint">Paying now adds the time on (or upgrades).</span>'
                  : '<span class="hint">' + (pro.until ? 'Pass ended ' + new Date(pro.until).toLocaleDateString() + ' — watermark is showing.' : 'Not paid yet — watermark shows once an hour.') + '</span>') + '</div>';
     }).catch(function () { st.innerHTML = '<span class="hint">The payment server is waking up — give it a few seconds.</span>'; setTimeout(payRefresh, 8000); });
   }
@@ -738,7 +878,7 @@
     if (!$('#payUser').value && C.accountOk(a)) { $('#payUser').value = C.accountLabel(a); payPlat = a.platform; }
     $$('#payPlat button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === payPlat); });
     $('#payModal').hidden = false; payRefresh();
-    if (!$('#payPaypal').children.length) payButtons('#payPaypal', payAcct, function () { return payPlan; }, function () { payRefresh(); checkPro(); });
+    if (!$('#payCheckout').children.length) payButtons('#payCheckout', payAcct, pickPay, function () { payRefresh(); checkPro(); });
   }
   $('#payPill').addEventListener('click', openPay);
   $('#payClose').addEventListener('click', function () { $('#payModal').hidden = true; });
@@ -751,16 +891,12 @@
     var a = payAcct(); if (a.name) $('#payUser').value = C.PLATFORMS[payPlat].host + a.name;
     payRefresh();
   });
-  $('#payModal').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-pplan]'); if (!b) return;
-    payPlan = b.dataset.pplan; $$('[data-pplan]').forEach(function (x) { x.classList.toggle('on', x === b); });
-  });
   if (/[#&]pay\b/.test(location.hash)) setTimeout(openPay, 300);   // link straight to it: /overlay-studio#pay
 
-  // load PayPal only when the box is visible (keeps the page fast)
+  // draw the checkout only when the box is visible (keeps the page fast)
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (en, ob) { if (en[0].isIntersecting) { loadPayPal(); ob.disconnect(); } }).observe($('#proBox'));
-  } else loadPayPal();
+    new IntersectionObserver(function (en, ob) { if (en[0].isIntersecting) { loadCheckout(); ob.disconnect(); } }).observe($('#proBox'));
+  } else loadCheckout();
 
   /* ---------- desktop scrolling: settings first, then the right side ---------- */
   var gridEl = $('.grid'), leftEl = $('.left'), rightEl = $('.right');

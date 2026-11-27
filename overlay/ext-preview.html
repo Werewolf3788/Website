@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Werewolf Twitch extension preview</title>
+<!-- Overlay Studio's preview of the Twitch extension: drawn with the extension's own files (extension/ext-render.js
+     and ext.css), so what you see here is what viewers see on Twitch. Gets the look + channel info from the Studio. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Z9M5LXQ5XN');gtag('config','G-CTYHDF4MSD');</script>
+<link rel="stylesheet" href="extension/ext.css">
+<style>
+  .pv-note{position:absolute;left:8px;bottom:8px;z-index:9;font:600 11px Inter,system-ui,sans-serif;color:#cbd5e1;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:6px}
+  .pv-controls{position:absolute;left:0;right:0;bottom:0;height:8%;min-height:26px;background:linear-gradient(transparent,rgba(0,0,0,.55));z-index:2;pointer-events:none}
+</style>
+</head>
+<body class="overlay">
+<div class="pv-controls"></div>
+<button type="button" class="ww-toggle" id="wwToggle">🐺 Game</button>
+<div class="ww-panel" id="wwPanel"><div id="ww"></div></div>
+<div id="wwLayer"></div>
+<div id="wwMark"></div>
+<span class="pv-note">Twitch extension preview · tap 🐺 Game</span>
+<script src="extension/ext-render.js"></script>
+<script>
+(function () {
+  'use strict';
+  var R = window.WWRender, look = null, card = null;
+  var panel = document.getElementById('wwPanel'), root = document.getElementById('ww'), layer = document.getElementById('wwLayer'), mark = document.getElementById('wwMark');
+  // draw at a real Twitch player size (about 1380px wide) and shrink to fit, so sizes match what viewers see
+  function fit() { var z = Math.min(1, window.innerWidth / 1380); document.documentElement.style.zoom = z; }
+  window.addEventListener('resize', fit); fit();
+  var fontNow = '';
+  function applyLook() {
+    var v = R.lookVars(look), el = document.documentElement;
+    ['--ww-accent', '--ww-accent2', '--ww-panel', '--ww-text', '--ww-radius', '--ww-font', '--ww-glow'].forEach(function (k) { if (v[k]) el.style.setProperty(k, v[k]); else el.style.removeProperty(k); });
+    var f = look && v['--ww-font'] ? look.font : '';
+    if (f && f !== fontNow) { fontNow = f; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(f).replace(/%20/g, '+') + ':wght@400;700;800&display=swap'; document.head.appendChild(l); }
+  }
+  function draw() {
+    if (!card) return;
+    applyLook();
+    layer.innerHTML = R.renderLayer(card, look);
+    root.innerHTML = R.renderCard(card, { allyIndex: 0 });
+  }
+  document.getElementById('wwToggle').addEventListener('click', function () { panel.classList.toggle('open'); });
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data) return;
+    if (e.data.type === 'ext-preview') { look = e.data.look || null; card = e.data.card || null; draw(); }
+    if (e.data.type === 'ext-mark' && card) {
+      mark.innerHTML = R.renderMark(Object.assign({}, card, { wm: { img: card.me.avatar, name: 'werewolf3788', opacity: 0.75 } }));
+      var a = mark.firstChild; if (!a) return;
+      var w = document.documentElement.clientWidth / (parseFloat(document.documentElement.style.zoom) || 1), h = document.documentElement.clientHeight / (parseFloat(document.documentElement.style.zoom) || 1), p = R.creditSpot(Math.random, w, h);
+      a.style.left = p.x + 'px'; a.style.top = p.y + 'px'; a.style.display = 'flex';
+      setTimeout(function () { mark.innerHTML = ''; }, 6000);
+    }
+  });
+  if (window.parent !== window) window.parent.postMessage({ type: 'ext-preview-ready' }, location.origin);
+})();
+</script>
+</body>
+</html>
