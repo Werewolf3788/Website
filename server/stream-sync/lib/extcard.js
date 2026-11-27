@@ -75,4 +75,41 @@ function sameCard(a, b) {
     return strip(a) === strip(b);
 }
 
-module.exports = { buildCard, cardSize, sameCard, effectiveTier, FOOT, MAX_BYTES };
+
+// ---- game tracker entries (what viewers see under "View more") ----
+// Internal/save fields that aren't progress, and keys whose value is never shown.
+const HIDE = /^(name|title|gamename|id|gameid|platform|updatedat|saveat|save|savedat|rev|by|v|version|seenversion|autofuse|carryslots|art|image|poster.*|.*url|.*source|.*id)$/;
+const norm = (k) => String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
+function prettyName(id, v) {
+    const n = v && (v.name || v.title || v.gameName);
+    if (n) return String(n);
+    let s = String(id || "").replace(/TM|™|®/g, " ").replace(/[_-]+/g, " ")
+        .replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2").replace(/([A-Za-z])(\d)/g, "$1 $2").replace(/\s+/g, " ").trim();
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+const words = (k) => { const s = String(k).replace(/[_-]+/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase().trim(); return s.charAt(0).toUpperCase() + s.slice(1); };
+const num = (n) => Math.round(Number(n)).toLocaleString("en-US");
+function trackerEntry(id, platform, v) {
+    v = v || {};
+    if (/_prev$/i.test(String(id))) return null;
+    const by = {}; Object.keys(v).forEach((k) => { by[norm(k)] = k; });
+    const facts = [], used = new Set();
+    const earned = Number(v[by.trophiesearned]), total = Number(v[by.trophiestotal]);
+    if (earned > 0 && total > 0) {
+        const pct = Number(v[by.trophiespercent]);
+        facts.push("Trophies " + earned + "/" + total + (pct > 0 ? " (" + Math.round(pct) + "%)" : ""));
+    }
+    ["trophiesearned", "trophiestotal", "trophiespercent"].forEach((k) => used.add(k));
+    Object.keys(v).forEach((k) => {
+        const n = norm(k), val = v[k];
+        if (used.has(n) || HIDE.test(n) || n.startsWith("trophies")) return;
+        if (typeof val === "number") { if (val > 0 && val < 1e11) facts.push(words(k) + " " + num(val)); }
+        else if (val === true) facts.push(words(k));
+        else if (typeof val === "string" && val && val.length <= 30 && !/^(yes|no|true|false|0)$/i.test(val) && !/^[[{]/.test(val)) facts.push(words(k) + ": " + val);
+    });
+    if (!facts.length) return null;
+    const trophyFirst = facts.slice(0, 8);
+    return { id: String(id), name: prettyName(id, v), platform, facts: trophyFirst, at: Number(v.updatedAt || v.saveAt || 0) || 0 };
+}
+
+module.exports = { trackerEntry, prettyName, buildCard, cardSize, sameCard, effectiveTier, FOOT, MAX_BYTES };

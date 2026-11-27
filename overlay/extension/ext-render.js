@@ -13,12 +13,13 @@
   // only https images
   function img(u) { u = String(u || ''); return /^https:\/\//i.test(u) ? escapeHtml(u) : ''; }
 
+  var key = function (s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+  function sameGame(a, b) { a = key(a); b = key(b); return a.length > 3 && b.length > 3 && (a.indexOf(b) >= 0 || b.indexOf(a) >= 0); }
+  // the card shows progress only for the game being played; "View more" opens the whole tracker
   function trackerHtml(t, game) {
     if (!t || !t.games || !t.games.length) return '';
-    var g0 = String(game || '').toLowerCase(), list = t.games.slice();
-    list.sort(function (a, b) { var ma = g0 && g0.indexOf(String(a.name).toLowerCase()) >= 0, mb = g0 && g0.indexOf(String(b.name).toLowerCase()) >= 0; return (mb ? 1 : 0) - (ma ? 1 : 0); });
-    var g = list[0];
-    return '<div class="ww-track"><b>' + escapeHtml(g.name) + '</b>' + (g.summary || []).map(function (s) { return '<div>' + escapeHtml(s) + '</div>'; }).join('') + '</div>' +
+    var g = t.games.filter(function (x) { return sameGame(x.name, game) && (x.summary || []).length; })[0];
+    return (g ? '<div class="ww-track"><b>' + escapeHtml(g.name) + '</b>' + g.summary.map(function (s) { return '<div>' + escapeHtml(s) + '</div>'; }).join('') + '</div>' : '') +
       '<button type="button" class="ww-more" data-more="' + escapeHtml(t.code) + '">View more</button>';
   }
 
@@ -74,9 +75,17 @@
       return { id: id, name: String(name), facts: facts };
     });
   }
+  var PLAT = { playstation: 'PlayStation', steam: 'Steam', xbox: 'Xbox', mobile: 'Mobile games', pc: 'PC' };
   function renderMore(docs) {
-    if (!docs || !docs.length) return '<p class="ww-empty">No tracked games yet.</p>';
-    return docs.map(function (d) { return '<div class="ww-track"><b>' + escapeHtml(d.name) + '</b>' + d.facts.map(function (s) { return '<div>' + escapeHtml(s) + '</div>'; }).join('') + '</div>'; }).join('');
+    docs = (docs || []).filter(function (d) { return d && (d.facts || []).length; });
+    if (!docs.length) return '<p class="ww-empty">No tracked games yet.</p>';
+    var out = '', last = null;
+    docs.forEach(function (d) {
+      var p = d.platform || '';
+      if (p !== last) { out += '<h4 class="ww-plat">' + escapeHtml(PLAT[p] || p || 'Games') + '</h4>'; last = p; }
+      out += '<div class="ww-track"><b>' + escapeHtml(d.name) + '</b>' + d.facts.map(function (s) { return '<div>' + escapeHtml(s) + '</div>'; }).join('') + '</div>';
+    });
+    return out;
   }
 
   return { escapeHtml: escapeHtml, renderCard: renderCard, renderMark: renderMark, creditSpot: creditSpot, shouldShowMark: shouldShowMark, parseFirestoreDocs: parseFirestoreDocs, renderMore: renderMore, SITE: SITE };

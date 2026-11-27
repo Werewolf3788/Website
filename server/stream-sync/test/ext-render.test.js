@@ -80,3 +80,20 @@ test("renderMore lists every game from Firestore", () => {
     const h = R.renderMore(docs);
     assert.match(h, /Wildlands/); assert.match(h, /level: 28/); assert.match(h, /Far Cry 5/);
 });
+
+test("card tracker only shows the game being played", () => {
+    const c = JSON.parse(JSON.stringify(card));
+    c.me.game = "Music";
+    c.me.tracker.games.unshift({ id: "Blender", name: "Blender", platform: "steam", summary: [] });
+    const h = R.renderCard(c, {});
+    assert.doesNotMatch(h, /Blender/);
+    assert.doesNotMatch(h, /Level 28/);
+    assert.match(h, /data-more="TLWWTSNU"/, "View more is still there");
+});
+
+test("view more groups games by platform", () => {
+    const h = R.renderMore([{ name: "Far Cry 5", platform: "playstation", facts: ["Trophies 27/73 (37%)"] }, { name: "Bastion", platform: "mobile", facts: ["Best 36"] }]);
+    assert.match(h, /PlayStation/); assert.match(h, /Mobile games/);
+    assert.ok(h.indexOf("PlayStation") < h.indexOf("Far Cry 5") && h.indexOf("Mobile games") < h.indexOf("Bastion"));
+    assert.match(h, /Trophies 27\/73 \(37%\)/);
+});
