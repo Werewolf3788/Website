@@ -8,6 +8,7 @@
  *   - sends the same title to YouTube (through the Apps Script hook) and Kick
  *   - relays YouTube, TikTok and Kick chat into Twitch chat (as the bot or the streamer)
  *   - posts one Discord "live" alert per stream
+ *   - runs the Werewolf Twitch extension: builds each paired channel's card and pushes it to viewers
  *
  * Render's free plan sleeps after ~15 min without visits. The Apps Script
  * StreamHook visits /wake every minute while the channel is live (that is what
@@ -27,6 +28,7 @@ const twitch = require("./lib/twitch");
 const kick = require("./lib/kick");
 const chat = require("./lib/chat");
 const { runUser } = require("./lib/sync");
+const { createExtension } = require("./lib/extension");
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_URL = String(process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || "").replace(/\/$/, "");
@@ -47,7 +49,8 @@ async function tick() {
             catch (e) { results[u.key] = { error: e.message }; console.warn(`[sync ${u.key}] ${e.stack || e.message}`); }
         }
         last = { at: new Date().toISOString(), results };
-        keepAwake(Object.values(results).some(r => r && r.live));
+        await ext.tick();   // Werewolf Twitch extension cards
+        keepAwake(Object.values(results).some(r => r && r.live) || await ext.anyLive());
     } catch (e) {
         last = { at: new Date().toISOString(), error: e.message };
         console.warn("[tick] " + e.message);
@@ -100,6 +103,9 @@ function verify(state) {
 }
 
 const app = express();
+// Werewolf Twitch extension (lib/extension.js): /ext/register, /ext/pair, /webhooks/twitch-eventsub
+const ext = createExtension({ fs: () => store.fs(), store, twitch, extapi: require("./lib/extapi"), publicUrl: PUBLIC_URL });
+ext.mount(app);
 app.get("/", (req, res) => res.type("text").send("ww-stream-sync running. Last pass: " + (last.at || "not yet")));
 app.get("/health", (req, res) => { res.set("Access-Control-Allow-Origin", "*"); res.json({ ok: true }); });
 app.get("/wake", (req, res) => { res.type("text").send("awake"); if (!running) tick(); });

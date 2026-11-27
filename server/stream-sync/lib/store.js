@@ -18,6 +18,7 @@ function db() {
     }
     return admin.database();
 }
+function fs() { db(); return admin.firestore(); }   // Firestore (extension channels, passes, trackers)
 
 async function get(path) { return (await db().ref(path).once("value")).val(); }
 async function update(path, obj) { await db().ref(path).update(obj); }
@@ -81,19 +82,23 @@ async function psnAccountId(onlineId) {
 }
 
 /** The few player-card fields the GitHub PSN sync writes (public read). */
-const CARD_FIELDS = ["online", "currentGame", "currentGameId", "commId", "gameStatus", "lastUpdated"];
-async function psnCard(onlineId) {
-    for (const tag of [onlineId, String(onlineId).toLowerCase()]) {
+const CARD_FIELDS = ["online", "currentGame", "currentGameId", "commId", "gameStatus", "lastUpdated", "currentGameArt"];
+async function psnCard(onlineId, opts) {
+    // opts.strict: throw when the PlayStation database can't be reached (instead of answering "nothing")
+    let failed = 0;
+    const tags = [onlineId, String(onlineId).toLowerCase()];
+    for (const tag of tags) {
         try {
             const base = `${PSN_DB_URL}/psn/gamertags/${encodeURIComponent(tag)}`;
-            const vals = await Promise.all(CARD_FIELDS.map((f) => fetch(`${base}/${f}.json`).then((r) => r.json()).catch(() => null)));
+            const vals = await Promise.all(CARD_FIELDS.map((f) => fetch(`${base}/${f}.json`).then((r) => { if (!r.ok) throw new Error("PSN db " + r.status); return r.json(); })));
             if (vals.every((v) => v === null)) continue;
             const card = {};
             CARD_FIELDS.forEach((f, i) => { card[f] = vals[i]; });
             return card;
-        } catch (e) { /* try next */ }
+        } catch (e) { failed++; }
     }
+    if (opts && opts.strict && failed === tags.length) throw new Error("PlayStation database unreachable");
     return null;
 }
 
-module.exports = { psnCard, db, get, update, set, enabledUsers, secrets, saveSecret, saveState, state, saveSettings, userFromIdToken, userByKickId, userByLogin, psnAccountId };
+module.exports = { psnCard, fs, db, get, update, set, enabledUsers, secrets, saveSecret, saveState, state, saveSettings, userFromIdToken, userByKickId, userByLogin, psnAccountId };
