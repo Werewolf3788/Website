@@ -278,7 +278,7 @@
           <p class="hint" style="margin:0 0 .5rem"><b>Werewolf Twitch extension</b> — your game, poster and (with a pass) tracker and allies show <b>on top of your stream</b> for viewers on the Twitch website and app, no OBS needed. Install it from your Twitch Creator Dashboard → Extensions, open its settings, and enter the pair code it shows here.</p>
           <div class="link"><input type="text" id="extCode" placeholder="Pair code, e.g. WOLF-K7Q2M9XD" maxlength="13" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm main" id="extFind" type="button">Find</button></div>
           <div id="extStatus" class="hint" style="margin-top:.5rem"></div>
-          <p class="hint" style="margin:.5rem 0 0">The extension uses this overlay's colors, font, corners and glow. Changed your look? <button class="btn sm" id="extLookBtn" type="button">Update extension look</button> (saving your overlay updates it too).</p>
+          <p class="hint" style="margin:.5rem 0 0">The extension shows this overlay's logo &amp; name, Now playing, Twitch poster and stream title in the same spots, with the same colors, font, corners and glow. Changed your look? <button class="btn sm" id="extLookBtn" type="button">Update extension look</button> (saving your overlay updates it too).</p>
           <p class="hint" style="margin:.5rem 0 0">Greyed-out parts on the left (chat box, alerts and the other video pieces) only work in OBS/Streamlabs. <b>Sign in</b> before pairing to show your game tracker (Tier 2) and PlayStation info (Tier 3).</p>
         </div>
         <div style="margin-top:0.625rem;display:none" id="seBox">
@@ -590,7 +590,7 @@
     // the extension can show the game, poster and your name/picture; everything else is video-only
     $$('#elements > details[data-el]').forEach(function (d) { d.classList.toggle('ext-off', use === 'ext' && EXT_OK.indexOf(d.dataset.el) < 0); });
   }
-  var EXT_OK = ['brand', 'game', 'poster', 'gameTheme'];
+  var EXT_OK = ['brand', 'game', 'poster', 'title', 'gameTheme'];
   if (/[#&]extension\b/.test(location.hash)) use = 'ext';
 
   /* ---------- Twitch extension pairing (ww-stream-sync /ext/pair) ---------- */
@@ -609,7 +609,12 @@
     }).catch(function () { st.innerHTML = 'The server is waking up — try again in a minute.'; });
   }
   // the overlay's look, sent to the extension so it matches (colors, font, corners, glow, box see-through)
-  function extLook() { return JSON.stringify({ accent: cfg.accent, accent2: cfg.accent2, panel: cfg.panel, text: cfg.text, font: cfg.font, panelOpacity: cfg.panelOpacity, radius: cfg.radius, glow: !!cfg.glow }); }
+  function extLook() {
+    var pick = function (k, extra) { var e = cfg[k] || {}; return Object.assign({ on: !!e.on, pos: e.pos }, extra ? extra(e) : {}); };
+    return JSON.stringify({ accent: cfg.accent, accent2: cfg.accent2, panel: cfg.panel, text: cfg.text, font: cfg.font, panelOpacity: cfg.panelOpacity, radius: cfg.radius, glow: !!cfg.glow,
+      layout: { brand: pick('brand', function (e) { return { name: e.name || '', tag: e.tag || '' }; }), game: pick('game', function (e) { return { prefix: e.prefix || '' }; }),
+        poster: pick('poster', function (e) { return { size: e.size || 100 }; }), title: pick('title') } });
+  }
   function sendLook(quiet) {
     var u = siteUser();
     if (!u) { if (!quiet) toast('Sign in first, then update the extension look'); return Promise.resolve(); }

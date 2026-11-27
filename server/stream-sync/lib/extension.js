@@ -19,6 +19,7 @@
 const crypto = require("crypto");
 const express = require("express");
 const { buildCard, sameCard, effectiveTier, trackerEntry, cleanLook } = require("./extcard");
+const { loadGameDefs } = require("./gamedefs");
 const { normName, cleanName } = require("./build");
 
 const DAY = 86400000, MIN = 60000;
@@ -35,6 +36,7 @@ function wmTarget(rand) { return 1200 + Math.floor(rand() * 1201); }
 function createExtension(deps) {
     const { store, twitch, extapi } = deps;
     const now = deps.now || Date.now, rand = deps.rand || Math.random;
+    const gameDef = deps.gameDefs || loadGameDefs();
     const fs = () => deps.fs();
     const chRef = (cid) => fs().collection("ext_channels").doc(String(cid));
     const OWNER = () => process.env.STREAM_SYNC_APP_OWNER_KEY || "";
@@ -89,10 +91,10 @@ function createExtension(deps) {
             const games = [];
             for (const p of PLATFORMS) {
                 const q = await fs().collection("user").doc(code).collection("platform").doc(p).collection("game").limit(60).get();
-                q.docs.map((g) => trackerEntry(g.id, p, g.data()))
+                q.docs.map((g) => trackerEntry(g.id, p, g.data(), gameDef(g.id)))
                     .filter(Boolean)
                     .sort((a, b) => b.at - a.at || a.name.localeCompare(b.name))
-                    .forEach((g) => games.push({ id: g.id, name: g.name, platform: g.platform === "ps" ? "playstation" : g.platform, facts: g.facts }));
+                    .forEach((g) => games.push({ id: g.id, name: g.name, platform: g.platform === "ps" ? "playstation" : g.platform, facts: g.facts, profile: g.profile || null }));
             }
             // the same PlayStation game can be saved by the Game Companion ("ps") and the PSN sync: keep the fuller one
             const seen = new Map();
@@ -307,7 +309,7 @@ function createExtension(deps) {
                 const d = o.data(), pass = await passFor(d);
                 if (pass.tier < 2 || !d.friendCode) return res.status(404).json({ error: "No tracker." });
                 res.setHeader("Cache-Control", "public, max-age=300");
-                res.json({ games: (await readGames(d.friendCode)).map((g) => ({ id: g.id, name: g.name, platform: g.platform, facts: g.facts })) });
+                res.json({ games: (await readGames(d.friendCode)).map((g) => ({ id: g.id, name: g.name, platform: g.platform, facts: g.facts, profile: g.profile })) });
             } catch (e) { res.status(500).json({ error: "Try again in a minute." }); }
         });
 

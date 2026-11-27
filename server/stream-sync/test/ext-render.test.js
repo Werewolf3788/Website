@@ -108,3 +108,21 @@ test("look turns into css variables", () => {
     assert.deepStrictEqual(R.lookVars(null), {});
     assert.strictEqual(R.lookVars({ accent: "red;}" })["--ww-accent"], undefined);
 });
+
+test("overlay layer shows logo, now playing, poster and title where the overlay has them", () => {
+    const look = { layout: { brand: { on: true, pos: "br", name: "", tag: "" }, game: { on: true, pos: "br", prefix: "Now playing" }, poster: { on: true, pos: "bl", size: 100 }, title: { on: true, pos: "tl" } } };
+    const c = JSON.parse(JSON.stringify(card)); c.me.title = "Hunting <bosses>";
+    const h = R.renderLayer(c, look);
+    assert.match(h, /ww-spot ww-br[^]*werewolf3788[^]*Now playing[^]*Ghost Recon Wildlands/);
+    assert.match(h, /ww-spot ww-bl[^]*psn\/art\.png/);
+    assert.match(h, /ww-spot ww-tl[^]*Hunting &lt;bosses&gt;/);
+    c.live = false; assert.strictEqual(R.renderLayer(c, look), "", "nothing while offline");
+    assert.strictEqual(R.renderLayer(card, null), "", "no look yet = no layer");
+});
+
+test("view more shows the game's profile like the site", () => {
+    const h = R.renderMore([{ name: "Tom Clancy's Ghost Recon Wildlands", platform: "playstation", facts: ["Collectibles 4/85"],
+        profile: { title: "Wildlands profile", level: 26, groups: [{ name: "Combat", rows: [["Longest shot", "307 m"], ["Favorite weapon", "MP7 Cartel"]] }] } }]);
+    assert.match(h, /Wildlands profile/); assert.match(h, /Level 26/);
+    assert.match(h, /Combat[^]*Longest shot[^]*307 m[^]*MP7 Cartel/);
+});
