@@ -284,6 +284,17 @@ test("tick runs at most once a minute", async () => {
     } finally { close(h); }
 });
 
+test("view more leaves out games with no progress", async () => {
+    const h = setup({ fs: { "user/KEV1/platform/playstation/game/wildlands": { name: "Wildlands", level: 28 }, "user/KEV1/platform/steam/game/Blender": { gameId: "Blender", platform: "steam" } } });
+    try {
+        const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
+        const a = await h.get("/ext/more/999");
+        assert.deepStrictEqual(a.j.games.map((g) => g.name), ["Wildlands"]);
+        assert.deepStrictEqual(a.j.games[0].facts, ["Level 28"]);
+    } finally { close(h); }
+});
+
 test("view more is served from the server cache", async () => {
     const h = setup({ fs: { "user/KEV1/platform/playstation/game/wildlands": { name: "Wildlands", level: 28 } } });
     try {
