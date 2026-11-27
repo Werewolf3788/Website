@@ -1,8 +1,8 @@
 {
- "_about": "Per-game color palettes for the stream overlay, built from the PlayStation games in Playstation/psn.json (247 trophy sets). Match a game like this: 1) look up its PlayStation code (games key) e.g. \"CUSA02902_00\" or \"NPWR09395_00\"; 2) otherwise look the lower-case name up in \"byName\"; 3) otherwise use \"default\". Each entry carries 16 named color roles (primary, secondary, tertiary, accent, accent2, border, border2, panel, panel2, text, muted, highlight, glow, shadow, ink, inkAccent), a 3-stop gradient, an 8-color swatch palette and an edge effect in the same shape as game-themes.json (same effect types, so it drops straight into game-themes.js). Nothing is ever drawn over the middle of the screen.",
+ "_about": "Per-game color palettes for the stream overlay, built from the PlayStation games in Playstation/psn.json (247 trophy sets). Match a game like this: 1) look up its PlayStation code (games key) e.g. \"CUSA02902_00\" or \"NPWR09395_00\"; 2) otherwise look the lower-case name up in \"byName\"; 3) otherwise use \"default\". Each entry carries 16 named color roles (primary, secondary, tertiary, accent, accent2, border, border2, panel, panel2, text, muted, highlight, glow, shadow, ink, inkAccent), a 3-stop gradient, an 8-color swatch palette and an edge effect in the same shape as game-themes.json (same effect types, so it drops straight into game-themes.js). Nothing is ever drawn over the middle of the screen. Non-game Twitch categories get their own entry too: \"category_music\" (name Music, neon magenta/aqua, equalizer-style lights effect) is reachable through \"categories\".music and through the byName aliases music, dj, music production, live music, beats, lofi.",
  "_usage": "const t = await (await fetch('overlay/stream_overlay_theme.json')).json(); const key = String(gameName || '').toLowerCase().trim(); const g = t.games[commId] || t.games[t.byName[key]] || t.default; for (const [k, v] of Object.entries(g.colors)) root.style.setProperty('--gt-' + k, v); // g.effect is ready for game-themes.js decorate(): same type/shape/dir/colors schema",
- "version": 1,
- "updated": "2026-11-26",
+ "version": 2,
+ "updated": "2026-11-27",
  "source": "Playstation/psn.json",
  "channels": [
   "phoenix_darkfire",
@@ -12,6 +12,9 @@
   "commId",
   "name"
  ],
+ "categories": {
+  "music": "category_music"
+ },
  "default": {
   "name": "Default (blue)",
   "colors": {
@@ -12385,6 +12388,58 @@
     ],
     "count": 10
    }
+  },
+  "category_music": {
+   "name": "Music (Twitch category)",
+   "platform": "Twitch category",
+   "aliases": [
+    "beats",
+    "dj",
+    "live music",
+    "lofi",
+    "music",
+    "music production"
+   ],
+   "colors": {
+    "primary": "#241046",
+    "secondary": "#4b1f8a",
+    "tertiary": "#a52690",
+    "accent": "#ff2d95",
+    "accent2": "#00e0ff",
+    "border": "#54456f",
+    "border2": "#ff4ca5",
+    "panel": "#06030d",
+    "panel2": "#0b0515",
+    "text": "#f2fdff",
+    "muted": "#a39bb1",
+    "highlight": "#73eeff",
+    "glow": "#ff2d95",
+    "shadow": "#040207",
+    "ink": "#ffffff",
+    "inkAccent": "#ffffff"
+   },
+   "gradient": [
+    "#00e0ff",
+    "#ff2d95",
+    "#241046"
+   ],
+   "palette": [
+    "#241046",
+    "#4b1f8a",
+    "#a52690",
+    "#ff2d95",
+    "#00e0ff",
+    "#73eeff",
+    "#54456f",
+    "#0b0515"
+   ],
+   "effect": {
+    "type": "lights",
+    "colors": [
+     "#ff2d95",
+     "#00e0ff"
+    ]
+   }
   }
  },
  "byName": {
@@ -12407,6 +12462,7 @@
   "batman: arkham asylum": "NPWR00626_00",
   "batman: arkham city": "NPWR01235_00",
   "battlefield 3 trophies": "NPWR02011_00",
+  "beats": "category_music",
   "binary domain": "NPWR02497_00",
   "bioshock infinite": "NPWR01478_00",
   "borderlands 2": "NPWR01537_00",
@@ -12435,6 +12491,7 @@
   "diablo iii": "NPWR04150_00",
   "diablo iii: reaper of souls": "NPWR05974_00",
   "disney's atlantis: the lost empire": "NPWR36594_00",
+  "dj": "category_music",
   "doom": "NPWR08661_00",
   "doom 3": "NPWR03554_00",
   "driver san francisco": "NPWR00331_00",
@@ -12486,6 +12543,8 @@
   "lego star wars ii: the original trilogy": "NPWR36496_00",
   "lego the incredibles": "NPWR14289_00",
   "littlebigplanet karting": "NPWR02312_00",
+  "live music": "category_music",
+  "lofi": "category_music",
   "lone survivor": "NPWR04948_00",
   "lords of the fallen": "NPWR24397_00",
   "mad max": "NPWR07032_00",
@@ -12504,6 +12563,8 @@
   "mortal kombat": "NPWR01747_00",
   "mortal kombat x": "NPWR07810_00",
   "mudrunner": "NPWR14211_00",
+  "music": "category_music",
+  "music production": "category_music",
   "need for speed": "NPWR08538_00",
   "need for speed heat": "NPWR18041_00",
   "need for speed hot pursuit": "NPWR01269_00",
