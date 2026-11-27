@@ -2,7 +2,8 @@
  * Keys come from the Key Vault, user_secrets/{STREAM_SYNC_APP_OWNER_KEY}:
  *   twitch_ext_client_id   Extension Client ID (dev.twitch.tv > Extensions > Werewolf Overlay)
  *   twitch_ext_secret      Extension Secret (base64, as Twitch shows it)
- *   twitch_ext_owner_id    Kevin's Twitch user id (signs EBS calls; also the watermark picture)
+ *   twitch_ext_owner_id    Kevin's Twitch user id (signs EBS calls; also the watermark picture).
+ *                          Optional: if empty it's looked up from users/{owner}/twitch_username.
  * Env vars TWITCH_EXT_CLIENT_ID / TWITCH_EXT_SECRET / TWITCH_EXT_OWNER_ID override them. */
 "use strict";
 
@@ -19,7 +20,11 @@ async function extKeys() {
     const s = owner ? await store.secrets(owner) : {};
     const clientId = String(process.env.TWITCH_EXT_CLIENT_ID || s.twitch_ext_client_id || "").trim();
     const secretB64 = String(process.env.TWITCH_EXT_SECRET || s.twitch_ext_secret || "").trim();
-    const ownerId = String(process.env.TWITCH_EXT_OWNER_ID || s.twitch_ext_owner_id || "").trim();
+    let ownerId = String(process.env.TWITCH_EXT_OWNER_ID || s.twitch_ext_owner_id || "").trim();
+    if (!ownerId && owner && clientId && secretB64) {   // not filled in: look it up from the owner's Twitch name in their profile
+        const login = await store.get("users/" + owner + "/twitch_username").catch(() => null);
+        if (login) { const j = await twitch.helix("GET", "/users?login=" + encodeURIComponent(String(login).toLowerCase())).catch(() => ({})); ownerId = String(((j.data || [])[0] || {}).id || ""); }
+    }
     if (!clientId || !secretB64 || !ownerId) throw new Error("twitch_ext keys missing (Keys sheet: twitch_ext_client_id, twitch_ext_secret, twitch_ext_owner_id)");
     keys = { clientId, secret: Buffer.from(secretB64, "base64"), ownerId };
     return keys;

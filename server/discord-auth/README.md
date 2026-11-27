@@ -39,8 +39,15 @@ Setup, once:
 
 Only channels the bot can read are shown, so hide a channel from the bot's role to keep it off the site. Posts from the site appear under the person's Discord name and avatar (via a "Pack Hub" webhook) and can never ping @everyone, roles or users.
 
+## Werewolf passes (tiers.js)
+One pass covers Overlay Studio **and** the Werewolf Twitch extension. Prices are locked for life and the same for everyone:
+Tier 1 $5/mo $50/yr · Tier 2 $10/mo $100/yr · Tier 3 $20/mo $200/yr; Lifetime $125/$250/$500; Founder lifetime
+$99/$199/$399 for the first 25 buyers (needs the terms checkbox; shows a small werewolf3788 credit about once a month,
+terms page `overlay-terms.html`). Stored in Firestore `overlay_pro/{account}.tiers`; old passes count as Tier 1;
+allies (owner's friends list) are Tier 3 free. Founder spots: `ext_meta/founders.taken`. Tests: `npm test`.
+
 ## Buy Me a Coffee payments (bmc.js)
-Everything that costs money is paid on Buy Me a Coffee (buymeacoffee.com/raykevin71b): the mobile game packs (Tile Survival: Starter $1.99, Supply Crate $4.99, Builder's Vault $9.99, Gem Pouch $2.99, Coal Cart $1.99, Overdrive $8; allies pay at most ALLY_CAP $5) and Overlay Studio passes (overlay-pro.js PRICES).
+Everything that costs money is paid on Buy Me a Coffee (buymeacoffee.com/raykevin71b): the mobile game packs (Tile Survival: Starter $1.99, Supply Crate $4.99, Builder's Vault $9.99, Gem Pouch $2.99, Coal Cart $1.99, Overdrive $8; allies pay at most ALLY_CAP $5) and Werewolf passes (tiers.js). Buy Me a Coffee item links can be pasted into ITEM_LINKS (`pass_t{1|2|3}_{month|year|lifetime|founder}`).
 1. The page calls POST /bmc/claim and gets a claim code (e.g. `WW-7KQ3M`), the price and the Buy Me a Coffee link.
 2. The buyer pays that amount on Buy Me a Coffee and types the code in the message (the e-mail they gave is the backup match).
 3. Buy Me a Coffee calls POST /bmc/webhook (Integrations → Webhooks, endpoint `https://ww-discord-auth.onrender.com/bmc/webhook`). The signature is checked with `bmc_webhook_secret` from the Key Vault (Keys sheet → Firebase user_secrets/{DISCORD_APP_OWNER_KEY}).

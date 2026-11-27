@@ -8,8 +8,8 @@ const SECRET_B64 = Buffer.from("super-secret-key-bytes").toString("base64");
 let secrets = { twitch_ext_client_id: "extcid", twitch_ext_secret: SECRET_B64, twitch_ext_owner_id: "111" };
 function fake(rel, exportsObj) { const p = require.resolve(path.join("..", rel)); require.cache[p] = { id: p, filename: p, loaded: true, exports: exportsObj }; }
 const helixCalls = [];
-fake("lib/store.js", { secrets: async () => secrets });
-fake("lib/twitch.js", { helix: async (m, p) => { helixCalls.push(p); return { data: [{ session_id: "s", participants: [{ broadcaster_id: "111" }, { broadcaster_id: "222" }] }] }; } });
+fake("lib/store.js", { secrets: async () => secrets, get: async (p) => (p === "users/owner/twitch_username" ? "werewolf3788" : null) });
+fake("lib/twitch.js", { helix: async (m, p) => { helixCalls.push(p); if (p.startsWith("/users?login=")) return { data: [{ id: "777" }] }; return { data: [{ session_id: "s", participants: [{ broadcaster_id: "111" }, { broadcaster_id: "222" }] }] }; } });
 const api = require("../lib/extapi");
 
 const sent = [];
@@ -68,4 +68,12 @@ test("missing keys throws", async () => {
     api._reset(); const keep = secrets; secrets = {};
     await assert.rejects(api.extKeys(), /twitch_ext keys missing/);
     secrets = keep;
+});
+
+test("owner id is looked up from the owner's Twitch name when the row is empty", async () => {
+    api._reset(); const keep = secrets; secrets = { twitch_ext_client_id: "extcid", twitch_ext_secret: SECRET_B64 };
+    const k = await api.extKeys();
+    assert.strictEqual(k.ownerId, "777");
+    assert.ok(helixCalls.includes("/users?login=werewolf3788"));
+    secrets = keep; api._reset();
 });
