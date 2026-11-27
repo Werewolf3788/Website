@@ -76,7 +76,9 @@ function createExtension(deps) {
         const ally = !!(d.friendCode && (await allySet()).has(String(d.friendCode).toUpperCase()));
         const doc = d.login ? await cached("pass:" + d.login, 5 * MIN, async () => { const p = await fs().collection("overlay_pro").doc(d.login).get(); return p.exists ? p.data() : null; }) : null;
         const paid = effectiveTier(doc, now(), false);
-        return ally && paid.tier < 3 ? Object.assign(effectiveTier(null, 0, true), { founder: false }) : paid;
+        // allies get Tier 3 free and, like Founder lifetime, the small monthly credit - except on the owner's own channel
+        if (ally && paid.tier < 3) return Object.assign(effectiveTier(null, 0, true), { founder: d.userKey !== OWNER() });
+        return paid;
     }
     // the streamer's public tracker, read at most once per 10 minutes no matter how many viewers there are.
     // Used for the card (3 facts per game) and for "View more" (/ext/more, up to 8 facts).

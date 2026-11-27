@@ -42,9 +42,9 @@ test("no allies panel when there are none", () => {
 test("no watermark markup when card.wm null", () => {
     assert.strictEqual(R.renderMark(card), "");
     const m = R.renderMark(Object.assign({}, card, { wm: { img: "https://cdn/k.png", name: "werewolf3788", secs: 10, opacity: 0.75 } }));
-    assert.match(m, /werewolf3788/);
+    assert.match(m, /Overlay by <b>werewolf3788<\/b>/);
     assert.match(m, /opacity:0\.75/);
-    assert.match(m, /href="https:\/\/entertainment-71888\.web\.app\/"/);
+    assert.match(m, /href="https:\/\/entertainment-71888\.web\.app\/overlay-studio#extension"/);
 });
 
 test("creditSpot never centre or bottom 12%", () => {

@@ -124,7 +124,7 @@ Lifetime options: see Decided §5.
    (Kevin: Lightstream basic is $8/mo or $88/yr, its 720p Gamer plan $25/mo.)
 2. **Tier 2 stays paid.**
 3. **One price for everyone** — no Affiliate/Partner bump. This replaces Overlay Studio's old $8/$80 earner price.
-4. **Allies (Kevin's friends list) get Tier 3 free.**
+4. **Allies (Kevin's friends list) get Tier 3 free** and show the Founder-style monthly credit (Kevin, 2026-11-26), except on Kevin's own channel.
 5. **Lifetime passes (optional, one payment, "for the lifetime of the service"):**
 
    | | Tier 1 | Tier 2 | Tier 3 | Watermark |
@@ -144,3 +144,7 @@ Lifetime options: see Decided §5.
 ## Left to the builder
 File layout inside `overlay/extension/`, card JSON shape, exact poll/heartbeat timing within Twitch limits, carousel UI,
 how the existing `overlay_pro` passes migrate to tiers, tests for card building and tier gating.
+
+## Update 2026-11-26 (Kevin)
+- The credit reads "🐺 Overlay by werewolf3788" and tapping it opens `overlay-studio#extension` (not the home page).
+- Allies show the monthly credit; Kevin's own channel never does.

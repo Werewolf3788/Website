@@ -49,7 +49,7 @@ function setup(opts) {
     };
     const store = {
         get: async (p) => rtdb[p] == null ? null : rtdb[p], secrets: async () => secrets, saveSecret: async (k, f, v) => { secrets[f] = v; },
-        userFromIdToken: async (t) => { if (t !== "kevtok") throw new Error("bad"); return { key: "kev" }; },
+        userFromIdToken: async (t) => { if (t === "ownertok") return { key: OWNER }; if (t !== "kevtok") throw new Error("bad"); return { key: "kev" }; },
         psnCard: async (tag) => { if (st.psnDown) throw new Error("psn db down"); return ({ wildhorse_spirit: { online: true, currentGame: st.title, gameStatus: "Hunting El Pozolero", currentGameArt: "https://psn/art.png" }, OneLIVIDMAN: { online: true, currentGame: opts.rayGame || "Ghost Recon Wildlands", currentGameArt: "https://psn/ray.png" } })[tag] || null; }
     };
     const ext = createExtension({ fs: F.fs, store, twitch, extapi, now: () => st.now, rand: () => (opts.rand == null ? 0.5 : opts.rand), publicUrl: "https://sync.example" });
@@ -109,7 +109,7 @@ test("ally owner friend gets tier 3: psn first and same-title friend becomes all
         assert.strictEqual(c.me.source, "psn");
         assert.strictEqual(c.me.poster, "https://psn/art.png");
         assert.deepStrictEqual(c.allies.map((a) => a.login), ["raymystyro"]);
-        assert.strictEqual(c.wm, null, "tier 3 has no watermark");
+        assert.strictEqual(c.wmAt, null, "tier 3 has no 20-40 min watermark");
     } finally { close(h); }
 });
 
@@ -309,4 +309,21 @@ test("psn outage keeps the last card", async () => {
         assert.strictEqual(h.pushes.length, n);
         assert.strictEqual(JSON.stringify(h.F.s["ext_channels/999"].lastCard), last);
     } finally { close(h); }
+});
+
+test("allies get the monthly credit, the owner's own channel never does", async () => {
+    const h = setup();
+    try {
+        const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });   // kev is on the owner's friends list
+        h.st.now += 61000; await h.ext.tick();
+        assert.ok(h.pushes.some((p) => p.card.credit), "ally channel shows the credit");
+    } finally { close(h); }
+    const o = setup({ rtdb: { "users/owner/friend_code": "OWN1", "users/owner/psn_username": "wildhorse_spirit", "users/owner/friends": { KEV1: {} } } });
+    try {
+        const { j } = await o.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await o.post("/ext/pair", { code: j.pairCode, idToken: "ownertok" });
+        o.st.now += 61000; await o.ext.tick();
+        assert.ok(!o.pushes.some((p) => p.card.credit), "owner's channel never shows it");
+    } finally { close(o); }
 });

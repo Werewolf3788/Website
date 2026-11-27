@@ -47,8 +47,9 @@
 
   function renderMark(card) {
     if (!card || !card.wm) return '';
-    return '<a class="ww-mark" href="' + SITE + '" target="_blank" rel="noopener" style="opacity:' + Number(card.wm.opacity || 0.75) + '">' +
-      (img(card.wm.img) ? '<img src="' + img(card.wm.img) + '" alt="">' : '') + '<span>' + escapeHtml(card.wm.name) + '</span></a>';
+    // a credit naming who made the extension; tapping it opens Overlay Studio's Twitch extension section
+    return '<a class="ww-mark" href="' + SITE + 'overlay-studio#extension" target="_blank" rel="noopener" style="opacity:' + Number(card.wm.opacity || 0.75) + '">' +
+      (img(card.wm.img) ? '<img src="' + img(card.wm.img) + '" alt="">' : '') + '<span>🐺 Overlay by <b>' + escapeHtml(card.wm.name) + '</b></span></a>';
   }
 
   // where the watermark goes: a random spot in the top band or the left/right edge bands (outer 18%),
