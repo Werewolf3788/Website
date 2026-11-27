@@ -98,23 +98,27 @@ async function cachedSnapshot(myTag, friendIds) {
  * rationed: at most once every `psn_poll_minutes` (default 5) per streamer,
  * and only while they're live. Between checks the last answer is reused.
  * psn_poll_minutes = 0 turns direct PSN calls off and only the database is used. */
-const lastLive = new Map(); // key -> { at, snap }
+const lastLive = new Map(); // key -> { at, snap, good, goodAt }
+/* When a live check fails, the last good live answer is still newer than the database copy
+ * (which can be hours old), so it's used for up to this long before falling back. */
+const KEEP_GOOD_MS = 30 * 60000;
 
 async function snapshot(key, cfg, myTag, friendIds, forceNow) {
     const minutes = cfg.psn_poll_minutes === undefined ? 5 : Number(cfg.psn_poll_minutes) || 0;
     if (minutes > 0) {
         const prev = lastLive.get(key);
-        if (!forceNow && prev && Date.now() - prev.at < minutes * 60000) return prev.snap || cachedSnapshot(myTag, friendIds);
+        const keptGood = () => (prev && prev.good && Date.now() - prev.goodAt < KEEP_GOOD_MS ? prev.good : null);
+        if (!forceNow && prev && Date.now() - prev.at < minutes * 60000) return prev.snap || keptGood() || cachedSnapshot(myTag, friendIds);
         try {
             const snap = await liveSnapshot(key, friendIds);
-            if (snap) { lastLive.set(key, { at: Date.now(), snap }); return snap; }
+            if (snap) { lastLive.set(key, { at: Date.now(), snap, good: snap, goodAt: Date.now() }); return snap; }
         } catch (e) {
-            // rate-limited or cookie expired: back off for a full window and use the database
-            lastLive.set(key, { at: Date.now(), snap: null });
-            console.warn(`[psn ${key}] live check failed (${e.message}); using the database`);
+            // rate-limited or cookie expired: back off for a full window; keep the last good answer
+            const good = keptGood();
+            lastLive.set(key, { at: Date.now(), snap: null, good: prev && prev.good, goodAt: prev && prev.goodAt });
+            console.warn(`[psn ${key}] live check failed (${e.message}); ${good ? "keeping the last live answer" : "using the database"}`);
+            if (good) return good;
         }
-        const p = lastLive.get(key);
-        if (p && p.snap) return p.snap;
     }
     return cachedSnapshot(myTag, friendIds);
 }

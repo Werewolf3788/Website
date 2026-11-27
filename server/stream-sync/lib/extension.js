@@ -112,17 +112,37 @@ function createExtension(deps) {
         return { code, games: games.filter((g, i) => (sameGame(g.name, playing) && i < 2) || (per[g.platform] = (per[g.platform] || 0) + 1) <= 6).slice(0, 12)
             .map((g) => ({ id: g.id, name: g.name, platform: g.platform, summary: g.facts.slice(0, 4) })) };
     }
+    // accounts/friend_codes/{CODE} is usually the owner's user key, but older records are objects: same rules as the
+    // site (games/mobile/js/common.js ownerKeyOfCode) - a candidate counts only if that user's friend_code matches
+    const SAFE_KEY = /^[^.$#\[\]\/]{1,120}$/;
+    async function ownerKeyOfCode(v, code) {
+        if (typeof v === "string") return SAFE_KEY.test(v) ? v : null;
+        if (!v || typeof v !== "object") return null;
+        const cands = [];
+        const add = (x) => { if (typeof x !== "string" || !x.trim()) return; x = x.trim(); cands.push(x.indexOf("@") > -1 ? x.toLowerCase().replace(/\./g, "_").replace("@", "_at_") : x); };
+        ["user_key", "userKey", "email_key", "emailKey", "key", "owner", "uid", "email", "user"].forEach((f) => add(v[f]));
+        Object.keys(v).forEach((f) => add(v[f]));
+        for (const c of [...new Set(cands)]) {
+            if (!SAFE_KEY.test(c)) continue;
+            const fc = await store.get("users/" + c + "/friend_code");
+            if (String(fc || "").toUpperCase() === String(code).toUpperCase()) return c;
+        }
+        return null;
+    }
     async function friendsInGame(d, myTitle) {
         if (!d.userKey || !myTitle) return [];
         const fr = (await store.get("users/" + d.userKey + "/friends")) || {}, out = [];
         for (const k of Object.keys(fr)) {
-            const code = String((fr[k] && fr[k].friend_code) || k).toUpperCase();
-            const key = await store.get("accounts/friend_codes/" + code); if (!key) continue;
-            const tag = await store.get("users/" + key + "/psn_username"); if (!tag) continue;
-            const g = await cached("psn:" + tag, 2 * MIN, () => psnNow(tag));
-            if (!g || normName(g.title) !== normName(myTitle)) continue;
-            const tw = (await store.get("users/" + key + "/twitch_username")) || tag;
-            out.push({ login: String(tw), display: String(tw), avatar: "", title: g.title, poster: g.poster, via: "psn", tracker: null });
+            // one friend's bad record must never stop the streamer's own card from updating
+            try {
+                const code = String((fr[k] && fr[k].friend_code) || k).toUpperCase();
+                const key = await ownerKeyOfCode(await store.get("accounts/friend_codes/" + code), code); if (!key) continue;
+                const tag = await store.get("users/" + key + "/psn_username"); if (!tag || typeof tag !== "string") continue;
+                const g = await cached("psn:" + tag, 2 * MIN, () => psnNow(tag));
+                if (!g || normName(g.title) !== normName(myTitle)) continue;
+                const tw = (await store.get("users/" + key + "/twitch_username")) || tag;
+                out.push({ login: String(tw), display: String(tw), avatar: "", title: g.title, poster: g.poster, via: "psn", tracker: null });
+            } catch (e) { log("friend " + k, e.message); }
         }
         return out;
     }
@@ -160,8 +180,10 @@ function createExtension(deps) {
             const psn = pass.tier >= 3 ? await psnNow(d.psnOnlineId) : null;
             const tracker = pass.tier >= 2 && d.friendCode ? await readTracker(d.friendCode, (psn && psn.title) || info.game_name) : null;
             let allies = [];
-            if (pass.tier >= 2 && live) allies = allies.concat(await sharedAllies(cid));
-            if (pass.tier >= 3 && live && psn) allies = allies.concat(await friendsInGame(d, psn.title));
+            // allies are extra: if looking them up fails, the streamer's own card still updates
+            const safe = async (f) => { try { return await f(); } catch (e) { log(cid, "allies skipped: " + e.message); return []; } };
+            if (pass.tier >= 2 && live) allies = allies.concat(await safe(() => sharedAllies(cid)));
+            if (pass.tier >= 3 && live && psn) allies = allies.concat(await safe(() => friendsInGame(d, psn.title)));
 
             // watermark clock (free tier): live seconds since the last one, carried across streams
             const st = { wmLiveSec: m.wmLiveSec, wmTargetSec: m.wmTargetSec || wmTarget(rand), wmAt: m.wmAt, lastCreditAt: m.lastCreditAt };
