@@ -86,28 +86,50 @@ function createExtension(deps) {
     }
     // the streamer's public tracker, read at most once per 10 minutes no matter how many viewers there are.
     // Used for the card (3 facts per game) and for "View more" (/ext/more, up to 8 facts).
-    function readGames(code) {
-        return cached("games:" + code, 10 * MIN, async () => {
+    // primary_platform comes from Settings / the Game Companion (users/{key}/primary_platform: ps, xbox, steam, pc)
+    const PLAT_ALIAS = { ps: "playstation", psn: "playstation", ps4: "playstation", ps5: "playstation" };
+    const normPlat = (p) => { p = String(p || "").toLowerCase().trim(); return PLAT_ALIAS[p] || p; };
+    async function primaryOf(userKey) {
+        if (!userKey) return "playstation";
+        try { return normPlat(await cached("prim:" + userKey, 10 * MIN, async () => (await store.get("users/" + userKey + "/primary_platform")) || "ps")) || "playstation"; }
+        catch (e) { return "playstation"; }
+    }
+    // merge two saves of the same game: keep the fuller fact list, never lose a profile
+    function mergeEntry(a, b) {
+        const keep = b.facts.length > a.facts.length ? b : a, other = keep === a ? b : a;
+        const facts = keep.facts.slice(), have = new Set(facts.map((f) => String(f).split(/[:\d]/)[0].trim().toLowerCase()));
+        other.facts.forEach((f) => { const k = String(f).split(/[:\d]/)[0].trim().toLowerCase(); if (k && !have.has(k)) { have.add(k); facts.push(f); } });
+        return Object.assign({}, keep, { facts, profile: keep.profile || other.profile || null });
+    }
+    /** pure: order by primary platform, merge ps/playstation copies, drop other-platform copies of a game the primary already has */
+    function arrangeGames(list, primary) {
+        primary = normPlat(primary) || "playstation";
+        const gk = (g) => g.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const byKey = new Map(), out = [];
+        list.forEach((g) => { const k = g.platform + ":" + gk(g); const i = byKey.get(k);
+            if (i === undefined) { byKey.set(k, out.length); out.push(g); } else out[i] = mergeEntry(out[i], g); });
+        const onPrimary = new Set(out.filter((g) => g.platform === primary).map(gk));
+        return out.filter((g) => g.platform === primary || !onPrimary.has(gk(g)))
+            .map((g, i) => [g, i]).sort((x, y) => ((y[0].platform === primary) - (x[0].platform === primary)) || x[1] - y[1]).map((x) => x[0]);
+    }
+    function readGames(code, userKey) {
+        return cached("games:" + code + ":" + (userKey || ""), 10 * MIN, async () => {
             const games = [];
             for (const p of PLATFORMS) {
                 const q = await fs().collection("user").doc(code).collection("platform").doc(p).collection("game").limit(60).get();
                 q.docs.map((g) => trackerEntry(g.id, p, g.data(), gameDef(g.id)))
                     .filter(Boolean)
                     .sort((a, b) => b.at - a.at || a.name.localeCompare(b.name))
-                    .forEach((g) => games.push({ id: g.id, name: g.name, platform: g.platform === "ps" ? "playstation" : g.platform, facts: g.facts, profile: g.profile || null }));
+                    .forEach((g) => games.push({ id: g.id, name: g.name, platform: normPlat(g.platform), facts: g.facts, profile: g.profile || null }));
             }
-            // the same PlayStation game can be saved by the Game Companion ("ps") and the PSN sync: keep the fuller one
-            const seen = new Map();
-            games.forEach((g, i) => { const k = g.platform + ":" + g.name.toLowerCase().replace(/[^a-z0-9]/g, ""), j = seen.get(k);
-                if (j === undefined) seen.set(k, i); else if (g.facts.length > games[j].facts.length) { games[j] = g; games[i] = null; } else games[i] = null; });
-            return games.filter(Boolean);
+            return arrangeGames(games, await primaryOf(userKey));
         });
     }
     // the card's tracker: the game being played first (that's the one viewers see), then the most recent ones
     const gkey = (x) => String(x || "").toLowerCase().replace(/[^a-z0-9]/g, "");
     const sameGame = (a, b) => { a = gkey(a); b = gkey(b); return a.length > 3 && b.length > 3 && (a.indexOf(b) >= 0 || b.indexOf(a) >= 0); };
-    async function readTracker(code, playing) {
-        const games = (await readGames(code)).slice(), per = {};
+    async function readTracker(code, playing, userKey) {
+        const games = (await readGames(code, userKey)).slice(), per = {};
         games.sort((a, b) => (sameGame(b.name, playing) ? 1 : 0) - (sameGame(a.name, playing) ? 1 : 0));
         return { code, games: games.filter((g, i) => (sameGame(g.name, playing) && i < 2) || (per[g.platform] = (per[g.platform] || 0) + 1) <= 6).slice(0, 12)
             .map((g) => ({ id: g.id, name: g.name, platform: g.platform, summary: g.facts.slice(0, 4) })) };
@@ -178,7 +200,7 @@ function createExtension(deps) {
             const viewers = live ? Number(s.viewer_count || 0) : 0;
             const startedAt = live ? Date.parse(s.started_at) || t : null;
             const psn = pass.tier >= 3 ? await psnNow(d.psnOnlineId) : null;
-            const tracker = pass.tier >= 2 && d.friendCode ? await readTracker(d.friendCode, (psn && psn.title) || info.game_name) : null;
+            const tracker = pass.tier >= 2 && d.friendCode ? await readTracker(d.friendCode, (psn && psn.title) || info.game_name, d.userKey) : null;
             let allies = [];
             // allies are extra: if looking them up fails, the streamer's own card still updates
             const safe = async (f) => { try { return await f(); } catch (e) { log(cid, "allies skipped: " + e.message); return []; } };
@@ -331,7 +353,7 @@ function createExtension(deps) {
                 const d = o.data(), pass = await passFor(d);
                 if (pass.tier < 2 || !d.friendCode) return res.status(404).json({ error: "No tracker." });
                 res.setHeader("Cache-Control", "public, max-age=300");
-                res.json({ games: (await readGames(d.friendCode)).map((g) => ({ id: g.id, name: g.name, platform: g.platform, facts: g.facts, profile: g.profile })) });
+                res.json({ games: (await readGames(d.friendCode, d.userKey)).map((g) => ({ id: g.id, name: g.name, platform: g.platform, facts: g.facts, profile: g.profile })) });
             } catch (e) { res.status(500).json({ error: "Try again in a minute." }); }
         });
 
