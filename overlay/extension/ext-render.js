@@ -76,16 +76,40 @@
     });
   }
   var PLAT = { playstation: 'PlayStation', steam: 'Steam', xbox: 'Xbox', mobile: 'Mobile games', pc: 'PC' };
+  function profileHtml(p) {
+    if (!p || !p.groups || !p.groups.length) return '';
+    return '<div class="ww-prof"><div class="ww-prof-h"><b>' + escapeHtml(p.title) + '</b><span>Level ' + escapeHtml(p.level || 1) + '</span></div><div class="ww-prof-g">' +
+      p.groups.map(function (g) { return '<div><div class="ww-prof-n">' + escapeHtml(g.name) + '</div>' +
+        g.rows.map(function (r) { return '<div class="ww-prof-r"><span>' + escapeHtml(r[0]) + '</span><b>' + escapeHtml(r[1]) + '</b></div>'; }).join('') + '</div>'; }).join('') +
+      '</div></div>';
+  }
   function renderMore(docs) {
-    docs = (docs || []).filter(function (d) { return d && (d.facts || []).length; });
+    docs = (docs || []).filter(function (d) { return d && ((d.facts || []).length || d.profile); });
     if (!docs.length) return '<p class="ww-empty">No tracked games yet.</p>';
     var out = '', last = null;
     docs.forEach(function (d) {
       var p = d.platform || '';
       if (p !== last) { out += '<h4 class="ww-plat">' + escapeHtml(PLAT[p] || p || 'Games') + '</h4>'; last = p; }
-      out += '<div class="ww-track"><b>' + escapeHtml(d.name) + '</b>' + d.facts.map(function (s) { return '<div>' + escapeHtml(s) + '</div>'; }).join('') + '</div>';
+      out += '<div class="ww-game-card"><b class="ww-game-name">' + escapeHtml(d.name) + '</b>' +
+        ((d.facts || []).length ? '<div class="ww-chips">' + d.facts.map(function (s) { return '<span>' + escapeHtml(s) + '</span>'; }).join('') + '</div>' : '') +
+        profileHtml(d.profile) + '</div>';
     });
     return out;
+  }
+
+  // the always-on layer: the same logo/name, "Now playing", Twitch poster and stream title the streamer's
+  // overlay shows, in the same corners (from Overlay Studio), so console streamers get their overlay too
+  var SPOTS = ['tl', 'tc', 'tr', 'ml', 'mc', 'mr', 'bl', 'bc', 'br'];
+  function renderLayer(card, look) {
+    var L = look && look.layout; if (!card || !card.live || !L || !card.me) return '';
+    var me = card.me, at = {};
+    function put(pos, html) { pos = SPOTS.indexOf(pos) >= 0 ? pos : 'br'; (at[pos] = at[pos] || []).push(html); }
+    if (L.poster && L.poster.on && img(me.poster)) put(L.poster.pos, '<div class="ww-box ww-lposter" style="--psz:' + (Number(L.poster.size || 100) / 100) + '"><img src="' + img(me.poster) + '" alt=""></div>');
+    if (L.title && L.title.on && me.title) put(L.title.pos, '<div class="ww-box ww-ltitle">' + escapeHtml(me.title) + '</div>');
+    if (L.brand && L.brand.on) put(L.brand.pos, '<div class="ww-box ww-lbrand">' + (img(me.avatar) ? '<img src="' + img(me.avatar) + '" alt="">' : '') +
+      '<div><b>' + escapeHtml(L.brand.name || me.name || '') + '</b>' + (L.brand.tag ? '<small>' + escapeHtml(L.brand.tag) + '</small>' : '') + '</div></div>');
+    if (L.game && L.game.on && me.game) put(L.game.pos, '<div class="ww-box ww-lgame"><small>' + escapeHtml(L.game.prefix || 'Now playing') + '</small><b>' + escapeHtml(me.game) + '</b></div>');
+    return SPOTS.filter(function (p) { return at[p]; }).map(function (p) { return '<div class="ww-spot ww-' + p + '">' + at[p].join('') + '</div>'; }).join('');
   }
 
   // the streamer's overlay look (colors, font, corners, glow) -> CSS variables for ext.css
@@ -104,5 +128,5 @@
     return v;
   }
 
-  return { lookVars: lookVars, escapeHtml: escapeHtml, renderCard: renderCard, renderMark: renderMark, creditSpot: creditSpot, shouldShowMark: shouldShowMark, parseFirestoreDocs: parseFirestoreDocs, renderMore: renderMore, SITE: SITE };
+  return { renderLayer: renderLayer, lookVars: lookVars, escapeHtml: escapeHtml, renderCard: renderCard, renderMark: renderMark, creditSpot: creditSpot, shouldShowMark: shouldShowMark, parseFirestoreDocs: parseFirestoreDocs, renderMore: renderMore, SITE: SITE };
 }));

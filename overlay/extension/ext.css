@@ -30,3 +30,24 @@ body.mobile .ww-moreBox{position:fixed;inset:6px}
 body.config{background:#fff;color:#18181b;padding:16px} body.config .code{font-size:2rem;font-weight:900;letter-spacing:.08em;margin:.4rem 0}
 html,body{height:100%;overflow:hidden} body.mobile,body.config{overflow:auto}
 #wwMark{position:absolute;inset:0;pointer-events:none;z-index:9} #wwMark .ww-mark{pointer-events:auto}
+/* always-on layer: the overlay's logo/name, Now playing, poster and stream title (positions from Overlay Studio) */
+#wwLayer{position:absolute;inset:0;pointer-events:none;z-index:3}
+.ww-spot{position:absolute;display:flex;flex-direction:column;gap:6px;max-width:34%}
+.ww-tl,.ww-tc,.ww-tr{top:3%} .ww-ml,.ww-mc,.ww-mr{top:50%;transform:translateY(-50%)} .ww-bl,.ww-bc,.ww-br{bottom:13%}
+.ww-tl,.ww-ml,.ww-bl{left:2%;align-items:flex-start} .ww-tr,.ww-mr,.ww-br{right:2%;align-items:flex-end}
+.ww-tc,.ww-mc,.ww-bc{left:50%;transform:translateX(-50%);align-items:center} .ww-mc{transform:translate(-50%,-50%)}
+.ww-tr{top:calc(10% + 52px)}
+.ww-box{background:var(--ww-panel);border:1px solid var(--ww-accent);border-radius:var(--ww-radius);box-shadow:var(--ww-glow);padding:6px 10px;color:var(--ww-text)}
+.ww-lbrand{display:flex;align-items:center;gap:8px} .ww-lbrand img{width:38px;height:38px;border-radius:50%} .ww-lbrand b{display:block;font-size:15px;text-transform:uppercase;letter-spacing:.03em}
+.ww-lbrand small,.ww-lgame small{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ww-accent)}
+.ww-lgame b{display:block;font-size:14px;text-transform:uppercase} .ww-ltitle{font-size:13px;font-style:italic;max-width:100%}
+.ww-lposter{padding:4px;line-height:0} .ww-lposter img{width:calc(86px * var(--psz,1));height:calc(115px * var(--psz,1));object-fit:cover;border-radius:calc(var(--ww-radius) * .6)}
+/* View more: one card per game, like the site's tracker */
+.ww-game-card{background:rgba(255,255,255,.05);border-radius:calc(var(--ww-radius) * .7);padding:8px 10px;margin:6px 0}
+.ww-game-name{display:block;color:var(--ww-accent2);font-size:14px}
+.ww-chips{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;margin-top:3px;color:var(--ww-text)}
+.ww-prof{margin-top:8px;padding:8px;border-radius:calc(var(--ww-radius) * .6);background:rgba(127,127,127,.12)}
+.ww-prof-h{display:flex;gap:10px;align-items:baseline;margin-bottom:6px} .ww-prof-h span{font-weight:800;color:#67e8f9}
+.ww-prof-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.ww-prof-n{font-size:10px;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:2px}
+.ww-prof-r{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:1px 0} .ww-prof-r span{opacity:.75}

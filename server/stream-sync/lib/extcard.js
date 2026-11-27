@@ -27,7 +27,7 @@ const clip = (s, n) => { s = String(s == null ? "" : s); return s.length > n ? s
 
 function me(input) {
     const tw = input.twitch || {}, tier = input.tier || 0;
-    const out = { name: tw.display || tw.login || "", login: tw.login || "", avatar: tw.avatar || "", game: "", status: "", poster: "", source: "avatar", tracker: tier >= 2 ? input.tracker || null : null };
+    const out = { name: tw.display || tw.login || "", login: tw.login || "", avatar: tw.avatar || "", game: "", status: "", poster: "", source: "avatar", title: tw.title || "", tracker: tier >= 2 ? input.tracker || null : null };
     if (!input.live) return Object.assign(out, { status: "Offline", poster: out.avatar });
     if (tier >= 3 && input.psn && input.psn.title) return Object.assign(out, { game: input.psn.title, status: input.psn.status || tw.title || "", poster: input.psn.poster || boxArt(tw.gameBoxArt) || out.avatar, source: "psn" });
     if (tw.gameName && !NON_GAMES.has(String(tw.gameName).toLowerCase())) return Object.assign(out, { game: tw.gameName, status: tw.title || "", poster: boxArt(tw.gameBoxArt) || out.avatar, source: "twitch" });
@@ -36,6 +36,7 @@ function me(input) {
 
 // ---- the streamer's overlay look (from Overlay Studio), so the extension matches their overlay ----
 const FONTS = ["Inter", "Roboto", "Montserrat", "Poppins", "Oswald", "Bebas Neue", "Rajdhani", "Orbitron", "Press Start 2P", "Bangers", "Permanent Marker", "Russo One", "Teko"];
+const POS = ["tl", "tc", "tr", "ml", "mc", "mr", "bl", "bc", "br"];
 const clamp = (n, lo, hi, d) => { n = Math.round(Number(n)); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
 function cleanLook(l) {
     if (typeof l === "string") { try { l = JSON.parse(l); } catch (e) { return null; } }
@@ -46,6 +47,18 @@ function cleanLook(l) {
     out.panelOpacity = clamp(l.panelOpacity, 0, 100, 82);
     out.radius = clamp(l.radius, 0, 30, 12);
     out.glow = l.glow === true;
+    // where the overlay puts its logo/name, "Now playing", Twitch poster and stream title (the extension copies it)
+    const L = l.layout && typeof l.layout === "object" ? l.layout : null;
+    if (L) {
+        const pos = (p) => (POS.indexOf(p) >= 0 ? p : "tl"), str = (x, n) => String(x == null ? "" : x).slice(0, n);
+        const e = (k) => L[k] && typeof L[k] === "object" ? L[k] : {};
+        out.layout = {
+            brand: { on: e("brand").on === true, pos: pos(e("brand").pos), name: str(e("brand").name, 40), tag: str(e("brand").tag, 60) },
+            game: { on: e("game").on === true, pos: pos(e("game").pos), prefix: str(e("game").prefix, 30) },
+            poster: { on: e("poster").on === true, pos: pos(e("poster").pos), size: clamp(e("poster").size, 50, 200, 100) },
+            title: { on: e("title").on === true, pos: pos(e("title").pos) }
+        };
+    }
     return out;
 }
 
@@ -107,7 +120,7 @@ const num = (n) => Math.round(Number(n)).toLocaleString("en-US");
 const vals = (o) => (o && typeof o === "object" ? Object.values(o).filter((x) => x && typeof x === "object") : []);
 const msOf = (t) => (t && typeof t.toMillis === "function" ? t.toMillis() : Number(t) || 0);
 const OBJ_KEYS = ["ranks", "collectibles", "missions", "medals", "wallet"];
-function trackerEntry(id, platform, v) {
+function trackerEntry(id, platform, v, def) {
     v = v || {};
     if (/_prev$/i.test(String(id))) return null;
     const by = {}; Object.keys(v).forEach((k) => { by[norm(k)] = k; });
@@ -128,7 +141,6 @@ function trackerEntry(id, platform, v) {
     xy("Collectibles", groups.reduce((a, g) => a + g.got, 0), groups.reduce((a, g) => a + g.total, 0));
     const ms = vals(v.missions); xy("Missions", ms.filter((m) => m.completed).length, ms.length);
     const md = vals(v.medals); xy("Medals", md.filter((m) => m.earned).length, md.length);
-    groups.filter((g) => g.label && g.got > 0).sort((a, b) => b.total - a.total).slice(0, 4).forEach((g) => extra.push(clip(g.label, 30) + " " + g.got + "/" + g.total));
     if (v.ranks && typeof v.ranks === "object") Object.keys(v.ranks).forEach((k) => { const n = Number(v.ranks[k]); if (norm(k) !== "collectibles" && n > 0 && n < 1e11) { extra.push(words(k) + " " + num(n)); progress = true; } });
     if (v.wallet && typeof v.wallet === "object" && Number(v.wallet.level) > 1) { facts.push("Level " + num(v.wallet.level)); progress = true; }
     // other plain stats (best score, kills, rank...)
@@ -139,8 +151,19 @@ function trackerEntry(id, platform, v) {
         else if (val === true) { facts.push(words(k)); progress = true; }
         else if (typeof val === "string" && val && val.length <= 30 && !/^(yes|no|true|false|0)$/i.test(val) && !/^[[{]/.test(val)) facts.push(words(k) + ": " + val);
     });
+    // the game's own profile card (e.g. "Wildlands profile"), laid out by the game's tracker file (player_profile)
+    let profile = null;
+    if (def && Array.isArray(def.groups)) {
+        const w = v.wallet && typeof v.wallet === "object" ? v.wallet : {};
+        const gs = def.groups.map((g) => ({ name: String(g.name || ""), rows: (g.fields || []).map((f) => {
+            const val = String(w["pf_" + f.id] == null ? "" : w["pf_" + f.id]).trim();
+            return val ? [String(f.name || f.id), clip(val + (/^\d+(\.\d+)?$/.test(val) ? String(f.unit || "") : ""), 40)] : null;
+        }).filter(Boolean) })).filter((g) => g.rows.length);
+        if (gs.length) { profile = { title: String(def.title || "Profile").replace(/^My\s+/i, ""), level: Number(w.level) || 1, groups: gs }; progress = true; }
+    }
     if (!progress) return null;
-    return { id: String(id), name: prettyName(id, v), platform, facts: facts.concat(extra).slice(0, 8), at: msOf(v.updatedAt) || msOf(v.saveAt) };
+    const nice = def && def.name ? String(def.name).replace(/[®™]/g, "").replace(/\s+/g, " ").trim() : prettyName(id, v);
+    return { id: String(id), name: nice, platform, profile, facts: facts.concat(extra).slice(0, 8), at: msOf(v.updatedAt) || msOf(v.saveAt) };
 }
 
 module.exports = { cleanLook, trackerEntry, prettyName, buildCard, cardSize, sameCard, effectiveTier, FOOT, MAX_BYTES };

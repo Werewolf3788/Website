@@ -125,9 +125,21 @@ test("card tracker shows the game being played, from the Game Companion", async 
         await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
         h.st.now += 61000; await h.ext.tick();
         const t = h.pushes.at(-1).card.me.tracker;
-        assert.strictEqual(t.games[0].name, "Tom Clancys Ghost Recon Wildlands");
+        assert.strictEqual(t.games[0].name, "Tom Clancy's Ghost Recon Wildlands");
         assert.deepStrictEqual(t.games[0].summary, ["Trophies 12/60 (20%)", "Missions 1/2"]);
         assert.strictEqual(t.games.filter((g) => /Wildlands/.test(g.name)).length, 1, "Game Companion and PSN copies merged");
+    } finally { close(h); }
+});
+
+test("view more uses the site's game files for names and profiles", async () => {
+    const h = setup({ fs: { "user/KEV1/platform/ps/game/wildlands": { wallet: { level: 26, pf_longshot: "307" } } } });
+    try {
+        const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
+        const g = (await h.get("/ext/more/999")).j.games[0];
+        assert.strictEqual(g.name, "Tom Clancy's Ghost Recon Wildlands");
+        assert.deepStrictEqual(g.profile.groups.find((x) => x.name === "Combat").rows, [["Longest shot", "307 m"]]);
+        assert.strictEqual(g.profile.level, 26);
     } finally { close(h); }
 });
 
@@ -322,7 +334,7 @@ test("view more leaves out games with no progress", async () => {
         const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
         await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
         const a = await h.get("/ext/more/999");
-        assert.deepStrictEqual(a.j.games.map((g) => g.name), ["Wildlands"]);
+        assert.deepStrictEqual(a.j.games.map((g) => g.name), ["Tom Clancy's Ghost Recon Wildlands"]);
         assert.deepStrictEqual(a.j.games[0].facts, ["Level 28"]);
     } finally { close(h); }
 });
@@ -334,7 +346,7 @@ test("view more is served from the server cache", async () => {
         await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
         const before = h.F.counts.reads["user/KEV1/platform/playstation/game"] || 0;
         const a = await h.get("/ext/more/999"), b = await h.get("/ext/more/999");
-        assert.strictEqual(a.j.games[0].name, "Wildlands");
+        assert.strictEqual(a.j.games[0].name, "Tom Clancy's Ghost Recon Wildlands");
         assert.deepStrictEqual(a.j, b.j);
         assert.ok((h.F.counts.reads["user/KEV1/platform/playstation/game"] || 0) - before <= 1, "Firestore read at most once for many viewers");
         assert.strictEqual((await h.get("/ext/more/123")).s, 404);
