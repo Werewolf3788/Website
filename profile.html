@@ -435,6 +435,42 @@ function wlCard(w) {
     ${WL_GROUPS.map(g => `<div><div class="mute" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">${g[0]}</div>${g[1].map(f => `<div style="display:flex;justify-content:space-between;gap:.6rem;font-size:.82rem;padding:.12rem 0"><span class="mute">${f[1]}</span><b>${val(f[0], f[2])}</b></div>`).join('')}</div>`).join('')}
     </div></div>`;
 }
+// Wildlands skill tree + Rebel Support: ranks saved by the Game Companion (collectibles[group].items[id].level / .bonusEarned),
+// names and max ranks from the game file. Loaded once, only when a Wildlands save is shown.
+const WL_SKILL_GROUPS = [['weapon_skills', 'Weapon'], ['drone_skills', 'Drone'], ['item_skills', 'Items'], ['physical_skills', 'Physical'], ['squad_skills', 'Squad']];
+let wlDefs = null, wlDefsLoading = null;
+function loadWlDefs() {
+  if (wlDefs || wlDefsLoading) return wlDefsLoading;
+  wlDefsLoading = fetch('public/games/wildlands.json', { cache: 'force-cache' }).then(r => r.json()).then(j => {
+    const c = j.collectibles || {}, out = {};
+    WL_SKILL_GROUPS.concat([['rebel_support_skills', 'Rebel']]).forEach(([g]) => { out[g] = (c[g] && c[g].items || []).map(it => ({ id: it.id, name: it.name, levels: Number(it.levels) || 1, bonus: !!it.bonus })); });
+    wlDefs = out; if (!$('#profile-root').hidden) render();
+  }).catch(e => { console.warn('[wildlands skills]', e); wlDefs = {}; });
+  return wlDefsLoading;
+}
+function wlSkillsCard(saved) {
+  if (!saved) return '';
+  if (!wlDefs) { loadWlDefs(); return ''; }
+  const lv = (g, id) => { const it = saved[g] && saved[g].items && saved[g].items[id]; return it ? Math.max(0, num(it.level) || (it.collected ? 1 : 0)) : 0; };
+  const star = (g, id) => !!(saved[g] && saved[g].items && saved[g].items[id] && saved[g].items[id].bonusEarned);
+  let tot = 0, got = 0, maxed = 0, skills = 0, stars = 0, starTot = 0;
+  const rows = WL_SKILL_GROUPS.map(([g, label]) => {
+    const defs = wlDefs[g] || []; let a = 0, b = 0;
+    defs.forEach(d => { const l = Math.min(lv(g, d.id), d.levels); a += l; b += d.levels; skills++; if (l >= d.levels) maxed++; if (d.bonus) { starTot++; if (star(g, d.id)) stars++; } });
+    tot += b; got += a;
+    return b ? `<div style="display:flex;justify-content:space-between;gap:.6rem;font-size:.82rem;padding:.12rem 0"><span class="mute">${label}</span><b>${a}/${b} ranks</b></div>${pctBar(Math.round(a / b * 100))}` : '';
+  }).join('');
+  const rebel = (wlDefs.rebel_support_skills || []).map(d => { const l = Math.min(lv('rebel_support_skills', d.id), d.levels);
+    return `<div style="display:flex;justify-content:space-between;gap:.6rem;font-size:.82rem;padding:.12rem 0"><span class="mute">${esc(d.name)}</span><b>${l ? 'Rank ' + l + '/' + d.levels : '<span class="mute">Locked</span>'}</b></div>`; }).join('');
+  const rDone = (wlDefs.rebel_support_skills || []).reduce((n, d) => n + Math.min(lv('rebel_support_skills', d.id), d.levels), 0), rTot = (wlDefs.rebel_support_skills || []).reduce((n, d) => n + d.levels, 0);
+  if (!got && !rDone) return '';
+  return `<div style="margin:.2rem 0 .9rem;padding:.8rem;border-radius:.8rem;background:rgba(127,127,127,.1)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem">
+      <div><div style="display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.4rem"><div style="font-weight:800"><i class="fas fa-sitemap"></i> Skill tree</div><div class="mono" style="font-weight:800;color:#67e8f9">${got}/${tot} ranks</div></div>
+        <div class="mute" style="font-size:.75rem;margin-bottom:.3rem">${maxed}/${skills} skills maxed${starTot ? ` &bull; ★ ${stars}/${starTot} bonus medals` : ''}</div>${rows}</div>
+      <div><div style="display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.4rem"><div style="font-weight:800"><i class="fas fa-users"></i> Rebel Support</div><div class="mono" style="font-weight:800;color:#67e8f9">${rDone}/${rTot} ranks</div></div>${rebel}</div>
+    </div></div>`;
+}
 async function readTracking(fs, ids) {
   const out = [], seen = new Set();
   for (const id of ids) for (const p of Object.keys(TRACK_PLATS)) {
@@ -447,7 +483,7 @@ async function readTracking(fs, ids) {
       const done = sets.reduce((n, a) => n + a.filter(x => x && (x.earned || x.completed)).length, 0)
                  + Object.values(d.collectibles || {}).reduce((n, c) => n + Object.values((c && c.items) || {}).filter(i => i && i.collected).length, 0);
       out.push({ title: /^wildlands$/i.test(doc.id) ? 'Ghost Recon Wildlands' : doc.id, platform:({ ps:'PlayStation', xbox:'Xbox', steam:'Steam', pc:'PC' })[p], status: total && done >= total ? 'Completed' : (done ? 'In progress' : 'Started'),
-        progress: total ? Math.round(Math.min(done, total) / total * 100) : null, poster:'', note: total ? `${Math.min(done, total)}/${total} tracked` : '', updated:d.updatedAt || 0, wl: /wildlands/i.test(doc.id) && wlHas(d.wallet) ? d.wallet : null, empty: /wildlands/i.test(doc.id) && !wlHas(d.wallet) });
+        progress: total ? Math.round(Math.min(done, total) / total * 100) : null, poster:'', note: total ? `${Math.min(done, total)}/${total} tracked` : '', updated:d.updatedAt || 0, wl: /wildlands/i.test(doc.id) && wlHas(d.wallet) ? d.wallet : null, sk: /wildlands/i.test(doc.id) ? (d.collectibles || null) : null, empty: /wildlands/i.test(doc.id) && !wlHas(d.wallet) });
     });
   }
   out.sort((a, b) => num(b.updated) - num(a.updated));
@@ -746,7 +782,7 @@ function trackingRows(items) {
     <div style="min-width:0;flex:1"><div style="font-weight:800" class="nowrap-trunc">${esc(t.title)}</div>
       <div class="mute" style="font-size:.75rem">${[t.platform, t.status].filter(Boolean).map(esc).join(' &bull; ')}${t.note ? ' &mdash; ' + esc(t.note) : ''}</div>
       ${t.progress != null ? pctBar(t.progress) : ''}</div>
-    ${t.progress != null ? `<div class="mono" style="font-weight:800;color:${t.progress >= 100 ? '#67e8f9' : pctColor(t.progress)}">${t.progress}%</div>` : ''}</div>${t.wl ? wlCard(t.wl) : (t.empty && S.isOwner ? wlCard({}) + `<div class="mute" style="font-size:.75rem;margin:-.5rem 0 .8rem">Fill in My Wildlands profile in the Game Companion and this card updates.</div>` : '')}`).join('');
+    ${t.progress != null ? `<div class="mono" style="font-weight:800;color:${t.progress >= 100 ? '#67e8f9' : pctColor(t.progress)}">${t.progress}%</div>` : ''}</div>${t.wl ? wlCard(t.wl) : (t.empty && S.isOwner ? wlCard({}) + `<div class="mute" style="font-size:.75rem;margin:-.5rem 0 .8rem">Fill in My Wildlands profile in the Game Companion and this card updates.</div>` : '')}${t.sk ? wlSkillsCard(t.sk) : ''}`).join('');
 }
 function trackingHtml() {
   if (!S.tracking || S.tracking.error) return `<div class="card mute" style="padding:1.5rem;text-align:center">Game tracking isn't available right now.</div>`;

@@ -419,3 +419,33 @@ test("mark endpoint reports a fresh founder credit", async () => {
         assert.strictEqual(m.j.creditAt, h.F.s["ext_channels/999"].lastCreditAt);
     } finally { close(h); }
 });
+
+test("view more puts the primary platform first and drops its copies saved on other platforms", async () => {
+    const h = setup({ rtdb: { "users/kev/primary_platform": "ps" }, fs: {
+        "user/KEV1/platform/steam/game/wildlands": { wallet: { level: 9 } },
+        "user/KEV1/platform/steam/game/portal2": { name: "Portal 2", level: 3 },
+        "user/KEV1/platform/xbox/game/halo": { name: "Halo", level: 5 },
+        "user/KEV1/platform/ps/game/wildlands": { wallet: { level: 26, pf_longshot: "307" } },
+        "user/KEV1/platform/playstation/game/wildlands": { name: "Wildlands", trophies: { earned: 12, total: 60 } } } });
+    try {
+        const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
+        const games = (await h.get("/ext/more/999")).j.games;
+        assert.strictEqual(games[0].platform, "playstation");
+        assert.strictEqual(games.filter((g) => /Wildlands/.test(g.name)).length, 1, "only the PlayStation Wildlands");
+        assert.ok(games[0].profile && games[0].profile.level === 26, "profile kept when ps/playstation copies merge");
+        assert.ok(games.some((g) => g.name === "Portal 2") && games.some((g) => g.name === "Halo"), "games only on other platforms stay");
+    } finally { close(h); }
+});
+
+test("primary platform xbox moves xbox games first", async () => {
+    const h = setup({ rtdb: { "users/kev/primary_platform": "xbox" }, fs: {
+        "user/KEV1/platform/ps/game/wildlands": { wallet: { level: 26 } },
+        "user/KEV1/platform/xbox/game/halo": { name: "Halo", level: 5 } } });
+    try {
+        const { j } = await h.post("/ext/register", {}, { Authorization: "Bearer bcast" });
+        await h.post("/ext/pair", { code: j.pairCode, idToken: "kevtok" });
+        const games = (await h.get("/ext/more/999")).j.games;
+        assert.deepStrictEqual(games.map((g) => g.platform), ["xbox", "playstation"]);
+    } finally { close(h); }
+});

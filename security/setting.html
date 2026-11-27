@@ -106,6 +106,9 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 
   <h2>Profile</h2>
   <label for="username">Display name / gamer tag</label><input id="username" maxlength="32">
+  <label for="primary_platform">Primary platform</label>
+  <select id="primary_platform"><option value="ps">PlayStation</option><option value="xbox">Xbox</option><option value="steam">Steam</option><option value="pc">PC</option></select>
+  <p class="hint">The platform you mainly play on. The Game Companion opens on it, and your Twitch overlay shows its tracker progress first.</p>
   <label>Friend code</label>
   <div class="row"><input id="friend_code" readonly><button id="cp">Copy</button></div>
   <p class="hint" id="codeState" role="status" style="min-height:1.2em"></p>
@@ -483,6 +486,7 @@ async function load(){
   $('discordBox').classList.toggle('hidden',(U.email||'').toLowerCase()!=='raykevin71888@gmail.com');   // Discord app details: owner account only
   $('whoSub').textContent=U.email||U.phoneNumber||'';
   $('username').value=D.username||U.displayName||'';
+  $('primary_platform').value=({playstation:'ps',psn:'ps'})[D.primary_platform]||D.primary_platform||'ps';if(!$('primary_platform').value)$('primary_platform').value='ps';
   $('avatar_source').value=D.avatar_source||'google';$('avatar_custom').value=D.avatar_source==='custom'?D.avatar_url||'':'';
   HANDLES.forEach(([f,,s])=>{$(f).value=D[f]||'';$(s).value=D[s]||'private'});
   $('discord_signin_id').value=D.discord_signin_id||'';$('discord_signin_key').value=S.discord_signin_key||'';$('discordKeyState').textContent=S.discord_signin_key?'Public Key saved.':'';
@@ -620,7 +624,7 @@ $('save').onclick=async()=>{
   const b=$('save');b.disabled=true;b.textContent='Saving…';
   try{
     const url=await resolveAvatar(),now=Date.now();
-    const pub={username:$('username').value.trim(),avatar_source:$('avatar_source').value,avatar_url:url,
+    const pub={username:$('username').value.trim(),primary_platform:$('primary_platform').value||'ps',avatar_source:$('avatar_source').value,avatar_url:url,
       primary_color:$('h1').value,secondary_color:$('h2x').value,
       links:[0,1,2,3,4].map(i=>$('lk'+i).value.trim()).filter(Boolean),updated_at:now};
     HANDLES.forEach(([f,,s])=>{pub[f]=$(f).value.trim();pub[s]=$(s).value});
