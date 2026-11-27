@@ -115,7 +115,8 @@ are PSN friends or show status to Anyone).
 - Make the Buy Me a Coffee shop items for the tiers.
 
 ## Open — Kevin decides
-1. **Prices:** keep $5 / $10 / $20, or lower (Claude suggested ~$5 / $8 / $12; Lightstream Gamer is $12–16)?
+1. ~~Prices~~ — **decided: $5 / $10 / $20 monthly, $50 / $100 / $200 yearly** (Kevin: Lightstream basic is $8/mo or $88/yr
+   and its 720p Gamer plan is $25/mo, so Tier 3 at $20 is still below it).
 2. **Tier 2 paid vs free-with-watermark:** charging for the tracker means fewer site sign-ups (the promotion goal).
 3. **Affiliate/Partner pricing** for the tiers like Overlay Studio's $8/$80, or one price for everyone?
 4. **Allies free at Tier 3** — OK?
