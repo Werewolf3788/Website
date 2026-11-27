@@ -76,7 +76,7 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors }) {
   // ---- Allies: the owner's friends list (users/{owner}/friends) gets "Match my game" free ----
   // friend code -> accounts/friend_codes/{CODE} -> user key -> users/{key}/twitch_username
   // Kept as a set of lower-case Twitch names, rebuilt at most every 10 minutes.
-  let allies = { at: 0, set: new Set() };
+  let allies = { at: 0, set: new Set(), owner: '' };
   async function allyChannels() {
     if (Date.now() - allies.at < 10 * 60000) return allies.set;
     const owner = process.env.DISCORD_APP_OWNER_KEY, db = admin.database(), set = new Set();
@@ -92,7 +92,8 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors }) {
         const t = cleanChan((await db.ref('users/' + k + '/twitch_username').once('value')).val() || '');
         if (okChan(t)) set.add(t);
       }));
-      allies = { at: Date.now(), set };
+      let ownerName = ''; if (owner) { try { ownerName = cleanChan((await db.ref('users/' + owner + '/twitch_username').once('value')).val() || ''); } catch (e) {} }
+      allies = { at: Date.now(), set, owner: ownerName };
     } catch (e) { console.error('[overlay allies]', e && e.message); }
     return allies.set;
   }
@@ -108,10 +109,11 @@ function mountOverlayPro(app, { admin, fetchFn, cors: baseCors }) {
     const hit = proCache.get(a.id); if (hit && Date.now() - hit.at < 5 * 60000) return res.json(hit.body);
     try {
       const d = await fs().collection('overlay_pro').doc(a.id).get();
-      let ally = false; if (a.platform === 'twitch') { try { ally = (await allyChannels()).has(a.name); } catch (e) { /* keep false */ } }
+      let ally = false, isOwner = false;
+      if (a.platform === 'twitch') { try { ally = (await allyChannels()).has(a.name); isOwner = !!allies.owner && allies.owner === a.name; } catch (e) { /* keep false */ } }
       const paid = T.effectiveTier(d.exists ? d.data() : null, Date.now(), false), eff = ally && paid.tier < 3 ? T.effectiveTier(null, 0, true) : paid;
       const body = { pro: paid.tier >= 1, until: paid.lifetime ? LIFETIME_UNTIL : paid.until, tier: eff.tier, lifetime: paid.lifetime, founder: paid.founder,
-        account: a.label, ally, games: paid.tier >= 1 || ally };
+        account: a.label, ally, owner: isOwner, games: paid.tier >= 1 || ally };
       proCache.set(a.id, { at: Date.now(), body }); res.json(body);
     } catch (e) { console.error('[overlay pro]', e && e.message); res.json({ pro: false, tier: 0 }); }
   });

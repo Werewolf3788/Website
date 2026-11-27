@@ -39,8 +39,8 @@ test('lifetime upgrade pays the difference', () => {
 });
 
 // ---- through the server: claims, founder limit, grants ----
-function boot(extraStore) {
-  const f = fakeAdmin({ 'user_secrets/owner/bmc_webhook_secret': 'sekret', 'users/owner/friends': {}, 'user_secrets/owner/twitch_client_id': 'x', 'user_secrets/owner/twitch_client_secret': 'y' }, {});
+function boot(extraStore, extraRtdb) {
+  const f = fakeAdmin(Object.assign({ 'user_secrets/owner/bmc_webhook_secret': 'sekret', 'users/owner/friends': {}, 'user_secrets/owner/twitch_client_id': 'x', 'user_secrets/owner/twitch_client_secret': 'y' }, extraRtdb || {}), {});
   Object.assign(f.store, extraStore || {});
   const { createApp } = require('../server.js');
   return Object.assign(start(createApp({ admin: f.admin, fetchFn: fakeFetch })), { store: f.store });
@@ -141,5 +141,13 @@ test('founder spot is held 24 hours, then released and the old code is not honou
     await h.hook({ type: 'extra_purchase.created', event_id: 'late', data: { amount: 99, support_note: a.j.claim } }, 'sekret');
     assert.ok(!h.store['overlay_pro/slowpay'], 'no 26th founder');
     assert.ok(h.store['bmc_unmatched/late'], 'late payment kept for Kevin');
+  } finally { h.srv.close(); }
+});
+
+test('pass check says when the channel is the owner\'s own', async () => {
+  const h = boot({}, { 'users/owner/twitch_username': 'werewolf3788' });
+  try {
+    assert.strictEqual((await h.get('/overlay/pro/werewolf3788')).j.owner, true);
+    assert.strictEqual((await h.get('/overlay/pro/someoneelse')).j.owner, false);
   } finally { h.srv.close(); }
 });
