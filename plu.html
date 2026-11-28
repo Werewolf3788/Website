@@ -53,6 +53,10 @@ main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
 .lb.on{display:flex}
 .lb img{max-width:min(92vw,900px);max-height:78vh;object-fit:contain;background:#fff;border-radius:12px;padding:8px}
 .lb .cap{color:#fff;font-size:20px;text-align:center}.lb .cap b{display:block;font-size:30px;letter-spacing:1px}
+.lb .langs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:600px}
+.lb .langs button{background:#fff;color:#111;border:0;border-radius:999px;padding:10px 16px;font-size:17px;font-weight:600;cursor:pointer}
+.lb .langs button.talking{background:#f5a623}
+.lb .said{color:#fff;font-size:34px;min-height:1.2em;text-align:center}
 .lb .x{position:absolute;top:12px;right:16px;background:none;border:0;color:#fff;font-size:40px;line-height:1;cursor:pointer}
 .note{color:var(--mute);font-size:13px;line-height:1.3}
 .price{font-weight:600;font-size:14px;margin-top:2px}
@@ -120,7 +124,7 @@ main{max-width:1400px;margin:0 auto;padding:16px max(4vw,14px) 40px}
   <div class="chips" id="chips"></div>
 </header>
 <main>
-  <section id="look"><p class="count" id="count"></p><div class="grid" id="grid"></div></section>
+  <section id="look"><p class="count" id="count"></p><p class="foot">Tap a picture to see it big and hear the name in 中文, Español, 日本語, 한국어 or Русский for customers.</p><div class="grid" id="grid"></div></section>
   <section id="prac" hidden>
     <div class="sub"><button id="sType" aria-pressed="true">Name → type code</button><button id="sPick" aria-pressed="false">Code → pick name</button></div>
     <div class="card" id="card"></div>
@@ -403,13 +407,14 @@ function parseCSV(t){const R=[];let row=[],f='',q=false;for(let i=0;i<t.length;i
   else if(ch=='"')q=true;else if(ch==','){row.push(f);f=''}else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;row.push(f);R.push(row);row=[];f=''}else f+=ch}
   if(f||row.length){row.push(f);R.push(row)}return R}
 function useRows(R){const h=R[0].map(x=>x.trim().toLowerCase());const col=k=>h.indexOf(k);
-  const ci=col('code'),ni=col('name'),si=col('section'),ti=col('note'),pi=col('picture'),pri=col('price'),hi=col('sold more');if(ni<0)return false;
+  const ci=col('code'),ni=col('name'),si=col('section'),ti=col('note'),pi=col('picture'),pri=col('price'),hi=col('sold more'),LC=[['zh','chinese'],['es','spanish'],['ja','japanese'],['ko','korean'],['ru','russian']].map(([k,h])=>[k,col(h)]);if(ni<0)return false;
   const secs=[...S],out=[];
   for(const r of R.slice(1)){const n=(r[ni]||'').trim();if(!n)continue;let c=(ci<0?'':(r[ci]||'')).trim().replace(/\.0+$/,'');
     const sn=(si<0?'':(r[si]||'')).trim()||'Other';let k=secs.indexOf(sn);if(k<0){secs.push(sn);k=secs.length-1}
-    out.push({i:out.length,s:k,c,n,t:ti<0?'':(r[ti]||'').trim(),p:pi<0?'':(r[pi]||'').trim(),pr:pri<0?'':(r[pri]||'').trim(),top:hi>=0&&/^(true|yes|y|x|1|✓|✔)$/i.test((r[hi]||'').trim())})}
+    out.push({i:out.length,s:k,c,n,t:ti<0?'':(r[ti]||'').trim(),p:pi<0?'':(r[pi]||'').trim(),pr:pri<0?'':(r[pri]||'').trim(),L:Object.fromEntries(LC.filter(([k,ix])=>ix>=0&&(r[ix]||'').trim()).map(([k,ix])=>[k,r[ix].trim()])),top:hi>=0&&/^(true|yes|y|x|1|✓|✔)$/i.test((r[hi]||'').trim())})}
   if(out.length<10)return false;S=secs;D=out;return true}
 function applyLive(R){if(!useRows(R))return false;if(sec>=S.length)sec=-1;chips();mode==='look'?draw():mode==='game'?newGame():mode==='reg'?newCustomer():next();return true}
+window.pluItem=i=>D[i];window.pluHint=t=>hint(t);
 try{const c=localStorage.getItem('pluSheet');if(c)applyLive(JSON.parse(c))}catch(e){}
 fetch(SHEET,{cache:'no-store'}).then(r=>r.ok?r.text():Promise.reject()).then(t=>{const R=parseCSV(t);if(applyLive(R)){try{localStorage.setItem('pluSheet',JSON.stringify(R))}catch(e){}}}).catch(()=>{});
 }
@@ -448,16 +453,25 @@ fetch(SHEET,{cache:'no-store'}).then(r=>r.ok?r.text():Promise.reject()).then(t=>
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
 })();
 </script>
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Item picture"><button class="x" aria-label="Close">&times;</button><img alt=""><div class="cap"></div></div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Item picture"><button class="x" aria-label="Close">&times;</button><img alt=""><div class="cap"></div><div class="said notranslate" translate="no"></div><div class="langs notranslate" translate="no"></div></div>
 <script>
 /* Lightbox: tap a picture in the list to see it big. Tap anywhere or press Esc to close. */
-(function(){const lb=document.getElementById('lb'),im=lb.querySelector('img'),cap=lb.querySelector('.cap'),g=document.getElementById('grid');
+(function(){const lb=document.getElementById('lb'),im=lb.querySelector('img'),cap=lb.querySelector('.cap'),said=lb.querySelector('.said'),langs=lb.querySelector('.langs'),g=document.getElementById('grid');
+const LN=[['zh','中文','zh-CN'],['es','Español','es-MX'],['ja','日本語','ja-JP'],['ko','한국어','ko-KR'],['ru','Русский','ru-RU']];
+let cur=null;
+function voiceFor(tag){try{const v=speechSynthesis.getVoices(),b=tag.slice(0,2);return v.find(x=>x.lang.replace('_','-')===tag)||v.find(x=>x.lang.toLowerCase().startsWith(b))||null}catch(e){return null}}
+function speak(k,btn){const L=LN.find(x=>x[0]===k),t=cur&&cur.L&&cur.L[k];if(!L||!t)return;said.textContent=t;
+ if(!window.speechSynthesis){window.pluHint&&pluHint('This browser can\'t read out loud.');return}
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=L[2];u.rate=.85;const v=voiceFor(L[2]);if(v)u.voice=v;else window.pluHint&&pluHint('No '+L[1]+' voice on this phone, so it may sound off. Show them the words instead.');
+ langs.querySelectorAll('button').forEach(b=>b.classList.remove('talking'));btn.classList.add('talking');u.onend=u.onerror=()=>btn.classList.remove('talking');window.__lu=u;speechSynthesis.speak(u)}
+langs.addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('button[data-l]');if(b)speak(b.dataset.l,b)});
 if(!g)return;
 g.addEventListener('click',e=>{const i=e.target.closest('.pic img');if(!i)return;const it=i.closest('.item');
  const code=it&&it.querySelector('.code')?it.querySelector('.code').textContent:'',nm=it&&it.querySelector('.name')?it.querySelector('.name').textContent:'',pr=it&&it.querySelector('.price')?it.querySelector('.price').textContent:'';
+ const sb=it&&it.querySelector('[data-say]');cur=sb&&window.pluItem?window.pluItem(+sb.dataset.say):null;said.textContent='';const L=cur&&cur.L||{};langs.innerHTML=LN.filter(x=>L[x[0]]).map(x=>`<button type="button" data-l="${x[0]}">🔊 ${x[1]}</button>`).join('');
  im.src=i.src;im.alt=nm;cap.innerHTML='';const b=document.createElement('b');b.className='notranslate';b.translate=false;b.textContent=code;cap.append(b,document.createTextNode(nm+(pr?' · '+pr:'')));
  lb.classList.add('on');document.body.style.overflow='hidden'});
-const close=()=>{lb.classList.remove('on');document.body.style.overflow=''};
+const close=()=>{try{speechSynthesis.cancel()}catch(e){}lb.classList.remove('on');document.body.style.overflow=''};
 lb.addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&lb.classList.contains('on'))close()});
 })();
 </script>
