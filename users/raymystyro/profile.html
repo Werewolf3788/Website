@@ -15,7 +15,6 @@
  *   5. Squad Campaigns: Cross-referenced shared games between OneLIVIDMAN and squad
  *      operatives with progress >= 1%, high-res banners, and leader crowns.
  *   6. Recent PSN Hunts: Styled overlay with legible % progress badges and bars.
- *   7. FS25 Farm 2 (farmId2) Telemetry: Live agronomy, crop stage, and fleet equipment.
  *   8. Smart Domain Routing: Same domain stays in current tab; external opens new tab.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
  * Date & Time Stamp: 2026-09-30 14:35:00 EDT (America/New_York)
@@ -234,7 +233,6 @@
         .card-theme-blue { border-top: 4px solid #38bdf8 !important; }
         .card-theme-se5 { border-top: 4px solid #38bdf8 !important; }
         .card-theme-cotw { border-top: 4px solid #10b981 !important; }
-        .card-theme-fs25 { border-top: 4px solid #84cc16 !important; }
 
         .header-stat-card {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -442,11 +440,6 @@
             text-transform: uppercase; animation: pulseLive 2s infinite;
         }
         @keyframes pulseLive { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        .fs25-badge {
-            background: rgba(132, 204, 22, 0.15); color: #bef264; border: 1px solid rgba(132, 204, 22, 0.3);
-            border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;
-        }
 
         .service-badge {
             background: rgba(255, 255, 255, 0.04);
@@ -675,75 +668,12 @@
                     <p class="text-xs text-gray-400 font-bold uppercase">Dedicated Real-Time Feeds for OneLIVIDMAN / Raymystyro</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 2 Focused</span>
                     <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40">Squad Roster Active</span>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="operations-matrix-grid">
                 
-                <!-- CARD A: FS25 FARM 2 -->
-                <section id="fs25-telemetry-section" class="glass-card card-theme-fs25 p-6 sm:p-7 flex flex-col justify-between space-y-6">
-                    <div class="space-y-5">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-tractor text-lime-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry & Farm 2 Fleet</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Node: fs25-a3563 / Target: farmId2</p>
-                            </div>
-                            <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
-                                <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
-                                <span id="fs25-status-text">Farm 2 Synchronized</span>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Farm Designation</div>
-                                <div id="fs25-farm-name" class="text-xs sm:text-sm font-black text-white mt-1 truncate">Ray's Farm (Farm 2)</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Operating Capital</div>
-                                <div id="fs25-money" class="text-xs sm:text-sm font-black text-lime-400 font-mono mt-1 truncate">$0</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Farmland Parcels</div>
-                                <div id="fs25-fields-count" class="text-xs sm:text-sm font-black text-white font-mono mt-1">0</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Fleet Machinery</div>
-                                <div id="fs25-vehicles-count" class="text-xs sm:text-sm font-black text-white font-mono mt-1">0</div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2.5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 2 Active Implements & Heavy Machinery
-                                </h4>
-                                <span id="fs25-fleet-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Units</span>
-                            </div>
-                            <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 2 Fleet...</div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2.5 pt-2 border-t border-white/5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-seedling text-lime-400"></i> Farm 2 Crops, Agronomy & Field Boundaries
-                                </h4>
-                                <span id="fs25-fields-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Parcels</span>
-                            </div>
-                            <div id="fs25-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Agronomy Data...</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
                 <!-- CARD B: SNIPER ELITE 5 COMPREHENSIVE SERVICE RECORD -->
                 <section id="firestore-progress-section" class="glass-card card-theme-se5 p-6 sm:p-7 flex flex-col justify-between space-y-6">
                     <div class="space-y-5">
@@ -893,7 +823,7 @@
                     Werewolf Command Engine • v45.8.0 • Build: 2026-09-30 14:35:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
-                    Primary RTDB: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farmId2)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
+                    Primary RTDB: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
                 </div>
             </div>
         </footer>
@@ -1530,8 +1460,6 @@
         const UTM_LINKS_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
         const PSN_GAMERTAGS_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json";
         
-        const FS25_PRIMARY_URL = "https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
-        const FS25_FALLBACK_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
         // Global Game Posters Directory for Fallback Matching
         const GLOBAL_FALLBACK_POSTERS = {
@@ -1932,123 +1860,6 @@
                 document.querySelectorAll('.folder-dropdown-menu').forEach(menu => menu.classList.remove('show'));
             }
         });
-
-        // FS25 Farm 2 Telemetry Ingestion from authorized endpoint
-        async function updateFS25Telemetry() {
-            try {
-                let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
-                if (!res.ok) res = await fetch(`${FS25_FALLBACK_URL}?t=${Date.now()}`);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (!data) return;
-
-                const farmData = data.farms?.farm_2 || 
-                                 data.farms?.farmId2 || 
-                                 data.farms?.[2] || 
-                                 data.farms?.Ray || 
-                                 data.farms?.OneLIVIDMAN || 
-                                 data.farmId2 || 
-                                 data;
-
-                const farmName = farmData.name || farmData.farmName || "Ray's Farm (Farm 2)";
-                const rawMoney = farmData.finances ? farmData.finances.money : farmData.money;
-                const money = rawMoney !== undefined ? `$${Math.round(Number(rawMoney)).toLocaleString()}` : "$0";
-                
-                const vehicles = convertFirebaseArray(farmData.cards?.fleet || farmData.vehicles || farmData.fleet || farmData.equipment || farmData.machines);
-                const harvesters = convertFirebaseArray(farmData.cards?.harvestersAndCombines);
-                const allUnits = [...vehicles, ...harvesters];
-
-                const fields = convertFirebaseArray(farmData.cards?.farmlandOwned || farmData.fields || farmData.farmlands || farmData.ownedFields);
-                const agronomyFields = convertFirebaseArray(data.fields || data.cards?.fieldsAgronomy || []);
-
-                document.getElementById('fs25-farm-name').innerText = farmName;
-                document.getElementById('fs25-money').innerText = money;
-                document.getElementById('fs25-fields-count').innerText = fields.length;
-                document.getElementById('fs25-vehicles-count').innerText = allUnits.length;
-                document.getElementById('fs25-fleet-subtitle').innerText = `${allUnits.length} Total Units Registered`;
-                document.getElementById('fs25-fields-subtitle').innerText = `${fields.length} Parcels Owned`;
-
-                const fleetContainer = document.getElementById('fs25-fleet-container');
-                if (fleetContainer) {
-                    if (allUnits.length > 0) {
-                        fleetContainer.innerHTML = allUnits.map(v => {
-                            const name = v.name || v.brand || v.type || "Machinery";
-                            const img = v.image || null;
-                            const hours = v.operatingHours !== undefined ? `${v.operatingHours} hrs` : "Operational";
-                            const wear = v.wear !== undefined ? `${Math.round(v.wear * 100)}% Wear` : "Clean";
-                            const cardType = v.cardType || "Farm 2 Implement";
-
-                            return `
-                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex gap-3 items-center hover:border-lime-500/40 transition-colors">
-                                    ${img ? `<img src="${img}" class="w-12 h-12 rounded-lg object-contain bg-black/60 p-1 border border-white/10" onerror="this.style.display='none'">` : ''}
-                                    <div class="min-w-0 flex-1">
-                                        <div class="text-xs font-black text-lime-400 uppercase tracking-widest">${cardType}</div>
-                                        <div class="text-xs font-black text-white uppercase truncate">${name}</div>
-                                        <div class="flex justify-between items-center text-xs font-bold text-gray-400 pt-1.5 border-t border-white/5 mt-1.5 font-mono">
-                                            <span>${hours}</span>
-                                            <span class="text-lime-400">${wear}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
-                    } else {
-                        fleetContainer.innerHTML = `<div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active machinery registered to Farm 2.</div>`;
-                    }
-                }
-
-                const fieldsContainer = document.getElementById('fs25-fields-container');
-                if (fieldsContainer) {
-                    if (fields.length > 0) {
-                        fieldsContainer.innerHTML = fields.map(f => {
-                            const fId = f.id || f.fieldId || "Plot";
-                            const area = f.areaHa ? `${f.areaHa} ha` : (f.area ? `${f.area}` : null);
-
-                            const agroMatch = agronomyFields.find(af => af.fieldId == fId) || {};
-                            const crop = agroMatch.fruitType || f.crop || f.fruitType || "Seeded";
-                            
-                            const growthStage = agroMatch.growthStage || f.growthStage || 0;
-                            let growthStatus = "Growing";
-                            if (growthStage >= 6) growthStatus = "Ready to Harvest";
-                            else if (growthStage === 0) growthStatus = "Seeded / Cultivated";
-                            else if (crop.toLowerCase().includes("harvest")) growthStatus = "Harvested";
-
-                            const fertVal = agroMatch.fertilizedLevel !== undefined ? agroMatch.fertilizedLevel : (f.fertilizedLevel || 0);
-                            let fertText = "Fertilizer: 0%";
-                            if (fertVal === 1) fertText = "Fertilizer: 50%";
-                            else if (fertVal >= 2) fertText = "Fertilizer: 100%";
-
-                            const needsLime = agroMatch.needsLime || f.needsLime || false;
-                            const limeBadge = needsLime 
-                                ? `<span class="text-red-400 font-black">Needs Lime</span>` 
-                                : `<span class="text-emerald-400 font-bold">Lime OK</span>`;
-
-                            return `
-                                <div class="bg-black/50 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <div class="text-xs font-black text-lime-400 uppercase">Farmland Plot #${fId}</div>
-                                            <div class="text-sm font-black text-white uppercase mt-0.5">${crop}</div>
-                                        </div>
-                                        <span class="text-xs font-mono font-bold ${growthStage >= 6 ? 'text-emerald-400' : 'text-amber-400'}">${growthStatus}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center text-xs font-mono pt-1.5 border-t border-white/5">
-                                        <span class="text-gray-300">${fertText}</span>
-                                        ${limeBadge}
-                                    </div>
-                                    ${area ? `<div class="text-xs text-gray-500 font-mono">Area: ${area}</div>` : ''}
-                                </div>
-                            `;
-                        }).join('');
-                    } else {
-                        fieldsContainer.innerHTML = `<div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No parcels assigned to Farm 2.</div>`;
-                    }
-                }
-
-            } catch (err) {
-                console.warn("[FS25 CLUSTER] Telemetry standby:", err.message);
-            }
-        }
 
         async function syncPSNGamertags() {
             try {
@@ -2631,12 +2442,10 @@
         fetchCanonicalSkeleton();
         fetchUtmNavLinks();
         updateHub();
-        updateFS25Telemetry();
         fetchLiveTwitch();
         syncPSNGamertags();
 
         setInterval(updateHub, 30000);
-        setInterval(updateFS25Telemetry, 30000);
         setInterval(fetchLiveTwitch, 60000);
         setInterval(fetchUtmNavLinks, 180000);
         setInterval(syncPSNGamertags, 30000);

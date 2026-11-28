@@ -60,12 +60,6 @@
     "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/460930/header.jpg"
   },
   {
-    "name": "FS25",
-    "group": "Game",
-    "url": "#/games/fs25",
-    "image": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1110/f3560662d08ec4f5efee22247ea7981b244ec5ea52cfd01e.png"
-  },
-  {
     "name": "Red Dead Online — Collector",
     "group": "Game",
     "url": "#/games/rdr2",

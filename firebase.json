@@ -9,7 +9,6 @@
       "psn.json",
       "Playstation/**",
       "scripts/**",
-      "games/fs25/data/raw/**",
       "**/*.md",
       "database.rules.json",
       "**/__pycache__/**",
@@ -100,6 +99,21 @@
         "type": 301
       },
       {
+        "source": "/fs25",
+        "destination": "/games/all?game=farcry5",
+        "type": 301
+      },
+      {
+        "source": "/fs25.html",
+        "destination": "/games/all?game=farcry5",
+        "type": 301
+      },
+      {
+        "source": "/games/fs25{,/**}",
+        "destination": "/games/all",
+        "type": 301
+      },
+      {
         "source": "/Claude-Test",
         "destination": "/games/mobile",
         "type": 301
@@ -114,10 +128,6 @@
       {
         "source": "/fc5",
         "destination": "/games/all.html"
-      },
-      {
-        "source": "/fs25",
-        "destination": "/games/fs25/index.html"
       }
     ],
     "headers": [
